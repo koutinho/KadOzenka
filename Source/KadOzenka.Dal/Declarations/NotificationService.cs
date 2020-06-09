@@ -5,6 +5,7 @@ using Core.Main.FileStorages;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Spd;
+using Kendo.Mvc.TagHelpers;
 using ObjectModel.Core.Reports;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.Declarations
 
 		public void SendNotificationToSpd(long notificationId)
 		{
-
+			
 			var uved = GetNotification(notificationId);
 			var registerId = OMUved.GetRegisterId();
 			var reportType = GetNotificationReportType(uved);
@@ -60,24 +61,9 @@ namespace KadOzenka.Dal.Declarations
 				var data = File.ReadAllBytes(fileLocation);
 				string downloadFileName = ReportStorage.GetFileName(savedReport, fileType);
 
-				var spdRequest = new SpdApplicationRequest();
-				SpdRequest service = new SpdRequest();
+				var appId = OMDeclaration.Where(x => x.Id == uved.Declaration_Id).SelectAll().ExecuteFirstOrDefault()?.SpdAppId;
 
-				//Отправка заявки
-				var responceAppl = service.CreateFullApplication(
-					spdRequest.ProfileName,
-					OMUved.GetRegisterId(),
-					savedReport.Id.ToString(),
-					spdRequest.Params
-				);
-
-				if (responceAppl.error)
-				{
-					throw new Exception($"Ошибка создания заявки в СПД: {responceAppl.message}");
-				}
-
-
-				ApplicationDocument spdDoc = new ApplicationDocument()
+				ApplicationDocument spdDoc = new ApplicationDocument
 				{
 					FILENAME = savedReport.Title,
 					BYTES = data,
@@ -85,7 +71,7 @@ namespace KadOzenka.Dal.Declarations
 					DEFINITION = savedReport.Comments
 				};
 
-				BaseResponse response = SpdRequest.AddApplicationDocument(responceAppl.APPID.ParseToLong(), spdDoc);
+				BaseResponse response = SpdRequest.AddApplicationDocument(appId.GetValueOrDefault(), spdDoc);
 
 			}
 			else

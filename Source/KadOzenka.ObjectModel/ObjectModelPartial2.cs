@@ -663,6 +663,31 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 221 Журнал отправки итогов расчета КО
+    /// </summary>
+    public partial class OMKoResultSendJournal
+    {
+        /// <summary>
+        /// Ссылка на (203 Задание на оценку)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMTask ParentTask { get; set; }
+
+        /// <summary>
+        /// Ссылка на (800 Журнал выгрузки данных)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Common.OMExportByTemplates ParentExportByTemplates { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Ko
 {
     /// <summary>

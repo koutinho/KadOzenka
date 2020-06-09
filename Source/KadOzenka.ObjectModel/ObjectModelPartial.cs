@@ -1350,6 +1350,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
+
+        /// <summary>
+        /// Ссылка на (221 Журнал отправки итогов расчета КО)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMKoResultSendJournal> KoResultSendJournal { get; set; }
         public OMTask()
         {
 
@@ -1359,6 +1365,8 @@ namespace ObjectModel.KO
             PropertyChangedList = new HashSet<String>();
 
             Unit = new List<ObjectModel.KO.OMUnit>();
+
+            KoResultSendJournal = new List<ObjectModel.KO.OMKoResultSendJournal>();
 
         }
         public OMTask(bool trackPropertyChanging) : this()
@@ -3319,11 +3327,17 @@ namespace ObjectModel.Modeling
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 800 Журнал выгрузки по шаблону Excel
+    /// 800 Журнал выгрузки данных
     /// </summary>
     public partial class OMExportByTemplates
     {
 
+
+        /// <summary>
+        /// Ссылка на (221 Журнал отправки итогов расчета КО)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMKoResultSendJournal> KoResultSendJournal { get; set; }
         public OMExportByTemplates()
         {
 
@@ -3331,6 +3345,8 @@ namespace ObjectModel.Common
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            KoResultSendJournal = new List<ObjectModel.KO.OMKoResultSendJournal>();
 
         }
         public OMExportByTemplates(bool trackPropertyChanging) : this()
@@ -3382,6 +3398,30 @@ namespace ObjectModel.Common
 
         }
         public OMDataFormStorage(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.SPD
+{
+    /// <summary>
+    /// 900 Журнал учёта запросов СПД
+    /// </summary>
+    public partial class OMRequestRegistration
+    {
+
+        public OMRequestRegistration()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRequestRegistration(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -3536,6 +3576,28 @@ namespace ObjectModel.Gbu.Custom
 
         }
         public OMSource29(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 46717425 Источник: ГКО 2036
+    /// </summary>
+    public partial class OMSource30
+    {
+
+        public OMSource30()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource30(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

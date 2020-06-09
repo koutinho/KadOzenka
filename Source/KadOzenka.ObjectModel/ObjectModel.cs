@@ -18355,26 +18355,67 @@ namespace ObjectModel.Declarations
             }
         }
 
-        private long? _spdid;
+
+        private long? _spdappid;
         /// <summary>
-        /// 50103400 Идентификатор СПД (SPD_ID)
+        /// 50103400 Идентификатор СПД (SPD_APP_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 50103400)]
-        public long? SpdId
+        public long? SpdAppId
         {
-	        get
-	        {
-		        CheckPropertyInited("SpdId");
-		        return _spdid;
-	        }
-	        set
-	        {
-		        _spdid = value;
-		        NotifyPropertyChanged("SpdId");
-	        }
+            get
+            {
+                CheckPropertyInited("SpdAppId");
+                return _spdappid;
+            }
+            set
+            {
+                _spdappid = value;
+                NotifyPropertyChanged("SpdAppId");
+            }
         }
 
-	}
+
+        private string _spdappname;
+        /// <summary>
+        /// 50103500 Номер заявки СПД (SPD_APP_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103500)]
+        public string SpdAppName
+        {
+            get
+            {
+                CheckPropertyInited("SpdAppName");
+                return _spdappname;
+            }
+            set
+            {
+                _spdappname = value;
+                NotifyPropertyChanged("SpdAppName");
+            }
+        }
+
+
+        private DateTime? _spdappdate;
+        /// <summary>
+        /// 50103600 Дата заявки СПД (SPD_APP_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103600)]
+        public DateTime? SpdAppDate
+        {
+            get
+            {
+                CheckPropertyInited("SpdAppDate");
+                return _spdappdate;
+            }
+            set
+            {
+                _spdappdate = value;
+                NotifyPropertyChanged("SpdAppDate");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.Declarations
@@ -23988,6 +24029,558 @@ namespace ObjectModel.Common
     }
 }
 
+namespace ObjectModel.SPD
+{
+    /// <summary>
+    /// 900 Журнал учёта запросов СПД (izk_rsm_main.SPD_REQUEST_REGISTRATION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 900)]
+    [Serializable]
+    public partial class OMRequestRegistration : OMBaseClass<OMRequestRegistration>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 90000100 Идентификатор записи (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 90000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime? _appdate;
+        /// <summary>
+        /// 90000200 Дата заявки (APP_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000200)]
+        public DateTime? AppDate
+        {
+            get
+            {
+                CheckPropertyInited("AppDate");
+                return _appdate;
+            }
+            set
+            {
+                _appdate = value;
+                NotifyPropertyChanged("AppDate");
+            }
+        }
+
+
+        private string _appname;
+        /// <summary>
+        /// 90000300 Номер заявки ДГИ (APP_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000300)]
+        public string AppName
+        {
+            get
+            {
+                CheckPropertyInited("AppName");
+                return _appname;
+            }
+            set
+            {
+                _appname = value;
+                NotifyPropertyChanged("AppName");
+            }
+        }
+
+
+        private long _appid;
+        /// <summary>
+        /// 90000400 Идентификатор заявки (APP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000400)]
+        public long AppId
+        {
+            get
+            {
+                CheckPropertyInited("AppId");
+                return _appid;
+            }
+            set
+            {
+                _appid = value;
+                NotifyPropertyChanged("AppId");
+            }
+        }
+
+
+        private string _appstatus;
+        /// <summary>
+        /// 90000500 Статус заявки (APP_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000500)]
+        public string AppStatus
+        {
+            get
+            {
+                CheckPropertyInited("AppStatus");
+                return _appstatus;
+            }
+            set
+            {
+                _appstatus = value;
+                NotifyPropertyChanged("AppStatus");
+            }
+        }
+
+
+        private DateTime? _docdate;
+        /// <summary>
+        /// 90000600 Дата документа (DOC_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000600)]
+        public DateTime? DocDate
+        {
+            get
+            {
+                CheckPropertyInited("DocDate");
+                return _docdate;
+            }
+            set
+            {
+                _docdate = value;
+                NotifyPropertyChanged("DocDate");
+            }
+        }
+
+
+        private string _docname;
+        /// <summary>
+        /// 90000700 Номер документа (DOC_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000700)]
+        public string DocName
+        {
+            get
+            {
+                CheckPropertyInited("DocName");
+                return _docname;
+            }
+            set
+            {
+                _docname = value;
+                NotifyPropertyChanged("DocName");
+            }
+        }
+
+
+        private string _doclink;
+        /// <summary>
+        /// 90000800 Ссылка на образ документа (DOC_LINK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000800)]
+        public string DocLink
+        {
+            get
+            {
+                CheckPropertyInited("DocLink");
+                return _doclink;
+            }
+            set
+            {
+                _doclink = value;
+                NotifyPropertyChanged("DocLink");
+            }
+        }
+
+
+        private string _siglink;
+        /// <summary>
+        /// 90000900 Ссылка на образ файла подписи (SIG_LINK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90000900)]
+        public string SigLink
+        {
+            get
+            {
+                CheckPropertyInited("SigLink");
+                return _siglink;
+            }
+            set
+            {
+                _siglink = value;
+                NotifyPropertyChanged("SigLink");
+            }
+        }
+
+
+        private long? _appdocid;
+        /// <summary>
+        /// 90001000 Идентификатор документа (APP_DOC_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001000)]
+        public long? AppDocId
+        {
+            get
+            {
+                CheckPropertyInited("AppDocId");
+                return _appdocid;
+            }
+            set
+            {
+                _appdocid = value;
+                NotifyPropertyChanged("AppDocId");
+            }
+        }
+
+
+        private string _doctype;
+        /// <summary>
+        /// 90001100 Наименование типа документа (DOC_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001100)]
+        public string DocType
+        {
+            get
+            {
+                CheckPropertyInited("DocType");
+                return _doctype;
+            }
+            set
+            {
+                _doctype = value;
+                NotifyPropertyChanged("DocType");
+            }
+        }
+
+
+        private string _customxml;
+        /// <summary>
+        /// 90001200 Дополнительные атрибуты документа (CUSTOM_XML)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001200)]
+        public string CustomXML
+        {
+            get
+            {
+                CheckPropertyInited("CustomXML");
+                return _customxml;
+            }
+            set
+            {
+                _customxml = value;
+                NotifyPropertyChanged("CustomXML");
+            }
+        }
+
+
+        private string _fls;
+        /// <summary>
+        /// 90001300 Номер ФЛС (FLS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001300)]
+        public string FLS
+        {
+            get
+            {
+                CheckPropertyInited("FLS");
+                return _fls;
+            }
+            set
+            {
+                _fls = value;
+                NotifyPropertyChanged("FLS");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 90001400 Статус обработки (внутренний параметр) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001400)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private long? _status_Code;
+        /// <summary>
+        /// 90001400 Статус обработки (внутренний параметр) (справочный код) (STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001400)]
+        public long? Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return _status_Code;
+            }
+            set
+            {
+                _status_Code = value;
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private DateTime? _datecreate;
+        /// <summary>
+        /// 90001500 Дата создания (внутренний параметр) (DATE_CREATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001500)]
+        public DateTime? DateCreate
+        {
+            get
+            {
+                CheckPropertyInited("DateCreate");
+                return _datecreate;
+            }
+            set
+            {
+                _datecreate = value;
+                NotifyPropertyChanged("DateCreate");
+            }
+        }
+
+
+        private DateTime? _dateconfirm;
+        /// <summary>
+        /// 90001600 Дата подтверждения получения (внутренний параметр) (DATE_CONFIRM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001600)]
+        public DateTime? DateConfirm
+        {
+            get
+            {
+                CheckPropertyInited("DateConfirm");
+                return _dateconfirm;
+            }
+            set
+            {
+                _dateconfirm = value;
+                NotifyPropertyChanged("DateConfirm");
+            }
+        }
+
+
+        private DateTime? _dateperform;
+        /// <summary>
+        /// 90001700 Дата выполнения (внутренний параметр) (DATE_PERFORM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001700)]
+        public DateTime? DatePerform
+        {
+            get
+            {
+                CheckPropertyInited("DatePerform");
+                return _dateperform;
+            }
+            set
+            {
+                _dateperform = value;
+                NotifyPropertyChanged("DatePerform");
+            }
+        }
+
+
+        private string _docnumber;
+        /// <summary>
+        /// 90001800 Номер договора (DOC_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001800)]
+        public string DocNumber
+        {
+            get
+            {
+                CheckPropertyInited("DocNumber");
+                return _docnumber;
+            }
+            set
+            {
+                _docnumber = value;
+                NotifyPropertyChanged("DocNumber");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 90001900 Наименование арендатора (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90001900)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private long? _error;
+        /// <summary>
+        /// 90002000 Ошибка (ERROR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002000)]
+        public long? Error
+        {
+            get
+            {
+                CheckPropertyInited("Error");
+                return _error;
+            }
+            set
+            {
+                _error = value;
+                NotifyPropertyChanged("Error");
+            }
+        }
+
+
+        private string _errormessage;
+        /// <summary>
+        /// 90002100 Описание ошибки (ERROR_MESSAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002100)]
+        public string ErrorMessage
+        {
+            get
+            {
+                CheckPropertyInited("ErrorMessage");
+                return _errormessage;
+            }
+            set
+            {
+                _errormessage = value;
+                NotifyPropertyChanged("ErrorMessage");
+            }
+        }
+
+
+        private long? _regid;
+        /// <summary>
+        /// 90002200 Идентификатор процесса (REGID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002200)]
+        public long? RegId
+        {
+            get
+            {
+                CheckPropertyInited("RegId");
+                return _regid;
+            }
+            set
+            {
+                _regid = value;
+                NotifyPropertyChanged("RegId");
+            }
+        }
+
+
+        private long? _appstatusid;
+        /// <summary>
+        /// 90002300 Идентификатор статуса заявки (APP_STATUS_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002300)]
+        public long? AppStatusId
+        {
+            get
+            {
+                CheckPropertyInited("AppStatusId");
+                return _appstatusid;
+            }
+            set
+            {
+                _appstatusid = value;
+                NotifyPropertyChanged("AppStatusId");
+            }
+        }
+
+
+        private string _inn;
+        /// <summary>
+        /// 90002400 ИНН (INN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002400)]
+        public string Inn
+        {
+            get
+            {
+                CheckPropertyInited("Inn");
+                return _inn;
+            }
+            set
+            {
+                _inn = value;
+                NotifyPropertyChanged("Inn");
+            }
+        }
+
+
+        private string _typerus;
+        /// <summary>
+        /// 90002500 Наименование госуслуги (TYPERUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002500)]
+        public string Typerus
+        {
+            get
+            {
+                CheckPropertyInited("Typerus");
+                return _typerus;
+            }
+            set
+            {
+                _typerus = value;
+                NotifyPropertyChanged("Typerus");
+            }
+        }
+
+
+        private long? _appdocidproj;
+        /// <summary>
+        /// 90002600 Идентификатор проекта (APPDOCID_PROJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 90002600)]
+        public long? AppDocIdProj
+        {
+            get
+            {
+                CheckPropertyInited("AppDocIdProj");
+                return _appdocidproj;
+            }
+            set
+            {
+                _appdocidproj = value;
+                NotifyPropertyChanged("AppDocIdProj");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu.Custom
 {
     /// <summary>
@@ -24068,6 +24661,18 @@ namespace ObjectModel.Gbu.Custom
     [RegisterInfo(RegisterID = 44355304)]
     [Serializable]
     public partial class OMSource29 : OMBaseClass<OMSource29>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 46717425 Источник: ГКО 2036 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 46717425)]
+    [Serializable]
+    public partial class OMSource30 : OMBaseClass<OMSource30>
     {
     }
 }

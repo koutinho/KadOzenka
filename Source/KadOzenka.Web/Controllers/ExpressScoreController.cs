@@ -43,7 +43,7 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult Index()
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CALCULATE, true, false, true);
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true, false, true);
 			return View();
 		}
 
@@ -71,7 +71,7 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CALCULATE, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
 				false, true);
 			if (!ModelState.IsValid)
 			{
@@ -212,7 +212,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult CalculateCostTargetObject(CalculateCostTargetObjectViewModel viewModel)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CALCULATE, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
 				false, true);
 			if (!ModelState.IsValid)
 			{
@@ -246,7 +246,7 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult AnalogObjectsCard(int objectId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_HISTORY, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_HISTORY, true,
 				false, true);
 			var marketIds = OMEsToMarketCoreObject.Where(x => x.EsId == objectId).SelectAll().Execute().Select(x => x.MarketObjectId).ToList();
 
@@ -260,7 +260,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult RecalculateAnalog(int esId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CALCULATE, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
 				false, true);
 			var analogIds = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
 			ViewBag.DeleteAnalogIds = analogIds;
@@ -271,7 +271,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public JsonResult RecalculateAnalog([FromForm]List<int> analogIds, [FromForm]int expressScoreId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CALCULATE, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
 				false, true);
 			if (analogIds.Count == 0)
 			{
@@ -320,14 +320,14 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult ConstructorExpressScore()
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CONSTRUCTOR, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
 				false, true);
 			return View();
 		}
 
 		public ActionResult SettingsExpressScore(int segmentId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CONSTRUCTOR, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
 				false, true);
 			var model = new SettingsExpressScoreViewModel();
 			var esSetting = OMSettingsParams.Where(x => x.SegmentType_Code == (MarketSegment)segmentId).SelectAll()
@@ -351,7 +351,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public JsonResult SettingsExpressScore(SettingsExpressScoreViewModel viewModel)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRES_SSCORE_CONSTRUCTOR, true,
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
 				false, true);
 			if (!ModelState.IsValid)
 			{

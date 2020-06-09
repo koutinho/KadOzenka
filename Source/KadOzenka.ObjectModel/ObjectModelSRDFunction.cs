@@ -263,6 +263,18 @@ namespace ObjectModel.SRD
               // Просмотр удаленных объектов (559)
               public const string SUD_OBJECTS_REMOVED_VIEW = "SUD.OBJECTS.REMOVED.VIEW";
                 
+              // Экспресс оценка (560)
+              public const string EXPRESSSCORE = "EXPRESSSCORE";
+                
+              // Выполнение расчетов (561)
+              public const string EXPRESSSCORE_CALCULATE = "EXPRESSSCORE.CALCULATE";
+                
+              // История расчетов (562)
+              public const string EXPRESSSCORE_HISTORY = "EXPRESSSCORE.HISTORY";
+                
+              // Конструктор расчетов (563)
+              public const string EXPRESSSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
@@ -280,20 +292,6 @@ namespace ObjectModel.SRD
                 
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
-
-			  //Экспресс оценка(560)
-              public const string EXPRES_SSCORE = "EXPRESSSCORE";
-
-              //История расчетов(562)
-              public const string EXPRES_SSCORE_HISTORY = "EXPRESSSCORE.HISTORY";
-
-			  //Расчет экспресс оценки(561)
-              public const string EXPRES_SSCORE_CALCULATE = "EXPRESSSCORE.CALCULATE";
-
-			  //Конструктор экспресс оценки(563)
-              public const string EXPRES_SSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
-
-
                 
     }
 }
