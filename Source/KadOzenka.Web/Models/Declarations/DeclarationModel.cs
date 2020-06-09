@@ -175,6 +175,17 @@ namespace KadOzenka.Web.Models.Declarations
 		//[Required(ErrorMessage = "Поле Статус обязательное")]
 		public long? Status { get; set; }
 
+
+		#region Данные из СПД
+
+		public bool FromSpd { get; set; } = false;
+		public long SpdAppId { get; set; }
+		public string SpdAppName { get; set; }
+		public DateTime SpdAppDate { get; set; }
+
+		#endregion
+
+
 		public int RegisterId { get; } = OMDeclaration.GetRegisterId();
 
 		public DeclarationFormalCheckModel FormalCheckModel { get; set; }
@@ -295,6 +306,13 @@ namespace KadOzenka.Web.Models.Declarations
 				entity.Status_Code = (StatusDec)declarationViewModel.Status.GetValueOrDefault();
 			}
 			DeclarationFormalCheckModel.ToEntity(declarationViewModel.FormalCheckModel, ref entity, ref result);
+
+			if (declarationViewModel.FromSpd)
+			{
+				entity.SpdAppName = declarationViewModel.SpdAppName;
+				entity.SpdAppId = declarationViewModel.SpdAppId;
+				entity.SpdAppDate = declarationViewModel.SpdAppDate;
+			}
 		}
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
