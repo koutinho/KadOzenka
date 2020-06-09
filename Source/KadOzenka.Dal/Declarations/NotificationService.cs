@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Core.Main.FileStorages;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
@@ -59,7 +60,7 @@ namespace KadOzenka.Dal.Declarations
 			{
 				RegistersExportType fileType = savedReport.FileType.ParseToEnum<RegistersExportType>();
 				var data = File.ReadAllBytes(fileLocation);
-				string downloadFileName = ReportStorage.GetFileName(savedReport, fileType);
+				string downloadFileName = HttpUtility.UrlDecode(ReportStorage.GetFileName(savedReport, fileType));
 
 				var appId = OMDeclaration.Where(x => x.Id == uved.Declaration_Id).SelectAll().ExecuteFirstOrDefault()?.SpdAppId;
 
