@@ -64,6 +64,11 @@ namespace KadOzenka.Dal.Declarations
 
 				var appId = OMDeclaration.Where(x => x.Id == uved.Declaration_Id).SelectAll().ExecuteFirstOrDefault()?.SpdAppId;
 
+				if (appId == null)
+				{
+					throw new Exception("У деклорации отсутствует SpdAppId");
+				}
+
 				ApplicationDocument spdDoc = new ApplicationDocument
 				{
 					FILENAME = savedReport.Title,
