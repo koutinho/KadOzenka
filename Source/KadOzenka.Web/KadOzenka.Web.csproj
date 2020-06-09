@@ -791,6 +791,12 @@
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubjectsUPKSByTypeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\ResultsForApprovalUpksAverageReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1121,6 +1127,8 @@
     <ConfigPath Remove="Config\Reports\RegisteredObjectsDefaultReport.frx" />
     <ConfigPath Remove="Config\Reports\ResultsForApprovalReport.frx" />
     <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
+    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
+    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
   </ItemGroup>
 
   <ItemGroup>

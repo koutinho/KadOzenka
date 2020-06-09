@@ -207,6 +207,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				}
 			};
 			query.AddColumn(OMUnit.GetColumn(x => x.Id, "Id"));
+			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMModel.GetColumn(x => x.CalculationMethod, "ModelCalculationMethod"));
@@ -219,7 +220,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				var objectIds = new List<long>();
 				for (var i = 0; i < table.Rows.Count; i++)
 				{
-					objectIds.Add(table.Rows[i]["Id"].ParseToLong());
+					objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
 				}
 
 				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
@@ -240,7 +241,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 								: null,
 					};
 					dto.GroupNumber = gbuAttributes
-						.FirstOrDefault(x => x.ObjectId == table.Rows[i]["Id"].ParseToLong())
+						.FirstOrDefault(x => x.ObjectId == table.Rows[i]["ObjectId"].ParseToLong())
 						?.GetValueInString();
 
 					result.Add(dto);
