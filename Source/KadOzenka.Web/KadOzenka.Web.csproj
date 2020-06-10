@@ -764,6 +764,9 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -795,6 +798,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\GeneralizedIndicatorsReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\SubjectsUPKSByTypeReport.frx">
@@ -1112,6 +1118,7 @@
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
@@ -1132,6 +1139,7 @@
     <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
+    <ConfigPath Remove="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx" />
   </ItemGroup>
 
   <ItemGroup>
