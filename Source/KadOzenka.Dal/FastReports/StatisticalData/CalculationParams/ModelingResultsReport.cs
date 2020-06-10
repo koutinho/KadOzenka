@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Model.Dto;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -28,67 +30,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var taskIdList = GetTaskIdList(query).ToList();
             var groupId = GetGroupIdFromFilter(query);
-            var group = GroupService.GetGroupById(groupId);
 
+            var group = GroupService.GetGroupById(groupId);
             var model = ModelService.GetModelByGroupId(group.Id);
             var factors = ModelService.GetModelFactors(model.Id);
 
-            var operations = GetOperations(group.Id.Value, taskIdList, factors);
-
-            //TODO remove after testing
-            //var dictionary1 = new Dictionary<string, string>
-            //{
-            //    {"Материал стен", "wallMat 1" },
-            //    {"Расстояние до метро", "distanceToMetro 1" },
-            //    {"Test", null }
-            //};
-            //var dictionary2 = new Dictionary<string, string>
-            //{
-            //    {"Материал стен", "wallMat 2" },
-            //    {"Расстояние до метро", "distanceToMetro 2" }
-            //};
-            //var dictionary3 = new Dictionary<string, string>
-            //{
-            //    {"Материал стен", "wallMat 1" },
-            //    {"Расстояние до метро", "distanceToMetro 1" },
-            //    {"Test", "test" }
-            //};
-            //operations = new List<ReportItem>
-            //{
-            //    new ReportItem
-            //    {
-            //        ObjectType = PropertyTypes.Building,
-            //        CadastralNumber = "KN_1",
-            //        CadastralDistrict = "KD_1",
-            //        Factors = dictionary1,
-            //        Address = "Address_1",
-            //        Square = 1,
-            //        Upks = 1,
-            //        CadastralCost = 1
-            //    },
-            //    new ReportItem
-            //    {
-            //        ObjectType = PropertyTypes.Building,
-            //        CadastralNumber = "KN_2",
-            //        CadastralDistrict = "KD_2",
-            //        Factors = dictionary2,
-            //        Address = "Address_2",
-            //        Square = 2,
-            //        Upks = 2,
-            //        CadastralCost = 2
-            //    },
-            //    new ReportItem
-            //    {
-            //        ObjectType = PropertyTypes.Building,
-            //        CadastralNumber = "KN_3",
-            //        CadastralDistrict = "KD_3",
-            //        Factors = dictionary3,
-            //        Address = "Address_3",
-            //        Square = 3,
-            //        Upks = 3,
-            //        CadastralCost = 3
-            //    }
-            //};
+            var operations = GetOperations(taskIdList, factors);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -102,29 +49,34 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(long groupId, List<long> taskIds, List<ModelFactorDto> factors)
+        private List<ReportItem> GetOperations(List<long> taskIds, List<ModelFactorDto> factors)
         {
             if(factors.Count == 0)
                 return new List<ReportItem>();
-            
-            var attributes = factors
-                .Select(x => new {Id = x.FactorId, Name = x.Factor, RegisterId = x.RegisterId})
-                .DistinctBy(x => x.Id).ToList();
-
-            var factorsDictionary = new Dictionary<string, string>();
-            attributes.Select(x => x.Name).Distinct().ToList().ForEach(x => factorsDictionary.Add(x, null));
 
             var units = GetUnits(taskIds);
             //для тестирования
+            //id объекта, у которого настроены показатели вручную - 11404578
+            //объект, у которого есть адрес в гбу
             //var objectIdForTesting = 11188991;
             //units[1].ObjectId = objectIdForTesting;
+
             var addresses = GetAddresses(units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList());
+
+            var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new UnitFactors
+            {
+                RegisterId = (int)x.Key,
+                Attributes = x.Select(y => new Attribute
+                {
+                    Id = y.FactorId,
+                    Name = y.Factor
+                }).ToList()
+            }).ToList();
 
             var items = new List<ReportItem>();
             units.ForEach(unit =>
             {
-                //todo tour factors
-                var objectFactors = factorsDictionary;
+                var objectFactors = GetTourFactorsForUnit(unit.Id, groupedFactors);
 
                 var objectAddress = addresses.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 
@@ -155,6 +107,37 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 DateTime.Now.GetEndOfTheDay());
         }
 
+        private List<Attribute> GetTourFactorsForUnit(long unitId, List<UnitFactors> unitFactors)
+        {
+            var attributes = new List<Attribute>();
+            unitFactors.ForEach(factor =>
+            {
+                var query = new QSQuery
+                {
+                    MainRegisterID = factor.RegisterId,
+                    Columns = factor.Attributes.Select(x => (QSColumn)new QSColumnSimple(x.Id, x.Id.ToString())).ToList(),
+                    Condition = new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.Equal, unitId)
+                };
+
+                var table = query.ExecuteQuery();
+                foreach (DataRow row in table.Rows)
+                {
+                    factor.Attributes.ForEach(attribute =>
+                    {
+                        var value = row[attribute.Id.ToString()].ParseToStringNullable();
+                        attributes.Add(new Attribute
+                        {
+                            Id = attribute.Id,
+                            Name = attribute.Name,
+                            Value = value
+                        });
+                    });
+                }
+            });
+
+            return attributes;
+        }
+
         private DataTable GetItemDataTable(List<ReportItem> operations)
         {
             var dataTable = new DataTable("Data");
@@ -179,12 +162,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                         operations[i].ObjectType == PropertyTypes.None ? null : operations[i].ObjectType.GetEnumDescription(),
                         operations[i].CadastralDistrict,
                         operations[i].CadastralNumber,
-                        keyValuePair.Key,
+                        keyValuePair.Name,
                         keyValuePair.Value,
                         operations[i].Address,
-                        operations[i].Square,
-                        operations[i].Upks,
-                        operations[i].CadastralCost);
+                        operations[i].Square?.ToString(DecimalFormat),
+                        operations[i].Upks?.ToString(DecimalFormat),
+                        operations[i].CadastralCost?.ToString(DecimalFormat));
                 }
             }
 
@@ -206,12 +189,25 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Entities
 
+        private class UnitFactors
+        {
+            public int RegisterId { get; set; }
+            public List<Attribute> Attributes { get; set; }
+        }
+
+        private class Attribute
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
+
         private class ReportItem
         {
             public PropertyTypes ObjectType { get; set; }
             public string CadastralDistrict { get; set; }
             public string CadastralNumber { get; set; }
-            public Dictionary<string, string> Factors { get; set; }
+            public List<Attribute> Factors { get; set; }
             public string Address { get; set; }
             public decimal? Square { get; set; }
             public decimal? Upks { get; set; }

@@ -15,6 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
     public abstract class BaseCalculationParamsReport : StatisticalDataReport
     {
+        protected string DecimalFormat => "#,##0.00";
         protected class Group
         {
             public long? Id { get; set; }

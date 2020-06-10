@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Model.Dto;
 using ObjectModel.KO;
 
@@ -14,7 +12,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
     public class CalculationParamsReport : BaseCalculationParamsReport
     {
-        private string DecimalFormat => "#,##0.00";
         private static readonly List<RegisterAttributeType> QuantitativeTypes = new List<RegisterAttributeType>
         {
             RegisterAttributeType.INTEGER,
