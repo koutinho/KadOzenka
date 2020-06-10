@@ -168,6 +168,7 @@ namespace KadOzenka.Dal.KoObject
 							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2017, reportService);
 							break;
 						case 2020:
+						case 2018:
                             var value2020 = complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group;
                             AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value2020);
 							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2020, reportService);
