@@ -7,9 +7,10 @@ using Core.UI.Registers.Reports.Model;
 using FastReport;
 using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Model;
 using Newtonsoft.Json;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
 
@@ -21,12 +22,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		protected readonly GbuObjectService GbuObjectService;
 		protected readonly StatisticalDataService StatisticalDataService;
+		protected readonly ModelService ModelService;
+		protected readonly GroupService GroupService;
 
 		protected StatisticalDataReport()
 		{
 			GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
-
+            ModelService = new ModelService();
+            GroupService = new GroupService();
         }
 
 		public override string GetTitle(long? objectId)
@@ -56,7 +60,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 			return tourId.Value;
 		}
-
 
 		protected DataSet HadleData(DataSet dataSet)
 		{
@@ -115,6 +118,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                 throw new Exception($"Не указан атрибут '{nameFromInterface}'");
 
             return attributeId.Value;
+        }
+
+        protected List<OMUnit> GetUnits(List<long> taskIds)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+                .SelectAll()
+                .Execute();
         }
     }
 }

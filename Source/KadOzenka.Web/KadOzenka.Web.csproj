@@ -752,6 +752,9 @@
     <None Update="Config\Reports\CalculationPagesReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\CalculationParamsModelingResultsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\CalculationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

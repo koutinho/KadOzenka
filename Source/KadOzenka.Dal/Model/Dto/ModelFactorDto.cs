@@ -6,9 +6,10 @@ namespace KadOzenka.Dal.Model.Dto
     {
         public long Id { get; set; }
         public long? ModelId { get; set; }
-        public long? FactorId { get; set; }
+        public long FactorId { get; set; }
         public string Factor { get; set; }
         public RegisterAttributeType Type { get; set; }
+        public long RegisterId { get; set; }
         public long? MarkerId { get; set; }
         public decimal Weight { get; set; }
         public decimal B0 { get; set; }

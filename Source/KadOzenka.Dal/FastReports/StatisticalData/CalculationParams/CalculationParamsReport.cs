@@ -4,21 +4,15 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.Shared.Misc;
-using Core.UI.Registers.Reports.Model;
-using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Model.Dto;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
-    public class CalculationParamsReport : StatisticalDataReport
+    public class CalculationParamsReport : BaseCalculationParamsReport
     {
         private string DecimalFormat => "#,##0.00";
         private static readonly List<RegisterAttributeType> QuantitativeTypes = new List<RegisterAttributeType>
@@ -32,32 +26,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return "CalculationParamsReport";
         }
 
-        public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
+        protected override StatisticalDataType GetReportType()
         {
-            if (!initialisation)
-                return;
-
-            var groupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "Groups");
-            if (groupsFilterValue != null)
-            {
-                var taskIds = GetTaskIdsFromSession();
-                var groups = GetGroups(taskIds);
-
-                groupsFilterValue.ReportParameters = new List<ReportParameter>();
-                groupsFilterValue.ReportParameters.AddRange(groups.Select(x => new ReportParameter { Value = $"{x.Name}", Key = $"key:{x.GroupId}" }));
-            }
+            return StatisticalDataType.CalculationParams;
         }
-
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-            var modelService = new ModelService();
-            var groupId = GetQueryParam<long>("Groups", query);
-            if (groupId == 0)
-                throw new Exception("Не выбрана группа");
+            var groupId = GetGroupIdFromFilter(query);
 
-            var model = modelService.GetModelByGroupId(groupId);
-            var factors = modelService.GetModelFactors(model.Id);
+            var model = ModelService.GetModelByGroupId(groupId);
+            var factors = ModelService.GetModelFactors(model.Id);
             var quantitativeFactors = GetQuantitativeFactors(factors, groupId);
             var qualityFactors = GetQualityFactors(factors, groupId);
 
@@ -78,53 +57,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
 
         #region Support Methods
-
-        private List<long> GetTaskIdsFromSession()
-        {
-            var reportCode = StatisticalDataType.CalculationParams.GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
-                nameof(StatisticalDataFmReportCodeAttribute.Code));
-
-            var taskIdsStr = HttpContextHelper.HttpContext.Session.GetString($"Report{reportCode}TaskFilter");
-
-            return JsonConvert.DeserializeObject<List<long>>(taskIdsStr);
-        }
-
-        private List<Group> GetGroups(List<long> taskIds)
-        {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIds.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    }
-                }
-            };
-
-            query.AddColumn(OMGroup.GetColumn(x => x.Id, nameof(Group.GroupId)));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(Group.Name)));
-
-            var result = query.ExecuteQuery<Group>();
-
-            return result.DistinctBy(x => x.GroupId).ToList();
-        }
 
         private DataTable GetModelDataTable(OMModel model)
         {
@@ -164,7 +96,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             if (factorIds.Count <= 0)
                 return new List<QuantitativeFactor>();
 
-            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId))
+            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId ?? 0))
                 .SelectAll().Execute();
 
             var groupedMarks = allMarks
@@ -221,7 +153,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             if (factorIds.Count <= 0)
                 return new List<QualityFactor>();
 
-            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId))
+            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId ?? 0))
                 .SelectAll().Execute();
 
             var result = new List<QualityFactor>();
@@ -264,14 +196,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #endregion
 
-        #region Entities
 
-        private class Group
-        {
-            public long Id { get; set; }
-            public long GroupId { get; set; }
-            public string Name { get; set; }
-        }
+        #region Entities
 
         private class QuantitativeFactor
         {

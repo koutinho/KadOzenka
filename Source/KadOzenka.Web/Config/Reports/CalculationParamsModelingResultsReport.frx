@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/01/2020 11:09:29" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/10/2020 08:58:55" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -15,94 +15,93 @@
     using FastReport.Table;
     using FastReport.Utils;
 
-    namespace FastReport
-    {
-    public class ReportScript
-    {
-
-      //private int rowIndex;
-
-      //private float GetValue(int columnIndex)
-      //{
-        //object value = MatrixData.Data.GetValue(columnIndex, rowIndex, 0);
-        //return new Variant(value);
-      //}
-
-    private void SetValue(string complexValue, float value)
-    {
-      //int columnIndex = MatrixData.Data.Columns.Find(complexValue.Split(';'));
-      //MatrixData.Data.SetValue(columnIndex, rowIndex, value);
-    }
-
-    private void MatrixData_AfterTotals(object sender, EventArgs e)
-    {
-        //int[] rowIndices = MatrixData.Data.Rows.GetTerminalIndices();
-          
-        //for (int i = 0; i &lt; rowIndices.Length; i++)
-        //{
-        //rowIndex = rowIndices[i];
-
-        //int[] columnIndices = MatrixData.Data.Columns.GetTerminalIndices();
-        //float oplataSum = 0;
-        //foreach (int columnIndex in columnIndices)
-        //{
-        //oplataSum += GetValue(columnIndex);
-        //}
-        //SetValue(&quot;Всего&quot;, oplataSum);
-        //}
-    }
-   
-    private void BandCommon_BeforePrint(object sender, EventArgs e)
-    {
-        //TitleText.Width = MatrixData.Width;
-    }
-
-    private void BandCommon_AfterLayout(object sender, EventArgs e)
-    {
-        //TitleText.Width = MatrixData.Width;
-    }
-
-
-    }
-
-    }
+namespace FastReport
+{
+  public class ReportScript
+  {
+  }
+}
   </ScriptText>
   <Dictionary>
     <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
-      <Column Name="PropertyType" DataType="System.String"/>
-      <Column Name="Group" DataType="System.String"/>
-      <Column Name="ObjectsCount" DataType="System.Decimal"/>
+      <Column Name="Number" DataType="System.Decimal"/>
+      <Column Name="CadastralDistrict" DataType="System.String"/>
+      <Column Name="ObjectType" DataType="System.String"/>
+      <Column Name="CadastralNumber" DataType="System.String"/>
+      <Column Name="Address" DataType="System.String"/>
+      <Column Name="FactorName" DataType="System.String"/>
+      <Column Name="FactorValue" DataType="System.String"/>
+      <Column Name="Square" DataType="System.String"/>
+      <Column Name="Upks" DataType="System.String"/>
+      <Column Name="CadastralCost" DataType="System.String"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,405.5,121.37,181.65,233.3" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
     <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
-      <TextObject Name="Text1" Top="9.45" Width="1039.5" Height="18.9" Text="CalculationParamsModelingResultsReport" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 14pt, style=Bold"/>
+      <TextObject Name="Text1" Left="9.45" Top="9.45" Width="1020.6" Height="18.9" Text="Результаты моделирования [Common.GroupName]" Font="Times New Roman, 14pt, style=Bold"/>
     </ReportTitleBand>
-    <DataBand Name="BandItem" Top="129.25" Width="1047.06" Height="47.25" Guides="0,90.88,22.72,45.44,68.16" PrintIfDatasourceEmpty="true">
-      <TextObject Name="Text14" Left="718.2" Width="160.65" Height="47.25" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text15" Left="878.85" Width="160.65" Height="47.25" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text9" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text10" Left="103.95" Width="103.95" Height="47.25" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text11" Left="207.9" Width="198.45" Height="47.25" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text12" Left="406.35" Width="151.2" Height="47.25" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text13" Left="557.55" Width="160.65" Height="47.25" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader1" Top="41" Width="1047.06" Height="85.05">
-        <TextObject Name="Text2" Left="9.45" Width="94.5" Height="66.15" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text3" Left="103.95" Width="103.95" Height="66.15" Border.Lines="All" Text="Кадастровый район" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text4" Left="207.9" Width="198.45" Height="66.15" Border.Lines="All" Text="Кадастровый номер объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text5" Left="406.35" Width="151.2" Height="66.15" Border.Lines="All" Text="Вид объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text6" Left="557.55" Width="160.65" Height="66.15" Border.Lines="All" Text="Общая площадь объекта недвижимости, кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text7" Left="718.2" Width="160.65" Height="66.15" Border.Lines="All" Text="УПКС объекта недвижимости, руб./кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text8" Left="878.85" Width="160.65" Height="66.15" Border.Lines="All" Text="Кадастровая стоимость объекта недвижимости, руб." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text16" Left="9.45" Top="66.15" Width="94.5" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text17" Left="103.95" Top="66.15" Width="103.95" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text18" Left="207.9" Top="66.15" Width="198.45" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text19" Left="406.35" Top="66.15" Width="151.2" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text20" Left="557.55" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text21" Left="718.2" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text22" Left="878.85" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      </DataHeaderBand>
+    <DataBand Name="Data1" Top="41.8" Width="1047.06" Height="126.67" DataSource="Data">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="1030.36" Height="117.22" FixedRows="2" FixedColumns="8" RepeatHeaders="false" AutoSize="false" CellsSideBySide="true" DataSource="Data" ShowTitle="true">
+        <MatrixColumns>
+          <Header Expression="[Data.FactorName]" Totals="false"/>
+        </MatrixColumns>
+        <MatrixRows>
+          <Header Expression="[Data.Number]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.CadastralDistrict]" Totals="false"/>
+          <Header Expression="[Data.ObjectType]" Totals="false"/>
+          <Header Expression="[Data.CadastralNumber]" Totals="false"/>
+          <Header Expression="[Data.Address]" Totals="false"/>
+          <Header Expression="[Data.Square]" Totals="false"/>
+          <Header Expression="[Data.Upks]" Totals="false"/>
+          <Header Expression="[Data.CadastralCost]" Totals="false"/>
+        </MatrixRows>
+        <MatrixCells>
+          <Cell Expression="[Data.FactorValue]"/>
+        </MatrixCells>
+        <TableColumn Name="Column1" Width="77.38"/>
+        <TableColumn Name="Column2"/>
+        <TableColumn Name="Column7" Width="122.85"/>
+        <TableColumn Name="Column8" Width="159.18"/>
+        <TableColumn Name="Column9" Width="141.75"/>
+        <TableColumn Name="Column10" Width="75.6"/>
+        <TableColumn Name="Column11" Width="122.85"/>
+        <TableColumn Name="Column12" Width="94.5"/>
+        <TableColumn Name="Column13" Width="170.1"/>
+        <TableRow Name="Row1" Height="51.07" AutoSize="true">
+          <TableCell Name="Cell1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="8"/>
+          <TableCell Name="Cell7" Font="Arial, 10pt"/>
+          <TableCell Name="Cell27" Font="Arial, 10pt"/>
+          <TableCell Name="Cell30" Font="Arial, 10pt"/>
+          <TableCell Name="Cell33" Font="Arial, 10pt"/>
+          <TableCell Name="Cell36" Font="Arial, 10pt"/>
+          <TableCell Name="Cell39" Font="Arial, 10pt"/>
+          <TableCell Name="Cell42" Font="Arial, 10pt"/>
+          <TableCell Name="Cell45" Border.Lines="All" Text="Значения ценообразующих факторов" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="47.25">
+          <TableCell Name="Cell3" Border.Lines="All" Text="№п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell8" Border.Lines="All" Text="Номер кадастрового района" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell28" Border.Lines="All" Text="Вид объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell31" Border.Lines="All" Text="Кадастровый номер объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell34" Border.Lines="All" Text="Адрес (местоположение) объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell37" Border.Lines="All" Text="Площадь" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell40" Border.Lines="All" Text="Удельный показатель кадастровой стоимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell43" Border.Lines="All" Text="Кадастровая стоимость" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell46" Border.Lines="All" Text="[FactorName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row3">
+          <TableCell Name="Cell5" Border.Lines="All" Text="[Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell6" Border.Lines="All" Text="[CadastralDistrict]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell29" Border.Lines="All" Text="[ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell32" Border.Lines="All" Text="[CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell35" Border.Lines="All" Text="[Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell38" Border.Lines="All" Text="[Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell41" Border.Lines="All" Text="[Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell44" Border.Lines="All" Text="[CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell47" Border.Lines="All" Text="[FactorValue]" HorzAlign="Right" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+      </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="179.7" Width="1047.06" Height="9.45"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="172.47" Width="1047.06" Height="47.25"/>
   </ReportPage>
 </Report>
