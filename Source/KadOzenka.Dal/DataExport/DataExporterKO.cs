@@ -3357,568 +3357,589 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Экспорт в Word - ответные документы по объектам.
         /// </summary>
-        public static void ExportToDoc(OMUnit _unit, string _dir_name)
+        public static Stream ExportToDoc(OMUnit _unit)
         {
-            OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-            if (task == null) return;
-            OMGroup group_unit = OMGroup.Where(x => x.Id == _unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-            if (group_unit == null) return;
-
-            Console.WriteLine("Выгрузка Otvet ...");
-            if (!Directory.Exists(_dir_name)) Directory.CreateDirectory(_dir_name);
-            string file_name = _dir_name + "\\Ответ_" + _unit.Id.ToString() + ".docx";
-            ComponentInfo.SetLicense("DN-2020Feb27-7KwYZ43Y+lJR5YBeTLWW8F+pXE9Aj3uU2ru+Jk1lHxILYWKJhT8TZQLCztE1qx6MQx/MnAR8BGGPC6QpAmIgm2EZh0w==A");
-            var document = new DocumentModel();
-            document.DefaultParagraphFormat.SpaceAfter = 0;
-
-            Console.WriteLine(" - создание таблицы ...");
-            #region Создание таблицы      
-            int count_rows  = 81;
-            int idx_row = -1;
-            int count_cells = 4;
-            var table = new Table(document);
-            table.Columns.Add(new TableColumn(96f / 2.54f * 1.50f));
-            table.Columns.Add(new TableColumn(96f / 2.54f * 7.25f));
-            table.Columns.Add(new TableColumn(96f / 2.54f * 2.95f));
-            table.Columns.Add(new TableColumn(96f / 2.54f * 5.80f));
-            table.TableFormat.PreferredWidth = new TableWidth(100, TableWidthUnit.Percentage);
-            table.TableFormat.Alignment = HorizontalAlignment.Center;
-            table.TableFormat.Borders.ClearBorders();
-
-            #endregion
-            Console.WriteLine(" - создание таблицы выполнено");
-
-            Console.WriteLine(" - заголовок ...");
-            #region Сбор и формирование данных по объекту
-            string strDateApp = "01.01.2018";
-            string strDateOut = "01.01.2019";
-            string strActReq_01_06 = "-";
-            string strActReq_01_07 = "-";
-            string strActReq_01_10 = "01.01.2019";
-            string str_3_0 = "-";
-            string value_attr = "";
-
-
-
-            #region Нашли и записали в список входящий документ
-
-            OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
-            KoNoteType doc_status = task.NoteType_Code;
-                
-            #endregion
-            OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
-            if (doc_out != null)
+            if (_unit == null)
             {
-                strDateOut = doc_out.CreateDate.ToString("dd.MM.yyyy"); //odoc.DATE_DOC.ToString("dd.MM.yyyy");
-                switch (doc_status)
-                {
-                    case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
-                        strActReq_01_10 = "-";
-                        strActReq_01_06 = DataExportCommon.GetFullNameDoc(doc_out);
-                        strActReq_01_07 = "Ковалев Д.В." + Environment.NewLine + "Капитонов К.С.";
-                        str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 16 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
-
-                        break;
-                    case KoNoteType.Petition:      //СтатусДокумента.Обращение
-                        strActReq_01_10 = "-";
-                        str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 21 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
-
-                        break;
-                    default:     //СтатусДокумента.Иное
-                        str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями части 9 статьи 24 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
-                        break;
-                }
-
+                throw new Exception($"Не найдена единица оценки.");
+            }
+            OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+            if (task == null)
+            {
+                throw new Exception($"Не указано задание на оценку для объекта Id = '{_unit.Id}'");
+            }
+            OMGroup group_unit = OMGroup.Where(x => x.Id == _unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+            if (group_unit == null)
+            {
+                throw new Exception($"Не указана группа объекта Id = '{_unit.Id}'");
             }
 
-            #region 0. Заголовок:
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Приложение", 12, HorizontalAlignment.Right, false, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells-1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Разъяснения, связанные с определением кадастровой стоимости", 14, HorizontalAlignment.Center, false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Государственное бюджетное учреждение города Москвы" + /*Environment.NewLine*/ "  " + "«Городской центр имущественных платежей и жилищного страхования»", 12, HorizontalAlignment.Center, false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
-                "«__» _______ " + DateTime.Now.Year.ToString() + " г.",
-                "№______________", 12,
-                HorizontalAlignment.Left, HorizontalAlignment.Right,
-                false, false);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "На основании обращения от _____________, поступившего" + /*Environment.NewLine +*/ "  " +
-                "_________________ г., сообщаем относительно определения кадастровой" + /*Environment.NewLine +*/ "  " +
-                "стоимости объекта недвижимости с кадастровым номером " + _unit.CadastralNumber, 12, HorizontalAlignment.Center, false, true);
-            #endregion
-            Console.WriteLine(" - заголовок выполнено");
-            #region 1. Общие сведения:
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "1. Общие сведения:", 10, HorizontalAlignment.Left, false, true);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "№ п/п",
-                 "Наименование показателя",
-                 "Значение, описание",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                 true, true);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.1",
-                 "Кадастровая стоимость",
-                 _unit.CadastralCost.ToString(),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.2",
-                 "Дата, по состоянию на которую определена кадастровая стоимость (дата определения кадастровой стоимости)",
-                 strDateApp,
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            if (_unit.PropertyType_Code == PropertyTypes.Stead)
-                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                     "1.3",
-                     "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
-                     "Отчет от 19.11.2018 № 2/2018 «Об итогах государственной кадастровой оценки земельных участков(категория земель «земли населенных пунктов»), расположенных на территории города Москвы по состоянию на 01.01.2018»",
-                     10,
-                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                     true, false);
-            else
-                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                     "1.3",
-                     "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
-                     "Отчет от 19.11.2018 № 1/2018 «Об итогах государственной кадастровой оценки зданий, помещений, объектов незавершенного строительства, машино-мест и сооружений, расположенных на территории города Москвы по состоянию на 01.01.2018»",
-                     10,
-                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                     true, false);
-
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            string sss = "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko";
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.4",
-                 "Полный электронный адрес размещения отчета об итогах государственной кадастровой оценки в информационно - телекоммуникационной сети «Интернет»",
-                 "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.5",
-                 "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, подготовившем отчет об итогах государственной кадастровой оценки",
-                 "Ковалев Д.В." + /*Environment.NewLine*/ " " + "Капитонов К.С.",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.6",
-                 "Реквизиты акта определения кадастровой стоимости, составленного в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
-                 strActReq_01_06,
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.7",
-                 "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, определившем кадастровую стоимость в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
-                 strActReq_01_07,
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.8",
-                 "Дата внесения сведений о кадастровой стоимости в Единый государственный реестр недвижимости",
-                 "-",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.9",
-                 "Дата подачи заявления об оспаривании кадастровой стоимости, по результатам рассмотрения которого определена кадастровая стоимость по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
-                 "-",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.10",
-                 "Дата начала применения кадастровой стоимости, в том числе в случае изменения кадастровой стоимости по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
-                 strActReq_01_10,
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "1.11",
-                 "Сведения об органе, его местонахождении, официальном сайте в информационно-телекоммуникационной сети «Интернет», адресе электронной почты, контактных телефонах, в который следует обращаться в отношении исчисления налогов, исчисляемых от кадастровой стоимости объекта недвижимости",
-                 "Управление Федеральной налоговой службы России по г. Москве" + /*Environment.NewLine*/ " " +
-                 "Адрес: 125284, г. Москва, Хорошевское шоссе, д. 12А" + /*Environment.NewLine*/ " " +
-                 "https://www.nalog.ru" + /*Environment.NewLine*/ " " +
-                 "Телефоны:" + /*Environment.NewLine*/ " " +
-                 "Контакт - центр: +7(495) 276 - 22 - 22" + /*Environment.NewLine*/ " " +
-                 "Для справок: +7(495) 400 - 67 - 68",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            #endregion
-
-            #region  2. 
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
-                "2.Кадастровая стоимость объекта недвижимости определена на основании следующей информации:",
-                10,
-                HorizontalAlignment.Left,
-                false, true);
-            #endregion
-
-            Console.WriteLine(" - характеристики ...");
-            #region  2.1.  О  характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
-                 "2.1. О характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:",
-                 10,
-                 HorizontalAlignment.Left,
-                 false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "№ п/п",
-                 "Наименование показателя",
-                 "Значение, описание",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, true);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.1",
-                 "Кадастровый номер объекта недвижимости",
-                 DataExportCommon.SStr(_unit.CadastralNumber),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.2",
-                 "Вид объекта недвижимости (земельный участок, здание, сооружение, помещение, машино-место, объект незавершенного строительства, единый недвижимый комплекс, предприятие как имущественный комплекс или иной вид)",
-                 DataExportCommon.SStr(_unit.PropertyType),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 600, out value_attr);               //Код 600 - Адрес 
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.3",
-                 "Адрес объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 8, out value_attr);                 //Код 8 - Местоположение PLACE_OBJECT
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.4",
-                 "Описание местоположения объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.5",
-                 "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
-                 DataExportCommon.SStr(_unit.Square.ToString()),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 3, out value_attr); //Код 3 - Категория земель
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.6",
-                 "Категория земель, к которой относится земельный участок, если объектом недвижимости является земельный участок",
-                 DataExportCommon.SStr(value_attr), 
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 4, out value_attr); //Код 4 - Вид использования по документам
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.7",
-                 "Вид разрешенного использования объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            long number_attr = -1;
-            if (_unit.PropertyType_Code == PropertyTypes.Building) number_attr = 14;
-            else if (_unit.PropertyType_Code == PropertyTypes.Construction) number_attr = 22;
-            else if (_unit.PropertyType_Code == PropertyTypes.Pllacement) number_attr = 23;
-            if (number_attr > 0)
-                DataExportCommon.GetObjectAttribute(_unit, number_attr, out value_attr); //Код  - Назначение
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.8",
-                 "Назначение (для зданий, сооружений, помещения, единого недвижимого комплекса, предприятия как имущественного комплекса), проектируемое назначение (для объектов незавершенного строительства) объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 17, out value_attr); //Код 17 - Количество этажей
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.9",
-                 "Этажность объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.10",
-                 "Материал наружных стен объекта недвижимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "-";
-            //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.11",
-                 "Обременения (ограничения) объекта недвижимости, использованные при определении кадастровой стоимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "";
-            DataExportCommon.GetObjectAttribute(_unit, 46, out value_attr);            //Код 46 - Процент готовности
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.12",
-                 "Степень готовности объекта незавершенного строительства в процентах",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            value_attr = "-";
-            //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.1.13",
-                 "Иные сведения об объекте недвижимости, использованные при определении кадастровой стоимости",
-                 DataExportCommon.SStr(value_attr),
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            #endregion
-            Console.WriteLine(" - характеристики выполнено");
-
-
-            #region 2.2. О рынке недвижимости:
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
-                "2.2. О рынке недвижимости:",
-                10,
-                HorizontalAlignment.Left,
-                false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "№ п/п",
-                 "Наименование показателя",
-                 "Значение, описание",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                 true, true);
-
-            //OMGroupToMarketSegmentRelation segment = OMGroupToMarketSegmentRelation.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.2.1",
-                 "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
-                 DataExportCommon.SStr(" "),   //TODO -
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.2.2",
-                 "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
-                 DataExportCommon.SStr("-"),   //TODO -
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2 ,3);
-            DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
-                 "2.2.3",
-                 "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
-                 DataExportCommon.SStr("-"),   //TODO -
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
-                 true, false);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-
-            #endregion
-
-            Console.WriteLine(" - факторы ...");
-            #region 2.3. Факторы:
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
-                 "2.3. Перечень ценообразующих факторов, использованных для определения кадастровой стоимости объекта недвижимости, их значения и источники сведений о них:",
-                 10,
-                 HorizontalAlignment.Left,
-                 false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                 "№ п/п",
-                 "Наименование",
-                 "Значение",
-                 "Источник",
-                 10,
-                 HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                 true, true);
-
-            if (group_unit != null)
+            try
             {
-                int pp = 0;
-                OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
-                if (model != null)
+                Console.WriteLine("Выгрузка Otvet ...");
+                ComponentInfo.SetLicense("DN-2020Feb27-7KwYZ43Y+lJR5YBeTLWW8F+pXE9Aj3uU2ru+Jk1lHxILYWKJhT8TZQLCztE1qx6MQx/MnAR8BGGPC6QpAmIgm2EZh0w==A");
+                var document = new DocumentModel();
+                document.DefaultParagraphFormat.SpaceAfter = 0;
+
+                Console.WriteLine(" - создание таблицы ...");
+                #region Создание таблицы      
+                int count_rows = 81;
+                int idx_row = -1;
+                int count_cells = 4;
+                var table = new Table(document);
+                table.Columns.Add(new TableColumn(96f / 2.54f * 1.50f));
+                table.Columns.Add(new TableColumn(96f / 2.54f * 7.25f));
+                table.Columns.Add(new TableColumn(96f / 2.54f * 2.95f));
+                table.Columns.Add(new TableColumn(96f / 2.54f * 5.80f));
+                table.TableFormat.PreferredWidth = new TableWidth(100, TableWidthUnit.Percentage);
+                table.TableFormat.Alignment = HorizontalAlignment.Center;
+                table.TableFormat.Borders.ClearBorders();
+
+                #endregion
+                Console.WriteLine(" - создание таблицы выполнено");
+
+                Console.WriteLine(" - заголовок ...");
+                #region Сбор и формирование данных по объекту
+                string strDateApp = "01.01.2018";
+                string strDateOut = "01.01.2019";
+                string strActReq_01_06 = "-";
+                string strActReq_01_07 = "-";
+                string strActReq_01_10 = "01.01.2019";
+                string str_3_0 = "-";
+                string value_attr = "";
+
+
+
+                #region Нашли и записали в список входящий документ
+
+                OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                KoNoteType doc_status = task.NoteType_Code;
+
+                #endregion
+                OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
+                if (doc_out != null)
                 {
-                    if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-                    foreach (OMModelFactor factor in model.ModelFactor)
+                    strDateOut = doc_out.CreateDate.ToString("dd.MM.yyyy"); //odoc.DATE_DOC.ToString("dd.MM.yyyy");
+                    switch (doc_status)
                     {
-                        RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                        factor.FillMarkCatalogs(model);
+                        case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
+                            strActReq_01_10 = "-";
+                            strActReq_01_06 = DataExportCommon.GetFullNameDoc(doc_out);
+                            strActReq_01_07 = "Ковалев Д.В." + Environment.NewLine + "Капитонов К.С.";
+                            str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 16 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
-                        string name = attribute_factor.Name;
-                        //string desc = attribute_factor.Description;
-                        string value = "-";
+                            break;
+                        case KoNoteType.Petition:      //СтатусДокумента.Обращение
+                            strActReq_01_10 = "-";
+                            str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 21 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
-                        int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
-                        List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                        DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
-                        if (data != null)
+                            break;
+                        default:     //СтатусДокумента.Иное
+                            str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями части 9 статьи 24 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
+                            break;
+                    }
+
+                }
+
+                #region 0. Заголовок:
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Приложение", 12, HorizontalAlignment.Right, false, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Разъяснения, связанные с определением кадастровой стоимости", 14, HorizontalAlignment.Center, false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Государственное бюджетное учреждение города Москвы" + /*Environment.NewLine*/ "  " + "«Городской центр имущественных платежей и жилищного страхования»", 12, HorizontalAlignment.Center, false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
+                    "«__» _______ " + DateTime.Now.Year.ToString() + " г.",
+                    "№______________", 12,
+                    HorizontalAlignment.Left, HorizontalAlignment.Right,
+                    false, false);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "На основании обращения от _____________, поступившего" + /*Environment.NewLine +*/ "  " +
+                    "_________________ г., сообщаем относительно определения кадастровой" + /*Environment.NewLine +*/ "  " +
+                    "стоимости объекта недвижимости с кадастровым номером " + _unit.CadastralNumber, 12, HorizontalAlignment.Center, false, true);
+                #endregion
+                Console.WriteLine(" - заголовок выполнено");
+                #region 1. Общие сведения:
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "1. Общие сведения:", 10, HorizontalAlignment.Left, false, true);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "№ п/п",
+                     "Наименование показателя",
+                     "Значение, описание",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                     true, true);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.1",
+                     "Кадастровая стоимость",
+                     _unit.CadastralCost.ToString(),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.2",
+                     "Дата, по состоянию на которую определена кадастровая стоимость (дата определения кадастровой стоимости)",
+                     strDateApp,
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                if (_unit.PropertyType_Code == PropertyTypes.Stead)
+                    DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                         "1.3",
+                         "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
+                         "Отчет от 19.11.2018 № 2/2018 «Об итогах государственной кадастровой оценки земельных участков(категория земель «земли населенных пунктов»), расположенных на территории города Москвы по состоянию на 01.01.2018»",
+                         10,
+                         HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                         true, false);
+                else
+                    DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                         "1.3",
+                         "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
+                         "Отчет от 19.11.2018 № 1/2018 «Об итогах государственной кадастровой оценки зданий, помещений, объектов незавершенного строительства, машино-мест и сооружений, расположенных на территории города Москвы по состоянию на 01.01.2018»",
+                         10,
+                         HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                         true, false);
+
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                string sss = "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko";
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.4",
+                     "Полный электронный адрес размещения отчета об итогах государственной кадастровой оценки в информационно - телекоммуникационной сети «Интернет»",
+                     "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.5",
+                     "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, подготовившем отчет об итогах государственной кадастровой оценки",
+                     "Ковалев Д.В." + /*Environment.NewLine*/ " " + "Капитонов К.С.",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.6",
+                     "Реквизиты акта определения кадастровой стоимости, составленного в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
+                     strActReq_01_06,
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.7",
+                     "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, определившем кадастровую стоимость в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
+                     strActReq_01_07,
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.8",
+                     "Дата внесения сведений о кадастровой стоимости в Единый государственный реестр недвижимости",
+                     "-",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.9",
+                     "Дата подачи заявления об оспаривании кадастровой стоимости, по результатам рассмотрения которого определена кадастровая стоимость по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
+                     "-",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.10",
+                     "Дата начала применения кадастровой стоимости, в том числе в случае изменения кадастровой стоимости по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
+                     strActReq_01_10,
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "1.11",
+                     "Сведения об органе, его местонахождении, официальном сайте в информационно-телекоммуникационной сети «Интернет», адресе электронной почты, контактных телефонах, в который следует обращаться в отношении исчисления налогов, исчисляемых от кадастровой стоимости объекта недвижимости",
+                     "Управление Федеральной налоговой службы России по г. Москве" + /*Environment.NewLine*/ " " +
+                     "Адрес: 125284, г. Москва, Хорошевское шоссе, д. 12А" + /*Environment.NewLine*/ " " +
+                     "https://www.nalog.ru" + /*Environment.NewLine*/ " " +
+                     "Телефоны:" + /*Environment.NewLine*/ " " +
+                     "Контакт - центр: +7(495) 276 - 22 - 22" + /*Environment.NewLine*/ " " +
+                     "Для справок: +7(495) 400 - 67 - 68",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                #endregion
+
+                #region  2. 
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
+                    "2.Кадастровая стоимость объекта недвижимости определена на основании следующей информации:",
+                    10,
+                    HorizontalAlignment.Left,
+                    false, true);
+                #endregion
+
+                Console.WriteLine(" - характеристики ...");
+                #region  2.1.  О  характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
+                     "2.1. О характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:",
+                     10,
+                     HorizontalAlignment.Left,
+                     false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "№ п/п",
+                     "Наименование показателя",
+                     "Значение, описание",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, true);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.1",
+                     "Кадастровый номер объекта недвижимости",
+                     DataExportCommon.SStr(_unit.CadastralNumber),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.2",
+                     "Вид объекта недвижимости (земельный участок, здание, сооружение, помещение, машино-место, объект незавершенного строительства, единый недвижимый комплекс, предприятие как имущественный комплекс или иной вид)",
+                     DataExportCommon.SStr(_unit.PropertyType),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 600, out value_attr);               //Код 600 - Адрес 
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.3",
+                     "Адрес объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 8, out value_attr);                 //Код 8 - Местоположение PLACE_OBJECT
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.4",
+                     "Описание местоположения объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.5",
+                     "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
+                     DataExportCommon.SStr(_unit.Square.ToString()),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 3, out value_attr); //Код 3 - Категория земель
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.6",
+                     "Категория земель, к которой относится земельный участок, если объектом недвижимости является земельный участок",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 4, out value_attr); //Код 4 - Вид использования по документам
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.7",
+                     "Вид разрешенного использования объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                long number_attr = -1;
+                if (_unit.PropertyType_Code == PropertyTypes.Building) number_attr = 14;
+                else if (_unit.PropertyType_Code == PropertyTypes.Construction) number_attr = 22;
+                else if (_unit.PropertyType_Code == PropertyTypes.Pllacement) number_attr = 23;
+                if (number_attr > 0)
+                    DataExportCommon.GetObjectAttribute(_unit, number_attr, out value_attr); //Код  - Назначение
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.8",
+                     "Назначение (для зданий, сооружений, помещения, единого недвижимого комплекса, предприятия как имущественного комплекса), проектируемое назначение (для объектов незавершенного строительства) объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 17, out value_attr); //Код 17 - Количество этажей
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.9",
+                     "Этажность объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.10",
+                     "Материал наружных стен объекта недвижимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "-";
+                //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.11",
+                     "Обременения (ограничения) объекта недвижимости, использованные при определении кадастровой стоимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "";
+                DataExportCommon.GetObjectAttribute(_unit, 46, out value_attr);            //Код 46 - Процент готовности
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.12",
+                     "Степень готовности объекта незавершенного строительства в процентах",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                value_attr = "-";
+                //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.1.13",
+                     "Иные сведения об объекте недвижимости, использованные при определении кадастровой стоимости",
+                     DataExportCommon.SStr(value_attr),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                #endregion
+                Console.WriteLine(" - характеристики выполнено");
+
+
+                #region 2.2. О рынке недвижимости:
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
+                    "2.2. О рынке недвижимости:",
+                    10,
+                    HorizontalAlignment.Left,
+                    false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "№ п/п",
+                     "Наименование показателя",
+                     "Значение, описание",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                     true, true);
+
+                //OMGroupToMarketSegmentRelation segment = OMGroupToMarketSegmentRelation.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.2.1",
+                     "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
+                     DataExportCommon.SStr(" "),   //TODO -
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.2.2",
+                     "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
+                     DataExportCommon.SStr("-"),   //TODO -
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.2.3",
+                     "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
+                     DataExportCommon.SStr("-"),   //TODO -
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+
+                #endregion
+
+                Console.WriteLine(" - факторы ...");
+                #region 2.3. Факторы:
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
+                     "2.3. Перечень ценообразующих факторов, использованных для определения кадастровой стоимости объекта недвижимости, их значения и источники сведений о них:",
+                     10,
+                     HorizontalAlignment.Left,
+                     false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                     "№ п/п",
+                     "Наименование",
+                     "Значение",
+                     "Источник",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                     true, true);
+
+                if (group_unit != null)
+                {
+                    int pp = 0;
+                    OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+                    if (model != null)
+                    {
+                        if (model.ModelFactor.Count == 0)
+                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+                        foreach (OMModelFactor factor in model.ModelFactor)
                         {
-                            foreach (DataRow row in data.Rows)
+                            RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
+                            factor.FillMarkCatalogs(model);
+
+                            string name = attribute_factor.Name;
+                            //string desc = attribute_factor.Description;
+                            string value = "-";
+
+                            int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
+                            List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                            DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                            if (data != null)
                             {
-                                FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                                foreach (DataRow row in data.Rows)
+                                {
+                                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                                }
                             }
-                        }
-                        CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                        if (factor_item != null)
-                        {
-                            value = factor_item.Value;
-                        }
+                            CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                            if (factor_item != null)
+                            {
+                                value = factor_item.Value;
+                            }
 
-                        pp++;
-                        idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                        DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                             "2.3." + pp.ToString(),
-                             name,
-                             value,
-                             "-",
-                             12,
-                             HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                             true, false);
+                            pp++;
+                            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                                 "2.3." + pp.ToString(),
+                                 name,
+                                 value,
+                                 "-",
+                                 12,
+                                 HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                                 true, false);
+                        }
                     }
                 }
+
+                #endregion
+                Console.WriteLine(" - факторы выполнено");
+
+                #region  3. 
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row], "3. Иная информация по запросу заявителя:", str_3_0, 12, HorizontalAlignment.Left, HorizontalAlignment.Center, false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                #endregion
+
+                #region  Подпись 
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
+                    "Начальник отдела по работе с разъяснениями",
+                    " ",
+                    12,
+                    HorizontalAlignment.Left, HorizontalAlignment.Right,
+                    false, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
+                    "ГБУ «Центр имущественных платежей и жилищного страхования»",
+                    "Н.А. Завьялова",
+                    12,
+                    HorizontalAlignment.Left, HorizontalAlignment.Right,
+                    false, false);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
+                    "Исполнитель:",
+                    " ",
+                    12,
+                    HorizontalAlignment.Left, HorizontalAlignment.Right,
+                    false, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
+                DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
+                    "Асоян А.С./Андреева И.В./Прусенкова О.В./Илюхин Б.В.",
+                    " ",
+                    10,
+                    HorizontalAlignment.Left, HorizontalAlignment.Right,
+                    false, false);
+                #endregion
+
+                #endregion
+
+                Console.WriteLine(" - сохранение ...");
+                #region Задаем параметры страницы и сохраняем таблицу и документ
+                var section       = new Section(document, table);
+                PageSetup ps      = new PageSetup();
+                ps.PageHeight     = 16838f / 15f;
+                ps.PageWidth      = 11906f / 15f;
+                PageMargins pm    = new PageMargins();
+                pm.Left           = 96f / 2.54f * 2.0f;
+                pm.Right          = 96f / 2.54f * 1.5f;
+                pm.Top            = 96f / 2.54f * 2.0f;
+                pm.Bottom         = 96f / 2.54f * 2.0f;
+                ps.PageMargins    = pm;
+                section.PageSetup = ps;
+                document.Sections.Add(section);
+
+                MemoryStream stream = new MemoryStream();
+                document.Save(stream, GemBox.Document.SaveOptions.DocxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                #endregion
+                Console.WriteLine(" - сохранение выполнено");
+                Console.WriteLine("Выгрузка Otvet выполнено");
+
+                return stream;
             }
-
-            #endregion
-            Console.WriteLine(" - факторы выполнено");
-
-            #region  3. 
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row], "3. Иная информация по запросу заявителя:", str_3_0, 12, HorizontalAlignment.Left, HorizontalAlignment.Center, false, true);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            #endregion
-
-            #region  Подпись 
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
-                "Начальник отдела по работе с разъяснениями",
-                " ",
-                12,
-                HorizontalAlignment.Left, HorizontalAlignment.Right,
-                false, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
-                "ГБУ «Центр имущественных платежей и жилищного страхования»",
-                "Н.А. Завьялова",
-                12,
-                HorizontalAlignment.Left, HorizontalAlignment.Right,
-                false, false);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
-                "Исполнитель:",
-                " ",
-                12,
-                HorizontalAlignment.Left, HorizontalAlignment.Right,
-                false, false);
-            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
-            DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
-                "Асоян А.С./Андреева И.В./Прусенкова О.В./Илюхин Б.В.",
-                " ",
-                10,
-                HorizontalAlignment.Left, HorizontalAlignment.Right,
-                false, false);
-            #endregion
-
-            #endregion
-
-            Console.WriteLine(" - сохранение ...");
-            #region Задаем параметры страницы и сохраняем таблицу и документ
-            var section   = new Section(document, table);
-            PageSetup ps  = new PageSetup();
-            ps.PageHeight = 16838f / 15f;
-            ps.PageWidth  = 11906f / 15f;
-            PageMargins pm = new PageMargins();
-            pm.Left   = 96f / 2.54f * 2.0f;
-            pm.Right  = 96f / 2.54f * 1.5f;
-            pm.Top    = 96f / 2.54f * 2.0f;
-            pm.Bottom = 96f / 2.54f * 2.0f;
-            ps.PageMargins = pm;
-            section.PageSetup = ps;
-            document.Sections.Add(section);
-            document.Save(file_name);
-            #endregion
-            Console.WriteLine(" - сохранение выполнено");
-
-            Console.WriteLine("Выгрузка Otvet выполнено");
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ErrorManager.LogError(e);
+                return null;
+            }
         }
     }
 

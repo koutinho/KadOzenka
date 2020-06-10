@@ -6,6 +6,7 @@ using System.Configuration;
 using ObjectModel.KO;
 using ObjectModel.Core.TD;
 using KadOzenka.Dal.DataExport;
+using Core.Main.FileStorages;
 
 namespace KadOzenka.BlFrontEnd.ExportKO
 {
@@ -41,15 +42,21 @@ namespace KadOzenka.BlFrontEnd.ExportKO
                 DEKOVuon.ExportToXml(response_doc, dir_name);
         }
 
+        /// <summary>
+        /// Выгрузка в Word документа о предоставлении разъяснений
+        /// Обертка для вызова DEKODocOtvet.ExportDocOtvet
+        /// </summary>
         public static void ExportDocOtvet()
         {
-            string dir_name = "C:\\Temp\\KO_Otvet";
-            if (!Directory.Exists(dir_name))
-                Directory.CreateDirectory(dir_name);
-
             OMUnit unit = OMUnit.Where(x => x.CadastralNumber == "77:02:0025011:1236").SelectAll().ExecuteFirstOrDefault();
-            if (unit != null)
-                DEKODocOtvet.ExportToDoc(unit, dir_name);
+            Stream resultFile = DEKODocOtvet.ExportToDoc(unit);
+            if (resultFile != null)
+            {
+                string StorageName = "KoExportResult";
+                FileStorageManager.Save(resultFile, StorageName, DateTime.Now, "C:\\Temp\\KO_Otvet\\Otvet.docx");
+            }
+            else
+                throw new Exception($"Документ предоставления разъяснений не создан.");
         }
     }
 }
