@@ -80,7 +80,7 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception($"Не найдена единица оценки с Id = '{unitId}'");
 
             var directory = FileStorageManager.GetPathForStorage("SaveReportPath");
-            DEKODocOtvet.ExportToDoc(unit, directory);
+            //DEKODocOtvet.ExportToDoc(unit, directory);
 
             return Ok();
         }
