@@ -12,6 +12,7 @@ using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.GbuLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
@@ -535,11 +536,11 @@ namespace KadOzenka.Web.Controllers
 		        viewModel.Document.IdDocument = idDocument;
 		    }
 
-			SelectionCOD.Run(viewModel.ToCodSelectionSettings());
+		    SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
 
 		    return Json(new
 		    {
-		        success = "Успешно выполнено",
+		        success = "Операция успешно поставлена в очерердь",
 		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
 		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null
 		    });

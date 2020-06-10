@@ -263,7 +263,7 @@
 						    if (response.idDocument && updateDocumentControl) {
 						        updateDocumentControl(response.idDocument);
 						    }
-							Common.ShowMessage("Выполнено");
+							Common.ShowMessage(response.success);
 						}
 					}).fail(function (response, textStatus, errorThrown) {
 					    Common.ShowError(response.responseText);

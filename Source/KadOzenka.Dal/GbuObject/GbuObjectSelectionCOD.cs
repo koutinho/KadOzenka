@@ -29,10 +29,28 @@ namespace KadOzenka.Dal.GbuObject
 
         private static GbuReportService _reportService;
 
-        /// <summary>
-        /// Выборка из справочника ЦОД по кадастровому номеру
-        /// </summary>
-        public static long Run(CodSelectionSettings setting)
+		#region columns for report
+
+		/// <summary>
+		/// Номер столбца кад номера для записи в отчет
+		/// </summary>
+		private static readonly int knColumn = 0;
+
+		private static readonly int inputFieldColumn = 1;
+
+		private static readonly int valueColumn = 2;
+
+		private static readonly int outputFieldColumn = 3;
+
+		private static readonly int errorColumn = 4;
+
+		#endregion
+
+
+		/// <summary>
+		/// Выборка из справочника ЦОД по кадастровому номеру
+		/// </summary>
+		public static long Run(CodSelectionSettings setting)
         {
             _reportService = new GbuReportService();
 
@@ -68,11 +86,11 @@ namespace KadOzenka.Dal.GbuObject
             MaxCount = 0;
 
             _reportService.SetStyle();
-            _reportService.SetIndividualWidth(1, 6);
-            _reportService.SetIndividualWidth(0, 4);
-            _reportService.SetIndividualWidth(2, 3);
-            _reportService.SetIndividualWidth(3, 6);
-            _reportService.SetIndividualWidth(4, 5);
+            _reportService.SetIndividualWidth(inputFieldColumn, 6);
+            _reportService.SetIndividualWidth(knColumn, 4);
+            _reportService.SetIndividualWidth(valueColumn, 3);
+            _reportService.SetIndividualWidth(outputFieldColumn, 6);
+            _reportService.SetIndividualWidth(errorColumn, 5);
             long reportId = _reportService.SaveReport("Отчет выборки из справочника ЦОД по кадастровому номеру");
             _reportService = null;
 
@@ -99,7 +117,7 @@ namespace KadOzenka.Dal.GbuObject
                 rowReport = _reportService.GetCurrentRow();
             }
 
-            AddRowToReport(rowReport, obj.CadastralNumber, 0, value, setting.IdAttributeResult.Value, "");
+            AddRowToReport(rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
 
             var attributeValue = new GbuObjectAttribute
             {
@@ -117,15 +135,14 @@ namespace KadOzenka.Dal.GbuObject
 
         }
 
-        public static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        public static void AddRowToReport(int rowNumber, string kn, string value, long resultAttribute, string errorMessage = "", string sourceName = "Справочник ЦОД")
         {
-	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-	        _reportService.AddValue(kn, 0, rowNumber);
-	        _reportService.AddValue(sourceName, 3, rowNumber);
-	        _reportService.AddValue(value, 2, rowNumber);
-	        _reportService.AddValue(resultName, 1, rowNumber);
-	        _reportService.AddValue(errorMessage, 4, rowNumber);
+	        _reportService.AddValue(kn, knColumn, rowNumber);
+	        _reportService.AddValue(sourceName, inputFieldColumn, rowNumber);
+	        _reportService.AddValue(value, valueColumn, rowNumber);
+	        _reportService.AddValue(resultName, outputFieldColumn, rowNumber);
+	        _reportService.AddValue(errorMessage, errorColumn, rowNumber);
         }
 
 	}

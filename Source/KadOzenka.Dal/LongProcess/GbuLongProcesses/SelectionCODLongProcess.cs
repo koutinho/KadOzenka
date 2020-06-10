@@ -6,13 +6,12 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.CodSelection;
-using EntryPointNotFoundException = System.EntryPointNotFoundException;
 
 namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 {
-	public class SelectionCODLongProcess : LongProcess
+	public class SelectionCodLongProcess : LongProcess
 	{
-		public const string LongProcessName = "HarmonizationCodProcess";
+		public const string LongProcessName = "SelectionCodLongProcess";
 
 		public static long AddProcessToQueue(CodSelectionSettings settings)
 		{
@@ -49,10 +48,26 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 						}
 					}
 				}, cancelToken);
+
+
+				long reportId = SelectionCOD.Run(settings);
+				cancelSource.Cancel();
+				t.Wait(cancellationToken);
+				cancelSource.Dispose();
+
+				WorkerCommon.SetProgress(processQueue, 100);
+
+
+				string message = "Операция успешно завершена." +
+				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+
+				NotificationSender.SendNotification(processQueue, "Результат Операции выборки из справочника ЦОД", message);
 			}
 			catch (Exception ex)
 			{
-
+				cancelSource.Cancel();
+				NotificationSender.SendNotification(processQueue, "Результат Операции выборки из справочника ЦОД", $"Операция была прервана: {ex.Message}");
+				throw;
 			}
 		}
 	}
