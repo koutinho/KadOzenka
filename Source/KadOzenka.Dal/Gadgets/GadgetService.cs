@@ -308,6 +308,43 @@ namespace KadOzenka.Dal.Gadgets
         }
 
         /// <summary>
+        /// Экспресс-оценка (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable ExpressEvaluation()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            data.Rows.Add("/ObjectCard?ObjId=0&RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
+            data.Rows.Add("/ObjectCard?ObjId=0&RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Поддержка принятия управленческих решений (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable ManagementDecisionSupport()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            data.Rows.Add("/ManagementDecisionSupport/Map", "Построение тематических карт", _moveToPageSymbol);
+            data.Rows.Add("/ManagementDecisionSupport/StatisticalData", "Статистическая информация", _moveToPageSymbol);
+            // Пункт меню есть, но URL не указан на основной странице?
+            data.Rows.Add("#", "Экономический анализ", _moveToPageSymbol);
+            data.Rows.Add("/Report/Viewer?ReportTypeId=1007", "Количество вновь учтенных объектов недвижимости", _moveToPageSymbol);
+            data.Rows.Add("/Report/Viewer?ReportTypeId=1008", "Количество ранее учтенных объектов недвижимости", _moveToPageSymbol);
+            data.Rows.Add("/Report/Viewer?ReportTypeId=1009", "Количество измененных объектов недвижимости", _moveToPageSymbol);
+
+            return data;
+        }
+
+        /// <summary>
         /// Единицы оценки по типам
         /// </summary>
         /// <returns></returns>
