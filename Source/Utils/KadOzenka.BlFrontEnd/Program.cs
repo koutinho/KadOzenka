@@ -36,6 +36,8 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.SPD;
+using System.Data;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -257,7 +259,26 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
-            consoleHelper.AddCommand("554", "эксель импорт", 
+			consoleHelper.AddCommand("905", "Тест получения данных по заявителю из заявки СПД", () =>
+			{
+				var id = 106941603;
+				var spdRequest = OMRequestRegistration.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+
+				DataSet dataSet = new DataSet();
+
+				System.IO.StringReader xmlSR = new System.IO.StringReader(spdRequest.CustomXML);
+
+				dataSet.ReadXml(xmlSR, XmlReadMode.ReadSchema);
+
+				var row = dataSet.Tables["AppApplicants"].Rows[0];
+
+				string name = row["NAME"].ToString();
+				string SNAME = row["SNAME"].ToString();
+				string FNAME = row["FNAME"].ToString();
+				string MNAME = row["MNAME"].ToString();
+			});
+
+			consoleHelper.AddCommand("554", "эксель импорт", 
 				() => new DataImporterCommon().StartProcess(null, 
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
 					new System.Threading.CancellationToken()));
