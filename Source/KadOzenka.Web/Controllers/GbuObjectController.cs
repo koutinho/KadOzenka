@@ -612,7 +612,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				GbuObjectInheritanceAttribute.Run(viewModel.ToAttributeSettings());
+				InheritanceLongProcess.AddProcessToQueue(viewModel.ToAttributeSettings());
 			}
 			catch (Exception e)
 			{
@@ -620,7 +620,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			
 
-			return Json(new { Success = "Выполнено успешно! Отчет можно скачать в уведомлениях."});
+			return Json(new { Success = "Операция успешно добавлена в очередь долгих процессов."});
 		}
 
         #endregion

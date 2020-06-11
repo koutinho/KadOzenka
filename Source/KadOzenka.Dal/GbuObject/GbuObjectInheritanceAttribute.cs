@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции наследования атрибутов
         /// </summary>
-        public static void Run(GbuInheritanceAttributeSettings setting)
+        public static long Run(GbuInheritanceAttributeSettings setting)
         {
 			var reportService = new GbuReportService();
 			reportService.AddHeaders(0, new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
@@ -64,12 +64,8 @@ namespace KadOzenka.Dal.GbuObject
             reportService.SetIndividualWidth(3, 4);
             reportService.SetIndividualWidth(4, 6);
             long reportId = reportService.SaveReport("Отчет наследование");
-
-            string message = "Операция успешно завершена." +
-                             $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
-
-            NotificationSender.SendNotification(new OMQueue { UserId = SRDSession.GetCurrentUserId().Value }, "Результат Операции наследования", message);
-		}
+            return reportId;
+        }
 
         public static void Inheritance(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode, GbuReportService reportService)
         {
