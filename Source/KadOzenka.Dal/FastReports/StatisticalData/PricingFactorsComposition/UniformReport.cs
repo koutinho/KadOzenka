@@ -36,12 +36,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var items = new List<ReportItem>();
             var units = GetUnits(taskIds);
-            //для тестирования
-            units = new List<OMUnit>
-            {
-                new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11251387 },
-                new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
-            };
+            ////для тестирования
+            //units = new List<OMUnit>
+            //{
+            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11251387 },
+            //    new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
+            //};
 
             var objectsAttributes = GbuObjectService.GetAllAttributes(
                 units.Where(x => x.ObjectId != null).Select(x => x.ObjectId.Value).ToList(),
