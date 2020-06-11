@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
@@ -34,90 +36,67 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var items = new List<ReportItem>();
             var units = GetUnits(taskIds);
-            ////для тестирования
-            //units = new List<OMUnit>
-            //{
-            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11251387 },
-            //    new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
-            //};
-
-            var uniqueAttributes = GetUniqueAttributeIds();
+            //для тестирования
+            units = new List<OMUnit>
+            {
+                new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11251387 },
+                new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
+            };
 
             var objectsAttributes = GbuObjectService.GetAllAttributes(
                 units.Where(x => x.ObjectId != null).Select(x => x.ObjectId.Value).ToList(),
-                uniqueAttributes.Select(x => x.RegisterId).Distinct().ToList(),
-                uniqueAttributes.Select(x => x.AttributeId).Distinct().ToList(),
                 dateOt: DateTime.Now.GetEndOfTheDay());
 
             units.ForEach(unit =>
             {
-                var item = new ReportItem
-                {
-                    CadastralNumber = unit.CadastralNumber
-                };
-
                 var objAttributes = objectsAttributes.Where(x => x.ObjectId == unit.ObjectId).ToList();
-                if (objAttributes.Count <= 0)
-                    return;
 
-                item.Attributes = objAttributes.Select(x => new Attribute
+                items.Add(new ReportItem
                 {
-                    RegisterName = x.RegisterData?.Description,
-                    AttributeName = x.GetAttributeName()
-                }).ToList();
-
-                items.Add(item);
+                    CadastralNumber = unit.CadastralNumber,
+                    Attributes = GetUniqueAttributes(objAttributes).Select(x => new Attribute
+                    {
+                        AttributeId = x.Id,
+                        AttributeName = x.GetAttributeName(),
+                        RegisterId = x.RegisterData.Id,
+                        RegisterName = x.RegisterData.Description
+                    }).ToList()
+                });
             });
 
             return items;
         }
 
-        private List<Attribute> GetUniqueAttributeIds()
+        private List<GbuObjectAttribute> GetUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
         {
-            var allGbuAttributes = GbuObjectService.GetGbuAttributes()
-                .Select(x => new Attribute
-                {
-                    AttributeId = x.Id,
-                    RegisterId = x.RegisterId,
-                    AttributeName = x.Name
-                }).ToList();
+            if(objectAttributes == null || objectAttributes.Count == 0)
+                return new List<GbuObjectAttribute>();
 
-            var gbuAttributesExceptRosreestr = allGbuAttributes
-                .Where(x => x.RegisterId != StatisticalDataService.RosreestrRegisterId).ToList();
+            var gbuAttributesExceptRosreestr = objectAttributes
+                .Where(x => x.RegisterData.Id != StatisticalDataService.RosreestrRegisterId).ToList();
 
-            var rosreestrAttributes = allGbuAttributes
-                .Where(x => x.RegisterId == StatisticalDataService.RosreestrRegisterId).ToList();
-
-            ////для тестирования
-            //gbuAttributesExceptRosreestr = new List<Test>
-            //{
-            //    new Test{Id = 1, Name = "АЛ_1", RegisterId = 1},
-            //    new Test{Id = 2, Name = "материал стен РСМ", RegisterId = 2},
-            //    new Test{Id = 3, Name = "АЛ_2", RegisterId = 3},
-            //};
-
-            //rosreestrAttributes = new List<Test>
-            //{
-            //    new Test{Id = 1, Name = "РР1", RegisterId = 1},
-            //    new Test{Id = 2, Name = "Материал стен", RegisterId = 2},
-            //    new Test{Id = 3, Name = "РР2", RegisterId = 3},
-            //};
+            var rosreestrAttributes = objectAttributes
+                .Where(x => x.RegisterData.Id == StatisticalDataService.RosreestrRegisterId).ToList();
 
             //симметрическая разность множеств
-            var uniqueAttributes = new List<Attribute>();
+            var uniqueAttributes = new List<GbuObjectAttribute>();
             //отбираем уникальные аттрибуты из РР
             rosreestrAttributes.ForEach(rr =>
             {
+                var rrAttributeName = rr.GetAttributeName();
+
                 var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
-                    gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                        gbu.GetAttributeName().StartsWith(rrAttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 if (sameAttributes.Count == 0)
                     uniqueAttributes.Add(rr);
             });
             //отбираем уникальные аттрибуты из всех источников кроме РР
             gbuAttributesExceptRosreestr.ForEach(gbu =>
             {
-                var sameAttributes = rosreestrAttributes
-                    .Where(rr => gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                var gbuAttributeName = gbu.GetAttributeName();
+
+                var sameAttributes = rosreestrAttributes.Where(rr =>
+                        gbuAttributeName.StartsWith(rr.GetAttributeName(), StringComparison.InvariantCultureIgnoreCase)).ToList();
                 if (sameAttributes.Count == 0)
                     uniqueAttributes.Add(gbu);
             });
