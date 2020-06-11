@@ -144,9 +144,65 @@
 		    <ConditionGroups>
 			    <ConditionGroup HideOrDisable="Disable">
 				    <Conditions>
-					    <Condition Key="{Get:UseSpd}" Operation="Equal" Value="False" AndOr="And" />
 					    <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
-			
+					    <Condition Key="{Get:UseSpd}" Operation="Equal" Value="False" AndOr="Or" />
+					    <Condition Key="{Get:UseSpd}" Operation="Equal" Value="True" AndOr="Or" OpeningBracket="("/>
+						<Condition Key="[ReportsCount1]" Value="0" Operation="Equal" AndOr="And"  ClosingBracket=")">
+							<CustomColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+								<SubQuery>
+									<Alias>ReportsCount1</Alias>
+									<MainRegisterID>809</MainRegisterID>
+									<Columns>
+										<QSColumn xsi:type="QSColumnFunction">
+											<FunctionType>Count</FunctionType>
+											<Operands>
+												<QSColumn xsi:type="QSColumnConstant">
+													<Value xsi:type="xsd:double">1</Value>
+												</QSColumn>
+											</Operands>
+										</QSColumn>
+									</Columns>
+									<Condition xsi:type="QSConditionGroup">
+										<Type>And</Type>
+										<Conditions>
+											<QSCondition xsi:type="QSConditionSimple">
+												<ConditionType>Equal</ConditionType>
+												<LeftOperand xsi:type="QSColumnSimple">
+													<AttributeID>80900700</AttributeID>
+													<Type>Value</Type>
+												</LeftOperand>
+												<RightOperand xsi:type="QSColumnSimple">
+													<AttributeID>50600100</AttributeID>
+													<Type>Value</Type>
+												</RightOperand>
+												<RightOperandLevel>1</RightOperandLevel>
+											</QSCondition>
+											<QSCondition xsi:type="QSConditionSimple">
+												<ConditionType>Equal</ConditionType>
+												<LeftOperand xsi:type="QSColumnSimple">
+													<AttributeID>80900600</AttributeID>
+													<Type>Value</Type>
+												</LeftOperand>
+												<RightOperand xsi:type="QSColumnConstant">
+													<Value xsi:type="xsd:int">506</Value>
+												</RightOperand>
+												<RightOperandLevel>0</RightOperandLevel>
+											</QSCondition>
+											<QSCondition xsi:type="QSConditionSimple">
+												<ConditionType>IsNull</ConditionType>
+												<LeftOperand xsi:type="QSColumnSimple">
+													<AttributeID>80901500</AttributeID>
+													<Type>Value</Type>
+													<Level xsi:nil="true" />
+												</LeftOperand>
+												<LeftOperandLevel>0</LeftOperandLevel>
+												<RightOperandLevel>0</RightOperandLevel>
+											</QSCondition>
+										</Conditions>
+									</Condition>
+								</SubQuery>
+							</CustomColumn>
+						</Condition>
 				    </Conditions>
 			    </ConditionGroup>
 		    </ConditionGroups>
