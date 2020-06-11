@@ -213,7 +213,7 @@ namespace KadOzenka.Web.Controllers
                         Name = x.Name,
                         Selected = false
                     });
-            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Market).ReferenceId)
+            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Market).ReferenceId).And(x => x.ItemId <= (int) MarketTypes.Rosreestr)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => x.ItemId).Select(x => new {
                         Id = x.ItemId,
