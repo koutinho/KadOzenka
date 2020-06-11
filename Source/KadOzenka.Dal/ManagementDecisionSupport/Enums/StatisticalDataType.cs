@@ -98,11 +98,23 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
         [StatisticalDataFmReportCode(10241)]
         ModelingResults = 151,
 
-        [Description("Состав ценообразующих факторов")]
-		[StatisticalDataFmReportCode(1025)]
-		PricingFactorsComposition = 16,
+        [Description("Состав данных по перечню объектов недвижимости (ЗУ)")]
+		[StatisticalDataFmReportCode(10250)]
+        PricingFactorsCompositionForZu = 160,
+        [Description("Состав данных по перечню объектов недвижимости (ОКС)")]
+        [StatisticalDataFmReportCode(10251)]
+        PricingFactorsCompositionForOks = 161,
+        [Description("Итоговый состав данных по характеристикам объектов недвижимости")]
+        [StatisticalDataFmReportCode(10252)]
+        PricingFactorsCompositionFinalUniform = 162,
+        [Description("Состав данных о результатах кадастровой оценки предыдущих туров")]
+        [StatisticalDataFmReportCode(10253)]
+        PricingFactorsCompositionForPreviousTours = 163,
+        [Description("Состав данных по характеристикам он взаимно увязанных разнородными сведениями по различным источникам")]
+        [StatisticalDataFmReportCode(10254)]
+        PricingFactorsCompositionFinalNonuniform = 164,
 
-		[Description("Состав данных объектов недвижимости с присвоенными крви (ОКС)")]
+        [Description("Состав данных объектов недвижимости с присвоенными крви (ОКС)")]
 		[StatisticalDataFmReportCode(10261)]
 		QualityPricingFactorsEncodingResultsOks = 171,
 

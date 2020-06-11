@@ -61,28 +61,28 @@
             @Html.CustomLabelFor("Статистика по количеству объектов:")
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts).Checked(true))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts).Checked(true))
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByGroups))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByGroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByGroups))
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups).Enable(false))
         </div>
         <div class="col-sm-11">
             @Html.CustomLabelFor("Статистика по минимальным, максимальным и средним УПКС/УПРС:")
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts))
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByGroups).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByGroups).Enable(false))
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters))
         </div>
         <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.SubjectsUPKS.GetEnumDescription()).Value((long) StatisticalDataType.SubjectsUPKS))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.SubjectsUPKS.GetEnumDescription()).Value((long)StatisticalDataType.SubjectsUPKS))
         </div>
         <div class="col-sm-11">
             @Html.CustomLabelFor("Результат оценки:")
@@ -115,39 +115,40 @@
                 @Html.CustomLabelFor("Результаты на утверждение:")
             </div>
             <div class="col-sm-11 subgroup-second-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long)StatisticalDataType.ResultsForApproval))
             </div>
             <div class="col-sm-11 subgroup-second-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts.GetEnumDescription()).Value((long)StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts))
             </div>
             <div class="col-sm-11 subgroup-second-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions.GetEnumDescription()).Value((long)StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions))
             </div>
             <div class="col-sm-11 subgroup-second-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters.GetEnumDescription()).Value((long)StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters))
             </div>
         </div>
         <div class="col-sm-11 subgroup-first-level">
             @Html.CustomLabelFor("Результаты сводные по КР:")
         </div>
         <div class="col-sm-11 subgroup-second-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.KRSummaryResultsOks.GetEnumDescription()).Value((long) StatisticalDataType.KRSummaryResultsOks))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.KRSummaryResultsOks.GetEnumDescription()).Value((long)StatisticalDataType.KRSummaryResultsOks))
         </div>
         <div class="col-sm-11 subgroup-second-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.KRSummaryResultsZu.GetEnumDescription()).Value((long) StatisticalDataType.KRSummaryResultsZu))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.KRSummaryResultsZu.GetEnumDescription()).Value((long)StatisticalDataType.KRSummaryResultsZu))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject.GetEnumDescription()).Value((long) StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject.GetEnumDescription()).Value((long)StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.GeneralizedIndicators.GetEnumDescription()).Value((long) StatisticalDataType.GeneralizedIndicators))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.GeneralizedIndicators.GetEnumDescription()).Value((long)StatisticalDataType.GeneralizedIndicators))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription()).Value((long) StatisticalDataType.CadastralCostDeterminationResults).Enable(true))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription()).Value((long)StatisticalDataType.CadastralCostDeterminationResults).Enable(true))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long) StatisticalDataType.InfoAboutCadastralCostDeterminingMethod).Enable(true))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long)StatisticalDataType.InfoAboutCadastralCostDeterminingMethod).Enable(true))
         </div>
+
         <div>
             <div class="col-sm-11">
                 @Html.CustomLabelFor("Параметры расчётов:")
@@ -159,25 +160,44 @@
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ModelingResults.GetEnumDescription()).Value((long)StatisticalDataType.ModelingResults).Enable(true))
             </div>
         </div>
-        <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsComposition.GetEnumDescription()).Value((long) StatisticalDataType.PricingFactorsComposition).Enable(false))
+
+        <div>
+            <div class="col-sm-11">
+                @Html.CustomLabelFor("Состав ценообразующих факторов:")
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForZu.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForZu).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForOks.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForOks).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform).Enable(true))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForPreviousTours.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform).Enable(false))
+            </div>
         </div>
+
         <div>
             <div class="col-sm-11">
                 @Html.CustomLabelFor("Результаты кодировки качественных ценообразующих факторов:")
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsOks.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsOks))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsOks.GetEnumDescription()).Value((long)StatisticalDataType.QualityPricingFactorsEncodingResultsOks))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsZu.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsZu))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsZu.GetEnumDescription()).Value((long)StatisticalDataType.QualityPricingFactorsEncodingResultsZu))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping.GetEnumDescription()).Value((long)StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping))
             </div>
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.StatisticsInContextOfArbitraryParams.GetEnumDescription()).Value((long) StatisticalDataType.StatisticsInContextOfArbitraryParams).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.StatisticsInContextOfArbitraryParams.GetEnumDescription()).Value((long)StatisticalDataType.StatisticsInContextOfArbitraryParams).Enable(false))
         </div>
     </div>
     <div class="form-group">
