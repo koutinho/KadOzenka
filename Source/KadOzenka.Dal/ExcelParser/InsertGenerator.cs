@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.ExcelParser
 
         public void GenerateInsertData(string sql, int startItemId, int startCode, int referenceId)
         {
-            ExcelFile excelFile = ExcelFile.Load(ConfigurationManager.AppSettings["WallMaterialFile"]);
+            ExcelFile excelFile = ExcelFile.Load(ConfigurationManager.AppSettings["SourcesFile"]);
             ExcelWorksheet ws = excelFile.Worksheets[0];
             Transliterator transliterator = new Transliterator();
             foreach (var row in ws.Rows)
