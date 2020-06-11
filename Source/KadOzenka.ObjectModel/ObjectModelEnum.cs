@@ -208,9 +208,9 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         Rezident = 1536,
 		/// <summary>
-		/// МИЭЛЬ - Северо-Запад (1537)
+		/// МИЭЛЬ – Северо-Запад (1537)
 		/// </summary>
-		[Description("МИЭЛЬ - Северо-Запад")]
+		[Description("МИЭЛЬ – Северо-Запад")]
         [EnumCode("28")]
         [ShortTitle("")]
         MIELJSeveroZapad = 1537,
@@ -2378,9 +2378,9 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         ProspektM = 1846,
 		/// <summary>
-		/// Байлар> (1847)
+		/// Байлар» (1847)
 		/// </summary>
-		[Description("Байлар>")]
+		[Description("Байлар»")]
         [EnumCode("338")]
         [ShortTitle("")]
         Bajlar = 1847,
@@ -4625,9 +4625,9 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         MIELJNaVojkovskoj = 2167,
 		/// <summary>
-		/// Балчуг Недвижимость (2168)
+		/// Балчуг Недвижимость  (2168)
 		/// </summary>
-		[Description("Балчуг Недвижимость")]
+		[Description("Балчуг Недвижимость ")]
         [EnumCode("659")]
         [ShortTitle("")]
         BalchugNedvizhimostj = 2168,

@@ -1443,6 +1443,26 @@ namespace ObjectModel.Market
         }
 
 
+        private string _phonenumber;
+        /// <summary>
+        /// 10006500 Телефонный номер (PHONE_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006500)]
+        public string PhoneNumber
+        {
+            get
+            {
+                CheckPropertyInited("PhoneNumber");
+                return _phonenumber;
+            }
+            set
+            {
+                _phonenumber = value;
+                NotifyPropertyChanged("PhoneNumber");
+            }
+        }
+
+
         private string _propertymarketsegment;
         /// <summary>
         /// 10007000 Сегмент рынка (PROPERTY_MARKET_SEGMENT)
