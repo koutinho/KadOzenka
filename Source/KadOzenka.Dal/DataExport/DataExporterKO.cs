@@ -3366,12 +3366,12 @@ namespace KadOzenka.Dal.DataExport
             OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
             if (task == null)
             {
-                throw new Exception($"Не указано задание на оценку для объекта Id = '{_unit.Id}'");
+                throw new Exception($"Не найдено задание на оценку для Единицы оценки с Id = '{_unit.Id}'");
             }
             OMGroup group_unit = OMGroup.Where(x => x.Id == _unit.GroupId).SelectAll().ExecuteFirstOrDefault();
             if (group_unit == null)
             {
-                throw new Exception($"Не указана группа объекта Id = '{_unit.Id}'");
+                throw new Exception($"Не найдена группа для Единицы оценки с Id = '{_unit.Id}'");
             }
 
             try

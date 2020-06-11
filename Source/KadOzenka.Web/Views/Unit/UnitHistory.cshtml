@@ -92,10 +92,10 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetClarification", "Unit")',
+            url: '@Url.Action("FormClarification", "Unit")',
             data: { unitId: '@Model' },
-            success: function (response) {
-                Common.ShowMessage('Файл успешно сохранен в папку с отчетами');
+            success: function () {
+                window.open('@Url.Action("DownloadClarification", "Unit")' + '?unitId=' + '@Model');
             },
             error: function (response) {
                 Common.ShowError(response.responseText);

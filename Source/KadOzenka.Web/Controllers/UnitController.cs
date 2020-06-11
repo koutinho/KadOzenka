@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectModel.KO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Core.Main.FileStorages;
+using Core.Register.Enums;
 using KadOzenka.Dal.DataExport;
-using NLog.Targets;
+using Microsoft.AspNetCore.Http;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -73,16 +75,32 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
-        public ActionResult GetClarification(long unitId)
+        public ActionResult FormClarification(long unitId)
         {
             var unit = OMUnit.Where(x => x.Id == unitId).SelectAll().ExecuteFirstOrDefault();
             if (unit == null)
                 throw new Exception($"Не найдена единица оценки с Id = '{unitId}'");
 
-            var directory = FileStorageManager.GetPathForStorage("SaveReportPath");
-            //DEKODocOtvet.ExportToDoc(unit, directory);
+            var fileStream = (MemoryStream)DEKODocOtvet.ExportToDoc(unit);
+
+            HttpContext.Session.Set(unitId.ToString(), fileStream.ToArray());
 
             return Ok();
+        }
+
+        [HttpGet]
+        public ActionResult DownloadClarification(string unitId)
+        {
+            var fileContent = HttpContext.Session.Get(unitId);
+            if (fileContent == null)
+                return new EmptyResult();
+
+            HttpContext.Session.Remove(unitId);
+            StringExtensions.GetFileExtension(RegistersExportType.Docx, out var fileExtensiton, out var contentType);
+
+            var fileName = $"Предоставление разъяснений {unitId}.{fileExtensiton}";
+
+            return File(fileContent, contentType, fileName);
         }
     }	
 }
