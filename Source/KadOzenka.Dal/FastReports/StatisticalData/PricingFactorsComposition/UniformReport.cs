@@ -41,28 +41,88 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //    new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
             //};
 
-            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
-                    units.Where(x => x.ObjectId != null).Select(x => x.ObjectId.Value).ToList(), 
-                    dateOt: DateTime.Now.GetEndOfTheDay());
+            var uniqueAttributes = GetUniqueAttributeIds();
+
+            var objectsAttributes = GbuObjectService.GetAllAttributes(
+                units.Where(x => x.ObjectId != null).Select(x => x.ObjectId.Value).ToList(),
+                uniqueAttributes.Select(x => x.RegisterId).Distinct().ToList(),
+                uniqueAttributes.Select(x => x.AttributeId).Distinct().ToList(),
+                dateOt: DateTime.Now.GetEndOfTheDay());
 
             units.ForEach(unit =>
             {
-                var objAttributes = allObjectsAttributes.Where(x => x.ObjectId == unit.ObjectId).ToList();
-                if (objAttributes.Count > 0)
+                var item = new ReportItem
                 {
-                    items.Add(new ReportItem
-                    {
-                        CadastralNumber = unit.CadastralNumber,
-                        Attributes = objAttributes.Select(x => new Attribute
-                        {
-                            RegisterName = x.RegisterData?.Description,
-                            AttributeName = x.GetAttributeName()
-                        }).ToList()
-                    });
-                }
+                    CadastralNumber = unit.CadastralNumber
+                };
+
+                var objAttributes = objectsAttributes.Where(x => x.ObjectId == unit.ObjectId).ToList();
+                if (objAttributes.Count <= 0)
+                    return;
+
+                item.Attributes = objAttributes.Select(x => new Attribute
+                {
+                    RegisterName = x.RegisterData?.Description,
+                    AttributeName = x.GetAttributeName()
+                }).ToList();
+
+                items.Add(item);
             });
 
             return items;
+        }
+
+        private List<Attribute> GetUniqueAttributeIds()
+        {
+            var allGbuAttributes = GbuObjectService.GetGbuAttributes()
+                .Select(x => new Attribute
+                {
+                    AttributeId = x.Id,
+                    RegisterId = x.RegisterId,
+                    AttributeName = x.Name
+                }).ToList();
+
+            var gbuAttributesExceptRosreestr = allGbuAttributes
+                .Where(x => x.RegisterId != StatisticalDataService.RosreestrRegisterId).ToList();
+
+            var rosreestrAttributes = allGbuAttributes
+                .Where(x => x.RegisterId == StatisticalDataService.RosreestrRegisterId).ToList();
+
+            ////для тестирования
+            //gbuAttributesExceptRosreestr = new List<Test>
+            //{
+            //    new Test{Id = 1, Name = "АЛ_1", RegisterId = 1},
+            //    new Test{Id = 2, Name = "материал стен РСМ", RegisterId = 2},
+            //    new Test{Id = 3, Name = "АЛ_2", RegisterId = 3},
+            //};
+
+            //rosreestrAttributes = new List<Test>
+            //{
+            //    new Test{Id = 1, Name = "РР1", RegisterId = 1},
+            //    new Test{Id = 2, Name = "Материал стен", RegisterId = 2},
+            //    new Test{Id = 3, Name = "РР2", RegisterId = 3},
+            //};
+
+            //симметрическая разность множеств
+            var uniqueAttributes = new List<Attribute>();
+            //отбираем уникальные аттрибуты из РР
+            rosreestrAttributes.ForEach(rr =>
+            {
+                var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
+                    gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                if (sameAttributes.Count == 0)
+                    uniqueAttributes.Add(rr);
+            });
+            //отбираем уникальные аттрибуты из всех источников кроме РР
+            gbuAttributesExceptRosreestr.ForEach(gbu =>
+            {
+                var sameAttributes = rosreestrAttributes
+                    .Where(rr => gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                if (sameAttributes.Count == 0)
+                    uniqueAttributes.Add(gbu);
+            });
+
+            return uniqueAttributes;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -112,8 +172,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private class Attribute
         {
-            public string RegisterName { get; set; }
+            public long AttributeId { get; set; }
+            public long RegisterId { get; set; }
             public string AttributeName { get; set; }
+            public string RegisterName { get; set; }
         }
 
         private class ReportItem
