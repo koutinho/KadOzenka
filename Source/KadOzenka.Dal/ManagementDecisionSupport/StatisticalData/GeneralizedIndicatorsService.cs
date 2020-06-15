@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 							? "Без группы"
 							: table.Rows[i]["GroupName"].ParseToStringNullable(),
 						HasGroup = !string.IsNullOrEmpty(table.Rows[i]["GroupName"].ParseToStringNullable()),
-						ObjectUpks = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
+						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
 						//TODO: ObjectWeigth MUST BE CLARIFIED
 						ObjectWeigth = 1
 					};
@@ -116,7 +116,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 								GroupName = x.Key.GroupName,
 								UpksCalcType = upksCalcType,
 								UpksCalcValue =
-									_statisticalDataService.GetUpksCalcValue(upksCalcType, x.ToList())
+									_statisticalDataService.GetCalcValue(upksCalcType, x.ToList())
 							};
 							result.Add(dto);
 						}
@@ -138,7 +138,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						GroupName = groupNameGroup.Key.GroupName,
 						UpksCalcType = upksCalcType,
 						UpksCalcValue =
-							_statisticalDataService.GetUpksCalcValue(upksCalcType, groupValues)
+							_statisticalDataService.GetCalcValue(upksCalcType, groupValues)
 					};
 					result.Add(dto);
 				}

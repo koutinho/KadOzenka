@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					var dto = new MinMaxAverageUPKSByAdministrativeDistrictsObjectDto
 					{
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-						ObjectUpks = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
+						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
 						//TODO: ObjectWeigth MUST BE CLARIFIED
 						ObjectWeigth = 1
 					};
@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						ObjectsCount = groupValues.Count,
 						PropertyType = @group.Key.PropertyType,
 						UpksCalcType = upksCalcType,
-						UpksCalcValue = _statisticalDataService.GetUpksCalcValue(upksCalcType, groupValues)
+						UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
 					};
 
 					result.Add(dto);

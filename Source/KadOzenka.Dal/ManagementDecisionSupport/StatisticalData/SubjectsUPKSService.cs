@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					var dto = new SubjectsUPKSByTypeObjectDto
 					{
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-						ObjectUpks = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
+						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
 						//TODO: ObjectWeigth MUST BE CLARIFIED
 						ObjectWeigth = 1
 					};
@@ -62,7 +62,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						ObjectsCount = groupValues.Count,
 						PropertyType = @group.Key,
 						UpksCalcType = upksCalcType,
-						UpksCalcValue = _statisticalDataService.GetUpksCalcValue(upksCalcType, groupValues)
+						UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
 					};
 
 					result.Add(dto);
@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					{
 						PropertyTypeCode = (PropertyTypes)table.Rows[i]["PropertyType"].ParseToLong(),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
-						ObjectUpks = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
+						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
 						//TODO: ObjectWeigth MUST BE CLARIFIED
 						ObjectWeigth = 1
 					};
@@ -144,7 +144,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						Purpose = @group.Key.Purpose,
 						HasPurpose = @group.Key.HasPurpose,
 						UpksCalcType = upksCalcType,
-						UpksCalcValue = _statisticalDataService.GetUpksCalcValue(upksCalcType, groupValues)
+						UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
 					};
 
 					result.Add(dto);

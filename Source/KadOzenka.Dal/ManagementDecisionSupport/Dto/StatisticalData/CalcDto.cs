@@ -1,8 +1,8 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class UpksCalcDto
+	public class CalcDto
 	{
-		public decimal? ObjectUpks { get; set; }
+		public decimal? ObjectValue { get; set; }
 		public decimal ObjectWeigth { get; set; }
 	}
 }

@@ -20,9 +20,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1013)]
 		OnTheMinMaxAverageUPKSByAdministrativeDistricts = 4,
 
-		[Description("Статистика по минимальным, максимальным и средним (арифметическое и средневзвешенное) УПКС/УПРС в разрезе групп")]
-		[StatisticalDataFmReportCode(1014)]
-		OnTheMinMaxAverageUPKSByGroups = 5,
+		[Description("Статистика УПКС в разрезе групп")]
+		[StatisticalDataFmReportCode(10141)]
+		OnTheMinMaxAverageUPKSByGroups = 51,
+
+		[Description("Статистика УПРС в разрезе групп")]
+		[StatisticalDataFmReportCode(10142)]
+		OnTheMinMaxAverageUPRSByGroups = 52,
+
+		[Description("Статистика УПКС-УПРС в разрезе групп")]
+		[StatisticalDataFmReportCode(10143)]
+		OnTheMinMaxAverageUPKSUPRSByGroups = 53,
 
 		[Description("Статистика по минимальным, максимальным и средним (арифметическое и средневзвешенное) УПКС/УПРС в разрезе кадастровых кварталов")]
 		[StatisticalDataFmReportCode(1015)]

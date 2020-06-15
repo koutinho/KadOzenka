@@ -60,22 +60,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        return cadastralQuartal.Substring(0, delimeterIndex);
         }
 
-        public decimal? GetUpksCalcValue<T>(UpksCalcType upksCalcType, List<T> dtoList) where T : UpksCalcDto
+        public decimal? GetCalcValue<T>(UpksCalcType upksCalcType, List<T> dtoList) where T : CalcDto
         {
 	        decimal? result = null;
 	        switch (upksCalcType)
 	        {
 		        case UpksCalcType.Min:
-			        result = dtoList.Min(x => x.ObjectUpks);
+			        result = dtoList.Min(x => x.ObjectValue);
 			        break;
 		        case UpksCalcType.Max:
-			        result = dtoList.Max(x => x.ObjectUpks);
+			        result = dtoList.Max(x => x.ObjectValue);
 			        break;
 		        case UpksCalcType.Average:
-			        result = dtoList.Average(x => x.ObjectUpks);
+			        result = dtoList.Average(x => x.ObjectValue);
 			        break;
 		        case UpksCalcType.AverageWeight:
-			        var sum = dtoList.Sum(x => x.ObjectUpks * x.ObjectWeigth);
+			        var sum = dtoList.Sum(x => x.ObjectValue * x.ObjectWeigth);
 			        var weightSum = dtoList.Sum(x => x.ObjectWeigth);
 			        result = weightSum != 0 ? sum / weightSum : null;
 			        break;

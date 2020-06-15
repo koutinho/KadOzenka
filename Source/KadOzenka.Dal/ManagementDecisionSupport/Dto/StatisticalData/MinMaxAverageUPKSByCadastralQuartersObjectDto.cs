@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class MinMaxAverageUPKSByCadastralQuartersObjectDto : UpksCalcDto
+	public class MinMaxAverageUPKSByCadastralQuartersObjectDto : CalcDto
 	{
 		public string CadastralRegionNumber { get; set; }
 		public string CadastralQuater { get; set; }

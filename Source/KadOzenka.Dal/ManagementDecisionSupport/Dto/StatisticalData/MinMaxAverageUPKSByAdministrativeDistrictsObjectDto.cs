@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class MinMaxAverageUPKSByAdministrativeDistrictsObjectDto : UpksCalcDto
+	public class MinMaxAverageUPKSByAdministrativeDistrictsObjectDto : CalcDto
 	{
 		public string AdditionalName { get; set; }
 		public string Name { get; set; }

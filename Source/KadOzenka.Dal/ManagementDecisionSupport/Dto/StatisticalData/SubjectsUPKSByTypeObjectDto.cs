@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class SubjectsUPKSByTypeObjectDto : UpksCalcDto
+	public class SubjectsUPKSByTypeObjectDto : CalcDto
 	{
 		public string PropertyType { get; set; }
 	}

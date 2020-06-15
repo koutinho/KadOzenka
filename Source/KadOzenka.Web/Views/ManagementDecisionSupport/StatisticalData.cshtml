@@ -75,8 +75,19 @@
         <div class="col-sm-11 subgroup-first-level">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts))
         </div>
-        <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByGroups).Enable(false))
+        <div>
+            <div class="col-sm-11 subgroup-first-level">
+                @Html.CustomLabelFor("Статистика по минимальным, максимальным и средним (арифметическое и средневзвешенное) УПКС/УПРС в разрезе групп:")
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByGroups))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPRSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPRSByGroups).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSUPRSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSUPRSByGroups).Enable(false))
+            </div>
         </div>
         <div class="col-sm-11 subgroup-first-level">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters.GetEnumDescription()).Value((long)StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters))
@@ -201,7 +212,7 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-12" style="position: absolute;bottom: 15px;">
+        <div class="col-sm-12">
             <button style="float: right" id="showViewer" class="k-button" type="button">Сформировать</button>
         </div>
     </div>

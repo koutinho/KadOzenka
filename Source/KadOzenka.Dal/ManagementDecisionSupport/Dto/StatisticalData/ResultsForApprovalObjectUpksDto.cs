@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class ResultsForApprovalObjectUpksDto : UpksCalcDto
+	public class ResultsForApprovalObjectUpksDto : CalcDto
 	{
 		public string Name { get; set; }
 		public string GroupName { get; set; }
