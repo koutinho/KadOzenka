@@ -1226,6 +1226,12 @@ namespace ObjectModel.KO
 
 
         /// <summary>
+        /// Ссылка на (216 Данные о кадастровой стоимости из Росреестра)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMCostRosreestr> CostRosreestr { get; set; }
+
+        /// <summary>
         /// Ссылка на (250 Параметры расчета для ОКС 2018 года)
         /// </summary>
         [Reference]
@@ -1261,6 +1267,8 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            CostRosreestr = new List<ObjectModel.KO.OMCostRosreestr>();
 
             UnitParamsOks2018 = new List<ObjectModel.KO.OMUnitParamsOks2018>();
 

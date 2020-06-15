@@ -666,6 +666,24 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 216 Данные о кадастровой стоимости из Росреестра
+    /// </summary>
+    public partial class OMCostRosreestr
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 221 Журнал отправки итогов расчета КО
     /// </summary>
     public partial class OMKoResultSendJournal
