@@ -78,6 +78,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
                 SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
 
+                item.ResultPurpose = GetPurpose(unit.PropertyType_Code, item);
+
                 result.Add(item);
             });
 
@@ -93,6 +95,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 .Execute();
         }
 
+        private string GetPurpose(PropertyTypes objectType, ReportItem item)
+        {
+            switch (objectType)
+            {
+                case PropertyTypes.Building:
+                    return item.BuildingPurpose;
+                case PropertyTypes.Pllacement:
+                    return item.PlacementPurpose;
+                case PropertyTypes.Construction:
+                    return item.ConstructionPurpose;
+            }
+
+            return null;
+        }
+
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
@@ -105,6 +122,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
             attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
             attributesDictionary.Add(nameof(ReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.PlacementPurpose), StatisticalDataService.GetRosreestrPlacementPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ConstructionPurpose), StatisticalDataService.GetRosreestrConstructionPurposeAttribute());
             attributesDictionary.Add(nameof(ReportItem.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
 
             var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
@@ -129,7 +148,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             dataTable.Columns.Add("WallMaterial");
             dataTable.Columns.Add("Location");
             dataTable.Columns.Add("Address");
-            dataTable.Columns.Add("BuildingPurpose");
+            dataTable.Columns.Add("Purpose");
             dataTable.Columns.Add("ObjectName");
 
             dataTable.Columns.Add("Square");
@@ -159,7 +178,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     operations[i].WallMaterial,
                     operations[i].Location,
                     operations[i].Address,
-                    operations[i].BuildingPurpose,
+                    operations[i].ResultPurpose,
                     operations[i].ObjectName,
                     operations[i].Square,
                     operations[i].ObjectType,
@@ -198,6 +217,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             public string Location { get; set; }
             public string Address { get; set; }
             public string BuildingPurpose { get; set; }
+            public string PlacementPurpose { get; set; }
+            public string ConstructionPurpose { get; set; }
+            public string ResultPurpose { get; set; }
             public string ObjectName { get; set; }
 
             //From Tour Settings
