@@ -7570,7 +7570,7 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 21600100  (ID)
+        /// 21600100 ИД (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 21600100)]
         public long Id
@@ -7590,7 +7590,7 @@ namespace ObjectModel.KO
 
         private long _idobject;
         /// <summary>
-        /// 21600200  (ID_OBJECT)
+        /// 21600200 ИД единицы оценки (ID_OBJECT)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600200)]
         public long IdObject
@@ -7610,7 +7610,7 @@ namespace ObjectModel.KO
 
         private DateTime? _datevaluation;
         /// <summary>
-        /// 21600300  (DATEVALUATION)
+        /// 21600300 Дата определения кадастровой стоимости (DATEVALUATION)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600300)]
         public DateTime? Datevaluation
@@ -7630,7 +7630,7 @@ namespace ObjectModel.KO
 
         private DateTime? _dateentering;
         /// <summary>
-        /// 21600400  (DATEENTERING)
+        /// 21600400 Дата внесения сведений о кадастровой стоимости в ЕГРН (DATEENTERING)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600400)]
         public DateTime? Dateentering
@@ -7650,7 +7650,7 @@ namespace ObjectModel.KO
 
         private string _docnumber;
         /// <summary>
-        /// 21600500  (DOCNUMBER)
+        /// 21600500 Номер акта об утверждении кадастровой стоимости (DOCNUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600500)]
         public string Docnumber
@@ -7670,7 +7670,7 @@ namespace ObjectModel.KO
 
         private DateTime? _docdate;
         /// <summary>
-        /// 21600600  (DOCDATE)
+        /// 21600600 Дата акта об утверждении кадастровой стоимости (DOCDATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600600)]
         public DateTime? Docdate
@@ -7690,7 +7690,7 @@ namespace ObjectModel.KO
 
         private DateTime? _applicationdate;
         /// <summary>
-        /// 21600700  (APPLICATIONDATE)
+        /// 21600700 Дата начала применения кадастровой стоимости (APPLICATIONDATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600700)]
         public DateTime? Applicationdate
@@ -7710,7 +7710,7 @@ namespace ObjectModel.KO
 
         private string _docname;
         /// <summary>
-        /// 21600800  (DOCNAME)
+        /// 21600800 Наименование документа об утверждении кадастровой стоимости (DOCNAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600800)]
         public string Docname
@@ -7730,7 +7730,7 @@ namespace ObjectModel.KO
 
         private decimal? _costvalue;
         /// <summary>
-        /// 21600900  (COSTVALUE)
+        /// 21600900 Сведения о кадастровой стоимости (COSTVALUE)
         /// </summary>
         [RegisterAttribute(AttributeID = 21600900)]
         public decimal? Costvalue
@@ -7750,7 +7750,7 @@ namespace ObjectModel.KO
 
         private DateTime? _dateapproval;
         /// <summary>
-        /// 21601000  (DATEAPPROVAL)
+        /// 21601000 Дата утверждения кадастровой стоимости (DATEAPPROVAL)
         /// </summary>
         [RegisterAttribute(AttributeID = 21601000)]
         public DateTime? Dateapproval
@@ -7770,7 +7770,7 @@ namespace ObjectModel.KO
 
         private DateTime? _revisalstatementdate;
         /// <summary>
-        /// 21601100  (REVISALSTATEMENTDATE)
+        /// 21601100 Дата подачи заявления о пересмотре кадастровой стоимости (REVISALSTATEMENTDATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 21601100)]
         public DateTime? Revisalstatementdate
