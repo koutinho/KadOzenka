@@ -14,7 +14,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
     public class ParcelsReport : ResultsByCadastralDistrictBaseReport
     {
-        private readonly string _typeOfUseByClassifierFilter = "TypeOfUseByClassifier";
         private readonly string _infoAboutExistenceOfOtherObjects = "InfoAboutExistenceOfOtherObjects";
         private readonly string _infoSource = "InfoSource";
         private readonly string _segment = "Segment";
@@ -47,7 +46,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             if (!initialisation)
                 return;
             
-            var typeOfUseByClassifierFilter = filterValues.FirstOrDefault(f => f.ParamName == _typeOfUseByClassifierFilter);
             var infoAboutExistenceOfOtherObjectsFilter = filterValues.FirstOrDefault(f => f.ParamName == _infoAboutExistenceOfOtherObjects);
             var infoSourceFilter = filterValues.FirstOrDefault(f => f.ParamName == _infoSource);
             var segmentFilter = filterValues.FirstOrDefault(f => f.ParamName == _segment);
@@ -55,7 +53,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var usageTypeNameFilter = filterValues.FirstOrDefault(f => f.ParamName == _usageTypeName);
             var usageTypeCodeSourceFilter = filterValues.FirstOrDefault(f => f.ParamName == _usageTypeCodeSource);
 
-            InitialiseGbuAttributesFilterValue(typeOfUseByClassifierFilter, infoAboutExistenceOfOtherObjectsFilter,
+            InitialiseGbuAttributesFilterValue(infoAboutExistenceOfOtherObjectsFilter,
                 infoSourceFilter, segmentFilter, usageTypeCodeFilter, usageTypeNameFilter, usageTypeCodeSourceFilter);
         }
 
@@ -63,7 +61,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         private InputParameters GetInputParameters(NameValueCollection query)
         {
-            var typeOfUseByClassifierAttributeId = GetFilterParameterValue(query, _typeOfUseByClassifierFilter, "Вид использования по классификатору");
             var infoAboutExistenceOfOtherObjectsAttributeId = GetFilterParameterValue(query, _infoAboutExistenceOfOtherObjects, "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости");
             var infoSourceAttributeId = GetFilterParameterValue(query, _infoSource, "Источник информации");
             var segmentAttributeId = GetFilterParameterValue(query, _segment, "Сегмент");
@@ -73,7 +70,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             return new InputParameters
             {
-                TypeOfUseByClassifierAttributeId = typeOfUseByClassifierAttributeId,
                 InfoAboutExistenceOfOtherObjectsAttributeId = infoAboutExistenceOfOtherObjectsAttributeId,
                 InfoSourceAttributeId = infoSourceAttributeId,
                 SegmentAttributeId = segmentAttributeId,
@@ -127,8 +123,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             attributesDictionary.Add(nameof(ReportItem.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
             attributesDictionary.Add(nameof(ReportItem.ParcelCategory), StatisticalDataService.GetRosreestrParcelCategoryAttribute());
             attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), StatisticalDataService.GetRosreestrTypeOfUseByClassifierAttribute());
 
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), RegisterCache.GetAttributeData(inputParameters.TypeOfUseByClassifierAttributeId));
             attributesDictionary.Add(nameof(ReportItem.InfoAboutExistenceOfOtherObjects), RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId));
             attributesDictionary.Add(nameof(ReportItem.InfoSource), RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId));
             attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
@@ -208,7 +204,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         private class InputParameters
         {
-            public long TypeOfUseByClassifierAttributeId { get; set; }
             public long InfoAboutExistenceOfOtherObjectsAttributeId { get; set; }
             public long InfoSourceAttributeId { get; set; }
             public long SegmentAttributeId { get; set; }
