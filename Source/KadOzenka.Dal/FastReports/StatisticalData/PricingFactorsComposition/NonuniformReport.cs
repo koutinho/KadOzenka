@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Collections.Specialized;
 using System.Data;
-using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class UniformReport : StatisticalDataReport
+    public class NonuniformReport : StatisticalDataReport
     {
         protected override string TemplateName(NameValueCollection query)
         {
-            return "PricingFactorsCompositionUniformReport";
+            return "PricingFactorsCompositionNonuniformReport";
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
@@ -54,21 +54,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 items.Add(new ReportItem
                 {
                     CadastralNumber = unit.CadastralNumber,
-                    Attributes = GetUniqueAttributes(objAttributes).Select(x => new Attribute
-                    {
-                        AttributeName = x.GetAttributeName(),
-                        RegisterName = x.RegisterData.Description
-                    }).ToList()
+                    Attributes = GetNotUniqueAttributes(objAttributes)
                 });
             });
 
             return items;
         }
 
-        private List<GbuObjectAttribute> GetUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
+        private List<Attribute> GetNotUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
         {
-            if(objectAttributes == null || objectAttributes.Count == 0)
-                return new List<GbuObjectAttribute>();
+            if (objectAttributes == null || objectAttributes.Count == 0)
+                return new List<Attribute>();
 
             var gbuAttributesExceptRosreestr = objectAttributes
                 .Where(x => x.RegisterData.Id != StatisticalDataService.RosreestrRegisterId).ToList();
@@ -76,9 +72,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var rosreestrAttributes = objectAttributes
                 .Where(x => x.RegisterData.Id == StatisticalDataService.RosreestrRegisterId).ToList();
 
-            //симметрическая разность множеств
-            var uniqueAttributes = new List<GbuObjectAttribute>();
-            //отбираем уникальные аттрибуты из РР
+            var notUniqueAttribute = new List<Attribute>();
             rosreestrAttributes.ForEach(rr =>
             {
                 var rrAttributeName = rr.GetAttributeName();
@@ -86,20 +80,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
                         gbu.GetAttributeName().StartsWith(rrAttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 if (sameAttributes.Count == 0)
-                    uniqueAttributes.Add(rr);
-            });
-            //отбираем уникальные аттрибуты из всех источников кроме РР
-            gbuAttributesExceptRosreestr.ForEach(gbu =>
-            {
-                var gbuAttributeName = gbu.GetAttributeName();
+                    return;
 
-                var sameAttributes = rosreestrAttributes.Where(rr =>
-                        gbuAttributeName.StartsWith(rr.GetAttributeName(), StringComparison.InvariantCultureIgnoreCase)).ToList();
-                if (sameAttributes.Count == 0)
-                    uniqueAttributes.Add(gbu);
+                var registerNames = new List<string> {rr.RegisterData.Description};
+                registerNames.AddRange(sameAttributes.Select(x => x.RegisterData.Description));
+                var attribute = new Attribute
+                {
+                    AttributeName = rrAttributeName,
+                    RegisterNames = registerNames
+                };
+
+                notUniqueAttribute.Add(attribute);
             });
 
-            return uniqueAttributes;
+            return notUniqueAttribute;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -123,19 +117,27 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                         {
                             title = $"Характеристика объекта {j + 1}";
                             value = operations[i].Attributes.ElementAtOrDefault(j)?.AttributeName;
+
+                            dataTable.Rows.Add(i + 1,
+                                operations[i].CadastralNumber,
+                                title,
+                                value);
                         }
                         else
                         {
-                            title = $"Итоговый источник информации {j + 1}";
-                            value = operations[i].Attributes.ElementAtOrDefault(j)?.RegisterName;
-                        }
+                            var registerNames = operations[i].Attributes.ElementAtOrDefault(j)?.RegisterNames;
+                            for (var registerCounter = 0; registerCounter < registerNames?.Count; registerCounter++)
+                            {
+                                title = $"Источник информации {registerCounter + 1}";
+                                value = registerNames[registerCounter];
 
-                        dataTable.Rows.Add(i + 1,
-                            operations[i].CadastralNumber, 
-                            title,
-                            value);
+                                dataTable.Rows.Add(i + 1,
+                                    operations[i].CadastralNumber,
+                                    title,
+                                    value);
+                            }
+                        }
                     }
-                   
                 }
             }
 
@@ -150,7 +152,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         private class Attribute
         {
             public string AttributeName { get; set; }
-            public string RegisterName { get; set; }
+            public List<string> RegisterNames { get; set; }
         }
 
         private class ReportItem
