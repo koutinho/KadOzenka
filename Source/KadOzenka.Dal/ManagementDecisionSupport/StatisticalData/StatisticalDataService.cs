@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -206,6 +207,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         }
 
         /// <summary>
+        /// Аттрибут "Вид использования по классификатору"
+        /// </summary>
+        public RegisterAttribute GetRosreestrTypeOfUseByClassifierAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Вид использования по классификатору");
+        }
+
+        /// <summary>
         /// Аттрибут "Категория земель"
         /// </summary>
         public RegisterAttribute GetRosreestrParcelCategoryAttribute()
@@ -268,7 +277,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
         {
-            return RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
+            var attribute = RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
+            if (attribute == null)
+                throw new Exception($"Не найден аттрибут Росреестра с именем '{name}'");
+
+            return attribute;
         }
 
         private RegisterAttribute GetAttributeIdFromTourSettings(long tourId, KoAttributeUsingType type)
