@@ -12,7 +12,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class PlacementsReport : BaseReport
+    public class PlacementsReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _segment = "Segment";
         private readonly string _usageTypeName = "UsageTypeName";

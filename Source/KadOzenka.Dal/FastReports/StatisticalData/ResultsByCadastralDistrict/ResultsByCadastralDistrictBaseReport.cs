@@ -3,53 +3,21 @@ using System.Collections.Generic;
 using Core.Register.RegisterEntities;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
     public class ResultsByCadastralDistrictBaseReport : StatisticalDataReport
     {
-        protected class InfoFromSettings
+        protected interface IParentInfo
         {
-            public string ObjectType { get; set; }
-            public string CadastralQuartal { get; set; }
-            public string SubGroupNumber { get; set; }
+            string ParentPurpose { get; set; }
+            string ParentGroup { get; set; }
         }
 
-        protected interface ParentInfo
-        {
-             string ParentPurpose { get; set; }
-             string ParentGroup { get; set; }
-        }
-
-        protected Dictionary<string, RegisterAttribute> GetGeneralAttributesForReport(long tourId)
-        {
-            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(InfoFromSettings.ObjectType), StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId));
-            attributesDictionary.Add(nameof(InfoFromSettings.CadastralQuartal), StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId));
-            attributesDictionary.Add(nameof(InfoFromSettings.SubGroupNumber), StatisticalDataService.GetGroupAttributeFromTourSettings(tourId));
-           
-            return attributesDictionary;
-        }
-
-        protected static void SetAttributes(long? objectId, List<GbuObjectAttribute> gbuAttributes,
-            Dictionary<string, RegisterAttribute> attributesDictionary, object item)
-        {
-            var objectAttributes = gbuAttributes.Where(x => x.ObjectId == objectId).ToList();
-            foreach (var objectAttribute in objectAttributes)
-            {
-                var attributeKeys = attributesDictionary.Where(x => x.Value.Id == objectAttribute.AttributeId).Select(x => x.Key);
-                foreach (var key in attributeKeys)
-                {
-                    item.GetType().GetProperty(key)?.SetValue(item, objectAttribute.GetValueInString());
-                }
-            }
-        }
-
-        protected void SetParentObjectAttributes(long tourId, string parentCadastralNumber, ParentInfo item)
+        protected void SetParentObjectAttributes(long tourId, string parentCadastralNumber, IParentInfo item)
         {
             if (string.IsNullOrWhiteSpace(parentCadastralNumber))
                 return;
@@ -63,7 +31,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var groupAttribute = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
             var attributesDictionary = new Dictionary<string, RegisterAttribute>
             {
-                {nameof(ParentInfo.ParentGroup), groupAttribute}
+                {nameof(IParentInfo.ParentGroup), groupAttribute}
             };
 
             RegisterAttribute purposeAttribute = null;
@@ -78,7 +46,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             }
             if (purposeAttribute != null)
             {
-                attributesDictionary.Add(nameof(ParentInfo.ParentPurpose), purposeAttribute);
+                attributesDictionary.Add(nameof(IParentInfo.ParentPurpose), purposeAttribute);
             }
 
             var parentAttributes = GbuObjectService.GetAllAttributes(obj.Id,
@@ -87,15 +55,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 DateTime.Now.GetEndOfTheDay());
 
             SetAttributes(obj.Id, parentAttributes, attributesDictionary, item);
-        }
-
-        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
-                                     x.PropertyType_Code == type &&
-                                     x.ObjectId != null)
-                .SelectAll()
-                .Execute();
         }
     }
 }

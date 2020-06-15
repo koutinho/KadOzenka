@@ -12,7 +12,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class ParcelsReport : BaseReport
+    public class ParcelsReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _typeOfUseByClassifierFilter = "TypeOfUseByClassifier";
         private readonly string _infoAboutExistenceOfOtherObjects = "InfoAboutExistenceOfOtherObjects";
