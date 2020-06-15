@@ -137,5 +137,26 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[Description("Статистика по количеству/средних значениях/перцентилях/суммарных значениях в разрезе произвольных параметров")]
 		[StatisticalDataFmReportCode(1027)]
 		StatisticsInContextOfArbitraryParams = 18,
+
+		[Description("Состав данных о рыночной информации")]
+		[StatisticalDataFmReportCode(10281)]
+		AdditionalFormsMarketDataInfo = 191,
+
+		[Description("Анализ расчетов")]
+		[StatisticalDataFmReportCode(10282)]
+		AdditionalFormsCalculationsAnalysis = 192,
+
+		[Description("Анализ результатов")]
+		[StatisticalDataFmReportCode(10283)]
+		AdditionalFormsResultsAnalysis = 193,
+
+		[Description("Выгрузка изменений")]
+		[StatisticalDataFmReportCode(10284)]
+		AdditionalFormsChangesUploading = 194,
+
+		[Description("Статистика по расчету")]
+		[StatisticalDataFmReportCode(10285)]
+		AdditionalFormsCalculationStatistics = 195,
+
 	}
 }

@@ -210,6 +210,26 @@
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.StatisticsInContextOfArbitraryParams.GetEnumDescription()).Value((long)StatisticalDataType.StatisticsInContextOfArbitraryParams).Enable(false))
         </div>
+        <div>
+            <div class="col-sm-11">
+                @Html.CustomLabelFor("Дополнительные формы:")
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.AdditionalFormsMarketDataInfo.GetEnumDescription()).Value((long)StatisticalDataType.AdditionalFormsMarketDataInfo).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.AdditionalFormsCalculationsAnalysis.GetEnumDescription()).Value((long)StatisticalDataType.AdditionalFormsCalculationsAnalysis).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.AdditionalFormsResultsAnalysis.GetEnumDescription()).Value((long)StatisticalDataType.AdditionalFormsResultsAnalysis).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.AdditionalFormsChangesUploading.GetEnumDescription()).Value((long)StatisticalDataType.AdditionalFormsChangesUploading))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.AdditionalFormsCalculationStatistics.GetEnumDescription()).Value((long)StatisticalDataType.AdditionalFormsCalculationStatistics).Enable(false))
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <div class="col-sm-12">
@@ -219,6 +239,7 @@
     <div id="reportViewerWindow"></div>
 </div>
 
+<script src="~/js/custom-validation.js" charset="utf-8"></script>
 <script type="text/javascript">
     var dialog;
     var window1;

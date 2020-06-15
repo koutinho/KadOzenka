@@ -1141,6 +1141,7 @@
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsChangesUploadingReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx" />
