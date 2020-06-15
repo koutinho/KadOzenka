@@ -11,13 +11,11 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class ParcelsReport : StatisticalDataReport
+    public class OksReport : StatisticalDataReport
     {
-        private const string DATE_FORMAT = "dd.MM.yyyy";
-
         protected override string TemplateName(NameValueCollection query)
         {
-            return "PricingFactorsCompositionForParcelsReport";
+            return "PricingFactorsCompositionForOksReport";
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
@@ -39,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds)
         {
-            var units = GetUnits(taskIds, PropertyTypes.Stead);
+            var units = GetNotSteadUnits(taskIds);
             ////для тестирования
             //units = new List<OMUnit>
             //{
@@ -49,7 +47,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             if (units == null || units.Count == 0)
                 return new List<ReportItem>();
 
-            var unitIds = units.Select(x => x.Id);
+            var unitIds = units.Select(x => x.Id).Distinct();
             var unitCosts = OMCostRosreestr.Where(x => unitIds.Contains(x.IdObject)).SelectAll().Execute();
 
             var attributesDictionary = GetAttributesForReport(tourId);
@@ -86,16 +84,28 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return result;
         }
 
+        protected List<OMUnit> GetNotSteadUnits(List<long> taskIds)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
+                                     x.PropertyType_Code != PropertyTypes.Stead &&
+                                     x.ObjectId != null)
+                .SelectAll()
+                .Execute();
+        }
+
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), StatisticalDataService.GetRosreestrTypeOfUseByClassifierAttribute());
+            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
             attributesDictionary.Add(nameof(ReportItem.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), StatisticalDataService.GetRosreestrParcelCategoryAttribute());
+            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
             attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
             attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
 
             var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
             var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
@@ -111,13 +121,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             dataTable.Columns.Add("CadastralNumber");
 
-            dataTable.Columns.Add("TypeOfUseByDocuments");
-            dataTable.Columns.Add("TypeOfUseByClassifier");
+            dataTable.Columns.Add("CommissioningYear");
+            dataTable.Columns.Add("BuildYear");
             dataTable.Columns.Add("FormationDate");
-            dataTable.Columns.Add("ParcelCategory");
+            dataTable.Columns.Add("UndergroundFloorsNumber");
+            dataTable.Columns.Add("FloorsNumber");
+            dataTable.Columns.Add("WallMaterial");
             dataTable.Columns.Add("Location");
             dataTable.Columns.Add("Address");
-            dataTable.Columns.Add("ParcelName");
+            dataTable.Columns.Add("BuildingPurpose");
+            dataTable.Columns.Add("ObjectName");
 
             dataTable.Columns.Add("Square");
 
@@ -138,25 +151,28 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             {
                 dataTable.Rows.Add(i + 1,
                     operations[i].CadastralNumber,
-                    operations[i].TypeOfUseByDocuments,
-                    operations[i].TypeOfUseByClassifier,
+                    operations[i].CommissioningYear,
+                    operations[i].BuildYear,
                     operations[i].FormationDate,
-                    operations[i].ParcelCategory,
+                    operations[i].UndergroundFloorsNumber,
+                    operations[i].FloorsNumber,
+                    operations[i].WallMaterial,
                     operations[i].Location,
                     operations[i].Address,
-                    operations[i].ParcelName,
+                    operations[i].BuildingPurpose,
+                    operations[i].ObjectName,
                     operations[i].Square,
                     operations[i].ObjectType,
                     operations[i].CadastralQuartal,
-                    operations[i].CostValue,
-                    operations[i].DateValuation?.ToString(DATE_FORMAT),
-                    operations[i].DateEntering?.ToString(DATE_FORMAT),
-                    operations[i].DateApproval?.ToString(DATE_FORMAT),
+                    operations[i].CostValue?.ToString(DecimalFormat),
+                    operations[i].DateValuation?.ToString(DateFormat),
+                    operations[i].DateEntering?.ToString(DateFormat),
+                    operations[i].DateApproval?.ToString(DateFormat),
                     operations[i].DocNumber,
-                    operations[i].DocDate?.ToString(DATE_FORMAT),
+                    operations[i].DocDate?.ToString(DateFormat),
                     operations[i].DocName,
-                    operations[i].ApplicationDate?.ToString(DATE_FORMAT),
-                    operations[i].RevisalStatementDate?.ToString(DATE_FORMAT));
+                    operations[i].ApplicationDate?.ToString(DateFormat),
+                    operations[i].RevisalStatementDate?.ToString(DateFormat));
             }
 
             return dataTable;
@@ -173,13 +189,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             public decimal? Square { get; set; }
 
             //From Rosreestr
-            public string TypeOfUseByDocuments { get; set; }
-            public string TypeOfUseByClassifier { get; set; }
+            public string CommissioningYear { get; set; }
+            public string BuildYear { get; set; }
             public string FormationDate { get; set; }
-            public string ParcelCategory { get; set; }
+            public string UndergroundFloorsNumber { get; set; }
+            public string FloorsNumber { get; set; }
+            public string WallMaterial { get; set; }
             public string Location { get; set; }
             public string Address { get; set; }
-            public string ParcelName { get; set; }
+            public string BuildingPurpose { get; set; }
+            public string ObjectName { get; set; }
 
             //From Tour Settings
 

@@ -270,6 +270,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return GetRegisterAttributeByName(RosreestrRegisterId, "Кадастровый номер здания или сооружения, в котором расположено помещение");
         }
 
+        /// <summary>
+        /// Аттрибут "Наименование объекта"
+        /// </summary>
+        public RegisterAttribute GetRosreestrObjectNameNumberAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование объекта");
+        }
+
         #endregion
 
 

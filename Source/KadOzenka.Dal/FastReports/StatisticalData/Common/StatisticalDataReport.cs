@@ -20,8 +20,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
 	public abstract class StatisticalDataReport : FastReportBase
 	{
-		public static readonly int PrecisionForDecimalValues = 2;
-		public static readonly string DateFormat = "dd.MM.yyyy";
+        public static readonly string DateFormat = "dd.MM.yyyy";
+        protected string DecimalFormat => "#,##0.00";
+        public static readonly int PrecisionForDecimalValues = 2;
 
         protected readonly GbuObjectService GbuObjectService;
 		protected readonly StatisticalDataService StatisticalDataService;
