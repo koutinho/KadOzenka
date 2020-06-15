@@ -222,10 +222,11 @@
 			data: [ ]
 		});
 
-		$(document).ready(function () {            
-            var mainRegisterId = @((long)ViewBag.MainRegisterId);            
+		$(document).ready(function () {
+            var mainRegisterId = @((long)ViewBag.MainRegisterId);
             const registerViewId = '@((string)ViewBag.RegisterViewId)';
-			const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
+            const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
+            const isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
 
 			$("#filter").on("input", function () {
 				var query = this.value.toLowerCase();
@@ -305,6 +306,14 @@
                     var file = $('#files').data('kendoUpload').getFiles()[0];
                     var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
                     var documentObject = Common.Functions.FormToObject($('#partialDocument'));
+
+                    if (!isForMarketObjects && documentObject.IsNewDocument == "False" && !documentObject.IdDocument) {
+                        kendo.ui.progress($('#importForm'), false);
+                        $("#loadButton").data('kendoButton').enable(true);
+                        Common.ShowError("Поле Документ обязательно для заполнения");
+                        return;
+                    }
+
                     var formData = new FormData();
 					formData.append("MainRegisterId", mainRegisterId);
                     formData.append("File", file.rawFile);
@@ -396,7 +405,7 @@
 
                         var select = selectAssist(treeData,dataItem.Name);
                         var node = (select.uid != null) ? treeView.findByUid(select.uid) : null;
-                        
+
                         $('#filter').val(select.filterText).trigger('input');
                         treeView.select(node);
                         if (node != null)
@@ -435,7 +444,7 @@
 				.kendoPanelBar()
 				.data('kendoPanelBar')
 				.expand('li[data-expand]');
-            
+
 			$.ajax({
                 type: 'GET',
                 @if ((long)ViewBag.MainRegisterId == 100)
@@ -448,7 +457,7 @@
                 {<text>
                 url: '/DataImport/GetTreeAttributes',
                 </text>}
-                }           
+                }
 				success: function (data) {
                     if (data) {
                         var filtered = data;
@@ -467,7 +476,6 @@
                 }
 			});
 
-            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
             if (isForMarketObjects)
                 $("#partialDocument").hide();
             $('#files').kendoUpload({

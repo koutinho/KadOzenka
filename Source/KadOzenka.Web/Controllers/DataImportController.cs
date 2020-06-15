@@ -27,6 +27,7 @@ using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImport;
 using ObjectModel.Core.TD;
+using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -191,17 +192,30 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
 		public IActionResult ImportDataFromExcel(ImportGbuObjectModel model)
 		{
-            var columns = model.Columns.Select(x => new DataExportColumn
+			if (model.MainRegisterId != OMCoreObject.GetRegisterId() && !model.Document.IsNewDocument && model.Document.IdDocument == null)
+			{
+				throw new Exception("Поле Документ обязательно для заполнения");
+			}
+
+			var columns = model.Columns.Select(x => new DataExportColumn
             {
                 AttributrId = x.AttributeId,
                 ColumnName = x.ColumnName,
                 IsKey = x.IsKey
             }).ToList();
 
-            var documentId = model.Document.IsNewDocument
-                ? TaskService.CreateDocument(model.Document.NewDocumentRegNumber,
-                    model.Document.NewDocumentName, model.Document.NewDocumentDate)
-                : model.Document.IdDocument;
+			if (model.Document.IsNewDocument)
+			{
+				var idDocument = TaskService.CreateDocument(model.Document.NewDocumentRegNumber,
+					model.Document.NewDocumentName, model.Document.NewDocumentDate);
+				if (idDocument == 0)
+				{
+					throw new Exception("Не корректные данные для создания нового документа");
+				}
+
+				model.Document.IdDocument = idDocument;
+			}
+			var documentId =  model.Document.IdDocument;
 
             if (model.IsBackgroundDownload)
             {
