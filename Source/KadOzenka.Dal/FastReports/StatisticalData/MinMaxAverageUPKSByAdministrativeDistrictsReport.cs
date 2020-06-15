@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 

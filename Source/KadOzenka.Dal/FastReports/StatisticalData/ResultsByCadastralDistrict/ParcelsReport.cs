@@ -8,10 +8,11 @@ using ObjectModel.Directory;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class ParcelsReport : ResultsByCadastralDistrictBaseReport
+    public class ParcelsReport : BaseReport
     {
         private readonly string _typeOfUseByClassifierFilter = "TypeOfUseByClassifier";
         private readonly string _infoAboutExistenceOfOtherObjects = "InfoAboutExistenceOfOtherObjects";
@@ -135,7 +136,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
             attributesDictionary.Add(nameof(ReportItem.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
 
-            var generalAttributes = GetGeneralAttributesForReport(tourId);
+            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
             var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
 
             return result;
@@ -216,7 +217,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public long UsageTypeCodeSourceAttributeId { get; set; }
         }
 
-        private class ReportItem : InfoFromSettings
+        private class ReportItem : InfoFromTourSettings
         {
             //From Unit
             public string CadastralNumber { get; set; }

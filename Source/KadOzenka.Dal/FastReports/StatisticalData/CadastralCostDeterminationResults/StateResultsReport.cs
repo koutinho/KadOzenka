@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Data;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 

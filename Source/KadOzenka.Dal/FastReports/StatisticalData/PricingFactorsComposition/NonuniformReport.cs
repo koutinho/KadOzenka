@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using System.Data;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodingResults

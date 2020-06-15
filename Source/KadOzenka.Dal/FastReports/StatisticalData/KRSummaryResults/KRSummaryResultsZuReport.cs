@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults

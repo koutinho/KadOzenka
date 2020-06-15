@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Microsoft.AspNetCore.Http;

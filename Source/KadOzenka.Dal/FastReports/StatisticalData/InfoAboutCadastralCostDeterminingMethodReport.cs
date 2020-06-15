@@ -6,6 +6,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using System.Collections.Specialized;
 using System.Data;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval

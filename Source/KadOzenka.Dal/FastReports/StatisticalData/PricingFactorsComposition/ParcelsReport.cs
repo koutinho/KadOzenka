@@ -5,13 +5,13 @@ using System.Data;
 using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class ParcelsReport : ResultsByCadastralDistrictBaseReport
+    public class ParcelsReport : StatisticalDataReport
     {
         private const string DATE_FORMAT = "dd.MM.yyyy";
 
@@ -97,7 +97,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
             attributesDictionary.Add(nameof(ReportItem.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
 
-            var generalAttributes = GetGeneralAttributesForReport(tourId);
+            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
             var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
 
             return result;
@@ -166,7 +166,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #region Entities
 
-        private class ReportItem : InfoFromSettings
+        private class ReportItem : InfoFromTourSettings
         {
             //From Unit
             public string CadastralNumber { get; set; }

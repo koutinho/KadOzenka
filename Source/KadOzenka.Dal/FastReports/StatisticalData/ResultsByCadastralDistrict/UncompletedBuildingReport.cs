@@ -8,10 +8,11 @@ using ObjectModel.Directory;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class UncompletedBuildingReport : ResultsByCadastralDistrictBaseReport
+    public class UncompletedBuildingReport : BaseReport
     {
         private readonly string _segment = "Segment";
         private readonly string _usageTypeName = "UsageTypeName";
@@ -134,7 +135,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             attributesDictionary.Add(nameof(ReportItem.SubGroupUsageTypeCode), RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId));
             attributesDictionary.Add(nameof(ReportItem.FunctionalSubGroupName), RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId));
 
-            var generalAttributes = GetGeneralAttributesForReport(tourId);
+            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
             var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
 
             return result;
@@ -221,7 +222,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public long FunctionalSubGroupNameAttributeId { get; set; }
         }
 
-        private class ReportItem : InfoFromSettings
+        private class ReportItem : InfoFromTourSettings
         {
             //From Units
             public string CadastralNumber { get; set; }

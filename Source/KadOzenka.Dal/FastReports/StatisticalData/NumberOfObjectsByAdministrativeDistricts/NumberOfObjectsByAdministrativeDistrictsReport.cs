@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
