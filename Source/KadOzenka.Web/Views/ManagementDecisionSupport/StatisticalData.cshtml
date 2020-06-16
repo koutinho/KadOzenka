@@ -186,7 +186,11 @@
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform).Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForPreviousTours.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours).Enable(true))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                    .Label(StatisticalDataType.PricingFactorsCompositionForPreviousTours.GetEnumDescription())
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)
+                    .HtmlAttributes(new {@class = "pricingFactorsCompositionForPreviousToursReport" })
+                    .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform).Enable(true))
@@ -246,6 +250,7 @@
 
     $(document).ready(function () {
         $('#showViewer').click(onShowViewerClicked);
+        $('.pricingFactorsCompositionForPreviousToursReport').on('change', enableFormButton);
 
         window1 = $('#reportViewerWindow').kendoWindow({
             visible: false,
@@ -258,6 +263,8 @@
             },
         }).data('kendoWindow');
     });
+
+
 
     function onTourChanged(e) {
         $("#TaskFilter").data('kendoMultiSelect').dataSource.read();
@@ -309,5 +316,9 @@
         }).always(function () {
             kendo.ui.progress($('body'), false);
         });
+    }
+
+    function enableFormButton() {
+        $('#showViewer').attr('disabled', false);
     }
 </script>
