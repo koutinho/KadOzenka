@@ -7225,6 +7225,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'spd_app_id')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "spd_app_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'spd_app_name')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "spd_app_name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'spd_app_date')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "spd_app_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_501_q_pk')) then
     execute 'alter table DECLARATIONS_DECLARATION add constraint reg_501_q_pk primary key (id)';
   end if;
@@ -19867,6 +19894,1140 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source25_a_dt')) then
+		execute 'create table gbu_source25_a_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'id')) then
+        execute 'alter table gbu_source25_a_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'object_id')) then
+        execute 'alter table gbu_source25_a_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'attribute_id')) then
+        execute 'alter table gbu_source25_a_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'ot')) then
+        execute 'alter table gbu_source25_a_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 's')) then
+        execute 'alter table gbu_source25_a_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'value')) then
+        execute 'alter table gbu_source25_a_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'change_id')) then
+        execute 'alter table gbu_source25_a_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'change_date')) then
+        execute 'alter table gbu_source25_a_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'change_user_id')) then
+        execute 'alter table gbu_source25_a_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_dt', 'change_doc_id')) then
+        execute 'alter table gbu_source25_a_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_dt_pk')) then
+    execute 'alter table gbu_source25_a_dt add constraint reg_25_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_dt_fk_o')) then
+	execute 'alter table gbu_source25_a_dt add constraint reg_25_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_25_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_25_a_dt_inx_obj_attr_id on gbu_source25_a_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source25_a_num')) then
+		execute 'create table gbu_source25_a_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'id')) then
+        execute 'alter table gbu_source25_a_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'object_id')) then
+        execute 'alter table gbu_source25_a_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'attribute_id')) then
+        execute 'alter table gbu_source25_a_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'ot')) then
+        execute 'alter table gbu_source25_a_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 's')) then
+        execute 'alter table gbu_source25_a_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'value')) then
+        execute 'alter table gbu_source25_a_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'change_id')) then
+        execute 'alter table gbu_source25_a_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'change_date')) then
+        execute 'alter table gbu_source25_a_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'change_user_id')) then
+        execute 'alter table gbu_source25_a_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_num', 'change_doc_id')) then
+        execute 'alter table gbu_source25_a_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_num_pk')) then
+    execute 'alter table gbu_source25_a_num add constraint reg_25_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_num_fk_o')) then
+	execute 'alter table gbu_source25_a_num add constraint reg_25_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_25_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_25_a_num_inx_obj_attr_id on gbu_source25_a_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source25_a_txt')) then
+		execute 'create table gbu_source25_a_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'id')) then
+        execute 'alter table gbu_source25_a_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'object_id')) then
+        execute 'alter table gbu_source25_a_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'attribute_id')) then
+        execute 'alter table gbu_source25_a_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'ot')) then
+        execute 'alter table gbu_source25_a_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 's')) then
+        execute 'alter table gbu_source25_a_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'ref_item_id')) then
+        execute 'alter table gbu_source25_a_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'value')) then
+        execute 'alter table gbu_source25_a_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'change_id')) then
+        execute 'alter table gbu_source25_a_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'change_date')) then
+        execute 'alter table gbu_source25_a_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'change_user_id')) then
+        execute 'alter table gbu_source25_a_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'change_doc_id')) then
+        execute 'alter table gbu_source25_a_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_txt_pk')) then
+    execute 'alter table gbu_source25_a_txt add constraint reg_25_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_25_a_txt_fk_o')) then
+	execute 'alter table gbu_source25_a_txt add constraint reg_25_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_25_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_25_a_txt_inx_obj_attr_id on gbu_source25_a_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source28_a_dt')) then
+		execute 'create table gbu_source28_a_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'id')) then
+        execute 'alter table gbu_source28_a_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'object_id')) then
+        execute 'alter table gbu_source28_a_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'attribute_id')) then
+        execute 'alter table gbu_source28_a_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'ot')) then
+        execute 'alter table gbu_source28_a_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 's')) then
+        execute 'alter table gbu_source28_a_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'value')) then
+        execute 'alter table gbu_source28_a_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'change_id')) then
+        execute 'alter table gbu_source28_a_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'change_date')) then
+        execute 'alter table gbu_source28_a_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'change_user_id')) then
+        execute 'alter table gbu_source28_a_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_dt', 'change_doc_id')) then
+        execute 'alter table gbu_source28_a_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_dt_pk')) then
+    execute 'alter table gbu_source28_a_dt add constraint reg_28_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_dt_fk_o')) then
+	execute 'alter table gbu_source28_a_dt add constraint reg_28_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_28_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_28_a_dt_inx_obj_attr_id on gbu_source28_a_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source28_a_num')) then
+		execute 'create table gbu_source28_a_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'id')) then
+        execute 'alter table gbu_source28_a_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'object_id')) then
+        execute 'alter table gbu_source28_a_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'attribute_id')) then
+        execute 'alter table gbu_source28_a_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'ot')) then
+        execute 'alter table gbu_source28_a_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 's')) then
+        execute 'alter table gbu_source28_a_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'value')) then
+        execute 'alter table gbu_source28_a_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'change_id')) then
+        execute 'alter table gbu_source28_a_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'change_date')) then
+        execute 'alter table gbu_source28_a_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'change_user_id')) then
+        execute 'alter table gbu_source28_a_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_num', 'change_doc_id')) then
+        execute 'alter table gbu_source28_a_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_num_pk')) then
+    execute 'alter table gbu_source28_a_num add constraint reg_28_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_num_fk_o')) then
+	execute 'alter table gbu_source28_a_num add constraint reg_28_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_28_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_28_a_num_inx_obj_attr_id on gbu_source28_a_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source28_a_txt')) then
+		execute 'create table gbu_source28_a_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'id')) then
+        execute 'alter table gbu_source28_a_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'object_id')) then
+        execute 'alter table gbu_source28_a_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'attribute_id')) then
+        execute 'alter table gbu_source28_a_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'ot')) then
+        execute 'alter table gbu_source28_a_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 's')) then
+        execute 'alter table gbu_source28_a_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'ref_item_id')) then
+        execute 'alter table gbu_source28_a_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'value')) then
+        execute 'alter table gbu_source28_a_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'change_id')) then
+        execute 'alter table gbu_source28_a_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'change_date')) then
+        execute 'alter table gbu_source28_a_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'change_user_id')) then
+        execute 'alter table gbu_source28_a_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'change_doc_id')) then
+        execute 'alter table gbu_source28_a_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_txt_pk')) then
+    execute 'alter table gbu_source28_a_txt add constraint reg_28_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28_a_txt_fk_o')) then
+	execute 'alter table gbu_source28_a_txt add constraint reg_28_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_28_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_28_a_txt_inx_obj_attr_id on gbu_source28_a_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source29_a_dt')) then
+		execute 'create table gbu_source29_a_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'id')) then
+        execute 'alter table gbu_source29_a_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'object_id')) then
+        execute 'alter table gbu_source29_a_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'attribute_id')) then
+        execute 'alter table gbu_source29_a_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'ot')) then
+        execute 'alter table gbu_source29_a_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 's')) then
+        execute 'alter table gbu_source29_a_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'value')) then
+        execute 'alter table gbu_source29_a_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'change_id')) then
+        execute 'alter table gbu_source29_a_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'change_date')) then
+        execute 'alter table gbu_source29_a_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'change_user_id')) then
+        execute 'alter table gbu_source29_a_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_dt', 'change_doc_id')) then
+        execute 'alter table gbu_source29_a_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_dt_pk')) then
+    execute 'alter table gbu_source29_a_dt add constraint reg_29_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_dt_fk_o')) then
+	execute 'alter table gbu_source29_a_dt add constraint reg_29_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_29_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_29_a_dt_inx_obj_attr_id on gbu_source29_a_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source29_a_num')) then
+		execute 'create table gbu_source29_a_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'id')) then
+        execute 'alter table gbu_source29_a_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'object_id')) then
+        execute 'alter table gbu_source29_a_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'attribute_id')) then
+        execute 'alter table gbu_source29_a_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'ot')) then
+        execute 'alter table gbu_source29_a_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 's')) then
+        execute 'alter table gbu_source29_a_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'value')) then
+        execute 'alter table gbu_source29_a_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'change_id')) then
+        execute 'alter table gbu_source29_a_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'change_date')) then
+        execute 'alter table gbu_source29_a_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'change_user_id')) then
+        execute 'alter table gbu_source29_a_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_num', 'change_doc_id')) then
+        execute 'alter table gbu_source29_a_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_num_pk')) then
+    execute 'alter table gbu_source29_a_num add constraint reg_29_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_num_fk_o')) then
+	execute 'alter table gbu_source29_a_num add constraint reg_29_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_29_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_29_a_num_inx_obj_attr_id on gbu_source29_a_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source29_a_txt')) then
+		execute 'create table gbu_source29_a_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'id')) then
+        execute 'alter table gbu_source29_a_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'object_id')) then
+        execute 'alter table gbu_source29_a_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'attribute_id')) then
+        execute 'alter table gbu_source29_a_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'ot')) then
+        execute 'alter table gbu_source29_a_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 's')) then
+        execute 'alter table gbu_source29_a_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'ref_item_id')) then
+        execute 'alter table gbu_source29_a_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'value')) then
+        execute 'alter table gbu_source29_a_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'change_id')) then
+        execute 'alter table gbu_source29_a_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'change_date')) then
+        execute 'alter table gbu_source29_a_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'change_user_id')) then
+        execute 'alter table gbu_source29_a_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'change_doc_id')) then
+        execute 'alter table gbu_source29_a_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_txt_pk')) then
+    execute 'alter table gbu_source29_a_txt add constraint reg_29_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29_a_txt_fk_o')) then
+	execute 'alter table gbu_source29_a_txt add constraint reg_29_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_29_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_29_a_txt_inx_obj_attr_id on gbu_source29_a_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('gbu_source3_a_dt')) then
 		execute 'create table gbu_source3_a_dt ("id" BIGINT NOT NULL)';
 	end if;
@@ -20272,6 +21433,384 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source30_a_dt')) then
+		execute 'create table gbu_source30_a_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'id')) then
+        execute 'alter table gbu_source30_a_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'object_id')) then
+        execute 'alter table gbu_source30_a_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'attribute_id')) then
+        execute 'alter table gbu_source30_a_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'ot')) then
+        execute 'alter table gbu_source30_a_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 's')) then
+        execute 'alter table gbu_source30_a_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'value')) then
+        execute 'alter table gbu_source30_a_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'change_id')) then
+        execute 'alter table gbu_source30_a_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'change_date')) then
+        execute 'alter table gbu_source30_a_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'change_user_id')) then
+        execute 'alter table gbu_source30_a_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_dt', 'change_doc_id')) then
+        execute 'alter table gbu_source30_a_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_dt_pk')) then
+    execute 'alter table gbu_source30_a_dt add constraint reg_30_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_dt_fk_o')) then
+	execute 'alter table gbu_source30_a_dt add constraint reg_30_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_30_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_30_a_dt_inx_obj_attr_id on gbu_source30_a_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source30_a_num')) then
+		execute 'create table gbu_source30_a_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'id')) then
+        execute 'alter table gbu_source30_a_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'object_id')) then
+        execute 'alter table gbu_source30_a_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'attribute_id')) then
+        execute 'alter table gbu_source30_a_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'ot')) then
+        execute 'alter table gbu_source30_a_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 's')) then
+        execute 'alter table gbu_source30_a_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'value')) then
+        execute 'alter table gbu_source30_a_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'change_id')) then
+        execute 'alter table gbu_source30_a_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'change_date')) then
+        execute 'alter table gbu_source30_a_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'change_user_id')) then
+        execute 'alter table gbu_source30_a_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_num', 'change_doc_id')) then
+        execute 'alter table gbu_source30_a_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_num_pk')) then
+    execute 'alter table gbu_source30_a_num add constraint reg_30_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_num_fk_o')) then
+	execute 'alter table gbu_source30_a_num add constraint reg_30_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_30_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_30_a_num_inx_obj_attr_id on gbu_source30_a_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source30_a_txt')) then
+		execute 'create table gbu_source30_a_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'id')) then
+        execute 'alter table gbu_source30_a_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'object_id')) then
+        execute 'alter table gbu_source30_a_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'attribute_id')) then
+        execute 'alter table gbu_source30_a_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'ot')) then
+        execute 'alter table gbu_source30_a_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 's')) then
+        execute 'alter table gbu_source30_a_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'ref_item_id')) then
+        execute 'alter table gbu_source30_a_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'value')) then
+        execute 'alter table gbu_source30_a_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'change_id')) then
+        execute 'alter table gbu_source30_a_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'change_date')) then
+        execute 'alter table gbu_source30_a_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'change_user_id')) then
+        execute 'alter table gbu_source30_a_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'change_doc_id')) then
+        execute 'alter table gbu_source30_a_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_txt_pk')) then
+    execute 'alter table gbu_source30_a_txt add constraint reg_30_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_30_a_txt_fk_o')) then
+	execute 'alter table gbu_source30_a_txt add constraint reg_30_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_30_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_30_a_txt_inx_obj_attr_id on gbu_source30_a_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('gbu_source4_a_dt')) then
 		execute 'create table gbu_source4_a_dt ("id" BIGINT NOT NULL)';
 	end if;
@@ -20671,6 +22210,384 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('reg_4_a_txt_inx_obj_attr_id')) then
 	execute 'CREATE  INDEX reg_4_a_txt_inx_obj_attr_id on gbu_source4_a_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source44_a_dt')) then
+		execute 'create table gbu_source44_a_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'id')) then
+        execute 'alter table gbu_source44_a_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'object_id')) then
+        execute 'alter table gbu_source44_a_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'attribute_id')) then
+        execute 'alter table gbu_source44_a_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'ot')) then
+        execute 'alter table gbu_source44_a_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 's')) then
+        execute 'alter table gbu_source44_a_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'value')) then
+        execute 'alter table gbu_source44_a_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'change_id')) then
+        execute 'alter table gbu_source44_a_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'change_date')) then
+        execute 'alter table gbu_source44_a_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'change_user_id')) then
+        execute 'alter table gbu_source44_a_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_dt', 'change_doc_id')) then
+        execute 'alter table gbu_source44_a_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_dt_pk')) then
+    execute 'alter table gbu_source44_a_dt add constraint reg_44_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_dt_fk_o')) then
+	execute 'alter table gbu_source44_a_dt add constraint reg_44_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_44_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_44_a_dt_inx_obj_attr_id on gbu_source44_a_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source44_a_num')) then
+		execute 'create table gbu_source44_a_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'id')) then
+        execute 'alter table gbu_source44_a_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'object_id')) then
+        execute 'alter table gbu_source44_a_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'attribute_id')) then
+        execute 'alter table gbu_source44_a_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'ot')) then
+        execute 'alter table gbu_source44_a_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 's')) then
+        execute 'alter table gbu_source44_a_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'value')) then
+        execute 'alter table gbu_source44_a_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'change_id')) then
+        execute 'alter table gbu_source44_a_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'change_date')) then
+        execute 'alter table gbu_source44_a_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'change_user_id')) then
+        execute 'alter table gbu_source44_a_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_num', 'change_doc_id')) then
+        execute 'alter table gbu_source44_a_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_num_pk')) then
+    execute 'alter table gbu_source44_a_num add constraint reg_44_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_num_fk_o')) then
+	execute 'alter table gbu_source44_a_num add constraint reg_44_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_44_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_44_a_num_inx_obj_attr_id on gbu_source44_a_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source44_a_txt')) then
+		execute 'create table gbu_source44_a_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'id')) then
+        execute 'alter table gbu_source44_a_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'object_id')) then
+        execute 'alter table gbu_source44_a_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'attribute_id')) then
+        execute 'alter table gbu_source44_a_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'ot')) then
+        execute 'alter table gbu_source44_a_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 's')) then
+        execute 'alter table gbu_source44_a_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'ref_item_id')) then
+        execute 'alter table gbu_source44_a_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'value')) then
+        execute 'alter table gbu_source44_a_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'change_id')) then
+        execute 'alter table gbu_source44_a_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'change_date')) then
+        execute 'alter table gbu_source44_a_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'change_user_id')) then
+        execute 'alter table gbu_source44_a_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'change_doc_id')) then
+        execute 'alter table gbu_source44_a_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_txt_pk')) then
+    execute 'alter table gbu_source44_a_txt add constraint reg_44_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_44_a_txt_fk_o')) then
+	execute 'alter table gbu_source44_a_txt add constraint reg_44_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_44_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_44_a_txt_inx_obj_attr_id on gbu_source44_a_txt (object_id, attribute_id)';
   end if;
 end $$;
 --<DO>--
@@ -22989,6 +24906,94 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('ko_compliance_guide')) then
+		execute 'create table ko_compliance_guide ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'id')) then
+        execute 'alter table ko_compliance_guide add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'code')) then
+        execute 'alter table ko_compliance_guide add "code" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'subgroup')) then
+        execute 'alter table ko_compliance_guide add "subgroup" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'type_property')) then
+        execute 'alter table ko_compliance_guide add "type_property" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'type_room')) then
+        execute 'alter table ko_compliance_guide add "type_room" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'type_property_code')) then
+        execute 'alter table ko_compliance_guide add "type_property_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'type_room_code')) then
+        execute 'alter table ko_compliance_guide add "type_room_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'tour_id')) then
+        execute 'alter table ko_compliance_guide add "tour_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_compliance_guide_pkey')) then
+    execute 'alter table ko_compliance_guide add constraint ko_compliance_guide_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_COMPLIANCE_GUIDE')) then
 		execute 'create table KO_COMPLIANCE_GUIDE ("id" BIGINT NOT NULL)';
 	end if;
@@ -23025,7 +25030,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'type_property')) then
-        execute 'alter table KO_COMPLIANCE_GUIDE add "type_property" BIGINT';
+        execute 'alter table KO_COMPLIANCE_GUIDE add "type_property" VARCHAR';
     end if;
 end $$;
 
@@ -23033,8 +25038,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'parent_id')) then
-        execute 'alter table KO_COMPLIANCE_GUIDE add "parent_id" BIGINT';
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'type_room')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "type_room" VARCHAR';
     end if;
 end $$;
 
@@ -23042,8 +25047,26 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'is_residential')) then
-        execute 'alter table KO_COMPLIANCE_GUIDE add "is_residential" BIGINT';
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'type_property_code')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "type_property_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'type_room_code')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "type_room_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'tour_id')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "tour_id" BIGINT';
     end if;
 end $$;
 
@@ -23795,6 +25818,40 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_210_q_pk')) then
     execute 'alter table KO_MODEL_FACTOR add constraint reg_210_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ko_objects_characteristics_register')) then
+		execute 'create table ko_objects_characteristics_register ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_objects_characteristics_register', 'id')) then
+        execute 'alter table ko_objects_characteristics_register add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_objects_characteristics_register', 'register_id')) then
+        execute 'alter table ko_objects_characteristics_register add "register_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_600_q_pk')) then
+    execute 'alter table ko_objects_characteristics_register add constraint reg_600_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -31863,6 +33920,265 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_702_q_pk')) then
     execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add constraint reg_702_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('SPD_REQUEST_REGISTRATION')) then
+		execute 'create table SPD_REQUEST_REGISTRATION ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'id')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_date')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_name')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_id')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_status')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'doc_date')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "doc_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'doc_name')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "doc_name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'doc_link')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "doc_link" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'sig_link')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "sig_link" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_doc_id')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'doc_type')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "doc_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'custom_xml')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "custom_xml" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'fls')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "fls" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'status')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'status_code')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'date_create')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "date_create" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'date_confirm')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "date_confirm" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'date_perform')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "date_perform" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'doc_number')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "doc_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'name')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'error')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "error" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'error_message')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "error_message" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'regid')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "regid" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'app_status_id')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "app_status_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'inn')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "inn" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'typerus')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "typerus" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SPD_REQUEST_REGISTRATION', 'appdocid_proj')) then
+        execute 'alter table SPD_REQUEST_REGISTRATION add "appdocid_proj" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_900_q_pk')) then
+    execute 'alter table SPD_REQUEST_REGISTRATION add constraint reg_900_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
