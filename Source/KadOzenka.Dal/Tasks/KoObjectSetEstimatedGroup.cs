@@ -31,7 +31,7 @@ namespace KadOzenka.Dal.KoObject
 	{
 		public string Group { get; set; }
 		public string Code { get; set; }
-		public string IsResidential { get; set; }
+		public string TypeRoom { get; set; }
 		public long SubGroup { get; set; }
 	}
 
@@ -123,7 +123,7 @@ namespace KadOzenka.Dal.KoObject
 					return;
 				}
 				{
-					if (complianceGuides[0].IsResidential != null)
+					if (complianceGuides[0].TypeRoom != null)
 					{
 						var attributeRoom = OMAttribute.Where(x => x.Id == param.IdTypeRoom).SelectAll()
 							.ExecuteFirstOrDefault();
@@ -134,7 +134,7 @@ namespace KadOzenka.Dal.KoObject
 							AddErrorRow($"Не найден тип помещения для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
 							return;
 						}
-						var group = complianceGuides.FirstOrDefault(x => x.IsResidential == typeRoom.Value);
+						var group = complianceGuides.FirstOrDefault(x => x.TypeRoom == typeRoom.Value);
 						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
 						AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, group.Group, reportService);
 						return;
@@ -243,12 +243,11 @@ namespace KadOzenka.Dal.KoObject
 		{
 			var res = new List<ComplianceGuid>();
 
-			string parentPrefix = complianceGuides.FirstOrDefault(x => x.ParentId == null)?.SubGroup;
-
-			foreach (var complianceGuide in complianceGuides.Where(x => x.ParentId != null))
+			foreach (var complianceGuide in complianceGuides)
 			{
-				if(complianceGuide.SubGroup != null && int.TryParse(complianceGuide.SubGroup, out var subGroup))
-					res.Add(new ComplianceGuid { Group = parentPrefix + '.' + subGroup, Code = complianceGuide.Code, IsResidential = complianceGuide.IsResidential, SubGroup = subGroup });
+				long.TryParse(complianceGuide.SubGroup.Split('.')[1], out var sGroup);
+				if(complianceGuide.SubGroup != null)
+					res.Add(new ComplianceGuid { Group = complianceGuide.SubGroup, Code = complianceGuide.Code, TypeRoom = complianceGuide.TypeRoom, SubGroup = sGroup });
 			}
 
 			return res;

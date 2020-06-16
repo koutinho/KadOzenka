@@ -10011,11 +10011,11 @@ namespace ObjectModel.Directory
         [ShortTitle("Жилое")]
         Residential = 1,
 		/// <summary>
-		/// Не жилое (2)
+		/// Нежилое (2)
 		/// </summary>
-		[Description("Не жилое")]
+		[Description("Нежилое")]
         [EnumCode("2")]
-        [ShortTitle("Не жилое")]
+        [ShortTitle("Нежилое")]
         NotResidential = 2,
     }
 }

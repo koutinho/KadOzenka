@@ -354,6 +354,66 @@ namespace ObjectModel.KO
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 25 Источник 25 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 25)]
+    [Serializable]
+    public partial class OMSource25 : OMBaseClass<OMSource25>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 28 Источник 28 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 28)]
+    [Serializable]
+    public partial class OMSource28 : OMBaseClass<OMSource28>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 29 Источник 29 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 29)]
+    [Serializable]
+    public partial class OMSource29 : OMBaseClass<OMSource29>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 30 Источник 30 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 30)]
+    [Serializable]
+    public partial class OMSource30 : OMBaseClass<OMSource30>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 44 Источник 44 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 44)]
+    [Serializable]
+    public partial class OMSource44 : OMBaseClass<OMSource44>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 80 Справочник кадастровых кварталов (GBU_KADASTR_KVARTAL)
     /// </summary>
     [RegisterInfo(RegisterID = 80)]
@@ -11207,7 +11267,7 @@ namespace ObjectModel.KO
 
         private string _typeproperty;
         /// <summary>
-        /// 25400400 Тип объекта  ()
+        /// 25400400 Тип объекта  (TYPE_PROPERTY)
         /// </summary>
         [RegisterAttribute(AttributeID = 25400400)]
         public string TypeProperty
@@ -11227,7 +11287,7 @@ namespace ObjectModel.KO
 
         private PropertyTypes _typeproperty_Code;
         /// <summary>
-        /// 25400400 Тип объекта  (справочный код) (TYPE_PROPERTY)
+        /// 25400400 Тип объекта  (справочный код) (TYPE_PROPERTY_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 25400400)]
         public PropertyTypes TypeProperty_Code
@@ -11260,57 +11320,37 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _parentid;
+        private string _typeroom;
         /// <summary>
-        /// 25400500 Идентификатор родителя (PARENT_ID)
+        /// 25400600 Тип помещения (TYPE_ROOM)
         /// </summary>
-        [RegisterAttribute(AttributeID = 25400500)]
-        public long? ParentId
+        [RegisterAttribute(AttributeID = 25400600)]
+        public string TypeRoom
         {
             get
             {
-                CheckPropertyInited("ParentId");
-                return _parentid;
+                CheckPropertyInited("TypeRoom");
+                return _typeroom;
             }
             set
             {
-                _parentid = value;
-                NotifyPropertyChanged("ParentId");
+                _typeroom = value;
+                NotifyPropertyChanged("TypeRoom");
             }
         }
 
 
-        private string _isresidential;
+        private KoTypeOfRoom _typeroom_Code;
         /// <summary>
-        /// 25400600 Тип помещения ()
+        /// 25400600 Тип помещения (справочный код) (TYPE_ROOM_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 25400600)]
-        public string IsResidential
+        public KoTypeOfRoom TypeRoom_Code
         {
             get
             {
-                CheckPropertyInited("IsResidential");
-                return _isresidential;
-            }
-            set
-            {
-                _isresidential = value;
-                NotifyPropertyChanged("IsResidential");
-            }
-        }
-
-
-        private KoTypeOfRoom _isresidential_Code;
-        /// <summary>
-        /// 25400600 Тип помещения (справочный код) (IS_RESIDENTIAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 25400600)]
-        public KoTypeOfRoom IsResidential_Code
-        {
-            get
-            {
-                CheckPropertyInited("IsResidential_Code");
-                return this._isresidential_Code;
+                CheckPropertyInited("TypeRoom_Code");
+                return this._typeroom_Code;
             }
             set
             {
@@ -11318,19 +11358,39 @@ namespace ObjectModel.KO
 
                 if (string.IsNullOrEmpty(descr))
                 {
-                    if (string.IsNullOrEmpty(_isresidential))
+                    if (string.IsNullOrEmpty(_typeroom))
                     {
-                         _isresidential = descr;
+                         _typeroom = descr;
                     }
                 }
                 else
                 {
-                     _isresidential = descr;
+                     _typeroom = descr;
                 }
 
-                this._isresidential_Code = value;
-                NotifyPropertyChanged("IsResidential");
-                NotifyPropertyChanged("IsResidential_Code");
+                this._typeroom_Code = value;
+                NotifyPropertyChanged("TypeRoom");
+                NotifyPropertyChanged("TypeRoom_Code");
+            }
+        }
+
+
+        private long _tourid;
+        /// <summary>
+        /// 25400700 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400700)]
+        public long TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
             }
         }
 
