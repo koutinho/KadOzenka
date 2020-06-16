@@ -16,7 +16,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    public abstract class GknXmlToExcelLongProcess : LongProcess
+    public class GknXmlToExcelLongProcess : LongProcess
     {
         public const string LongProcessName = nameof(GknXmlToExcelLongProcess);
 
