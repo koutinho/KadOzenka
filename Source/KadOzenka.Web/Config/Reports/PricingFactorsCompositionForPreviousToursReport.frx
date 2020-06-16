@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/16/2020 13:53:43" ReportInfo.CreatorVersion="2019.4.11.0">
+  <ScriptText>
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+    using System.Drawing;
+    using System.Data;
+    using FastReport;
+    using FastReport.Data;
+    using FastReport.Dialog;
+    using FastReport.Barcode;
+    using FastReport.Table;
+    using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+  }
+}
+  </ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
+      <Column Name="Number" DataType="System.Decimal"/>
+      <Column Name="CadastralNumber" DataType="System.String"/>
+      <Column Name="ColumnTitle" DataType="System.String"/>
+      <Column Name="TourYear" DataType="System.String"/>
+      <Column Name="ValueForTour" DataType="System.String"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="28.35">
+      <TextObject Name="Text1" Left="9.45" Top="9.45" Width="1020.6" Height="18.9" Text="Состав данных о результатах кадастровой оценки предыдущих туров" HorzAlign="Center" Font="Times New Roman, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="Data1" Top="30.35" Width="1047.06" Height="162.66" DataSource="Data">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="341.05" Height="68.16" FixedRows="2" FixedColumns="2" AutoSize="false" DataSource="Data">
+        <MatrixColumns>
+          <Header Expression="[Data.ColumnTitle]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.TourYear]" Totals="false"/>
+        </MatrixColumns>
+        <MatrixRows>
+          <Header Expression="[Data.Number]" Totals="false"/>
+          <Header Expression="[Data.CadastralNumber]" Totals="false"/>
+        </MatrixRows>
+        <MatrixCells>
+          <Cell Expression="[Data.ValueForTour]"/>
+        </MatrixCells>
+        <TableColumn Name="Column8" Width="75.3"/>
+        <TableColumn Name="Column9" Width="150.17"/>
+        <TableColumn Name="Column10" Width="115.58"/>
+        <TableRow Name="Row4" Height="22.72">
+          <TableCell Name="Cell30" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" RowSpan="2"/>
+          <TableCell Name="Cell31" Border.Lines="All" Text="Кадастровый номер" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" RowSpan="2"/>
+          <TableCell Name="Cell36" Border.Lines="All" Text="[ColumnTitle]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row5" Height="22.72">
+          <TableCell Name="Cell32" Font="Arial, 10pt"/>
+          <TableCell Name="Cell33" Font="Arial, 10pt"/>
+          <TableCell Name="Cell37" Border.Lines="All" Text="[TourYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row6" Height="22.72">
+          <TableCell Name="Cell40" Border.Lines="All" Text="[Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell41" Border.Lines="All" Text="[CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell42" Border.Lines="All" Text="[ValueForTour]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+      </MatrixObject>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="195.01" Width="1047.06" Height="18.9"/>
+  </ReportPage>
+</Report>
