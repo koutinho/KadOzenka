@@ -51,8 +51,29 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
 			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
 			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "RegionCode"));
-			query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "GroupName"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+
+			var subQuery = new QSQuery(OMGroup.GetRegisterId())
+			{
+				Columns = new List<QSColumn>
+				{
+					OMGroup.GetColumn(x => x.GroupName)
+				},
+				Condition = new QSConditionGroup(QSConditionGroupType.And)
+				{
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(
+							OMGroup.GetColumn(x => x.Id),
+							QSConditionType.Equal,
+							OMGroup.GetColumn(x => x.ParentId))
+						{
+							RightOperandLevel = 1
+						}
+					}
+				}
+			};
+			query.AddColumn(subQuery, "ParentGroup");
 
 			var table = query.ExecuteQuery();
 			var data = new List<GeneralizedIndicatorsObjectDto>();
@@ -62,10 +83,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				{
 					var dto = new GeneralizedIndicatorsObjectDto
 					{
-						GroupName = string.IsNullOrEmpty(table.Rows[i]["GroupName"].ParseToStringNullable())
+						GroupName = string.IsNullOrEmpty(table.Rows[i]["ParentGroup"].ParseToStringNullable())
 							? "Без группы"
-							: table.Rows[i]["GroupName"].ParseToStringNullable(),
-						HasGroup = !string.IsNullOrEmpty(table.Rows[i]["GroupName"].ParseToStringNullable()),
+							: table.Rows[i]["ParentGroup"].ParseToStringNullable(),
+						HasGroup = !string.IsNullOrEmpty(table.Rows[i]["ParentGroup"].ParseToStringNullable()),
 						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
 						//TODO: ObjectWeigth MUST BE CLARIFIED
 						ObjectWeigth = 1

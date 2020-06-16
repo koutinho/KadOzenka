@@ -67,7 +67,28 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "Group"));
+
+            var subQuery = new QSQuery(OMGroup.GetRegisterId())
+            {
+	            Columns = new List<QSColumn>
+	            {
+		            OMGroup.GetColumn(x => x.GroupName)
+	            },
+	            Condition = new QSConditionGroup(QSConditionGroupType.And)
+	            {
+		            Conditions = new List<QSCondition>
+		            {
+			            new QSConditionSimple(
+				            OMGroup.GetColumn(x => x.Id),
+				            QSConditionType.Equal,
+				            OMGroup.GetColumn(x => x.ParentId))
+			            {
+				            RightOperandLevel = 1
+			            }
+		            }
+	            }
+            };
+            query.AddColumn(subQuery, "ParentGroup");
 
             var table = query.ExecuteQuery();
 
@@ -76,7 +97,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             {
                 for (var i = 0; i < table.Rows.Count; i++)
                 {
-                    var group = table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.Group)]
+                    var group = table.Rows[i]["ParentGroup"]
                         .ParseToStringNullable();
                     var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
                     {
@@ -147,7 +168,28 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             };
 
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyType)));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.Group)));
+
+            var subQuery = new QSQuery(OMGroup.GetRegisterId())
+            {
+	            Columns = new List<QSColumn>
+	            {
+		            OMGroup.GetColumn(x => x.GroupName)
+	            },
+	            Condition = new QSConditionGroup(QSConditionGroupType.And)
+	            {
+		            Conditions = new List<QSCondition>
+		            {
+			            new QSConditionSimple(
+				            OMGroup.GetColumn(x => x.Id),
+				            QSConditionType.Equal,
+				            OMGroup.GetColumn(x => x.ParentId))
+			            {
+				            RightOperandLevel = 1
+			            }
+		            }
+	            }
+            };
+            query.AddColumn(subQuery, "ParentGroup");
 
             var table = query.ExecuteQuery();
 
@@ -156,7 +198,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             {
                 for (var i = 0; i < table.Rows.Count; i++)
                 {
-                    var group = table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.Group)]
+                    var group = table.Rows[i]["ParentGroup"]
                         .ParseToStringNullable();
                     var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto
                     {
@@ -236,7 +278,29 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "Group"));
+
+            var subQuery = new QSQuery(OMGroup.GetRegisterId())
+            {
+	            Columns = new List<QSColumn>
+	            {
+		            OMGroup.GetColumn(x => x.GroupName)
+	            },
+	            Condition = new QSConditionGroup(QSConditionGroupType.And)
+	            {
+		            Conditions = new List<QSCondition>
+		            {
+			            new QSConditionSimple(
+				            OMGroup.GetColumn(x => x.Id),
+				            QSConditionType.Equal,
+				            OMGroup.GetColumn(x => x.ParentId))
+			            {
+				            RightOperandLevel = 1
+			            }
+		            }
+	            }
+            };
+            query.AddColumn(subQuery, "ParentGroup");
+
 
             var table = query.ExecuteQuery();
 
@@ -247,7 +311,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 {
 	                var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsDto();
 
-                    var group = table.Rows[i]["Group"].ParseToStringNullable();
+                    var group = table.Rows[i]["ParentGroup"].ParseToStringNullable();
                     dto.Group = string.IsNullOrEmpty(group) ? "Без группы" : group;
                     dto.HasGroup = !string.IsNullOrEmpty(group);
 
