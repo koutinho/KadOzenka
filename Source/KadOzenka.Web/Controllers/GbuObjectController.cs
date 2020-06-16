@@ -660,8 +660,7 @@ namespace KadOzenka.Web.Controllers
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
 				queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
 					viewModel.ToGroupModel(estimatedGroupModelParamsDto));
-
-			}
+	        }
 	        catch (Exception ex)
 	        {
 	            return SendErrorMessage(ex.Message);

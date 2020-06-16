@@ -245,7 +245,7 @@ namespace KadOzenka.Dal.KoObject
 
 			foreach (var complianceGuide in complianceGuides)
 			{
-				long.TryParse(complianceGuide.SubGroup.Split('.')[1], out var sGroup);
+				long.TryParse(complianceGuide.SubGroup?.Split('.')[1], out var sGroup);
 				if(complianceGuide.SubGroup != null)
 					res.Add(new ComplianceGuid { Group = complianceGuide.SubGroup, Code = complianceGuide.Code, TypeRoom = complianceGuide.TypeRoom, SubGroup = sGroup });
 			}
