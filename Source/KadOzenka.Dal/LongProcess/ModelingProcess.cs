@@ -40,7 +40,8 @@ namespace KadOzenka.Dal.LongProcess
             {
                 WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
                 WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-                NotificationSender.SendNotification(processQueue, "Моделирование", "Операция завершена с ошибкой. Подробнее в списке процессов");
+                NotificationSender.SendNotification(processQueue, "Моделирование",
+                    "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
                 return;
             }
 
@@ -52,7 +53,7 @@ namespace KadOzenka.Dal.LongProcess
 
                 var requestForService = strategy.GetRequestForService();
 
-                var response = SendDataToService(_httpClient, strategy.Url, requestForService).GetAwaiter().GetResult();
+                var response = SendDataToService(_httpClient, strategy.GetUrl(), requestForService).GetAwaiter().GetResult();
                 response = PreProcessServiceResponse(response);
                 WorkerCommon.SetProgress(processQueue, 80);
 
@@ -74,13 +75,13 @@ namespace KadOzenka.Dal.LongProcess
 
         private AModelingStrategy GetModelingStrategy(ModelingInputParameters inputParameters)
         {
-            switch (inputParameters.ModelingType)
+            switch (inputParameters.Mode)
             {
-                case ModelingType.Training:
+                case ModelingMode.Training:
                     return new TrainingStrategy(inputParameters.InputParametersXml);
-                case ModelingType.Prediction:
+                case ModelingMode.Prediction:
                     return new PredictionStrategy(inputParameters.InputParametersXml);
-                case ModelingType.Correlation:
+                case ModelingMode.Correlation:
                     return new CorrelationStrategy(inputParameters.InputParametersXml);
                 default:
                     throw new Exception("Не определен тип моделирования");

@@ -248,14 +248,15 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("904", "Моделирование (обучение)", () =>
             {
-                var trainingInputParameters = new TrainingInputParameters
+                var trainingInputParameters = new GeneralModelingInputParameters
                 {
-                    ModelId = 44859102
+                    ModelId = 44742135,
+                    ModelType = ModelType.Linear
                 };
                 var inputRequest = new ModelingInputParameters
                 {
-                    ModelingType = ModelingType.Training,
-                    InputParametersXml = trainingInputParameters.SerializeToXml<TrainingInputParameters>()
+                    Mode = ModelingMode.Training,
+                    InputParametersXml = trainingInputParameters.SerializeToXml()
                 };
                 new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
                 {
