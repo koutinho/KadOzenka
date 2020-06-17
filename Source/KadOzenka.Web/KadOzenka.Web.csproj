@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Tour\AddGroup.cshtml" />
     <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
@@ -1152,6 +1153,7 @@
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
   <ItemGroup>
+    <None Include="Views\Tour\AddGroup.cshtml" />
     <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
     <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
   </ItemGroup>
@@ -1160,10 +1162,14 @@
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\GbuObject\GroupingObject.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Tour\AddGroup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Tour\AddGroup.cshtml" />
   </ItemGroup>
 
 </Project>
