@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
@@ -12,7 +13,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		public NumberOfObjectsByAdministrativeDistrictsByGroupsReportHandler()
 		{
-			_service = new NumberOfObjectsByAdministrativeDistrictsService();
+			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService());
 		}
 
 		public string GetTemplateName(NameValueCollection query, IGetQueryPAramFunc getQueryParam)

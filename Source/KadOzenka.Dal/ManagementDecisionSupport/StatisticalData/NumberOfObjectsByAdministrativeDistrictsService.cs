@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
@@ -13,6 +15,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class NumberOfObjectsByAdministrativeDistrictsService : StatisticalDataService
 	{
+		private readonly StatisticalDataService _statisticalDataService;
+		private readonly GbuObjectService _gbuObjectService;
+
+		public NumberOfObjectsByAdministrativeDistrictsService(StatisticalDataService statisticalDataService, GbuObjectService gbuObjectService)
+		{
+			_statisticalDataService = statisticalDataService;
+			_gbuObjectService = gbuObjectService;
+		}
+
         public List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto> GetNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes(long[] taskList)
         {
             var query = new QSQuery
@@ -129,45 +140,24 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto> GetNumberOfObjectsByAdministrativeDistrictsBySubject(long[] taskList)
         {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskList.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMTask.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-                            RightOperand = OMTask.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Left
-                    },
-                }
-            };
+	        var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
+	        var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
 
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyType)));
+            var groupJoin = new QSJoin
+	        {
+		        RegisterId = OMGroup.GetRegisterId(),
+		        JoinCondition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.Equal,
+			        LeftOperand = OMUnit.GetColumn(x => x.GroupId),
+			        RightOperand = OMGroup.GetColumn(x => x.Id)
+		        },
+		        JoinType = QSJoinType.Left
+	        };
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, additionalJoins: new List<QSJoin>() { groupJoin });
+
+            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
+            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)));
 
             var subQuery = new QSQuery(OMGroup.GetRegisterId())
             {
@@ -196,26 +186,47 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var result = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
             if (table.Rows.Count != 0)
             {
+	            var objectIds = new List<long>();
+	            for (var i = 0; i < table.Rows.Count; i++)
+	            {
+		            objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
+	            }
+
+	            var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+		            new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
+		            new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
+		            DateTime.Now.GetEndOfTheDay());
+
                 for (var i = 0; i < table.Rows.Count; i++)
                 {
                     var group = table.Rows[i]["ParentGroup"]
                         .ParseToStringNullable();
                     var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto
                     {
-                        PropertyType = table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyType)].ParseToString(),
+                        PropertyTypeCode = (PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)].ParseToLong(),
+                        PropertyType = ((PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)].ParseToLong()).GetEnumDescription(),
+                        GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
                         Group = string.IsNullOrEmpty(group) ? "Без группы" : group,
                         HasGroup = !string.IsNullOrEmpty(@group),
                         Count = 1
                     };
-                    result.Add(dto);
+
+                    FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
+
+                    if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
+                    {
+	                    result.Add(dto);
+                    }
                 }
             }
 
             result =
-                result.GroupBy(x => new { x.PropertyType, x.Group, x.HasGroup }).Select(
+                result.GroupBy(x => new { x.PropertyType, x.Purpose, x.HasPurpose, x.Group, x.HasGroup }).Select(
                 group => new NumberOfObjectsByAdministrativeDistrictsBySubjectDto
                 {
                     PropertyType = group.Key.PropertyType,
+                    Purpose = group.Key.Purpose,
+                    HasPurpose = group.Key.HasPurpose,
                     Group = group.Key.Group,
                     HasGroup = group.Key.HasGroup,
                     Count = group.ToList().DefaultIfEmpty().Sum(x => x.Count)
@@ -352,6 +363,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	            }).OrderBy(x => x.HasGroup).ToList();
 
             return result;
+        }
+
+        private void FillPurposeData<T>(T dto, List<GbuObjectAttribute> gbuAttributes,
+	        RegisterAttribute buildingPurposeAttr, RegisterAttribute placementPurposeAttr) where  T : PropertyTypeWithPurposeDto
+        {
+	        if (dto.PropertyTypeCode == PropertyTypes.Building)
+	        {
+		        dto.HasPurpose = true;
+		        var purpose = gbuAttributes
+			        .FirstOrDefault(x => x.ObjectId == dto.GbuObjectId && x.AttributeId == buildingPurposeAttr.Id);
+		        if (purpose != null)
+		        {
+			        dto.Purpose = purpose.GetValueInString();
+		        }
+	        }
+	        else if (dto.PropertyTypeCode == PropertyTypes.Pllacement)
+	        {
+		        dto.HasPurpose = true;
+		        var purpose = gbuAttributes
+			        .FirstOrDefault(x => x.ObjectId == dto.GbuObjectId && x.AttributeId == placementPurposeAttr.Id);
+		        if (purpose != null)
+		        {
+			        dto.Purpose = purpose.GetValueInString();
+		        }
+	        }
         }
     }
 }

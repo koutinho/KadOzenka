@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Data;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
@@ -10,7 +11,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		public NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReportHandler()
 		{
-			_service = new NumberOfObjectsByAdministrativeDistrictsService();
+			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService());
 		}
 
 		public string GetTemplateName(NameValueCollection query, IGetQueryPAramFunc getQueryParam)

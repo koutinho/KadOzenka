@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
+﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
-	public class NumberOfObjectsByAdministrativeDistrictsBySubjectDto
+	public class NumberOfObjectsByAdministrativeDistrictsBySubjectDto : PropertyTypeWithPurposeDto
 	{
 		public string PropertyType { get; set; }
 		public string Group { get; set; }

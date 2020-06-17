@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Data;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
@@ -10,7 +11,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		public NumberOfObjectsByAdministrativeDistrictsBySubjectReportHandler()
 		{
-			_service = new NumberOfObjectsByAdministrativeDistrictsService();
+			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService());
 		}
 
 		public string GetTemplateName(NameValueCollection query, IGetQueryPAramFunc getQueryParam)
@@ -26,6 +27,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 			var dataTable = new DataTable("Data");
 			dataTable.Columns.Add("PropertyType", typeof(string));
+			dataTable.Columns.Add("Purpose", typeof(string));
+			dataTable.Columns.Add("HasPurpose", typeof(bool));
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
@@ -33,7 +36,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 			foreach (var unitDto in data)
 			{
-				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Group, unitDto.Count);
+				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.Group, unitDto.Count);
 			}
 
 			var dataSet = new DataSet();
