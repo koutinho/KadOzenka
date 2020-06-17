@@ -28,6 +28,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 		protected readonly StatisticalDataService StatisticalDataService;
 		protected readonly ModelService ModelService;
 		protected readonly GroupService GroupService;
+		protected readonly FactorsService FactorsService;
 
 		protected StatisticalDataReport()
 		{
@@ -35,6 +36,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             StatisticalDataService = new StatisticalDataService();
             ModelService = new ModelService();
             GroupService = new GroupService();
+            FactorsService = new FactorsService();
         }
 
 		public override string GetTitle(long? objectId)

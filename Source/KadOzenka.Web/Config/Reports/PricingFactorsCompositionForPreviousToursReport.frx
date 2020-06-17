@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/16/2020 13:53:43" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/16/2020 16:12:16" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -39,14 +39,14 @@ namespace FastReport
       <MatrixObject Name="MatrixData" Left="9.45" Width="341.05" Height="68.16" FixedRows="2" FixedColumns="2" AutoSize="false" DataSource="Data">
         <MatrixColumns>
           <Header Expression="[Data.ColumnTitle]" Sort="None" Totals="false"/>
-          <Header Expression="[Data.TourYear]" Totals="false"/>
+          <Header Expression="[Data.TourYear]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
-          <Header Expression="[Data.Number]" Totals="false"/>
-          <Header Expression="[Data.CadastralNumber]" Totals="false"/>
+          <Header Expression="[Data.Number]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.CadastralNumber]" Sort="None" Totals="false"/>
         </MatrixRows>
         <MatrixCells>
-          <Cell Expression="[Data.ValueForTour]"/>
+          <Cell Expression="[Data.ValueForTour]" Function="None"/>
         </MatrixCells>
         <TableColumn Name="Column8" Width="75.3"/>
         <TableColumn Name="Column9" Width="150.17"/>

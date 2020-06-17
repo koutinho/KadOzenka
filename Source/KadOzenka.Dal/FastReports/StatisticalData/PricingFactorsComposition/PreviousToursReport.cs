@@ -9,9 +9,13 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
+    //TODO отчет работает очень медленно, ножно обсудить с Димой оптимизацию. как вариант:
+    //TODO 1) Фоновый процесс 2) Добавить всходные параметры (туры и задачи), но это не реализовано в платформе
     public class PreviousToursReport : StatisticalDataReport
     {
         private const string TypeTitle = "Тип";
@@ -44,16 +48,30 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return "PricingFactorsCompositionForPreviousToursReport";
         }
 
+        public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
+        {
+            if (!initialisation)
+                return;
+
+            var groupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "Groups");
+            if (groupsFilterValue != null)
+            {
+                var groups = OMGroup.Where(x => true).SelectAll().Execute();
+
+                groupsFilterValue.ReportParameters = new List<ReportParameter>();
+                groupsFilterValue.ReportParameters.AddRange(groups.Select(x => new ReportParameter { Value = $"{x.GroupName}", Key = $"key:{x.Id}" }));
+            }
+        }
+
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var tourId = GetTourId(query);
-            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
-            if(tour == null)
-                throw new Exception($"Не найден тур с Id='{tourId}'");
+            var previousTours = GetPreviousTours(tourId);
 
-            var previousTours = OMTour.Where(x => x.Year <= tour.Year).OrderBy(x => x.Year).SelectAll().Execute();
+            var groupId = GetGroupIdFromFilter(query);
+            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
-            var operations = GetOperations(previousTours);
+            var operations = GetOperations(previousTours, model?.Id);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -65,33 +83,59 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<OMTour> tours)
+        private List<OMTour> GetPreviousTours(long tourId)
         {
-            var units = GetUnitsByTour(tours.Select(x => x.Id).ToList());
-            ////для тестирования
+            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+                throw new Exception($"Не найден тур с Id='{tourId}'");
+
+            return OMTour.Where(x => x.Year <= tour.Year).OrderBy(x => x.Year).SelectAll().Execute();
+        }
+
+        protected long GetGroupIdFromFilter(NameValueCollection query)
+        {
+            var groupId = GetQueryParam<long>("Groups", query);
+            if (groupId == 0)
+                throw new Exception("Не выбрана группа");
+
+            return groupId;
+        }
+
+        private List<ReportItem> GetOperations(List<OMTour> tours, long? modelId)
+        {
+            var tourIds = tours.Select(x => x.Id).Distinct().ToList();
+            var units = GetUnitsByTour(tourIds);
+            //для тестирования
+            //modelId = 7977478;
             //var units = new List<OMUnit>
             //{
             //    new OMUnit{CadastralNumber = "KN_1", Id = 12435691, ObjectId = 11188991, TourId = 2016 },
-            //    new OMUnit{CadastralNumber = "KN_2", Id = 12402753, ObjectId = 11251387, TourId = 2018 }
+            //    new OMUnit{CadastralNumber = "KN_2", Id = 15731468, ObjectId = 11404578, TourId = 2018 }
             //};
             if (units == null || units.Count == 0)
                 return new List<ReportItem>();
 
-            var tourAttributes = GetTourAttributes(tours.Select(x => x.Id).Distinct().ToList());
+            var tourAttributes = GetTourAttributes(tourIds);
             var rosreestrAttributes = GetRosreestrAttributes();
             var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
             var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
+
+            var groupedFactors = modelId == null 
+                ? new List<FactorsService.PricingFactors>() 
+                : FactorsService.GetGroupedModelFactors(modelId.Value);
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
             {
                 var tour = tours.FirstOrDefault(x => x.Id == unit.TourId);
+                var objectFactors = FactorsService.GetPricingFactorsForUnit(unit.Id, groupedFactors);
                 var item = new ReportItem
                 {
                     Tour = tour,
                     CadastralNumber = unit.CadastralNumber,
                     Square = unit.Square,
-                    CadastralCost = unit.CadastralCost
+                    CadastralCost = unit.CadastralCost,
+                    Factors = objectFactors
                 };
 
                 var objectAttributes = gbuAttributes.Where(x => x.ObjectId == unit.ObjectId).ToList();
@@ -246,7 +290,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var dataTable = new DataTable("Data");
 
             dataTable.Columns.Add("Number");
-
             dataTable.Columns.Add("CadastralNumber");
 
             dataTable.Columns.Add("ColumnTitle");
@@ -261,30 +304,29 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //    new ReportItem{CadastralNumber = "KN_3", Tour = new OMTour{Id = 3, Year = 2020}, Square = 20, ObjectType = "type_16"}
             //};
 
-            var groupedByCadastralNumberItems = operations
-                .OrderBy(x => x.CadastralNumber)
-                .GroupBy(x => new
-                {
-                    x.CadastralNumber
-                });
+            var orderedOperations = operations.OrderBy(x => x.CadastralNumber);
             var counter = 0;
-            foreach (var items in groupedByCadastralNumberItems)
+            foreach (var item in orderedOperations)
             {
                 counter++;
                 _columnTitles.ForEach(title =>
                 {
-                    items.ToList().ForEach(item =>
-                    {
-                        var value = GetValueForReportItem(title, item);
-
-                        dataTable.Rows.Add(counter,
-                            items.Key.CadastralNumber,
-                            title,
-                            item.Tour?.Year,
-                            value);
-                    });
+                    var value = GetValueForReportItem(title, item);
+                    dataTable.Rows.Add(counter,
+                        item.CadastralNumber,
+                        title,
+                        item.Tour?.Year,
+                        value);
                 });
 
+                foreach (var keyValuePair in item.Factors)
+                {
+                    dataTable.Rows.Add(counter,
+                        item.CadastralNumber,
+                        keyValuePair.Name,
+                        item.Tour?.Year,
+                        keyValuePair.Value);
+                }
             }
             
             return dataTable;
@@ -326,7 +368,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     return item.SubGroupNumber;
                 case CadastralCostTitle:
                     return item.CadastralCost;
-                //TODO factors
             }
 
             return null;
@@ -351,13 +392,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 AttributeIds = new List<long>();
             }
         }
-
-        //private class Attribute
-        //{
-        //    public long Id { get; set; }
-        //    public string Name { get; set; }
-        //    public string Value { get; set; }
-        //}
 
         private class ReportItem : InfoFromTourSettings
         {
@@ -388,8 +422,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             //From Tour Settings
 
-            ////Factors from Modeling
-            //public List<Attribute> Factors { get; set; }
+            //Factors from Model
+            public List<FactorsService.PricingFactor> Factors { get; set; }
         }
 
         #endregion

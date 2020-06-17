@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.Model.Dto;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -33,9 +31,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var group = GroupService.GetGroupById(groupId);
             var model = ModelService.GetModelByGroupId(group.Id);
-            var factors = ModelService.GetModelFactors(model.Id);
 
-            var operations = GetOperations(taskIdList, factors);
+            var operations = GetOperations(taskIdList, model.Id);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -49,9 +46,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<long> taskIds, List<ModelFactorDto> factors)
+        private List<ReportItem> GetOperations(List<long> taskIds, long modelId)
         {
-            if(factors.Count == 0)
+            var groupedFactors = FactorsService.GetGroupedModelFactors(modelId);
+            if (groupedFactors.Count == 0)
                 return new List<ReportItem>();
 
             var units = GetUnits(taskIds);
@@ -63,20 +61,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var addresses = GetAddresses(units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList());
 
-            var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new UnitFactors
-            {
-                RegisterId = (int)x.Key,
-                Attributes = x.Select(y => new Attribute
-                {
-                    Id = y.FactorId,
-                    Name = y.Factor
-                }).ToList()
-            }).ToList();
-
             var items = new List<ReportItem>();
             units.ForEach(unit =>
             {
-                var objectFactors = GetTourFactorsForUnit(unit.Id, groupedFactors);
+                var objectFactors = FactorsService.GetPricingFactorsForUnit(unit.Id, groupedFactors);
 
                 var objectAddress = addresses.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 
@@ -105,37 +93,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 new List<long> {addressAttribute.RegisterId},
                 new List<long> {addressAttribute.Id},
                 DateTime.Now.GetEndOfTheDay());
-        }
-
-        private List<Attribute> GetTourFactorsForUnit(long unitId, List<UnitFactors> unitFactors)
-        {
-            var attributes = new List<Attribute>();
-            unitFactors.ForEach(factor =>
-            {
-                var query = new QSQuery
-                {
-                    MainRegisterID = factor.RegisterId,
-                    Columns = factor.Attributes.Select(x => (QSColumn)new QSColumnSimple(x.Id, x.Id.ToString())).ToList(),
-                    Condition = new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.Equal, unitId)
-                };
-
-                var table = query.ExecuteQuery();
-                foreach (DataRow row in table.Rows)
-                {
-                    factor.Attributes.ForEach(attribute =>
-                    {
-                        var value = row[attribute.Id.ToString()].ParseToStringNullable();
-                        attributes.Add(new Attribute
-                        {
-                            Id = attribute.Id,
-                            Name = attribute.Name,
-                            Value = value
-                        });
-                    });
-                }
-            });
-
-            return attributes;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -189,25 +146,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Entities
 
-        private class UnitFactors
-        {
-            public int RegisterId { get; set; }
-            public List<Attribute> Attributes { get; set; }
-        }
-
-        private class Attribute
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-        }
-
         private class ReportItem
         {
             public PropertyTypes ObjectType { get; set; }
             public string CadastralDistrict { get; set; }
             public string CadastralNumber { get; set; }
-            public List<Attribute> Factors { get; set; }
+            public List<FactorsService.PricingFactor> Factors { get; set; }
             public string Address { get; set; }
             public decimal? Square { get; set; }
             public decimal? Upks { get; set; }
