@@ -151,11 +151,18 @@ namespace KadOzenka.Web.Controllers
             return new JsonResult(new { Message = "Обновление выполнено" });
         }
 
-        #endregion
+		#endregion
 
-        #region Настройки атрибутов тура
+		#region Настройки атрибутов тура
+		[HttpGet]
+		public ActionResult AddGroup(long tourId)
+		{
 
-        [HttpGet]
+			return NoContent();
+		}
+
+
+		[HttpGet]
         public ActionResult TourAttributeSettings()
         {
 	        ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
@@ -168,7 +175,7 @@ namespace KadOzenka.Web.Controllers
 					 Value = y.Value,
 					 Text = y.Text
 				 }).ToList()
-			 }).AsEnumerable();
+			 }).AsEnumerable();	
 
 			return View(new TourAttributeSettingsModel());
         }

@@ -5,61 +5,71 @@
 
 @using (Html.BeginForm("TourAttributeSettings", "Tour", FormMethod.Post))
 {
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group"></div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.TourId)
-            </div>
-            <div class="col-sm-10">
-                @(Html.Kendo().DropDownListFor(m => m.TourId)
-                                      .DataTextField("Text")
-                                      .DataValueField("Value")
-                                      .Filter("contains")
-                                      .Events(x =>
-                                          x.DataBound("initKoAttributes")
-                                              .Change("initKoAttributes")
-                                      )
-                                      .DataSource(source =>
-                                      {
-                                          source.Read(read =>
-                                          {
-                                              read.Action("GetRatingTours", "Tour");
-                                          })
-                                          .ServerFiltering(false);
-                                      }))
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.CodeGroupAttributeId)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.CodeGroupAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.CodeQuarterAttributeId)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.CodeQuarterAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.TypeRoomAttributeId)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.TypeRoomAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
-            </div>
-        </div>
-    </div>
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group"></div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.TourId)
+			</div>
+			<div class="col-sm-10">
+				@(Html.Kendo().DropDownListFor(m => m.TourId)
+					.DataTextField("Text")
+					.DataValueField("Value")
+					.Filter("contains")
+					.Events(x =>
+						x.DataBound("initKoAttributes")
+							.Change("initKoAttributes")
+					)
+					.DataSource(source =>
+					{
+						source.Read(read =>
+						{
+							read.Action("GetRatingTours", "Tour");
+						})
+							.ServerFiltering(false);
+					}))
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.CodeGroupAttributeId)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.CodeGroupAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.CodeQuarterAttributeId)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.CodeQuarterAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.TypeRoomAttributeId)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.TypeRoomAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-12">
+				<button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+			</div>
+		</div>
+	</div>
+
+	<div style="height: auto">
+		<div class="form-horizontal col-sm-12">
+			<div class="form-group"></div>
+			<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/KoComplianceGuide?Transition=1&25400700=0")" data-param-Pageable="true" data-param-Scrollable="true"
+			     data-param-partialview="true" data-param-tourid="" data-loader="true" data-onsuccess="resizeGrid254" data-load-mode="delay" ></div>
+			<div class="form-group"></div>
+		</div>
+	</div>
+
 }
 
 <script src="~/js/custom-validation.js"></script>
@@ -91,9 +101,20 @@
 
     });
 
+    var firstGridLoad = true;
     function initKoAttributes() {
         kendo.ui.progress($('body'), true);
-        var tourId = $('#@(nameof(Model.TourId))').val();
+		var tourId = $('#@(nameof(Model.TourId))').val();
+
+	    var cUrl = $('.ajax-data-loading').data('url');
+	    cUrl = updateQueryStringParameter(cUrl, '25400700', tourId);
+	    $('.ajax-data-loading').data('url', cUrl);
+	    $('.ajax-data-loading').data('load-mode', 'always');
+		$('.ajax-data-loading').data('param-tourid', tourId);
+	    firstGridLoad = false;
+	    $('.ajax-data-loading').ajaxDataLoader();
+		
+	
         $.get('@Url.Action("GetTourGbuAttributeSettings", "Tour")', { tourId: tourId}).done(function (response) {
             if (response.Data) {
                 changeAttrValue($('#CodeGroupAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.CodeGroupAttribute.GetEnumCode());
@@ -114,6 +135,17 @@
             data.find(item => item.KoAttributeUsingType == attrType);
         var attrId = attr ? attr.AttributeId : null;
         dropDownTree.value(attrId);
+	}
+
+    function updateQueryStringParameter(uri, key, value) {
+	    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	    if (uri.match(re)) {
+		    return uri.replace(re, '$1' + key + "=" + value + '$2');
+	    }
+	    else {
+		    return uri + separator + key + "=" + value;
+	    }
     }
 </script>
 

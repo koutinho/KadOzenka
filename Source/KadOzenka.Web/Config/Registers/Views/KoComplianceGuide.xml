@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="254" LinkedRegistersList="254" DefaultLayoutId="1002541" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
+	<Buttons>
+		<Button Caption="Добавить" NavigateURL="/Tour/AddGroup" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
+			<Parameters>
+				<Parameter Key="tourId" Value="{Get:TourId}" />
+			</Parameters>
+		</Button>
+		<Button Caption="Редактировать" NavigateURL="/Sud/EditCourtLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
+			<Parameters>
+			</Parameters>
+		</Button>
+
+	</Buttons>
+	<StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>
