@@ -20,11 +20,6 @@ namespace KadOzenka.Dal.LongProcess
     {
         public const string LongProcessName = nameof(GknXmlToExcelLongProcess);
 
-        protected GknXmlToExcelLongProcess()
-        {
-            NotificationSender = new NotificationSender();
-        }
-
         public static void AddProcessToQueue(GknXmlConvertParams convertParams)
         {
             LongProcessManager.AddTaskToQueue(LongProcessName, parameters: convertParams.SerializeToXml());
