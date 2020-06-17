@@ -515,6 +515,12 @@
             $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
             $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
             $('#valuesFilter').data("kendoMultiSelect").enable(true);
+            Common.UI.ShowInfo({
+                content: "Вводите значения через 'Shift + Enter'",
+                onSuccess: function() {
+                    Common.UI.CloseWindow('Dashboard', window.parent);
+                }
+            });
         } else {
             $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
             $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
