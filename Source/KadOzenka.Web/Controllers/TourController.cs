@@ -16,6 +16,7 @@ using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
+using KadOzenka.Web.Models.Tour.EstimateGroup;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -155,11 +156,114 @@ namespace KadOzenka.Web.Controllers
 
 		#region Настройки атрибутов тура
 		[HttpGet]
-		public ActionResult AddGroup(long tourId)
+		public ActionResult AddGroup(long tourId, long complianceId)
 		{
+			var compliance = OMComplianceGuide.Where(x => x.Id == complianceId).SelectAll().ExecuteFirstOrDefault();
+			var model = new AddGroupViewModel();
 
-			return NoContent();
+			if (compliance != null)
+			{
+				model = AddGroupViewModel.ToModel(compliance);
+			}
+
+			model.TourId = tourId;
+			return View(model);
 		}
+
+		[HttpPost]
+		public JsonResult AddGroup(AddGroupViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+			OMComplianceGuide compliance = null;
+
+			if (model.Id != -1)
+			{
+				compliance = OMComplianceGuide.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			}
+
+			try
+			{
+				compliance = AddGroupViewModel.ToEntity(compliance ?? new OMComplianceGuide(), model);
+				var id = compliance.Save();
+
+				return Json(new { message = "Сохранение выполненно успешно" , id});
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				Console.WriteLine(e);
+				return SendErrorMessage("При сохранении возникли ошибки. Подробнее в журнале ошибок.");
+			}
+
+		}
+
+		[HttpGet]
+		public ActionResult RemoveGroup(long complianceId)
+		{
+			var compliance = OMComplianceGuide.Where(x => x.Id == complianceId).SelectAll().ExecuteFirstOrDefault();
+			return View(AddGroupViewModel.ToModel(compliance));
+		}
+
+		[HttpPost]
+		public ActionResult RemoveGroup(AddGroupViewModel model)
+		{
+			if (model.Id == -1)
+			{
+				return SendErrorMessage("Не выбрана запись");
+			}
+			var compliance = OMComplianceGuide.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+
+			compliance.Destroy();
+
+			return Json(new { Success = true });
+		}
+
+		[HttpGet]
+		public ActionResult RemoveGroupsByTour(long tourId)
+		{
+			if (tourId == 0)
+			{
+				throw new Exception("Не задан тур");
+			}
+			ViewBag.TourId = tourId;
+			return View();
+		
+		}
+
+		[HttpPost]
+		public ActionResult RemoveGroupsByTour(AddGroupViewModel model)
+		{
+			if (model.TourId == 0)
+			{
+				return SendErrorMessage("Не задан Тур");
+			}
+			var compliance = OMComplianceGuide.Where(x => x.TourId == model.TourId).SelectAll().Execute();
+
+			try
+			{
+				using (var ts = new TransactionScope())
+				{
+					foreach (var item in compliance)
+					{
+						item.Destroy();
+					}
+					ts.Complete();
+				}
+
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				Console.WriteLine(e);
+				return SendErrorMessage("Во время удаления произошла ошибка. Подробнее в журнале ошибок");
+			}
+		
+			return Json(new { Success = true });
+		}
+
 
 
 		[HttpGet]
