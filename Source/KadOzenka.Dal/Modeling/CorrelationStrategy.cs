@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.Modeling
             return "http://82.148.28.237:5000/api/teach/testCorrelation";
         }
 
-        public override void PrepareData()
+        public override void PrepareData(OMQueue processQueue)
         {
             ObjectIds = GetObjectIds(InputParameters.QsQueryStr);
             Attributes = GetAttributes(InputParameters.AttributeIds);

@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.Modeling
            return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         }
 
-        public override void PrepareData()
+        public override void PrepareData(OMQueue processQueue)
         {
             if (!Model.WasTrained.GetValueOrDefault())
                 throw new Exception($"Модель '{Model.Name}' не была обучена. Расчет невозможен.");

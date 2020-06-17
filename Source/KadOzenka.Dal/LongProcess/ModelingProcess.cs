@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.LongProcess
             var strategy = GetModelingStrategy(inputParameters);
             try
             {
-                strategy.PrepareData();
+                strategy.PrepareData(processQueue);
                 WorkerCommon.SetProgress(processQueue, 50);
 
                 var requestForService = strategy.GetRequestForService();

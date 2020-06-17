@@ -42,9 +42,9 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public override void PrepareData()
+        public override void PrepareData(OMQueue processQueue)
         {
-            ModelingService.CreateObjectsForModel(InputParameters.ModelId);
+            ModelingService.CreateObjectsForModel(InputParameters.ModelId, processQueue);
         }
 
         public override object GetRequestForService()

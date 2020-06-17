@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.Modeling
 
         public abstract string GetUrl();
 
-        public abstract void PrepareData();
+        public abstract void PrepareData(OMQueue processQueue);
 
         public abstract object GetRequestForService();
 

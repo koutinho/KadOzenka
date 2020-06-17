@@ -18,6 +18,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using ObjectModel.Core.LongProcess;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
@@ -397,8 +398,17 @@ namespace KadOzenka.Dal.Modeling
 
         #region Modeling Process
 
-        public void CreateObjectsForModel(long modelId)
+        private void AddLog(OMQueue processQueue, string message)
         {
+            var previousLog = processQueue.Log;
+            var newLog = previousLog + Environment.NewLine + message;
+            processQueue.Log = newLog;
+            processQueue.Save();
+        }
+
+        public void CreateObjectsForModel(long modelId, OMQueue processQueue)
+        {
+            AddLog(processQueue, "Начат сбор данных");
             var model = GetModelByIdInternal(modelId);
 
             var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
@@ -406,6 +416,7 @@ namespace KadOzenka.Dal.Modeling
                 .Select(x => x.MarketSegment_Code)
                 .Select(x => x.TerritoryType_Code)
                 .ExecuteFirstOrDefault();
+            AddLog(processQueue, $"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}");
 
             //var territoryCondition = GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
@@ -427,17 +438,19 @@ namespace KadOzenka.Dal.Modeling
                     x.CadastralNumber,
                     x.Price
                 });
+            AddLog(processQueue, $"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.");
 
             DestroyModelMarketObjects(modelId);
+            AddLog(processQueue, $"Удалены предыдущие данные.");
 
             var modelAttributes = GetModelAttributes(modelId);
+            AddLog(processQueue, $"Получено {modelAttributes?.Count} атрибутов для модели.");
 
             var i = 0;
             Parallel.ForEach(groupedObjects, groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
                 i++;
-
                 var modelObject = new OMModelToMarketObjects
                 {
                     ModelId = modelId,
@@ -451,6 +464,8 @@ namespace KadOzenka.Dal.Modeling
 
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
+
+                AddLog(processQueue, $"Обработан объект № {i}.");
             });
         }
 
