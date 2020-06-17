@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
+using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
@@ -13,7 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 		public MarketDataInfoReport()
 		{
-			_service = new AdditionalFormsService(StatisticalDataService);
+			_service = new AdditionalFormsService(StatisticalDataService, GbuObjectService);
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -21,10 +23,29 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			return "AdditionalFormsMarketDataInfoReport";
 		}
 
+		public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
+		{
+			if (initialisation)
+			{
+				InitialiseGbuAttributesFilterValue(
+					filterValues.FirstOrDefault(f => f.ParamName == "TypeOfUseCodeAttribute"));
+				InitialiseGbuAttributesFilterValue(
+					filterValues.FirstOrDefault(f => f.ParamName == "OksGroupAttribute"));
+				InitialiseGbuAttributesFilterValue(
+					filterValues.FirstOrDefault(f => f.ParamName == "TypeOfUseAttribute"));
+				InitialiseGbuAttributesFilterValue(
+					filterValues.FirstOrDefault(f => f.ParamName == "TypeOfRightAttribute"));
+			}
+		}
+
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var dateFrom = GetQueryParam<DateTime?>("DateFrom", query);
 			var dateTo = GetQueryParam<DateTime?>("DateTo", query);
+			var typeOfUseCodeAttributeId = GetFilterParameterValue(query, "TypeOfUseCodeAttribute", "Код вида использования");
+			var oksGroupAttributeId = GetFilterParameterValue(query, "OksGroupAttribute", "Группа ОКС");
+			var typeOfUseAttributeId = GetFilterParameterValue(query, "TypeOfUseAttribute", "Вид использования (функциональное назначение)");
+			var typeOfRightAttributeId = GetFilterParameterValue(query, "TypeOfRightAttribute", "Вид права");
 
 			if (dateFrom.HasValue && dateTo.HasValue && dateTo < dateFrom)
 			{
@@ -61,7 +82,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("Upks");
 			dataTable.Columns.Add("AnnualRateOfRent");
 
-			var data = _service.GetMarketData(dateFrom, dateTo);
+			var data = _service.GetMarketData(dateFrom, dateTo, typeOfUseCodeAttributeId, oksGroupAttributeId, typeOfUseAttributeId, typeOfRightAttributeId);
 			var i = 1;
 			foreach (var dto in data)
 			{
