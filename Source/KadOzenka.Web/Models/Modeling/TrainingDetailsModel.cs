@@ -21,14 +21,14 @@ namespace KadOzenka.Web.Models.Modeling
         {
             return new TrainingDetailsModel
             {
-                MeanSquaredErrorTrain = trainingResult.AccuracyScore.MeanSquaredError.Train,
-                MeanSquaredErrorTest = trainingResult.AccuracyScore.MeanSquaredError.Test,
-                FisherCriterionTrain = trainingResult.AccuracyScore.FisherCriterion.Train,
-                FisherCriterionTest = trainingResult.AccuracyScore.FisherCriterion.Test,
-                R2Train = trainingResult.AccuracyScore.R2.Train,
-                R2Test = trainingResult.AccuracyScore.R2.Test,
-                ScatterImageLink = trainingResult.Images.ScatterLink,
-                CorrelationImageLink = trainingResult.Images.CorrelationLink
+                MeanSquaredErrorTrain = trainingResult?.AccuracyScore?.MeanSquaredError?.Train,
+                MeanSquaredErrorTest = trainingResult?.AccuracyScore?.MeanSquaredError?.Test,
+                FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Train,
+                FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Test,
+                R2Train = trainingResult?.AccuracyScore?.R2?.Train,
+                R2Test = trainingResult?.AccuracyScore?.R2?.Test,
+                ScatterImageLink = trainingResult?.Images?.ScatterLink,
+                CorrelationImageLink = trainingResult?.Images?.CorrelationLink
             };
         }
     }

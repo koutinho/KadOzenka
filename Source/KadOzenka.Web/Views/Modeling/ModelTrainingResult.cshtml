@@ -99,19 +99,31 @@ else
         @if (Model != null)
         {
             <text>
+                //картинки не всегда подгружаются сразу (особенности сервиса моделирования),
+                //поэтому, если картинка не загрузилась - отправляем еще несколько запросов на сервис
+                var requestsCount = 100;
+
+                var correlationImageRequestCounter = 0;
                 $("#correlationImg").error(function() {
-                    $(this).attr("src", "@Model.CorrelationImageLink");
+                    if (correlationImageRequestCounter < requestsCount) {
+                        $(this).attr("src", "@Model.CorrelationImageLink");
+                        correlationImageRequestCounter++;
+                    }
                 });
 
+                var scatterImageRequestCounter = 0;
                 $("#scatterImg").error(function() {
-                    $(this).attr("src", "@Model.ScatterImageLink");
+                    if (scatterImageRequestCounter < requestsCount) {
+                        $(this).attr("src", "@Model.ScatterImageLink");
+                        scatterImageRequestCounter++;
+                    }
                 });
             </text>
         }
     });
 
 
-
+    //выравнивание картинок по середине
     $(window).load(function() {
         var scatterDivHeight = $("#scatterDiv").height();
         var scatterImgHeight = $("#scatterImg").height();

@@ -131,10 +131,10 @@ namespace KadOzenka.Dal.Modeling
 
             for (var i = 0; i < oldCoefficients.Count; i++)
             {
-                var entry = oldCoefficients.ElementAt(i);
-                var attributeId = RequestForService.AttributeIds.ElementAt(i);
+                var entry = oldCoefficients.ElementAtOrDefault(i);
+                var attributeId = RequestForService.AttributeIds.ElementAtOrDefault(i);
 
-                newCoefficients.Add(attributeId.ToString(), entry.Value);
+                newCoefficients[attributeId.ToString()] = entry.Value;
             }
 
             result.CoefficientsForAttributes = newCoefficients;

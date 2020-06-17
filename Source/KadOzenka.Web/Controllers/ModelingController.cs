@@ -111,13 +111,13 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = new ModelingInputParameters
             //    {
             //        Mode = ModelingMode.Training,
-            //        InputParametersXml = inputParameters.SerializeToXml<GeneralModelingInputParameters>()
+            //        InputParametersXml = inputParameters.SerializeToXml()
             //    }.SerializeToXml()
             //}, new CancellationToken());
             ModelingProcess.AddProcessToQueue(new ModelingInputParameters
             {
                 Mode = ModelingMode.Training,
-                InputParametersXml = inputParameters.SerializeToXml<GeneralModelingInputParameters>()
+                InputParametersXml = inputParameters.SerializeToXml()
             });
 
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
@@ -142,13 +142,13 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = new ModelingInputParameters
             //    {
             //        Mode = ModelingMode.Prediction,
-            //        InputParametersXml = inputParameters.SerializeToXml<GeneralModelingInputParameters>()
+            //        InputParametersXml = inputParameters.SerializeToXml()
             //    }.SerializeToXml()
             //}, new CancellationToken());
             ModelingProcess.AddProcessToQueue(new ModelingInputParameters
             {
                 Mode = ModelingMode.Prediction,
-                InputParametersXml = inputParameters.SerializeToXml<GeneralModelingInputParameters>()
+                InputParametersXml = inputParameters.SerializeToXml()
             });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });

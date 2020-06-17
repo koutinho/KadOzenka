@@ -37,8 +37,10 @@
                         t.Add().Text(ModelType.Linear.GetEnumDescription())
                             .HtmlAttributes(new { style = "width: 100%;" });
                         t.Add().Text(ModelType.Exponential.GetEnumDescription())
+                            .Enabled(false)
                             .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
                         t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
+                            .Enabled(false)
                             .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
                     })
                     .HtmlAttributes(new { style = "width: 100%;" })
