@@ -29,8 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Tour\AddGroup.cshtml" />
-    <Content Remove="Views\Tour\GroupCard.cshtml" />
+      <Content Remove="Views\Tour\AddGroup.cshtml" />
+      <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
@@ -457,11 +457,11 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4" PrivateAssets="all">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.436" />
+    <PackageReference Include="Platform.Web" Version="1.0.437" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -1142,7 +1142,6 @@
     <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
-	<ConfigPath Remove="Config\Reports\AdditionalFormsChangesUploadingReport.frx" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
 	<ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx" />
@@ -1155,6 +1154,8 @@
     <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsChangesUploadingReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsMarketDataInfoReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
