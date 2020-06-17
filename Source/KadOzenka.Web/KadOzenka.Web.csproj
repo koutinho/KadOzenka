@@ -1142,8 +1142,17 @@
     <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
+	<ConfigPath Remove="Config\Reports\AdditionalFormsChangesUploadingReport.frx" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
+	<ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsOksReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsZuReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
