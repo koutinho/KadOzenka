@@ -16,8 +16,6 @@ namespace KadOzenka.Dal.Modeling
 {
     public class CorrelationStrategy : AModelingStrategy
     {
-        //TODO ConfigurationManager.AppSettings["trainModelLink"];
-        public override string Url => "http://82.148.28.237:5000/api/teach/testCorrelation";
         private string ColumnNameFroPrice => "PriceForService";
         protected CorrelationInputParameters InputParameters { get; set; }
         private List<long> ObjectIds { get; set; }
@@ -27,6 +25,13 @@ namespace KadOzenka.Dal.Modeling
         public CorrelationStrategy(string inputParametersXml)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<CorrelationInputParameters>();
+        }
+
+
+        //TODO вынести в конфиг
+        public override string GetUrl()
+        {
+            return "http://82.148.28.237:5000/api/teach/testCorrelation";
         }
 
         public override void PrepareData()

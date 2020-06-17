@@ -15,16 +15,31 @@ namespace KadOzenka.Dal.Modeling
 {
     public class TrainingStrategy : AModelingStrategy
     {
-        //TODO ConfigurationManager.AppSettings["trainModelLink"];
-        public override string Url => $"http://82.148.28.237:5000/api/teach/{Model.InternalName}";
         private TrainingRequest RequestForService { get; set; }
-        protected TrainingInputParameters InputParameters { get; set; }
+        protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
 
         public TrainingStrategy(string inputParametersXml)
         {
-            InputParameters = inputParametersXml.DeserializeFromXml<TrainingInputParameters>();
+            InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
+        }
+
+
+        //TODO вынести в конфиг
+        public override string GetUrl()
+        {
+            switch (InputParameters.ModelType)
+            {
+                case ModelType.Linear:
+                    return $"http://82.148.28.237:5000/api/teach/lin/{Model.InternalName}";
+                case ModelType.Exponential:
+                    return $"http://82.148.28.237:5000/api/teach/exp/{Model.InternalName}";
+                case ModelType.Multiplicative:
+                    return $"http://82.148.28.237:5000/api/teach/mult/{Model.InternalName}";
+                default:
+                    throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
+            }
         }
 
         public override void PrepareData()
@@ -70,18 +85,13 @@ namespace KadOzenka.Dal.Modeling
 
         public override void ProcessServiceAnswer(string responseContentStr)
         {
-            //it will be list
             var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
             PreprocessTrainingResult(trainingResult);
 
             ResetPredictedPrice();
             ResetCoefficientsForPredictedPrice();
 
-            Model.LinearTrainingResult = JsonConvert.SerializeObject(trainingResult);
-            //Model.ExponentialTrainingResult = responseContentStr;
-            //Model.MultiplicativeTrainingResult = responseContentStr;
-            Model.WasTrained = true;
-            Model.Save();
+            UpdateModel(trainingResult);
         }
 
         public override void RollBackResult()
@@ -158,6 +168,28 @@ namespace KadOzenka.Dal.Modeling
                 x.Coefficient = null;
                 x.Save();
             });
+        }
+
+        private void UpdateModel(TrainingResult trainingResult)
+        {
+            var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
+            switch (InputParameters.ModelType)
+            {
+                case ModelType.Linear:
+                    Model.LinearTrainingResult = jsonTrainingResult;
+                    break;
+                case ModelType.Exponential:
+                    Model.ExponentialTrainingResult = jsonTrainingResult;
+                    break;
+                case ModelType.Multiplicative:
+                    Model.MultiplicativeTrainingResult = jsonTrainingResult;
+                    break;
+                default:
+                    throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
+            }
+
+            Model.WasTrained = true;
+            Model.Save();
         }
 
         #endregion

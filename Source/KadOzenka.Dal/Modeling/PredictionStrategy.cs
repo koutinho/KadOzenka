@@ -16,16 +16,21 @@ namespace KadOzenka.Dal.Modeling
 {
     public class PredictionStrategy : AModelingStrategy
     {
-        //TODO ConfigurationManager.AppSettings["calculateModelLink"];
-        public override string Url => $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         private PredictionRequest RequestForService { get; set; }
-        protected PredictionInputParameters InputParameters { get; set; }
+        protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
 
         public PredictionStrategy(string inputParametersXml)
         {
-            InputParameters = inputParametersXml.DeserializeFromXml<PredictionInputParameters>();
+            InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
+        }
+
+
+        //TODO вынести в конфиг
+        public override string GetUrl()
+        {
+           return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         }
 
         public override void PrepareData()
@@ -141,20 +146,20 @@ namespace KadOzenka.Dal.Modeling
         private string GetTrainingResultStr()
         {
             var trainingResult = string.Empty;
-            switch (InputParameters.PredictionType)
+            switch (InputParameters.ModelType)
             {
-                case PredictionType.Linear:
+                case ModelType.Linear:
                     trainingResult = Model.LinearTrainingResult;
                     break;
-                case PredictionType.Exponential:
+                case ModelType.Exponential:
                     trainingResult = Model.ExponentialTrainingResult;
                     break;
-                case PredictionType.Multiplicative:
+                case ModelType.Multiplicative:
                     trainingResult = Model.MultiplicativeTrainingResult;
                     break;
             }
             if (string.IsNullOrWhiteSpace(trainingResult))
-                throw new Exception($"Не найдено результатов обучения модели типа: '{InputParameters.PredictionType.GetEnumDescription()}'");
+                throw new Exception($"Не найдено результатов обучения модели типа: '{InputParameters.ModelType.GetEnumDescription()}'");
 
             return trainingResult;
         }
@@ -176,17 +181,17 @@ namespace KadOzenka.Dal.Modeling
 
         private KoAlgoritmType GetModelAlgorithmType()
         {
-            switch (InputParameters.PredictionType)
+            switch (InputParameters.ModelType)
             {
-                case PredictionType.Linear:
+                case ModelType.Linear:
                     return KoAlgoritmType.Line;
-                case PredictionType.Exponential:
+                case ModelType.Exponential:
                     return KoAlgoritmType.Exp;
-                case PredictionType.Multiplicative:
+                case ModelType.Multiplicative:
                     return KoAlgoritmType.Multi;
             }
 
-            throw new Exception($"Неизвестный тип модели {InputParameters.PredictionType}");
+            throw new Exception($"Неизвестный тип модели {InputParameters.ModelType}");
         }
 
         private OMModel CreateModel(KoAlgoritmType algorithmType)

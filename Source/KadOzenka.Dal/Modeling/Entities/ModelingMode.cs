@@ -2,7 +2,7 @@
 
 namespace KadOzenka.Dal.Modeling.Entities
 {
-    public enum ModelingType
+    public enum ModelingMode
     {
         [Description("Обучение")]
         Training,

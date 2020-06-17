@@ -24,27 +24,25 @@
     </div>
 </div>
 
-<!-- Модальное окно для выбора типа модели для прогнозирования цены -->
-<div id="predictionTypeModal" style="display: none; padding: 4% 2%;">
+<!-- Модальное окно для выбора типа модели -->
+<div id="modelTypeWindow" style="display: none; padding: 4% 2%;">
     <div class="form-horizontal col-sm-12" style="width: 100%;">
         <div class="form-group">
             <div class="col-sm-12" style="width: 100%;">
                 @(Html.Kendo().ButtonGroup()
-                    .Name("choosePredictionType")
+                    .Name("chooseModelType")
                     .Selection("single")
                     .Items(t =>
                     {
-                        t.Add().Text(PredictionType.Linear.GetEnumDescription())
+                        t.Add().Text(ModelType.Linear.GetEnumDescription())
                             .HtmlAttributes(new { style = "width: 100%;" });
-                        t.Add().Text(PredictionType.Exponential.GetEnumDescription())
-                            .Enabled(false)
+                        t.Add().Text(ModelType.Exponential.GetEnumDescription())
                             .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
-                        t.Add().Text(PredictionType.Multiplicative.GetEnumDescription())
-                            .Enabled(false)
+                        t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
                             .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
                     })
                     .HtmlAttributes(new { style = "width: 100%;" })
-                    .Events(ev => ev.Select("onPredictionTypeSelect")))
+                    .Events(ev => ev.Select("onModelTypeSelect")))
             </div>
         </div>
     </div>
@@ -130,7 +128,6 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function() {
-
         $('#mainToolbar').kendoToolBar({
             items: [
                 {
@@ -146,7 +143,7 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
-                    click: trainModel
+                    click: onTrainModelBtnClick
                 },
                 {
                     id: 'predictModelBtn',
@@ -155,7 +152,7 @@
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
                     enable: '@Model.IsModelWasTrained' === "True",
-                    click: predict
+                    click: onPredictModelBtnClick
                 }
             ]
         });
@@ -305,6 +302,31 @@
         window.destroy();
     }
 
+    var isTrainingMode = false;
+    function onTrainModelBtnClick() {
+        isTrainingMode = true;
+        showModelTypeWindow();
+    }
+    function onPredictModelBtnClick() {
+        isTrainingMode = false;
+        showModelTypeWindow();
+    }
+
+
+    function showModelTypeWindow() {
+        var modal = $("#modelTypeWindow");
+        ShowModal(modal, '60%', '10%', "Выбор типа модели");
+    }
+
+    function onModelTypeSelect(e) {
+        var modal = $('#modelTypeWindow');
+        modal.data("kendoWindow").close();
+        if (isTrainingMode)
+            trainModel(e);
+        else
+            predictModel(e);
+    }
+
 
 	function updateModel() {
 		if (!validateForm())
@@ -341,12 +363,12 @@
     }
 
 
-    function trainModel() {
+    function trainModel(modelTypeButtons) {
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("TrainModel", "Modeling")',
-            data: {modelId : '@Model.Id'},
+            data: { modelId: '@Model.Id', modelType: modelTypeButtons.indices },
             success: function(response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);
@@ -366,19 +388,12 @@
     }
 
 
-    function predict() {
-        var modal = $("#predictionTypeModal");
-        ShowModal(modal, '60%', '10%', "Выбор типа модели");
-    }
-
-    function onPredictionTypeSelect(e) {
-        var modal = $('#predictionTypeModal');
-        modal.data("kendoWindow").close();
+    function predictModel(modelTypeButtons) {
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("Predict", "Modeling")',
-            data: { modelId: '@Model.Id', predictionType: e.indices},
+            data: { modelId: '@Model.Id', modelType: modelTypeButtons.indices},
             success: function(response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);

@@ -23,11 +23,11 @@ namespace KadOzenka.Dal.Modeling.Entities
 
     public class AccuracyScore
     {
-        [JsonProperty("mean_squared_error")]
+        [JsonProperty("mse")]
         public TrainingGeneralResult MeanSquaredError { get; set; }
-        [JsonProperty("Fisher_criterion")]
+        [JsonProperty("fisher")]
         public TrainingGeneralResult FisherCriterion { get; set; }
-        [JsonProperty("R2")]
+        [JsonProperty("r2")]
         public TrainingGeneralResult R2 { get; set; }
     }
 

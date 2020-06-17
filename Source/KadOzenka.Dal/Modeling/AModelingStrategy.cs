@@ -7,7 +7,6 @@ namespace KadOzenka.Dal.Modeling
 {
     public abstract class AModelingStrategy
     {
-        public abstract string Url { get; }
         protected ModelingService ModelingService { get; set; }
 
 
@@ -16,6 +15,8 @@ namespace KadOzenka.Dal.Modeling
             ModelingService = new ModelingService(new ScoreCommonService());
         }
 
+
+        public abstract string GetUrl();
 
         public abstract void PrepareData();
 

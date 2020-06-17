@@ -2,7 +2,7 @@
 
 namespace KadOzenka.Dal.Modeling.Entities
 {
-    public enum PredictionType
+    public enum ModelType
     {
         [Description("Линейная")]
         Linear,

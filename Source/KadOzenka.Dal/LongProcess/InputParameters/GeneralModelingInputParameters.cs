@@ -2,9 +2,9 @@
 
 namespace KadOzenka.Dal.LongProcess.InputParameters
 {
-    public class PredictionInputParameters
+    public class GeneralModelingInputParameters
     {
         public long ModelId { get; set; }
-        public PredictionType PredictionType { get; set; }
+        public ModelType ModelType { get; set; }
     }
 }
