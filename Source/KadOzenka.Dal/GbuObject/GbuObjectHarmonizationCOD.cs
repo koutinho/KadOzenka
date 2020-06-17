@@ -125,12 +125,11 @@ namespace KadOzenka.Dal.GbuObject
 	                                                lock (locked)
 	                                                {
 		                                                rowReport = _reportService.GetCurrentRow();
-	                                                }
+                                                        string message = "Для текущего объекта было установлено значение по умолчанию.";
+                                                        AddRowToReport(rowReport, obj.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
+                                                    }
 
-	                                                string message = "Для текущего объекта было установлено значение по умолчанию.";
-	                                                AddRowToReport(rowReport,obj.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
-
-													var attributeValue = new GbuObjectAttribute
+                                                    var attributeValue = new GbuObjectAttribute
                                                     {
                                                         Id = -1,
                                                         AttributeId = setting.IdAttributeResult.Value,
@@ -185,12 +184,11 @@ namespace KadOzenka.Dal.GbuObject
 	                                                    lock (locked)
 	                                                    {
 		                                                    rowReport = _reportService.GetCurrentRow();
-	                                                    }
+                                                            string message = "Для текущего объекта было установлено значение по умолчанию.";
+                                                            AddRowToReport(rowReport, unit.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
+                                                        }
 
-	                                                    string message = "Для текущего объекта было установлено значение по умолчанию.";
-	                                                    AddRowToReport(rowReport, unit.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
-
-														var attributeValue = new GbuObjectAttribute
+                                                        var attributeValue = new GbuObjectAttribute
                                                         {
                                                             Id = -1,
                                                             AttributeId = setting.IdAttributeResult.Value,
@@ -235,9 +233,9 @@ namespace KadOzenka.Dal.GbuObject
 	                        lock (locked)
 	                        {
 		                        rowReport = _reportService.GetCurrentRow();
-	                        }
+                                AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, resValue, idResultAttrib.Value, "");
+                            }
 
-	                        AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, resValue, idResultAttrib.Value, "");
 							res = true;
                             var attributeValue = new GbuObjectAttribute
                             {
@@ -284,10 +282,10 @@ namespace KadOzenka.Dal.GbuObject
 	                        lock (locked)
 	                        {
 		                        rowReport = _reportService.GetCurrentRow();
-	                        }
-	                        AddRowToReport(rowReport, unit.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                                AddRowToReport(rowReport, unit.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                            }
 
-							res = true;
+                            res = true;
                             var attributeValue = new GbuObjectAttribute
                             {
                                 Id = -1,
@@ -318,7 +316,5 @@ namespace KadOzenka.Dal.GbuObject
 	        _reportService.AddValue(resultName, 1, rowNumber);
 	        _reportService.AddValue(errorMessage, 4, rowNumber);
         }
-
-	}
-
+    }
 }
