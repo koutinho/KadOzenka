@@ -88,17 +88,18 @@ namespace KadOzenka.Dal.Modeling
 
 
             var maxDegreeOfParallelism = 20;
-            AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
-            var cancelTokenSource = new CancellationTokenSource();
-            var options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = maxDegreeOfParallelism
-            };
+            //AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
+            //var cancelTokenSource = new CancellationTokenSource();
+            //var options = new ParallelOptions
+            //{
+            //    CancellationToken = cancelTokenSource.Token,
+            //    MaxDegreeOfParallelism = maxDegreeOfParallelism
+            //};
 
             AddLog($"Обработано объектов: ");
+            //var locker = new object();
             var i = 0;
-            Parallel.ForEach(groupedObjects, options, groupedObj =>
+            groupedObjects.ForEach(groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
                 i++;
@@ -119,6 +120,27 @@ namespace KadOzenka.Dal.Modeling
                 if (i % 100 == 0)
                     AddLog($"{i}, ");
             });
+            //Parallel.ForEach(groupedObjects, options, groupedObj =>
+            //{
+            //    var isForTraining = i < groupedObjects.Count / 2;
+            //    i++;
+            //    var modelObject = new OMModelToMarketObjects
+            //    {
+            //        ModelId = Model.Id,
+            //        CadastralNumber = groupedObj.CadastralNumber,
+            //        Price = groupedObj.Price ?? 0,
+            //        IsForTraining = isForTraining
+            //    };
+
+            //    var objectCoefficients = ModelingService.GetCoefficientsForObject(Model.TourId,
+            //        modelObject.CadastralNumber, modelAttributes);
+
+            //    modelObject.Coefficients = objectCoefficients.SerializeToXml();
+            //    modelObject.Save();
+
+            //    if (i % 100 == 0)
+            //        AddLog($"{i}, ");
+            //});
 
             AddLog($"\nСбор данных закончен");
         }
