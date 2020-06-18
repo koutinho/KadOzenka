@@ -45,10 +45,10 @@ namespace KadOzenka.Dal.LongProcess
                 return;
             }
 
-            var strategy = GetModelingStrategy(inputParameters);
+            var strategy = GetModelingStrategy(inputParameters, processQueue);
             try
             {
-                strategy.PrepareData(processQueue);
+                strategy.PrepareData();
                 WorkerCommon.SetProgress(processQueue, 50);
 
                 var requestForService = strategy.GetRequestForService();
@@ -73,16 +73,16 @@ namespace KadOzenka.Dal.LongProcess
 
         #region Support Methods
 
-        private AModelingStrategy GetModelingStrategy(ModelingInputParameters inputParameters)
+        private AModelingStrategy GetModelingStrategy(ModelingInputParameters inputParameters, OMQueue processQueue)
         {
             switch (inputParameters.Mode)
             {
                 case ModelingMode.Training:
-                    return new TrainingStrategy(inputParameters.InputParametersXml);
+                    return new TrainingStrategy(inputParameters.InputParametersXml, processQueue);
                 case ModelingMode.Prediction:
-                    return new PredictionStrategy(inputParameters.InputParametersXml);
+                    return new PredictionStrategy(inputParameters.InputParametersXml, processQueue);
                 case ModelingMode.Correlation:
-                    return new CorrelationStrategy(inputParameters.InputParametersXml);
+                    return new CorrelationStrategy(inputParameters.InputParametersXml, processQueue);
                 default:
                     throw new Exception("Не определен тип моделирования");
             }

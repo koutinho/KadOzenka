@@ -23,7 +23,8 @@ namespace KadOzenka.Dal.Modeling
         private List<OMAttribute> Attributes { get; set; }
         private string ResultMessage { get; set; }
 
-        public CorrelationStrategy(string inputParametersXml)
+        public CorrelationStrategy(string inputParametersXml, OMQueue processQueue)
+            : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<CorrelationInputParameters>();
         }
@@ -35,7 +36,7 @@ namespace KadOzenka.Dal.Modeling
             return "http://82.148.28.237:5000/api/corr/";
         }
 
-        public override void PrepareData(OMQueue processQueue)
+        public override void PrepareData()
         {
             ObjectIds = GetObjectIds(InputParameters.QsQueryStr);
             Attributes = GetAttributes(InputParameters.AttributeIds);
@@ -97,7 +98,7 @@ namespace KadOzenka.Dal.Modeling
                     .AppendLine(coefficientsForAttribute.Value.ToString());
             }
 
-            ResultMessage =  sb.ToString();
+            ResultMessage = sb.ToString();
         }
 
         public override void RollBackResult()
