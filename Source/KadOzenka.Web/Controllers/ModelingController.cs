@@ -5,8 +5,11 @@ using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
+using Core.ObjectModel.CustomAttribute;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -261,7 +264,13 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetMarketObjectAttributes()
         {
-            var marketObjectAttributes = OMAttribute.Where(x => x.RegisterId == OMCoreObject.GetRegisterId() && x.Type == 2)
+            var attribute = typeof(OMCoreObject).GetProperty(nameof(OMCoreObject.Price))
+                ?.GetCustomAttribute(typeof(RegisterAttributeAttribute));
+
+            var priceAttributeId = (attribute as RegisterAttributeAttribute)?.AttributeID;
+
+            var marketObjectAttributes = OMAttribute.Where(x =>
+                    x.RegisterId == OMCoreObject.GetRegisterId() && x.Id != priceAttributeId && x.Type == 2)
                 .Select(x => x.Id)
                 .Select(x => x.Name)
                 .OrderBy(x => x.Name)
@@ -282,6 +291,8 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception("Не переден запрос для формирования списка объектов");
             if (model.AttributeIds == null || model.AttributeIds.Count == 0)
                 throw new Exception("Не выбраны атрибуты");
+            if (model.AttributeIds.Count < 2)
+                throw new Exception("Должно быть выбрано минимум два атрибута");
 
             var correlationInputParameters = new CorrelationInputParameters
             {

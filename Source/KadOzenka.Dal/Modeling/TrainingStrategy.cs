@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.Modeling
         public override void PrepareData()
         {
             AddLog("Начат сбор данных");
-            
+
             var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
                 .Where(x => x.GroupId == Model.GroupId)
                 .Select(x => x.MarketSegment_Code)
@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.Modeling
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 
-                if(i % 100 == 0)
+                if (i % 100 == 0)
                     AddLog($"{i}");
             });
 
@@ -175,10 +175,10 @@ namespace KadOzenka.Dal.Modeling
             NotificationSender.SendNotification(processQueue, subject, message);
         }
 
-        public override void SendFailNotification(OMQueue processQueue)
+        public override void SendFailNotification(OMQueue processQueue, Exception exception)
         {
             var subject = $"Процесс обучения модели '{Model.Name}'";
-            var message = "Операция завершена с ошибкой. Подробнее в списке процессов";
+            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
             NotificationSender.SendNotification(processQueue, subject, message);
         }
 

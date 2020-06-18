@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.Modeling.Entities
         [JsonProperty("innerError")]
         public string InnerError { get; set; }
 
-        [JsonProperty("data")]
+        [JsonProperty("response_data")]
         public object Data { get; set; }
     }
 }

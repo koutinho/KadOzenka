@@ -57,27 +57,28 @@ namespace KadOzenka.Dal.Modeling
             query.AddColumn(OMCoreObject.GetColumn(x => x.Price, ColumnNameFroPrice));
             Attributes.ForEach(attribute =>
             {
-                query.AddColumn(attribute.Id, attribute.InternalName);
+                query.AddColumn(attribute.Id, attribute.Id.ToString());
             });
 
             var request = new CorrelationRequest();
-            request.AttributeNames.AddRange(Attributes.Select(x => PreProcessAttributeName(x.Name)));
+            request.AttributeNames.AddRange(Attributes.Select(x => x.Name));
+            request.AttributeNames.Add("Цена");
             var table = query.ExecuteQuery();
             for (var i = 0; i < table.Rows.Count; i++)
             {
                 var row = table.Rows[i];
                 var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
-                var currentCoefficients = new List<decimal?>();
+                var coefficients = new List<decimal?>();
                 Attributes.ForEach(attribute =>
                 {
-                    var val = row[attribute.InternalName].ParseToDecimalNullable();
-                    currentCoefficients.Add(val);
+                    var val = row[attribute.Id.ToString()].ParseToDecimalNullable();
+                    coefficients.Add(val);
                 });
 
-                if (currentCoefficients.All(x => x != null))
+                if (coefficients.All(x => x != null))
                 {
-                    request.Prices.Add(new List<decimal> { priceForService.GetValueOrDefault() });
-                    request.Coefficients.Add(currentCoefficients);
+                    coefficients.Add(priceForService.GetValueOrDefault());
+                    request.Coefficients.Add(coefficients);
                 }
             }
 
@@ -91,11 +92,21 @@ namespace KadOzenka.Dal.Modeling
         {
             var correlationResult = JsonConvert.DeserializeObject<CorrelationResponse>(generalResponse.Data.ToString());
 
+            if (correlationResult.CoefficientsForAttributes == null ||
+                correlationResult.CoefficientsForAttributes.Count == 0)
+            {
+                ResultMessage = "Сервис для моделирования не вернул данные. Обратитесь к администратору.";
+                return;
+            }
+
             var sb = new StringBuilder();
             foreach (var coefficientsForAttribute in correlationResult.CoefficientsForAttributes)
             {
-                sb.Append(coefficientsForAttribute.Key).Append(": ")
-                    .AppendLine(coefficientsForAttribute.Value.ToString());
+                sb.Append(coefficientsForAttribute.FirstColumn)
+                    .Append(" - ")
+                    .Append(coefficientsForAttribute.SecondColumn)
+                    .Append(": ")
+                    .AppendLine(coefficientsForAttribute.Coefficient.ToString());
             }
 
             ResultMessage = sb.ToString();
@@ -117,10 +128,10 @@ namespace KadOzenka.Dal.Modeling
             NotificationSender.SendNotification(processQueue, subject, message.ToString());
         }
 
-        public override void SendFailNotification(OMQueue processQueue)
+        public override void SendFailNotification(OMQueue processQueue, Exception exception)
         {
             var subject = "Процесс корреляции";
-            var message = "Операция завершена с ошибкой. Подробнее в списке процессов";
+            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
             NotificationSender.SendNotification(processQueue, subject, message);
         }
 
@@ -148,7 +159,6 @@ namespace KadOzenka.Dal.Modeling
                 .Select(x => x.Id)
                 .Select(x => x.Name)
                 .Select(x => x.RegisterId)
-                .Select(x => x.InternalName)
                 .Execute();
         }
 

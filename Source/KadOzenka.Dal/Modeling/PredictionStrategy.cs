@@ -104,10 +104,10 @@ namespace KadOzenka.Dal.Modeling
             NotificationSender.SendNotification(processQueue, subject, message);
         }
 
-        public override void SendFailNotification(OMQueue processQueue)
+        public override void SendFailNotification(OMQueue processQueue, Exception exception)
         {
             var subject = $"Процесс обучения модели '{Model.Name}'";
-            var message = "Операция завершена с ошибкой. Подробнее в списке процессов";
+            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
             NotificationSender.SendNotification(processQueue, subject, message);
         }
 

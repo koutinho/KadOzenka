@@ -38,7 +38,7 @@
 
     <Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="70" WindowWidth="500" />
     
-    <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="500" Icon="fas fa-chart-line" />
+    <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="600" Icon="fas fa-chart-line" />
 
     <Button Caption="Корректировка на дату" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
 		  <DropDownButtons>

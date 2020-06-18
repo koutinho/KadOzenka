@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.Modeling
 
         public abstract void SendSuccessNotification(OMQueue processQueue);
 
-        public abstract void SendFailNotification(OMQueue processQueue);
+        public abstract void SendFailNotification(OMQueue processQueue, Exception exception);
 
 
         protected OMModelingModel GetModel(long modelId)

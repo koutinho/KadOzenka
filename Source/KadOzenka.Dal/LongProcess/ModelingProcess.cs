@@ -62,10 +62,10 @@ namespace KadOzenka.Dal.LongProcess
 
                 strategy.SendSuccessNotification(processQueue);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 strategy.RollBackResult();
-                strategy.SendFailNotification(processQueue);
+                strategy.SendFailNotification(processQueue, exception);
                 throw;
             }
         }
