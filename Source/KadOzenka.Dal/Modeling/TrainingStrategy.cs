@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
@@ -85,9 +86,19 @@ namespace KadOzenka.Dal.Modeling
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
             AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
 
-            var i = 0;
+
+            var maxDegreeOfParallelism = 20;
+            AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
+            var cancelTokenSource = new CancellationTokenSource();
+            var options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = maxDegreeOfParallelism
+            };
+
             AddLog($"Обработано объектов: ");
-            Parallel.ForEach(groupedObjects, groupedObj =>
+            var i = 0;
+            Parallel.ForEach(groupedObjects, options, groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
                 i++;
