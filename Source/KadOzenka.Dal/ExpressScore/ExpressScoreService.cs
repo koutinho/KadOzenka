@@ -69,7 +69,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (setting == null)
 			{
-				return "Не найдены настройки для выбраного сегмента";
+				return "Не найдены настройки для выбранного сегмента";
 			}
 
 			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (years.Count == 0)
 			{
-				return "Не найдены данные для выбраного объекта";
+				return "Не найдены данные для выбранного объекта";
 			}
 
 			var year = years[0].Year;
@@ -354,7 +354,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (exSettingsCostFactors == null)
 			{
-				msg = "Не найденны настройки для выбраного сегмента";
+				msg = "Не найденны настройки для выбранного сегмента";
 				return 0;
 			}
 
@@ -366,7 +366,7 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				ErrorManager.LogError(e);
 				Console.WriteLine(e);
-				msg = "Не найденны настройки для выбраного сегмента";
+				msg = "Не найденны настройки для выбранного сегмента";
 				return 0;
 			}
 

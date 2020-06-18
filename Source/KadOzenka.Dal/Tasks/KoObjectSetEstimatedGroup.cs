@@ -181,7 +181,7 @@ namespace KadOzenka.Dal.KoObject
 							break;
 						default:
 						{
-							AddErrorRow("Для выбраного тура не предусмотренны параметры проставления оценки", rowReport, reportService);
+							AddErrorRow("Для выбранного тура не предусмотренны параметры проставления оценки", rowReport, reportService);
 							return;
 						}
 					}
