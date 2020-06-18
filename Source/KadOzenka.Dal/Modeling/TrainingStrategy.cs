@@ -48,14 +48,14 @@ namespace KadOzenka.Dal.Modeling
 
         public override void PrepareData()
         {
-            AddLog("Начат сбор данных");
+            AddLog("Начат сбор данных\n");
 
             var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
                 .Where(x => x.GroupId == Model.GroupId)
                 .Select(x => x.MarketSegment_Code)
                 .Select(x => x.TerritoryType_Code)
                 .ExecuteFirstOrDefault();
-            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}");
+            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}\n");
 
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
@@ -77,13 +77,13 @@ namespace KadOzenka.Dal.Modeling
                     x.CadastralNumber,
                     x.Price
                 });
-            AddLog($"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.");
+            AddLog($"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.\n");
 
             ModelingService.DestroyModelMarketObjects(Model.Id);
-            AddLog($"Удалены предыдущие данные.");
+            AddLog($"Удалены предыдущие данные.\n");
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
-            AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.");
+            AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
 
             var i = 0;
             AddLog($"Обработано объектов:");
@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.Modeling
                     AddLog($"{i}");
             });
 
-            AddLog($"Сбор данных закончен");
+            AddLog($"\nСбор данных закончен");
         }
 
         public override object GetRequestForService()
@@ -188,7 +188,7 @@ namespace KadOzenka.Dal.Modeling
         private void AddLog(string message)
         {
             var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
-            var newLog = previousLog + Environment.NewLine + message;
+            var newLog = previousLog + message;
             ProcessQueue.Log = newLog;
             ProcessQueue.Save();
         }
