@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <ApplicationName>Предпрод - Кадастровая оценка</ApplicationName>
+    <ApplicationName>Предпрод (PPR) - Кадастровая оценка</ApplicationName>
     <ApplicationSubName>Центр имущественных платежей и жилищного страхования</ApplicationSubName>
     <LeftPanelTitle>Департамент имущества города Москвы</LeftPanelTitle>
     <LeftPanelDescription>Центр имущественных платежей и жилищного страхования</LeftPanelDescription>
@@ -39,8 +39,4 @@
     <IsFileStorage>true</IsFileStorage>
   </AttachmnetsSettings>
 
-  <OmAssemblies>
-    <string>Platform</string>
-    <string>KadOzenka.ObjectModel</string>
-  </OmAssemblies>
 </SystemCommon>
