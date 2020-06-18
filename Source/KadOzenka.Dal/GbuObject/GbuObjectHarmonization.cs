@@ -97,8 +97,9 @@ namespace KadOzenka.Dal.GbuObject
 	                    lock (locked)
 	                    {
 		                    rowReport = _reportService.GetCurrentRow();
-	                    }
-	                    AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                            AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                        }
+	                    
 						res = true;
                         var attributeValue = new GbuObjectAttribute
                         {
@@ -132,8 +133,9 @@ namespace KadOzenka.Dal.GbuObject
 	                    lock (locked)
 	                    {
 							rowReport = _reportService.GetCurrentRow();
-						}
-						AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                            AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+                        }
+						
                         res = true;
                         var attributeValue = new GbuObjectAttribute
                         {
@@ -191,12 +193,11 @@ namespace KadOzenka.Dal.GbuObject
 	                                                lock (locked)
 	                                                {
 		                                                rowReport = _reportService.GetCurrentRow();
-	                                                }
+                                                        var message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
+                                                        AddRowToReport(rowReport, obj.CadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
+                                                    }
 
-	                                                string message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
-	                                                AddRowToReport(rowReport, obj.CadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
-
-													var attributeValue = new GbuObjectAttribute
+                                                    var attributeValue = new GbuObjectAttribute
                                                     {
                                                         Id = -1,
                                                         AttributeId = setting.IdAttributeResult.Value,
@@ -250,10 +251,10 @@ namespace KadOzenka.Dal.GbuObject
 														lock (locked)
 	                                                    {
 		                                                    rowReport = _reportService.GetCurrentRow();
-														}
-	                                                   
-	                                                    string message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
-	                                                    AddRowToReport(rowReport, obj.CadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
+                                                            var message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
+                                                            AddRowToReport(rowReport, obj.CadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
+                                                        }
+                                                        
 														var attributeValue = new GbuObjectAttribute
                                                         {
                                                             Id = -1,
