@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
 
             var i = 0;
-            AddLog($"Обработано объектов:");
+            AddLog($"Обработано объектов: ");
             Parallel.ForEach(groupedObjects, groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.Modeling
                 modelObject.Save();
 
                 if (i % 100 == 0)
-                    AddLog($"{i}");
+                    AddLog($"{i}, ");
             });
 
             AddLog($"\nСбор данных закончен");
