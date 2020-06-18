@@ -95,36 +95,63 @@ else
 
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         @if (Model != null)
         {
             <text>
                 //картинки не всегда подгружаются сразу (особенности сервиса моделирования),
                 //поэтому, если картинка не загрузилась - отправляем еще несколько запросов на сервис
-                var requestsCount = 100;
+                $("#scatterImg")
+                    .on('load', () => onImageLoad(scatter))
+                    .on('error', () => onImageFail(scatter, $("#scatterImg"), "@Model.ScatterImageLink"));
 
-                var correlationImageRequestCounter = 0;
-                $("#correlationImg").error(function() {
-                    if (correlationImageRequestCounter < requestsCount) {
-                        $(this).attr("src", "@Model.CorrelationImageLink");
-                        correlationImageRequestCounter++;
-                    }
-                });
-
-                var scatterImageRequestCounter = 0;
-                $("#scatterImg").error(function() {
-                    if (scatterImageRequestCounter < requestsCount) {
-                        $(this).attr("src", "@Model.ScatterImageLink");
-                        scatterImageRequestCounter++;
-                    }
-                });
+                $("#correlationImg")
+                    .on('load', () => onImageLoad(correlation))
+                    .on('error', () => onImageFail(correlation, $("#correlationImg"), "@Model.CorrelationImageLink"));
             </text>
         }
     });
 
 
-    //выравнивание картинок по середине
-    $(window).load(function() {
+
+    var requestsMaxNumber = 25;
+    var scatter = {
+        Timer: -1,
+        Counter: 0
+    };
+    var correlation = {
+        Timer: -1,
+        Counter: 0
+    }
+
+
+    function onImageLoad(imgObject) {
+        //console.log('success');
+        if (imgObject.Timer !== -1) {
+            clearInterval(imgObject.Timer);
+            alignImagesMiddle();
+        }
+    }
+
+
+    function onImageFail(imgObject, jqObject, srcValue) {
+        //console.log('error');
+        imgObject.Counter++;
+        //console.log('counter', imgObject.Counter);
+        if (imgObject.Timer === -1) {
+            // повторить с интервалом 2 секунды
+            imgObject.Timer = setInterval(() => jqObject.attr("src", srcValue), 2000);
+            //console.log('set sheduler', imgObject.Timer);
+        }
+        else if (imgObject.Counter > requestsMaxNumber) {
+            // остановить вывод
+            clearInterval(imgObject.Timer);
+            //console.log('stop calling', imgObject.Timer);
+        }
+    }
+
+
+    function alignImagesMiddle() {
         var scatterDivHeight = $("#scatterDiv").height();
         var scatterImgHeight = $("#scatterImg").height();
 
@@ -136,5 +163,5 @@ else
             $("#correlationImg").css('margin-top', ((max - correlationImgHeight) / 2) + 'px');
             $("#scatterImg").css('margin-top', ((max - scatterImgHeight) / 2) + 'px');
         }
-    });
+    };
 </script>
