@@ -86,9 +86,9 @@ namespace KadOzenka.Dal.Modeling
             return request;
         }
 
-        public override void ProcessServiceAnswer(string responseContentStr)
+        public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            var correlationResult = JsonConvert.DeserializeObject<CorrelationResult>(responseContentStr);
+            var correlationResult = JsonConvert.DeserializeObject<CorrelationResponse>(generalResponse.Data.ToString());
 
             var sb = new StringBuilder();
             foreach (var coefficientsForAttribute in correlationResult.CoefficientsForAttributes)

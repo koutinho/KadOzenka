@@ -83,9 +83,9 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        public override void ProcessServiceAnswer(string responseContentStr)
+        public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+            var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
 
             ResetPredictedPrice();
@@ -124,7 +124,7 @@ namespace KadOzenka.Dal.Modeling
         /// Заменяем имена аттрибутов на их Id
         /// </summary>
         /// <param name="result"></param>
-        private void PreprocessTrainingResult(TrainingResult result)
+        private void PreprocessTrainingResult(TrainingResponse result)
         {
             var newCoefficients = new Dictionary<string, decimal>();
             var oldCoefficients = result.CoefficientsForAttributes;
@@ -164,7 +164,7 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private void UpdateModel(TrainingResult trainingResult)
+        private void UpdateModel(TrainingResponse trainingResult)
         {
             var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
             switch (InputParameters.ModelType)

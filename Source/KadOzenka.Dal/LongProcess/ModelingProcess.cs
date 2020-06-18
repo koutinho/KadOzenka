@@ -53,11 +53,11 @@ namespace KadOzenka.Dal.LongProcess
 
                 var requestForService = strategy.GetRequestForService();
 
-                var response = SendDataToService(_httpClient, strategy.GetUrl(), requestForService).GetAwaiter().GetResult();
-                response = PreProcessServiceResponse(response);
+                var responseStr = SendDataToService(_httpClient, strategy.GetUrl(), requestForService).GetAwaiter().GetResult();
+                var generalResponse = PreProcessServiceResponse(responseStr);
                 WorkerCommon.SetProgress(processQueue, 80);
 
-                strategy.ProcessServiceAnswer(response);
+                strategy.ProcessServiceResponse(generalResponse);
                 WorkerCommon.SetProgress(processQueue, 100);
 
                 strategy.SendSuccessNotification(processQueue);
@@ -102,18 +102,18 @@ namespace KadOzenka.Dal.LongProcess
             return await response.Content.ReadAsStringAsync();
         }
 
-        private string PreProcessServiceResponse(string responseContentStr)
+        private GeneralResponse PreProcessServiceResponse(string responseContentStr)
         {
             //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
             if (string.IsNullOrWhiteSpace(responseContentStr))
                 throw new Exception("Сервис для моделирования вернул пустой ответ");
 
-            //TODO переделаем на обработку json-объекта ошибки, после реализации в сервисе
-            if (responseContentStr.ToLower().Contains("message"))
-                throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
+            var json = JsonConvert.DeserializeObject<GeneralResponse>(responseContentStr);
+            if (!string.IsNullOrWhiteSpace(json.ErrorMessage))
+                throw new Exception($"Сервис для моделирования вернул ошибку: {json.ErrorMessage}.\n{json.InnerError}");
 
-            return responseContentStr;
+            return json;
         }
 
         #endregion

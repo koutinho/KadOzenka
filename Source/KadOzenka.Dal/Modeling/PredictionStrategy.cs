@@ -30,7 +30,8 @@ namespace KadOzenka.Dal.Modeling
         //TODO вынести в конфиг
         public override string GetUrl()
         {
-           return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
+            //ConfigurationManager.AppSettings["trainModelLink"];
+            return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         }
 
         public override void PrepareData(OMQueue processQueue)
@@ -73,15 +74,15 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        public override void ProcessServiceAnswer(string responseFromService)
+        public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            var predictionResult = JsonConvert.DeserializeObject<PredictionResult>(responseFromService);
+            var predictionResult = JsonConvert.DeserializeObject<PredictionResponse>(generalResponse.Data.ToString());
 
             if (predictionResult.Prices == null || predictionResult.Prices.Count != RequestForService.CadastralNumbers.Count)
                 throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
 
             var trainingResultStr = GetTrainingResultStr();
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(trainingResultStr);
+            var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
 
             SavePredictedPrice(predictionResult.Prices);
 

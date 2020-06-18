@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.Modeling.Entities
 {
-    public class PredictionResult
+    public class PredictionResponse
     {
         [JsonProperty("y_predict")]
         public List<decimal> Prices { get; set; }

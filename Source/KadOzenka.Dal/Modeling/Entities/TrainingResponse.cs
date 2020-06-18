@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.Modeling.Entities
 {
-    public class TrainingResult
+    public class TrainingResponse
     {
         [JsonProperty("coef")]
         public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }

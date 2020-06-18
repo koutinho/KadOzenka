@@ -17,7 +17,7 @@ namespace KadOzenka.Web.Models.Modeling
         public string CorrelationImageLink { get; set; }
 
 
-        public static TrainingDetailsModel ToModel(TrainingResult trainingResult)
+        public static TrainingDetailsModel ToModel(TrainingResponse trainingResult)
         {
             return new TrainingDetailsModel
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.ScoreCommon;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
@@ -23,7 +24,7 @@ namespace KadOzenka.Dal.Modeling
 
         public abstract object GetRequestForService();
 
-        public abstract void ProcessServiceAnswer(string responseFromService);
+        public abstract void ProcessServiceResponse(GeneralResponse responseFromService);
 
         public abstract void RollBackResult();
 

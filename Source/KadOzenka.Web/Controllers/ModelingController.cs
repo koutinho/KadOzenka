@@ -321,11 +321,11 @@ namespace KadOzenka.Web.Controllers
             return model;
         }
 
-        private TrainingResult GetDetails(string trainingResult)
+        private TrainingResponse GetDetails(string trainingResult)
         {
             return string.IsNullOrWhiteSpace(trainingResult)
                 ? null
-                : JsonConvert.DeserializeObject<TrainingResult>(trainingResult);
+                : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
         }
 
         private QSQuery GetQueryFromLayout()
