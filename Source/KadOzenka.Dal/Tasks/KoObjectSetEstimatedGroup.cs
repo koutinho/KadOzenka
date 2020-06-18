@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 
@@ -123,7 +125,7 @@ namespace KadOzenka.Dal.KoObject
 					return;
 				}
 				{
-					if (complianceGuides[0].TypeRoom != null)
+					if (complianceGuides.Any(x => x.TypeRoom != null && x.TypeRoom != KoTypeOfRoom.None.GetEnumDescription()) )
 					{
 						var attributeRoom = OMAttribute.Where(x => x.Id == param.IdTypeRoom).SelectAll()
 							.ExecuteFirstOrDefault();
@@ -135,9 +137,13 @@ namespace KadOzenka.Dal.KoObject
 							return;
 						}
 						var group = complianceGuides.FirstOrDefault(x => x.TypeRoom == typeRoom.Value);
-						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
-						AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, group.Group, reportService);
-						return;
+						if (group.TypeRoom == null)
+						{
+							AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
+							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, group.Group, reportService);
+							return;
+						}
+						
 					}
 
 					var attributeQuarter = OMAttribute.Where(x => x.Id == param.IdCodeQuarter).SelectAll()

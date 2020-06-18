@@ -1,0 +1,170 @@
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Tour.EstimateGroup.ImportGroupViewModel
+
+@using (Html.BeginForm("DataImport", "Tour", FormMethod.Post))
+{
+	@Html.HiddenFor(m => m.TourId)
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group"></div>
+		<div class="form-group">
+			<input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor("Тип объекта недвижимости")
+			</div>
+			<div class="col-sm-10">
+				@(Html.Kendo()
+									.DropDownListFor(m => m.ObjectType)
+									.DataTextField("Text")
+									.DataValueField("Value")
+									.BindTo(ComboBoxHelper.GetSelectList(typeof(PropertyTypes), new long[] { 4, 5, 6, 7, 8, 9, 10, 11, 12, 802 }))
+									.HtmlAttributes(new { @style = "width: 100%" })
+				)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor("Код")
+			</div>
+			<div class="col-sm-10">
+				@Html.Kendo().DropDownListFor(m => m.CodeColumnName).DataTextField("Name").DataValueField("Name")
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor("Группа")
+			</div>
+			<div class="col-sm-10">
+				@Html.Kendo().DropDownListFor(m => m.GroupColumnName).DataTextField("Name").DataValueField("Name")
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-6">
+				@Html.Kendo().CheckBox().Name("ByTypeRoom").Checked(false).Label("По типу жилого помещения")
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor("Тип помещения")
+			</div>
+			<div class="col-sm-10">
+				@Html.Kendo().DropDownListFor(m => m.RoomTypeColumnName).DataTextField("Name").DataValueField("Name").Enable(false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div>
+				<span>
+					<button id="importButton" type="button" class="k-button" style="float: right">Загрузить</button>
+				</span>
+			</div>
+		</div>
+	</div>
+}
+
+<script type="text/javascript">
+
+	var dataSource = new kendo.data.DataSource({
+		data: []
+	});
+	var uploadControl;
+
+
+
+	uploadControl = $('#files').kendoUpload({
+		multiple: false,
+		localization: {
+			select: 'Загрузить Файл'
+		},
+		async: {
+			autoUpload: true,
+			saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
+		},
+		validation: {
+			allowedExtensions: ['.xls', '.xlsx']
+		},
+		success: function (e) {
+			if (e.operation === "upload") {
+				dataSource.data(e.response.ColumnsNames);
+			}
+		},
+		error: function (e) {
+			dataSource.data([]);
+			if (e.XMLHttpRequest.responseText) {
+				Common.ShowError(e.XMLHttpRequest.responseText);
+			} else {
+				Common.ShowError("Не удалось загрузить выбранный файл");
+			}
+		},
+		clear: function (e) {
+			dataSource.data([]);
+		}
+	}).data('kendoUpload');
+
+	$(function() {
+		$('#ByTypeRoom').on('change',
+			function() {
+				if ($('#ByTypeRoom:checked').length > 0) {
+					$('#@nameof(Model.RoomTypeColumnName)').data('kendoDropDownList').enable(true);
+				} else {
+					$('#@nameof(Model.RoomTypeColumnName)').data('kendoDropDownList').enable(false);
+				}
+			});
+
+		$('#@(nameof(Model.CodeColumnName))').data('kendoDropDownList').setDataSource(dataSource);
+		$('#@(nameof(Model.GroupColumnName))').data('kendoDropDownList').setDataSource(dataSource);
+		$('#@(nameof(Model.RoomTypeColumnName))').data('kendoDropDownList').setDataSource(dataSource);
+
+
+		$('#importButton').on('click', function() {
+
+			var form = $('form');
+			var formObject = Common.Functions.FormToObject(form);
+
+			var files = uploadControl.getFiles();
+			if (files.length === 0) {
+				Common.ShowError("Файл не выбран");
+				return;
+			}
+		
+			var formData = new FormData();
+			formData.append("file", files[0].rawFile);
+			formData.append("model.CodeColumnName", formObject['CodeColumnName']);
+			formData.append("model.GroupColumnName", formObject['GroupColumnName']);
+			formData.append("model.RoomTypeColumnName", formObject['RoomTypeColumnName'] || "");
+			formData.append("model.ObjectType", formObject['ObjectType']);
+			formData.append("model.TourId", formObject['TourId']);
+
+			kendo.ui.progress($('body'), true);
+			$.ajax({
+				type: 'POST',
+				url: form.attr('action'),
+				data: formData,
+				contentType: false,
+				processData: false,
+				dataType: 'json',
+				success: function (response) {
+					if (response.Errors) {
+						var errors = getErrors(response.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+					if (response.message) {
+						uploadControl.clearAllFiles();
+						Common.ShowMessage(response.message);
+						dataSource.data([]);
+					}
+					return;
+				},
+				error: function (response) {
+					uploadControl.clearAllFiles();
+					Common.ShowError(response.responseText);
+				},
+				complete: function (data) {
+					kendo.ui.progress($('body'), false);
+				}
+			});
+		
+		});
+	});
+</script>

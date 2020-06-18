@@ -40,7 +40,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-6">
-				@Html.Kendo().CheckBox().Name("ByTypeRom").Checked(Model.IsByTypeRoom).Label("По типу жилого помещения")
+				@Html.Kendo().CheckBox().Name("ByTypeRoom").Checked(Model.IsByTypeRoom).Label("По типу жилого помещения")
 			</div>
 		</div>
 		<div class="form-group">
@@ -68,8 +68,8 @@
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
 	$(function() {
-		$('#ByTypeRom').on('change', function () {
-			if ($('#ByTypeRom:checked').length > 0) {
+		$('#ByTypeRoom').on('change', function () {
+			if ($('#ByTypeRoom:checked').length > 0) {
 				$('#@nameof(Model.TypeOfRoom)').data("kendoDropDownList").enable(true);
 			} else {
 				$('#@nameof(Model.TypeOfRoom)').data("kendoDropDownList").enable(false);
@@ -82,7 +82,7 @@
 				var formObject = Common.Functions.FormToObject(form);
 				kendo.ui.progress($('body'), true);
 
-				formObject['IsByTypeRoom'] = $('#ByTypeRom').prop('checked');
+				formObject['IsByTypeRoom'] = $('#ByTypeRoom').prop('checked');
 				$.post(form.attr('action'), formObject).done(function(response) {
 					kendo.ui.progress($('body'), false);
 					if (response.Errors) {

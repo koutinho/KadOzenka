@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
@@ -22,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -34,6 +37,7 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
+		public TourComplianceImportService TourComplianceImportService { get; set; }
 
 		public TourController()
         {
@@ -41,8 +45,9 @@ namespace KadOzenka.Web.Controllers
             TourService = new TourService(TourFactorService);
             GroupService = new GroupService();
             GbuObjectService = new GbuObjectService();
+            TourComplianceImportService = new TourComplianceImportService();
 
-        }
+		}
 
         #region Карточка тура
 
@@ -264,7 +269,65 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = true });
 		}
 
+		[HttpGet]
+		public ActionResult DataImport(long tourId)
+		{
+			var model = new ImportGroupViewModel {TourId = tourId};
+			return View(model);
+		}
 
+		[HttpPost]
+		public ActionResult DataImport(IFormFile file, ImportGroupViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			try
+			{
+				var importFileDto = new ImportFileComplianceDto
+				{
+					FileName = Path.GetFileNameWithoutExtension(file.FileName),
+					CodeColumnName = model.CodeColumnName,
+					GroupColumnName = model.GroupColumnName,
+					RoomTypeColumnName = model.RoomTypeColumnName
+				};
+
+				using (Stream stream = file.OpenReadStream())
+				{
+					TourComplianceImportService.ImportComplianceFromFile(stream, importFileDto, model.ObjectType, model.TourId.GetValueOrDefault());
+				}
+				
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				return SendErrorMessage(e.Message);
+			}
+			return Json(new {message = "Данные успешно загружены"});
+		}
+
+
+		[HttpGet]
+		public FileContentResult DownloadImportedFile(int idFile)
+		{
+			var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();
+
+			if (import == null)
+			{
+				throw new Exception("Указанный файл не найден.");
+			}
+
+			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+				import.Id.ToString());
+			var bytes = new byte[templateFile.Length];
+			templateFile.Read(bytes);
+			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+			return File(bytes, contentType, $"{import.DataFileName}.{fileExtension}");
+		}
 
 		[HttpGet]
         public ActionResult TourAttributeSettings()

@@ -25,7 +25,7 @@
 			</Parameters>
 		</Button>
 
-		<Button Caption="Загрузить из файла" NavigateURL="/Tour/AddGroup" NeedRefresh="true" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
+		<Button Caption="Загрузить из файла" NavigateURL="/Tour/DataImport" NeedRefresh="true" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
 			<Parameters>
 				<Parameter Key="tourId" Value="{Get:TourId}" />
 			</Parameters>
