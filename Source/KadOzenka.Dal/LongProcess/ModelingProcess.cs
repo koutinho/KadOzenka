@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.LongProcess
             }
         }
 
-        protected async Task<string> SendDataToService(HttpClient httpClient, string url, object data)
+        private async Task<string> SendDataToService(HttpClient httpClient, string url, object data)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new Exception("Не найден URL для сервиса");
@@ -102,7 +102,7 @@ namespace KadOzenka.Dal.LongProcess
             return await response.Content.ReadAsStringAsync();
         }
 
-        protected string PreProcessServiceResponse(string responseContentStr)
+        private string PreProcessServiceResponse(string responseContentStr)
         {
             //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());

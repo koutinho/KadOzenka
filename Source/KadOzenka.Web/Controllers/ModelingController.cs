@@ -294,7 +294,7 @@ namespace KadOzenka.Web.Controllers
                 InputParametersXml = correlationInputParameters.SerializeToXml<CorrelationInputParameters>()
             };
 
-            //TODO код для отладки
+            ////TODO код для отладки
             //var process = new ModelingProcess();
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
@@ -304,7 +304,7 @@ namespace KadOzenka.Web.Controllers
 
             ModelingProcess.AddProcessToQueue(inputRequest);
 
-            return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь."});
+            return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь. Результат будет отправлен на почту."});
         }
 
         #endregion

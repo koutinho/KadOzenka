@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using KadOzenka.Dal.ScoreCommon;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
@@ -38,6 +39,12 @@ namespace KadOzenka.Dal.Modeling
                 throw new Exception($"Не найдена модель с Id='{modelId}'");
 
             return model;
+        }
+
+        protected string PreProcessAttributeName(string name)
+        {
+            var pattern = new Regex("[() ]");
+            return pattern.Replace(name, string.Empty);
         }
     }
 }

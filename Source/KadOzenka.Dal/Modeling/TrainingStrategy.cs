@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -29,6 +28,7 @@ namespace KadOzenka.Dal.Modeling
         //TODO вынести в конфиг
         public override string GetUrl()
         {
+            //ConfigurationManager.AppSettings["trainModelLink"];
             switch (InputParameters.ModelType)
             {
                 case ModelType.Linear:
@@ -138,12 +138,6 @@ namespace KadOzenka.Dal.Modeling
             }
 
             result.CoefficientsForAttributes = newCoefficients;
-        }
-
-        private string PreProcessAttributeName(string name)
-        {
-            var pattern = new Regex("[() ]");
-            return pattern.Replace(name, string.Empty);
         }
 
         private void ResetPredictedPrice()

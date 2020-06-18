@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace KadOzenka.Dal.Modeling
         //TODO вынести в конфиг
         public override string GetUrl()
         {
-            return "http://82.148.28.237:5000/api/teach/testCorrelation";
+            return "http://82.148.28.237:5000/api/corr/";
         }
 
         public override void PrepareData(OMQueue processQueue)
@@ -59,10 +60,9 @@ namespace KadOzenka.Dal.Modeling
             });
 
             var request = new CorrelationRequest();
-            request.AttributeNames.AddRange(Attributes.Select(x => x.Name));
+            request.AttributeNames.AddRange(Attributes.Select(x => PreProcessAttributeName(x.Name)));
             var table = query.ExecuteQuery();
-            //i=1 чтобы пропустить строку с Id
-            for (var i = 1; i < table.Rows.Count; i++)
+            for (var i = 0; i < table.Rows.Count; i++)
             {
                 var row = table.Rows[i];
                 var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
@@ -79,6 +79,9 @@ namespace KadOzenka.Dal.Modeling
                     request.Coefficients.Add(currentCoefficients);
                 }
             }
+
+            if (request.Coefficients.Count == 0)
+                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
             return request;
         }
@@ -146,50 +149,6 @@ namespace KadOzenka.Dal.Modeling
                 .Select(x => x.RegisterId)
                 .Select(x => x.InternalName)
                 .Execute();
-
-        }
-
-        public object GetRequestForService(List<long> objectIds, List<OMAttribute> attributes)
-        {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMCoreObject.GetRegisterId(),
-                Condition = new QSConditionSimple
-                {
-                    ConditionType = QSConditionType.In,
-                    LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-                    RightOperand = new QSColumnConstant(objectIds)
-                }
-            };
-            query.AddColumn(OMCoreObject.GetColumn(x => x.Price, ColumnNameFroPrice));
-            attributes.ForEach(attribute =>
-            {
-                query.AddColumn(attribute.Id, attribute.InternalName);
-            });
-
-            var request = new CorrelationRequest();
-            request.AttributeNames.AddRange(attributes.Select(x => x.Name));
-            var table = query.ExecuteQuery();
-            //i=1 чтобы пропустить строку с Id
-            for (var i = 1; i < table.Rows.Count; i++)
-            {
-                var row = table.Rows[i];
-                var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
-                var currentCoefficients = new List<decimal?>();
-                attributes.ForEach(attribute =>
-                {
-                    var val = row[attribute.InternalName].ParseToDecimalNullable();
-                    currentCoefficients.Add(val);
-                });
-
-                if (currentCoefficients.All(x => x != null))
-                {
-                    request.Prices.Add(new List<decimal> { priceForService.GetValueOrDefault() });
-                    request.Coefficients.Add(currentCoefficients);
-                }
-            }
-
-            return request;
         }
 
         #endregion
