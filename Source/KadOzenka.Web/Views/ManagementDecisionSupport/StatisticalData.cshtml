@@ -60,8 +60,19 @@
         <div class="col-sm-11">
             @Html.CustomLabelFor("Статистика по количеству объектов:")
         </div>
-        <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts).Checked(true))
+        <div>
+            <div class="col-sm-11 subgroup-first-level">
+                @Html.CustomLabelFor("Статистика по количеству объектов по административным округам:")
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsBySubject.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsBySubject))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsByGroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistrictsByGroups))
+            </div>
         </div>
         <div class="col-sm-11 subgroup-first-level">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByGroups.GetEnumDescription()).Value((long)StatisticalDataType.OnTheNumberOfObjectsByGroups))

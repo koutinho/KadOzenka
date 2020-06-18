@@ -1,26 +1,30 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
 {
-	public class NumberOfObjectsByAdministrativeDistrictsBySubjectReportHandler : INumberOfObjectsByAdministrativeDistrictsReportHandler
+	public class NumberOfObjectsByAdministrativeDistrictsBySubjectReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByAdministrativeDistrictsService _service;
 
-		public NumberOfObjectsByAdministrativeDistrictsBySubjectReportHandler()
+		public NumberOfObjectsByAdministrativeDistrictsBySubjectReport()
 		{
 			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService());
 		}
 
-		public string GetTemplateName(NameValueCollection query, IGetQueryPAramFunc getQueryParam)
+		protected override string TemplateName(NameValueCollection query)
 		{
 			return "NumberOfObjectsByAdministrativeDistrictsBySubjectReport";
 		}
 
-		public DataSet GetData(long[] taskList, NameValueCollection query, IGetQueryPAramFunc getQueryParam)
+		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			var taskIdList = GetTaskIdList(query);
+
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
 			dataTitleTable.Rows.Add("Количество объектов недвижимости (по субъекту), в разрезе групп и видов объектов недвижимости на территории города Москвы");
@@ -32,7 +36,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsBySubject(taskList);
+			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsBySubject(taskIdList);
 
 			foreach (var unitDto in data)
 			{
@@ -43,7 +47,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
 
-			return dataSet;
+			return HadleData(dataSet);
 		}
 	}
 }

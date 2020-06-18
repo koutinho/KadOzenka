@@ -24,60 +24,42 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-        public List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto> GetNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes(long[] taskList)
+        public List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>
+	        GetNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes(long[] taskList,
+		        StatisticDataAreaDivisionType divisionType)
         {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskList.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMTask.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-                            RightOperand = OMTask.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMQuartalDictionary.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-                            RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Left
-                    },
-                }
-            };
+	        var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
+	        var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+
+	        var groupJoin = new QSJoin
+	        {
+		        RegisterId = OMGroup.GetRegisterId(),
+		        JoinCondition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.Equal,
+			        LeftOperand = OMUnit.GetColumn(x => x.GroupId),
+			        RightOperand = OMGroup.GetColumn(x => x.Id)
+		        },
+		        JoinType = QSJoinType.Left
+	        };
+	        var quartalDictionaryJoin = new QSJoin
+	        {
+		        RegisterId = OMQuartalDictionary.GetRegisterId(),
+		        JoinCondition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.Equal,
+			        LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
+			        RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
+		        },
+		        JoinType = QSJoinType.Inner
+	        };
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, additionalJoins: new List<QSJoin>() { quartalDictionaryJoin, groupJoin });
 
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
+            query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
+            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)));
+            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 
             var subQuery = new QSQuery(OMGroup.GetRegisterId())
             {
@@ -106,30 +88,67 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var result = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>();
             if (table.Rows.Count != 0)
             {
+	            var objectIds = new List<long>();
+	            for (var i = 0; i < table.Rows.Count; i++)
+	            {
+		            objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
+	            }
+
+	            var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+		            new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
+		            new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
+		            DateTime.Now.GetEndOfTheDay());
+
                 for (var i = 0; i < table.Rows.Count; i++)
                 {
                     var group = table.Rows[i]["ParentGroup"]
                         .ParseToStringNullable();
                     var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
                     {
-                        Distrinct = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle(),
-                        RegionNumber = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString()),
-                        PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
+                        ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle(),
+                        Name = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString()),
+                        PropertyTypeCode = (PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)].ParseToLong(),
+                        PropertyType = ((PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)].ParseToLong()).GetEnumDescription(),
+                        GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
                         Group = string.IsNullOrEmpty(group) ? "Без группы" : group,
                         HasGroup = !string.IsNullOrEmpty(@group),
                         Count = 1
                     };
-                    result.Add(dto);
+
+                    switch (divisionType)
+                    {
+	                    case StatisticDataAreaDivisionType.RegionNumbers:
+		                    dto.Name = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString());
+                            dto.ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
+		                    break;
+	                    case StatisticDataAreaDivisionType.Districts:
+		                    dto.Name = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
+                            dto.ParentName = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString());
+                            break;
+	                    case StatisticDataAreaDivisionType.Regions:
+		                    dto.Name = ((Districts)table.Rows[i]["Region_Code"].ParseToLong()).GetEnumDescription();
+		                    dto.ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
+                            break;
+                    }
+
+                    FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
+
+                    if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
+                    {
+	                    result.Add(dto);
+                    }
                 }
             }
 
             result =
-                result.GroupBy(x => new { x.Distrinct, x.RegionNumber, x.PropertyType, x.Group, x.HasGroup }).Select(
+                result.GroupBy(x => new { x.ParentName, x.Name, x.PropertyType, x.Purpose, x.HasPurpose, x.Group, x.HasGroup }).Select(
                 group => new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
                 {
-                    Distrinct = group.Key.Distrinct,
-                    RegionNumber = group.Key.RegionNumber,
+                    ParentName = group.Key.ParentName,
+                    Name = group.Key.Name,
                     PropertyType = group.Key.PropertyType,
+                    Purpose = group.Key.Purpose,
+                    HasPurpose = group.Key.HasPurpose,
                     Group = group.Key.Group,
                     HasGroup = group.Key.HasGroup,
                     Count = group.ToList().DefaultIfEmpty().Sum(x => x.Count)
@@ -237,56 +256,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto> GetNumberOfObjectsByAdministrativeDistrictsByGroups(long[] taskList, StatisticDataAreaDivisionType areaDivisionType)
         {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskList.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMTask.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-                            RightOperand = OMTask.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMQuartalDictionary.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-                            RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-	                    RegisterId = OMGroup.GetRegisterId(),
-	                    JoinCondition = new QSConditionSimple
-	                    {
-		                    ConditionType = QSConditionType.Equal,
-		                    LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-		                    RightOperand = OMGroup.GetColumn(x => x.Id)
-	                    },
-	                    JoinType = QSJoinType.Left
-                    },
-                }
-            };
+			var groupJoin = new QSJoin
+			{
+				RegisterId = OMGroup.GetRegisterId(),
+				JoinCondition = new QSConditionSimple
+				{
+					ConditionType = QSConditionType.Equal,
+					LeftOperand = OMUnit.GetColumn(x => x.GroupId),
+					RightOperand = OMGroup.GetColumn(x => x.Id)
+				},
+				JoinType = QSJoinType.Left
+			};
+			var quartalDictionaryJoin = new QSJoin
+			{
+				RegisterId = OMQuartalDictionary.GetRegisterId(),
+				JoinCondition = new QSConditionSimple
+				{
+					ConditionType = QSConditionType.Equal,
+					LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
+					RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
+				},
+				JoinType = QSJoinType.Inner
+			};
+			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, additionalJoins: new List<QSJoin>() { quartalDictionaryJoin, groupJoin });
 
-            query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
+			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
 

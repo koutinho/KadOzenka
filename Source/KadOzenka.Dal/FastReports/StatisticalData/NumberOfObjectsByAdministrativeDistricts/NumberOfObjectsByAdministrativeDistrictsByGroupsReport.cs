@@ -1,24 +1,26 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
 {
-	public class NumberOfObjectsByAdministrativeDistrictsByGroupsReportHandler : INumberOfObjectsByAdministrativeDistrictsReportHandler
+	public class NumberOfObjectsByAdministrativeDistrictsByGroupsReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByAdministrativeDistrictsService _service;
 
-		public NumberOfObjectsByAdministrativeDistrictsByGroupsReportHandler()
+		public NumberOfObjectsByAdministrativeDistrictsByGroupsReport()
 		{
 			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService());
 		}
 
-		public string GetTemplateName(NameValueCollection query, IGetQueryPAramFunc getQueryParam)
+		protected override string TemplateName(NameValueCollection query)
 		{
-			var divisionType = GetAreaDivisionType(getQueryParam.Call<string>("GroupDivisionType", query));
+			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));
 			switch (divisionType)
 			{
 				case StatisticDataAreaDivisionType.RegionNumbers:
@@ -30,26 +32,35 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 				case StatisticDataAreaDivisionType.Quarters:
 					return "NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport";
 				default:
-					throw new InvalidDataException($"Неизвестный тип деления для количества объектов по группам: {divisionType}");
+					throw new InvalidDataException($"Неизвестный тип деления: {divisionType}");
 			}
 		}
 
-		public DataSet GetData(long[] taskList, NameValueCollection query, IGetQueryPAramFunc getQueryParam)
+		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
-			var divisionType = GetAreaDivisionType(getQueryParam.Call<string>("GroupDivisionType", query));
+			var taskList = GetTaskIdList(query);
+			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));
+
+			DataSet dataset;
 			switch (divisionType)
 			{
 				case StatisticDataAreaDivisionType.RegionNumbers:
-					return GetDataForCadastralRegions(taskList);
+					dataset = GetDataForCadastralRegions(taskList);
+					break;
 				case StatisticDataAreaDivisionType.Districts:
-					return GetDataForDistricts(taskList);
+					dataset = GetDataForDistricts(taskList);
+					break;
 				case StatisticDataAreaDivisionType.Regions:
-					return GetDataForRegions(taskList);
+					dataset = GetDataForRegions(taskList);
+					break;
 				case StatisticDataAreaDivisionType.Quarters:
-					return GetDataForQuarters(taskList);
+					dataset = GetDataForQuarters(taskList);
+					break;
 				default:
 					throw new InvalidDataException($"Неизвестный тип деления для количества объектов по группам: {divisionType}");
 			}
+
+			return HadleData(dataset);
 		}
 
 		private DataSet GetDataForCadastralRegions(long[] taskList)

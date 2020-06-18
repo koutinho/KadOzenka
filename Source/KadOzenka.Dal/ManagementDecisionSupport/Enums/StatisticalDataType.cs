@@ -4,9 +4,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 {
 	public enum StatisticalDataType
 	{
-		[Description("Статистика по количеству объектов по административным округам")]
-		[StatisticalDataFmReportCode(1010)]
-		OnTheNumberOfObjectsByAdministrativeDistricts = 1,
+		[Description("Количество объектов  по КР/МР/АО в разрезе групп и видов объектов недвижимости")]
+		[StatisticalDataFmReportCode(10101)]
+		OnTheNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes = 1001,
+
+		[Description("Количество объектов  по субъекту в разрезе групп и видов объектов недвижимости")]
+		[StatisticalDataFmReportCode(10102)]
+		OnTheNumberOfObjectsByAdministrativeDistrictsBySubject = 1002,
+
+		[Description("Количество объектов по группам")]
+		[StatisticalDataFmReportCode(10103)]
+		OnTheNumberOfObjectsByAdministrativeDistrictsByGroups = 1003,
 
 		[Description("Статистика по количеству объектов в разрезе групп")]
 		[StatisticalDataFmReportCode(1011)]
