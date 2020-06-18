@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -8,6 +9,8 @@ using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory;
+using ObjectModel.Market;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
@@ -18,7 +21,8 @@ namespace KadOzenka.Dal.Modeling
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
 
-        public TrainingStrategy(string inputParametersXml)
+        public TrainingStrategy(string inputParametersXml, OMQueue processQueue)
+            : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
@@ -42,9 +46,70 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public override void PrepareData(OMQueue processQueue)
+        public override void PrepareData()
         {
-            ModelingService.CreateObjectsForModel(InputParameters.ModelId, processQueue);
+            AddLog("Начат сбор данных");
+            
+            var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
+                .Where(x => x.GroupId == Model.GroupId)
+                .Select(x => x.MarketSegment_Code)
+                .Select(x => x.TerritoryType_Code)
+                .ExecuteFirstOrDefault();
+            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}");
+
+            //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
+
+            var groupedObjects = OMCoreObject.Where(x =>
+                    x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+                    x.CadastralNumber != null &&
+                    x.ProcessType_Code != ProcessStep.Excluded)
+                //TODO PART
+                //.And(territoryCondition)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.Price)
+                .GroupBy(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                })
+                .ExecuteSelect(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                });
+            AddLog($"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.");
+
+            ModelingService.DestroyModelMarketObjects(Model.Id);
+            AddLog($"Удалены предыдущие данные.");
+
+            var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
+            AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.");
+
+            var i = 0;
+            AddLog($"Обработано объектов:");
+            Parallel.ForEach(groupedObjects, groupedObj =>
+            {
+                var isForTraining = i < groupedObjects.Count / 2;
+                i++;
+                var modelObject = new OMModelToMarketObjects
+                {
+                    ModelId = Model.Id,
+                    CadastralNumber = groupedObj.CadastralNumber,
+                    Price = groupedObj.Price ?? 0,
+                    IsForTraining = isForTraining
+                };
+
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(Model.TourId,
+                    modelObject.CadastralNumber, modelAttributes);
+
+                modelObject.Coefficients = objectCoefficients.SerializeToXml();
+                modelObject.Save();
+
+                if(i % 100 == 0)
+                    AddLog($"{i}");
+            });
+
+            AddLog($"Сбор данных закончен");
         }
 
         public override object GetRequestForService()
@@ -119,6 +184,14 @@ namespace KadOzenka.Dal.Modeling
 
 
         #region Support Methods
+
+        private void AddLog(string message)
+        {
+            var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
+            var newLog = previousLog + Environment.NewLine + message;
+            ProcessQueue.Log = newLog;
+            ProcessQueue.Save();
+        }
 
         /// <summary>
         /// Заменяем имена аттрибутов на их Id

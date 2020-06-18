@@ -20,7 +20,8 @@ namespace KadOzenka.Dal.Modeling
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
 
-        public PredictionStrategy(string inputParametersXml)
+        public PredictionStrategy(string inputParametersXml, OMQueue processQueue)
+            : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.Modeling
             return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         }
 
-        public override void PrepareData(OMQueue processQueue)
+        public override void PrepareData()
         {
             if (!Model.WasTrained.GetValueOrDefault())
                 throw new Exception($"Модель '{Model.Name}' не была обучена. Расчет невозможен.");

@@ -398,78 +398,7 @@ namespace KadOzenka.Dal.Modeling
 
         #region Modeling Process
 
-        private void AddLog(OMQueue processQueue, string message)
-        {
-            var previousLog = processQueue.Log;
-            var newLog = previousLog + Environment.NewLine + message;
-            processQueue.Log = newLog;
-            processQueue.Save();
-        }
-
-        public void CreateObjectsForModel(long modelId, OMQueue processQueue)
-        {
-            AddLog(processQueue, "Начат сбор данных");
-            var model = GetModelByIdInternal(modelId);
-
-            var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == model.GroupId)
-                .Select(x => x.MarketSegment_Code)
-                .Select(x => x.TerritoryType_Code)
-                .ExecuteFirstOrDefault();
-            AddLog(processQueue, $"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}");
-
-            //var territoryCondition = GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
-
-            var groupedObjects = OMCoreObject.Where(x =>
-					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    x.CadastralNumber != null && 
-                    x.ProcessType_Code != ProcessStep.Excluded)
-                //TODO PART
-                //.And(territoryCondition)
-				.Select(x => x.CadastralNumber)
-				.Select(x => x.Price)
-                .GroupBy(x => new
-                {
-                    x.CadastralNumber,
-                    x.Price
-                })
-                .ExecuteSelect(x => new
-                {
-                    x.CadastralNumber,
-                    x.Price
-                });
-            AddLog(processQueue, $"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.");
-
-            DestroyModelMarketObjects(modelId);
-            AddLog(processQueue, $"Удалены предыдущие данные.");
-
-            var modelAttributes = GetModelAttributes(modelId);
-            AddLog(processQueue, $"Получено {modelAttributes?.Count} атрибутов для модели.");
-
-            var i = 0;
-            Parallel.ForEach(groupedObjects, groupedObj =>
-            {
-                var isForTraining = i < groupedObjects.Count / 2;
-                i++;
-                var modelObject = new OMModelToMarketObjects
-                {
-                    ModelId = modelId,
-                    CadastralNumber = groupedObj.CadastralNumber,
-                    Price = groupedObj.Price ?? 0,
-                    IsForTraining = isForTraining
-                };
-
-                var objectCoefficients = GetCoefficientsForObject(model.TourId,
-                    modelObject.CadastralNumber, modelAttributes);
-
-                modelObject.Coefficients = objectCoefficients.SerializeToXml();
-                modelObject.Save();
-
-                AddLog(processQueue, $"Обработан объект № {i}.");
-            });
-        }
-
-        private Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
+        public Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
         {
             switch (territoryType)
             {
@@ -488,7 +417,7 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-		private List<CoefficientForObject> GetCoefficientsForObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
+        public List<CoefficientForObject> GetCoefficientsForObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
         {
             var coefficients = new List<CoefficientForObject>();
             modelAttributes.ForEach(modelAttribute =>
@@ -567,7 +496,7 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		private void DestroyModelMarketObjects(long modelId)
+        public void DestroyModelMarketObjects(long modelId)
         {
             var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
             existedModelObjects.ForEach(x => x.Destroy());

@@ -10,17 +10,20 @@ namespace KadOzenka.Dal.Modeling
     public abstract class AModelingStrategy
     {
         protected ModelingService ModelingService { get; set; }
+        //для логирования прогресса
+        protected OMQueue ProcessQueue { get; set; }
 
 
-        protected AModelingStrategy()
+        protected AModelingStrategy(OMQueue processQueue)
         {
             ModelingService = new ModelingService(new ScoreCommonService());
+            ProcessQueue = processQueue;
         }
 
 
         public abstract string GetUrl();
 
-        public abstract void PrepareData(OMQueue processQueue);
+        public abstract void PrepareData();
 
         public abstract object GetRequestForService();
 
