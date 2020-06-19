@@ -458,6 +458,12 @@ namespace KadOzenka.Dal.Modeling
                             x.IsForTraining.Coalesce(false) == isForTraining).SelectAll().Execute();
         }
 
+        public void DestroyModelMarketObjects(long modelId)
+        {
+            var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+            existedModelObjects.ForEach(x => x.Destroy());
+        }
+
         #endregion
 
 
@@ -472,7 +478,7 @@ namespace KadOzenka.Dal.Modeling
             return model;
         }
 
-        public ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
+        private ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
 		{
 			return new ModelMarketObjectRelationDto
 			{
@@ -503,12 +509,6 @@ namespace KadOzenka.Dal.Modeling
 			if (message.Length != 0)
 				throw new Exception(message.ToString());
 		}
-
-        public void DestroyModelMarketObjects(long modelId)
-        {
-            var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
-            existedModelObjects.ForEach(x => x.Destroy());
-        }
 
         private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute)
         {

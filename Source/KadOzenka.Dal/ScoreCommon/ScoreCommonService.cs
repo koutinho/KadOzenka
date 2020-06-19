@@ -67,7 +67,7 @@ namespace KadOzenka.Dal.ScoreCommon
 			if (type == ReferenceItemCodeType.String)
 			{
                 var referenceItems = GetReferenceItems(referenceId);
-                return referenceItems.Select(ReferenceToString).FirstOrDefault(x => x.Key == parameterData.StringValue)?.Value ?? 1;
+                return referenceItems.FirstOrDefault(x => x.Value == parameterData.StringValue)?.CalculationValue ?? 1;
 			}
 			return 0;
 		}
@@ -119,17 +119,8 @@ namespace KadOzenka.Dal.ScoreCommon
 			};
 		}
 
-		public StringReference ReferenceToString(OMEsReferenceItem item)
-		{
-			return new StringReference
-			{
-				Key = item.Value,
-				Value = item.CalculationValue.GetValueOrDefault()
-			};
-		}
 
-
-		#region Support Methods
+        #region Support Methods
 
 		private List<OMEsReferenceItem> GetReferenceItems(int referenceId)
 		{
