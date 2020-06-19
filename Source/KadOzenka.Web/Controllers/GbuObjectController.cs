@@ -185,9 +185,9 @@ namespace KadOzenka.Web.Controllers
 
             long queueId;
             try
-			{
-				queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
-			}
+            {
+	            queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
+            }
 			catch (Exception e)
 			{
 				return SendErrorMessage(e.Message);

@@ -441,5 +441,12 @@ from (select
         {
 	        return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == idAttribute)?.Name;
         }
+
+        public static string GetRegisterNameByAttributeId(long idAttribute)
+        {
+	       var attrId= RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == idAttribute)?.RegisterId;
+
+	       return RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attrId)?.Description;
+        }
 	}
 }
