@@ -417,15 +417,9 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public List<OMUnit> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, int tourId)
+        public List<OMUnit> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, long tourId)
         {
-            if (cadastralNumbers == null || cadastralNumbers.Count == 0)
-                return new List<OMUnit>();
-
-            return OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == tourId)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Execute();
+            return ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)tourId);
         }
 
         public List<CoefficientForObject> GetCoefficientsForObject(List<ModelAttributeRelationDto> modelAttributes, List<long> unitIds)
@@ -576,6 +570,6 @@ namespace KadOzenka.Dal.Modeling
 			return $"Ошибка: нет справочника. Атрибут относится к типу '{type}', но к нему не выбран справочник.";
 		}
 
-		#endregion
-	}
+        #endregion
+    }
 }

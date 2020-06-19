@@ -89,20 +89,8 @@ namespace KadOzenka.Dal.Modeling
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
             AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
 
-
-            //var maxDegreeOfParallelism = 20;
-            //AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
-            //var cancelTokenSource = new CancellationTokenSource();
-            //var options = new ParallelOptions
-            //{
-            //    CancellationToken = cancelTokenSource.Token,
-            //    MaxDegreeOfParallelism = maxDegreeOfParallelism
-            //};
-            //var locker = new object();
-            
-
             var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
-            var unitsDictionary = ModelingService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)Model.TourId)
+            var unitsDictionary = ModelingService.GetUnitsByCadastralNumbers(cadastralNumbers, Model.TourId)
                 .GroupBy(x => x.CadastralNumber)
                 .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.\n");
@@ -121,17 +109,27 @@ namespace KadOzenka.Dal.Modeling
                     IsForTraining = isForTraining
                 };
 
-                var objectUnits = unitsDictionary.ContainsKey(modelObject.CadastralNumber) 
+                var objectUnitIds = unitsDictionary.ContainsKey(modelObject.CadastralNumber) 
                     ? unitsDictionary[modelObject.CadastralNumber] 
                     : new List<long>();
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnits);
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnitIds);
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 
                 if (i % 100 == 0)
                     AddLog($"{i}, ");
             });
+
+            //var maxDegreeOfParallelism = 20;
+            //AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
+            //var cancelTokenSource = new CancellationTokenSource();
+            //var options = new ParallelOptions
+            //{
+            //    CancellationToken = cancelTokenSource.Token,
+            //    MaxDegreeOfParallelism = maxDegreeOfParallelism
+            //};
+            //var locker = new object();
             //Parallel.ForEach(groupedObjects, options, groupedObj =>
             //{
             //    var isForTraining = i < groupedObjects.Count / 2;

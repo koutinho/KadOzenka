@@ -18,7 +18,18 @@ namespace KadOzenka.Dal.ScoreCommon
 				.Select(x => x.Id).Execute().Select(x => x.Id).ToList();
 		}
 
-		public ParameterDataDto GetParameters(List<long> unitsIds, int attributeId, int registerId, QSConditionGroup qsGroup = null)
+        public List<OMUnit> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, int tourId)
+        {
+            if (cadastralNumbers == null || cadastralNumbers.Count == 0)
+                return new List<OMUnit>();
+
+            return OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == tourId)
+                .Select(x => x.Id)
+                .Select(x => x.CadastralNumber)
+                .Execute();
+        }
+
+        public ParameterDataDto GetParameters(List<long> unitsIds, int attributeId, int registerId, QSConditionGroup qsGroup = null)
 		{
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.IsPrimaryKey)?.Id;
 
@@ -51,12 +62,12 @@ namespace KadOzenka.Dal.ScoreCommon
 
 		public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
 		{
-			var referenceItems = GetReferenceItems(referenceId);
-			var type = GetReferenceValueType(referenceId);
+            var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.String)
 			{
-				return referenceItems.Select(ReferenceToString).FirstOrDefault(x => x.Key == parameterData.StringValue)?.Value ?? 1;
+                var referenceItems = GetReferenceItems(referenceId);
+                return referenceItems.Select(ReferenceToString).FirstOrDefault(x => x.Key == parameterData.StringValue)?.Value ?? 1;
 			}
 			return 0;
 		}
@@ -68,24 +79,24 @@ namespace KadOzenka.Dal.ScoreCommon
 				return parameterData.NumberValue;
 			}
 
-			var referenceItems = GetReferenceItems(referenceId);
 			var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.Number)
 			{
-				return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
+                var referenceItems = GetReferenceItems(referenceId);
+                return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
 			}
 			return 0;
 		}
 
 		public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, int referenceId)
 		{
-			var referenceItems = GetReferenceItems(referenceId);
-			var type = GetReferenceValueType(referenceId);
+            var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.Date)
 			{
-				return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
+                var referenceItems = GetReferenceItems(referenceId);
+                return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
 			}
 			return 0;
 		}
