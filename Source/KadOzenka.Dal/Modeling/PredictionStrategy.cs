@@ -37,12 +37,16 @@ namespace KadOzenka.Dal.Modeling
 
         public override void PrepareData()
         {
+            AddLog($"Запущен расчет модели\n");
+
             if (!Model.WasTrained.GetValueOrDefault())
                 throw new Exception($"Модель '{Model.Name}' не была обучена. Расчет невозможен.");
         }
 
         public override object GetRequestForService()
         {
+            AddLog($"\n\nНачато формирование запроса на сервис");
+
             RequestForService = new PredictionRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
@@ -72,11 +76,15 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
+            AddLog($"\n\nЗакончено формирование запроса на сервис");
+
             return RequestForService;
         }
 
         public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
+            AddLog($"\n\nНачата обработка ответа сервиса");
+
             var predictionResult = JsonConvert.DeserializeObject<PredictionResponse>(generalResponse.Data.ToString());
 
             if (predictionResult.Prices == null || predictionResult.Prices.Count != RequestForService.CadastralNumbers.Count)
@@ -90,6 +98,8 @@ namespace KadOzenka.Dal.Modeling
             SaveCoefficientsForPredictedPrice(trainingResult.CoefficientsForAttributes);
 
             SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
+
+            AddLog($"Закончена обработка ответа сервиса\n");
         }
 
         public override void RollBackResult()

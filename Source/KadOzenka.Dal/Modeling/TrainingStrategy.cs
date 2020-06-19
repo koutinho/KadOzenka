@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.Modeling
 
         public override void PrepareData()
         {
-            AddLog("Начат сбор данных\n");
+            AddLog("Начат сбор данных для обучения модели\n");
 
             var marketObjects = GetMarketObjects();
             AddLog($"Найдено {marketObjects.Count} объекта.\n");
@@ -101,6 +101,8 @@ namespace KadOzenka.Dal.Modeling
 
         public override object GetRequestForService()
         {
+            AddLog($"\n\nНачато формирование запроса на сервис");
+
             RequestForService = new TrainingRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
@@ -132,11 +134,15 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
+            AddLog($"Закончено формирование запроса на сервис\n");
+
             return RequestForService;
         }
 
         public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
+            AddLog($"\n\nНачата обработка ответа сервиса");
+
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
 
@@ -144,6 +150,8 @@ namespace KadOzenka.Dal.Modeling
             ResetCoefficientsForPredictedPrice();
 
             UpdateModel(trainingResult);
+
+            AddLog($"Закончена обработка ответа сервиса\n");
         }
 
         public override void RollBackResult()
@@ -293,14 +301,6 @@ namespace KadOzenka.Dal.Modeling
 
             Model.WasTrained = true;
             Model.Save();
-        }
-
-        private void AddLog(string message)
-        {
-            var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
-            var newLog = previousLog + message;
-            ProcessQueue.Log = newLog;
-            ProcessQueue.Save();
         }
 
         #endregion

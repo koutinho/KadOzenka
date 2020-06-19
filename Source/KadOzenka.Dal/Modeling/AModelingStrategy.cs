@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.Modeling
     public abstract class AModelingStrategy
     {
         protected ModelingService ModelingService { get; set; }
-        //для логирования прогресса
+        //для логирования работы
         protected OMQueue ProcessQueue { get; set; }
 
 
@@ -49,6 +49,14 @@ namespace KadOzenka.Dal.Modeling
         {
             var pattern = new Regex("[() ]");
             return pattern.Replace(name, string.Empty);
+        }
+
+        protected void AddLog(string message)
+        {
+            var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
+            var newLog = previousLog + message;
+            ProcessQueue.Log = newLog;
+            ProcessQueue.Save();
         }
     }
 }
