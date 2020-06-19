@@ -211,8 +211,11 @@ namespace KadOzenka.Dal.Modeling
                     x.CadastralNumber,
                     x.Price
                 })
-                .Execute()
-                .Select(x => new MarketObjectPure
+                .ExecuteSelect(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                }).Select(x => new MarketObjectPure
                 {
                     CadastralNumber = x.CadastralNumber,
                     Price = x.Price.GetValueOrDefault()
