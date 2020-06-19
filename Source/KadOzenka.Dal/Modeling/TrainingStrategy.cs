@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.Modeling
 
         public override object GetRequestForService()
         {
-            AddLog($"\n\nНачато формирование запроса на сервис");
+            AddLog($"\n\nНачато формирование запроса на сервис\n");
 
             RequestForService = new TrainingRequest();
 
@@ -141,7 +141,7 @@ namespace KadOzenka.Dal.Modeling
 
         public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            AddLog($"\n\nНачата обработка ответа сервиса");
+            AddLog($"\n\nНачата обработка ответа сервиса\n");
 
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
