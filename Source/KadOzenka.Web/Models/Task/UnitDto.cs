@@ -42,6 +42,8 @@ namespace KadOzenka.Web.Models.Task
 
 		[DisplayName("Наименование группы")]
 		public string GroupName { get; set; }
+		[DisplayName("Оценочная группа")]
+		public string GroupNumber { get; set; }
 		public long? GroupId { get; set; }
 		[DisplayName("УПКС (предварительный)")]
 		public decimal? UpksPre { get; set; }
@@ -142,6 +144,7 @@ namespace KadOzenka.Web.Models.Task
 				if (group != null)
 				{
 					dto.GroupName = group.GroupName;
+					dto.GroupNumber = group.Number;
 					dto.GroupId = group.Id;
 				}
 
