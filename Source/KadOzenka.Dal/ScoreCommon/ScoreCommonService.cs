@@ -60,15 +60,28 @@ namespace KadOzenka.Dal.ScoreCommon
 			return query;
 		}
 
-        public List<OMEsReference> GetDictionaries(List<long> dictionaryIds)
+        public List<OMEsReference> GetDictionaries(List<long> dictionaryIds, bool withItems = true)
         {
-            if(dictionaryIds == null || dictionaryIds.Count == 0)
+            if (dictionaryIds == null || dictionaryIds.Count == 0)
                 return new List<OMEsReference>();
 
-            return OMEsReference.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+            var dictionaries = OMEsReference.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+
+            if (!withItems)
+                return dictionaries;
+
+            var dictionariesItems = OMEsReferenceItem.Where(x => dictionaryIds.Contains(x.ReferenceId)).SelectAll()
+                .Execute().ToList();
+
+            dictionaries.ForEach(dictionary =>
+            {
+                dictionary.EsReferenceItem = dictionariesItems.Where(item => item.ReferenceId == dictionary.Id).ToList();
+            });
+
+            return dictionaries;
         }
 
-		public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
+        public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
 		{
             var type = GetReferenceValueType(referenceId);
 
@@ -80,7 +93,12 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
-        //TODO убрать постоянный запрос к данным словаря
+        /// <summary>
+        /// Поиск в словаре коэффициента для строкового атрибута
+        /// </summary>
+        /// <param name="parameterData">Атрибут</param>
+        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
+        /// <returns></returns>
         public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, OMEsReference dictionary)
         {
             if (dictionary == null)
@@ -88,9 +106,10 @@ namespace KadOzenka.Dal.ScoreCommon
 
             if (dictionary.ValueType_Code == ReferenceItemCodeType.String)
             {
-                var referenceItems = GetReferenceItems(dictionary.Id);
-                return referenceItems.FirstOrDefault(x => x.Value == parameterData.StringValue)?.CalculationValue ?? 1;
+                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
+                return referenceItems?.FirstOrDefault(x => x.Value == parameterData.StringValue)?.CalculationValue ?? 1;
             }
+
             return 0;
         }
 
@@ -111,6 +130,11 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
+        /// <summary>
+        /// Поиск в словаре коэффициента для числового атрибута
+        /// </summary>
+        /// <param name="parameterData">Атрибут</param>
+        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
         public decimal GetCoefficientFromNumberFactor(ParameterDataDto parameterData, OMEsReference dictionary)
         {
             if (dictionary == null)
@@ -120,8 +144,8 @@ namespace KadOzenka.Dal.ScoreCommon
 
             if (type == ReferenceItemCodeType.Number)
             {
-                var referenceItems = GetReferenceItems(dictionary.Id);
-                return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
+                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
+                return referenceItems?.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
             }
             return 0;
         }
@@ -138,6 +162,11 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
+        /// <summary>
+        /// Поиск в словаре коэффициента для атрибута с типом 'датa'
+        /// </summary>
+        /// <param name="parameterData">Атрибут</param>
+        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
         public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, OMEsReference dictionary)
         {
             if (dictionary == null)
@@ -147,8 +176,8 @@ namespace KadOzenka.Dal.ScoreCommon
 
             if (type == ReferenceItemCodeType.Date)
             {
-                var referenceItems = GetReferenceItems(dictionary.Id);
-                return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
+                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
+                return referenceItems?.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
             }
             return 0;
         }
