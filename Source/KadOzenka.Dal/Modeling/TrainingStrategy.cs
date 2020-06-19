@@ -8,9 +8,11 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.ScoreCommon;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Ko;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 
@@ -21,12 +23,14 @@ namespace KadOzenka.Dal.Modeling
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
+        protected ScoreCommonService ScoreCommonService { get; set; }
 
         public TrainingStrategy(string inputParametersXml, OMQueue processQueue)
             : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
+            ScoreCommonService = new ScoreCommonService();
         }
 
 
@@ -51,61 +55,32 @@ namespace KadOzenka.Dal.Modeling
         {
             AddLog("Начат сбор данных\n");
 
-            var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == Model.GroupId)
-                .Select(x => x.MarketSegment_Code)
-                .Select(x => x.TerritoryType_Code)
-                .ExecuteFirstOrDefault();
-            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}\n");
-
-            //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
-
-            var groupedObjects = OMCoreObject.Where(x =>
-                    x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    x.CadastralNumber != null &&
-                    x.ProcessType_Code != ProcessStep.Excluded)
-                //TODO ждем выполнения CIPJSKO-307
-                //.And(territoryCondition)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Price)
-                ////TODO для тестирования
-                //.SetPackageIndex(0)
-                //.SetPackageSize(100)
-                .GroupBy(x => new
-                {
-                    x.CadastralNumber,
-                    x.Price
-                })
-                .ExecuteSelect(x => new
-                {
-                    x.CadastralNumber,
-                    x.Price
-                });
-            AddLog($"Выполнен sql запрос. Найдено {groupedObjects.Count} объекта.\n");
+            var marketObjects = GetMarketObjects();
+            AddLog($"Найдено {marketObjects.Count} объекта.\n");
 
             ModelingService.DestroyModelMarketObjects(Model.Id);
             AddLog($"Удалены предыдущие данные.\n");
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
-            AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
+            AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.\n");
 
-            var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
-            var unitsDictionary = ModelingService.GetUnitsByCadastralNumbers(cadastralNumbers, Model.TourId)
-                .GroupBy(x => x.CadastralNumber)
-                .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+            var dictionaries = ModelingService.GetDictionaries(modelAttributes);
+            AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.\n");
+
+            var unitsDictionary = GetUnits(marketObjects);
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.\n");
 
             var i = 0;
             AddLog($"Обработано объектов: ");
-            groupedObjects.ForEach(groupedObj =>
+            marketObjects.ForEach(groupedObj =>
             {
-                var isForTraining = i < groupedObjects.Count / 2;
+                var isForTraining = i < marketObjects.Count / 2;
                 i++;
                 var modelObject = new OMModelToMarketObjects
                 {
                     ModelId = Model.Id,
                     CadastralNumber = groupedObj.CadastralNumber,
-                    Price = groupedObj.Price ?? 0,
+                    Price = groupedObj.Price,
                     IsForTraining = isForTraining
                 };
 
@@ -113,44 +88,13 @@ namespace KadOzenka.Dal.Modeling
                     ? unitsDictionary[modelObject.CadastralNumber] 
                     : new List<long>();
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnitIds);
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnitIds, dictionaries);
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 
                 if (i % 100 == 0)
                     AddLog($"{i}, ");
             });
-
-            //var maxDegreeOfParallelism = 20;
-            //AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
-            //var cancelTokenSource = new CancellationTokenSource();
-            //var options = new ParallelOptions
-            //{
-            //    CancellationToken = cancelTokenSource.Token,
-            //    MaxDegreeOfParallelism = maxDegreeOfParallelism
-            //};
-            //var locker = new object();
-            //Parallel.ForEach(groupedObjects, options, groupedObj =>
-            //{
-            //    var isForTraining = i < groupedObjects.Count / 2;
-            //    i++;
-            //    var modelObject = new OMModelToMarketObjects
-            //    {
-            //        ModelId = Model.Id,
-            //        CadastralNumber = groupedObj.CadastralNumber,
-            //        Price = groupedObj.Price ?? 0,
-            //        IsForTraining = isForTraining
-            //    };
-
-            //    var objectCoefficients = ModelingService.GetCoefficientsForObject(Model.TourId,
-            //        modelObject.CadastralNumber, modelAttributes);
-
-            //    modelObject.Coefficients = objectCoefficients.SerializeToXml();
-            //    modelObject.Save();
-
-            //    if (i % 100 == 0)
-            //        AddLog($"{i}, ");
-            //});
 
             AddLog($"\nСбор данных закончен");
         }
@@ -228,12 +172,61 @@ namespace KadOzenka.Dal.Modeling
 
         #region Support Methods
 
-        private void AddLog(string message)
+        private List<MarketObjectPure> GetMarketObjects()
         {
-            var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
-            var newLog = previousLog + message;
-            ProcessQueue.Log = newLog;
-            ProcessQueue.Save();
+            var groupToMarketSegmentRelation = GetGroupToMarketSegmentRelation();
+            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}\n");
+
+            //TODO для тестирования
+            //return new List<MarketObjectPure>
+            //{
+            //    new MarketObjectPure
+            //    {
+            //        CadastralNumber = "77:22:0040131:36",
+            //        Price = 100
+            //    }
+            //};
+
+            //TODO ждем выполнения CIPJSKO-307
+            //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
+
+            return OMCoreObject.Where(x =>
+                    x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+                    x.CadastralNumber != null &&
+                    x.ProcessType_Code != ProcessStep.Excluded)
+                //TODO ждем выполнения CIPJSKO-307
+                //.And(territoryCondition)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.Price)
+                .GroupBy(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                })
+                .Execute()
+                .Select(x => new MarketObjectPure
+                {
+                    CadastralNumber = x.CadastralNumber,
+                    Price = x.Price.GetValueOrDefault()
+                }).ToList();
+        }
+
+        private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
+        {
+            return OMGroupToMarketSegmentRelation
+                .Where(x => x.GroupId == Model.GroupId)
+                .Select(x => x.MarketSegment_Code)
+                .Select(x => x.TerritoryType_Code)
+                .ExecuteFirstOrDefault();
+        }
+
+        private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
+        {
+            var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+
+            var units = ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int) Model.TourId);
+
+            return units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
         }
 
         /// <summary>
@@ -300,6 +293,14 @@ namespace KadOzenka.Dal.Modeling
 
             Model.WasTrained = true;
             Model.Save();
+        }
+
+        private void AddLog(string message)
+        {
+            var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
+            var newLog = previousLog + message;
+            ProcessQueue.Log = newLog;
+            ProcessQueue.Save();
         }
 
         #endregion

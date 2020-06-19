@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -18,7 +17,6 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
-using ObjectModel.Core.LongProcess;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
@@ -339,7 +337,7 @@ namespace KadOzenka.Dal.Modeling
             var columnHeaders = new List<object> {"Кадастровый номер"};
             columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
 
-            AddRow(mainWorkSheet, 0, columnHeaders.ToArray());
+            AddRowToExcelLog(mainWorkSheet, 0, columnHeaders.ToArray());
 
             var rowCounter = 1;
             modelMarketObjects.ForEach(modelMarketObject =>
@@ -356,7 +354,7 @@ namespace KadOzenka.Dal.Modeling
                     values.Add(message);
                 });
 
-                AddRow(mainWorkSheet, rowCounter++, values.ToArray());
+                AddRowToExcelLog(mainWorkSheet, rowCounter++, values.ToArray());
             });
 
 
@@ -367,7 +365,7 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        private void AddRow(ExcelWorksheet sheet, int row, object[] values)
+        private void AddRowToExcelLog(ExcelWorksheet sheet, int row, object[] values)
         {
             var col = 0;
             foreach (object value in values)
@@ -417,12 +415,13 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public List<OMUnit> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, long tourId)
+        public List<OMEsReference> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
         {
-            return ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)tourId);
+            var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value).ToList();
+            return ScoreCommonService.GetDictionaries(dictionaryIds);
         }
 
-        public List<CoefficientForObject> GetCoefficientsForObject(List<ModelAttributeRelationDto> modelAttributes, List<long> unitIds)
+        public List<CoefficientForObject> GetCoefficientsForObject(List<ModelAttributeRelationDto> modelAttributes, List<long> unitIds, List<OMEsReference> dictionaries)
         {
             var coefficients = new List<CoefficientForObject>();
             modelAttributes.ForEach(modelAttribute =>
@@ -442,7 +441,11 @@ namespace KadOzenka.Dal.Modeling
                 }
                 else
                 {
-                    coefficient = CalculateCoefficient(objectParameterData, modelAttribute);
+                    var dictionary = modelAttribute.DictionaryId == null
+                        ? null
+                        : dictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId);
+
+                    coefficient = CalculateCoefficient(objectParameterData, modelAttribute.AttributeId, dictionary);
                 }
 
                 coefficients.Add(coefficient);
@@ -510,46 +513,43 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-        private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute)
+        private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, long attributeId, OMEsReference dictionary)
         {
-            var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
+            var coefficient = new CoefficientForObject(attributeId);
 
             switch (objectParameterData.Type)
 			{
 				case ParameterType.String:
 				{
-					if (modelAttribute.DictionaryId == null)
+					if (dictionary == null)
 					{
                         coefficient.Message = GetErrorMessage("строка");
 					}
 					else
                     {
                         coefficient.Value = objectParameterData.StringValue;
-                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData,
-							(int)modelAttribute.DictionaryId.GetValueOrDefault());
+                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData, dictionary);
 					}
 
 					break;
 				}
 				case ParameterType.Date:
 				{
-					if (modelAttribute.DictionaryId == null)
+					if (dictionary == null)
 					{
                         coefficient.Message = GetErrorMessage("дата");
 					}
 					else
 					{
                         coefficient.Value = objectParameterData.DateValue.ToShortDateString();
-                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData,
-							(int)modelAttribute.DictionaryId.GetValueOrDefault());
+                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData, dictionary);
 					}
 
 					break;
 				}
 				case ParameterType.Number:
 				{
-                    var number = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
-                        (int)modelAttribute.DictionaryId.GetValueOrDefault());
+                    var number = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData, dictionary);
 
                     coefficient.Value = number.ToString();
                     coefficient.Coefficient = number;

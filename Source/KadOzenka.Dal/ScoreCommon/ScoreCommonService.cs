@@ -60,6 +60,14 @@ namespace KadOzenka.Dal.ScoreCommon
 			return query;
 		}
 
+        public List<OMEsReference> GetDictionaries(List<long> dictionaryIds)
+        {
+            if(dictionaryIds == null || dictionaryIds.Count == 0)
+                return new List<OMEsReference>();
+
+            return OMEsReference.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+        }
+
 		public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
 		{
             var type = GetReferenceValueType(referenceId);
@@ -72,7 +80,21 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
-		public decimal GetCoefficientFromNumberFactor(ParameterDataDto parameterData, int referenceId)
+        //TODO убрать постоянный запрос к данным словаря
+        public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, OMEsReference dictionary)
+        {
+            if (dictionary == null)
+                return 0;
+
+            if (dictionary.ValueType_Code == ReferenceItemCodeType.String)
+            {
+                var referenceItems = GetReferenceItems(dictionary.Id);
+                return referenceItems.FirstOrDefault(x => x.Value == parameterData.StringValue)?.CalculationValue ?? 1;
+            }
+            return 0;
+        }
+
+        public decimal GetCoefficientFromNumberFactor(ParameterDataDto parameterData, int referenceId)
 		{
 			if (referenceId == 0)
 			{
@@ -89,7 +111,22 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
-		public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, int referenceId)
+        public decimal GetCoefficientFromNumberFactor(ParameterDataDto parameterData, OMEsReference dictionary)
+        {
+            if (dictionary == null)
+                return parameterData.NumberValue;
+
+            var type = GetReferenceValueType(dictionary.Id);
+
+            if (type == ReferenceItemCodeType.Number)
+            {
+                var referenceItems = GetReferenceItems(dictionary.Id);
+                return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
+            }
+            return 0;
+        }
+
+        public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, int referenceId)
 		{
             var type = GetReferenceValueType(referenceId);
 
@@ -101,7 +138,22 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
-		public DateReference ReferenceToDate(OMEsReferenceItem item)
+        public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, OMEsReference dictionary)
+        {
+            if (dictionary == null)
+                return 0;
+
+            var type = GetReferenceValueType(dictionary.Id);
+
+            if (type == ReferenceItemCodeType.Date)
+            {
+                var referenceItems = GetReferenceItems(dictionary.Id);
+                return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
+            }
+            return 0;
+        }
+
+        public DateReference ReferenceToDate(OMEsReferenceItem item)
 		{
 			return new DateReference
 			{
@@ -122,12 +174,12 @@ namespace KadOzenka.Dal.ScoreCommon
 
         #region Support Methods
 
-		private List<OMEsReferenceItem> GetReferenceItems(int referenceId)
+		private List<OMEsReferenceItem> GetReferenceItems(long referenceId)
 		{
 			return OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute().ToList();
 		}
 
-		private ReferenceItemCodeType GetReferenceValueType(int referenceId)
+		private ReferenceItemCodeType GetReferenceValueType(long referenceId)
 		{
 			return OMEsReference.Where(x => x.Id == referenceId).Select(x => x.ValueType_Code).ExecuteFirstOrDefault().ValueType_Code;
 		}
