@@ -250,7 +250,7 @@ namespace KadOzenka.BlFrontEnd
             {
                 var trainingInputParameters = new GeneralModelingInputParameters
                 {
-                    ModelId = 44742135,
+                    ModelId = 46847140,
                     ModelType = ModelType.Linear
                 };
                 var inputRequest = new ModelingInputParameters

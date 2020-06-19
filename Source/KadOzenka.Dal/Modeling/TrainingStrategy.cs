@@ -64,10 +64,13 @@ namespace KadOzenka.Dal.Modeling
                     x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
                     x.CadastralNumber != null &&
                     x.ProcessType_Code != ProcessStep.Excluded)
-                //TODO PART
+                //TODO ждем выполнения CIPJSKO-307
                 //.And(territoryCondition)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.Price)
+                ////TODO для тестирования
+                //.SetPackageIndex(0)
+                //.SetPackageSize(100)
                 .GroupBy(x => new
                 {
                     x.CadastralNumber,
@@ -87,7 +90,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Получено {modelAttributes?.Count} атрибутов для модели.\n");
 
 
-            var maxDegreeOfParallelism = 20;
+            //var maxDegreeOfParallelism = 20;
             //AddLog($"Максимальное число потоков {maxDegreeOfParallelism}: ");
             //var cancelTokenSource = new CancellationTokenSource();
             //var options = new ParallelOptions
@@ -95,10 +98,17 @@ namespace KadOzenka.Dal.Modeling
             //    CancellationToken = cancelTokenSource.Token,
             //    MaxDegreeOfParallelism = maxDegreeOfParallelism
             //};
-
-            AddLog($"Обработано объектов: ");
             //var locker = new object();
+            
+
+            var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+            var unitsDictionary = ModelingService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)Model.TourId)
+                .GroupBy(x => x.CadastralNumber)
+                .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+            AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.\n");
+
             var i = 0;
+            AddLog($"Обработано объектов: ");
             groupedObjects.ForEach(groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
@@ -111,9 +121,11 @@ namespace KadOzenka.Dal.Modeling
                     IsForTraining = isForTraining
                 };
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(Model.TourId,
-                    modelObject.CadastralNumber, modelAttributes);
+                var objectUnits = unitsDictionary.ContainsKey(modelObject.CadastralNumber) 
+                    ? unitsDictionary[modelObject.CadastralNumber] 
+                    : new List<long>();
 
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnits);
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 

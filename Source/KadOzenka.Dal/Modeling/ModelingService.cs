@@ -417,14 +417,28 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public List<CoefficientForObject> GetCoefficientsForObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
+        public List<OMUnit> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, int tourId)
+        {
+            if (cadastralNumbers == null || cadastralNumbers.Count == 0)
+                return new List<OMUnit>();
+
+            return OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == tourId)
+                .Select(x => x.Id)
+                .Select(x => x.CadastralNumber)
+                .Execute();
+        }
+
+        public List<CoefficientForObject> GetCoefficientsForObject(List<ModelAttributeRelationDto> modelAttributes, List<long> unitIds)
         {
             var coefficients = new List<CoefficientForObject>();
             modelAttributes.ForEach(modelAttribute =>
             {
                 CoefficientForObject coefficient;
-                var objectParameterData = GetParameterDataByCadastralNumber(cadastralNumber, (int) tourId,
-                    (int) modelAttribute.AttributeId, (int) modelAttribute.RegisterId);
+
+                var objectParameterData = unitIds.Count > 0 
+                    ? ScoreCommonService.GetParameters(unitIds, (int)modelAttribute.AttributeId, (int)modelAttribute.RegisterId) 
+                    : null;
+
                 if (objectParameterData == null)
                 {
                     coefficient = new CoefficientForObject(modelAttribute.AttributeId)
@@ -502,13 +516,7 @@ namespace KadOzenka.Dal.Modeling
             existedModelObjects.ForEach(x => x.Destroy());
         }
 
-        private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
-		{
-			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
-			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
-		}
-
-		private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute)
+        private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute)
         {
             var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
 
