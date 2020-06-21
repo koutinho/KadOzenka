@@ -29,8 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-      <Content Remove="Views\Tour\AddGroup.cshtml" />
-      <Content Remove="Views\Tour\GroupCard.cshtml" />
+    <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
@@ -293,7 +292,9 @@
     <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\KoComplianceGuide.xml" />
+    <Content Include="Config\Registers\Views\KoComplianceGuide.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\KoResultSendJournal.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -707,6 +708,9 @@
     <None Update="Config\Registers\SearchPanels\InsurMfcPackages.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Registers\SearchPanels\KoObjectsCard.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Registers\SearchPanels\Pfhd.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -756,31 +760,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CCC_OUReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-	  
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
@@ -1124,7 +1103,6 @@
     <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsWallMaterials.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoComplianceGuide.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoResultSendJournal.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
@@ -1135,18 +1113,8 @@
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
-	<ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsOksReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsZuReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdditionalFormsChangesUploadingReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdditionalFormsMarketDataInfoReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
@@ -1169,7 +1137,6 @@
     <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
-    <ConfigPath Remove="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1179,7 +1146,6 @@
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
   <ItemGroup>
-    <None Include="Views\Tour\AddGroup.cshtml" />
     <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
     <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
   </ItemGroup>
@@ -1188,14 +1154,10 @@
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\GbuObject\GroupingObject.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Tour\AddGroup.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Tour\AddGroup.cshtml" />
   </ItemGroup>
 
 </Project>
