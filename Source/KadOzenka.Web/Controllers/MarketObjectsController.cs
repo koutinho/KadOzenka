@@ -198,7 +198,6 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-
         #region Correction By Bargain
 
         [HttpGet]
@@ -228,7 +227,6 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion Correction By Bargain
-
 
         #region Correction By Rooms
 
@@ -321,7 +319,6 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
-
 
         #region Correction By Stage
 
@@ -508,5 +505,6 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion Correction Settings
+
     }
 }
