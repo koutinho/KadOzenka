@@ -30912,6 +30912,14 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('parser_time_index')) then
+	execute 'CREATE  INDEX parser_time_index on market_core_object (parser_time)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_CORE_OBJECT')) then
 		execute 'create table MARKET_CORE_OBJECT ("id" BIGINT NOT NULL)';
 	end if;
@@ -31531,6 +31539,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('url_index')) then
 	execute 'CREATE  INDEX url_index on MARKET_CORE_OBJECT (url)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('parser_time_index')) then
+	execute 'CREATE  INDEX parser_time_index on MARKET_CORE_OBJECT (parser_time)';
   end if;
 end $$;
 --<DO>--
