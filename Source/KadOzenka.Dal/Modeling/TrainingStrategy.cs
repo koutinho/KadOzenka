@@ -53,25 +53,25 @@ namespace KadOzenka.Dal.Modeling
 
         public override void PrepareData()
         {
-            AddLog("Начат сбор данных для обучения модели\n");
+            AddLog("Начат сбор данных для обучения модели");
 
             var marketObjects = GetMarketObjects();
-            AddLog($"Найдено {marketObjects.Count} объекта.\n");
+            AddLog($"Найдено {marketObjects.Count} объекта.");
 
             ModelingService.DestroyModelMarketObjects(Model.Id);
-            AddLog($"Удалены предыдущие данные.\n");
+            AddLog($"Удалены предыдущие данные.");
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
-            AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.\n");
+            AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
 
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
-            AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.\n");
+            AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
             var unitsDictionary = GetUnits(marketObjects);
-            AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.\n");
+            AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
-            AddLog($"Обработано объектов: ");
+            AddLog($"Обработано объектов: ", false);
             marketObjects.ForEach(groupedObj =>
             {
                 var isForTraining = i < marketObjects.Count / 2;
@@ -93,15 +93,16 @@ namespace KadOzenka.Dal.Modeling
                 modelObject.Save();
 
                 if (i % 100 == 0)
-                    AddLog($"{i}, ");
+                    AddLog($"{i}, ", false);
             });
+            AddLog($"{i}.", false);
 
-            AddLog($"\nСбор данных закончен");
+            AddLog($"Сбор данных закончен");
         }
 
         public override object GetRequestForService()
         {
-            AddLog($"\n\nНачато формирование запроса на сервис\n");
+            AddLog($"\nНачато формирование запроса на сервис");
 
             RequestForService = new TrainingRequest();
 
@@ -134,14 +135,14 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
-            AddLog($"Закончено формирование запроса на сервис\n");
+            AddLog($"Закончено формирование запроса на сервис");
 
             return RequestForService;
         }
 
         public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            AddLog($"\n\nНачата обработка ответа сервиса\n");
+            AddLog($"\nНачата обработка ответа сервиса");
 
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
@@ -151,7 +152,7 @@ namespace KadOzenka.Dal.Modeling
 
             UpdateModel(trainingResult);
 
-            AddLog($"Закончена обработка ответа сервиса\n");
+            AddLog($"Закончена обработка ответа сервиса");
         }
 
         public override void RollBackResult()

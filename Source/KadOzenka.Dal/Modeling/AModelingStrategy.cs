@@ -51,10 +51,12 @@ namespace KadOzenka.Dal.Modeling
             return pattern.Replace(name, string.Empty);
         }
 
-        protected void AddLog(string message)
+        protected void AddLog(string message, bool withNewLine = true)
         {
             var previousLog = string.IsNullOrWhiteSpace(ProcessQueue.Log) ? string.Empty : ProcessQueue.Log;
-            var newLog = previousLog + message;
+            var newLog = withNewLine && !string.IsNullOrWhiteSpace(previousLog)
+                ? previousLog + Environment.NewLine + message
+                : previousLog + message;
             ProcessQueue.Log = newLog;
             ProcessQueue.Save();
         }

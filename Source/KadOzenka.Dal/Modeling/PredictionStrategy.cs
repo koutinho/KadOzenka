@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.Modeling
 
         public override object GetRequestForService()
         {
-            AddLog($"\n\nНачато формирование запроса на сервис\n");
+            AddLog($"\nНачато формирование запроса на сервис");
 
             RequestForService = new PredictionRequest();
 
@@ -76,14 +76,14 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
-            AddLog($"\n\nЗакончено формирование запроса на сервис\n");
+            AddLog($"Закончено формирование запроса на сервис");
 
             return RequestForService;
         }
 
         public override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            AddLog($"\n\nНачата обработка ответа сервиса\n");
+            AddLog($"\nНачата обработка ответа сервиса");
 
             var predictionResult = JsonConvert.DeserializeObject<PredictionResponse>(generalResponse.Data.ToString());
 
@@ -99,7 +99,7 @@ namespace KadOzenka.Dal.Modeling
 
             SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
 
-            AddLog($"Закончена обработка ответа сервиса\n");
+            AddLog($"Закончена обработка ответа сервиса");
         }
 
         public override void RollBackResult()
