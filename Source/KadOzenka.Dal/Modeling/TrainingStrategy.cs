@@ -71,7 +71,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
-            AddLog($"Обработано объектов: ", false);
+            AddLog($"Обработано объектов: ");
             marketObjects.ForEach(groupedObj =>
             {
                 var isForTraining = i < marketObjects.Count / 2;
