@@ -16,9 +16,10 @@ namespace KadOzenka.Web.Controllers
             return View("/Views/DataExport/GknXmlToExcel.cshtml");
         }
 
-        public FileResult DownloadResult(DateTime dt, int id)
+        public FileResult DownloadResult(string dt, int id)
         {
-            var st = FileStorageManager.GetFileStream(FileStorage, dt, $"{id}_ExcelConversion.zip");
+            var dateTime = DateTime.Parse(dt);
+            var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{id}_ExcelConversion.zip");
             return File(st, "application/zip",
                 $"{id}_{dt:ddMMyyyy}_ExcelConversion.zip");
         }
