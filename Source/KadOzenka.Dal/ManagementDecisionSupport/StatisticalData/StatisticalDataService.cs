@@ -7,6 +7,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.Tours;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
@@ -15,8 +16,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class StatisticalDataService
     {
-        private long? _rosreestrRegisterId;
+        private TourFactorService TourFactorService { get; set; }
 
+        private long? _rosreestrRegisterId;
         public long RosreestrRegisterId
         {
             get
@@ -31,6 +33,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
                 return _rosreestrRegisterId.Value;
             }
+        }
+
+        public StatisticalDataService()
+        {
+            TourFactorService = new TourFactorService();
         }
 
         public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, List<QSCondition> additionalConditions = null, List<QSJoin> additionalJoins = null)
@@ -85,20 +92,26 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        return result;
         }
 
+
+        #region Tour Settings
+
         public RegisterAttribute GetGroupAttributeFromTourSettings(long tourId)
         {
-            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
+            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
         }
 
         public RegisterAttribute GetObjectTypeAttributeFromTourSettings(long tourId)
         {
-            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
+            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
         }
 
         public RegisterAttribute GetCadastralQuartalAttributeFromTourSettings(long tourId)
         {
-            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
+            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
         }
+
+        #endregion
+
 
         #region Rosreestr Attributes
 
@@ -281,7 +294,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         #endregion
 
 
-        #region Helpers
+        #region Support Methods
 
         private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
         {
@@ -290,16 +303,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 throw new Exception($"Не найден аттрибут Росреестра с именем '{name}'");
 
             return attribute;
-        }
-
-        private RegisterAttribute GetAttributeIdFromTourSettings(long tourId, KoAttributeUsingType type)
-        {
-            var attributeId = OMTourAttributeSettings
-                .Where(x => x.TourId == tourId && x.AttributeUsingType_Code == type)
-                .Select(x => x.AttributeId)
-                .ExecuteFirstOrDefault()?.AttributeId;
-
-            return attributeId == null ? null : RegisterCache.RegisterAttributes.Values.First(x => x.Id == attributeId);
         }
 
         #endregion Helpers

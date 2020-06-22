@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
@@ -64,19 +65,6 @@ namespace KadOzenka.Dal.Tours
                 .Execute().FirstOrDefault();
 
             return register;
-        }
-
-        public List<AttributeSettingsDto> GetTourAttributesWithSettings(long tourId)
-        {
-	        var tourAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tourId)
-		        .SelectAll().Execute();
-
-            return tourAttributeSettings
-	            .Select(x => 
-		            new AttributeSettingsDto
-		            {AttributeId = x.AttributeId, KoAttributeUsingType = x.AttributeUsingType_Code}
-	            )
-	            .ToList();
         }
 
         public OMRegister CreateTourFactorRegister(long tourId, bool isStead)
@@ -174,6 +162,31 @@ namespace KadOzenka.Dal.Tours
         }
 
 
+        #region Tour Settings
+
+        public List<AttributeSettingsDto> GetTourAttributesFromSettings(long tourId)
+        {
+            var tourAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tourId)
+                .SelectAll().Execute();
+
+            return tourAttributeSettings
+                .Select(x =>
+                    new AttributeSettingsDto
+                        { AttributeId = x.AttributeId, KoAttributeUsingType = x.AttributeUsingType_Code }
+                )
+                .ToList();
+        }
+
+        public RegisterAttribute GetTourAttributeFromSettings(long tourId, KoAttributeUsingType type)
+        {
+            var attributeId = OMTourAttributeSettings
+                .Where(x => x.TourId == tourId && x.AttributeUsingType_Code == type)
+                .Select(x => x.AttributeId)
+                .ExecuteFirstOrDefault()?.AttributeId;
+
+            return attributeId == null ? null : RegisterCache.RegisterAttributes.Values.First(x => x.Id == attributeId);
+        }
+
         public TourEstimatedGroupAttributeParamsDto GetEstimatedGroupModelParamsForTask(long taskId)
         {
             var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
@@ -221,6 +234,8 @@ namespace KadOzenka.Dal.Tours
 
             return paramsDto;
         }
+
+        #endregion
 
         #region Support Methods
 
