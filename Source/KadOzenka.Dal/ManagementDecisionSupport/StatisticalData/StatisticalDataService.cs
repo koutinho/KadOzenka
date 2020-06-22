@@ -83,9 +83,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			        result = dtoList.Average(x => x.ObjectValue);
 			        break;
 		        case UpksCalcType.AverageWeight:
-			        var sum = dtoList.Sum(x => x.ObjectValue * x.ObjectWeigth);
-			        var weightSum = dtoList.Sum(x => x.ObjectWeigth);
-			        result = weightSum != 0 ? sum / weightSum : null;
+                    var totalCost = dtoList.Sum(x => x.ObjectCost);
+                    var totalSquare = dtoList.Sum(x => x.ObjectSquare);
+                    result = totalSquare != 0 ? totalCost / totalSquare : null;
 			        break;
 	        }
 

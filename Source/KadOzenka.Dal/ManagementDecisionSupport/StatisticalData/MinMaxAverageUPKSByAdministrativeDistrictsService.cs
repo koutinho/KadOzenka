@@ -41,6 +41,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
 
 			var table = query.ExecuteQuery();
 
@@ -53,9 +55,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					{
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
 						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
-						//TODO: ObjectWeigth MUST BE CLARIFIED
-						ObjectWeigth = 1
-					};
+                        ObjectCost = table.Rows[i]["ObjectCost"].ParseToDecimalNullable(),
+                        ObjectSquare = table.Rows[i]["ObjectSquare"].ParseToDecimalNullable(),
+				};
 
 					switch (reportType)
 					{

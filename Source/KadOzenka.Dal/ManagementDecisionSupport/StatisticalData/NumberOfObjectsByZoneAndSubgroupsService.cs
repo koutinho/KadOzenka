@@ -85,6 +85,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
 
 			var table = query.ExecuteQuery();
 
@@ -122,7 +124,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						DistrictName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle(),
 						RegionName = ((Districts)table.Rows[i]["Region_Code"].ParseToLong()).GetEnumDescription(),
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-						Calc = new CalcDto { ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable() }
+						Calc = new CalcDto
+                        {
+                            ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
+                            ObjectCost = table.Rows[i]["ObjectCost"].ParseToDecimalNullable(),
+                            ObjectSquare = table.Rows[i]["ObjectSquare"].ParseToDecimalNullable(),
+						}
 					};
 					dto.ZoneDistrict = $"Зона {dto.Zone}_{dto.DistrictName}";
 					dto.ZoneDistrictRegion = $"{dto.ZoneDistrict}_{dto.RegionName}";

@@ -3,6 +3,7 @@
 	public class CalcDto
 	{
 		public decimal? ObjectValue { get; set; }
-		public decimal ObjectWeigth { get; set; }
-	}
+        public decimal? ObjectCost { get; set; }
+        public decimal? ObjectSquare { get; set; }
+    }
 }

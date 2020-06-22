@@ -28,6 +28,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
 
 			var table = query.ExecuteQuery();
 			var data = new List<SubjectsUPKSByTypeObjectDto>();
@@ -39,8 +41,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					{
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
 						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
-						//TODO: ObjectWeigth MUST BE CLARIFIED
-						ObjectWeigth = 1
+                        ObjectCost = table.Rows[i]["ObjectCost"].ParseToDecimalNullable(),
+                        ObjectSquare = table.Rows[i]["ObjectSquare"].ParseToDecimalNullable(),
 					};
 
 					data.Add(dto);
@@ -82,6 +84,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
 
 			var table = query.ExecuteQuery();
 			var data = new List<SubjectsUPKSByTypeAndPurposeObjectDto>();
@@ -105,8 +109,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						PropertyTypeCode = (PropertyTypes)table.Rows[i]["PropertyType"].ParseToLong(),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
 						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
-						//TODO: ObjectWeigth MUST BE CLARIFIED
-						ObjectWeigth = 1
+                        ObjectCost = table.Rows[i]["ObjectCost"].ParseToDecimalNullable(),
+                        ObjectSquare = table.Rows[i]["ObjectSquare"].ParseToDecimalNullable(),
 					};
 
 					if (dto.PropertyTypeCode == PropertyTypes.Building)

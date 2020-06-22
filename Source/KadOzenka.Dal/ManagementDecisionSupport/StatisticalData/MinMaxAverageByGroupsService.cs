@@ -186,6 +186,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
 
 			var subQuery = new QSQuery(OMGroup.GetRegisterId())
 			{
@@ -219,26 +221,26 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			if (calcType == MinMaxAverageByGroupsCalcType.Upks)
 			{
 				dto.UpksCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				//TODO: ObjectWeigth MUST BE CLARIFIED
-				dto.UpksCalcDto.ObjectWeigth = 1;
-			}
+				dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+				dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+            }
 			else if (calcType == MinMaxAverageByGroupsCalcType.Uprs)
 			{
 				//TODO: How to calculate uprs?
 				dto.UprsCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				//TODO: ObjectWeigth MUST BE CLARIFIED
-				dto.UprsCalcDto.ObjectWeigth = 1;
+                dto.UprsCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 			}
 			else
 			{
 				dto.UpksCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				//TODO: ObjectWeigth MUST BE CLARIFIED
-				dto.UpksCalcDto.ObjectWeigth = 1;
+                dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+                dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 
 				//TODO: How to calculate uprs?
 				dto.UprsCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				//TODO: ObjectWeigth MUST BE CLARIFIED
-				dto.UprsCalcDto.ObjectWeigth = 1;
+                dto.UprsCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 			}
 		}
 
