@@ -350,7 +350,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetTourGbuAttributeSettings(long tourId)
         {
-	        var models = TourFactorService.GetTourAttributesWithSettings(tourId);
+	        var models = TourFactorService.GetTourAttributesFromSettings(tourId);
 
 			return Json(new {Data = models});
         }
