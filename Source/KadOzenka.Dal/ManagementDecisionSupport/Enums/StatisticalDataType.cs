@@ -20,9 +20,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1011)]
 		OnTheNumberOfObjectsByGroups = 2,
 
-		[Description("Статистика по зонам и подгруппам")]
-		[StatisticalDataFmReportCode(1012)]
-		OnTheNumberOfObjectsByZoneAndSubgroups = 3,
+		[Description("Статистика по зонам ОКС")]
+		[StatisticalDataFmReportCode(10121)]
+		OnTheNumberOfObjectsByZoneAndSubgroupsOks = 31,
+
+		[Description("Статистика по зонам ЗУ")]
+		[StatisticalDataFmReportCode(10122)]
+		OnTheNumberOfObjectsByZoneAndSubgroupsZu = 32,
 
 		[Description("Статистика по минимальным, максимальным и средним (арифметическое и средневзвешенное) УПКС по административным округам")]
 		[StatisticalDataFmReportCode(1013)]

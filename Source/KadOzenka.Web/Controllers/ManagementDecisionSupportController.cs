@@ -209,6 +209,7 @@ namespace KadOzenka.Web.Controllers
 			HttpContext currentHttpContext = HttpContextHelper.HttpContext;
 			currentHttpContext.Session.SetString($"Report{fmReportTypeValue}TaskFilter", JsonConvert.SerializeObject(model.TaskFilter));
 			currentHttpContext.Session.SetString($"Report{fmReportTypeValue}TourId", JsonConvert.SerializeObject(model.TourId));
+			currentHttpContext.Session.SetString($"Report{fmReportTypeValue}SecondTourId", JsonConvert.SerializeObject(model.SecondTourId));
 
 			return Json(new { reportUrl = $"/Report/Viewer?reportTypeId={fmReportTypeValue}" });
 		}

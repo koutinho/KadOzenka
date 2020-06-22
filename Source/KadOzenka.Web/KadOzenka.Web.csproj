@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Tour\GroupCard.cshtml" />
+      <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
@@ -709,7 +709,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\KoObjectsCard.xml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\Pfhd.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -762,7 +762,7 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
+      <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
@@ -1127,6 +1127,7 @@
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByGroupsReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />
@@ -1146,7 +1147,7 @@
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
   <ItemGroup>
-    <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
+      <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
     <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
   </ItemGroup>
   <ItemGroup>

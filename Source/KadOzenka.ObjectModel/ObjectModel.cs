@@ -3796,6 +3796,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _zonenamebycircles;
+        /// <summary>
+        /// 10700800 Название зоны по кольцам (ZONE_NAME_BY_CIRCLES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700800)]
+        public string ZoneNameByCircles
+        {
+            get
+            {
+                CheckPropertyInited("ZoneNameByCircles");
+                return _zonenamebycircles;
+            }
+            set
+            {
+                _zonenamebycircles = value;
+                NotifyPropertyChanged("ZoneNameByCircles");
+            }
+        }
+
     }
 }
 
