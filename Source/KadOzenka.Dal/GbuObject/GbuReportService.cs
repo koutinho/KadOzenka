@@ -92,10 +92,13 @@ namespace KadOzenka.Dal.GbuObject
 			{
 				for (int j = 0; j < countColumns; j++)
 				{
-					_mainWorkSheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-					_mainWorkSheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-					_mainWorkSheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-					_mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
+					if (_mainWorkSheet.Rows[i] != null && _mainWorkSheet.Rows[i].Cells[j] != null)
+					{
+						_mainWorkSheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+						_mainWorkSheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+						_mainWorkSheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+						_mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
+					}
 				}
 			}
 		}
@@ -107,17 +110,16 @@ namespace KadOzenka.Dal.GbuObject
 
 		public long SaveReport(string fileName)
 		{
-			MemoryStream stream = new MemoryStream();
-			_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			var currentDate = DateTime.Now;
-			
 			try
 			{
+				MemoryStream stream = new MemoryStream();
+				_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+				stream.Seek(0, SeekOrigin.Begin);
+
+				var currentDate = DateTime.Now;
 				var export = new OMExportByTemplates
 				{
-					UserId = SRDSession.GetCurrentUserId().Value,
+					UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 					DateCreated = currentDate,
 					Status = (int)ImportStatus.Added,
 					TemplateFileName = fileName,

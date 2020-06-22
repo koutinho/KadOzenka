@@ -12,10 +12,20 @@ namespace KadOzenka.Dal.GbuObject
     /// </summary>
     public class HarmonizationCOD
     {
-        /// <summary>
-        /// Объект для блокировки счетчика в многопоточке
-        /// </summary>
-        private static object locked;
+
+	    #region Номера столбцов отчетов
+
+	    private static int KnColumnNumber = 0;
+	    private static int ResultColumnNumber = 1;
+	    private static int ValueColumnNumber = 2;
+	    private static int SourceColumnNUmber = 3;
+	    private static int ErrorColumnNumber = 4;
+
+	    #endregion
+		/// <summary>
+		/// Объект для блокировки счетчика в многопоточке
+		/// </summary>
+		private static object locked;
         /// <summary>
         /// Общее число объектов
         /// </summary>
@@ -74,12 +84,16 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = 0;
             }
 
+            if (_reportService == null)
+            {
+				throw new Exception("Сервис отчетов не создан");
+            }
             _reportService.SetStyle();
-            _reportService.SetIndividualWidth(1, 6);
-            _reportService.SetIndividualWidth(0, 4);
-            _reportService.SetIndividualWidth(2, 3);
-            _reportService.SetIndividualWidth(3, 6);
-            _reportService.SetIndividualWidth(4, 5);
+            _reportService.SetIndividualWidth(KnColumnNumber, 4);
+			_reportService.SetIndividualWidth(ResultColumnNumber, 6);
+			_reportService.SetIndividualWidth(ValueColumnNumber, 3);
+            _reportService.SetIndividualWidth(SourceColumnNUmber, 6);
+            _reportService.SetIndividualWidth(ErrorColumnNumber, 5);
             long reportId = _reportService.SaveReport("Отчет гормонизации ЦОД");
             _reportService = null;
 
@@ -310,11 +324,11 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-	        _reportService.AddValue(kn, 0, rowNumber);
-	        _reportService.AddValue(sourceName, 3, rowNumber);
-	        _reportService.AddValue(value, 2, rowNumber);
-	        _reportService.AddValue(resultName, 1, rowNumber);
-	        _reportService.AddValue(errorMessage, 4, rowNumber);
+	        _reportService.AddValue(kn, KnColumnNumber, rowNumber);
+	        _reportService.AddValue(resultName, ResultColumnNumber, rowNumber);
+	        _reportService.AddValue(value, ValueColumnNumber, rowNumber);
+			_reportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
+			_reportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
         }
     }
 }
