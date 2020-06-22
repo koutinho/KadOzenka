@@ -657,57 +657,80 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
-	    [HttpGet]
-		public ActionResult ImportGroupDataFromExcel()
-	    {
-		    return View(new ImportGroupDataModel());
-	    }
+        #region Импорт группы из Excel
 
-	    [HttpPost]
-	    public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
-	    {
-		    var errors = viewModel.Validate();
-		    if (errors.Count > 0)
-		    {
-				return Json(new
-			    {
-				    Errors = errors.Select(x => new
-				    {
-					    Control = x.MemberNames.FirstOrDefault(),
-					    Message = x.ErrorMessage
-				    })
-			    });
-			}
+        [HttpGet]
+        public ActionResult ImportGroupDataFromExcel()
+        {
+            return View(new ImportGroupDataModel());
+        }
 
-			try
-		    {
-			    ExcelFile excelFile;
-			    using (var stream = viewModel.File.OpenReadStream())
-			    {
-				    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-					excelFile.DocumentProperties.Custom["FileName"] = viewModel.File.FileName;
-				}
+        [HttpPost]
+        public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
+        {
+            var errors = viewModel.Validate();
+            if (errors.Count > 0)
+            {
+                return Json(new
+                {
+                    Errors = errors.Select(x => new
+                    {
+                        Control = x.MemberNames.FirstOrDefault(),
+                        Message = x.ErrorMessage
+                    })
+                });
+            }
 
-			    if (viewModel.IsUnitStatusUsed)
-			    {
-				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-					    viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
-				}
-			    else
-			    {
-				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-					    viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
-				}
-		    }
-		    catch (Exception ex)
-		    {
-			    ErrorManager.LogError(ex);
-			    return BadRequest();
-		    }
-			return NoContent();
-		}
+            var fileName = string.Empty;
+            try
+            {
+                ExcelFile excelFile;
+                using (var stream = viewModel.File.OpenReadStream())
+                {
+                    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+                    excelFile.DocumentProperties.Custom["FileName"] = viewModel.File.FileName;
+                }
 
-	    [HttpGet]
+                MemoryStream resultStream;
+                if (viewModel.IsUnitStatusUsed)
+                {
+                    resultStream = (MemoryStream)DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+                        viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
+                }
+                else
+                {
+                    resultStream = (MemoryStream)DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+                        viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
+                }
+
+                if (resultStream != null)
+                {
+                    fileName = viewModel.File.FileName;
+                    HttpContext.Session.Set(fileName, resultStream.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorManager.LogError(ex);
+                return BadRequest();
+            }
+
+            return Content(JsonConvert.SerializeObject(new { FileName = fileName }), "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult DownloadImportGroupResult(string fileName)
+        {
+            var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+            if (fileInfo == null)
+                return new EmptyResult();
+
+            return File(fileInfo.FileContent, fileInfo.ContentType, $"Результат импорта группы.{fileInfo.FileExtension}");
+        }
+
+        #endregion
+
+        [HttpGet]
 	    public JsonResult GetTours()
 	    {
 			var tours = OMTour.Where(x => true).SelectAll().Execute()

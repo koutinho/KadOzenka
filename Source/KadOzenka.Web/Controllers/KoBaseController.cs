@@ -6,6 +6,10 @@ using Core.UI.Registers.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
+using Core.Register.Enums;
+using Microsoft.AspNetCore.Http;
+using Core.Shared.Extensions;
+using KadOzenka.Web.Models.KoBase;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -68,8 +72,23 @@ namespace KadOzenka.Web.Controllers
 					}
 				}
 	        });
-
         }
 
-	}
+        protected FileGeneralInfo GetFileFromSession(string fileName, RegistersExportType fileType)
+        {
+            var fileContent = HttpContext.Session.Get(fileName);
+            if (fileContent == null)
+                return null;
+
+            HttpContext.Session.Remove(fileName);
+            StringExtensions.GetFileExtension(fileType, out var fileExtenstion, out var contentType);
+
+            return new FileGeneralInfo
+            {
+                FileContent = fileContent,
+                FileExtension = fileExtenstion,
+                ContentType = contentType
+            };
+        }
+    }
 }

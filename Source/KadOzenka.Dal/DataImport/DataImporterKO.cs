@@ -2,20 +2,26 @@
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Tours;
 using ObjectModel.Common;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.DataImport
 {
     public static class DataImporterKO
     {
+        private static TourFactorService _tourFactorService { get; set; }
+
+        private static TourFactorService TourFactorService => _tourFactorService ?? (_tourFactorService = new TourFactorService());
+
         /// <summary>
         /// Импорт значений меток по фактору и группе из Excel
         /// groupId - Идентификатор группы
@@ -184,6 +190,7 @@ namespace KadOzenka.Dal.DataImport
             mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
             List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
             List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
+            var groupAttributeFromTourSettings = TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
 
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
@@ -219,12 +226,12 @@ namespace KadOzenka.Dal.DataImport
                                     findGroup = true;
                                 }
                             }
-
                         }
 
-
-
-
+                        if (findGroup && findObj)
+                        {
+                            SaveGroupAsObjectAttribute(groupAttributeFromTourSettings?.Id, unit.ObjectId, unit.TaskId, numberGroup);
+                        }
 
                         if (findGroup)
                         {
@@ -238,7 +245,6 @@ namespace KadOzenka.Dal.DataImport
                             {
 
                             }
-
                         }
                         else
                         {
@@ -264,10 +270,13 @@ namespace KadOzenka.Dal.DataImport
                     mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
                 }
             });
+
             MemoryStream streamResult = new MemoryStream();
             excelFile.Save(streamResult, SaveOptions.XlsxDefault);
             streamResult.Seek(0, SeekOrigin.Begin);
+
             SaveImportFile(streamResult, excelFile, registerViewId, mainRegisterId, true);
+
             return streamResult;
         }
 
@@ -293,15 +302,13 @@ namespace KadOzenka.Dal.DataImport
             mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
             List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
             List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
+            var groupAttributeFromTourSettings = TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
 
             List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
             foreach (long taskId in taskFilter)
             {
                 Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
             }
-
-
-
 
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
@@ -313,8 +320,8 @@ namespace KadOzenka.Dal.DataImport
                         string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
                         bool findGroup = false;
                         bool findObj = false;
-                        ObjectModel.KO.OMUnit unit = Objs.Find(x=>x.CadastralNumber==cadastralNumber);
 
+                        ObjectModel.KO.OMUnit unit = Objs.Find(x=>x.CadastralNumber==cadastralNumber);
                         if (unit != null)
                         {
                             findObj = true;
@@ -338,7 +345,11 @@ namespace KadOzenka.Dal.DataImport
                                     findGroup = true;
                                 }
                             }
+                        }
 
+                        if (findGroup && findObj)
+                        {
+                            SaveGroupAsObjectAttribute(groupAttributeFromTourSettings?.Id, unit.ObjectId, unit.TaskId, numberGroup);
                         }
 
                         if (findGroup)
@@ -367,7 +378,6 @@ namespace KadOzenka.Dal.DataImport
                             {
 
                             }
-
                         }
                     }
                 }
@@ -379,12 +389,40 @@ namespace KadOzenka.Dal.DataImport
                     mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
                 }
             });
+
             MemoryStream streamResult = new MemoryStream();
             excelFile.Save(streamResult, SaveOptions.XlsxDefault);
             streamResult.Seek(0, SeekOrigin.Begin);
+
             SaveImportFile(streamResult, excelFile, registerViewId, mainRegisterId, true);
+
             return streamResult;
         }
+
+
+        #region Support Methods
+
+        private static void SaveGroupAsObjectAttribute(long? attributeId, long? objectId, long? taskId, string numberGroup)
+        {
+            if(attributeId == null || objectId == null)
+                return;
+
+            var task = OMTask.Where(x => x.Id == taskId).Select(x => x.DocumentId).ExecuteFirstOrDefault();
+
+            new GbuObjectAttribute
+            {
+                ObjectId = objectId.Value,
+                AttributeId = attributeId.Value,
+                StringValue = numberGroup,
+                S = DateTime.Now,
+                Ot = DateTime.Now,
+                ChangeDocId = task == null ? -1 : task.DocumentId ?? -1,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now
+            }.Save();
+        }
+
+        #endregion
     }
 }
 

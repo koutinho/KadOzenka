@@ -102,8 +102,10 @@
                     data: formData,
                     contentType: false,
                     processData: false,
-                    dataType: 'xml',
                     success: function (data) {
+                        if (data.FileName) {
+                            window.location = '@Url.Action("DownloadImportGroupResult", "Tour")' + '?fileName=' + data.FileName;;
+                        }
                         Common.ShowMessage("Импорт группы из Excel успешно выполнен");
                     },
                     error: function (response) {

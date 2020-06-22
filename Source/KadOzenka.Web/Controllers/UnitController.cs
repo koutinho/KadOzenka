@@ -8,12 +8,10 @@ using System.IO;
 using System.Linq;
 using Core.Register.Enums;
 using KadOzenka.Dal.DataExport;
-using Microsoft.AspNetCore.Http;
-using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class UnitController : Controller
+	public class UnitController : KoBaseController
 	{
 		[HttpGet]
 		public ActionResult ObjectCard(long unitId)
@@ -91,16 +89,11 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult DownloadClarification(string unitId)
         {
-            var fileContent = HttpContext.Session.Get(unitId);
-            if (fileContent == null)
+            var fileInfo = GetFileFromSession(unitId, RegistersExportType.Docx);
+            if (fileInfo == null)
                 return new EmptyResult();
 
-            HttpContext.Session.Remove(unitId);
-            StringExtensions.GetFileExtension(RegistersExportType.Docx, out var fileExtensiton, out var contentType);
-
-            var fileName = $"Предоставление разъяснений {unitId}.{fileExtensiton}";
-
-            return File(fileContent, contentType, fileName);
+            return File(fileInfo.FileContent, fileInfo.ContentType, $"Предоставление разъяснений {unitId}.{fileInfo.FileExtension}");
         }
     }	
 }
