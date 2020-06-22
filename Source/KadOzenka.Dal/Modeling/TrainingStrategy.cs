@@ -157,7 +157,6 @@ namespace KadOzenka.Dal.Modeling
 
         public override void RollBackResult()
         {
-            Model.WasTrained = false;
             Model.LinearTrainingResult = null;
             Model.ExponentialTrainingResult = null;
             Model.MultiplicativeTrainingResult = null;
@@ -303,7 +302,6 @@ namespace KadOzenka.Dal.Modeling
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }
 
-            Model.WasTrained = true;
             Model.Save();
         }
 

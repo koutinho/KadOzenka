@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ObjectModel.Directory;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Register;
@@ -16,6 +15,9 @@ namespace KadOzenka.Web.Models.Modeling
     {
 		public long Id { get; set; }
         public bool IsModelWasTrained { get; set; }
+        public bool HasLinearTrainingResult { get; set; }
+        public bool HasExponentialTrainingResult { get; set; }
+        public bool HasMultiplicativeTrainingResult { get; set; }
 
         [Display(Name = "Имя")]
 		[Required(ErrorMessage = "Не заполнено Имя")]
@@ -42,20 +44,25 @@ namespace KadOzenka.Web.Models.Modeling
 
 
 		public static ModelingModel ToModel(ModelingModelDto entity)
-		{
-			return new ModelingModel
-			{
-				Id = entity.ModelId,
+        {
+            return new ModelingModel
+            {
+                Id = entity.ModelId,
                 GroupId = entity.GroupId,
                 GroupName = entity.GroupName,
                 TourId = entity.TourId,
-				TourYear = entity.TourYear,
-				Name = entity.Name,
-				Attributes = entity.Attributes,
-                IsModelWasTrained = entity.WasTrained,
-                ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU
+                TourYear = entity.TourYear,
+                Name = entity.Name,
+                Attributes = entity.Attributes,
+                ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
+                IsModelWasTrained = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult) ||
+                                    !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult) ||
+                                    !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
+                HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
+                HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
+                HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult)
             };
-		}
+        }
 
 		public static ModelingModelDto FromModel(ModelingModel model)
 		{

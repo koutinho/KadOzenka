@@ -35,13 +35,11 @@
                     .Items(t =>
                     {
                         t.Add().Text(ModelType.Linear.GetEnumDescription())
-                            .HtmlAttributes(new { style = "width: 100%;" });
+                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 100%;" });
                         t.Add().Text(ModelType.Exponential.GetEnumDescription())
-                            .Enabled(false)
-                            .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
+                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
                         t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
-                            .Enabled(false)
-                            .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
+                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
                     })
                     .HtmlAttributes(new { style = "width: 100%;" })
                     .Events(ev => ev.Select("onModelTypeSelect")))
@@ -179,10 +177,10 @@
                 {
                     type: 'button',
                     id: 'warningsBtn',
-                    className: '@Model.IsModelWasTrained' === "True" , "k-state-disabled" : "",
                     text: '',
                     attributes: { title: "Логи" },
                     icon: 'clock',
+                    enable: '@Model.IsModelWasTrained' === "True",
                     click: downloadLogs
                 }
             ]
@@ -307,11 +305,31 @@
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
         isTrainingMode = true;
+        setGroupButtonsState(true, true, true);
         showModelTypeWindow();
     }
     function onPredictModelBtnClick() {
         isTrainingMode = false;
+        var hasLinearTrainingResult = '@Model.HasLinearTrainingResult' === "True";
+        var hasExponentialTrainingResult = '@Model.HasExponentialTrainingResult' === "True";
+        var hasMultiplicativeTrainingResult = '@Model.HasMultiplicativeTrainingResult' === "True";
+        setGroupButtonsState(hasLinearTrainingResult, hasExponentialTrainingResult, hasMultiplicativeTrainingResult);
         showModelTypeWindow();
+    }
+
+    function setGroupButtonsState(enableLinerBtn, enableExponentialBtn, enableMultiplicativeBtn) {
+        if (enableLinerBtn)
+            $("#linearModelTypeBtn").removeClass('k-state-disabled');
+        else
+            $("#linearModelTypeBtn").addClass('k-state-disabled');
+        if (enableExponentialBtn)
+            $("#exponentialModelTypeBtn").removeClass('k-state-disabled');
+        else
+            $("#exponentialModelTypeBtn").addClass('k-state-disabled');
+        if (enableMultiplicativeBtn)
+            $("#multiplicativeModelTypeBtn").removeClass('k-state-disabled');
+        else
+            $("#multiplicativeModelTypeBtn").addClass('k-state-disabled');
     }
 
 
@@ -330,8 +348,19 @@
     }
 
 
-	function updateModel() {
-		if (!validateForm())
+    function updateModel() {
+        Common.UI.ShowConfirm({
+            title: 'Обновление модели',
+            content: 'При обновлении модели могут быть сброшены результаты её обучения. Вы уверены, что хотите обновить модель?',
+            onSuccess: onUpdateModel,
+            onFail: function () {
+                closeConfirmWindow($(this));
+            }
+        });
+    }
+
+    function onUpdateModel() {
+        if (!validateForm())
 			return;
 		var attributes = getAttributesFromGrid();
 		var form = $('#updateModelModelForm');

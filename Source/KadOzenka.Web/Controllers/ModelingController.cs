@@ -129,10 +129,6 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult Predict(long modelId, ModelType modelType)
         {
-            var model = GetModel(modelId);
-            if (!model.WasTrained.GetValueOrDefault())
-                throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
-
             var inputParameters = new GeneralModelingInputParameters
             {
                 ModelId = modelId,

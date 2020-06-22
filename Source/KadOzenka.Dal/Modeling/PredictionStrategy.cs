@@ -37,10 +37,16 @@ namespace KadOzenka.Dal.Modeling
 
         public override void PrepareData()
         {
-            AddLog($"Запущен расчет модели\n");
+            AddLog("Запущен расчет модели");
 
-            if (!Model.WasTrained.GetValueOrDefault())
-                throw new Exception($"Модель '{Model.Name}' не была обучена. Расчет невозможен.");
+            if(InputParameters.ModelType == ModelType.Linear && string.IsNullOrWhiteSpace(Model.LinearTrainingResult))
+                throw new Exception(GetErrorMessage(ModelType.Linear));
+
+            if (InputParameters.ModelType == ModelType.Exponential && string.IsNullOrWhiteSpace(Model.ExponentialTrainingResult))
+                throw new Exception(GetErrorMessage(ModelType.Exponential));
+
+            if (InputParameters.ModelType == ModelType.Multiplicative && string.IsNullOrWhiteSpace(Model.MultiplicativeTrainingResult))
+                throw new Exception(GetErrorMessage(ModelType.Multiplicative));
         }
 
         public override object GetRequestForService()
@@ -174,6 +180,11 @@ namespace KadOzenka.Dal.Modeling
                 throw new Exception($"Не найдено результатов обучения модели типа: '{InputParameters.ModelType.GetEnumDescription()}'");
 
             return trainingResult;
+        }
+
+        private string GetErrorMessage(ModelType type)
+        {
+            return $"{type.GetEnumDescription()} модель '{Model.Name}' не была обучена. Расчет невозможен.";
         }
 
 
