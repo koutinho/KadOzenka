@@ -162,9 +162,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         #endregion
 
-        #region Helpers
+        #region Support
 
-        public string GetCadastralDistrict(string cadastralQuartal)
+        protected string GetCadastralDistrict(string cadastralQuartal)
         {
             return string.IsNullOrWhiteSpace(cadastralQuartal) 
                 ? null

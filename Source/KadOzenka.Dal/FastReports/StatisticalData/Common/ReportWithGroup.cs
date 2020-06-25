@@ -5,39 +5,28 @@ using System.Linq;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.UI.Registers.Reports.Model;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ObjectModel.KO;
+using KadOzenka.Dal.FastReports.StatisticalData.Common.Entities;
 
-namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
+namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
-    public abstract class BaseCalculationParamsReport : StatisticalDataReport
+    public abstract class ReportWithGroup : StatisticalDataReport
     {
-        protected class Group
-        {
-            public long? Id { get; set; }
-            public string Name { get; set; }
-        }
-
         protected abstract StatisticalDataType GetReportType();
 
-        protected List<Group> GetGroups(List<long> taskIds)
+        protected long GetGroupIdFromFilter(NameValueCollection query)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
-                .Select(x => x.ParentGroup.Id)
-                .Select(x => x.ParentGroup.GroupName)
-                .Execute()
-                .Select(x => new Group
-                {
-                    Id = x.ParentGroup?.Id,
-                    Name = x.ParentGroup?.GroupName
-                })
-                .Where(x => x.Id != null)
-                .DistinctBy(x => x.Id).ToList();
+            var groupId = GetQueryParam<long>("Groups", query);
+            if (groupId == 0)
+                throw new Exception("Не выбрана группа");
+
+            return groupId;
         }
+
 
         public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
         {
@@ -56,7 +45,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             }
         }
 
-        protected List<long> GetTaskIdsFromSession(StatisticalDataType reportType)
+
+        #region Support
+
+        private List<long> GetTaskIdsFromSession(StatisticalDataType reportType)
         {
             var reportCode = reportType.GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
                 nameof(StatisticalDataFmReportCodeAttribute.Code));
@@ -66,13 +58,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return JsonConvert.DeserializeObject<List<long>>(taskIdsStr);
         }
 
-        protected long GetGroupIdFromFilter(NameValueCollection query)
+        private List<Group> GetGroups(List<long> taskIds)
         {
-            var groupId = GetQueryParam<long>("Groups", query);
-            if (groupId == 0)
-                throw new Exception("Не выбрана группа");
-
-            return groupId;
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+                .Select(x => x.ParentGroup.Id)
+                .Select(x => x.ParentGroup.GroupName)
+                .Execute()
+                .Select(x => new Group
+                {
+                    Id = x.ParentGroup?.Id,
+                    Name = x.ParentGroup?.GroupName
+                })
+                .Where(x => x.Id != null)
+                .DistinctBy(x => x.Id).ToList();
         }
+
+        #endregion
     }
 }

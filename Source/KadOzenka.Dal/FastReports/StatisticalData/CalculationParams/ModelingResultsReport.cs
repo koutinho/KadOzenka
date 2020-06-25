@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -12,7 +13,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
-    public class ModelingResultsReport : BaseCalculationParamsReport
+    public class ModelingResultsReport : ReportWithGroup
     {
         protected override string TemplateName(NameValueCollection query)
         {

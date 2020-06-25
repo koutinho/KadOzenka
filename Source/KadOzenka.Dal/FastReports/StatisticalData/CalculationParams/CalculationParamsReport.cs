@@ -4,13 +4,14 @@ using System.Data;
 using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Model.Dto;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
-    public class CalculationParamsReport : BaseCalculationParamsReport
+    public class CalculationParamsReport : ReportWithGroup
     {
         private static readonly List<RegisterAttributeType> QuantitativeTypes = new List<RegisterAttributeType>
         {
