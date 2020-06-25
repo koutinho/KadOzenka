@@ -201,15 +201,15 @@
     <Content Include="Config\Common\MainMenu.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Param\ModelingProcessConfig.Dev.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <Content Include="Config\Param\ModelingProcessConfig.Dev.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     <Content Include="Config\Param\ReonService.Ppr.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Param\ModelingProcessConfig.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <Content Include="Config\Param\ModelingProcessConfig.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     <Content Include="Config\Param\ReonServiceConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1125,6 +1125,7 @@
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx" />
     <ConfigPath Remove="Config\Reports\AdditionalFormsResultsAnalysisReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />

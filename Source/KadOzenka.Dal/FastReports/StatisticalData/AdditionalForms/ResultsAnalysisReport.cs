@@ -24,7 +24,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
-			var reportType = GetQueryParam<string>("ReportType", query);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");

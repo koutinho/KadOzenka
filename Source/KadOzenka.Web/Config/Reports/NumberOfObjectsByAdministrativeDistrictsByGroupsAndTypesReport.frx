@@ -43,7 +43,7 @@ namespace FastReport
       table[2, 0].SetStyle(table[0,0]);
       
       int row=2;
-      String currentParentName = null;
+      String currentParentName = string.Empty;
       while(row &lt; table.RowCount){
         int rowSpan = table[1, row].RowSpan;
         table[0, row].SetStyle(table[1,row]);
