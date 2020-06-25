@@ -58,6 +58,7 @@
     <None Remove="Config\Param\Core.SystemCommon.Ppr.xml" />
     <None Remove="Config\Param\Core.SystemCommon.Prod.xml" />
     <None Remove="Config\Param\FmReportTypes.xml" />
+    <None Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
     <None Remove="Config\Param\ModelingProcessConfig.xml" />
     <None Remove="Config\Param\Postgres.Backup.Dev.xml" />
     <None Remove="Config\Param\Postgres.Backup.Ppr.xml" />
@@ -198,6 +199,9 @@
 
   <ItemGroup>
     <Content Include="Config\Common\MainMenu.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\ModelingProcessConfig.Dev.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Param\ReonService.Ppr.xml">
@@ -1090,6 +1094,7 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
     <ConfigPath Remove="Config\Param\ModelingProcessConfig.xml" />
     <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
