@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -34,18 +32,17 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        //TODO вынести в конфиг
         public override string GetUrl()
         {
-            //ConfigurationManager.AppSettings["trainModelLink"];
+            var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
                 case ModelType.Linear:
-                    return $"http://82.148.28.237:5000/api/teach/lin/{Model.InternalName}";
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
                 case ModelType.Exponential:
-                    return $"http://82.148.28.237:5000/api/teach/exp/{Model.InternalName}";
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{Model.InternalName}";
                 case ModelType.Multiplicative:
-                    return $"http://82.148.28.237:5000/api/teach/mult/{Model.InternalName}";
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{Model.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }

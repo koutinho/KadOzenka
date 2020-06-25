@@ -30,10 +30,9 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        //TODO вынести в конфиг
         public override string GetUrl()
         {
-            return "http://82.148.28.237:5000/api/corr/";
+            return ModelingProcessConfig.Current.CorrelationUrl;
         }
 
         public override void PrepareData()

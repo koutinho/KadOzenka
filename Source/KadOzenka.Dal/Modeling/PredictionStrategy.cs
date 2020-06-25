@@ -28,11 +28,9 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        //TODO вынести в конфиг
         public override string GetUrl()
         {
-            //ConfigurationManager.AppSettings["trainModelLink"];
-            return $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
+            return $"{ModelingProcessConfig.Current.PredictionUrl}/{Model.InternalName}";
         }
 
         public override void PrepareData()
