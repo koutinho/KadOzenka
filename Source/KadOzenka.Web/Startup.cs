@@ -19,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 using Platform.Web;
 using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,6 +76,7 @@ namespace CIPJS
 	        services.AddTransient<DashboardWidgetService>();
 	        services.AddTransient<StatisticsReportsService>();
 	        services.AddTransient<StatisticsReportsExportService>();
+	        services.AddTransient<TourService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

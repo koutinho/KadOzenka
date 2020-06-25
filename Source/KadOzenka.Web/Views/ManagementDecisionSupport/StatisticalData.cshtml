@@ -17,6 +17,15 @@
     }
 </style>
 
+<!-- Модальное окно для отчетов, в которых нужны дополнительные параметры -->
+<div id="reportsWithAdditionalConfigurationModal" style="display: none; padding: 1% 2% 0 2%;">
+    <div class="form-horizontal col-sm-12">
+        <div class="col-sm-12">
+            <div id="reportsWithAdditionalConfigurationModalContent"></div>
+        </div>
+    </div>
+</div>
+
 <div class="form-horizontal col-sm-12" style="height: 100%; padding: 1%">
     <div class="form-group">
     </div>
@@ -219,8 +228,9 @@
             </div>
             <div class="col-sm-11 subgroup-first-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType)
-        .Label(StatisticalDataType.PricingFactorsCompositionForPreviousTours.GetEnumDescription())
-        .Value((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)
+                    .Label(StatisticalDataType.PricingFactorsCompositionForPreviousTours.GetEnumDescription())
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)
+                    .HtmlAttributes(new { @class = "pricingFactorsCompositionForPreviousTours" })
                     .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
@@ -274,6 +284,8 @@
     <div id="reportViewerWindow"></div>
 </div>
 
+
+<script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js" charset="utf-8"></script>
 <script type="text/javascript">
     var dialog;
@@ -294,6 +306,7 @@
         }).data('kendoWindow');
 
         $('input[type="radio"][name="ReportType"]').change(onReportTypeChanged);
+        $(".pricingFactorsCompositionForPreviousTours").click(onCompositionForPreviousToursClick);
     });
 
 
@@ -320,8 +333,11 @@
 
     function getTaskData() {
         return {
-            tourId: $('#TourId').data('kendoDropDownList').value()
+            tourId: getSelectedTourId()
         }
+    }
+    function getSelectedTourId() {
+        return $('#TourId').data('kendoDropDownList').value();
     }
 
     function onShowViewerClicked() {
@@ -330,29 +346,30 @@
 
         kendo.ui.progress($('body'), true);
         $.post("/ManagementDecisionSupport/GetStatisticalDataReportUrl", formObject).done(function(response) {
-            if (response.Errors) {
-                var errors = getErrors(response.Errors);
-                Common.ShowError(errors);
-                return;
-            }
-            window1.refresh({
-                url: response.reportUrl
-            });
-
-            //kendo.ui.progress($('#reportViewerWindow'), true);
-            //kendoWindow.bind('refresh', function () {
-            //    kendo.ui.progress($('#reportViewerWindow'), false);
-            //});
-
-            window1.center();
-            window1.open();
-            window1.maximize();
-
+            openReportViewer(response);
         }).fail(function (response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);
         }).always(function () {
             kendo.ui.progress($('body'), false);
         });
+    }
+
+    function openReportViewer(response) {
+        if (response.Errors) {
+            var errors = getErrors(response.Errors);
+            Common.ShowError(errors);
+            return;
+        }
+        window1.refresh({
+            url: response.reportUrl
+        });
+        //kendo.ui.progress($('#reportViewerWindow'), true);
+        //kendoWindow.bind('refresh', function () {
+        //    kendo.ui.progress($('#reportViewerWindow'), false);
+        //});
+        window1.center();
+        window1.open();
+        window1.maximize();
     }
 
     function enableFormButton() {
@@ -394,5 +411,27 @@
             enableTaskFilter(true);
             enableTour(true);
         }
+    }
+
+
+    function onCompositionForPreviousToursClick() {
+        var tourId = getSelectedTourId();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("PreviousToursReportConfiguration", "ManagementDecisionSupport")',
+            data: { lastTourId: tourId },
+            success: function (response) {
+                $("#reportsWithAdditionalConfigurationModalContent").html(response);
+                var modal = $("#reportsWithAdditionalConfigurationModal");
+                ShowModal(modal, '50%', '25%', "Параметры отчета");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 </script>

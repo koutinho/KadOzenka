@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -22,16 +26,20 @@ namespace KadOzenka.Web.Controllers
 		private readonly DashboardWidgetService _dashboardWidgetService;
 		private readonly StatisticsReportsService _statisticsReportsService;
 		private readonly StatisticsReportsExportService _statisticsReportsExportService;
+		private readonly TourService _tourService;
 
-		public ManagementDecisionSupportController(MapBuildingService mapBuildingService, DashboardWidgetService dashboardWidgetService, StatisticsReportsService statisticsReportsService, StatisticsReportsExportService statisticsReportsExportService)
-		{
-			_mapBuildingService = mapBuildingService;
-			_dashboardWidgetService = dashboardWidgetService;
-			_statisticsReportsService = statisticsReportsService;
-			_statisticsReportsExportService = statisticsReportsExportService;
-		}
+        public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
+            DashboardWidgetService dashboardWidgetService, StatisticsReportsService statisticsReportsService,
+            StatisticsReportsExportService statisticsReportsExportService, TourService tourService)
+        {
+            _mapBuildingService = mapBuildingService;
+            _dashboardWidgetService = dashboardWidgetService;
+            _statisticsReportsService = statisticsReportsService;
+            _statisticsReportsExportService = statisticsReportsExportService;
+            _tourService = tourService;
+        }
 
-		#region MapBuilding
+        #region MapBuilding
 
 		public ActionResult Map()
 		{
@@ -214,6 +222,37 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { reportUrl = $"/Report/Viewer?reportTypeId={fmReportTypeValue}" });
 		}
 
-		#endregion StatisticalData
-	}
+
+        #region Reports with additional configuration
+
+        [HttpGet]
+        public ActionResult PreviousToursReportConfiguration(long? lastTourId)
+        {
+            var lastTour = _tourService.GetTourById(lastTourId);
+            var previousTours = OMTour.Where(x => x.Year <= lastTour.Year).OrderBy(x => x.Year).SelectAll().Execute();
+
+            var model = new PreviousToursConfigurationModel
+            {
+                AvailableTours = previousTours.Select(x => new SelectListItem
+                {
+                    Text = x.Year?.ToString(),
+                    Value = x.Id.ToString()
+                }).ToList()
+            };
+
+            return PartialView("~/Views/ManagementDecisionSupport/Partials/PreviousToursReportConfiguration.cshtml", model);
+        }
+
+        [HttpGet]
+        public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
+        {
+            var reportModel = model.Map();
+
+            return GetStatisticalDataReportUrl(reportModel);
+        }
+
+        #endregion
+
+        #endregion StatisticalData
+    }
 }

@@ -80,6 +80,11 @@ namespace KadOzenka.Dal.Tasks
             return GetTaskDocumentInfoList().Where(x => x.TourId == tourId).ToList();
         }
 
+        public List<TaskDocumentInfoDto> GetTasksByTour(List<long?> tourIds)
+        {
+            return GetTaskDocumentInfoList().Where(x => tourIds.Contains(x.TourId)).ToList();
+        }
+
         public void FetchGbuData(List<DataMappingDto> list, long objectId, OMTask task, string postfix)
         {
             string sql = $@"select DISTINCT object_id, attribute_id, value, ot from gbu_source2_a_{postfix}

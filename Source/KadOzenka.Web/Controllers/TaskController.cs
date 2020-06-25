@@ -24,6 +24,7 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
+using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -150,16 +151,21 @@ namespace KadOzenka.Web.Controllers
 		{
 			var tasks = TaskService.GetTasksByTour(tourId);
 
-			var models = tasks.Select(x => new SelectListItem
-			{
-				Value = x.TaskId.ToString(),
-				Text = TaskService.GetTemplateForTaskName(x)
-			});
+            var models = MapToSelectListItems(tasks);
 
-			return Json(models);
+            return Json(models);
 		}
 
-		public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
+        public JsonResult GetTasksByTours(List<long?> tourIds)
+        {
+            var tasks = TaskService.GetTasksByTour(tourIds);
+
+            var models = MapToSelectListItems(tasks);
+
+            return Json(models);
+        }
+
+        public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
 		{
 			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
 			if (exceptedAttributes != null && exceptedAttributes.Count > 0)
@@ -226,9 +232,20 @@ namespace KadOzenka.Web.Controllers
 		}
 
 
-		#region Support Methods
+        #region Support Methods
 
-		public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
+        private IEnumerable<SelectListItem> MapToSelectListItems(List<TaskDocumentInfoDto> tasks)
+        {
+            var models = tasks.Select(x => new SelectListItem
+            {
+                Value = x.TaskId.ToString(),
+                Text = TaskService.GetTemplateForTaskName(x)
+            });
+
+            return models;
+        }
+
+        public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
 		{
 			var message = new StringBuilder("Один из параметров не выбран, строки №:");
 			var withErrors = false;

@@ -1,0 +1,109 @@
+﻿@model KadOzenka.Web.Models.ManagementDecisionSupport.PreviousToursConfigurationModel
+
+<div class="form-horizontal col-sm-12">
+    @using (Html.BeginForm("GetPreviousToursReportReport", "ManagementDecisionSupport", FormMethod.Get, htmlAttributes: new {id = "getReportForm" }))
+    {
+        foreach (var tour in Model.AvailableTours)
+        {
+            <div id="checkboxes">
+                <label>
+                    <input type="checkbox" id="@tour.Value" value="@tour.Value" />
+                    <label for="@tour.Value">@tour.Text</label>
+                </label>
+            </div>
+        }
+
+        <div id="tasksFilterBlock" class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor("Задания на оценку:")
+            </div>
+            <div class="col-sm-9">
+                <div id="taskFilterForReport"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2 col-sm-offset-10">
+                <input type="button" id="getReportBtn" class="k-button" value="Сформировать отчет" />
+            </div>
+        </div>
+    }
+</div>
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        initTasks();
+
+        $('#checkboxes input[type="checkbox"]').each(function() {
+            $(this).change(initTasks);
+        });
+
+        $("#getReportBtn").click(getReport);
+    });
+
+    
+
+    function initTasks() {
+        var tourIds = getCheckedTours();
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTasksByTours", "Task")',
+                    data: { tourIds: tourIds},
+                    dataType: 'json',
+                    traditional: true
+                }
+            }
+        });
+        var tasks = $('#taskFilterForReport').data("kendoMultiSelect");
+        if (tasks) {
+            tasks.setDataSource(dataSource);
+            tasks.value(-1);
+        }
+        else {
+            $("#taskFilterForReport").kendoMultiSelect({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
+                dataSource: dataSource,
+                filter: "contains"
+            });
+        }
+    }
+
+
+    function getCheckedTours() {
+        var checkedTours = [];
+        $('#checkboxes input:checked').each(function() {
+            checkedTours.push($(this).val());
+        });
+        return checkedTours;
+    }
+
+
+    function getReport() {
+        var form = $('#getReportForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.SelectedTasks = $("#taskFilterForReport").data("kendoMultiSelect").value();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            traditional: true,
+            success: function (response) {
+                openReportViewer(response);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+</script>
