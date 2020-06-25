@@ -10,7 +10,7 @@
 
 <script id="gridToolbarTemplate" type="text/x-kendo-template">
     <div style="float: left">
-        <a class="k-button k-button-icon" id="getClarificationBtn" style="width:250px;">
+        <a class="k-button k-button-icon k-state-disabled" id="getClarificationBtn" style="width:250px;">
             <span class="k-icon k-i-question" style="padding-right: 5%"></span>
             Предоставить разъяснения
         </a>
@@ -21,6 +21,8 @@
     $(document).ready(function () {
         $("#grid").kendoGrid({
             toolbar: kendo.template($("#gridToolbarTemplate").html()),
+            scrollable: true,
+            selectable: true,
             dataSource: {
                 transport: {
                     read: {
@@ -83,27 +85,52 @@
             });
         });
 
+
+        $("#grid").data("kendoGrid").bind('change', onGridChanged);
         $('#getClarificationBtn').on('click', getClarification);
     });
 
 
 
+    function onGridChanged() {
+        var selectedRow = getSelectedRow();
+        if (selectedRow.length === 0) {
+            $('#getClarificationBtn').addClass('k-state-disabled');
+        }
+        else {
+            $('#getClarificationBtn').removeClass('k-state-disabled');
+        }
+    }
+
+
     function getClarification() {
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("FormClarification", "Unit")',
-            data: { unitId: '@Model' },
-            success: function () {
-                window.open('@Url.Action("DownloadClarification", "Unit")' + '?unitId=' + '@Model');
-            },
-            error: function (response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
+        var selectedRow = getSelectedRow();
+        if (selectedRow.length !== 0) {
+            var data = $("#grid").data("kendoGrid").dataItem(selectedRow);
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("FormClarification", "Unit")',
+                data: { unitId: data.Id },
+                success: function() {
+                    window.open('@Url.Action("DownloadClarification", "Unit")' + '?unitId=' +  data.Id);
+                },
+                error: function(response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        } else {
+            Common.ShowError("Выберите строку");
+        }
+    }
+
+
+    function getSelectedRow() {
+        var grid = $("#grid").data("kendoGrid");
+        return  grid.select();
     }
 
     </script>
