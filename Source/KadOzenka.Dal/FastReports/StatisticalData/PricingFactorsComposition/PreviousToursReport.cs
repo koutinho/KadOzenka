@@ -10,6 +10,7 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
@@ -48,30 +49,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return "PricingFactorsCompositionForPreviousToursReport";
         }
 
-        public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
+        public override void InitializeFilterValues(long objId, string senderName, bool initialization, List<FilterValue> filterValues)
         {
-            if (!initialisation)
-                return;
-
-            var groupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "Groups");
-            if (groupsFilterValue != null)
-            {
-                var groups = OMGroup.Where(x => true).SelectAll().Execute();
-
-                groupsFilterValue.ReportParameters = new List<ReportParameter>();
-                groupsFilterValue.ReportParameters.AddRange(groups.Select(x => new ReportParameter { Value = $"{x.GroupName}", Key = $"key:{x.Id}" }));
-            }
+            GroupFilter.InitializeFilterValues(StatisticalDataType.PricingFactorsCompositionForPreviousTours, initialization, filterValues);
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-            var tourId = GetTourId(query);
-            var previousTours = GetPreviousTours(tourId);
+            var taskIds = GetTaskIdList(query)?.ToList();
 
             var groupId = GetGroupIdFromFilter(query);
             var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
-            var operations = GetOperations(previousTours, model?.Id);
+            var operations = GetOperations(taskIds, model?.Id);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -83,28 +73,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #region Support Methods
 
-        private List<OMTour> GetPreviousTours(long tourId)
+        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId)
         {
-            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
-            if (tour == null)
-                throw new Exception($"Не найден тур с Id='{tourId}'");
-
-            return OMTour.Where(x => x.Year <= tour.Year).OrderBy(x => x.Year).SelectAll().Execute();
-        }
-
-        protected long GetGroupIdFromFilter(NameValueCollection query)
-        {
-            var groupId = GetQueryParam<long>("Groups", query);
-            if (groupId == 0)
-                throw new Exception("Не выбрана группа");
-
-            return groupId;
-        }
-
-        private List<ReportItem> GetOperations(List<OMTour> tours, long? modelId)
-        {
-            var tourIds = tours.Select(x => x.Id).Distinct().ToList();
-            var units = GetUnitsByTour(tourIds);
+            var tours = GetToursByTasks(taskIds);
+            var tourIds = tours.Select(x => x.Id).ToList();
+            var units = GetUnits(taskIds);
             //для тестирования
             //modelId = 7977478;
             //var units = new List<OMUnit>
@@ -115,7 +88,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             if (units == null || units.Count == 0)
                 return new List<ReportItem>();
 
-            var tourAttributes = GetTourAttributes(tourIds);
+            var tourAttributes = GetToursAttributes(tourIds);
             var rosreestrAttributes = GetRosreestrAttributes();
             var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
             var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
@@ -149,15 +122,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return result;
         }
 
-        private List<OMUnit> GetUnitsByTour(List<long> tourIds)
+        private List<OMTour> GetToursByTasks(List<long> taskIds)
         {
-            if (tourIds == null || tourIds.Count == 0)
-                return new List<OMUnit>();
-
-            return OMUnit.Where(x => tourIds.Contains((long)x.TourId)).SelectAll().Execute();
+            return OMTask.Where(x => taskIds.Contains(x.Id))
+                .Select(x => x.ParentTour.Id)
+                .Select(x => x.ParentTour.Year)
+                .SelectAll()
+                .Execute()
+                .Select(x => x.ParentTour)
+                .DistinctBy(x => x.Id)
+                .ToList();
         }
 
-        private Dictionary<long, TourAttributesFromSettings> GetTourAttributes(List<long> tourIds)
+        private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<long> tourIds)
         {
             var tourAttributes = new Dictionary<long, TourAttributesFromSettings>();
             tourIds.ForEach(tourId =>

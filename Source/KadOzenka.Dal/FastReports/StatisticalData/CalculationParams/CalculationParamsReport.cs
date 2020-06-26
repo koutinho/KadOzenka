@@ -8,10 +8,11 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Model.Dto;
 using ObjectModel.KO;
+using Core.UI.Registers.Reports.Model;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
-    public class CalculationParamsReport : ReportWithGroup
+    public class CalculationParamsReport : StatisticalDataReport
     {
         private static readonly List<RegisterAttributeType> QuantitativeTypes = new List<RegisterAttributeType>
         {
@@ -24,9 +25,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return "CalculationParamsReport";
         }
 
-        protected override StatisticalDataType GetReportType()
+        public override void InitializeFilterValues(long objId, string senderName, bool initialization, List<FilterValue> filterValues)
         {
-            return StatisticalDataType.CalculationParams;
+            GroupFilter.InitializeFilterValues(StatisticalDataType.CalculationParams, initialization, filterValues);
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)

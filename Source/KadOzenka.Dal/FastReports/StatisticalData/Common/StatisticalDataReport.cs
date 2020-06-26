@@ -70,6 +70,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             return tourId.Value;
         }
 
+        protected long GetGroupIdFromFilter(NameValueCollection query)
+        {
+            var groupId = GetQueryParam<long>("Groups", query);
+            if (groupId == 0)
+                throw new Exception("Не выбрана группа");
+
+            return groupId;
+        }
+
         protected void InitialiseGbuAttributesFilterValue(params FilterValue[] filterValues)
         {
             if (filterValues == null)

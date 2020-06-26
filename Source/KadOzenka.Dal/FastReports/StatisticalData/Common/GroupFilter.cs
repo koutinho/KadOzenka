@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
@@ -14,29 +12,16 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common.Entities;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
-    public abstract class ReportWithGroup : StatisticalDataReport
+    public static class GroupFilter
     {
-        protected abstract StatisticalDataType GetReportType();
-
-        protected long GetGroupIdFromFilter(NameValueCollection query)
+        public static void InitializeFilterValues(StatisticalDataType reportType, bool initialization, List<FilterValue> filterValues)
         {
-            var groupId = GetQueryParam<long>("Groups", query);
-            if (groupId == 0)
-                throw new Exception("Не выбрана группа");
-
-            return groupId;
-        }
-
-
-        public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
-        {
-            if (!initialisation)
+            if (!initialization)
                 return;
 
             var groupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "Groups");
             if (groupsFilterValue != null)
             {
-                var reportType = GetReportType();
                 var taskIds = GetTaskIdsFromSession(reportType);
                 var groups = GetGroups(taskIds);
 
@@ -46,9 +31,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         }
 
 
-        #region Support
+        #region Support Methods
 
-        private List<long> GetTaskIdsFromSession(StatisticalDataType reportType)
+        private static List<long> GetTaskIdsFromSession(StatisticalDataType reportType)
         {
             var reportCode = reportType.GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
                 nameof(StatisticalDataFmReportCodeAttribute.Code));
@@ -58,19 +43,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             return JsonConvert.DeserializeObject<List<long>>(taskIdsStr);
         }
 
-        private List<Group> GetGroups(List<long> taskIds)
+        private static List<Group> GetGroups(List<long> taskIds)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
-                .Select(x => x.ParentGroup.Id)
-                .Select(x => x.ParentGroup.GroupName)
+            var groupIds = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.GroupId != null)
+                .Select(x => x.GroupId)
                 .Execute()
-                .Select(x => new Group
-                {
-                    Id = x.ParentGroup?.Id,
-                    Name = x.ParentGroup?.GroupName
-                })
-                .Where(x => x.Id != null)
-                .DistinctBy(x => x.Id).ToList();
+                .Select(x => x.GroupId)
+                .Distinct();
+
+            return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Execute()
+                .Select(x => new Group { Id = x.Id, Name = x.GroupName }).ToList();
         }
 
         #endregion

@@ -10,19 +10,20 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
+using Core.UI.Registers.Reports.Model;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
-    public class ModelingResultsReport : ReportWithGroup
+    public class ModelingResultsReport : StatisticalDataReport
     {
         protected override string TemplateName(NameValueCollection query)
         {
             return "CalculationParamsModelingResultsReport";
         }
 
-        protected override StatisticalDataType GetReportType()
+        public override void InitializeFilterValues(long objId, string senderName, bool initialization, List<FilterValue> filterValues)
         {
-            return StatisticalDataType.ModelingResults;
+            GroupFilter.InitializeFilterValues(StatisticalDataType.ModelingResults, initialization, filterValues);
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
