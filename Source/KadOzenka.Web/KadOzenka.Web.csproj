@@ -872,7 +872,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Config\LeftPanel\" />
     <Folder Include="Pages\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
@@ -1094,6 +1093,7 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\LeftPanel\Help.xml" />
     <ConfigPath Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
     <ConfigPath Remove="Config\Param\ModelingProcessConfig.xml" />
     <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
