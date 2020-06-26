@@ -93,15 +93,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
             var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
 
-            var groupedFactors = modelId == null 
-                ? new List<FactorsService.PricingFactors>() 
+            var groupedFactors = modelId == null
+                ? new List<FactorsService.PricingFactors>()
                 : FactorsService.GetGroupedModelFactors(modelId.Value);
+            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
+            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
 
-            var result = new List<ReportItem>();
+            var items = new List<ReportItem>();
             units.ToList().ForEach(unit =>
             {
                 var tour = tours.FirstOrDefault(x => x.Id == unit.TourId);
-                var objectFactors = FactorsService.GetPricingFactorsForUnit(unit.Id, groupedFactors);
+                var objectFactors = pricingFactors.TryGetValue(unit.Id, out var value) ? value : attributes;
+
                 var item = new ReportItem
                 {
                     Tour = tour,
@@ -116,10 +119,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 SetAttributesFromTourSettings(objectAttributes, tour?.Id, tourAttributes, item);
                 SetAttributesAccordingToObjectType(unit.PropertyType_Code, item);
 
-                result.Add(item);
+                items.Add(item);
             });
 
-            return result;
+            return items;
         }
 
         private List<OMTour> GetToursByTasks(List<long> taskIds)

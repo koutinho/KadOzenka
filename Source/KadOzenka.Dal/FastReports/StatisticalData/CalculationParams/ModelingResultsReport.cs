@@ -11,6 +11,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
 using Core.UI.Registers.Reports.Model;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -32,9 +33,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var groupId = GetGroupIdFromFilter(query);
 
             var group = GroupService.GetGroupById(groupId);
-            var model = ModelService.GetModelByGroupId(group.Id);
+            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
-            var operations = GetOperations(taskIdList, model.Id);
+            var operations = GetOperations(taskIdList, model?.Id);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -48,25 +49,29 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<long> taskIds, long modelId)
+        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId)
         {
-            var groupedFactors = FactorsService.GetGroupedModelFactors(modelId);
-            if (groupedFactors.Count == 0)
-                return new List<ReportItem>();
-
             var units = GetUnits(taskIds);
             //для тестирования
             //id объекта, у которого настроены показатели вручную - 11404578
             //объект, у которого есть адрес в гбу
             //var objectIdForTesting = 11188991;
             //units[1].ObjectId = objectIdForTesting;
+            if (units == null || units.Count == 0)
+                return new List<ReportItem>();
 
             var addresses = GetAddresses(units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList());
+
+            var groupedFactors = modelId == null
+                ? new List<FactorsService.PricingFactors>()
+                : FactorsService.GetGroupedModelFactors(modelId.Value);
+            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
+            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
 
             var items = new List<ReportItem>();
             units.ForEach(unit =>
             {
-                var objectFactors = FactorsService.GetPricingFactorsForUnit(unit.Id, groupedFactors);
+                var objectFactors = pricingFactors.TryGetValue(unit.Id, out var value) ? value : attributes;
 
                 var objectAddress = addresses.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 

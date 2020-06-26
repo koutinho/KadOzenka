@@ -22,6 +22,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public List<PricingFactors> GetGroupedModelFactors(long modelId)
         {
             var factors = ModelService.GetModelFactors(modelId);
+
             var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new PricingFactors
             {
                 RegisterId = (int)x.Key,
@@ -31,22 +32,23 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                     Name = y.Factor
                 }).ToList()
             }).ToList();
+
             return groupedFactors;
         }
 
-        public List<PricingFactor> GetPricingFactorsForUnit(long unitIds, List<PricingFactors> unitFactors)
+        public Dictionary<long, List<PricingFactor>> GetPricingFactorsForUnits(List<long> unitIds, List<PricingFactors> unitFactors)
         {
-            var attributes = new List<PricingFactor>();
+            var attributes = new Dictionary<long, List<PricingFactor>>();
             unitFactors.ForEach(factor =>
             {
                 //улучшение производительности: не делаем join c юнитами, если можем найти атрибут с ID основного ключа
                 var cacheAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == factor.RegisterId && x.IsPrimaryKey);
 
                 var condition = cacheAttribute == null
-                    ? new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.Equal, unitIds)
+                    ? new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.In, unitIds.Select(x => (double)x))
                     : new QSConditionSimple
                     {
-                        ConditionType = QSConditionType.Equal,
+                        ConditionType = QSConditionType.In,
                         LeftOperand = new QSColumnSimple(cacheAttribute.Id),
                         RightOperand = new QSColumnConstant(unitIds)
                     };
@@ -63,8 +65,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 {
                     factor.Attributes.ForEach(attribute =>
                     {
+                        var unitId = row["ID"].ParseToLong();
                         var value = row[attribute.Id.ToString()].ParseToStringNullable();
-                        attributes.Add(new PricingFactor
+
+                        if (!attributes.ContainsKey(unitId))
+                            attributes.Add(unitId, new List<PricingFactor>());
+
+                        attributes[unitId].Add(new PricingFactor
                         {
                             Id = attribute.Id,
                             Name = attribute.Name,
@@ -73,12 +80,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                     });
                 }
             });
-
-            //если в БД не было найдено значений для объекта, возвращаем аттрибуты с пустым значением
-            if (attributes.Count == 0)
-            {
-                return unitFactors.SelectMany(x => x.Attributes).ToList();
-            }
 
             return attributes;
         }
