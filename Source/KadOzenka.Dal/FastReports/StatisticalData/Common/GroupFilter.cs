@@ -49,7 +49,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                 .Select(x => x.GroupId)
                 .Execute()
                 .Select(x => x.GroupId)
-                .Distinct();
+                .Distinct()
+                .ToList();
+
+            if(groupIds.Count == 0)
+                return new List<Group>();
 
             return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Execute()
                 .Select(x => new Group { Id = x.Id, Name = x.GroupName }).ToList();
