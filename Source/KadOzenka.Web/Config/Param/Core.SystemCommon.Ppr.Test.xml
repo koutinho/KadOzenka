@@ -7,6 +7,7 @@
     <KendoTheme>silver.genix</KendoTheme>
     <DefaultLayout>_LayoutLeftPanel</DefaultLayout>
     <DesignType>LeftPanel</DesignType>
+    <ShowHelpSection>true</ShowHelpSection>
 
     <ActiveDirectoryDomain>cipgs.ru</ActiveDirectoryDomain>
 
