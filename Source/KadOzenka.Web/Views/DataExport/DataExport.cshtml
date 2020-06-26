@@ -428,8 +428,19 @@
 
             $.ajax({
                 type: 'GET',
-                url: '/CoreUi/GetAttributes',
-                data: { registerViewId: registerViewId },
+                @if ((long)ViewBag.MainRegisterId == 100)
+                {
+                    <text>
+                         url: '/CoreUi/GetAttributes',
+                         data: { registerViewId: registerViewId },
+                     </text>
+                }
+                else
+                {
+                    <text>
+                        url: '/DataImport/GetTreeAttributes',
+                    </text>
+                }
                 success: function (data) {
                     if (data) {
                         var filtered = data;

@@ -42,6 +42,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             using (var ts = new TransactionScope())
             {
                 var numberOfExistingRegistersWithCharacteristics = GetNumberOfExistingRegistersWithCharacteristics();
+                numberOfExistingRegistersWithCharacteristics++;
                 var registerName = $"Gbu.Custom.Source{numberOfExistingRegistersWithCharacteristics}";
                 var allpriTable = $"gbu_custom_source_{numberOfExistingRegistersWithCharacteristics}";
                 var registerDescription = $"Источник: {sourceDto.RegisterDescription}";
