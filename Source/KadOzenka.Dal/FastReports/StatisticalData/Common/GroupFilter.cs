@@ -7,13 +7,20 @@ using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using ObjectModel.KO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common.Entities;
+using KadOzenka.Dal.Groups;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
     public static class GroupFilter
     {
+        public static GroupService GroupService { get; set; }
+
+        static GroupFilter()
+        {
+            GroupService = new GroupService();
+        }
+
         public static void InitializeFilterValues(StatisticalDataType reportType, bool initialization, List<FilterValue> filterValues)
         {
             if (!initialization)
@@ -45,18 +52,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         private static List<Group> GetGroups(List<long> taskIds)
         {
-            var groupIds = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.GroupId != null)
-                .Select(x => x.GroupId)
-                .Execute()
-                .Select(x => x.GroupId)
-                .Distinct()
-                .ToList();
-
-            if(groupIds.Count == 0)
-                return new List<Group>();
-
-            return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Execute()
-                .Select(x => new Group { Id = x.Id, Name = x.GroupName }).ToList();
+            return GroupService.GetGroupsByTasks(taskIds).Select(x => new Group { Id = x.Id, Name = x.GroupName }).ToList();
         }
 
         #endregion

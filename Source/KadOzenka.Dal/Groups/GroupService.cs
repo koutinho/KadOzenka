@@ -177,6 +177,23 @@ namespace KadOzenka.Dal.Groups
 	        return models;
         }
 
+        public List<OMGroup> GetGroupsByTasks(List<long> taskIds)
+        {
+            if (taskIds.Count == 0)
+                return new List<OMGroup>();
+
+            var groupIds = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.GroupId != null)
+                .Select(x => x.GroupId)
+                .Execute()
+                .Select(x => x.GroupId)
+                .Distinct()
+                .ToList();
+
+            if (groupIds.Count == 0)
+                return new List<OMGroup>();
+
+            return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Execute().ToList();
+        }
 
         public int AddGroup(GroupDto groupDto)
         {

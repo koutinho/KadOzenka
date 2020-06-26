@@ -1,7 +1,7 @@
 ﻿@model KadOzenka.Web.Models.ManagementDecisionSupport.PreviousToursConfigurationModel
 
 <div class="form-horizontal col-sm-12">
-    @using (Html.BeginForm("GetPreviousToursReportReport", "ManagementDecisionSupport", FormMethod.Get, htmlAttributes: new {id = "getReportForm" }))
+    @using (Html.BeginForm("GetPreviousToursReportReport", "ManagementDecisionSupport", FormMethod.Get, htmlAttributes: new { id = "getReportForm" }))
     {
         foreach (var tour in Model.AvailableTours)
         {
@@ -13,12 +13,30 @@
             </div>
         }
 
-        <div id="tasksFilterBlock" class="form-group">
+        <div class="form-group">
             <div class="col-sm-3">
                 @Html.CustomLabelFor("Задания на оценку:")
             </div>
             <div class="col-sm-9">
                 <div id="taskFilterForReport"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor("Фоновое создание:")
+            </div>
+            <div class="col-sm-9">
+                @Html.CheckBoxFor(x => x.IsInBackground)
+            </div>
+        </div>
+
+        <div id="groupBlock" class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor("Группа:")
+            </div>
+            <div class="col-sm-9">
+                <div id="groupFilterForReport"></div>
             </div>
         </div>
 
@@ -36,16 +54,18 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
-        initTasks();
+        var taskMultiSelect = initTasks();
+        taskMultiSelect.bind("change", initGroups);
+        initGroups();
 
         $('#checkboxes input[type="checkbox"]').each(function() {
             $(this).change(initTasks);
         });
 
+        $("#IsInBackground").change(setGroupBlockVisibility);
         $("#getReportBtn").click(getReport);
     });
 
-    
 
     function initTasks() {
         var tourIds = getCheckedTours();
@@ -62,16 +82,55 @@
         var tasks = $('#taskFilterForReport').data("kendoMultiSelect");
         if (tasks) {
             tasks.setDataSource(dataSource);
-            tasks.value(-1);
         }
         else {
-            $("#taskFilterForReport").kendoMultiSelect({
+            tasks = $('#taskFilterForReport').kendoMultiSelect({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
+                dataSource: dataSource,
+                filter: "contains"
+            }).data("kendoMultiSelect");
+        }
+        return tasks;
+    }
+
+
+    function initGroups() {
+        var taskIds = getSelectedTasks();
+        console.log('initGroups', taskIds);
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetGroupsByTasks", "Tour")',
+                    data: { taskIds: taskIds},
+                    dataType: 'json',
+                    traditional: true
+                }
+            }
+        });
+        var element = $('#groupFilterForReport').data("kendoDropDownList");
+        if (element) {
+            element.setDataSource(dataSource);
+        }
+        else {
+            $('#groupFilterForReport').kendoDropDownList({
                 dataTextField: 'Text',
                 dataValueField: 'Value',
                 optionLabel: " ",
                 dataSource: dataSource,
                 filter: "contains"
             });
+        }
+    }
+
+
+    function setGroupBlockVisibility() {
+        var isBackground = $("#IsInBackground:checked").val();
+        if (isBackground) {
+            $("#groupBlock").show();
+        } else {
+            $("#groupBlock").hide();
         }
     }
 
@@ -85,10 +144,16 @@
     }
 
 
+    function getSelectedTasks() {
+        return $("#taskFilterForReport").data("kendoMultiSelect").value();
+    }
+
+
     function getReport() {
         var form = $('#getReportForm');
         var formObject = Common.Functions.FormToObject(form);
-        formObject.SelectedTasks = $("#taskFilterForReport").data("kendoMultiSelect").value();
+        formObject.GroupId = $("#groupFilterForReport").data("kendoDropDownList").value();
+        formObject.SelectedTasks = getSelectedTasks();
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: form.attr('method'),
@@ -96,7 +161,10 @@
             data: formObject,
             traditional: true,
             success: function (response) {
-                openReportViewer(response);
+                if (response.Message)
+                    Common.ShowMessage(response.Message);
+                if (!formObject.IsInBackground)
+                    openReportViewer(response);
             },
             error: function(response) {
                 Common.ShowError(response.responseText);

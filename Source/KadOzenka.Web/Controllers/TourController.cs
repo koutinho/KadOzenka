@@ -657,6 +657,19 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
+        public JsonResult GetGroupsByTasks(List<long> taskIds)
+        {
+            var groups = GroupService.GetGroupsByTasks(taskIds);
+
+            var items = groups.Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.GroupName
+            });
+
+            return Json(items);
+        }
+
         #region Импорт группы из Excel
 
         [HttpGet]

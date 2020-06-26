@@ -246,8 +246,13 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
-            var reportModel = model.Map();
+            if (model.IsInBackground)
+            {
+                return Content(JsonConvert.SerializeObject(new {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
+                    "application/json");
+            }
 
+            var reportModel = model.Map();
             return GetStatisticalDataReportUrl(reportModel);
         }
 

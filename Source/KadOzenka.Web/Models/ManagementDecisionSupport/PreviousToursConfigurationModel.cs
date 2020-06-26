@@ -6,11 +6,15 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
     public class PreviousToursConfigurationModel
     {
+        public bool IsInBackground { get; set; }
+
         public List<SelectListItem> AvailableTours { get; set; }
         public long[] SelectedTasks{ get; set; }
+        public long? GroupId { get; set; }
 
         public PreviousToursConfigurationModel()
         {
+            IsInBackground = true;
             AvailableTours = new List<SelectListItem>();
         }
 
