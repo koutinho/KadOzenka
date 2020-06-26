@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Model;
@@ -33,16 +34,28 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return groupedFactors;
         }
 
-        public List<PricingFactor> GetPricingFactorsForUnit(long unitId, List<PricingFactors> unitFactors)
+        public List<PricingFactor> GetPricingFactorsForUnit(long unitIds, List<PricingFactors> unitFactors)
         {
             var attributes = new List<PricingFactor>();
             unitFactors.ForEach(factor =>
             {
+                //улучшение производительности: не делаем join c юнитами, если можем найти атрибут с ID основного ключа
+                var cacheAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == factor.RegisterId && x.IsPrimaryKey);
+
+                var condition = cacheAttribute == null
+                    ? new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.Equal, unitIds)
+                    : new QSConditionSimple
+                    {
+                        ConditionType = QSConditionType.Equal,
+                        LeftOperand = new QSColumnSimple(cacheAttribute.Id),
+                        RightOperand = new QSColumnConstant(unitIds)
+                    };
+
                 var query = new QSQuery
                 {
                     MainRegisterID = factor.RegisterId,
                     Columns = factor.Attributes.Select(x => (QSColumn)new QSColumnSimple(x.Id, x.Id.ToString())).ToList(),
-                    Condition = new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.Equal, unitId)
+                    Condition = condition
                 };
 
                 var table = query.ExecuteQuery();
