@@ -1971,6 +1971,154 @@ namespace ObjectModel.KO
                 }
             }
         }
+        public static string GetFormulaKoeff(OMGroup _parent_group, bool upks, string value)
+        {
+            string res = string.Empty;
+            if (_parent_group == null) return res;
+
+            if (_parent_group.GroupFactor.Count == 0)
+                _parent_group.GroupFactor = OMGroupFactor.Where(x => x.GroupId == _parent_group.Id).SelectAll().Execute();
+            foreach (OMGroupFactor koeff in _parent_group.GroupFactor)
+            {
+                RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(koeff.FactorId));
+                if (attributeData != null)
+                {
+                    res += ((/*koeff.IS_METKA*/true ? ("Корректировка(" + attributeData.Name + ")") : (attributeData.Name)) + "*");
+                }
+
+            }
+            if (res.Length > 1)
+            {
+                res = res.TrimEnd('*');
+                res = "*" + res;
+            }
+
+            return (upks ? "УПКС=" : string.Empty) + value + res;
+        }
+
+        public static string GetFormulaFull(OMGroup _parent_group, bool upks)
+        {
+            string str_koeff = GetFormulaKoeff(_parent_group, false, string.Empty);
+            return (upks ? ("УПКС=") : string.Empty) + ((str_koeff != string.Empty) ? "(" : string.Empty) + GetFormulaMain(_parent_group, false) + ((str_koeff != string.Empty) ? ")" : string.Empty) + str_koeff;
+        }
+
+        private static string GetFormulaPart(string val, string znak, double empty)
+        {
+            string res = Convert.ToDouble(val).ToString() + " " + znak + " ";
+            double rval = Convert.ToDouble(val);
+            if (rval == empty)
+                res = string.Empty;
+            return res;
+        }
+
+        public static string GetFormulaMain(OMGroup _parent_group, bool upks)
+        {
+            string res = string.Empty;
+            #region Моделирование
+            if (_parent_group == null) return res;
+
+            OMModel model = OMModel.Where(x => x.GroupId == _parent_group.Id).SelectAll().ExecuteFirstOrDefault();
+            if (model != null)
+            {
+                if (model.ModelFactor.Count == 0)
+                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+            }
+
+            if (_parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || _parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
+            {
+                string D_string = "";
+                string Dm_string = "";
+                string De_string = "";
+                string Dss_string = "";
+
+
+                foreach (OMModelFactor weight in model.ModelFactor)
+                {
+                    if (weight.SignAdd)
+                    {
+                        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
+                        if (attributeData != null)
+                        {
+                            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
+                            switch (model.AlgoritmType_Code)
+                            {
+                                case KoAlgoritmType.Exp:
+                                case KoAlgoritmType.Line:
+                                    if (!weight.SignDiv)
+                                        De_string = De_string + " * " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    else
+                                        De_string = De_string + " * " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    break;
+                                case KoAlgoritmType.Multi:
+                                    if (!weight.SignDiv)
+                                        Dss_string = Dss_string + " + " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    else
+                                        Dss_string = Dss_string + " + " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+
+                                    Dss_string = Dss_string.TrimStart(' ').TrimStart('+').TrimStart(' ');
+                                    Dm_string = "(" + Dss_string + ")";
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                foreach (OMModelFactor weight in model.ModelFactor)
+                {
+                    if (!weight.SignAdd)
+                    {
+                        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
+                        if (attributeData != null)
+                        {
+                            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
+
+                            switch (model.AlgoritmType_Code)
+                            {
+                                case KoAlgoritmType.Exp:
+                                case KoAlgoritmType.Line:
+                                    if (!weight.SignDiv)
+                                        D_string = D_string + " + " + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string;
+                                    else
+                                        D_string = D_string + " + " + "1 / (" + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    break;
+                                case KoAlgoritmType.Multi:
+                                    if (!weight.SignDiv)
+                                        Dm_string = Dm_string + " * (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    else
+                                        Dm_string = Dm_string + " / (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+
+                switch (model.AlgoritmType_Code)
+                {
+                    case KoAlgoritmType.Exp:
+                        if (De_string != string.Empty)
+                            res = "exp(" + model.A0.ToString() + D_string + ")" + De_string;
+                        else
+                            res = "exp(" + model.A0.ToString() + D_string + ")";
+                        break;
+                    case KoAlgoritmType.Line:
+                        res = model.A0.ToString() + D_string;
+                        break;
+                    case KoAlgoritmType.Multi:
+                        res = GetFormulaPart(model.A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
+                        break;
+                    default:
+                        res = string.Empty;
+                        break;
+                }
+            }
+            #endregion
+            return (upks ? ("УПКС=") : string.Empty) + res;
+        }
     }
 
     /// <summary>

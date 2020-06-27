@@ -512,6 +512,7 @@ namespace KadOzenka.Dal.DataExport
                                    _end.ToString() + "," + idx_row.ToString() + ")";
                         var cell_merge = new TableCell(_document, new Paragraph(_document));
                         cell_merge.ColumnSpan = _end - _begin + 1;
+                        cell_merge.Blocks.Clear();  // Ощищаем после объединения, убираем пустую строку
                         _table.Rows[idx_row].Cells.Add(cell_merge);
                         i = _end;
                     }
@@ -551,16 +552,20 @@ namespace KadOzenka.Dal.DataExport
                                     string _col1, double _size,
                                     HorizontalAlignment _align1, bool _border, bool _bold)
         {
-            Paragraph paragraph = new Paragraph(_document);
-            paragraph.ParagraphFormat.Alignment = _align1;
-            Run run = new Run(_document, _col1);
-            run.CharacterFormat.FontName  = "Times New Roman";
-            run.CharacterFormat.Bold      = _bold;
-            run.CharacterFormat.FontColor = Color.Black;
-            run.CharacterFormat.Size      = _size;
-            paragraph.Inlines.Add(run);
-            _cell.Blocks.Add(paragraph);
-            _cell.CellFormat.VerticalAlignment = VerticalAlignment.Center;
+            string[] paragraphs = _col1.Split('$');
+            foreach (string partext in paragraphs)
+            {
+                Paragraph paragraph = new Paragraph(_document);
+                paragraph.ParagraphFormat.Alignment = _align1;
+                Run run = new Run(_document, partext);
+                run.CharacterFormat.FontName = "Times New Roman";
+                run.CharacterFormat.Bold = _bold;
+                run.CharacterFormat.FontColor = Color.Black;
+                run.CharacterFormat.Size = _size;
+                paragraph.Inlines.Add(run);
+                _cell.Blocks.Add(paragraph);
+                _cell.CellFormat.VerticalAlignment = VerticalAlignment.Center;
+            }
 
             if (_border)
             {

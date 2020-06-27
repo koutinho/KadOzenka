@@ -3354,6 +3354,11 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKODocOtvet
     {
+        public static string SStr(string value)
+        {
+            if (value == string.Empty) return "-"; else return value;
+        }
+
         /// <summary>
         /// Экспорт в Word - ответные документы по объектам.
         /// </summary>
@@ -3373,6 +3378,13 @@ namespace KadOzenka.Dal.DataExport
             {
                 throw new Exception($"Не найдена группа для Единицы оценки с Id = '{_unit.Id}'");
             }
+            OMGroup calc_group = null;
+            OMUnit   calc_unit = null;
+            if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
+            {
+                // Определяем объект, по которому был расcчитан _unit, и у этого объекта берем группу
+                GetCalcGroupFromUnit(_unit, task.EstimationDate, out calc_unit, out calc_group);
+            }
 
             try
             {
@@ -3383,7 +3395,6 @@ namespace KadOzenka.Dal.DataExport
 
                 Console.WriteLine(" - создание таблицы ...");
                 #region Создание таблицы      
-                int count_rows = 81;
                 int idx_row = -1;
                 int count_cells = 4;
                 var table = new Table(document);
@@ -3398,8 +3409,8 @@ namespace KadOzenka.Dal.DataExport
                 #endregion
                 Console.WriteLine(" - создание таблицы выполнено");
 
-                Console.WriteLine(" - заголовок ...");
                 #region Сбор и формирование данных по объекту
+                Console.WriteLine(" - заголовок ...");
                 string strDateApp = "01.01.2018";
                 string strDateOut = "01.01.2019";
                 string strActReq_01_06 = "-";
@@ -3408,13 +3419,9 @@ namespace KadOzenka.Dal.DataExport
                 string str_3_0 = "-";
                 string value_attr = "";
 
-
-
                 #region Нашли и записали в список входящий документ
-
                 OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
                 KoNoteType doc_status = task.NoteType_Code;
-
                 #endregion
                 OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
                 if (doc_out != null)
@@ -3425,7 +3432,7 @@ namespace KadOzenka.Dal.DataExport
                         case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
                             strActReq_01_10 = "-";
                             strActReq_01_06 = DataExportCommon.GetFullNameDoc(doc_out);
-                            strActReq_01_07 = "Ковалев Д.В." + Environment.NewLine + "Капитонов К.С.";
+                            strActReq_01_07 = "Ковалев Д.В." +"$ $"+ "Капитонов К.С.";
                             str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 16 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
                             break;
@@ -3442,13 +3449,14 @@ namespace KadOzenka.Dal.DataExport
                 }
 
                 #region 0. Заголовок:
+                // Добавляем символ разделитель строки "$". Потом он обрабатывается в методе DataExportCommon.SetTextToCellDoc
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Приложение", 12, HorizontalAlignment.Right, false, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Разъяснения, связанные с определением кадастровой стоимости", 14, HorizontalAlignment.Center, false, true);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Государственное бюджетное учреждение города Москвы" + /*Environment.NewLine*/ "  " + "«Городской центр имущественных платежей и жилищного страхования»", 12, HorizontalAlignment.Center, false, true);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Государственное бюджетное учреждение города Москвы" + "$" + "«Городской центр имущественных платежей и жилищного страхования»", 12, HorizontalAlignment.Center, false, true);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, 2);
                 DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
@@ -3459,10 +3467,11 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "На основании обращения от _____________, поступившего" + /*Environment.NewLine +*/ "  " +
-                    "_________________ г., сообщаем относительно определения кадастровой" + /*Environment.NewLine +*/ "  " +
+                    "_________________ г., сообщаем относительно определения кадастровой" + "$" +
                     "стоимости объекта недвижимости с кадастровым номером " + _unit.CadastralNumber, 12, HorizontalAlignment.Center, false, true);
                 #endregion
                 Console.WriteLine(" - заголовок выполнено");
+
                 #region 1. Общие сведения:
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
@@ -3511,11 +3520,11 @@ namespace KadOzenka.Dal.DataExport
                          true, false);
 
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
-                string sss = "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko";
+                string sss = "http://cadastre.gcgs.ru/state/" + "$" + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko";
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.4",
                      "Полный электронный адрес размещения отчета об итогах государственной кадастровой оценки в информационно - телекоммуникационной сети «Интернет»",
-                     "http://cadastre.gcgs.ru/state/" + /*Environment.NewLine*/ " " + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko",
+                     "http://cadastre.gcgs.ru/state/" + "$" + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko",
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -3523,7 +3532,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.5",
                      "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, подготовившем отчет об итогах государственной кадастровой оценки",
-                     "Ковалев Д.В." + /*Environment.NewLine*/ " " + "Капитонов К.С.",
+                     "Ковалев Д.В." + "$" + "Капитонов К.С.",
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -3571,11 +3580,11 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.11",
                      "Сведения об органе, его местонахождении, официальном сайте в информационно-телекоммуникационной сети «Интернет», адресе электронной почты, контактных телефонах, в который следует обращаться в отношении исчисления налогов, исчисляемых от кадастровой стоимости объекта недвижимости",
-                     "Управление Федеральной налоговой службы России по г. Москве" + /*Environment.NewLine*/ " " +
-                     "Адрес: 125284, г. Москва, Хорошевское шоссе, д. 12А" + /*Environment.NewLine*/ " " +
-                     "https://www.nalog.ru" + /*Environment.NewLine*/ " " +
-                     "Телефоны:" + /*Environment.NewLine*/ " " +
-                     "Контакт - центр: +7(495) 276 - 22 - 22" + /*Environment.NewLine*/ " " +
+                     "Управление Федеральной налоговой службы России по г. Москве" + "$" +
+                     "Адрес: 125284, г. Москва, Хорошевское шоссе, д. 12А" + "$" +
+                     "https://www.nalog.ru" + "$" +
+                     "Телефоны:" + "$" +
+                     "Контакт - центр: +7(495) 276 - 22 - 22" + "$" +
                      "Для справок: +7(495) 400 - 67 - 68",
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
@@ -3744,7 +3753,6 @@ namespace KadOzenka.Dal.DataExport
                 #endregion
                 Console.WriteLine(" - характеристики выполнено");
 
-
                 #region 2.2. О рынке недвижимости:
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
@@ -3801,8 +3809,8 @@ namespace KadOzenka.Dal.DataExport
                      10,
                      HorizontalAlignment.Left,
                      false, true);
-                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
 
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
                 DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
                      "№ п/п",
@@ -3813,56 +3821,331 @@ namespace KadOzenka.Dal.DataExport
                      HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                      true, true);
 
-                if (group_unit != null)
+                int pp = 0;
+
+                #region Calc Group
+                if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
                 {
-                    int pp = 0;
-                    OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
-                    if (model != null)
+                    if (calc_group != null)
                     {
-                        if (model.ModelFactor.Count == 0)
-                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-                        foreach (OMModelFactor factor in model.ModelFactor)
+                        OMModel model_calc = OMModel.Where(x => x.GroupId == calc_group.Id).SelectAll().ExecuteFirstOrDefault();
+                        if (model_calc != null)
                         {
-                            RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                            factor.FillMarkCatalogs(model);
+                            if (model_calc.ModelFactor.Count == 0)
+                                model_calc.ModelFactor = OMModelFactor.Where(x => x.ModelId == model_calc.Id).SelectAll().Execute();
 
-                            string name = attribute_factor.Name;
-                            //string desc = attribute_factor.Description;
-                            string value = "-";
-
-                            int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
-                            List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                            DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
-                            if (data != null)
+                            foreach (OMModelFactor factor in model_calc.ModelFactor)
                             {
-                                foreach (DataRow row in data.Rows)
+                                RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
+                                factor.FillMarkCatalogs(model_calc);
+
+                                string name = attribute_factor.Name;
+                                //string desc = attribute_factor.Description;
+                                string value = "-";
+
+                                int? factorReestrId = OMGroup.GetFactorReestrId(calc_group);
+                                List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                                DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                                if (data != null)
                                 {
-                                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                                    foreach (DataRow row in data.Rows)
+                                    {
+                                        FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                                    }
                                 }
-                            }
-                            CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                            if (factor_item != null)
-                            {
-                                value = factor_item.Value;
-                            }
+                                CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                                if (factor_item != null)
+                                {
+                                    value = factor_item.Value;
+                                }
 
-                            pp++;
-                            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                                 "2.3." + pp.ToString(),
-                                 name,
-                                 value,
-                                 "-",
-                                 12,
-                                 HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                                 true, false);
+                                pp++;
+                                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                                DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                                     "2.3." + pp.ToString(),
+                                     name,
+                                     value,
+                                     "-",
+                                     12,
+                                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                                     true, false);
+                            }
                         }
                     }
                 }
+                #endregion
+
+                #region Group
+                OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+                if (model != null)
+                {
+                    if (model.ModelFactor.Count == 0)
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+                    foreach (OMModelFactor factor in model.ModelFactor)
+                    {
+                        RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
+                        factor.FillMarkCatalogs(model);
+
+                        string name = attribute_factor.Name;
+                        //string desc = attribute_factor.Description;
+                        string value = "-";
+
+                        int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
+                        List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                        DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                        if (data != null)
+                        {
+                            foreach (DataRow row in data.Rows)
+                            {
+                                FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                            }
+                        }
+                        CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                        if (factor_item != null)
+                        {
+                            value = factor_item.Value;
+                        }
+
+                        pp++;
+                        idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                        DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                             "2.3." + pp.ToString(),
+                             name,
+                             value,
+                             "-",
+                             12,
+                             HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                             true, false);
+                    }
+                }
+                #endregion
 
                 #endregion
                 Console.WriteLine(" - факторы выполнено");
+
+                Console.WriteLine(" - методология расчета ...");
+                #region 2.4.   Кадастровая   стоимость   объекта   недвижимости   определена  в соответствии со следующей методологией:
+                string formula = string.Empty;
+                string pr_kn = string.Empty;
+                bool dd = false;
+                bool jj = true;
+
+                if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
+                {
+                    if ( (calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty) )
+                    { 
+                        formula = OMGroup.GetFormulaKoeff(calc_group, true, "УПКС здания, в котором расположено помещение(" + calc_unit.CadastralNumber + ")");
+                        dd = true;
+                    }
+                    else
+                    {
+                        string[] kk = _unit.ParentCalcNumber.Split(':');
+                        string calc_group_num = group_unit.Number;
+                        if (kk.Length == 1)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 2)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 3)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        jj = false;
+                    }
+                }
+                if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) //subgroup.Type_SubGroup == 10)
+                {
+                    string[] kk = _unit.ParentCalcNumber.Split(':');
+                    string calc_group_num = group_unit.Number;
+                    if (kk.Length == 1)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", по субъекту)") +
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                    if (kk.Length == 2)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                    if (kk.Length == 3)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                }
+                if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited) //subgroup.Type_SubGroup == 11)
+                {
+                    string[] kk = _unit.ParentCalcNumber.Split(':');
+                    string calc_group_num = group_unit.Number;
+                    if (kk.Length == 1)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                    if (kk.Length == 2)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                    if (kk.Length == 3)
+                    {
+                        formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                }
+                if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Min) //subgroup.Type_SubGroup == 12)
+                {
+                    string[] kk1 = _unit.ParentCalcNumber.Split('(');
+                    if (kk1.Length > 1)
+                    {
+                        string ppkk = kk1[1].Replace(")", "").Replace(" ", "");
+                        string[] kk = ppkk.Split(':');
+
+                        string calc_group_num = group_unit.Number;
+                        if (kk.Length == 1)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 2)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + ppkk + ")") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 3)
+                        {
+                            formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + ppkk + ")") +
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                    }
+                }
+                if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Model) && jj)
+                {
+                    if (!dd)
+                    {
+                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                    else
+                    {
+                        formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                    }
+                }
+                if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))
+                {
+                    if((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
+                    {
+                        string[] kk = _unit.ParentCalcNumber.Split(':');
+                        string calc_group_num = calc_group.Number;
+                        if (kk.Length == 1)
+                        {
+                            formula = formula +"$$"+
+                                "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                                OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 2)
+                        {
+                            formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                                OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + calc_unit.CadastralNumber + ")") +
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                        if (kk.Length == 3)
+                        {
+                            formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                                OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + calc_unit.CadastralNumber + ")") +
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        }
+                    }
+                }
+                string dopmodel = "dop_model"; //subgroup.dop_model; //TODO добавить поля dop_... в OMGroup
+                if (dopmodel != string.Empty)
+                    formula = formula + " " + dopmodel; //Environment.NewLine
+
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
+                     "2.4. Кадастровая стоимость объекта недвижимости определена в соответствии со следующей методологией:",
+                     10,
+                     HorizontalAlignment.Left,
+                     false, true);
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "№ п/п",
+                     "Наименование показателя",
+                     "Значение, описание",
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                     true, true);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.1",
+                     "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
+                     "dop_podxod", //SStr(subgroup.dop_podxod),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.2",
+                     "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
+                     "dop_metod", //SStr(subgroup.dop_metod),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.3",
+                     "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
+                     "dop_sposob", //SStr(subgroup.dop_sposob),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.4",
+                     "Модель определения кадастровой стоимости объекта недвижимости с обоснованием ее выбора",
+                     SStr(formula),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.5",
+                     "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
+                     "dop_segment", //SStr(subgroup.dop_segment),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.6",
+                     "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
+                     "dop_group", //SStr(subgroup.dop_group),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+                idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
+                DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
+                     "2.4.7",
+                     "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
+                     "dop_opicanie", //SStr(subgroup.dop_opicanie),
+                     10,
+                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
+                     true, false);
+
+                idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
+                #endregion
+                Console.WriteLine(" - методология расчета выполнено");
 
                 #region  3. 
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -3912,16 +4195,16 @@ namespace KadOzenka.Dal.DataExport
 
                 Console.WriteLine(" - сохранение ...");
                 #region Задаем параметры страницы и сохраняем таблицу и документ
-                var section       = new Section(document, table);
-                PageSetup ps      = new PageSetup();
-                ps.PageHeight     = 16838f / 15f;
-                ps.PageWidth      = 11906f / 15f;
-                PageMargins pm    = new PageMargins();
-                pm.Left           = 96f / 2.54f * 2.0f;
-                pm.Right          = 96f / 2.54f * 1.5f;
-                pm.Top            = 96f / 2.54f * 2.0f;
-                pm.Bottom         = 96f / 2.54f * 2.0f;
-                ps.PageMargins    = pm;
+                var section = new Section(document, table);
+                PageSetup ps = new PageSetup();
+                ps.PageHeight = 16838f / 15f;
+                ps.PageWidth = 11906f / 15f;
+                PageMargins pm = new PageMargins();
+                pm.Left = 96f / 2.54f * 2.0f;
+                pm.Right = 96f / 2.54f * 1.5f;
+                pm.Top = 96f / 2.54f * 2.0f;
+                pm.Bottom = 96f / 2.54f * 2.0f;
+                ps.PageMargins = pm;
                 section.PageSetup = ps;
                 document.Sections.Add(section);
 
@@ -3940,6 +4223,33 @@ namespace KadOzenka.Dal.DataExport
                 ErrorManager.LogError(e);
                 return null;
             }
+        }
+
+        public static void GetCalcGroupFromUnit(OMUnit _unit, DateTime? _estimatedate, out OMUnit unit_out, out OMGroup group_out)
+        {
+            unit_out = null;
+            group_out = null;
+
+            string value_attr = "";
+            DataExportCommon.GetObjectAttribute(_unit, 604, out value_attr);  //Код 604 - Кадастровый номер здания или сооружения, в котором расположено помещение
+
+            List<OMUnit> units_parent = OMUnit.Where(x => x.CadastralNumber == value_attr).SelectAll().Execute();
+            if (units_parent.Count == 0) return;
+
+            DateTime? date_temp = new DateTime(2010, 1, 1);
+            TimeSpan? date_near = _estimatedate - date_temp;
+            foreach (OMUnit unit_par in units_parent)
+            {
+                OMTask task = OMTask.Where(x => x.Id == unit_par.TaskId).SelectAll().ExecuteFirstOrDefault();
+                if (_estimatedate - task.EstimationDate < date_near)
+                {
+                    date_near = _estimatedate - task.EstimationDate;
+                    unit_out = unit_par;
+                    group_out = OMGroup.Where(x => x.Id == unit_par.GroupId).SelectAll().ExecuteFirstOrDefault(); ;
+                }
+            }
+
+            return;
         }
     }
 
