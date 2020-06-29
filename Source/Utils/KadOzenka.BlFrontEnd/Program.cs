@@ -38,6 +38,7 @@ using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
+using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -234,16 +235,25 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("902", "Тест Сервиса для создания задач на основе данных из РЕОН", () =>
             {
                 new KoTaskFromReon().StartProcess(null,
-                    new OMQueue { UserId = SRDSession.Current.UserID },
-                    new System.Threading.CancellationToken());
+                    new OMQueue
+                    {
+                        UserId = SRDSession.Current.UserID,
+                        Status_Code = Status.Added
+                    },
+                    new CancellationToken());
             });
 
             consoleHelper.AddCommand("903", "Тест Сервиса для получения графических факторов из РЕОН", () =>
             {
                 var taskId = 44354853;
                 new KoFactorsFromReon().StartProcess(null,
-                    new OMQueue {ObjectId = taskId, UserId = SRDSession.Current.UserID }, 
-                    new System.Threading.CancellationToken());
+                    new OMQueue
+                    {
+                        ObjectId = taskId,
+                        UserId = SRDSession.Current.UserID,
+                        Status_Code = Status.Added
+                    },
+                    new CancellationToken());
             });
 
             consoleHelper.AddCommand("904", "Моделирование (обучение)", () =>

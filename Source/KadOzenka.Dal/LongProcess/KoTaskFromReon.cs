@@ -14,6 +14,7 @@ using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -21,6 +22,7 @@ namespace KadOzenka.Dal.LongProcess
     {
         private TaskService TaskService { get; set; }
         private RosreestrDataApi ReonWebClientService { get; set; }
+        private GbuReportService GbuReportService { get; set; }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
@@ -28,15 +30,23 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 0);
             TaskService = new TaskService();
             ReonWebClientService = new RosreestrDataApi();
+            GbuReportService = new GbuReportService();
+
+            GbuReportService.AddHeaders(0, new List<string> { "Номер задания", "Дата задания", "Год тура", "Количество файлов", "Ошибка" });
 
             var request = GetRequest(processType);
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
             var errorIds = ProcessResponse(response);
-            var message = errorIds.Count > 0 
+
+            var info = errorIds.Count > 0 
                 ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-            NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message);
+            var reportId = GbuReportService.SaveReport("олучение заданий на оценку из ИС РЕОН");
+            var message = $"{info}\n" + $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+            var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
+            NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
+
             WorkerCommon.SetProgress(processQueue, 100);
         }
 
@@ -45,9 +55,8 @@ namespace KadOzenka.Dal.LongProcess
 
         private TaskFromReonRequest GetRequest(OMProcessType processType)
         {
-            if(processType.Parameters.IsNotEmpty())
+            if(processType != null && processType.Parameters.IsNotEmpty())
                 return new TaskFromReonRequest(processType.Parameters.ParseToDateTime(), processType.Parameters.ParseToDateTime().AddDays(1));
-
 
             var dateFrom = DateTime.Today.AddDays(-1);
             var dateTo = DateTime.Today;
@@ -60,21 +69,29 @@ namespace KadOzenka.Dal.LongProcess
             var errorIds = new List<long>();
             tasksFromResponse.ForEach(task =>
             {
+                OMTask omTask = null;
                 try
                 {
                     var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
 
-                    var omTask = CreateTask(task, documentId);
+                    omTask = CreateTask(task, documentId);
 
                     foreach (var fileInfo in task.XmlDocUrls)
                     {
                         ProcessFile(fileInfo, omTask.Id);
                     }
+
+                    var taskNumber = TaskService.GetTemplateForTaskName(task.DocDate, task.DocNumber, omTask.NoteType);
+                    AddRowToReport(taskNumber, omTask.CreationDate, task.TourYear, task.XmlDocUrls.Count, string.Empty);
                 }
                 catch (Exception ex)
                 {
                     long errorId = ErrorManager.LogError(ex);
                     errorIds.Add(errorId);
+
+                    var taskNumber = TaskService.GetTemplateForTaskName(task.DocDate, task.DocNumber, omTask?.NoteType);
+                    AddRowToReport(taskNumber, omTask?.CreationDate, task.TourYear, task.XmlDocUrls.Count,
+                        $"Ошибка загрузки (журнал: {errorId})");
                 }
             });
 
@@ -142,6 +159,12 @@ namespace KadOzenka.Dal.LongProcess
             {
                 return client.DownloadData(url);
             }
+        }
+
+        private void AddRowToReport(string taskNumber, DateTime? taskDate, int? tourYear, int filesCount, string errorMessage)
+        {
+            GbuReportService.AddRow(new List<string>
+                {taskNumber, taskDate?.ToShortDateString(), tourYear?.ToString(), filesCount.ToString(), errorMessage});
         }
 
         #endregion

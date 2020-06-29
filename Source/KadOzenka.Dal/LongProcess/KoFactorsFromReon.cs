@@ -7,9 +7,11 @@ using CadAppraisalDataApi.Models;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.LongProcessManagment;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Registers;
+using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
@@ -24,6 +26,8 @@ namespace KadOzenka.Dal.LongProcess
         private const long REOIN_SOURCE_REGISTER_ID = 44355304;
         private RosreestrDataApi ReonWebClientService { get; set; }
         private RegisterAttributeService RegisterAttributeService { get; set; }
+        private GbuReportService GbuReportService { get; set; }
+
 
         public static void AddProcessToQueue(long taskId)
         {
@@ -43,19 +47,19 @@ namespace KadOzenka.Dal.LongProcess
 
             ReonWebClientService = new RosreestrDataApi();
             RegisterAttributeService = new RegisterAttributeService();
+            GbuReportService = new GbuReportService();
 
             var task = GetTask(processQueue.ObjectId.Value);
             var document = GetDocument(task.DocumentId);
             var units = GetUnits(task.Id);
 
             var errorIds = new List<long>();
-
-            List<string> log = new List<string>();
             bool isError = false;
-
             long total = units.Count;
             long success = 0;
             long errors = 0;
+
+            GbuReportService.AddHeaders(0, new List<string> { "Кадастровый номер", "Успешно", "Ошибка" });
 
             units.ForEach(unit =>
             {
@@ -69,39 +73,38 @@ namespace KadOzenka.Dal.LongProcess
                     var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, response);
                     if (currentErrorIds?.Count > 0)
                     {
-                        errorIds.AddRange(currentErrorIds);
-                        isError = true;
-                        log.Add($"{unit.CadastralNumber}: ошибка загрузки (журнал {String.Join(", ", currentErrorIds)})");
                         errors++;
+                        isError = true;
+                        errorIds.AddRange(currentErrorIds);
+                        AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (журнал: {string.Join(", ", currentErrorIds)})");
                     }
                     else
                     {
-                        isError = true;
-                        log.Add($"{unit.CadastralNumber}: загружено успешно");
                         success++;
+                        AddRowToReport(unit.CadastralNumber, true, string.Empty);
                     }
                 }
                 catch (Exception ex)
                 {
-                    var errorId = ErrorManager.LogError(ex);
-
                     errors++;
-
-                    log.Add($"{unit.CadastralNumber}: ошибка загрузки (журнал {errorId})");
+                    isError = true;
+                    var errorId = ErrorManager.LogError(ex);
+                    AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (журнал: {errorId})");
                 }
             });
 
-            var message = isError
+            var info = isError
                 ? $"При загрузке факторов возникли ошибки. Всего: {total}; Успешно: {success}; Ошибки: {errors}"
                 : $"Загрузка факторов выполнена без ошибок. Всего: {total}; Успешно: {success}; Ошибки: {errors}";
 
-            processQueue.Message = message;
-            processQueue.Log = String.Join("\n", log);
+            processQueue.Message = info;
             processQueue.Save();
 
-            
-            
-            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН завершено", message);
+            var reportId = GbuReportService.SaveReport("Получение графических факторов из ИС РЕОН");
+            var message = $"{info}\n" + $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+            var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
+            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН завершено", message, roleId);
+
             WorkerCommon.SetProgress(processQueue, 100);
         }
 
@@ -242,6 +245,12 @@ namespace KadOzenka.Dal.LongProcess
             //}
 
             gbuObjectAttribute.Save();
+        }
+
+        private void AddRowToReport(string cadastralNumber, bool isSuccessful, string errorMessage)
+        {
+            var isSuccessfulStr = isSuccessful ? "Да" : "Нет";
+            GbuReportService.AddRow(new List<string>{cadastralNumber, isSuccessfulStr, errorMessage});
         }
 
         #endregion

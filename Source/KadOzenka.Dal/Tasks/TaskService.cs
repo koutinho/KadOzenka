@@ -126,6 +126,11 @@ namespace KadOzenka.Dal.Tasks
             return GetTemplateForTaskName(x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
         }
 
+        public string GetTemplateForTaskName(DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
+        {
+            return $"{documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
+        }
+
         public long CreateDocument(string regNumber, string description, DateTime? createDate = null)
         {
             OMInstance instance = new OMInstance
@@ -212,11 +217,6 @@ namespace KadOzenka.Dal.Tasks
                 Id = tour.Id,
                 Year = tour.Year
             };
-        }
-
-        private string GetTemplateForTaskName(DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
-        {
-            return $"{documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
         }
 
         private static void FillNumbersOfImportedAndPossibleTotalObjects(long taskId, out long? commonNumberOfImportedObjects,

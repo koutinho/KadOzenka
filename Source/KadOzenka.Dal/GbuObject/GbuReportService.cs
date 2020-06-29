@@ -83,7 +83,17 @@ namespace KadOzenka.Dal.GbuObject
 				//mainWorkSheet.Columns[col].SetWidth(5, LengthUnit.Centimeter);
 		}
 
-		public void SetStyle()
+        public void AddRow(List<string> values)
+        {
+            for (var i = 0; i < values.Count; i++)
+            {
+                _mainWorkSheet.Rows[_currentRow].Cells[i].SetValue(values[i]);
+            }
+
+            _currentRow++;
+        }
+
+        public void SetStyle()
 		{
 			int countRows = _mainWorkSheet.Rows.Count;
 			int countColumns = _mainWorkSheet.CalculateMaxUsedColumns();
