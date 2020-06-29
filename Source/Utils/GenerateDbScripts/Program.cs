@@ -28,7 +28,8 @@ namespace GenerateDbScripts
 			string providerName = ConfigurationManager.AppSettings["DbExporterProviderName"];
 
 			string baseFolder = ConfigurationManager.AppSettings["DbExporterBaseFolder"];
-			
+			string providerNameDestination = ConfigurationManager.AppSettings["DbExporterProviderNameDestination"];
+
 			DbExporter.CorrectSystemLayoutsAndFilters();
 			
 			ExportProfile exportProfile = File.ReadAllText(exportProfileFilename).DeserializeFromXml<ExportProfile>();
@@ -36,7 +37,7 @@ namespace GenerateDbScripts
 			try
 			{
 				DbExporter dbExporter = new DbExporter(connectionString, providerName);
-				dbExporter.GenerateExportScripts(baseFolder, exportProfile);
+				dbExporter.GenerateExportScripts(baseFolder, exportProfile, providerNameDestination);
 			}
 			catch (Exception ex)
 			{

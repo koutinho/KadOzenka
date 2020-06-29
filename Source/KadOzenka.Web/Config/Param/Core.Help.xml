@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<HelpConfiguration>
+    <ContextHelpRows>
+        <ContextHelpRow CurrentLocation="/" FileName="user_manual" Section=""/>
+        <ContextHelpRow CurrentLocation="/Dashboard" FileName="user_manual" Section=""/>
+        <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Declarations" FileName="user_manual" Section="_Toc31794882"/>
+    </ContextHelpRows>
+</HelpConfiguration>
