@@ -14,7 +14,7 @@
                 <label class="control-label">1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ObjectType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectType.StringValue) || Model.ObjectType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ObjectType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ObjectType.StringValue) || Model.ObjectType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ObjectType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectType.StringValue))
@@ -35,7 +35,7 @@
                 <label class="control-label">2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.Address.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.Address.StringValue) || Model.Address.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.Address.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.Address.StringValue) || Model.Address.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.Address.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.Address.StringValue))
@@ -56,7 +56,7 @@
                 <label class="control-label">3</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.Square.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.Square.DecimalValue.HasValue || Model.Square.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.Square.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.Square.DecimalValue.HasValue || Model.Square.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.Square.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.Square.DecimalValue.HasValue)
@@ -77,7 +77,7 @@
                 <label class="control-label">4</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.TypeAndValueMainCharacteristic.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.TypeAndValueMainCharacteristic.StringValue) || Model.TypeAndValueMainCharacteristic.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.TypeAndValueMainCharacteristic.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.TypeAndValueMainCharacteristic.StringValue) || Model.TypeAndValueMainCharacteristic.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.TypeAndValueMainCharacteristic.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.TypeAndValueMainCharacteristic.StringValue))
@@ -98,7 +98,7 @@
                 <label class="control-label">5</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ReadinessDegreeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ReadinessDegreeOns.StringValue) || Model.ReadinessDegreeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ReadinessDegreeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ReadinessDegreeOns.StringValue) || Model.ReadinessDegreeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ReadinessDegreeOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ReadinessDegreeOns.StringValue))
@@ -119,7 +119,7 @@
                 <label class="control-label">6</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue) || Model.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue) || Model.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue))
@@ -140,7 +140,7 @@
                 <label class="control-label">7</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.DesignedPurposeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedPurposeOns.StringValue) || Model.DesignedPurposeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.DesignedPurposeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DesignedPurposeOns.StringValue) || Model.DesignedPurposeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.DesignedPurposeOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedPurposeOns.StringValue))
@@ -161,7 +161,7 @@
                 <label class="control-label">8</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.FloorCount.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorCount.LongValue.HasValue || Model.FloorCount.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.FloorCount.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorCount.LongValue.HasValue || Model.FloorCount.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.FloorCount.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorCount.LongValue.HasValue)
@@ -182,7 +182,7 @@
                 <label class="control-label">9</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.FloorNumber.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorNumber.LongValue.HasValue || Model.FloorNumber.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.FloorNumber.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorNumber.LongValue.HasValue || Model.FloorNumber.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.FloorNumber.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorNumber.LongValue.HasValue)
@@ -203,7 +203,7 @@
                 <label class="control-label">10</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.BuildingWallMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.BuildingWallMaterial.StringValue) || Model.BuildingWallMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.BuildingWallMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.BuildingWallMaterial.StringValue) || Model.BuildingWallMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.BuildingWallMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.BuildingWallMaterial.StringValue))
@@ -224,7 +224,7 @@
                 <label class="control-label">11</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.MainSupportingStructuresMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.MainSupportingStructuresMaterial.StringValue) || Model.MainSupportingStructuresMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.MainSupportingStructuresMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.MainSupportingStructuresMaterial.StringValue) || Model.MainSupportingStructuresMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.MainSupportingStructuresMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.MainSupportingStructuresMaterial.StringValue))
@@ -245,7 +245,7 @@
                 <label class="control-label">12</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.RoofMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.RoofMaterial.StringValue) || Model.RoofMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.RoofMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.RoofMaterial.StringValue) || Model.RoofMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.RoofMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.RoofMaterial.StringValue))
@@ -266,7 +266,7 @@
                 <label class="control-label">13</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.CommissioningYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CommissioningYear.DateTimeValue.HasValue || Model.CommissioningYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.CommissioningYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.CommissioningYear.DateTimeValue.HasValue || Model.CommissioningYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.CommissioningYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CommissioningYear.DateTimeValue.HasValue)
@@ -287,7 +287,7 @@
                 <label class="control-label">14</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.CompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CompletionYear.DateTimeValue.HasValue || Model.CompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.CompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.CompletionYear.DateTimeValue.HasValue || Model.CompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.CompletionYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CompletionYear.DateTimeValue.HasValue)
@@ -308,7 +308,7 @@
                 <label class="control-label">15</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.OverhaulCompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.OverhaulCompletionYear.DateTimeValue.HasValue || Model.OverhaulCompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.OverhaulCompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.OverhaulCompletionYear.DateTimeValue.HasValue || Model.OverhaulCompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.OverhaulCompletionYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.OverhaulCompletionYear.DateTimeValue.HasValue)
@@ -329,7 +329,7 @@
                 <label class="control-label">16</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ReconstructionDate.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.ReconstructionDate.DateTimeValue.HasValue || Model.ReconstructionDate.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ReconstructionDate.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.ReconstructionDate.DateTimeValue.HasValue || Model.ReconstructionDate.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ReconstructionDate.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.ReconstructionDate.DateTimeValue.HasValue)
@@ -350,7 +350,7 @@
                 <label class="control-label">17</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.DwellingType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DwellingType.StringValue) || Model.DwellingType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.DwellingType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DwellingType.StringValue) || Model.DwellingType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.DwellingType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DwellingType.StringValue))
@@ -371,7 +371,7 @@
                 <label class="control-label">18</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.PermittedUseType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PermittedUseType.StringValue) || Model.PermittedUseType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.PermittedUseType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.PermittedUseType.StringValue) || Model.PermittedUseType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.PermittedUseType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PermittedUseType.StringValue))
@@ -392,7 +392,7 @@
                 <label class="control-label">19</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectInclusionIntoCulturalHeritageInfo.StringValue) || Model.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ObjectInclusionIntoCulturalHeritageInfo.StringValue) || Model.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectInclusionIntoCulturalHeritageInfo.StringValue))
@@ -413,7 +413,7 @@
                 <label class="control-label">20</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.PhysicalDeterioration.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PhysicalDeterioration.StringValue) || Model.PhysicalDeterioration.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.PhysicalDeterioration.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.PhysicalDeterioration.StringValue) || Model.PhysicalDeterioration.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.PhysicalDeterioration.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PhysicalDeterioration.StringValue))
@@ -434,7 +434,7 @@
                 <label class="control-label">21</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.CommunicationsDescription.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.CommunicationsDescription.StringValue) || Model.CommunicationsDescription.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.CommunicationsDescription.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.CommunicationsDescription.StringValue) || Model.CommunicationsDescription.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.CommunicationsDescription.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.CommunicationsDescription.StringValue))
@@ -460,7 +460,7 @@
                 <label class="control-label">21.1.1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -481,7 +481,7 @@
                 <label class="control-label">21.1.2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -502,7 +502,7 @@
                 <label class="control-label">21.1.3</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ElectricPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ElectricPower.StringValue) || Model.ElectricPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ElectricPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ElectricPower.StringValue) || Model.ElectricPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ElectricPower.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ElectricPower.StringValue))
@@ -528,7 +528,7 @@
                 <label class="control-label">21.2.1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -549,7 +549,7 @@
                 <label class="control-label">21.2.2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -570,7 +570,7 @@
                 <label class="control-label">21.2.3</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.GasPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.GasPower.StringValue) || Model.GasPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.GasPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.GasPower.StringValue) || Model.GasPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.GasPower.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.GasPower.StringValue))
@@ -596,7 +596,7 @@
                 <label class="control-label">21.3.1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -617,7 +617,7 @@
                 <label class="control-label">21.3.2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -643,7 +643,7 @@
                 <label class="control-label">21.4.1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -664,7 +664,7 @@
                 <label class="control-label">21.4.2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -690,7 +690,7 @@
                 <label class="control-label">21.5.1</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -711,7 +711,7 @@
                 <label class="control-label">21.5.2</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
                 @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
@@ -767,9 +767,14 @@
             $(this).bind("change", onTextBoxChanged);;
         });
 
-        $("input[id*='AdditionalInfo_HarStatus'").each(function () {
-            $(this).data('kendoDropDownList').bind("change", onHarStatusTypeChanged);;
-        });
+        @if (Model.CanIncludeInFormalChecking)
+        {
+            @Html.Raw(@"
+            $('input[id*=""AdditionalInfo_HarStatus""').each(function () {
+                $(this).data('kendoDropDownList').bind('change', onHarStatusTypeChanged);
+             });");
+        }
+
 
 
         $('#save').on('click',

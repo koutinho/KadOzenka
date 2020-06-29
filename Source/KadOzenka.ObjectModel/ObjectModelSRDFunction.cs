@@ -274,6 +274,9 @@ namespace ObjectModel.SRD
                 
               // Конструктор расчетов (563)
               public const string EXPRESSSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
+              
+              // Декларации Редактирование: добавление характеристик в раздел Формальная проверка / Уведомление (613)
+              public const string DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING = "DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS.INCLUDE_IN_FORMAL_CHECKING";
                 
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
@@ -292,6 +295,6 @@ namespace ObjectModel.SRD
                 
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
-                
+              
     }
 }

@@ -353,6 +353,7 @@ namespace KadOzenka.Web.Controllers
 			model.DeclarationId = declarationId;
 			model.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
+			model.CanIncludeInFormalChecking = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING);
 
 			return View("~/Views/Declarations/ParcelCharacteristicsWindowContent.cshtml", model);
 		}
@@ -412,9 +413,18 @@ namespace KadOzenka.Web.Controllers
 		                omHarOksAdditionalInfo.Save();
 		            }
 
-		            result.TextYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
-		            result.TextNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();
-		            result.Save();
+					var textYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
+					var textNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();
+
+					if (result.TextYes != textYes
+					    || result.TextNo != textNo)
+					{
+						SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING, true, false, true);
+					}
+
+					result.TextYes = textYes;
+					result.TextNo = textNo;
+					result.Save();
 
 		            ts.Complete();
 		        }
@@ -427,6 +437,7 @@ namespace KadOzenka.Web.Controllers
 		    parcelCharacteristicsViewModel.Id = id;
 			parcelCharacteristicsViewModel.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
+			parcelCharacteristicsViewModel.CanIncludeInFormalChecking = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING);
 			return Json(new { Success = "Сохранено успешно", data = parcelCharacteristicsViewModel });
 		}
 
@@ -459,6 +470,7 @@ namespace KadOzenka.Web.Controllers
 			model.DeclarationId = declarationId;
 			model.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
+			model.CanIncludeInFormalChecking = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING);
 
 			return View("~/Views/Declarations/OksCharacteristicsWindowContent.cshtml", model);
 		}
@@ -519,8 +531,17 @@ namespace KadOzenka.Web.Controllers
 		                omHarOksAdditionalInfo.Save();
 		            }
 
-		            result.TextYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
-		            result.TextNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();
+					var textYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
+					var textNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();
+					
+					if (result.TextYes != textYes
+						|| result.TextNo != textNo)
+					{
+						SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING, true, false, true);
+					}
+
+					result.TextYes = textYes;
+					result.TextNo = textNo;
 		            result.Save();
 
 		            ts.Complete();
@@ -534,6 +555,7 @@ namespace KadOzenka.Web.Controllers
 		    oksCharacteristicsViewModel.Id = id;
 			oksCharacteristicsViewModel.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
+			oksCharacteristicsViewModel.CanIncludeInFormalChecking = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING);
 			return Json(new { Success = "Сохранено успешно", data = oksCharacteristicsViewModel });
 		}
 

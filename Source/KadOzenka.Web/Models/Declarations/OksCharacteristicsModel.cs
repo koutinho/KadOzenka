@@ -232,6 +232,7 @@ namespace KadOzenka.Web.Models.Declarations
 		public CharacteristicModel AvailabilityConnectionToWaterDisposal { get; set; }
 
 		public bool IsEditDeclarationCharacteristics { get; set; }
+		public bool CanIncludeInFormalChecking { get; set; }
 
 		public string GetAcceptedCharacteristics()
 		{
@@ -257,7 +258,9 @@ namespace KadOzenka.Web.Models.Declarations
 					}
 				}
 			}
-			return string.Join(",\n", result);
+			var resultString = string.Join(",\n", result);
+
+			return string.IsNullOrEmpty(resultString) ? null : resultString;
 		}
 
 		public string GetRejectedCharacteristics()
@@ -284,7 +287,9 @@ namespace KadOzenka.Web.Models.Declarations
 					}
 				}
 			}
-			return string.Join(",\n", result);
+			var resultString = string.Join(",\n", result);
+
+			return string.IsNullOrEmpty(resultString) ? null : resultString;
 		}
 
 		public static OksCharacteristicsModel FromEntity(OMHarOKS entity, List<OMHarOKSAdditionalInfo> additionalInfos)
