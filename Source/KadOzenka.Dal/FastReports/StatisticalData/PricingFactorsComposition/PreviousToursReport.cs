@@ -15,11 +15,11 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    //TODO отчет работает очень медленно, поэтому для него дополнительно создан длительный процесс PreviousToursReportProcess
+    //TODO отчет работает очень медленно (большой объем данных + сложая матрица FastReport),
+    //TODO поэтому для него дополнительно создан длительный процесс PreviousToursReportProcess
     public class PreviousToursReport : StatisticalDataReport
     {
-        public string ReportTitle => "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
-
+        private string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
         private const string TypeTitle = "Тип";
         private const string SquareTitle = "Площадь";
         private const string NameTitle = "Наименование";
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         private const string GroupOrSubgroupTitle = "Группа/ Подгруппа";
         private const string CadastralCostTitle = "Кадастровая стоимость";
 
-        public readonly List<string> ColumnTitles = new List<string>
+        private readonly List<string> _сolumnTitles = new List<string>
         {
             TypeTitle, SquareTitle, NameTitle, PurposeTitle, PermittedUseTitle,
             AddressTitle, LocationTitle, CadastralQuartalTitle, ParentCadastralNumberTitle,
@@ -77,8 +77,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
+            var factorsByRegisters = GetPricingFactors(groupId);
+            var attributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
+
+            var tours = GetToursByTasks(taskIds);
             var units = GetUnits(taskIds);
-            //для тестирования
+            ////TODO: для тестирования
             //var units = new List<OMUnit>
             //{
             //    new OMUnit {CadastralNumber = "KN_1", Id = 12435691, ObjectId = 11188991, TourId = 2016},
@@ -86,23 +90,22 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //};
             //var tours = new List<OMTour> { new OMTour { Id = 2016, Year = 2016 }, new OMTour { Id = 2018, Year = 2018 } };
             if (units == null || units.Count == 0)
-                return new PreviousToursReportInfo();
+            {
+                return new PreviousToursReportInfo
+                {
+                    Title = ReportTitle,
+                    ColumnTitles = _сolumnTitles,
+                    Tours = tours.OrderBy(x => x.Year).ToList(),
+                    PricingFactors = attributes.OrderBy(x => x.Name).ToList()
+                };
+            }
 
-            var tours = GetToursByTasks(taskIds);
-            var tourIds = tours.Select(x => x.Id).ToList();
-            var tourAttributes = GetToursAttributes(tourIds);
-            var rosreestrAttributes = GetRosreestrAttributes();
             var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
+            var tourAttributes = GetToursAttributes(tours);
+            var rosreestrAttributes = GetRosreestrAttributes();
             var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
 
-            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
-            //для тестирования
-            //var model = OMModel.Where(x => x.Id == 7977478).SelectAll().ExecuteFirstOrDefault();
-            var groupedFactors = model == null
-                ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(model.Id);
-            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
-            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
+            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), factorsByRegisters);
 
             var items = new List<PreviousTourReportItem>();
             units.ToList().ForEach(unit =>
@@ -129,6 +132,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             return new PreviousToursReportInfo
             {
+                Title = ReportTitle,
+                ColumnTitles = _сolumnTitles,
                 Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.Tour?.Year).ToList(),
                 Tours = tours.OrderBy(x => x.Year).ToList(),
                 PricingFactors = attributes.OrderBy(x => x.Name).ToList()
@@ -147,8 +152,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 .ToList();
         }
 
-        private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<long> tourIds)
+        private List<FactorsService.PricingFactors> GetPricingFactors(long groupId)
         {
+            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            ////TODO: для тестирования
+            //var model = OMModel.Where(x => x.Id == 7977478).SelectAll().ExecuteFirstOrDefault();
+            return model == null
+                ? new List<FactorsService.PricingFactors>()
+                : FactorsService.GetGroupedModelFactors(model.Id);
+        }
+
+        private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<OMTour> tours)
+        {
+            var tourIds = tours.Select(x => x.Id).ToList();
             var tourAttributes = new Dictionary<long, TourAttributesFromSettings>();
             tourIds.ForEach(tourId =>
             {
@@ -309,7 +325,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             foreach (var item in operations)
             {
                 counter++;
-                ColumnTitles.ForEach(title =>
+                _сolumnTitles.ForEach(title =>
                 {
                     var value = GetValueForReportItem(title, item);
                     dataTable.Rows.Add(counter,
@@ -398,6 +414,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         public class PreviousToursReportInfo
         {
+            public string Title { get; set; }
+            public List<string> ColumnTitles { get; set; }
             public List<PreviousTourReportItem> Items { get; set; }
             public List<OMTour> Tours { get; set; }
             public List<FactorsService.PricingFactor> PricingFactors { get; set; }

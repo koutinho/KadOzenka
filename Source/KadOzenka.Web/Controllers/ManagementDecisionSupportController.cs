@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
@@ -252,13 +253,14 @@ namespace KadOzenka.Web.Controllers
         {
             if (model.IsInBackground)
             {
-                //TODO для тестирования
+                ////TODO для тестирования
                 //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
                 //{
+                //    Status_Code = Status.Added,
                 //    Parameters = new PreviousToursReportInputParameters
                 //    {
-                //        GroupId = model.GroupId ?? - 1,
-                //        TaskIds = model.SelectedTasks.Length == 0 ? new List<long> {-1} : model.SelectedTasks.ToList()
+                //        GroupId = model.GroupId ?? -1,
+                //        TaskIds = model.SelectedTasks.Length == 0 ? new List<long> { -1 } : model.SelectedTasks.ToList()
                 //    }.SerializeToXml()
                 //}, new CancellationToken());
 

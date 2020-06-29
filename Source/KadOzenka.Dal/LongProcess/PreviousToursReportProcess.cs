@@ -23,16 +23,10 @@ namespace KadOzenka.Dal.LongProcess
         private readonly ExcelFile _excelTemplate;
         private readonly ExcelWorksheet _mainWorkSheet;
         private int _currentRow;
-        //кол-во объединенных ячеек для столбца с кадастровым номером
+        //кол-во столбцов без разделения на туры (№пп и КН)
         private int _numberOfColumnsWithoutTourSeparation;
         private string _reportGbuStorage = "SaveReportPath";
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
-        public enum CellStyleType
-        {
-            Header,
-            Normal
-        }
-        public const string LongProcessName = nameof(PreviousToursReportProcess);
 
 
         public PreviousToursReportProcess()
@@ -44,13 +38,13 @@ namespace KadOzenka.Dal.LongProcess
 
         public static void AddProcessToQueue(PreviousToursReportInputParameters inputParameters)
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, parameters: inputParameters.SerializeToXml());
+            LongProcessManager.AddTaskToQueue(nameof(PreviousToursReportProcess), parameters: inputParameters.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
-            //WorkerCommon.SetProgress(processQueue, 0);
+            WorkerCommon.SetProgress(processQueue, 0);
             PreviousToursReportInputParameters inputParameters = null;
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
             {
@@ -65,20 +59,134 @@ namespace KadOzenka.Dal.LongProcess
                 return;
             }
 
-            var report = new PreviousToursReport();
-            var reportInfo = report.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
-            var tourYears = reportInfo.Tours.Select(x => x.Year.ToString()).ToList();
-            var pricingFactorNames = reportInfo.PricingFactors.Select(x => x.Name).ToList();
+            try
+            {
+                var report = new PreviousToursReport();
+                var reportInfo = report.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
+                WorkerCommon.SetProgress(processQueue, 50);
 
-            
+                var tourYears = reportInfo.Tours.Select(x => x.Year.ToString()).ToList();
+                var pricingFactorNames = reportInfo.PricingFactors.Select(x => x.Name).ToList();
 
+                GenerateReportHeader(reportInfo.Title, reportInfo.ColumnTitles, tourYears, pricingFactorNames);
+
+                GenerateReportBody(reportInfo, report, tourYears, pricingFactorNames);
+
+                var reportId = SaveReport(_reportName);
+
+                //TODO для тестирования
+                var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
+
+                var message = "Операция успешно завершена." +
+                              $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+                NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
+
+                WorkerCommon.SetProgress(processQueue, 100);
+            }
+            catch (Exception ex)
+            {
+                var errorId = ErrorManager.LogError(ex);
+                var message = $"Ошибка построения (журнал: {errorId})";
+                NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
+                throw;
+            }
+        }
+
+
+        #region Support Methods
+
+        private void GenerateReportHeader(string reportTitle, List<string> columnTitles, List<string> tourYears, List<string> pricingFactorNames)
+        {
+            var columnsWithoutTourSeparation = new List<string>
+            {
+                "№ п/п",
+                "Кадастровый номер"
+            };
+            _numberOfColumnsWithoutTourSeparation = columnsWithoutTourSeparation.Count;
+
+            var allColumnTitles = new List<string>();
+            allColumnTitles.AddRange(columnsWithoutTourSeparation);
+            allColumnTitles.AddRange(columnTitles);
+            allColumnTitles.AddRange(pricingFactorNames);
+
+            //для колонки с № п/п и КН  не нужны подзаголовки с турами
+            var tourColumns = new List<string>();
+            tourColumns.AddRange(columnsWithoutTourSeparation);
+            tourColumns.AddRange(Enumerable
+                .Repeat(tourYears, allColumnTitles.Count - columnsWithoutTourSeparation.Count)
+                .SelectMany(x => x.ToList()).ToList());
+
+            AddTitle(reportTitle, allColumnTitles.Count * tourYears.Count);
+            AddHeaders(allColumnTitles, tourYears.Count, true);
+            AddRow(tourColumns, true);
+        }
+
+        private void AddTitle(string title, int mergedColumnsCount)
+        {
+            //т.к. отсчет идет с 0
+            if (mergedColumnsCount != 0)
+                mergedColumnsCount--;
+
+            var startColumnIndex = 0;
+            var endColumnIndex = startColumnIndex + mergedColumnsCount;
+
+            _mainWorkSheet.Rows[_currentRow].Cells[startColumnIndex].SetValue(title);
+
+            var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(_currentRow, startColumnIndex, _currentRow, endColumnIndex);
+            cells.Merged = true;
+            cells.Style = GetHeadersCellStyle();
+
+            _currentRow++;
+        }
+
+        private void AddHeaders(List<string> titles, int mergedColumnsCount, bool isHeaderCellStyle = false)
+        {
+            //т.к. отсчет идет с 0
+            if (mergedColumnsCount != 0)
+                mergedColumnsCount--;
+
+            var endColumnIndex = -1;
+            foreach (var title in titles)
+            {
+                endColumnIndex++;
+                var startColumnIndex = endColumnIndex;
+                var startRowIndex = _currentRow;
+                var endRowIndex = startRowIndex;
+
+                _mainWorkSheet.Rows[_currentRow].Cells[startColumnIndex].SetValue(title);
+
+                //оставляем первые _numberOfColumnsWithoutTourSeparation ячеек
+                //необъединенными по горизонтали, но объединенными по вертикали
+                if (startColumnIndex < _numberOfColumnsWithoutTourSeparation)
+                {
+                    endColumnIndex = startColumnIndex;
+                    endRowIndex++;
+                }
+                else
+                {
+                    endColumnIndex = startColumnIndex + mergedColumnsCount;
+                }
+
+                var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex);
+                cells.Merged = true;
+
+                if (isHeaderCellStyle)
+                    cells.Style = GetHeadersCellStyle();
+            }
+
+            _currentRow++;
+        }
+
+        private void GenerateReportBody(PreviousToursReport.PreviousToursReportInfo reportInfo, PreviousToursReport report, List<string> tourYears,
+            List<string> pricingFactorNames)
+        {
             var index = 1;
             var groupedReportItems = reportInfo.Items.GroupBy(x => x.CadastralNumber).ToList();
             groupedReportItems.ForEach(groupedItem =>
             {
-                var rowValues = new List<string> { index.ToString(), groupedItem.Key};
+                var rowValues = new List<string> { index.ToString(), groupedItem.Key };
 
-                report.ColumnTitles.ForEach(title =>
+                reportInfo.ColumnTitles.ForEach(title =>
                 {
                     tourYears.ForEach(tourYear =>
                     {
@@ -100,100 +208,21 @@ namespace KadOzenka.Dal.LongProcess
                 index++;
                 AddRow(rowValues);
             });
-
-
-            var reportId = SaveReport("test");
-
-            var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
-
-            var message = "Операция успешно завершена." +
-                             $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
-            NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
         }
 
-
-        #region Support Methods
-
-        private void GenerateReportHeader(string reportTitle, List<string> columnTitles, List<string> tourYears, List<string> pricingFactorNames)
+        private void AddRow(List<string> values, bool isHeaderCellStyle = false)
         {
-            var columnsWithoutTourSeparation = new List<string>
+            for(var i=0; i<values.Count; i++)
             {
-                "№ п/п",
-                "Кадастровый номер"
-            };
+                var cells = _mainWorkSheet.Rows[_currentRow].Cells[i];
+                cells.SetValue(values[i]);
 
-            var allColumnTitles = new List<string>();
-            allColumnTitles.AddRange(columnsWithoutTourSeparation);
-            allColumnTitles.AddRange(columnTitles);
-            allColumnTitles.AddRange(pricingFactorNames);
-
-            _numberOfColumnsWithoutTourSeparation = columnsWithoutTourSeparation.Count;
-
-            //для колонки с № п/п и КН  не нужны подзаголовки с турами
-            var tourColumns = new List<string>();
-            for (var i = 0; i < columnsWithoutTourSeparation.Count; i++)
-            {
-                tourColumns.Add(string.Empty);
-            }
-
-            tourColumns.AddRange(Enumerable.Repeat(tourYears, allColumnTitles.Count - columnsWithoutTourSeparation.Count).SelectMany(x => x.ToList()).ToList());
-
-            AddHeaders(new List<string> { reportTitle }, allColumnTitles.Count * tourYears.Count, CellStyleType.Header);
-            AddHeaders(allColumnTitles, tourYears.Count, CellStyleType.Header);
-            AddRow(tourColumns);
-        }
-
-        private void AddHeaders(List<string> titles, int mergedColumnsCount = 0, CellStyleType cellStyle = CellStyleType.Normal)
-        {
-            //т.к. отсчет идет с 0
-            if (mergedColumnsCount != 0)
-                mergedColumnsCount--;
-
-            var endColumnIndex = -1;
-            foreach (var title in titles)
-            {
-                endColumnIndex++;
-                var startColumnIndex = endColumnIndex;
-
-                _mainWorkSheet.Rows[_currentRow].Cells[startColumnIndex].SetValue(title);
-
-                //оставляем первые _numberOfColumnsWithoutTourSeparation ячеек необъединенными
-                if (startColumnIndex > _numberOfColumnsWithoutTourSeparation)
-                {
-                    endColumnIndex = startColumnIndex + mergedColumnsCount;
-                }
-
-                var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(_currentRow, startColumnIndex, _currentRow, endColumnIndex);
-                cells.Merged = true;
-
-                if (cellStyle == CellStyleType.Header)
+                if (isHeaderCellStyle)
                     cells.Style = GetHeadersCellStyle();
             }
 
             _currentRow++;
         }
-
-        private void AddRow(List<string> values)
-        {
-            var columnIndex = 0;
-            foreach (var value in values)
-            {
-                _mainWorkSheet.Rows[_currentRow].Cells[columnIndex].SetValue(value);
-
-                if (columnIndex == 0)
-                {
-                    var endIndex = _numberOfColumnsWithoutTourSeparation - 1;
-                    var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(_currentRow, 0, _currentRow, endIndex);
-                    cells.Merged = true;
-                    columnIndex = endIndex;
-                }
-
-                columnIndex++;
-            }
-
-            _currentRow++;
-        }
-
 
         private CellStyle GetHeadersCellStyle()
         {
