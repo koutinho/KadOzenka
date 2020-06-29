@@ -2,7 +2,7 @@
 {
     public class ReonServiceConfig
     {
-        public static ReonServiceConfig Current => Core.ConfigParam.Configuration.GetParam<ReonServiceConfig>("ReonServiceConfig");
+        public static ReonServiceConfig Current => Core.ConfigParam.Configuration.GetParam<ReonServiceConfig>("ReonService");
 
         public string BaseUrl { get; set; }
     }

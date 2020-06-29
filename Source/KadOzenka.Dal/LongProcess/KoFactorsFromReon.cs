@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var message = isError
                 ? $"При загрузке факторов возникли ошибки. Всего: {total}; Успешно: {success}; Ошибки: {errors}"
-                : "Загрузка факторов выполнена без ошибок. Всего: {total}; Успешно: {success}; Ошибки: {errors}";
+                : $"Загрузка факторов выполнена без ошибок. Всего: {total}; Успешно: {success}; Ошибки: {errors}";
 
             processQueue.Message = message;
             processQueue.Log = String.Join("\n", log);

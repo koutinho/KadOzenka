@@ -64,7 +64,7 @@
     <None Remove="Config\Param\Postgres.Backup.Ppr.xml" />
     <None Remove="Config\Param\Postgres.Backup.Prod.xml" />
     <None Remove="Config\Param\ReonService.Ppr.xml" />
-    <None Remove="Config\Param\ReonServiceConfig.xml" />
+    <None Remove="Config\Param\ReonService.xml" />
     <None Remove="Config\ReadMe.txt" />
     <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
@@ -210,7 +210,7 @@
       <Content Include="Config\Param\ModelingProcessConfig.xml">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-    <Content Include="Config\Param\ReonServiceConfig.xml">
+    <Content Include="Config\Param\ReonService.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Param\Core.LongProcess.Prod.Db.xml">
@@ -1097,7 +1097,7 @@
     <ConfigPath Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
     <ConfigPath Remove="Config\Param\ModelingProcessConfig.xml" />
     <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
-    <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
+    <ConfigPath Remove="Config\Param\ReonService.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />

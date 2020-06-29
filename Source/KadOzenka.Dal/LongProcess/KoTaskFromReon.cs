@@ -13,6 +13,7 @@ using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -28,7 +29,7 @@ namespace KadOzenka.Dal.LongProcess
             TaskService = new TaskService();
             ReonWebClientService = new RosreestrDataApi();
 
-            var request = GetRequest();
+            var request = GetRequest(processType);
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
             var errorIds = ProcessResponse(response);
             var message = errorIds.Count > 0 
@@ -42,8 +43,12 @@ namespace KadOzenka.Dal.LongProcess
 
         #region Support Methods
 
-        private TaskFromReonRequest GetRequest()
+        private TaskFromReonRequest GetRequest(OMProcessType processType)
         {
+            if(processType.Parameters.IsNotEmpty())
+                return new TaskFromReonRequest(processType.Parameters.ParseToDateTime(), processType.Parameters.ParseToDateTime().AddDays(1));
+
+
             var dateFrom = DateTime.Today.AddDays(-1);
             var dateTo = DateTime.Today;
 
