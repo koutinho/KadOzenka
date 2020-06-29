@@ -155,14 +155,12 @@ namespace KadOzenka.Web.Models.Declarations
 			if (Type == (int)SubjectType.Fl && (string.IsNullOrWhiteSpace(Surname) || string.IsNullOrWhiteSpace(FirstName)))
 			{
 				yield return
-					new ValidationResult(errorMessage: "Поля Фамилия, Имя обязательны для Физлица",
-						memberNames: new[] { "Surname", "FirstName" });
+					new ValidationResult(errorMessage: "Поля Фамилия, Имя обязательны для Физлица");
 			}
 			if (Type == (int)SubjectType.Ul && string.IsNullOrWhiteSpace(Name))
 			{
 				yield return
-					new ValidationResult(errorMessage: "Полe Наименование обязательно для Юрлица",
-						memberNames: new[] { "Name" });
+					new ValidationResult(errorMessage: "Полe Наименование обязательно для Юрлица");
 			}
 		}
 	}
