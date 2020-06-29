@@ -59,6 +59,14 @@ namespace KadOzenka.Dal.Model
                         },
                         JoinType = QSJoinType.Inner
                     }
+                },
+                OrderBy = new List<QSOrder>
+                {
+                    new QSOrder
+                    {
+                        Column = OMAttribute.GetColumn(x => x.Name),
+                        Order = QSOrderType.ASC
+                    }
                 }
             };
 

@@ -15,10 +15,11 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    //TODO отчет работает очень медленно, ножно обсудить с Димой оптимизацию. как вариант:
-    //TODO 1) Фоновый процесс 2) Добавить всходные параметры (туры и задачи), но это не реализовано в платформе
+    //TODO отчет работает очень медленно, поэтому для него дополнительно создан длительный процесс PreviousToursReportProcess
     public class PreviousToursReport : StatisticalDataReport
     {
+        public string ReportTitle => "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
+
         private const string TypeTitle = "Тип";
         private const string SquareTitle = "Площадь";
         private const string NameTitle = "Наименование";
@@ -36,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         private const string GroupOrSubgroupTitle = "Группа/ Подгруппа";
         private const string CadastralCostTitle = "Кадастровая стоимость";
 
-        private readonly List<string> _columnTitles = new List<string>
+        public readonly List<string> ColumnTitles = new List<string>
         {
             TypeTitle, SquareTitle, NameTitle, PurposeTitle, PermittedUseTitle,
             AddressTitle, LocationTitle, CadastralQuartalTitle, ParentCadastralNumberTitle,
@@ -59,13 +60,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var taskIds = GetTaskIdList(query)?.ToList();
 
             var groupId = GetGroupIdFromFilter(query);
-            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
-            var operations = GetOperations(taskIds, model?.Id);
+            var operations = GetReportInfo(taskIds, groupId);
 
             var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
+            var itemTable = GetItemDataTable(operations.Items);
+            var commonTable = GetCommonDataTable();
             dataSet.Tables.Add(itemTable);
+            dataSet.Tables.Add(commonTable);
 
             return HadleData(dataSet);
         }
@@ -73,39 +75,42 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId)
+        public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
-            var tours = GetToursByTasks(taskIds);
-            var tourIds = tours.Select(x => x.Id).ToList();
             var units = GetUnits(taskIds);
             //для тестирования
-            //modelId = 7977478;
             //var units = new List<OMUnit>
             //{
-            //    new OMUnit{CadastralNumber = "KN_1", Id = 12435691, ObjectId = 11188991, TourId = 2016 },
-            //    new OMUnit{CadastralNumber = "KN_2", Id = 15731468, ObjectId = 11404578, TourId = 2018 }
+            //    new OMUnit {CadastralNumber = "KN_1", Id = 12435691, ObjectId = 11188991, TourId = 2016},
+            //    new OMUnit {CadastralNumber = "KN_2", Id = 15731468, ObjectId = 11404578, TourId = 2018}
             //};
+            //var tours = new List<OMTour> { new OMTour { Id = 2016, Year = 2016 }, new OMTour { Id = 2018, Year = 2018 } };
             if (units == null || units.Count == 0)
-                return new List<ReportItem>();
+                return new PreviousToursReportInfo();
 
+            var tours = GetToursByTasks(taskIds);
+            var tourIds = tours.Select(x => x.Id).ToList();
             var tourAttributes = GetToursAttributes(tourIds);
             var rosreestrAttributes = GetRosreestrAttributes();
             var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
             var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
 
-            var groupedFactors = modelId == null
+            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            //для тестирования
+            //var model = OMModel.Where(x => x.Id == 7977478).SelectAll().ExecuteFirstOrDefault();
+            var groupedFactors = model == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(modelId.Value);
+                : FactorsService.GetGroupedModelFactors(model.Id);
             var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
             var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
 
-            var items = new List<ReportItem>();
+            var items = new List<PreviousTourReportItem>();
             units.ToList().ForEach(unit =>
             {
                 var tour = tours.FirstOrDefault(x => x.Id == unit.TourId);
                 var objectFactors = pricingFactors.TryGetValue(unit.Id, out var value) ? value : attributes;
 
-                var item = new ReportItem
+                var item = new PreviousTourReportItem
                 {
                     Tour = tour,
                     CadastralNumber = unit.CadastralNumber,
@@ -122,7 +127,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 items.Add(item);
             });
 
-            return items;
+            return new PreviousToursReportInfo
+            {
+                Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.Tour?.Year).ToList(),
+                Tours = tours.OrderBy(x => x.Year).ToList(),
+                PricingFactors = attributes.OrderBy(x => x.Name).ToList()
+            };
         }
 
         private List<OMTour> GetToursByTasks(List<long> taskIds)
@@ -191,7 +201,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         }
 
         private static void SetRosreestrAttributes(List<GbuObjectAttribute> objectAttributes, Dictionary<string, RegisterAttribute> rosreestrAttributes, 
-            ReportItem item)
+            PreviousTourReportItem item)
         {
             foreach (var objectAttribute in objectAttributes)
             {
@@ -205,7 +215,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         }
 
         private static void SetAttributesFromTourSettings(List<GbuObjectAttribute> objectAttributes, long? tourId, 
-            Dictionary<long, TourAttributesFromSettings> tourAttributesFromSettings, ReportItem item)
+            Dictionary<long, TourAttributesFromSettings> tourAttributesFromSettings, PreviousTourReportItem item)
         {
             if (tourId == null || !tourAttributesFromSettings.TryGetValue(tourId.Value, out var tourAttributes))
                 return;
@@ -215,7 +225,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             item.SubGroupNumber = objectAttributes.FirstOrDefault(x => x.AttributeId == tourAttributes.Group?.Id)?.GetValueInString();
         }
 
-        private void SetAttributesAccordingToObjectType(PropertyTypes objectType, ReportItem item)
+        private void SetAttributesAccordingToObjectType(PropertyTypes objectType, PreviousTourReportItem item)
         {
             string purpose = null, name = null, parentCadastralNumberForOks = item.ParentCadastralNumberForOks;
             switch (objectType)
@@ -247,25 +257,36 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
 
-            attributesDictionary.Add(nameof(ReportItem.OksName), StatisticalDataService.GetRosreestrObjectNameAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ZuName), StatisticalDataService.GetRosreestrParcelNameAttribute());
-            attributesDictionary.Add(nameof(ReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.PlacementPurpose), StatisticalDataService.GetRosreestrPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ConstructionPurpose), StatisticalDataService.GetRosreestrConstructionPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.PermittedUse), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParentCadastralNumberForOks), StatisticalDataService.GetRosreestrParcelAttribute());
-            attributesDictionary.Add(nameof(ReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), StatisticalDataService.GetRosreestrObjectNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), StatisticalDataService.GetRosreestrParcelNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), StatisticalDataService.GetRosreestrPlacementPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), StatisticalDataService.GetRosreestrConstructionPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), StatisticalDataService.GetRosreestrParcelAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
 
             return attributesDictionary;
         }
 
-        private DataTable GetItemDataTable(List<ReportItem> operations)
+        private DataTable GetCommonDataTable()
+        {
+            var dataTable = new DataTable("Common");
+
+            dataTable.Columns.Add("Title");
+
+            dataTable.Rows.Add(ReportTitle);
+
+            return dataTable;
+        }
+
+        private DataTable GetItemDataTable(List<PreviousTourReportItem> operations)
         {
             var dataTable = new DataTable("Data");
 
@@ -284,12 +305,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //    new ReportItem{CadastralNumber = "KN_3", Tour = new OMTour{Id = 3, Year = 2020}, Square = 20, ObjectType = "type_16"}
             //};
 
-            var orderedOperations = operations.OrderBy(x => x.CadastralNumber);
             var counter = 0;
-            foreach (var item in orderedOperations)
+            foreach (var item in operations)
             {
                 counter++;
-                _columnTitles.ForEach(title =>
+                ColumnTitles.ForEach(title =>
                 {
                     var value = GetValueForReportItem(title, item);
                     dataTable.Rows.Add(counter,
@@ -312,8 +332,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return dataTable;
         }
 
-        private object GetValueForReportItem(string title, ReportItem item)
+        public object GetValueForReportItem(string title, PreviousTourReportItem item)
         {
+            if (item == null)
+                return null;
+
             switch (title)
             {
                 case TypeTitle:
@@ -373,7 +396,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             }
         }
 
-        private class ReportItem : InfoFromTourSettings
+        public class PreviousToursReportInfo
+        {
+            public List<PreviousTourReportItem> Items { get; set; }
+            public List<OMTour> Tours { get; set; }
+            public List<FactorsService.PricingFactor> PricingFactors { get; set; }
+
+            public PreviousToursReportInfo()
+            {
+                Items = new List<PreviousTourReportItem>();
+                Tours = new List<OMTour>();
+                PricingFactors = new List<FactorsService.PricingFactor>();
+            }
+        }
+
+        public class PreviousTourReportItem : InfoFromTourSettings
         {
             public OMTour Tour { get; set; }
 

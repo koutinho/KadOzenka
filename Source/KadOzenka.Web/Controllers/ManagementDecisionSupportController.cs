@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -15,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -248,6 +252,16 @@ namespace KadOzenka.Web.Controllers
         {
             if (model.IsInBackground)
             {
+                //TODO для тестирования
+                //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
+                //{
+                //    Parameters = new PreviousToursReportInputParameters
+                //    {
+                //        GroupId = model.GroupId ?? - 1,
+                //        TaskIds = model.SelectedTasks.Length == 0 ? new List<long> {-1} : model.SelectedTasks.ToList()
+                //    }.SerializeToXml()
+                //}, new CancellationToken());
+
                 return Content(JsonConvert.SerializeObject(new {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
                     "application/json");
             }

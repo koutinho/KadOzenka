@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/26/2020 09:21:16" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/29/2020 11:40:08" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -32,11 +32,11 @@ namespace FastReport
     </BusinessObjectDataSource>
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
-    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="28.35">
-      <TextObject Name="Text1" Top="9.45" Width="1048.95" Height="18.9" Text="Состав данных о результатах кадастровой оценки предыдущих туров" HorzAlign="Center" Font="Times New Roman, 14pt, style=Bold"/>
-    </ReportTitleBand>
-    <DataBand Name="Data1" Top="30.64" Width="1047.06" Height="68.16" DataSource="Data">
-      <MatrixObject Name="MatrixData" Left="9.45" Width="341.05" Height="68.16" FixedRows="2" FixedColumns="2" AutoSize="false" DataSource="Data">
+    <DataBand Name="DataCommon" Width="1047.06" Height="37.8">
+      <TextObject Name="Text1" Top="9.45" Width="1048.95" Height="28.35" Text="[Common.Title]" HorzAlign="Center" Font="Times New Roman, 14pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="Data1" Top="40.09" Width="1047.06" Height="68.16" DataSource="Data">
+      <MatrixObject Name="MatrixData" Width="341.05" Height="68.16" FixedRows="2" FixedColumns="2" AutoSize="false" DataSource="Data">
         <MatrixColumns>
           <Header Expression="[Data.ColumnTitle]" Sort="None" Totals="false"/>
           <Header Expression="[Data.TourYear]" Sort="None" Totals="false"/>
@@ -68,6 +68,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="101.08" Width="1047.06" Height="18.9"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="110.53" Width="1047.06" Height="18.9"/>
   </ReportPage>
 </Report>

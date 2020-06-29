@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
@@ -46,6 +47,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                 nameof(StatisticalDataFmReportCodeAttribute.Code));
 
             var taskIdsStr = HttpContextHelper.HttpContext.Session.GetString($"Report{reportCode}TaskFilter");
+
+            if (string.IsNullOrEmpty(taskIdsStr))
+                throw new Exception("Истекло время ожидания сессии. Обновите страницу.");
 
             return JsonConvert.DeserializeObject<List<long>>(taskIdsStr);
         }
