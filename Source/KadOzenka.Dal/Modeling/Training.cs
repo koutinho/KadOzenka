@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
@@ -16,14 +15,15 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
 {
-    public class TrainingStrategy : AModelingStrategy
+    public class Training : AModelingTemplate
     {
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
         protected ScoreCommonService ScoreCommonService { get; set; }
+        protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
-        public TrainingStrategy(string inputParametersXml, OMQueue processQueue)
+        public Training(string inputParametersXml, OMQueue processQueue)
             : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        public override string GetUrl()
+        protected override string GetUrl()
         {
             var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public override void PrepareData()
+        protected override void PrepareData()
         {
             AddLog("Начат сбор данных для обучения модели");
 
@@ -81,8 +81,8 @@ namespace KadOzenka.Dal.Modeling
                     IsForTraining = isForTraining
                 };
 
-                var objectUnitIds = unitsDictionary.ContainsKey(modelObject.CadastralNumber) 
-                    ? unitsDictionary[modelObject.CadastralNumber] 
+                var objectUnitIds = unitsDictionary.ContainsKey(modelObject.CadastralNumber)
+                    ? unitsDictionary[modelObject.CadastralNumber]
                     : new List<long>();
 
                 var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnitIds, dictionaries);
@@ -97,7 +97,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Сбор данных закончен");
         }
 
-        public override object GetRequestForService()
+        protected override object GetRequestForService()
         {
             AddLog($"\nНачато формирование запроса на сервис");
 
@@ -137,7 +137,7 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        public override void ProcessServiceResponse(GeneralResponse generalResponse)
+        protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
             AddLog($"\nНачата обработка ответа сервиса");
 
@@ -152,26 +152,12 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Закончена обработка ответа сервиса");
         }
 
-        public override void RollBackResult()
+        protected override void RollBackResult()
         {
             Model.LinearTrainingResult = null;
             Model.ExponentialTrainingResult = null;
             Model.MultiplicativeTrainingResult = null;
             Model.Save();
-        }
-
-        public override void SendSuccessNotification(OMQueue processQueue)
-        {
-            var subject = $"Процесс обучения модели '{Model.Name}'";
-            var message = "Операция успешно завершена";
-            NotificationSender.SendNotification(processQueue, subject, message);
-        }
-
-        public override void SendFailNotification(OMQueue processQueue, Exception exception)
-        {
-            var subject = $"Процесс обучения модели '{Model.Name}'";
-            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
-            NotificationSender.SendNotification(processQueue, subject, message);
         }
 
 
@@ -221,11 +207,16 @@ namespace KadOzenka.Dal.Modeling
 
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
         {
-            return OMGroupToMarketSegmentRelation
+            var relation = OMGroupToMarketSegmentRelation
                 .Where(x => x.GroupId == Model.GroupId)
                 .Select(x => x.MarketSegment_Code)
                 .Select(x => x.TerritoryType_Code)
                 .ExecuteFirstOrDefault();
+
+            if(relation == null)
+                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{Model.GroupId}'");
+
+            return relation;
         }
 
         private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)

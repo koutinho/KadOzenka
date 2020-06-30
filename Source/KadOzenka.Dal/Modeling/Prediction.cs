@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
@@ -14,13 +13,14 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
 {
-    public class PredictionStrategy : AModelingStrategy
+    public class Prediction : AModelingTemplate
     {
         private PredictionRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
+        protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{Model.Name}'";
 
-        public PredictionStrategy(string inputParametersXml, OMQueue processQueue)
+        public Prediction(string inputParametersXml, OMQueue processQueue)
             : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
@@ -28,12 +28,12 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        public override string GetUrl()
+        protected override string GetUrl()
         {
             return $"{ModelingProcessConfig.Current.PredictionUrl}/{Model.InternalName}";
         }
 
-        public override void PrepareData()
+        protected override void PrepareData()
         {
             AddLog("Запущен расчет модели");
 
@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.Modeling
                 throw new Exception(GetErrorMessage(ModelType.Multiplicative));
         }
 
-        public override object GetRequestForService()
+        protected override object GetRequestForService()
         {
             AddLog($"\nНачато формирование запроса на сервис");
 
@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        public override void ProcessServiceResponse(GeneralResponse generalResponse)
+        protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
             AddLog($"\nНачата обработка ответа сервиса");
 
@@ -105,26 +105,6 @@ namespace KadOzenka.Dal.Modeling
 
             AddLog($"Закончена обработка ответа сервиса");
         }
-
-        public override void RollBackResult()
-        {
-           
-        }
-
-        public override void SendSuccessNotification(OMQueue processQueue)
-        {
-            var subject = $"Процесс прогнозирования цены для модели '{Model.Name}'";
-            var message = "Операция успешно завершена";
-            NotificationSender.SendNotification(processQueue, subject, message);
-        }
-
-        public override void SendFailNotification(OMQueue processQueue, Exception exception)
-        {
-            var subject = $"Процесс обучения модели '{Model.Name}'";
-            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
-            NotificationSender.SendNotification(processQueue, subject, message);
-        }
-
 
         #region Support Methods
 

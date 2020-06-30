@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -110,6 +111,7 @@ namespace KadOzenka.Web.Controllers
             ////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    Status_Code = Status.Added,
             //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = new ModelingInputParameters
             //    {
@@ -137,6 +139,7 @@ namespace KadOzenka.Web.Controllers
             ////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    Status_Code = Status.Added,
             //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = new ModelingInputParameters
             //    {
@@ -305,6 +308,7 @@ namespace KadOzenka.Web.Controllers
             //var process = new ModelingProcess();
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    Status_Code = Status.Added,
             //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());

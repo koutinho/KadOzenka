@@ -15,33 +15,34 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Modeling
 {
-    public class CorrelationStrategy : AModelingStrategy
+    public class Correlation : AModelingTemplate
     {
         private string ColumnNameFroPrice => "PriceForService";
         protected CorrelationInputParameters InputParameters { get; set; }
         private List<long> ObjectIds { get; set; }
         private List<OMAttribute> Attributes { get; set; }
         private string ResultMessage { get; set; }
+        protected override string SubjectForMessageInNotification => "Процесс корреляции";
 
-        public CorrelationStrategy(string inputParametersXml, OMQueue processQueue)
+        public Correlation(string inputParametersXml, OMQueue processQueue)
             : base(processQueue)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<CorrelationInputParameters>();
         }
 
 
-        public override string GetUrl()
+        protected override string GetUrl()
         {
             return ModelingProcessConfig.Current.CorrelationUrl;
         }
 
-        public override void PrepareData()
+        protected override void PrepareData()
         {
             ObjectIds = GetObjectIds(InputParameters.QsQueryStr);
             Attributes = GetAttributes(InputParameters.AttributeIds);
         }
 
-        public override object GetRequestForService()
+        protected override object GetRequestForService()
         {
             var query = new QSQuery
             {
@@ -87,7 +88,7 @@ namespace KadOzenka.Dal.Modeling
             return request;
         }
 
-        public override void ProcessServiceResponse(GeneralResponse generalResponse)
+        protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
             var correlationResult = JsonConvert.DeserializeObject<CorrelationResponse>(generalResponse.Data.ToString());
 
@@ -111,11 +112,7 @@ namespace KadOzenka.Dal.Modeling
             ResultMessage = sb.ToString();
         }
 
-        public override void RollBackResult()
-        {
-        }
-
-        public override void SendSuccessNotification(OMQueue processQueue)
+        protected override void SendSuccessNotification(OMQueue processQueue)
         {
             var subject = "Процесс корреляции";
             var message = new StringBuilder()
@@ -125,13 +122,6 @@ namespace KadOzenka.Dal.Modeling
                 .AppendLine(ResultMessage);
 
             NotificationSender.SendNotification(processQueue, subject, message.ToString());
-        }
-
-        public override void SendFailNotification(OMQueue processQueue, Exception exception)
-        {
-            var subject = "Процесс корреляции";
-            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
-            NotificationSender.SendNotification(processQueue, subject, message);
         }
 
 
