@@ -7401,7 +7401,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_1')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_1" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_1" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7410,7 +7410,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_2')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_2" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_2" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7428,7 +7428,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_4')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_4" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_4" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7437,7 +7437,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_5')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_5" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_5" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7446,7 +7446,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_6')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_6" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_6" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7455,7 +7455,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_7')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_7" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_7" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7482,7 +7482,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_10')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_10" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_10" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7491,7 +7491,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_11')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_11" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_11" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7500,7 +7500,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_12')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_12" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_12" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7545,7 +7545,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_17')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_17" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_17" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7554,7 +7554,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_18')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_18" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_18" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7563,7 +7563,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_19')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_19" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_19" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7572,7 +7572,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_20')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_20" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_20" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7581,7 +7581,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_21')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_21" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_21" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7608,7 +7608,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_21_1_3')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_21_1_3" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_21_1_3" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7635,7 +7635,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_21_2_3')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_21_2_3" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_21_2_3" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7940,7 +7940,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_6')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_6" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_6" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7958,7 +7958,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_1')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_1" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_1" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7976,7 +7976,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_3')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_3" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_3" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7985,7 +7985,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_4')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_4" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_4" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7994,7 +7994,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_5')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_5" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_5" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8003,7 +8003,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_7')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_7" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_7" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8012,7 +8012,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_8')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_8" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_8" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8021,7 +8021,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_9')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_9" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_9" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8030,7 +8030,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_10')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_10" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_10" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8039,7 +8039,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_12')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_12" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_12" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8048,7 +8048,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_13')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8075,7 +8075,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_13_1_3')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13_1_3" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13_1_3" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8102,7 +8102,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_13_2_3')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13_2_3" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_13_2_3" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8165,7 +8165,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_14')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_14" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_14" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8174,7 +8174,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_15')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_15" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_15" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8183,7 +8183,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_16')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_16" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_16" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8192,7 +8192,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_17')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_17" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_17" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8201,7 +8201,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_18')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_18" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_18" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8210,7 +8210,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_19')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_19" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_19" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8219,7 +8219,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_20')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_20" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_20" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8228,7 +8228,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_21')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_21" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_21" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8237,7 +8237,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_PARCEL', 'har_11')) then
-        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_11" VARCHAR(255)';
+        execute 'alter table DECLARATIONS_HAR_PARCEL add "har_11" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -20203,7 +20203,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source25_a_txt', 'value')) then
-        execute 'alter table gbu_source25_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source25_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -20581,7 +20581,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source28_a_txt', 'value')) then
-        execute 'alter table gbu_source28_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source28_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -20959,7 +20959,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source29_a_txt', 'value')) then
-        execute 'alter table gbu_source29_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source29_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -21742,7 +21742,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source30_a_txt', 'value')) then
-        execute 'alter table gbu_source30_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source30_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -22525,7 +22525,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source44_a_txt', 'value')) then
-        execute 'alter table gbu_source44_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source44_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -28208,6 +28208,42 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field44404317')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field44404317" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field44404311')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field44404311" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field44404309')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field44404309" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field44404313')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field44404313" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -33378,6 +33414,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'zone_name_by_circles')) then
+        execute 'alter table market_region_dictionaty add "zone_name_by_circles" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_107_q_pk')) then
     execute 'alter table market_region_dictionaty add constraint reg_107_q_pk primary key (id)';
   end if;
@@ -33468,6 +33513,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_REGION_DICTIONATY', 'custom_zone')) then
         execute 'alter table MARKET_REGION_DICTIONATY add "custom_zone" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_REGION_DICTIONATY', 'zone_name_by_circles')) then
+        execute 'alter table MARKET_REGION_DICTIONATY add "zone_name_by_circles" VARCHAR(255)';
     end if;
 end $$;
 
@@ -33708,15 +33762,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'group_id')) then
         execute 'alter table MODELING_MODEL add "group_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'was_trained')) then
-        execute 'alter table MODELING_MODEL add "was_trained" SMALLINT';
     end if;
 end $$;
 
