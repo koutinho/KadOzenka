@@ -28,6 +28,13 @@ namespace KadOzenka.Dal.LongProcess
         private RegisterAttributeService RegisterAttributeService { get; set; }
         private GbuReportService GbuReportService { get; set; }
 
+        public KoFactorsFromReon()
+        {
+            ReonWebClientService = new RosreestrDataApi();
+            RegisterAttributeService = new RegisterAttributeService();
+            GbuReportService = new GbuReportService();
+        }
+
 
         public static void AddProcessToQueue(long taskId)
         {
@@ -44,10 +51,6 @@ namespace KadOzenka.Dal.LongProcess
                 WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 return;
             }
-
-            ReonWebClientService = new RosreestrDataApi();
-            RegisterAttributeService = new RegisterAttributeService();
-            GbuReportService = new GbuReportService();
 
             var task = GetTask(processQueue.ObjectId.Value);
             var document = GetDocument(task.DocumentId);

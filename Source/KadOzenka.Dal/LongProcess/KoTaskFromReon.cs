@@ -24,14 +24,19 @@ namespace KadOzenka.Dal.LongProcess
         private RosreestrDataApi ReonWebClientService { get; set; }
         private GbuReportService GbuReportService { get; set; }
 
+        public KoTaskFromReon()
+        {
+            TaskService = new TaskService();
+            ReonWebClientService = new RosreestrDataApi();
+            GbuReportService = new GbuReportService();
+        }
+
+
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
-            TaskService = new TaskService();
-            ReonWebClientService = new RosreestrDataApi();
-            GbuReportService = new GbuReportService();
-
+            
             GbuReportService.AddHeaders(0, new List<string> { "Номер задания", "Дата задания", "Год тура", "Количество файлов", "Ошибка" });
 
             var request = GetRequest(processType);
