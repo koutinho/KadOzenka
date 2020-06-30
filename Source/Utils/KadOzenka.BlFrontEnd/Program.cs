@@ -80,6 +80,8 @@ namespace KadOzenka.BlFrontEnd
 		    consoleHelper.AddCommand("194-2", "Процедура обновления цен объектов-аналогов с Avito", () => { new Avito().RefreshAllData(testBoot: false); });
             consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
+			consoleHelper.AddCommand("1111", "", () => { new ParserProcess().StartProcess(null, null, new System.Threading.CancellationToken()); });
+
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1108", "Присвоение кадастровых кварталов, районов и зон", () => { new Cian().SetCadastralNumbers(); });
 
