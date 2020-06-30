@@ -193,7 +193,7 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'Factor', title: 'Фактор'
+                    field: 'Factor', title: 'Фактор', width: "40%"
                 }, {
                     field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#"
                 }, {
@@ -208,7 +208,17 @@
             ],
             width: '100%',
             scrollable: true,
-            selectable: true
+            selectable: true,
+        });
+
+        $('#grid').data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                return e.target.text();
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
         });
 
 
