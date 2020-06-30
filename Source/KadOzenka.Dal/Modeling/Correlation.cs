@@ -40,6 +40,8 @@ namespace KadOzenka.Dal.Modeling
         {
             ObjectIds = GetObjectIds(InputParameters.QsQueryStr);
             Attributes = GetAttributes(InputParameters.AttributeIds);
+
+            AddLog($"Найдено: {ObjectIds.Count} объектов и {Attributes.Count} атрибутов.");
         }
 
         protected override object GetRequestForService()
@@ -114,14 +116,13 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void SendSuccessNotification(OMQueue processQueue)
         {
-            var subject = "Процесс корреляции";
             var message = new StringBuilder()
                 .AppendLine("Операция успешно завершена")
                 .AppendLine()
                 .AppendLine("Коэффициенты:")
                 .AppendLine(ResultMessage);
 
-            NotificationSender.SendNotification(processQueue, subject, message.ToString());
+            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message.ToString());
         }
 
 

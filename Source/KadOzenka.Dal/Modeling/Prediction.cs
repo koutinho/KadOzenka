@@ -35,8 +35,6 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            AddLog("Запущен расчет модели");
-
             if(InputParameters.ModelType == ModelType.Linear && string.IsNullOrWhiteSpace(Model.LinearTrainingResult))
                 throw new Exception(GetErrorMessage(ModelType.Linear));
 
@@ -49,8 +47,6 @@ namespace KadOzenka.Dal.Modeling
 
         protected override object GetRequestForService()
         {
-            AddLog($"\nНачато формирование запроса на сервис");
-
             RequestForService = new PredictionRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
@@ -80,15 +76,11 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
-            AddLog($"Закончено формирование запроса на сервис");
-
             return RequestForService;
         }
 
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            AddLog($"\nНачата обработка ответа сервиса");
-
             var predictionResult = JsonConvert.DeserializeObject<PredictionResponse>(generalResponse.Data.ToString());
 
             if (predictionResult.Prices == null || predictionResult.Prices.Count != RequestForService.CadastralNumbers.Count)
@@ -98,12 +90,13 @@ namespace KadOzenka.Dal.Modeling
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
 
             SavePredictedPrice(predictionResult.Prices);
+            AddLog("Сохранены спрогнозированные цены");
 
             SaveCoefficientsForPredictedPrice(trainingResult.CoefficientsForAttributes);
+            AddLog("Сохранены коэффициенты");
 
             SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
-
-            AddLog($"Закончена обработка ответа сервиса");
+            AddLog("Сохранены данные в КО-часть");
         }
 
         #region Support Methods

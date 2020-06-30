@@ -33,17 +33,22 @@ namespace KadOzenka.Dal.Modeling
                 if (_httpClient == null)
                     _httpClient = new HttpClient();
 
+                AddLog("\nНачат сбор данных");
                 PrepareData();
+                AddLog("\nЗакончен сбор данных");
                 WorkerCommon.SetProgress(ProcessQueue, 50);
 
+                AddLog("\nНачато формирование запроса на сервис");
                 var requestForService = GetRequestForService();
+                AddLog("Закончено формирование запроса на сервис");
 
                 var responseStr = SendDataToService(requestForService).GetAwaiter().GetResult();
-
                 var generalResponse = PreProcessServiceResponse(responseStr);
                 WorkerCommon.SetProgress(ProcessQueue, 80);
 
+                AddLog("\nНачата обработка ответа сервиса");
                 ProcessServiceResponse(generalResponse);
+                AddLog("Закончена обработка ответа сервиса");
                 WorkerCommon.SetProgress(ProcessQueue, 100);
 
                 SendSuccessNotification(ProcessQueue);

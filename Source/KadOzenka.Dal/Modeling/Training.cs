@@ -50,8 +50,6 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            AddLog("Начат сбор данных для обучения модели");
-
             var marketObjects = GetMarketObjects();
             AddLog($"Найдено {marketObjects.Count} объекта.");
 
@@ -93,14 +91,10 @@ namespace KadOzenka.Dal.Modeling
                     AddLog($"{i}, ", false);
             });
             AddLog($"{i}.", false);
-
-            AddLog($"Сбор данных закончен");
         }
 
         protected override object GetRequestForService()
         {
-            AddLog($"\nНачато формирование запроса на сервис");
-
             RequestForService = new TrainingRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
@@ -132,24 +126,19 @@ namespace KadOzenka.Dal.Modeling
             if (RequestForService.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
-            AddLog($"Закончено формирование запроса на сервис");
-
             return RequestForService;
         }
 
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            AddLog($"\nНачата обработка ответа сервиса");
-
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
 
             ResetPredictedPrice();
+
             ResetCoefficientsForPredictedPrice();
 
             UpdateModel(trainingResult);
-
-            AddLog($"Закончена обработка ответа сервиса");
         }
 
         protected override void RollBackResult()
