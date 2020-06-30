@@ -6,6 +6,7 @@ using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
