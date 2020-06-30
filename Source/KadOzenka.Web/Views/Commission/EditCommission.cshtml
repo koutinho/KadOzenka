@@ -7,6 +7,16 @@
 @using (Html.BeginForm("EditCommission", "Commission", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
+    if (Model.Id == -1)
+    {
+        <div class="form-group" style="margin-bottom: 20px;">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=/ObjectCard?RegisterViewId=CommissionCost" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+    }
     <ul id="ls_panelbar" class="panelbar">
         <li id="Section_Main" data-expand>
             <span>Основные данные</span>

@@ -22,7 +22,13 @@
 	@Html.HiddenFor(m => m.Org)
 	@Html.HiddenFor(m => m.Sro)
 	<div class="form-horizontal col-sm-12">
-		<div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=/ObjectCard?RegisterViewId=SudZak" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
 		<div class="form-group">
 			<div class="col-sm-2">
 				@Html.CustomLabelFor("Номер заключения", true)

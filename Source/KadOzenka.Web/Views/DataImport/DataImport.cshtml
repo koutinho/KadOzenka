@@ -1,7 +1,18 @@
 ﻿@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Gbu
 @using ObjectModel.Market
 
 <form id="importForm">
+    @if((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
+    {
+    <div class="form-group" style="margin-bottom: 20px;">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=/ObjectCard?RegisterViewId=GbuObjectsImport" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
+        </div>
+    </div>
+    }
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
         <li id="Section_UploadBuilding" data-expand>
             <span>Формирование загрузки</span>
@@ -9,7 +20,7 @@
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
                     <div class="form-group">
-                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx"/>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-5">
@@ -34,7 +45,7 @@
                             </div>
                             <div class="row filterParamsContainer">
                                 <span class="filterInput">
-                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск по атрибутам" />
+                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск по атрибутам"/>
                                 </span>
                                 <div class="filterAttrParamsContainer">
                                     <div id="treeview"></div>
@@ -46,7 +57,7 @@
                         <div>
                             <span>
                                 <button id="loadButton" type="button">Загрузить</button>
-                                <input id="backgroundDownloadCheckbox" type="checkbox" />
+                                <input id="backgroundDownloadCheckbox" type="checkbox"/>
                                 <label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
                             </span>
                         </div>
