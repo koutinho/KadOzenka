@@ -161,9 +161,17 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("253", "Импорт данных ГБУ(БД) ОНС Date", MSExporter.DoLoadBd_Uncomplited_GBU_Date);
 			consoleHelper.AddCommand("254", "Импорт данных ГБУ(БД) Помещения Date", MSExporter.DoLoadBd_Flat_GBU_Date);
 
-			consoleHelper.AddCommand("255", "Импорт данных ГБУ(БД) Новые факторы Текст", MSExporter.DoLoadBd2018Unit_Dop_TEXT);
-			consoleHelper.AddCommand("256", "Импорт данных ГБУ(БД) Новые факторы Дата", MSExporter.DoLoadBd2018Unit_Dop_Data);
-			consoleHelper.AddCommand("257", "Импорт данных ГБУ(БД) Новые факторы Число", MSExporter.DoLoadBd2018Unit_Dop_Numeric);
+			consoleHelper.AddCommand("255", "Импорт данных ГБУ(БД) Новые факторы Текст (Земля)", MSExporter.DoLoadBd2018Unit_Dop_TEXT_P);
+			consoleHelper.AddCommand("256", "Импорт данных ГБУ(БД) Новые факторы Текст (Здания)", MSExporter.DoLoadBd2018Unit_Dop_TEXT_B);
+			consoleHelper.AddCommand("257", "Импорт данных ГБУ(БД) Новые факторы Текст (Сооружения)", MSExporter.DoLoadBd2018Unit_Dop_TEXT_C);
+			consoleHelper.AddCommand("258", "Импорт данных ГБУ(БД) Новые факторы Текст (ОНС)", MSExporter.DoLoadBd2018Unit_Dop_TEXT_U);
+			consoleHelper.AddCommand("259", "Импорт данных ГБУ(БД) Новые факторы Текст (Помещения)", MSExporter.DoLoadBd2018Unit_Dop_TEXT_F);
+
+			consoleHelper.AddCommand("260", "Импорт данных ГБУ(БД) Новые факторы Число (Земля)", MSExporter.DoLoadBd2018Unit_Dop_NUM_P);
+			consoleHelper.AddCommand("261", "Импорт данных ГБУ(БД) Новые факторы Число (Здания)", MSExporter.DoLoadBd2018Unit_Dop_NUM_B);
+			consoleHelper.AddCommand("262", "Импорт данных ГБУ(БД) Новые факторы Число (Сооружения)", MSExporter.DoLoadBd2018Unit_Dop_NUM_C);
+			consoleHelper.AddCommand("263", "Импорт данных ГБУ(БД) Новые факторы Число (ОНС)", MSExporter.DoLoadBd2018Unit_Dop_NUM_U);
+			consoleHelper.AddCommand("264", "Импорт данных ГБУ(БД) Новые факторы Число (Помещения)", MSExporter.DoLoadBd2018Unit_Dop_NUM_F);
 
 
 			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
