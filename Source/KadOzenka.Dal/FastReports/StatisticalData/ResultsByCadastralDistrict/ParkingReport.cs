@@ -9,6 +9,7 @@ using ObjectModel.Directory;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {

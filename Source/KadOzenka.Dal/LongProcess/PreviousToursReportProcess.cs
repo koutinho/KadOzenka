@@ -5,13 +5,14 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using System.IO;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
@@ -25,10 +26,12 @@ namespace KadOzenka.Dal.LongProcess
         private int _currentRowIndex;
         private string _reportGbuStorage = "SaveReportPath";
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
+        private PreviousToursService PreviousToursService { get; set; }
 
 
         public PreviousToursReportProcess()
         {
+            PreviousToursService = new PreviousToursService();
             _excelTemplate = new ExcelFile();
             _mainWorkSheet = _excelTemplate.Worksheets.Add("Лист 1");
             _mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
@@ -59,10 +62,8 @@ namespace KadOzenka.Dal.LongProcess
 
             try
             {
-                var report = new PreviousToursReport();
-
                 AddLog(processQueue, "Начат сбор данных");
-                var reportInfo = report.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
+                var reportInfo = PreviousToursService.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
                 AddLog(processQueue, "Закончен сбор данных");
                 WorkerCommon.SetProgress(processQueue, 50);
 
@@ -71,7 +72,7 @@ namespace KadOzenka.Dal.LongProcess
 
                 AddLog(processQueue, "Начато формирование файла");
                 GenerateReportHeader(reportInfo.Title, reportInfo.ColumnTitles, tourYears, pricingFactorNames);
-                GenerateReportBody(reportInfo, report, tourYears, pricingFactorNames);
+                GenerateReportBody(reportInfo, tourYears, pricingFactorNames);
                 AddLog(processQueue, "Закончено формирование файла");
 
                 var reportId = SaveReport();
@@ -199,11 +200,9 @@ namespace KadOzenka.Dal.LongProcess
         /// Построчная генерация отчета
         /// </summary>
         /// <param name="reportInfo"></param>
-        /// <param name="report"></param>
         /// <param name="tourYears"></param>
         /// <param name="pricingFactorNames"></param>
-        private void GenerateReportBody(PreviousToursReport.PreviousToursReportInfo reportInfo, PreviousToursReport report, List<string> tourYears,
-            List<string> pricingFactorNames)
+        private void GenerateReportBody(PreviousToursReportInfo reportInfo, List<string> tourYears, List<string> pricingFactorNames)
         {
             var index = 1;
             var groupedReportItems = reportInfo.Items.GroupBy(x => x.CadastralNumber).ToList();
@@ -216,7 +215,7 @@ namespace KadOzenka.Dal.LongProcess
                     tourYears.ForEach(tourYear =>
                     {
                         var itemInTour = groupedItem.FirstOrDefault(x => x.Tour?.Year.ToString() == tourYear);
-                        rowValues.Add(report.GetValueForReportItem(title, itemInTour)?.ToString());
+                        rowValues.Add(PreviousToursService.GetValueForReportItem(title, itemInTour)?.ToString());
                     });
                 });
 

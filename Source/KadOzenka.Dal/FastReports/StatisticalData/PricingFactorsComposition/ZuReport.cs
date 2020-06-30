@@ -6,6 +6,7 @@ using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 

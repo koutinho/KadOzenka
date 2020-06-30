@@ -10,6 +10,7 @@ using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Model;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
