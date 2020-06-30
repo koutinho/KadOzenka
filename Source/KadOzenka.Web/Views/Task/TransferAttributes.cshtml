@@ -166,12 +166,9 @@
         </div>
 
 	    <div class="form-group">
-		    <div class="col-sm-2">
-			    @(Html.Kendo().Button()
-				    .Name("addRow")
-				    .Content("Добавить строчку").HtmlAttributes(new {@type = "button"})
-				    )
-		    </div>
+            <div class="col-sm-2">
+                <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+            </div>
 		    <div class="col-sm-2 col-sm-offset-8">
 			    @(Html.Kendo().Button()
 					.Name("execute")
