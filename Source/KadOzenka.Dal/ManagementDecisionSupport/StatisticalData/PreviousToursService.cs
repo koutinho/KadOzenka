@@ -1,28 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Directory;
 using ObjectModel.KO;
-using Core.UI.Registers.Reports.Model;
-using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using KadOzenka.Dal.Model;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class PreviousToursService
     {
+        protected readonly GbuObjectService GbuObjectService;
+        protected readonly StatisticalDataService StatisticalDataService;
+        protected readonly FactorsService FactorsService;
+
         private const string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
         private const string TypeTitle = "Тип";
         private const string SquareTitle = "Площадь";
@@ -49,18 +42,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             WallMaterialTitle, GroupOrSubgroupTitle, CadastralCostTitle
         };
 
-        protected readonly GbuObjectService GbuObjectService;
-        protected readonly StatisticalDataService StatisticalDataService;
-        protected readonly ModelService ModelService;
-        protected readonly GroupService GroupService;
-        protected readonly FactorsService FactorsService;
-
         public PreviousToursService()
         {
             GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
-            ModelService = new ModelService();
-            GroupService = new GroupService();
             FactorsService = new FactorsService();
         }
 
@@ -128,6 +113,53 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 PricingFactors = attributes.OrderBy(x => x.Name).ToList()
             };
         }
+
+        public object GetValueForReportItem(string title, PreviousTourReportItem item)
+        {
+            if (item == null)
+                return null;
+
+            switch (title)
+            {
+                case TypeTitle:
+                    return item.ObjectType;
+                case SquareTitle:
+                    return item.Square;
+                case NameTitle:
+                    return item.ResultName;
+                case PurposeTitle:
+                    return item.ResultPurpose;
+                case PermittedUseTitle:
+                    return item.PermittedUse;
+                case AddressTitle:
+                    return item.Address;
+                case LocationTitle:
+                    return item.Location;
+                case CadastralQuartalTitle:
+                    return item.CadastralQuartal;
+                case ParentCadastralNumberTitle:
+                    return item.ParentCadastralNumberForOks;
+                case BuildYearTitle:
+                    return item.BuildYear;
+                case CommissioningYearTitle:
+                    return item.CommissioningYear;
+                case FloorsNumberTitle:
+                    return item.FloorsNumber;
+                case UnderGroundFloorsNumberTitle:
+                    return item.UndergroundFloorsNumber;
+                case WallMaterialTitle:
+                    return item.WallMaterial;
+                case GroupOrSubgroupTitle:
+                    return item.SubGroupNumber;
+                case CadastralCostTitle:
+                    return item.CadastralCost;
+            }
+
+            return null;
+        }
+
+
+        #region Support Methods
 
         private List<OMTour> GetToursByTasks(List<long> taskIds)
         {
@@ -280,56 +312,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return attributesDictionary;
         }
 
-        public object GetValueForReportItem(string title, PreviousTourReportItem item)
-        {
-            if (item == null)
-                return null;
-
-            switch (title)
-            {
-                case TypeTitle:
-                    return item.ObjectType;
-                case SquareTitle:
-                    return item.Square;
-                case NameTitle:
-                    return item.ResultName;
-                case PurposeTitle:
-                    return item.ResultPurpose;
-                case PermittedUseTitle:
-                    return item.PermittedUse;
-                case AddressTitle:
-                    return item.Address;
-                case LocationTitle:
-                    return item.Location;
-                case CadastralQuartalTitle:
-                    return item.CadastralQuartal;
-                case ParentCadastralNumberTitle:
-                    return item.ParentCadastralNumberForOks;
-                case BuildYearTitle:
-                    return item.BuildYear;
-                case CommissioningYearTitle:
-                    return item.CommissioningYear;
-                case FloorsNumberTitle:
-                    return item.FloorsNumber;
-                case UnderGroundFloorsNumberTitle:
-                    return item.UndergroundFloorsNumber;
-                case WallMaterialTitle:
-                    return item.WallMaterial;
-                case GroupOrSubgroupTitle:
-                    return item.SubGroupNumber;
-                case CadastralCostTitle:
-                    return item.CadastralCost;
-            }
-
-            return null;
-        }
-
         protected List<OMUnit> GetUnits(List<long> taskIds)
         {
             return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
                 .SelectAll()
                 .Execute();
         }
+
+        #endregion
 
         #region Entities
 
