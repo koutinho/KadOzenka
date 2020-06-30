@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProccessor", "ImagePro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "Utils\EP.SdkCore\EP.Sdk.Core.csproj", "{F9CC1690-F519-4C76-A52B-78625BF288AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.WebClients", "KadOzenka.WebClients\KadOzenka.WebClients.csproj", "{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{424A8967-E655-42CB-A88A-B30251FB0ACB}"
@@ -33,6 +31,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Test.ReonWebServiceMock", "KadOzenka.Test.ReonWebServiceMock\KadOzenka.Test.ReonWebServiceMock.csproj", "{35BD5D31-C805-4528-AA4E-855795AFE7AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.WebServices", "KadOzenka.WebServices\KadOzenka.WebServices\KadOzenka.WebServices.csproj", "{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{B35699D8-1146-4F67-BAA1-000AF81FB776}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,14 +106,6 @@ Global
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|x86.Build.0 = Release|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|x86.Build.0 = Debug|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.ActiveCfg = Release|Any CPU
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.Build.0 = Release|Any CPU
 		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -138,6 +130,14 @@ Global
 		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|x86.ActiveCfg = Release|Any CPU
 		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|x86.Build.0 = Release|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Debug|x86.Build.0 = Debug|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|x86.ActiveCfg = Release|Any CPU
+		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,8 +148,8 @@ Global
 		{620E8F25-59FD-4854-A112-E34658EBDFD0} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{E885A580-E156-4906-8978-41B59991EF01} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{F9CC1690-F519-4C76-A52B-78625BF288AC} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
-		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{35BD5D31-C805-4528-AA4E-855795AFE7AE} = {424A8967-E655-42CB-A88A-B30251FB0ACB}
+		{B35699D8-1146-4F67-BAA1-000AF81FB776} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
@@ -188,19 +188,19 @@ Global
 		SccProjectTopLevelParentUniqueName8 = KadOzenka.sln
 		SccProjectName8 = Utils/EP.SdkCore
 		SccLocalPath8 = Utils\\EP.SdkCore
-		SccProjectUniqueName9 = StartProject\\StartProject.csproj
-		SccProjectTopLevelParentUniqueName9 = KadOzenka.sln
-		SccProjectName9 = StartProject
-		SccLocalPath9 = StartProject
-		SccProjectUniqueName10 = KadOzenka.WebClients\\KadOzenka.WebClients.csproj
-		SccProjectName10 = KadOzenka.WebClients
-		SccLocalPath10 = KadOzenka.WebClients
-		SccProjectUniqueName11 = KadOzenka.Test.ReonWebServiceMock\\KadOzenka.Test.ReonWebServiceMock.csproj
-		SccProjectTopLevelParentUniqueName11 = KadOzenka.sln
-		SccProjectName11 = KadOzenka.Test.ReonWebServiceMock
-		SccLocalPath11 = KadOzenka.Test.ReonWebServiceMock
-		SccProjectUniqueName12 = KadOzenka.WebServices\\KadOzenka.WebServices\\KadOzenka.WebServices.csproj
-		SccProjectName12 = KadOzenka.WebServices/KadOzenka.WebServices
-		SccLocalPath12 = KadOzenka.WebServices\\KadOzenka.WebServices
+		SccProjectUniqueName9 = KadOzenka.WebClients\\KadOzenka.WebClients.csproj
+		SccProjectName9 = KadOzenka.WebClients
+		SccLocalPath9 = KadOzenka.WebClients
+		SccProjectUniqueName10 = KadOzenka.Test.ReonWebServiceMock\\KadOzenka.Test.ReonWebServiceMock.csproj
+		SccProjectTopLevelParentUniqueName10 = KadOzenka.sln
+		SccProjectName10 = KadOzenka.Test.ReonWebServiceMock
+		SccLocalPath10 = KadOzenka.Test.ReonWebServiceMock
+		SccProjectUniqueName11 = KadOzenka.WebServices\\KadOzenka.WebServices\\KadOzenka.WebServices.csproj
+		SccProjectName11 = KadOzenka.WebServices/KadOzenka.WebServices
+		SccLocalPath11 = KadOzenka.WebServices\\KadOzenka.WebServices
+		SccProjectUniqueName12 = Parser\\Parser.csproj
+		SccProjectTopLevelParentUniqueName12 = KadOzenka.sln
+		SccProjectName12 = Parser
+		SccLocalPath12 = Parser
 	EndGlobalSection
 EndGlobal
