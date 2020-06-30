@@ -60,15 +60,19 @@ namespace KadOzenka.Dal.LongProcess
             try
             {
                 var report = new PreviousToursReport();
+
+                AddLog(processQueue, "Начат сбор данных");
                 var reportInfo = report.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
+                AddLog(processQueue, "Закончен сбор данных");
                 WorkerCommon.SetProgress(processQueue, 50);
 
                 var tourYears = reportInfo.Tours.Select(x => x.Year.ToString()).ToList();
                 var pricingFactorNames = reportInfo.PricingFactors.Select(x => x.Name).ToList();
 
+                AddLog(processQueue, "Начато формирование файла");
                 GenerateReportHeader(reportInfo.Title, reportInfo.ColumnTitles, tourYears, pricingFactorNames);
-
                 GenerateReportBody(reportInfo, report, tourYears, pricingFactorNames);
+                AddLog(processQueue, "Закончено формирование файла");
 
                 var reportId = SaveReport();
                 var message = "Операция успешно завершена." +

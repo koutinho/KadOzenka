@@ -27,5 +27,17 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			return true;
 		}
+
+        protected void AddLog(OMQueue processQueue, string message, bool withNewLine = true)
+        {
+            var previousLog = string.IsNullOrWhiteSpace(processQueue.Log) ? string.Empty : processQueue.Log;
+
+            var newLog = withNewLine && !string.IsNullOrWhiteSpace(previousLog)
+                ? previousLog + Environment.NewLine + message
+                : previousLog + message;
+
+            processQueue.Log = newLog;
+            processQueue.Save();
+        }
     }
 }
