@@ -15,11 +15,11 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    //TODO отчет работает очень медленно (большой объем данных + сложая матрица FastReport),
+    //TODO отчет работает очень медленно (большой объем данных + сложная матрица FastReport),
     //TODO поэтому для него дополнительно создан длительный процесс PreviousToursReportProcess
     public class PreviousToursReport : StatisticalDataReport
     {
-        private string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
+        private const string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
         private const string TypeTitle = "Тип";
         private const string SquareTitle = "Площадь";
         private const string NameTitle = "Наименование";
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         private const string GroupOrSubgroupTitle = "Группа/ Подгруппа";
         private const string CadastralCostTitle = "Кадастровая стоимость";
 
-        private readonly List<string> _сolumnTitles = new List<string>
+        private readonly List<string> _columnTitles = new List<string>
         {
             TypeTitle, SquareTitle, NameTitle, PurposeTitle, PermittedUseTitle,
             AddressTitle, LocationTitle, CadastralQuartalTitle, ParentCadastralNumberTitle,
@@ -94,7 +94,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 return new PreviousToursReportInfo
                 {
                     Title = ReportTitle,
-                    ColumnTitles = _сolumnTitles,
+                    ColumnTitles = _columnTitles,
                     Tours = tours.OrderBy(x => x.Year).ToList(),
                     PricingFactors = attributes.OrderBy(x => x.Name).ToList()
                 };
@@ -133,7 +133,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return new PreviousToursReportInfo
             {
                 Title = ReportTitle,
-                ColumnTitles = _сolumnTitles,
+                ColumnTitles = _columnTitles,
                 Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.Tour?.Year).ToList(),
                 Tours = tours.OrderBy(x => x.Year).ToList(),
                 PricingFactors = attributes.OrderBy(x => x.Name).ToList()
@@ -325,7 +325,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             foreach (var item in operations)
             {
                 counter++;
-                _сolumnTitles.ForEach(title =>
+                _columnTitles.ForEach(title =>
                 {
                     var value = GetValueForReportItem(title, item);
                     dataTable.Rows.Add(counter,
