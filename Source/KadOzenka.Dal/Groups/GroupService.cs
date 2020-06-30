@@ -182,8 +182,10 @@ namespace KadOzenka.Dal.Groups
             if (taskIds.Count == 0)
                 return new List<OMGroup>();
 
-            var groupIds = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.GroupId != null)
+            var groupIds = OMUnit.Where(x => taskIds.Contains((long) x.TaskId) && x.GroupId != null)
+                .GroupBy(x => x.GroupId)
                 .Select(x => x.GroupId)
+                .SetDistinct()
                 .Execute()
                 .Select(x => x.GroupId)
                 .Distinct()

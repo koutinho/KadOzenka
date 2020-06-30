@@ -251,25 +251,33 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
             if (model.IsInBackground)
             {
+                var inputParameters = new PreviousToursReportInputParameters
+                {
+                    GroupId = model.GroupId.Value,
+                    TaskIds = model.SelectedTasks.ToList()
+                };
+
                 ////TODO для тестирования
                 //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
                 //{
                 //    Status_Code = Status.Added,
-                //    Parameters = new PreviousToursReportInputParameters
-                //    {
-                //        GroupId = model.GroupId ?? -1,
-                //        TaskIds = model.SelectedTasks.Length == 0 ? new List<long> { -1 } : model.SelectedTasks.ToList()
-                //    }.SerializeToXml()
+                //    Parameters = inputParameters.SerializeToXml()
                 //}, new CancellationToken());
 
-                return Content(JsonConvert.SerializeObject(new {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
+                PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+
+                return Content(
+                    JsonConvert.SerializeObject(new
+                        {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
                     "application/json");
             }
 
-            var reportModel = model.Map();
-            return GetStatisticalDataReportUrl(reportModel);
+            return GetStatisticalDataReportUrl(model.Map());
         }
 
         #endregion

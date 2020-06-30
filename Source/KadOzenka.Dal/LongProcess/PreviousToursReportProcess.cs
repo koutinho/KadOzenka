@@ -22,9 +22,7 @@ namespace KadOzenka.Dal.LongProcess
     {
         private readonly ExcelFile _excelTemplate;
         private readonly ExcelWorksheet _mainWorkSheet;
-        private int _currentRow;
-        //кол-во столбцов без разделения на туры (№пп и КН)
-        private int _numberOfColumnsWithoutTourSeparation;
+        private int _currentRowIndex;
         private string _reportGbuStorage = "SaveReportPath";
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
 
@@ -72,16 +70,15 @@ namespace KadOzenka.Dal.LongProcess
 
                 GenerateReportBody(reportInfo, report, tourYears, pricingFactorNames);
 
-                var reportId = SaveReport(_reportName);
-
-                //TODO для тестирования
-                var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
-
+                var reportId = SaveReport();
                 var message = "Операция успешно завершена." +
                               $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
                 NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
 
                 WorkerCommon.SetProgress(processQueue, 100);
+
+                //TODO для тестирования
+                var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
             }
             catch (Exception ex)
             {
@@ -102,7 +99,6 @@ namespace KadOzenka.Dal.LongProcess
                 "№ п/п",
                 "Кадастровый номер"
             };
-            _numberOfColumnsWithoutTourSeparation = columnsWithoutTourSeparation.Count;
 
             var allColumnTitles = new List<string>();
             allColumnTitles.AddRange(columnsWithoutTourSeparation);
@@ -117,47 +113,40 @@ namespace KadOzenka.Dal.LongProcess
                 .SelectMany(x => x.ToList()).ToList());
 
             AddTitle(reportTitle, allColumnTitles.Count * tourYears.Count);
-            AddHeaders(allColumnTitles, tourYears.Count, true);
+            AddHeaders(allColumnTitles, tourYears.Count, columnsWithoutTourSeparation.Count);
             AddRow(tourColumns, true);
         }
 
         private void AddTitle(string title, int mergedColumnsCount)
         {
-            //т.к. отсчет идет с 0
-            if (mergedColumnsCount != 0)
-                mergedColumnsCount--;
-
+            mergedColumnsCount--;
             var startColumnIndex = 0;
             var endColumnIndex = startColumnIndex + mergedColumnsCount;
 
-            _mainWorkSheet.Rows[_currentRow].Cells[startColumnIndex].SetValue(title);
+            _mainWorkSheet.Rows[_currentRowIndex].Cells[startColumnIndex].SetValue(title);
 
-            var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(_currentRow, startColumnIndex, _currentRow, endColumnIndex);
+            var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(_currentRowIndex, startColumnIndex, _currentRowIndex, endColumnIndex);
             cells.Merged = true;
-            cells.Style = GetHeadersCellStyle();
+            cells.Style = GetCellStyle(true);
 
-            _currentRow++;
+            _currentRowIndex++;
         }
 
-        private void AddHeaders(List<string> titles, int mergedColumnsCount, bool isHeaderCellStyle = false)
+        private void AddHeaders(List<string> titles, int mergedColumnsCount, int numberOfColumnsWithoutTourSeparation)
         {
-            //т.к. отсчет идет с 0
-            if (mergedColumnsCount != 0)
-                mergedColumnsCount--;
-
+            mergedColumnsCount--;
             var endColumnIndex = -1;
             foreach (var title in titles)
             {
                 endColumnIndex++;
                 var startColumnIndex = endColumnIndex;
-                var startRowIndex = _currentRow;
+                var startRowIndex = _currentRowIndex;
                 var endRowIndex = startRowIndex;
 
-                _mainWorkSheet.Rows[_currentRow].Cells[startColumnIndex].SetValue(title);
+                _mainWorkSheet.Rows[_currentRowIndex].Cells[startColumnIndex].SetValue(title);
 
-                //оставляем первые _numberOfColumnsWithoutTourSeparation ячеек
-                //необъединенными по горизонтали, но объединенными по вертикали
-                if (startColumnIndex < _numberOfColumnsWithoutTourSeparation)
+                //оставляем первые N ячеек необъединенными по горизонтали, но объединенными по вертикали
+                if (startColumnIndex < numberOfColumnsWithoutTourSeparation)
                 {
                     endColumnIndex = startColumnIndex;
                     endRowIndex++;
@@ -169,14 +158,46 @@ namespace KadOzenka.Dal.LongProcess
 
                 var cells = _mainWorkSheet.Cells.GetSubrangeAbsolute(startRowIndex, startColumnIndex, endRowIndex, endColumnIndex);
                 cells.Merged = true;
-
-                if (isHeaderCellStyle)
-                    cells.Style = GetHeadersCellStyle();
+                cells.Style = GetCellStyle(true);
             }
 
-            _currentRow++;
+            _currentRowIndex++;
         }
 
+        private void AddRow(List<string> values, bool isHeaderCellStyle = false)
+        {
+            for (var i = 0; i < values.Count; i++)
+            {
+                var cells = _mainWorkSheet.Rows[_currentRowIndex].Cells[i];
+                cells.SetValue(values[i]);
+                cells.Style = GetCellStyle(isHeaderCellStyle);
+            }
+
+            _currentRowIndex++;
+        }
+
+        private CellStyle GetCellStyle(bool isHeaderCellStyle = false)
+        {
+            var style = new CellStyle
+            {
+                HorizontalAlignment = HorizontalAlignmentStyle.Center,
+                VerticalAlignment = VerticalAlignmentStyle.Center,
+                WrapText = true
+            };
+
+            if(isHeaderCellStyle)
+                style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+
+            return style;
+        }
+
+        /// <summary>
+        /// Построчная генерация отчета
+        /// </summary>
+        /// <param name="reportInfo"></param>
+        /// <param name="report"></param>
+        /// <param name="tourYears"></param>
+        /// <param name="pricingFactorNames"></param>
         private void GenerateReportBody(PreviousToursReport.PreviousToursReportInfo reportInfo, PreviousToursReport report, List<string> tourYears,
             List<string> pricingFactorNames)
         {
@@ -210,35 +231,7 @@ namespace KadOzenka.Dal.LongProcess
             });
         }
 
-        private void AddRow(List<string> values, bool isHeaderCellStyle = false)
-        {
-            for(var i=0; i<values.Count; i++)
-            {
-                var cells = _mainWorkSheet.Rows[_currentRow].Cells[i];
-                cells.SetValue(values[i]);
-
-                if (isHeaderCellStyle)
-                    cells.Style = GetHeadersCellStyle();
-            }
-
-            _currentRow++;
-        }
-
-        private CellStyle GetHeadersCellStyle()
-        {
-            var style = new CellStyle
-            {
-                HorizontalAlignment = HorizontalAlignmentStyle.Center,
-                VerticalAlignment = VerticalAlignmentStyle.Center,
-                WrapText = true
-            };
-
-            style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-
-            return style;
-        }
-
-        private long SaveReport(string fileName)
+        private long SaveReport()
         {
             try
             {
@@ -252,7 +245,7 @@ namespace KadOzenka.Dal.LongProcess
                     UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
                     DateCreated = currentDate,
                     Status = (int)ImportStatus.Added,
-                    TemplateFileName = fileName,
+                    TemplateFileName = _reportName,
                     MainRegisterId = OMMainObject.GetRegisterId(),
                     RegisterViewId = "GbuObjects"
                 };
