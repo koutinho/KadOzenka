@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using ObjectModel.Market;
 using KadOzenka.Dal.WebRequest;
+using Core.Register.QuerySubsystem;
 
 namespace KadOzenka.Dal.RestAppParser
 {
@@ -14,8 +15,8 @@ namespace KadOzenka.Dal.RestAppParser
     {
 
         List<OMCoreObject> AllObjects = new List<OMCoreObject>();
-        DateTime LastUpdateDate = 
-            OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian)
+        DateTime LastUpdateDate =
+            OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian && x.ParserTime != null)
                         .Select(x => x.ParserTime)
                         .OrderByDescending(x => x.ParserTime)
                         .ExecuteFirstOrDefault()
@@ -25,6 +26,7 @@ namespace KadOzenka.Dal.RestAppParser
 
         public void Detect()
         {
+            Console.WriteLine($"Дата последнего обновления: {LastUpdateDate}");
             string[] regionIDs = ConfigurationManager.AppSettings["restAppRegionIDsCIAN"].Split(',');
             string[] dealTypes = ConfigurationManager.AppSettings["restAppDealTypeCIAN"].Split(',');
             int delta = int.Parse(ConfigurationManager.AppSettings["restAppMinuteLimits"]);

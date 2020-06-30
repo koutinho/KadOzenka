@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
 
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
         public List<OMCoreObject> AllObjects = OMCoreObject
-            .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null)
+            .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null && x.Url != null)
             .Select(x => new { x.Url, x.DealType_Code, x.PropertyMarketSegment_Code, x.Price, x.LastDateUpdate })
             .Execute();
         public List<OMCoreObject> NoCadastralNumbersData = OMCoreObject
@@ -104,7 +104,8 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                             initialObject.Save();
                             errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nОбъявление снято с публикации\n");
                         }
-                        else if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && 
+                        else 
+                        if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && 
                                  !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
                             //Тут обрабатываются данные неудалённых и не снятых с публикации объектов
@@ -168,6 +169,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     catch (Exception ex) 
                     {
                         Console.WriteLine("\n" + ex.Message);
+                        Console.WriteLine("\n" + ex.StackTrace);
                         OErr++; 
                     }
                     OCur++;
@@ -241,13 +243,9 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
 
         public void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData, MarketTypes type, long objectId = 0, bool testBoot = false)
         {
-            try
-            {
-				var screenShot = new FullScreen().TakeScreenShot(driver, type);
-				if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
-                if (testBoot) File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png", screenShot);
-            }
-            catch(Exception ex) { Console.WriteLine(ex.Message); }
+            var screenShot = new FullScreen().TakeScreenShot(driver, type);
+            if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
+            if (testBoot) File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png", screenShot);
         }
 
     }
