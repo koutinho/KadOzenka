@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
-	public class HarmonizationViewModel : PartialCharacteristicViewModel, IValidatableObject
+    public class PartialNewHarmonizationLevel
+    {
+        public int RowNumber { get; set; }
+        public int LevelNumber { get; set; }
+        public long? AttributeId { get; set; }
+    }
+
+    public class HarmonizationViewModel : PartialCharacteristicViewModel, IValidatableObject
 	{
-		/// <summary>
-		/// Тип объекта 
-		/// </summary>
-		[Required(ErrorMessage = "Выберете Тип объекта")]
+        public static int NumberOfConstantLevelsInHarmonization => 10;
+
+        /// <summary>
+        /// Тип объекта 
+        /// </summary>
+        [Required(ErrorMessage = "Выберете Тип объекта")]
 		public long? PropertyType { get; set; }
 
 		/// <summary>
@@ -97,9 +107,21 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		public long? Level10Attribute { get; set; }
 
-		public HarmonizationSettings ToHarmonizationSettings()
-		{
-			var settings = new HarmonizationSettings
+        /// <summary>
+        /// Факторы, добавленные юзером
+        /// </summary>
+        public List<PartialNewHarmonizationLevel> AdditionalCustomLevels { get; set; }
+
+
+        public HarmonizationSettings ToHarmonizationSettings()
+        {
+            var additionalLevels = AdditionalCustomLevels?.Select(x => new AdditionalLevelsForHarmonization
+            {
+                LevelNumber = x.LevelNumber,
+                AttributeId = x.AttributeId
+            }).ToList();
+
+            var settings = new HarmonizationSettings
 			{
 				IdAttributeResult = IdAttributeResult,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
@@ -116,6 +138,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
+                AdditionalLevels = additionalLevels,
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
 				DateActual = IsDataActualUsed ? DataActual: null
 			};

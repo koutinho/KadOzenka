@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ObjectModel.Gbu.Harmonization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,6 +57,8 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                ////TODO для тестирования
+                //Parallel.ForEach(Objs.Take(1), options, item => { RunOneUnit(item, setting); });
                 Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting); });
                 CurrentCount = 0;  
                 MaxCount = 0;
@@ -65,6 +68,8 @@ namespace KadOzenka.Dal.GbuObject
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == setting.PropertyType && x.IsActive == true).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                ////TODO для тестирования
+                //Parallel.ForEach(Objs.Take(1), options, item => { RunOneGbu(item, setting); });
                 Parallel.ForEach(Objs, options, item => { RunOneGbu(item, setting); });
                 CurrentCount = 0;
                 MaxCount = 0;
@@ -98,6 +103,9 @@ namespace KadOzenka.Dal.GbuObject
 
         private static void RunOneItem(string cadastralNumber, long? objectId, DateTime? date, HarmonizationSettings setting)
         {
+            ////TODO для тестирования
+            //objectId = 11188991;
+
             lock (locked)
             {
                 CurrentCount++;
@@ -106,64 +114,51 @@ namespace KadOzenka.Dal.GbuObject
             if (objectId == null)
                 return;
 
-            var lstIds = new List<long>();
-            if (setting.Level1Attribute != null) lstIds.Add(setting.Level1Attribute.Value);
-            if (setting.Level2Attribute != null) lstIds.Add(setting.Level2Attribute.Value);
-            if (setting.Level3Attribute != null) lstIds.Add(setting.Level3Attribute.Value);
-            if (setting.Level4Attribute != null) lstIds.Add(setting.Level4Attribute.Value);
-            if (setting.Level5Attribute != null) lstIds.Add(setting.Level5Attribute.Value);
-            if (setting.Level6Attribute != null) lstIds.Add(setting.Level6Attribute.Value);
-            if (setting.Level7Attribute != null) lstIds.Add(setting.Level7Attribute.Value);
-            if (setting.Level8Attribute != null) lstIds.Add(setting.Level8Attribute.Value);
-            if (setting.Level9Attribute != null) lstIds.Add(setting.Level9Attribute.Value);
-            if (setting.Level10Attribute != null) lstIds.Add(setting.Level10Attribute.Value);
+            var allLevelsAttributeIds = GetAllLevelsAttributeIds(setting);
+            var notNullAttributeIds = allLevelsAttributeIds.Where(x => x != null).Select(x => x.Value).ToList();
+            var attributes = new GbuObjectService().GetAllAttributes(objectId.Value, null, notNullAttributeIds, date);
 
-            var attributes = new GbuObjectService().GetAllAttributes(objectId.Value, null, lstIds, date);
-
-            if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level1Attribute, setting.IdAttributeResult, attributes))
-                if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level2Attribute, setting.IdAttributeResult, attributes))
-                    if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level3Attribute, setting.IdAttributeResult, attributes))
-                        if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level4Attribute, setting.IdAttributeResult, attributes))
-                            if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level5Attribute, setting.IdAttributeResult, attributes))
-                                if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level6Attribute, setting.IdAttributeResult, attributes))
-                                    if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level7Attribute, setting.IdAttributeResult, attributes))
-                                        if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level8Attribute, setting.IdAttributeResult, attributes))
-                                            if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level9Attribute, setting.IdAttributeResult, attributes))
-                                                if (!GetLevelData(cadastralNumber, objectId.Value, setting.Level10Attribute, setting.IdAttributeResult, attributes))
-                                                {
-                                                    lock (locked)
-                                                    {
-                                                        var rowReport = _reportService.GetCurrentRow();
-                                                        var message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
-                                                        AddRowToReport(rowReport, cadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
-                                                    }
-
-                                                    var attributeValue = new GbuObjectAttribute
-                                                    {
-                                                        Id = -1,
-                                                        AttributeId = setting.IdAttributeResult.Value,
-                                                        ObjectId = objectId.Value,
-                                                        ChangeDocId = -1,
-                                                        S = date ?? DateTime.Now,
-                                                        ChangeUserId = SRDSession.Current.UserID,
-                                                        ChangeDate = DateTime.Now,
-                                                        Ot = date ?? DateTime.Now
-                                                    };
-
-                                                    attributeValue.Save();
-                                                }
+            foreach (var attribute in allLevelsAttributeIds)
+            {
+                var isDataSaved = SaveLevelData(cadastralNumber, objectId.Value, attribute, setting.IdAttributeResult, attributes);
+                if(isDataSaved)
+                    return;
+            }
+            
+            SaveFailResult(cadastralNumber, objectId.Value, date ?? DateTime.Now, setting);
         }
 
-        private static bool GetLevelData(string cadastralNumber, long objectId, long? sourceAttributeId, long? resultAttributeId, List<GbuObjectAttribute> allAttributes)
+        private static List<long?> GetAllLevelsAttributeIds(HarmonizationSettings setting)
+        {
+            var allLevelsAttributeIds = new List<long?>
+            {
+                setting.Level1Attribute,
+                setting.Level2Attribute,
+                setting.Level3Attribute,
+                setting.Level4Attribute,
+                setting.Level5Attribute,
+                setting.Level6Attribute,
+                setting.Level7Attribute,
+                setting.Level8Attribute,
+                setting.Level9Attribute,
+                setting.Level10Attribute
+            };
+            if (setting.AdditionalLevels != null && allLevelsAttributeIds.Count != 0)
+                allLevelsAttributeIds.AddRange(setting.AdditionalLevels.Select(x => x.AttributeId));
+
+            return allLevelsAttributeIds;
+        }
+
+        private static bool SaveLevelData(string cadastralNumber, long objectId, long? sourceAttributeId, long? resultAttributeId, List<GbuObjectAttribute> allAttributes)
         {
             if (sourceAttributeId == null || resultAttributeId == null)
                 return false;
 
-            var attribute = allAttributes.Find(x => x.AttributeId == sourceAttributeId.Value);
-            if (attribute == null)
+            var sourceAttribute = allAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId.Value);
+            if (sourceAttribute == null)
                 return false;
 
-            var attributeValueInString = attribute.GetValueInString();
+            var attributeValueInString = sourceAttribute.GetValueInString();
             if (string.IsNullOrEmpty(attributeValueInString))
                 return false;
 
@@ -178,17 +173,42 @@ namespace KadOzenka.Dal.GbuObject
                 Id = -1,
                 AttributeId = resultAttributeId.Value,
                 ObjectId = objectId,
-                ChangeDocId = attribute.ChangeDocId,
-                S = attribute.S,
+                ChangeDocId = sourceAttribute.ChangeDocId,
+                S = sourceAttribute.S,
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now,
-                Ot = attribute.Ot,
+                Ot = sourceAttribute.Ot,
                 StringValue = attributeValueInString
             };
 
             attributeValue.Save();
 
             return true;
+        }
+
+        private static void SaveFailResult(string cadastralNumber, long objectId, DateTime date,
+            HarmonizationSettings setting)
+        {
+            lock (locked)
+            {
+                var rowReport = _reportService.GetCurrentRow();
+                var message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
+                AddRowToReport(rowReport, cadastralNumber, 0, "", setting.IdAttributeResult.Value, message);
+            }
+
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = setting.IdAttributeResult.Value,
+                ObjectId = objectId,
+                ChangeDocId = -1,
+                S = date,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now,
+                Ot = date
+            };
+
+            attributeValue.Save();
         }
 
         private static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)

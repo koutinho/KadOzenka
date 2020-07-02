@@ -78,22 +78,23 @@
                 </div>
                 <div class="col-sm-10">
                     @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-                                          .DataTextField("Text")
-                                          .DataValueField("Value")
-                                          .Filter("contains")
-                                          .Enable(Model.IsTaskFilterUsed)
-                                          .DataSource(source =>
-                                          {
-                                              source.Read(read =>
-                                              {
-                                                  read.Action("GetTasksData", "GbuObject");
-                                              })
-                                                  .ServerFiltering(false);
-                                          }))
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Filter("contains")
+                        .Enable(Model.IsTaskFilterUsed)
+                        .DataSource(source =>
+                        {
+                            source.Read(read =>
+                            {
+                                read.Action("GetTasksData", "GbuObject");
+                            })
+                                .ServerFiltering(false);
+                        }))
                 </div>
             </div>
         </fieldset>
-        <fieldset class="attrLevelFieldset">
+        <div id="levelsList">
+            <fieldset class="attrLevelFieldset">
             <legend>1 уровень</legend>
             <div class="col-sm-2">
                 @Html.CustomLabel("Характеристика")
@@ -174,15 +175,21 @@
                 @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>10 уровень</legend>
+            <fieldset class="attrLevelFieldset">
+                <legend>10 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+                </div>
+            </fieldset>
+        </div>
+        <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
+                <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
             </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-            </div>
-        </fieldset>
+        </div>
         <div class="form-group">
             <div class="col-sm-7">
                 @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
@@ -232,7 +239,14 @@
         }
     </style>
 }
+
+
 @section scripts {
+<script type="text/x-kendo-template" id="templateRow">
+	<div class="wrapper-#: rowNumber #" style="display: none">
+	</div>
+</script>
+    
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
     function fillForm(data) {
@@ -371,7 +385,48 @@
         }
     }
 
-		$(document).ready(function () {
+
+    var rowNumber = 1;
+    function addNewRow() {
+        kendo.ui.progress($('body'), true);
+        var data = [{ rowNumber }];
+        var templateContent = $("#templateRow").html();
+        var template = kendo.template(templateContent);
+        var result = kendo.render(template, data);
+        $("#levelsList").append(result);
+        var classWrapper = ".wrapper-" + rowNumber;
+        var url = "@Url.Action("GetRowWithNewLevel", "GbuObject")";
+        $(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
+            $(classWrapper).show(500);
+            rowNumber++;
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+
+    function addCustomLevels(formObject) {
+        if (!formObject) {
+            return formObject;
+        }
+        var customLevels = [];
+        for (var i = 1; i < rowNumber; i++) {
+            var attributeName = 'AttributeId_' + i;
+            var levelName = 'LevelNumber_' + i;
+            customLevels.push({
+                LevelNumber: formObject[levelName],
+                AttributeId: formObject[attributeName]
+            });
+            delete formObject[attributeName];
+        }
+        return Object.assign({}, formObject, { AdditionalCustomLevels: customLevels });
+    }
+
+
+
+
+    $(document).ready(function () {
+        $('#addRow').on('click', addNewRow);
+
 		    $('#SelectAllObject').bind("change", function () {
 		        selectAllObjectChanged(this.checked);
 		    });
@@ -428,7 +483,8 @@
 					var formObject = Common.Functions.FormToObject(form);
                     formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
                     formObject.TaskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-					$.post(form.attr('action'), formObject).done(function(response) {
+                    formObject = addCustomLevels(formObject);
+                    $.post(form.attr('action'), formObject).done(function(response) {
 						if (response.Errors) {
                             var errors = getErrors(response.Errors);
 							Common.ShowError(errors);

@@ -310,6 +310,12 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
 
 namespace ObjectModel.Gbu.Harmonization
 {
+    public struct AdditionalLevelsForHarmonization
+    {
+        public int LevelNumber { get; set; }
+        public long? AttributeId { get; set; }
+    }
+
     /// <summary>
     /// Настройки простой гармонизации
     /// </summary>
@@ -381,6 +387,10 @@ namespace ObjectModel.Gbu.Harmonization
         /// Фактор 10 уровня 
         /// </summary>
         public long? Level10Attribute;
+        /// <summary>
+        /// Факторы, добавленные юзером
+        /// </summary>
+        public List<AdditionalLevelsForHarmonization> AdditionalLevels;
         /// <summary>
         /// Дата на которую делается гармонизация 
         /// </summary>

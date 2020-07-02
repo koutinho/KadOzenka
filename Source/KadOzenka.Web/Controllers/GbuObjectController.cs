@@ -31,7 +31,8 @@ namespace KadOzenka.Web.Controllers
 {
     public class GbuObjectController : KoBaseController
 	{
-		#region initialization
+		#region Initialization
+
 		private readonly GbuObjectService _service;
 		private readonly TaskService _taskService;
 	    private TourFactorService _tourFactorService;
@@ -43,6 +44,7 @@ namespace KadOzenka.Web.Controllers
 		    _tourFactorService = tourFactorService;
 
 		}
+
 		#endregion
 
 		#region Object Card
@@ -355,19 +357,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization()
 		{
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			var viewModel = new HarmonizationViewModel();
+
 			return View(viewModel);
 		}
 
@@ -394,8 +387,10 @@ namespace KadOzenka.Web.Controllers
             long queueId;
 			try
 			{
-				queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
-			}
+                ////TODO для тестирования
+                //KadOzenka.Dal.GbuObject.Harmonization.Run(viewModel.ToHarmonizationSettings());
+                queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
+            }
 			catch (Exception e)
 			{
 				ErrorManager.LogError(e);
@@ -410,7 +405,39 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-		#endregion
+        public ActionResult GetRowWithNewLevel([FromForm] int rowNumber)
+        {
+            ViewData["TreeAttributes"] = GetGbuAttributesTree();
+
+            var model = new PartialNewHarmonizationLevel
+            {
+                RowNumber = rowNumber,
+                LevelNumber = HarmonizationViewModel.NumberOfConstantLevelsInHarmonization + rowNumber
+            };
+
+            return PartialView("/Views/GbuObject/Partials/PartialNewHarmonizationRow.cshtml", model);
+        }
+
+        #endregion
+
+        #region Support Methods
+
+        private IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
+        {
+            return _service.GetGbuAttributesTree()
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
+        }
+
+        #endregion
 
 		#region HarmonizationCOD
 		[HttpGet]
