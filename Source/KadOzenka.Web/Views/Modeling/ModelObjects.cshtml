@@ -74,7 +74,6 @@
 
 
     function updateGrid() {
-
         kendo.ui.progress($('body'), true);
         var modelId = '@Model.Id';
         var dataSource = new kendo.data.DataSource({
@@ -130,7 +129,8 @@
             columns: generateColumns(),
             dataSource: dataSource,
             pageable: true,
-            sortable: true
+            sortable: true,
+            resizable: true
         });
 
         $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
@@ -163,7 +163,8 @@
             {
                 title: "Кадастровый номер",
                 field: "CadastralNumber",
-                sortable: false
+                sortable: false,
+                width: 200
             },
             {
                 title: "Цена",

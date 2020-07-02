@@ -140,9 +140,7 @@ namespace KadOzenka.Dal.ScoreCommon
             if (dictionary == null)
                 return parameterData.NumberValue;
 
-            var type = GetReferenceValueType(dictionary.Id);
-
-            if (type == ReferenceItemCodeType.Number)
+            if (dictionary.ValueType_Code == ReferenceItemCodeType.Number)
             {
                 var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
                 return referenceItems?.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
@@ -172,9 +170,7 @@ namespace KadOzenka.Dal.ScoreCommon
             if (dictionary == null)
                 return 0;
 
-            var type = GetReferenceValueType(dictionary.Id);
-
-            if (type == ReferenceItemCodeType.Date)
+            if (dictionary.ValueType_Code == ReferenceItemCodeType.Date)
             {
                 var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
                 return referenceItems?.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
