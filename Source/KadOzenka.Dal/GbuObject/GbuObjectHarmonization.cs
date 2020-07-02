@@ -158,14 +158,14 @@ namespace KadOzenka.Dal.GbuObject
             if (sourceAttribute == null)
                 return false;
 
-            var attributeValueInString = sourceAttribute.GetValueInString();
-            if (string.IsNullOrEmpty(attributeValueInString))
+            var sourceAttributeValueInString = sourceAttribute.GetValueInString();
+            if (string.IsNullOrEmpty(sourceAttributeValueInString))
                 return false;
 
             lock (locked)
             {
                 var rowReport = _reportService.GetCurrentRow();
-                AddRowToReport(rowReport, cadastralNumber, sourceAttributeId.Value, attributeValueInString, resultAttributeId.Value, string.Empty);
+                AddRowToReport(rowReport, cadastralNumber, sourceAttributeId.Value, sourceAttributeValueInString, resultAttributeId.Value, string.Empty);
             }
 
             var attributeValue = new GbuObjectAttribute
@@ -178,7 +178,7 @@ namespace KadOzenka.Dal.GbuObject
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now,
                 Ot = sourceAttribute.Ot,
-                StringValue = attributeValueInString
+                StringValue = sourceAttributeValueInString
             };
 
             attributeValue.Save();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ObjectModel.Gbu.Harmonization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace KadOzenka.Dal.GbuObject
 	    private static int ErrorColumnNumber = 4;
 
 	    #endregion
+
 		/// <summary>
 		/// Объект для блокировки счетчика в многопоточке
 		/// </summary>
@@ -70,6 +72,8 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                ////TODO для тестирования
+                //Parallel.ForEach(Objs.Take(1), options, item => { RunOneUnit(item, setting, DictionaryItem); });
                 Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, DictionaryItem); });
                 CurrentCount = 0;
                 MaxCount = 0;
@@ -79,6 +83,8 @@ namespace KadOzenka.Dal.GbuObject
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == setting.PropertyType && x.IsActive == true).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                ////TODO для тестирования
+                //Parallel.ForEach(Objs.Take(1), options, item => { RunOneGbu(item, setting, DictionaryItem); });
                 Parallel.ForEach(Objs, options, item => { RunOneGbu(item, setting, DictionaryItem); });
                 CurrentCount = 0;
                 MaxCount = 0;
@@ -94,241 +100,162 @@ namespace KadOzenka.Dal.GbuObject
 			_reportService.SetIndividualWidth(ValueColumnNumber, 3);
             _reportService.SetIndividualWidth(SourceColumnNUmber, 6);
             _reportService.SetIndividualWidth(ErrorColumnNumber, 5);
-            long reportId = _reportService.SaveReport("Отчет гормонизации ЦОД");
+
+            var reportId = _reportService.SaveReport("Отчет гармонизации ЦОД");
             _reportService = null;
 
             return reportId;
-
         }
+
+
+        #region Support Methods
 
         public static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
         {
-            lock (locked)
-            {
-                CurrentCount++;
-            }
-
-            DateTime dt = (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value;
-            List<long> lstIds = new List<long>();
-            if (setting.Level1Attribute != null) lstIds.Add(setting.Level1Attribute.Value);
-            if (setting.Level2Attribute != null) lstIds.Add(setting.Level2Attribute.Value);
-            if (setting.Level3Attribute != null) lstIds.Add(setting.Level3Attribute.Value);
-            if (setting.Level4Attribute != null) lstIds.Add(setting.Level4Attribute.Value);
-            if (setting.Level5Attribute != null) lstIds.Add(setting.Level5Attribute.Value);
-            if (setting.Level6Attribute != null) lstIds.Add(setting.Level6Attribute.Value);
-            if (setting.Level7Attribute != null) lstIds.Add(setting.Level7Attribute.Value);
-            if (setting.Level8Attribute != null) lstIds.Add(setting.Level8Attribute.Value);
-            if (setting.Level9Attribute != null) lstIds.Add(setting.Level9Attribute.Value);
-            if (setting.Level10Attribute != null) lstIds.Add(setting.Level10Attribute.Value);
-
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, null, lstIds, dt);
-
-            if (!GetLevelData(obj, setting.Level1Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                if (!GetLevelData(obj, setting.Level2Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                    if (!GetLevelData(obj, setting.Level3Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                        if (!GetLevelData(obj, setting.Level4Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                            if (!GetLevelData(obj, setting.Level5Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                if (!GetLevelData(obj, setting.Level6Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                    if (!GetLevelData(obj, setting.Level7Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                        if (!GetLevelData(obj, setting.Level8Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                            if (!GetLevelData(obj, setting.Level9Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                                if (!GetLevelData(obj, setting.Level10Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                                {
-	                                                int rowReport;
-
-	                                                lock (locked)
-	                                                {
-		                                                rowReport = _reportService.GetCurrentRow();
-                                                        string message = "Для текущего объекта было установлено значение по умолчанию.";
-                                                        AddRowToReport(rowReport, obj.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
-                                                    }
-
-                                                    var attributeValue = new GbuObjectAttribute
-                                                    {
-                                                        Id = -1,
-                                                        AttributeId = setting.IdAttributeResult.Value,
-                                                        ObjectId = obj.Id,
-                                                        ChangeDocId = (setting.IdDocument==null)?-1: setting.IdDocument.Value,
-                                                        S = dt,
-                                                        ChangeUserId = SRDSession.Current.UserID,
-                                                        ChangeDate = DateTime.Now,
-                                                        Ot = dt,
-                                                        StringValue=setting.DefaultValue
-                                                    };
-                                                    attributeValue.Save();
-
-                                                }
+            var dt = setting.DateActual ?? DateTime.Now;
+            RunOneItem(obj.CadastralNumber, obj.Id, dt, setting, dictionaryItem);
         }
+
         public static void RunOneUnit(ObjectModel.KO.OMUnit unit, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
         {
+            RunOneItem(unit.CadastralNumber, unit.ObjectId, unit.CreationDate, setting, dictionaryItem);
+        }
+
+        public static void RunOneItem(string cadastralNumber, long? objectId, DateTime? date, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
+        {
+            ////TODO для тестирования
+            //objectId = 11188991;
+
             lock (locked)
             {
                 CurrentCount++;
             }
-            if (unit.ObjectId != null)
+
+            if (objectId == null)
+                return;
+
+            var allLevelsAttributeIds = GetAllLevelsAttributeIds(setting);
+            var notNullAttributeIds = allLevelsAttributeIds.Where(x => x != null).Select(x => x.Value).ToList();
+            var attributes = new GbuObjectService().GetAllAttributes(objectId.Value, null, notNullAttributeIds, date);
+
+            foreach (var attribute in allLevelsAttributeIds)
             {
-
-                List<long> lstIds = new List<long>();
-                if (setting.Level1Attribute != null) lstIds.Add(setting.Level1Attribute.Value);
-                if (setting.Level2Attribute != null) lstIds.Add(setting.Level2Attribute.Value);
-                if (setting.Level3Attribute != null) lstIds.Add(setting.Level3Attribute.Value);
-                if (setting.Level4Attribute != null) lstIds.Add(setting.Level4Attribute.Value);
-                if (setting.Level5Attribute != null) lstIds.Add(setting.Level5Attribute.Value);
-                if (setting.Level6Attribute != null) lstIds.Add(setting.Level6Attribute.Value);
-                if (setting.Level7Attribute != null) lstIds.Add(setting.Level7Attribute.Value);
-                if (setting.Level8Attribute != null) lstIds.Add(setting.Level8Attribute.Value);
-                if (setting.Level9Attribute != null) lstIds.Add(setting.Level9Attribute.Value);
-                if (setting.Level10Attribute != null) lstIds.Add(setting.Level10Attribute.Value);
-
-                List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, unit.CreationDate);
-
-                if (!GetLevelData(unit, setting.Level1Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                    if (!GetLevelData(unit, setting.Level2Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                        if (!GetLevelData(unit, setting.Level3Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                            if (!GetLevelData(unit, setting.Level4Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                if (!GetLevelData(unit, setting.Level5Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                    if (!GetLevelData(unit, setting.Level6Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                        if (!GetLevelData(unit, setting.Level7Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                            if (!GetLevelData(unit, setting.Level8Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                                if (!GetLevelData(unit, setting.Level9Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                                    if (!GetLevelData(unit, setting.Level10Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
-                                                    {
-	                                                    int rowReport;
-
-	                                                    lock (locked)
-	                                                    {
-		                                                    rowReport = _reportService.GetCurrentRow();
-                                                            string message = "Для текущего объекта было установлено значение по умолчанию.";
-                                                            AddRowToReport(rowReport, unit.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
-                                                        }
-
-                                                        var attributeValue = new GbuObjectAttribute
-                                                        {
-                                                            Id = -1,
-                                                            AttributeId = setting.IdAttributeResult.Value,
-                                                            ObjectId = unit.ObjectId.Value,
-                                                            ChangeDocId = (setting.IdDocument == null) ? -1 : setting.IdDocument.Value,
-                                                            S = unit.CreationDate.Value,
-                                                            ChangeUserId = SRDSession.Current.UserID,
-                                                            ChangeDate = DateTime.Now,
-                                                            Ot = unit.CreationDate.Value,
-                                                            StringValue = setting.DefaultValue
-                                                        };
-                                                        attributeValue.Save();
-
-                                                    }
+                var isDataSaved = SaveLevelData(cadastralNumber, objectId.Value, attribute, setting.IdAttributeResult, attributes, dictionaryItem);
+                if (isDataSaved)
+                    return;
             }
+
+            SaveFailResult(cadastralNumber, objectId, date, setting);
         }
 
-        public static bool GetLevelData(ObjectModel.Gbu.OMMainObject obj, long? idSourceAttrib, long? idResultAttrib, List<GbuObjectAttribute> attribs, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
+        private static List<long?> GetAllLevelsAttributeIds(HarmonizationCODSettings setting)
         {
-            bool res = false;
-            if (idSourceAttrib != null && idResultAttrib != null)
+            var allLevelsAttributeIds = new List<long?>
             {
-                GbuObjectAttribute attrib = attribs.Find(x => x.AttributeId == idSourceAttrib.Value);
-                if (attrib != null)
+                setting.Level1Attribute,
+                setting.Level2Attribute,
+                setting.Level3Attribute,
+                setting.Level4Attribute,
+                setting.Level5Attribute,
+                setting.Level6Attribute,
+                setting.Level7Attribute,
+                setting.Level8Attribute,
+                setting.Level9Attribute,
+                setting.Level10Attribute
+            };
+            //if (setting.AdditionalLevels != null && allLevelsAttributeIds.Count != 0)
+            //    allLevelsAttributeIds.AddRange(setting.AdditionalLevels.Select(x => x.AttributeId));
+
+            return allLevelsAttributeIds;
+        }
+
+        public static bool SaveLevelData(string cadastralNumber, long objectId, long? sourceAttributeId, long? resultAttributeId, List<GbuObjectAttribute> allAttributes, List<ObjectModel.KO.OMCodDictionary> dictionaryItems)
+        {
+            if (sourceAttributeId == null || resultAttributeId == null)
+                return false;
+
+            var sourceAttribute = allAttributes.Find(x => x.AttributeId == sourceAttributeId.Value);
+            if (sourceAttribute == null)
+                return false; 
+
+            var sourceAttributeValueInString = sourceAttribute.GetValueInString();
+            if (string.IsNullOrEmpty(sourceAttributeValueInString))
+                return false;
+
+            var resValue = string.Empty;
+            var dictionaryRecord = dictionaryItems.Find(x => x.Value == sourceAttributeValueInString);
+            if (dictionaryRecord != null)
+            {
+                var code = dictionaryRecord.Code.Replace(" ", "");
+                if (code != "0")
                 {
-                    string resValue = string.Empty;
-                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
-                    {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.GetValueInString());
-                        if (dictionaryRecord != null)
-                        {
-                            string code = dictionaryRecord.Code.Replace(" ", "");
-                            if (code != "0")
-                            {
-                                resValue = code;
-                            }
-                        }
-                        if (resValue != string.Empty)
-                        {
-	                        int rowReport;
-
-	                        lock (locked)
-	                        {
-		                        rowReport = _reportService.GetCurrentRow();
-                                AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, resValue, idResultAttrib.Value, "");
-                            }
-
-							res = true;
-                            var attributeValue = new GbuObjectAttribute
-                            {
-                                Id = -1,
-                                AttributeId = idResultAttrib.Value,
-                                ObjectId = obj.Id,
-                                ChangeDocId = attrib.ChangeDocId,
-                                S = attrib.S,
-                                ChangeUserId = SRDSession.Current.UserID,
-                                ChangeDate = DateTime.Now,
-                                Ot = attrib.Ot,
-                                StringValue = resValue,
-                            };
-                            attributeValue.Save();
-                        }
-                    }
+                    resValue = code;
                 }
             }
-            return res;
-        }
-        public static bool GetLevelData(ObjectModel.KO.OMUnit unit, long? idSourceAttrib, long? idResultAttrib, List<GbuObjectAttribute> attribs, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
-        {
-            bool res = false;
-            if (idSourceAttrib != null && idResultAttrib != null)
+            if (resValue == string.Empty)
+                return false;
+
+            lock (locked)
             {
-                GbuObjectAttribute attrib = attribs.Find(x => x.AttributeId == idSourceAttrib.Value);
-                if (attrib != null)
-                {
-                    string resValue = string.Empty;
-                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
-                    {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.GetValueInString());
-                        if (dictionaryRecord != null)
-                        {
-                            string code = dictionaryRecord.Code.Replace(" ", "");
-                            if (code != "0")
-                            {
-                                resValue = code;
-                            }
-                        }
-                        if (resValue != string.Empty)
-                        {
-	                        int rowReport;
-	                        lock (locked)
-	                        {
-		                        rowReport = _reportService.GetCurrentRow();
-                                AddRowToReport(rowReport, unit.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
-                            }
-
-                            res = true;
-                            var attributeValue = new GbuObjectAttribute
-                            {
-                                Id = -1,
-                                AttributeId = idResultAttrib.Value,
-                                ObjectId = unit.ObjectId.Value,
-                                ChangeDocId = attrib.ChangeDocId,
-                                S = attrib.S,
-                                ChangeUserId = SRDSession.Current.UserID,
-                                ChangeDate = DateTime.Now,
-                                Ot = attrib.Ot,
-                                StringValue = resValue,
-                            };
-                            attributeValue.Save();
-                        }
-                    }
-                }
+                var rowReport = _reportService.GetCurrentRow();
+                AddRowToReport(rowReport, cadastralNumber, sourceAttributeId.Value, resValue, resultAttributeId.Value, string.Empty);
             }
-            return res;
+
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = resultAttributeId.Value,
+                ObjectId = objectId,
+                ChangeDocId = sourceAttribute.ChangeDocId,
+                S = sourceAttribute.S,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now,
+                Ot = sourceAttribute.Ot,
+                StringValue = resValue
+            };
+
+            attributeValue.Save();
+
+            return true;
         }
 
-        public static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        private static void SaveFailResult(string cadastralNumber, long? objectId, DateTime? date,
+            HarmonizationCODSettings setting)
         {
-	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
-	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-	        _reportService.AddValue(kn, KnColumnNumber, rowNumber);
-	        _reportService.AddValue(resultName, ResultColumnNumber, rowNumber);
-	        _reportService.AddValue(value, ValueColumnNumber, rowNumber);
-			_reportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
-			_reportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
+            lock (locked)
+            {
+                var rowReport = _reportService.GetCurrentRow();
+                var message = "Для текущего объекта было установлено значение по умолчанию.";
+                AddRowToReport(rowReport, cadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
+            }
+
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = setting.IdAttributeResult.Value,
+                ObjectId = objectId.Value,
+                ChangeDocId = setting.IdDocument ?? -1,
+                S = date ?? DateTime.Now,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now,
+                Ot = date ?? DateTime.Now,
+                StringValue = setting.DefaultValue
+            };
+
+            attributeValue.Save();
         }
+
+        private static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        {
+            string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
+            string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
+            _reportService.AddValue(kn, KnColumnNumber, rowNumber);
+            _reportService.AddValue(resultName, ResultColumnNumber, rowNumber);
+            _reportService.AddValue(value, ValueColumnNumber, rowNumber);
+            _reportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
+            _reportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
+        }
+
+        #endregion
     }
 }
