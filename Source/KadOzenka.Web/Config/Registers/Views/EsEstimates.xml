@@ -2,7 +2,7 @@
 <RegisterView RegisterId="600" DefaultLayoutId="1006001" LinkedRegistersList="600" AllowSearchPanelResize="false"
               Description="Экспресс оценка" IsBasic="true" OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false"  ShowSettingsPanel="false" ShowFilterMenu="false"
-              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%">
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SRDFunction="EXPRESSSCORE.HISTORY" SplitterSize="40%">
 	<Tabs>
 		<Tab Caption="Аналоги" NavigateURL="/ExpressScore/AnalogObjectsCard">
 			<Parameters>

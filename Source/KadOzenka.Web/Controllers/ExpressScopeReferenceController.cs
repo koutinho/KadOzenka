@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
@@ -10,11 +9,13 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.LongProcess.ExpressScore;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.ExpressScoreReference;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
 using ObjectModel.ES;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -28,15 +29,17 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
         public ActionResult ReferenceCard(long id, bool showItems = false)
         {
             var entity = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             var isReferenceEmpty = entity == null || !OMEsReferenceItem.Where(x => x.ReferenceId == id).ExecuteExists();
-
+            
             return View(ReferenceViewModel.FromEntity(entity, isReferenceEmpty, showItems));
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
         public ActionResult ReferenceCard(ReferenceViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -65,6 +68,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_DELETE)]
         public IActionResult DeleteReference(long id)
         {
             var entity = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -73,6 +77,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [ActionName("DeleteReference")]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_DELETE)]
         public IActionResult DeleteReferenceAction(long id)
         {
             try
@@ -88,6 +93,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public ActionResult ReferenceItemCard(long id, long referenceId)
         {
             var entity = OMEsReferenceItem.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -98,6 +104,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public ActionResult ReferenceItemCard(ReferenceItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -126,6 +133,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public IActionResult DeleteReferenceItem(long id)
         {
             var entity = OMEsReferenceItem.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -138,6 +146,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [ActionName("DeleteReferenceItem")]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public IActionResult DeleteReferenceItemAction(long id)
         {
             try
@@ -153,6 +162,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
         public IActionResult DataImport()
         {
             ViewData["References"] = OMEsReference.Where(x => x).SelectAll().Execute().Select(x => new
@@ -165,6 +175,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
         public IActionResult DataImport(IFormFile file, ImportDataViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -223,6 +234,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public FileContentResult DownloadImportedFile(int idFile)
         {
 	        var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();

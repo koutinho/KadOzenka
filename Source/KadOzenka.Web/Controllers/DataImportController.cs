@@ -25,6 +25,7 @@ using System.Globalization;
 using System.IO;
 using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 using ObjectModel.Core.TD;
 using ObjectModel.Market;
@@ -43,6 +44,7 @@ namespace KadOzenka.Web.Controllers
 	    }
 
         [HttpGet]
+        [SRDFunction(Tag = "")]
 		public IActionResult DataImport(string registerViewId, long? mainRegisterId)
 		{
 			if (!string.IsNullOrEmpty(registerViewId))
@@ -66,7 +68,8 @@ namespace KadOzenka.Web.Controllers
 
             return View();
 		}
-		
+
+        [SRDFunction(Tag = "")]
 		public IActionResult GetTreeAttributes()
 		{			
 			var source = new List<object>();
@@ -110,6 +113,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(source);
 		}
 
+        [SRDFunction(Tag = "")]
 		public static List<RegisterTemplateColumn> BuildAttributesTree()
 		{
 			var attributesTree = new List<RegisterTemplateColumn>();
@@ -153,6 +157,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = "")]
 		public ActionResult ParseFileColumns(List<IFormFile> files)
 		{
 			if (files == null || files.Count == 0)
@@ -190,6 +195,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpPost]
+        [SRDFunction(Tag = "")]
 		public IActionResult ImportDataFromExcel(ImportGbuObjectModel model)
 		{
 			if (model.MainRegisterId != OMCoreObject.GetRegisterId() && !model.Document.IsNewDocument && model.Document.IdDocument == null)
@@ -247,7 +253,8 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult DownloadExcelResultFile(string resultFileName)
+        [SRDFunction(Tag = "")]
+		public ActionResult DownloadExcelResultFile(string resultFileName)
         {
             var fileContent = HttpContext.Session.Get(resultFileName);
             if (fileContent == null)
@@ -262,6 +269,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult ImportGkn()
 		{
 			TaskModel dto = new TaskModel();
@@ -270,7 +278,8 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
-        public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
+        [SRDFunction(Tag = "")]
+		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
 		{
 			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 
@@ -315,7 +324,8 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
-        public ActionResult ImportGknFromTask(List<IFormFile> files, long taskId)
+        [SRDFunction(Tag = "")]
+		public ActionResult ImportGknFromTask(List<IFormFile> files, long taskId)
 		{
 			try
 			{
@@ -338,7 +348,8 @@ namespace KadOzenka.Web.Controllers
 
 	    [HttpGet]
 	    [ActionName("RestartGknImports")]
-	    public ActionResult RestartGknImportsConfirm(long? importId)
+        [SRDFunction(Tag = "")]
+		public ActionResult RestartGknImportsConfirm(long? importId)
 	    {
 	        var currentImportsId = RegistersVariables.CurrentList?.ToList();
 	        if (currentImportsId == null || currentImportsId.Count == 0)
@@ -385,7 +396,8 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [ActionName("RestartGknImports")]
-        public ActionResult RestartGknImports(long? importId)
+        [SRDFunction(Tag = "")]
+		public ActionResult RestartGknImports(long? importId)
 	    {
 	        var currentImportsId = RegistersVariables.CurrentList?.ToList();
 	        if (currentImportsId == null || currentImportsId.Count == 0)

@@ -5,14 +5,12 @@ using CIPJS.Models.ExpressScore;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
-using KadOzenka.Dal.LongProcess.SudLongProcesses;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
@@ -24,6 +22,7 @@ using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -41,12 +40,13 @@ namespace KadOzenka.Web.Controllers
 		}
 		#endregion
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult Index()
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true, false, true);
 			return View();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetKadNumber(string address)
 		{
 			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
@@ -58,6 +58,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { response = new {kadNumber = yandexAddress.CadastralNumber} });
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetAddressByKadNumber(string kadNumber)
 		{
 			var yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == kadNumber).Select(x => x.FormalizedAddress).ExecuteFirstOrDefault();
@@ -69,11 +70,10 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { response = new { address = yandexAddress.FormalizedAddress } });
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public JsonResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
-				false, true);
-			if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
 			{
 				return GenerateMessageNonValidModel();
 			}
@@ -178,6 +178,7 @@ namespace KadOzenka.Web.Controllers
 		#region WallMaterial
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public ActionResult WallMaterial(long id)
 		{
 			var wallMaterial = OMWallMaterial.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -185,6 +186,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public ActionResult WallMaterial(WallMaterialViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -210,10 +212,9 @@ namespace KadOzenka.Web.Controllers
 		#endregion
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult CalculateCostTargetObject(CalculateCostTargetObjectViewModel viewModel)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
-				false, true);
 			if (!ModelState.IsValid)
 			{
 				return GenerateMessageNonValidModel();
@@ -244,10 +245,9 @@ namespace KadOzenka.Web.Controllers
 			return PartialView("Partials/PartialGridResultExpressScore", resultCalculate);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_HISTORY)]
 		public ActionResult AnalogObjectsCard(int objectId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_HISTORY, true,
-				false, true);
 			var marketIds = OMEsToMarketCoreObject.Where(x => x.EsId == objectId).SelectAll().Execute().Select(x => x.MarketObjectId).ToList();
 
 			ViewBag.Filter = $"10002000={string.Join(',', marketIds)}";
@@ -258,10 +258,9 @@ namespace KadOzenka.Web.Controllers
 
 		#region Recalculate Analog
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult RecalculateAnalog(int esId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
-				false, true);
 			var analogIds = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
 			ViewBag.DeleteAnalogIds = analogIds;
 			ViewBag.EsId = esId;
@@ -269,10 +268,9 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public JsonResult RecalculateAnalog([FromForm]List<int> analogIds, [FromForm]int expressScoreId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CALCULATE, true,
-				false, true);
 			if (analogIds.Count == 0)
 			{
 				return SendErrorMessage("Выберите аналоги");
@@ -318,17 +316,15 @@ namespace KadOzenka.Web.Controllers
 
 		#region Setting ExpressScore
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR)]
 		public ActionResult ConstructorExpressScore()
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
-				false, true);
-			return View();
+            return View();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR)]
 		public ActionResult SettingsExpressScore(int segmentId)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
-				false, true);
 			var model = new SettingsExpressScoreViewModel();
 			var esSetting = OMSettingsParams.Where(x => x.SegmentType_Code == (MarketSegment)segmentId).SelectAll()
 				.ExecuteFirstOrDefault();
@@ -349,10 +345,9 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR)]
 		public JsonResult SettingsExpressScore(SettingsExpressScoreViewModel viewModel)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR, true,
-				false, true);
 			if (!ModelState.IsValid)
 			{
 				return GenerateMessageNonValidModel();
@@ -384,6 +379,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new {success = true});
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetDictionaries()
 		{
 			var dictionaries = OMEsReference.Where(x => x).SelectAll().Execute().Select(x => new
@@ -397,6 +393,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(dictionaries);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetAttributes(int registerId)
 		{
 			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId && !x.IsPrimaryKey).Select(x => new
@@ -408,6 +405,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(attributes);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetFactorRegisters(int tourId)
 		{
 			var registerFactors = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute().Select(x => new SelectListItem
@@ -422,12 +420,14 @@ namespace KadOzenka.Web.Controllers
 			return Json(registerFactors);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public ActionResult AddNewComplexCard(int count)
 		{
 			ViewBag.Count = count;
 			return PartialView("Partials/PartialComplexFactorCard", new ComplexCostFactor());
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public ActionResult AddNewSimpleCard(int count)
 		{
 			ViewBag.Count = count;
@@ -441,6 +441,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region download report
 
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public FileResult DownloadReport(long reportId)
 		{
 			var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using System.IO;
+using KadOzenka.Web.Attributes;
 using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
@@ -19,6 +20,7 @@ namespace KadOzenka.Web.Controllers
 	public class DataImporterLayoutController : BaseController
 	{
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult MainData(long importId)
 		{
 			var import = OMImportDataLog
@@ -32,6 +34,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public FileContentResult Download(long importId, bool downloadResult, string fileNameWithExtension = null)
 		{
 			var import = OMImportDataLog
@@ -62,6 +65,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 	    [HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult ImportReStart(long importId)
 		{
 			var import = OMImportDataLog

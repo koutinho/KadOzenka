@@ -13,10 +13,12 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -38,7 +40,8 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-		public IActionResult ObjectCard(long id)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        public IActionResult ObjectCard(long id)
 		{
 			var analogItem = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             if (analogItem != null)
@@ -51,6 +54,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public FileResult ShowFile(long id)
         {
             var screen = OMScreenshots.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -59,7 +63,8 @@ namespace KadOzenka.Web.Controllers
         }
 
 		[HttpGet]
-		public ActionResult GetChartData(long? id)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        public ActionResult GetChartData(long? id)
 		{
 			if (!id.HasValue) throw new Exception("Не передан идентификатор объекта.");
 			var priceHistories = ObjectModel.Market.OMPriceHistory.Where(x => x.InitialId == id.Value).SelectAll().Execute();
@@ -68,7 +73,8 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public FileResult UnloadScreenshots(long objectId)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_UNLOAD_SCREENSHOTS)]
+        public FileResult UnloadScreenshots(long objectId)
 		{
 			List<long?> ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long?>()?.ToList() : new List<long?> { objectId };
 			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId)).SelectAll().Execute().ToList();
@@ -102,6 +108,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
         public ActionResult ActivateProcess()
         {
             if (AddressesDetector.IsProcessAdditable())
@@ -113,6 +120,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_COORDINATES)]
         public ActionResult ActivateCoordinates()
         {
             if (CoordinatesJoiner.IsProcessAdditable())
@@ -126,6 +134,7 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Date
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public ActionResult CorrectionByDateGeneralCoefficients()
         {
             var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
@@ -137,6 +146,7 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
         {
             var history = CorrectionByDateService.GetAverageCoefficientsBySegments(marketSegmentCode);
@@ -144,6 +154,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public ActionResult CorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var marketSegment = (MarketSegment)marketSegmentCode;
@@ -164,6 +175,7 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var historyRecords = CorrectionByDateService.GetDetailedCoefficients(marketSegmentCode, date);
@@ -173,6 +185,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
         public JsonResult ChangeBuildingsStatusInCalculationForCorrectionByDate(string models, DateTime date)
         {
             var historyJson = JObject.Parse(models).SelectToken("models").ToString();
@@ -201,6 +214,7 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Bargain
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public ActionResult CorrectionByBargain()
         {
             var segments = System.Enum.GetValues(typeof(MarketSegment)).Cast<MarketSegment>();
@@ -211,7 +225,8 @@ namespace KadOzenka.Web.Controllers
         }
 
 	    [HttpPost]
-	    public ActionResult CorrectionByBargain(CorrectionByBargainModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
+        public ActionResult CorrectionByBargain(CorrectionByBargainModel model)
 	    {
 	        if (!ModelState.IsValid)
 	        {
@@ -231,6 +246,7 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Rooms
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public ActionResult CorrectionByRoomGeneralCoefficients()
         {
             var filters = CorrectionByRoomService.CalculatedMarketSegments.Select(x => (long) x).ToArray();
@@ -241,6 +257,7 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
         {
             var history = CorrectionByRoomService.GetAverageCoefficients(marketSegmentCode);
@@ -253,6 +270,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public ActionResult CorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var marketSegment = (MarketSegment)marketSegmentCode;
@@ -283,6 +301,7 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var historyRecords = CorrectionByRoomService.GetDetailedCoefficients(marketSegmentCode, date);
@@ -295,6 +314,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
         public JsonResult ChangeBuildingsStatusInCalculation(string models, DateTime date)
         {
             var historyJson = JObject.Parse(models).SelectToken("models").ToString();
@@ -323,7 +343,8 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Stage
 
 		[HttpGet]
-		public ActionResult CorrectionByStageGeneralHistory()
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
+        public ActionResult CorrectionByStageGeneralHistory()
 		{
 		    var filters = CorrectionByStageService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
 		    var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
@@ -332,7 +353,8 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 
-		public JsonResult GetCorrectionByStageGeneralHistory(long marketSegmentCode)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
+        public JsonResult GetCorrectionByStageGeneralHistory(long marketSegmentCode)
 		{
             var history = CorrectionByStageService.GetGeneralHistory(marketSegmentCode);
 
@@ -340,7 +362,8 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult CorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
+        public ActionResult CorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
 		{
 			var marketSegment = (MarketSegment)marketSegmentCode;
 
@@ -360,7 +383,8 @@ namespace KadOzenka.Web.Controllers
             return View();
 		}
 
-		public JsonResult GetCorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
+        public JsonResult GetCorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
 		{
 			var historyRecords = CorrectionByStageService.GetDetailedHistory(marketSegmentCode, date);
 		    var models = historyRecords.Select(x => CorrectionByStageModel.Map(x, CorrectionByStageService.IsCoefIncludedInCalculationLimit)).ToList();
@@ -368,8 +392,9 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
 		}
 
-		[HttpPost]		
-		public JsonResult ChangeBuildingsStatusInCalculationByStage(string models, DateTime date)
+		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
+        public JsonResult ChangeBuildingsStatusInCalculationByStage(string models, DateTime date)
 		{
 			var historyJson = JObject.Parse(models).SelectToken("models").ToString();
 
@@ -395,6 +420,8 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
         #region Correction For First Floor
+
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public IActionResult CorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
         {
             var marketSegment = (MarketSegment)marketSegmentCode;
@@ -415,6 +442,7 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
         {
             var details = CorrectionForFirstFloorService.GetDetailsForSegmentAtDate(marketSegmentCode, date);
@@ -423,6 +451,7 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public IActionResult CorrectionForFirstFloorGeneral()
         {
             var filters = CorrectionForFirstFloorService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
@@ -431,6 +460,8 @@ namespace KadOzenka.Web.Controllers
 
             return View();
         }
+
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
         public JsonResult GetCorrectionForFirstFloorGeneral(long marketSegmentCode)
         {
             var stats = CorrectionForFirstFloorService.GetRatesBySegment(marketSegmentCode);
@@ -439,6 +470,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
         public JsonResult ChangeFirstFloorStatusInCalculation(string models, DateTime date, MarketSegment code)
         {
             var historyJson = JObject.Parse(models).SelectToken("models").ToString();
@@ -466,6 +498,7 @@ namespace KadOzenka.Web.Controllers
         #region Correction Settings
 
 	    [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
         public IActionResult CorrectionSettings()
 	    {
 	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
@@ -475,14 +508,16 @@ namespace KadOzenka.Web.Controllers
 	    }
 
 	    [HttpGet]
-	    public IActionResult GetCorrectionSettingsInfo(CorrectionTypes correctionType)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
+        public IActionResult GetCorrectionSettingsInfo(CorrectionTypes correctionType)
 	    {
 	        var settings = CorrectionSettingsService.GetCorrectionSettings(correctionType);
 	        return Content(JsonConvert.SerializeObject(new CorrectionSettingsModel(settings, correctionType)), "application/json");
         }
 
         [HttpPost]
-	    public IActionResult CorrectionSettings(CorrectionSettingsModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
+        public IActionResult CorrectionSettings(CorrectionSettingsModel model)
 	    {
 	        if (!ModelState.IsValid)
 	        {

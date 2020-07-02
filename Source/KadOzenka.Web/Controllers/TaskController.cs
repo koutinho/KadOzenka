@@ -26,8 +26,10 @@ using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Web.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -54,6 +56,7 @@ namespace KadOzenka.Web.Controllers
 		#region Карточка задачи
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult TaskCard(long taskId)
 		{
 			var taskDto = TaskService.GetTaskById(taskId);
@@ -66,7 +69,8 @@ namespace KadOzenka.Web.Controllers
 		}
 
 	    [HttpPost]
-	    public ActionResult TaskCard(TaskEditModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult TaskCard(TaskEditModel model)
 	    {
 	        if (!ModelState.IsValid)
 	        {
@@ -86,6 +90,7 @@ namespace KadOzenka.Web.Controllers
 	    }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult GetXmlDocuments([DataSourceRequest]DataSourceRequest request, long taskId)
 		{
 			var importDataLogsDto = DataImporterService.GetCommonDataLog(OMTask.GetRegisterId(), taskId);
@@ -107,7 +112,8 @@ namespace KadOzenka.Web.Controllers
 			return Json(result.ToDataSourceResult(request));
 		}
 
-	    public JsonResult GetRatingTours()
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetRatingTours()
 	    {
 	        var tours = OMTour.Where(x => true).SelectAll().Execute()
 	            .Select(x => new SelectListItem
@@ -124,6 +130,7 @@ namespace KadOzenka.Web.Controllers
         #region Перенос атрибутов
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public ActionResult TransferAttributes(bool create = false)
 		{
 			var model = new ExportAttributesModel();
@@ -147,6 +154,7 @@ namespace KadOzenka.Web.Controllers
 			return View(model);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public JsonResult GetTasksByTour(long tourId)
 		{
 			var tasks = TaskService.GetTasksByTour(tourId);
@@ -156,7 +164,8 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
 		}
 
-        public JsonResult GetTasksByTours(List<long?> tourIds)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+		public JsonResult GetTasksByTours(List<long?> tourIds)
         {
             var tasks = TaskService.GetTasksByTour(tourIds);
 
@@ -165,7 +174,8 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
         }
 
-        public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+		public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
 		{
 			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
 			if (exceptedAttributes != null && exceptedAttributes.Count > 0)
@@ -183,6 +193,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public void TransferAttributes(ExportAttributesModel model)
 		{
 			if (model.TaskFilter == null || model.TaskFilter.Count == 0)
@@ -200,8 +211,9 @@ namespace KadOzenka.Web.Controllers
 			}
 
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
-        }		
+        }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType, [FromForm] bool create)
 		{
 
@@ -272,6 +284,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region Модель
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Model(long groupId, bool isPartial)
 		{
 			var modelDto = ModelService.GetModelByGroupId(groupId);
@@ -287,6 +300,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Model(ModelModel model)
 		{
 			var omModel = ModelService.GetModelById(model.Id);
@@ -306,6 +320,7 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetFormula(long modelId, long algType)
 		{
 			OMModel model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
@@ -314,6 +329,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { formula });
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetModelFactors(long modelId)
         {
             var factorDtos = ModelService.GetModelFactors(modelId);
@@ -322,6 +338,7 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetFactors(long? tourId)
 		{
 			List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId)
@@ -343,6 +360,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long modelId)
 		{
 			ModelFactorDto factorDto;
@@ -405,6 +423,7 @@ namespace KadOzenka.Web.Controllers
 			return result;
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetModelFactorName(long? modelId)
 		{
 			OMModel model = OMModel.Where(x => x.Id == modelId)
@@ -440,6 +459,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(OMModelFactor factor)
 		{
 			factor.Save();
@@ -452,6 +472,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult DeleteModelFactor(long? id)
 		{
 			OMModelFactor factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -468,6 +489,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region Единица оценки
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Unit(long objectId)
 		{
 			OMUnit unit = OMUnit.Where(x => x.ObjectId == objectId)
@@ -483,6 +505,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Unit(UnitDto dto)
 		{
 			OMUnit unit = OMUnit.Where(x => x.Id == dto.Id)
@@ -549,6 +572,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Успешно сохранено" });
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetExplication(long id)
 		{
 			List<UnitExplicationDto> result = new List<UnitExplicationDto>();
@@ -582,6 +606,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetUnitFactors(long id)
 		{
 			OMUnit unit = OMUnit.Where(x => x.Id == id)
@@ -623,6 +648,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new List<UnitFactorsDto>());
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetFactorsList(long id)
 		{
 			OMUnit unit = OMUnit.Where(x => x.Id == id)
@@ -643,13 +669,15 @@ namespace KadOzenka.Web.Controllers
         #region Расчет кадастровой стоимости
 
         [HttpGet]
-        public ActionResult CalculateCadastralPrice()
+        [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
+		public ActionResult CalculateCadastralPrice()
         {
             return View();
         }
 
         [HttpPost]
-        public JsonResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
+		public JsonResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
         {
             if (model.TaskFilter == null || model.TaskFilter.Count == 0)
                 throw new ArgumentException("Не выбраны задания на оценку");
@@ -664,14 +692,16 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult CalculationOrderSettings(long tourId, bool isParcel)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
+		public ActionResult CalculationOrderSettings(long tourId, bool isParcel)
         {
             ViewBag.TourId = tourId;
             ViewBag.IsParcel = isParcel;
             return PartialView();
         }
 
-        public JsonResult GetCalculationOrderSettings(long tourId, bool isParcel)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
+		public JsonResult GetCalculationOrderSettings(long tourId, bool isParcel)
         {
             var settings = GroupService.GetCalculationSettings(tourId, isParcel);
             var models = settings.Select(CadastralPriceCalculationSettingsModel.ToModel).ToList();
@@ -680,7 +710,8 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveCalculationSettings(string models)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
+		public JsonResult SaveCalculationSettings(string models)
         {
             var settingsJson = JObject.Parse(models).SelectToken("models").ToString();
             var settingsModels = JsonConvert.DeserializeObject<List<CadastralPriceCalculationSettingsModel>>(settingsJson);
@@ -705,16 +736,18 @@ namespace KadOzenka.Web.Controllers
         #region Загрузка графических факторов из РЕОН
 
         [HttpGet]
-        public ActionResult DownloadGraphicFactorsFromReon(long taskId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
+		public ActionResult DownloadGraphicFactorsFromReon(long taskId)
         {
             KoFactorsFromReon.AddProcessToQueue(taskId);
             return View();
         }
 
-        #endregion
+		#endregion
 
 
-        public ActionResult DataMapping(long taskId)
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult DataMapping(long taskId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)				
 				.ExecuteFirstOrDefault();
@@ -727,6 +760,7 @@ namespace KadOzenka.Web.Controllers
 			return View(taskId);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)
 		{
 			List<OMUnit> unitList = OMUnit.Where(x => x.TaskId == taskId)
@@ -738,6 +772,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(objectList);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetDataMapping(long taskId, long objectId)
 		{			
 			OMTask task = OMTask.Where(x => x.Id == taskId)

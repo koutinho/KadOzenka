@@ -17,6 +17,7 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Tour;
 using KadOzenka.Web.Models.Tour.EstimateGroup;
 using Kendo.Mvc.UI;
@@ -28,6 +29,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -52,6 +54,7 @@ namespace KadOzenka.Web.Controllers
         #region Карточка тура
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourCard(long? tourId, long? parentGroupId, long? groupId)
         {
             //нужно чтобы при обновлении данных поставить фокус на нужный элемент в дереве
@@ -61,6 +64,7 @@ namespace KadOzenka.Web.Controllers
 			return View();
         }
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public JsonResult GetAllTours()
         {
 	        var tours = OMTour.Where(x => true).OrderBy(x => x.Year).SelectAll().Execute();
@@ -85,6 +89,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourSubCard(long tourId)
         {
             var tour = TourService.GetTourById(tourId);
@@ -94,6 +99,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult GroupSubCard(long groupId, long tourId)
         {
 	        var groupDto = new GroupDto {Id = groupId};
@@ -123,6 +129,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult MarksGrid(long groupId, long factorId)
         {
             //TODO переделать на модель
@@ -136,6 +143,7 @@ namespace KadOzenka.Web.Controllers
         #region Настройка отношения групп и сегментов рынка
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult GroupSegmentSettingsSubCard(long groupId)
         {
             var settings = GroupService.GetGroupToMarketSegmentRelation(groupId);
@@ -147,6 +155,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public JsonResult GroupSegmentSettingsSubCard(GroupSegmentSettingsModel model)
         {
             if (!ModelState.IsValid)
@@ -161,6 +170,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region Настройки атрибутов тура
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult AddGroup(long tourId, long complianceId)
 		{
 			var compliance = OMComplianceGuide.Where(x => x.Id == complianceId).SelectAll().ExecuteFirstOrDefault();
@@ -176,6 +186,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public JsonResult AddGroup(AddGroupViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -206,6 +217,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult RemoveGroup(long complianceId)
 		{
 			var compliance = OMComplianceGuide.Where(x => x.Id == complianceId).SelectAll().ExecuteFirstOrDefault();
@@ -213,6 +225,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult RemoveGroup(AddGroupViewModel model)
 		{
 			if (model.Id == -1)
@@ -227,6 +240,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult RemoveGroupsByTour(long tourId)
 		{
 			if (tourId == 0)
@@ -239,6 +253,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult RemoveGroupsByTour(AddGroupViewModel model)
 		{
 			if (model.TourId == 0)
@@ -270,6 +285,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult DataImport(long tourId)
 		{
 			var model = new ImportGroupViewModel {TourId = tourId};
@@ -277,6 +293,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public ActionResult DataImport(IFormFile file, ImportGroupViewModel model)
 		{
 			if (!ModelState.IsValid)
@@ -311,6 +328,7 @@ namespace KadOzenka.Web.Controllers
 
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
 		public FileContentResult DownloadImportedFile(int idFile)
 		{
 			var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();
@@ -330,6 +348,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
         public ActionResult TourAttributeSettings()
         {
 	        ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
@@ -348,6 +367,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
         public JsonResult GetTourGbuAttributeSettings(long tourId)
         {
 	        var models = TourFactorService.GetTourAttributesFromSettings(tourId);
@@ -356,6 +376,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
         public ActionResult TourAttributeSettings(TourAttributeSettingsModel model)
         {
             if (!ModelState.IsValid)
@@ -399,12 +420,14 @@ namespace KadOzenka.Web.Controllers
         #region Туры
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
 		public IActionResult TourEstimates()
 		{
 			return View();
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
 		public IActionResult TourEstimates(TourModel tourModel)
         {
             if (tourModel == null)
@@ -421,6 +444,7 @@ namespace KadOzenka.Web.Controllers
 
 
 		[HttpDelete]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
 		public IActionResult TourEstimates(int id)
 		{
 			var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -441,6 +465,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Удаление выполненно" });
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
 		public JsonResult GetTourEstimations()
 		{
 			var tours = OMTour.Where(x => x).SelectAll().Execute()
@@ -457,11 +482,13 @@ namespace KadOzenka.Web.Controllers
 
 		#region Группы/подгруппы
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public ActionResult Groups()
 		{
 			return View();
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetGroups()
         {
             var groups = GroupService.GetGroups();
@@ -476,6 +503,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public ActionResult EditGroup(long? id)
 		{
 			GroupModel dto = new GroupModel();
@@ -529,6 +557,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult EditGroup(GroupModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
@@ -546,6 +575,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public IActionResult DeleteGroup(long id)
 		{
 			OMGroup group = OMGroup.Where(x => x.Id == id)
@@ -563,6 +593,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Удаление выполненно" });
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetRatingTours()
 		{
 			var tours = OMTour.Where(x => true).SelectAll().Execute()
@@ -575,6 +606,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(tours);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetAllGroups()
 		{
 			var groups = OMGroup.Where(x => true).SelectAll().Execute()
@@ -587,6 +619,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetParentGroup(string type, long? id)
 		{
 			KoGroupAlgoritm groupAlgoritm;
@@ -615,6 +648,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetSubgroup(long? groupId)
 		{
 			if (groupId == null)
@@ -633,6 +667,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetGroupingMechanism(bool parentIsSet)
 		{
 			var algotitmItems = Core.RefLib.ReferencesCommon.GetItems(204);
@@ -657,7 +692,8 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
-        public JsonResult GetGroupsByTasks(List<long> taskIds)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetGroupsByTasks(List<long> taskIds)
         {
             var groups = GroupService.GetGroupsByTasks(taskIds);
 
@@ -673,12 +709,14 @@ namespace KadOzenka.Web.Controllers
         #region Импорт группы из Excel
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult ImportGroupDataFromExcel()
         {
             return View(new ImportGroupDataModel());
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
         {
             var errors = viewModel.Validate();
@@ -732,6 +770,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult DownloadImportGroupResult(string fileName)
         {
             var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
@@ -744,6 +783,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 	    public JsonResult GetTours()
 	    {
 			var tours = OMTour.Where(x => true).SelectAll().Execute()
@@ -756,6 +796,7 @@ namespace KadOzenka.Web.Controllers
 		    return Json(tours);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public JsonResult GetGroupsForTour(long tourId)
 		{
 			var groups = GroupService.GetGroupsTreeForTour(tourId);
@@ -765,6 +806,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(models);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public JsonResult GetGroupsByTourAndMainGroup(long tourId, bool isParcel)
         {
 	        var allGroups = GroupService.GetGroupsTreeForTour(tourId);
@@ -781,11 +823,13 @@ namespace KadOzenka.Web.Controllers
 
 		#region Метки
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
 		public ActionResult MarkCatalog()
 		{			
 			return View();
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetMarkCatalog(long? groupId, long? factorId)
 		{			
 			List<OMMarkCatalog> markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
@@ -795,6 +839,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
 		public ActionResult CreateMark(OMMarkCatalog markCatalog)
 		{
 			markCatalog.Save();
@@ -802,6 +847,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
 		public ActionResult UpdateMark(OMMarkCatalog markCatalog)
 		{
 			markCatalog.Save();
@@ -809,12 +855,14 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
 		public ActionResult DeleteMark(OMMarkCatalog markCatalog)
 		{
 			markCatalog.Destroy();
 			return Json(markCatalog);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public FileResult DownloadMarksCatalog(long groupId, long factorId)
         {
             var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
@@ -822,6 +870,7 @@ namespace KadOzenka.Web.Controllers
             return File(fileStream, Helpers.Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
         {
             if (file == null)
@@ -845,6 +894,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult DownloadExcelFile(string fileName)
         {
             var fileContent = HttpContext.Session.Get(fileName);
@@ -864,6 +914,7 @@ namespace KadOzenka.Web.Controllers
         #region Факторы
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourZuFactorsCard(long tourId)
         {
             var model = new TourFactorsModel
@@ -884,6 +935,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourOksFactorsCard(long tourId)
         {
             var model = new TourFactorsModel
@@ -904,6 +956,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourFactorObjectCard(long id, long tourId, bool isSteadObjectType, long registerFactorId)
         {
             var omAttribute = OMAttribute.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -930,6 +983,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult EditTourFactorObjectCard(TourFactorObjectModel model)
         {
             if (!ModelState.IsValid)
@@ -963,6 +1017,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public IActionResult DeleteTourFactorObject(long id)
         {
             var omAttribute = OMAttribute.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -981,6 +1036,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public IActionResult DeleteTourFactorObject(TourFactorObjectModel model)
         {
             var omAttribute = OMAttribute.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
@@ -998,6 +1054,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region Зависимости при расчете подгрупп
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public JsonResult GetCalcGroups(long groupId)
 		{
             var groupList = OMCalcGroup.Where(x => x.GroupId == groupId)
@@ -1022,6 +1079,7 @@ namespace KadOzenka.Web.Controllers
             return Json(result);
         }
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public JsonResult GetSubgroups(long groupId)
 		{
 			var group = OMGroup.Where(x => x.Id == groupId)
@@ -1048,6 +1106,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(res);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public ActionResult EditCalcGroup(long? id, long groupId)
 		{
 			OMCalcGroup calcGroup;
@@ -1074,6 +1133,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public ActionResult EditCalcGroup(OMCalcGroup calcGroup)
 		{
 			bool isExists = OMCalcGroup.Where(x => x.GroupId == calcGroup.GroupId && x.ParentCalcGroupId == calcGroup.ParentCalcGroupId)
@@ -1087,6 +1147,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public ActionResult DeleteCalcGroup(long id)
 		{
 			OMCalcGroup calcGroup = OMCalcGroup.Where(x => x.Id == id)

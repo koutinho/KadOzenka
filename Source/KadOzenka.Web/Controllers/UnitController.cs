@@ -8,12 +8,15 @@ using System.IO;
 using System.Linq;
 using Core.Register.Enums;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Web.Attributes;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class UnitController : KoBaseController
 	{
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
 		public ActionResult ObjectCard(long unitId)
 		{
 			OMUnit unit = OMUnit.Where(x => x.Id == unitId)
@@ -31,12 +34,14 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
 		public ActionResult UnitHistory(long unitId)
 		{
 			return View(unitId);
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
 		public JsonResult GetUnitHistory(long unitId)
 		{
 			OMUnit unit = OMUnit.Where(x => x.Id == unitId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
@@ -73,6 +78,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
         public ActionResult FormClarification(long unitId)
         {
             var unit = OMUnit.Where(x => x.Id == unitId).SelectAll().ExecuteFirstOrDefault();
@@ -87,6 +93,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
         public ActionResult DownloadClarification(string unitId)
         {
             var fileInfo = GetFileFromSession(unitId, RegistersExportType.Docx);

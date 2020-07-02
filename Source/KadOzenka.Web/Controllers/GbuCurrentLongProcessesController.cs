@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuProgressBar;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -18,6 +19,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult CurrentLongProcessesList()
 		{
 			var processesList = _service.GetCurrentLongProcessesList();

@@ -2,14 +2,13 @@
 using System.IO;
 using System.Transactions;
 using Core.ErrorManagment;
-using Core.UI.Registers.Controllers;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Core.Reports;
-using ObjectModel.Declarations;
 using ObjectModel.KO;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -18,6 +17,7 @@ namespace KadOzenka.Web.Controllers
 		#region CodJob
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public ActionResult CodJobObjectCard(long id)
 		{
 			var codJob = OMCodJob.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -26,6 +26,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public ActionResult CodJobObjectCard(CodJobViewModel viewModel)
 		{
 			var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
@@ -54,6 +55,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
 		public IActionResult DeleteCodJob(long codJobId)
 		{
 			var codJob = OMCodJob.Where(x => x.Id == codJobId).SelectAll().ExecuteFirstOrDefault();
@@ -66,6 +68,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
 		public IActionResult DeleteCodJob(CodJobViewModel viewModel)
 		{
 			var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
@@ -94,6 +97,7 @@ namespace KadOzenka.Web.Controllers
 		#region CodDictionary
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
 		public ActionResult CodDictionaryObjectCard(long id, long jobId)
 		{
 			if (jobId == 0)
@@ -119,6 +123,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
 		public ActionResult CodDictionaryObjectCard(CodDictionaryViewModel viewModel)
 		{
 			var codDictionary = OMCodDictionary.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
@@ -147,6 +152,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public IActionResult DeleteCodDictionary(long codDictionaryId)
 		{
 			var codDictionary = OMCodDictionary.Where(x => x.Id == codDictionaryId).SelectAll().ExecuteFirstOrDefault();
@@ -159,6 +165,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public IActionResult DeleteCodDictionary(CodDictionaryViewModel viewModel)
 		{
 			var codDictionary = OMCodDictionary.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
@@ -177,6 +184,7 @@ namespace KadOzenka.Web.Controllers
 		#region CodImport
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_IMPORT)]
 		public ActionResult ImportCod(long codJobId)
 		{
 			var codJob = OMCodJob.Where(x => x.Id == codJobId).SelectAll().ExecuteFirstOrDefault();
@@ -189,6 +197,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_IMPORT)]
 		public ActionResult ImportCod(IFormFile file, long codId, bool deleteOld)
 		{
 			try

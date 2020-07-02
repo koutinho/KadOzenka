@@ -9,6 +9,7 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
 using Kendo.Mvc;
@@ -22,6 +23,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -46,6 +48,7 @@ namespace KadOzenka.Web.Controllers
 
         #region MapBuilding
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_THEME_MAPS)]
 		public ActionResult Map()
 		{
 			var exceptions = new List<long> { (long)PropertyTypes.None };
@@ -55,6 +58,7 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_THEME_MAPS)]
 		public JsonResult HeatMapData(long tourId, PropertyTypes objectType, MapDivisionType divisionType, string colors)
 		{
 			var result = _mapBuildingService.GetHeatMapData(tourId, objectType, divisionType, colors.Split(","));
@@ -66,6 +70,7 @@ namespace KadOzenka.Web.Controllers
 		#region ObjectsByGroupsWidget
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetGroupsChartData()
 		{
 			var actualDate = DateTime.Now.Date;
@@ -75,6 +80,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new{ actualDate = actualDate, data = chartGroupDtoList});
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportGroupsChartDataToExcel()
 		{
 			var actualDate = DateTime.Now.Date;
@@ -88,42 +94,49 @@ namespace KadOzenka.Web.Controllers
 
 		#region StatisticsReportsWidget
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetUnitPropertyTypes()
 		{
 			var types = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypes));
 			return Json(types);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetZoneTypes()
 		{
 			var types = _statisticsReportsService.GetZoneData();
 			return Json(types);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public ActionResult GetImportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			GridDataDto<UnitObjectDto> data = _statisticsReportsService.GetImportedObjectsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetExportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			GridDataDto<ExportedObjectDto> data = _statisticsReportsService.GetExportedObjectsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetZoneStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			GridDataDto<ZoneStatisticDto> data = _statisticsReportsService.GetZoneStatisticsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetFactorStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			GridDataDto<FactorStatisticDto> data = _statisticsReportsService.GetFactorStatisticsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetGroupStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			GridDataDto<GroupStatisticDto> data = _statisticsReportsService.GetGroupStatisticsData(request, dateStart, dateEnd);
@@ -134,6 +147,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region StatisticsReportsWidgetExport
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportImportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var request = new DataSourceRequest();
@@ -146,6 +160,7 @@ namespace KadOzenka.Web.Controllers
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportExportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var request = new DataSourceRequest();
@@ -158,6 +173,7 @@ namespace KadOzenka.Web.Controllers
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportZoneStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var request = new DataSourceRequest();
@@ -170,6 +186,7 @@ namespace KadOzenka.Web.Controllers
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportFactorStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var request = new DataSourceRequest();
@@ -182,6 +199,7 @@ namespace KadOzenka.Web.Controllers
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public FileResult ExportGroupStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var request = new DataSourceRequest();
@@ -198,11 +216,13 @@ namespace KadOzenka.Web.Controllers
 
 		#region StatisticalData
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public ActionResult StatisticalData()
 		{
 			return View(new StatisticalDataModel());
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public IActionResult GetStatisticalDataReportUrl(StatisticalDataModel model)
 		{
 			if (!ModelState.IsValid)
@@ -231,6 +251,7 @@ namespace KadOzenka.Web.Controllers
         #region Reports with additional configuration
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public ActionResult PreviousToursReportConfiguration(long? lastTourId)
         {
             var lastTour = _tourService.GetTourById(lastTourId);
@@ -249,6 +270,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
             if (!ModelState.IsValid)

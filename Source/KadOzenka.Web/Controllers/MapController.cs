@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Core.Register.QuerySubsystem;
 using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
 using KadOzenka.Web.Models.Prefilter;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Market;
 using Newtonsoft.Json;
@@ -15,10 +13,10 @@ using ObjectModel.Directory;
 using Core.Shared.Extensions;
 using KadOzenka.Web.Models.MarketObject;
 using ObjectModel.Core.Shared;
-using System.Reflection;
 using KadOzenka.Dal.MapModeling;
-using DevExpress.DataProcessing.InMemoryDataProcessor;
 using System.Globalization;
+using KadOzenka.Web.Attributes;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -36,6 +34,7 @@ namespace KadOzenka.Web.Controllers
             _registersService = registersService;
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult Index(long? objectId)
         {
             if (objectId.HasValue)
@@ -46,6 +45,7 @@ namespace KadOzenka.Web.Controllers
             return View(new MapObjectDto());
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude,
             int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId, 
             string districts, string marketSource, string actualDate)
@@ -75,6 +75,7 @@ namespace KadOzenka.Web.Controllers
             return Json(new { token = token, arr = point, allCount = size });
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult HeatMapData(string colors, string actualDate)
         {
             DateTime acD;
@@ -117,6 +118,7 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult RequiredInfo()
         {
             List<long> ids = JsonConvert.DeserializeObject<List<long>>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
@@ -157,6 +159,7 @@ namespace KadOzenka.Web.Controllers
             return Json(allData);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult FindFilters()
         {
             var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
@@ -281,12 +284,14 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult SetFilters(string filter)
         {
             new CoreUiController(_coreUiService, _registersService).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
             return Json(new { });
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult GetAvaliableValues()
         {
             List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).SelectAll().Execute();
@@ -300,6 +305,7 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult ChangeObject(long? id, decimal? lng, decimal? lat, long? propertyTypeCode, long? marketSegmentCode, long? statusCode)
         {
             OMCoreObject obj = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -327,6 +333,7 @@ namespace KadOzenka.Web.Controllers
             return Json(result);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult cadastralTiles(int x, int y, int z)
         {
             try { return base.File($@"~/imgLayer/{z}/{x}_{y}.png", "image/png"); }

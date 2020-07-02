@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using ObjectModel.Core.Register;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -22,6 +24,7 @@ namespace KadOzenka.Web.Controllers
         #region Source
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM_ADD_SOURCE)]
         public ActionResult AddSource()
         {
             var model = new SourceModel
@@ -33,6 +36,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM_EDIT_SOURCE)]
         public ActionResult EditSource(long registerId)
         {
             var source = ObjectsCharacteristicsService.GetSource(registerId);
@@ -43,6 +47,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM_EDIT_SOURCE)]
         public JsonResult EditSource(SourceModel model)
         {
             if (!ModelState.IsValid)
@@ -69,6 +74,7 @@ namespace KadOzenka.Web.Controllers
         #region Characteristic
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public ActionResult Characteristics(long registerId)
         {
             var model = new SourceModel
@@ -80,6 +86,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public ActionResult AddCharacteristic(long registerId)
         {
             var model = new CharacteristicModel
@@ -92,6 +99,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public ActionResult EditCharacteristic(long attributeId)
         {
             var attribute = GetAttribute(attributeId);
@@ -102,6 +110,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public JsonResult EditCharacteristic(CharacteristicModel model)
         {
             if (!ModelState.IsValid)
@@ -123,6 +132,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public ActionResult DeleteCharacteristic(long attributeId)
         {
             var attribute = GetAttribute(attributeId);
@@ -133,6 +143,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public void DeleteCharacteristic(CharacteristicModel model)
         {
             ObjectsCharacteristicsService.DeleteCharacteristic(model.Id);

@@ -3,9 +3,9 @@
               AllowSearchPanelResize="false" Description="Экспресс оценка. Справочники" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false"
-              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" ShowRowMenu="true">
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" SRDFunction="EXPRESSSCORE.REFERENCES" ShowRowMenu="true">
 	<Buttons>
-	    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+	    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" SRDFunction="EXPRESSSCORE.REFERENCES.ALL_DATA" Icon="icon-contract">
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>
@@ -19,10 +19,10 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus">
+	    <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" SRDFunction="EXPRESSSCORE.REFERENCES.EDIT" Icon="fas fa-plus">
 	    </Button>
 
-	    <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit" >
+	    <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" SRDFunction="EXPRESSSCORE.REFERENCES.EDIT" Icon="fas fa-edit" >
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>
@@ -35,7 +35,7 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Удалить" NavigateURL="/ExpressScopeReference/DeleteReference" WindowHeight="180" WindowWidth="800" Icon="fas fa-trash-alt">
+	    <Button Caption="Удалить" NavigateURL="/ExpressScopeReference/DeleteReference" WindowHeight="180" WindowWidth="800" SRDFunction="EXPRESSSCORE.REFERENCES.DELETE" Icon="fas fa-trash-alt">
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>
@@ -48,7 +48,7 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Импорт справочника" NavigateURL="/ExpressScopeReference/DataImport" WindowHeight="470" WindowWidth="840" Icon="fas fa-code">
+	    <Button Caption="Импорт справочника" NavigateURL="/ExpressScopeReference/DataImport" WindowHeight="470" WindowWidth="840" SRDFunction="EXPRESSSCORE.REFERENCES.IMPORT" Icon="fas fa-code">
 	    </Button>
   </Buttons>
 

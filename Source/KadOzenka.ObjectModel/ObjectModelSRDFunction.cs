@@ -89,10 +89,10 @@ namespace ObjectModel.SRD
               // Объекты аналоги (500)
               public const string MARKET = "MARKET";
                 
-              // Объекты оценки (501)
+              // Объекты недвижимости (501)
               public const string GBU = "GBU";
                 
-              // Задания на оценку (502)
+              // Рассчетная подсистема (502)
               public const string KO = "KO";
                 
               // Судебные решения (503)
@@ -155,10 +155,10 @@ namespace ObjectModel.SRD
               // Декларации (523)
               public const string DECLARATIONS_DECLARATION = "DECLARATIONS.DECLARATION";
                 
-              // Декларации Создание (524)
+              // Создание (524)
               public const string DECLARATIONS_DECLARATION_CREATE = "DECLARATIONS.DECLARATION.CREATE";
                 
-              // Декларации Редактирование (525)
+              // Редактирование (525)
               public const string DECLARATIONS_DECLARATION_EDIT = "DECLARATIONS.DECLARATION.EDIT";
                 
               // Декларации Редактирование: блок «Подача декларации» (526)
@@ -277,6 +277,228 @@ namespace ObjectModel.SRD
               
               // Декларации Редактирование: добавление характеристик в раздел Формальная проверка / Уведомление (613)
               public const string DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING = "DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS.INCLUDE_IN_FORMAL_CHECKING";
+                
+              // Карта (570)
+              public const string MARKET_MAP = "MARKET.MAP";
+                
+              // Все данные (571)
+              public const string MARKET_ALL_DATA = "MARKET.ALL_DATA";
+                
+              // Загрузка данных по списку (572)
+              public const string MARKET_DATA_IMPORT = "MARKET.DATA_IMPORT";
+                
+              // Выгрузка данных по списку (573)
+              public const string MARKET_DATA_EXPORT = "MARKET.DATA_EXPORT";
+                
+              // Выгрузка скриншотов (574)
+              public const string MARKET_UNLOAD_SCREENSHOTS = "MARKET.UNLOAD_SCREENSHOTS";
+                
+              // Выгрузка в Excel (575)
+              public const string MARKET_EXPORT_TO_EXCEL = "MARKET.EXPORT_TO_EXCEL";
+                
+              // Присвоение округов, районов, зон (576)
+              public const string MARKET_ACTIVATE_PROCESS = "MARKET.ACTIVATE_PROCESS";
+                
+              // Присвоение координат (577)
+              public const string MARKET_ACTIVATE_COORDINATES = "MARKET.ACTIVATE_COORDINATES";
+                
+              // Моделирование корреляции (578)
+              public const string MARKET_CORRELATION = "MARKET.CORRELATION";
+                
+              // Корректировки (580)
+              public const string MARKET_CORRECTION = "MARKET.CORRECTION";
+                
+              // Редактирование (581)
+              public const string MARKET_CORRECTION_EDIT = "MARKET.CORRECTION.EDIT";
+                
+              // Отчет (582)
+              public const string MARKET_CORRECTION_REPORT = "MARKET.CORRECTION.REPORT";
+                
+              // Реестр (583)
+              public const string GBU_OBJECTS = "GBU.OBJECTS";
+                
+              // Справочники ЦОД (584)
+              public const string GBU_COD = "GBU.COD";
+                
+              // Характеристики объектов (585)
+              public const string GBU_OBJ_PARAM = "GBU.OBJ_PARAM";
+                
+              // Нормализация данных (586)
+              public const string GBU_OBJECTS_GROUPING_OBJECT = "GBU.OBJECTS.GROUPING_OBJECT";
+                
+              // Выборка из справочника ЦОД (587)
+              public const string GBU_OBJECTS_UNLOADING_FROM_DICT = "GBU.OBJECTS.UNLOADING_FROM_DICT";
+                
+              // Наследование (588)
+              public const string GBU_OBJECTS_INHERITANCE = "GBU.OBJECTS.INHERITANCE";
+                
+              // Присвоить оценочную группу (589)
+              public const string GBU_OBJECTS_SET_ESTIMATED_GROUP = "GBU.OBJECTS.SET_ESTIMATED_GROUP";
+                
+              // Загрузка данных по списку (590)
+              public const string GBU_OBJECTS_DATA_IMPORT = "GBU.OBJECTS.DATA_IMPORT";
+                
+              // Выгрузка данных по списку (591)
+              public const string GBU_OBJECTS_DATA_EXPORT = "GBU.OBJECTS.DATA_EXPORT";
+                
+              // Выгрузка в Excel (592)
+              public const string GBU_OBJECTS_EXPORT_TO_EXCEL = "GBU.OBJECTS.EXPORT_TO_EXCEL";
+                
+              // Гармонизация (593)
+              public const string GBU_OBJECTS_HARMONIZATION = "GBU.OBJECTS.HARMONIZATION";
+                
+              // Гармонизация по классификатору ЦОД (594)
+              public const string GBU_OBJECTS_HARMONIZATION_COD = "GBU.OBJECTS.HARMONIZATION_COD";
+                
+              // Добавить (595)
+              public const string GBU_COD_JOB_ADD = "GBU.COD.JOB_ADD";
+                
+              // Удалить (596)
+              public const string GBU_COD_JOB_DELETE = "GBU.COD.JOB_DELETE";
+                
+              // Импорт классификатора ЦОД (597)
+              public const string GBU_COD_IMPORT = "GBU.COD.IMPORT";
+                
+              // Все данные (598)
+              public const string GBU_OBJ_PARAM_ALL_DATA = "GBU.OBJ_PARAM.ALL_DATA";
+                
+              // Добавить источник (599)
+              public const string GBU_OBJ_PARAM_ADD_SOURCE = "GBU.OBJ_PARAM.ADD_SOURCE";
+                
+              // Редактировать источник (600)
+              public const string GBU_OBJ_PARAM_EDIT_SOURCE = "GBU.OBJ_PARAM.EDIT_SOURCE";
+                
+              // Все данные (601)
+              public const string GBU_OBJECTS_ALL_DATA = "GBU.OBJECTS.ALL_DATA";
+                
+              // Справочники (602)
+              public const string EXPRESSSCORE_REFERENCES = "EXPRESSSCORE.REFERENCES";
+                
+              // Все данные (603)
+              public const string EXPRESSSCORE_REFERENCES_ALL_DATA = "EXPRESSSCORE.REFERENCES.ALL_DATA";
+                
+              // Добавить/Редактировать (605)
+              public const string EXPRESSSCORE_REFERENCES_EDIT = "EXPRESSSCORE.REFERENCES.EDIT";
+                
+              // Удалить (606)
+              public const string EXPRESSSCORE_REFERENCES_DELETE = "EXPRESSSCORE.REFERENCES.DELETE";
+                
+              // Импорт справочника (607)
+              public const string EXPRESSSCORE_REFERENCES_IMPORT = "EXPRESSSCORE.REFERENCES.IMPORT";
+                
+              // Добавить/Редактировать (608)
+              public const string COMMISSION_EDIT_COMMISSION = "COMMISSION.EDIT_COMMISSION";
+                
+              // Выгрузка в Excel (609)
+              public const string COMMISSION_EXPORT_TO_EXCEL = "COMMISSION.EXPORT_TO_EXCEL";
+                
+              // Все данные (610)
+              public const string COMMISSION_ALL_DATA = "COMMISSION.ALL_DATA";
+                
+              // Загрузка данных (611)
+              public const string COMMISSION_LOAD_DOCUMENT = "COMMISSION.LOAD_DOCUMENT";
+                
+              // Поддержка принятия управленческих решений (612)
+              public const string DECISION_SUPPORT = "DECISION_SUPPORT";
+                
+              // Декларации Редактирование: добавление характеристик в раздел Формальная проверка / Уведомление (613)
+              public const string DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING = "DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS.INCLUDE_IN_FORMAL_CHECKING";
+                
+              // Построение тематических карт (614)
+              public const string DECISION_SUPPORT_THEME_MAPS = "DECISION_SUPPORT.THEME_MAPS";
+                
+              // Статистическая информация (615)
+              public const string DECISION_SUPPORT_STATISTICS = "DECISION_SUPPORT.STATISTICS";
+                
+              // Экономический анализ (616)
+              public const string DECISION_SUPPORT_ANALYSIS = "DECISION_SUPPORT.ANALYSIS";
+                
+              // Формирование отчетных форм (617)
+              public const string DECISION_SUPPORT_REPORT_FORMS = "DECISION_SUPPORT.REPORT_FORMS";
+                
+              // Задания на оценку (618)
+              public const string KO_TASKS = "KO.TASKS";
+                
+              // Единицы оценки (619)
+              public const string KO_OBJECTS = "KO.OBJECTS";
+                
+              // Создать задание на оценку (620)
+              public const string KO_IMPORT_GKN = "KO.IMPORT_GKN";
+                
+              // Произвести расчет кадастровой стоимости (621)
+              public const string KO_CALCULATE_CADASTRAL_PRICE = "KO.CALCULATE_CADASTRAL_PRICE";
+                
+              // Выгрузка результатов оценки (622)
+              public const string KO_UNLOAD_RESULTS = "KO.UNLOAD_RESULTS";
+                
+              // Справочники (623)
+              public const string KO_DICT = "KO.DICT";
+                
+              // Журнал отправки итогов расчета КО в ИС РЕОН (624)
+              public const string KO_JOURNAL = "KO.JOURNAL";
+                
+              // Все данные (625)
+              public const string KO_TASKS_ALL_DATA = "KO.TASKS.ALL_DATA";
+                
+              // Перенос атрибутов (626)
+              public const string KO_TASKS_TRANSFER_ATTRIBUTES = "KO.TASKS.TRANSFER_ATTRIBUTES";
+                
+              // Перенос и создание атрибутов (627)
+              public const string KO_TASKS_TRANSFER_CREATE_ATTRIBUTES = "KO.TASKS.TRANSFER_CREATE_ATTRIBUTES";
+                
+              // Импорт данных ГКН (628)
+              public const string KO_TASKS_IMPORT_GKN = "KO.TASKS.IMPORT_GKN";
+                
+              // Выгрузка в Excel (629)
+              public const string KO_TASKS_EXPORT_TO_EXCEL = "KO.TASKS.EXPORT_TO_EXCEL";
+                
+              // Загрузка графических факторов из ИС РЕОН (630)
+              public const string KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON = "KO.TASKS.DOWNLOAD_GRAPHIC_FACTORS_FROM_REON";
+                
+              // Все данные (631)
+              public const string KO_OBJECTS_ALL_DATA = "KO.OBJECTS.ALL_DATA";
+                
+              // Все действия (632)
+              public const string KO_OBJECTS_CORE_AUDIT_COMMON = "KO.OBJECTS.CORE_AUDIT_COMMON";
+                
+              // Выгрузка в Excel (633)
+              public const string KO_OBJECTS_EXPORT_TO_EXCEL = "KO.OBJECTS.EXPORT_TO_EXCEL";
+                
+              // Туры (634)
+              public const string KO_DICT_TOURS = "KO.DICT.TOURS";
+                
+              // Модели (635)
+              public const string KO_DICT_MODELS = "KO.DICT.MODELS";
+                
+              // Ценообразующие факторы (636)
+              public const string KO_DICT_FACTORS = "KO.DICT.FACTORS";
+                
+              // Туры оценки (637)
+              public const string KO_DICT_TOURS_ESTIMATES = "KO.DICT.TOURS.ESTIMATES";
+                
+              // Группы (638)
+              public const string KO_DICT_TOURS_GROUPS = "KO.DICT.TOURS.GROUPS";
+                
+              // Значения меток (639)
+              public const string KO_DICT_TOURS_MARK_CATALOG = "KO.DICT.TOURS.MARK_CATALOG";
+                
+              // Импорт группы из Excel (640)
+              public const string KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL = "KO.DICT.TOURS.IMPORT_GROUP_DATA_FROM_EXCEL";
+                
+              // Настройки атрибутов туров (641)
+              public const string KO_DICT_TOURS_ATTRIBUTE_SETTINGS = "KO.DICT.TOURS.ATTRIBUTE_SETTINGS";
+                
+              // Модель (642)
+              public const string KO_DICT_MODELS_ADD_MODEL = "KO.DICT.MODELS.ADD_MODEL";
+                
+              // Просмотр объектов (643)
+              public const string KO_DICT_MODELS_MODEL_OBJECTS = "KO.DICT.MODELS.MODEL_OBJECTS";
+                
+              // Все данные (644)
+              public const string KO_DICT_FACTORS_ALL_DATA = "KO.DICT.FACTORS.ALL_DATA";
+                
+              // Туры оценки (645)
+              public const string KO_DICT_FACTORS_TOUR_ESTIMATES = "KO.DICT.FACTORS.TOUR_ESTIMATES";
                 
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";

@@ -16,6 +16,7 @@ using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImporterLayout;
 using ObjectModel.KO;
 
@@ -26,6 +27,7 @@ namespace KadOzenka.Web.Controllers
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public IActionResult DataExport(string registerViewId, long? mainRegisterId)
 		{
 			if (!string.IsNullOrEmpty(registerViewId))
@@ -42,6 +44,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = "")]
 		public ActionResult ParseFileColumns(List<IFormFile> files)
 		{
 			if (files == null || files.Count == 0)
@@ -79,6 +82,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = "")]
 		public JsonResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
             ValidateColumns(columns);
@@ -95,6 +99,7 @@ namespace KadOzenka.Web.Controllers
         }
 
 		[HttpPost]
+        [SRDFunction(Tag = "")]
 		public ActionResult ExportDataToExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
 		{
 			ValidateColumns(columns);
@@ -113,6 +118,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult DownloadExcelFile(string fileName)
 		{
 			var fileContent = HttpContext.Session.Get(fileName);
@@ -128,6 +134,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult DownloadExcelTemplate(long objectId, string fileType)
 		{
 			OMExportByTemplates export = OMExportByTemplates
@@ -154,6 +161,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public ActionResult RepeatFormation(long objectId)
 		{
 			OMExportByTemplates export = OMExportByTemplates
@@ -178,6 +186,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = "")]
 		public IActionResult Details(long objectId)
 		{
 			OMExportByTemplates export = OMExportByTemplates.Where(x => x.Id == objectId).SelectAll().Execute().FirstOrDefault();
@@ -210,13 +219,15 @@ namespace KadOzenka.Web.Controllers
 			return View(export);
 		}
 
-        public FileResult DownloadExportData(long exportId)
+        [SRDFunction(Tag = "")]
+		public FileResult DownloadExportData(long exportId)
         {
             var file = DataExporterCommon.GetExportResultFileStream(exportId);
 
             return File(file, Helpers.Consts.ExcelContentType, "Результат выгрузки данных по списку" + ".xlsx");
         }
 
+        [SRDFunction(Tag = "")]
 		public ActionResult UnloadSettings()
 		{
 			KOUnloadSettings settings = new KOUnloadSettings();
@@ -224,6 +235,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = "")]
 		public ActionResult UnloadSettings(UnloadSettingsDto settings)
 		{
 			if (!ModelState.IsValid)
@@ -236,6 +248,7 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
+        [SRDFunction(Tag = "")]
 		public FileResult DownloadKoExportResult(long reportId, bool isXml)
 		{
 			var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();

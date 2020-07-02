@@ -1,24 +1,24 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Transactions;
 using CIPJS.Models.Commission;
 using Core.ErrorManagment;
-using Core.UI.Registers.Controllers;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Commission;
+using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class CommissionController : KoBaseController
     {
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.COMMISSION_EDIT_COMMISSION)]
 		public ActionResult EditCommission(long id)
 		{
 			OMCost commission = OMCost
@@ -34,6 +34,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.COMMISSION_EDIT_COMMISSION)]
 		public ActionResult EditCommission(CommissionModel commissionViewModel)
 		{
 			if (!ModelState.IsValid)
@@ -78,12 +79,14 @@ namespace KadOzenka.Web.Controllers
 		#region Load Document
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.COMMISSION_LOAD_DOCUMENT)]
 		public ActionResult LoadDocument()
 		{
 			return View();
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.COMMISSION_LOAD_DOCUMENT)]
 		public ActionResult LoadDocument(IFormFile file)
 		{
 

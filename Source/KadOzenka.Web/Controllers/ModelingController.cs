@@ -6,23 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using Core.ObjectModel.CustomAttribute;
 using Core.Register.QuerySubsystem;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Market;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -40,6 +39,7 @@ namespace KadOzenka.Web.Controllers
 		#region Model Card
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult ModelCard(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
@@ -48,12 +48,14 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId)
 		{
 			var attributes = ModelingService.GetModelAttributes(modelId);
 			return Json(attributes);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups()
         {
             var groups = ModelingService.GetGroups()
@@ -67,12 +69,14 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
 		public ActionResult AddModel()
 		{
             return View();
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
 		public JsonResult AddModel(ModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
@@ -85,6 +89,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult UpdateModel(ModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
@@ -97,6 +102,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
             var attributes = ModelingService.GetModelAttributes(modelId);
@@ -129,6 +135,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult Predict(long modelId, ModelType modelType)
         {
             var inputParameters = new GeneralModelingInputParameters
@@ -157,6 +164,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public FileResult DownloadLogs(long modelId)
         {
             var fileStream = ModelingService.GetLogs(modelId);
@@ -170,6 +178,7 @@ namespace KadOzenka.Web.Controllers
         #region Models Training Results
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult LinearModelDetails(long modelId)
         {
             var model = GetModel(modelId);
@@ -181,6 +190,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ExponentialModelDetails(long modelId)
         {
             var model = GetModel(modelId);
@@ -192,6 +202,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MultiplicativeModelDetails(long modelId)
         {
             var model = GetModel(modelId);
@@ -208,6 +219,7 @@ namespace KadOzenka.Web.Controllers
         #region Market Objects For Model
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public ActionResult ModelObjects(long modelId)
 		{
             var modelDto = ModelingService.GetModelById(modelId);
@@ -217,6 +229,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
@@ -225,6 +238,7 @@ namespace KadOzenka.Web.Controllers
         }
 
 		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult ChangeObjectsStatusInCalculation(string objects, long modelId)
 		{
 			var objectsJson = JObject.Parse(objects).SelectToken("objects").ToString();
@@ -244,6 +258,7 @@ namespace KadOzenka.Web.Controllers
         #region Correlation
 
         [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
         public ActionResult Correlation()
         {
             var model = new CorrelationModel();
@@ -261,6 +276,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
         public JsonResult GetMarketObjectAttributes()
         {
             var attribute = typeof(OMCoreObject).GetProperty(nameof(OMCoreObject.Price))
@@ -284,6 +300,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
         public JsonResult Correlation(CorrelationModel model)
         {
             if(string.IsNullOrWhiteSpace(model.QsQueryXmlStr))

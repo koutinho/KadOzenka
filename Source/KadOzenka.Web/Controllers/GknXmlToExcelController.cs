@@ -2,7 +2,9 @@
 using Core.Main.FileStorages;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -11,11 +13,13 @@ namespace KadOzenka.Web.Controllers
         private readonly string FileStorage = "DataExporterByTemplate";
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
         public IActionResult Configurator()
         {
             return View("/Views/DataExport/GknXmlToExcel.cshtml");
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
         public FileResult DownloadResult(string dt, int id)
         {
             var dateTime = DateTime.Parse(dt);
@@ -24,6 +28,7 @@ namespace KadOzenka.Web.Controllers
                 $"{id}_{dt:ddMMyyyy}_ExcelConversion.zip");
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
         public IActionResult Convert(long id, int[] config)
         {
             try

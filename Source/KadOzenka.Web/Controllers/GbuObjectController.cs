@@ -14,9 +14,9 @@ using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,8 +24,8 @@ using ObjectModel.Common;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
-using ObjectModel.Gbu.CodSelection;
 using ObjectModel.KO;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -47,11 +47,13 @@ namespace KadOzenka.Web.Controllers
 
 		#region Object Card
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_ALL_DATA)]
 		public ActionResult AllDataTree(long objectId)
 		{
 			return View(objectId);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult TreeList(long objectId, string parentNodeId, long nodeLevel)
 		{
 			List<AllDataTreeDto> treeList = _service.GetAllDataTree(objectId, parentNodeId, nodeLevel);
@@ -59,6 +61,7 @@ namespace KadOzenka.Web.Controllers
 			return Content(JsonConvert.SerializeObject(treeList), "application/json");
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult AllDetails(long objectId, long? registerId = null, long? attributeId = null)
 		{
 			List<long> sources = null;
@@ -81,6 +84,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GbuObjectCard(long objectId)
 		{
 			var obj = OMMainObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
@@ -89,6 +93,7 @@ namespace KadOzenka.Web.Controllers
             return View("~/Views/GbuObject/GbuObjectCardNew.cshtml", GbuObjectViewModel.FromEntity(obj, DateTime.Now, registerDtoList));
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetGbuObjectCardPanelBar(long objectId, DateTime? actualDate)
 		{
 		    var obj = OMMainObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
@@ -122,7 +127,8 @@ namespace KadOzenka.Web.Controllers
 	        return registerDtoList;
 	    }
 
-        public ActionResult GetAttributeHistory(long objectId, long registerId, long attrId)
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetAttributeHistory(long objectId, long registerId, long attrId)
 	    {
 	        var attributeValues = _service
 	            .GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
@@ -140,7 +146,9 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
         #region GroupingObject
+
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
 		public ActionResult GroupingObject()
 		{
 			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
@@ -165,6 +173,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
 		public JsonResult GroupingObject(GroupingObject model)
 		{
 			if (!ModelState.IsValid)
@@ -203,6 +212,8 @@ namespace KadOzenka.Web.Controllers
 		#endregion
 
 		#region Getting Templates
+		
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesGrouping()
 		{
 			return OMDataFormStorage.Where(x =>
@@ -210,12 +221,15 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesUnloadingForm()
 		{
 			return OMDataFormStorage.Where(x =>
 					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.UnloadingFromDict)
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
+
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesHarmonization()
 		{
 			return OMDataFormStorage.Where(x =>
@@ -223,6 +237,7 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesHarmonizationCOD()
 		{
 			return OMDataFormStorage.Where(x =>
@@ -230,15 +245,16 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
-	    public List<SelectListItem> GetTemplatesEstimated()
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public List<SelectListItem> GetTemplatesEstimated()
 	    {
 	        return OMDataFormStorage.Where(x =>
 	                x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.EstimatedGroup)
 	            .SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 	    }
 
-
-        public JsonResult GetTemplatesOneGroup(int id)
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public JsonResult GetTemplatesOneGroup(int id)
 		{
 			if (id == 0)
 			{
@@ -297,31 +313,36 @@ namespace KadOzenka.Web.Controllers
 		#region Save Template
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateGroupingObject(string nameTemplate, [FromForm]GroupingObject model)
 		{
 			return SaveTemplate(nameTemplate, DataFormStorege.Normalisation, model.SerializeToXml());
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, [FromForm]HarmonizationViewModel viewModel)
 		{
 			return SaveTemplate(nameTemplate, DataFormStorege.Harmonization, viewModel.SerializeToXml());
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, [FromForm]HarmonizationCODViewModel viewModel)
 		{
 			return SaveTemplate(nameTemplate, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateUnloading(string nameTemplate, [FromForm]UnloadingFromDicViewModel viewModel)
 		{
 			return SaveTemplate(nameTemplate, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
 		}
 
 	    [HttpPost]
-	    public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, [FromForm]EstimatedGroupViewModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, [FromForm]EstimatedGroupViewModel model)
 	    {
 	        return SaveTemplate(nameTemplate, DataFormStorege.EstimatedGroup, model.SerializeToXml());
 	    }
@@ -331,6 +352,7 @@ namespace KadOzenka.Web.Controllers
         #region Harmonization
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization()
 		{
 			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
@@ -350,6 +372,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization(HarmonizationViewModel viewModel)
 		{
 			if (!ModelState.IsValid)
@@ -391,6 +414,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region HarmonizationCOD
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
 		public ActionResult HarmonizationCOD()
 		{
 			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
@@ -420,6 +444,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
 		public ActionResult HarmonizationCOD(HarmonizationCODViewModel viewModel)
 		{
 			if (!ModelState.IsValid)
@@ -476,6 +501,7 @@ namespace KadOzenka.Web.Controllers
 		#region Unloading From Dict
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_UNLOADING_FROM_DICT)]
 		public ActionResult UnloadingFromDict()
 		{
 			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
@@ -506,6 +532,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_UNLOADING_FROM_DICT)]
 		public JsonResult UnloadingFromDict(UnloadingFromDicViewModel viewModel)
 		{
             if (!ModelState.IsValid)
@@ -552,7 +579,8 @@ namespace KadOzenka.Web.Controllers
 
 		#region load data
 
-		public JsonResult GetRatingTours()
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+        public JsonResult GetRatingTours()
 		{
 			var tours = OMTour.Where(x => true).SelectAll().Execute()
 				.Select(x => new SelectListItem
@@ -564,6 +592,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(tours);
 		}
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetRow([FromForm] int rowNumber)
 		{
 			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
@@ -583,7 +612,9 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-		[HttpGet]
+		
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_INHERITANCE)]
 		public ActionResult Inheritance()
 		{
 			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
@@ -603,6 +634,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_INHERITANCE)]
 		public JsonResult Inheritance(InheritanceViewModel viewModel)
 		{
 			if (!ModelState.IsValid)
@@ -628,7 +660,8 @@ namespace KadOzenka.Web.Controllers
 	    #region Присвоение оценочной группы
 
 	    [HttpGet]
-	    public ActionResult SetEstimatedGroup()
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_SET_ESTIMATED_GROUP)]
+		public ActionResult SetEstimatedGroup()
 	    {
 	        ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
 	            .Select(x => new DropDownTreeItemModel
@@ -646,7 +679,8 @@ namespace KadOzenka.Web.Controllers
 	    }
 
 	    [HttpPost]
-	    public JsonResult SetEstimatedGroup(EstimatedGroupViewModel viewModel)
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_SET_ESTIMATED_GROUP)]
+		public JsonResult SetEstimatedGroup(EstimatedGroupViewModel viewModel)
 	    {
 	        if (!ModelState.IsValid)
 	        {
@@ -669,9 +703,10 @@ namespace KadOzenka.Web.Controllers
 	        return Json(new {Success = true, QueueId = queueId });
 	    }
 
-	    #endregion
+		#endregion
 
-        public List<SelectListItem> GetTasksData()
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public List<SelectListItem> GetTasksData()
 		{
 			var documentInfoList = _taskService.GetTaskDocumentInfoList().OrderByDescending(x => x.DocumentCreateDate);
 			return documentInfoList
@@ -679,8 +714,9 @@ namespace KadOzenka.Web.Controllers
 				.ToList();
 		}
 
-        #region Download result
+		#region Download result
 
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
         public FileResult GetFileResult(long reportId)
         {
 	        var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
@@ -697,12 +733,13 @@ namespace KadOzenka.Web.Controllers
 
 	        return File(file, contentType, export.TemplateFileName + $".{fileExtension}");
 		}
-        
 
-        #endregion
+
+		#endregion
 
 		#region Helper
 
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
 			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));

@@ -3,12 +3,12 @@
               AllowSearchPanelResize="false" Description="Справочники ЦОД" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false"
-              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" ShowRowMenu="true">
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" SRDFunctionTag="GBU.COD" ShowRowMenu="true">
 	<Buttons>
-	    <Button Caption="Добавить" NavigateURL="/GbuCod/CodJobObjectCard" WindowHeight="200" WindowWidth="840" Icon="fas fa-plus">
+	    <Button Caption="Добавить" NavigateURL="/GbuCod/CodJobObjectCard" WindowHeight="200" WindowWidth="840" SRDFunctionTag="GBU.COD" Icon="fas fa-plus">
 	    </Button>
 
-	    <Button Caption="Удалить" NavigateURL="/GbuCod/DeleteCodJob" WindowHeight="180" WindowWidth="840" Icon="fas fa-trash-alt">
+	    <Button Caption="Удалить" NavigateURL="/GbuCod/DeleteCodJob" WindowHeight="180" WindowWidth="840" SRDFunctionTag="GBU.COD.JOB_DELETE" Icon="fas fa-trash-alt">
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>
@@ -21,7 +21,7 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/GbuCod/ImportCod" WindowHeight="320" WindowWidth="840" Icon="fas fa-code">
+	    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/GbuCod/ImportCod" WindowHeight="320" WindowWidth="840" SRDFunctionTag="GBU.COD.IMPORT" Icon="fas fa-code">
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>

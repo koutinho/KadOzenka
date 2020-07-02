@@ -1,4 +1,5 @@
-﻿<div class="form-horizontal col-sm-12">
+﻿@using Core.SRD
+<div class="form-horizontal col-sm-12">
     <div class="general-info">
         <div class="form-group">
             <div class="col-sm-2">
@@ -20,13 +21,15 @@
 
 
 <script id="GridToolbarTemplate" type="text/x-kendo-template">
-    <div style="float: left">
+    @if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.MARKET_CORRECTION_EDIT))
+    {
+        <div style="float: left">
         <a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
             <span class="k-icon k-i-save" style="padding-right: 30%"></span>
             Сохранить
         </a>
     </div>
-
+    }
 </script>
 
 
