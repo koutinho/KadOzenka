@@ -274,9 +274,6 @@ namespace ObjectModel.SRD
                 
               // Конструктор расчетов (563)
               public const string EXPRESSSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
-              
-              // Декларации Редактирование: добавление характеристик в раздел Формальная проверка / Уведомление (613)
-              public const string DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS_INCLUDE_IN_FORMAL_CHECKING = "DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS.INCLUDE_IN_FORMAL_CHECKING";
                 
               // Карта (570)
               public const string MARKET_MAP = "MARKET.MAP";
@@ -443,9 +440,6 @@ namespace ObjectModel.SRD
               // Перенос атрибутов (626)
               public const string KO_TASKS_TRANSFER_ATTRIBUTES = "KO.TASKS.TRANSFER_ATTRIBUTES";
                 
-              // Перенос и создание атрибутов (627)
-              public const string KO_TASKS_TRANSFER_CREATE_ATTRIBUTES = "KO.TASKS.TRANSFER_CREATE_ATTRIBUTES";
-                
               // Импорт данных ГКН (628)
               public const string KO_TASKS_IMPORT_GKN = "KO.TASKS.IMPORT_GKN";
                 
@@ -517,6 +511,6 @@ namespace ObjectModel.SRD
                 
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
-              
+                
     }
 }
