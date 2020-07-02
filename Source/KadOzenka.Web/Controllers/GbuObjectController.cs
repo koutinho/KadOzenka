@@ -405,7 +405,7 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-        public ActionResult GetRowWithNewLevel([FromForm] int rowNumber)
+        public ActionResult GetRowWithNewLevelForHarmonization([FromForm] int rowNumber)
         {
             ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
@@ -420,47 +420,20 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        #region Support Methods
+        #region HarmonizationCOD
 
-        private IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
-        {
-            return _service.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
-        }
-
-        #endregion
-
-		#region HarmonizationCOD
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
 		public ActionResult HarmonizationCOD()
 		{
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			ViewData["CodJobs"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
 			{
 				Text = x.NameJob,
 				Value = x.Id,
 			}).ToList();
+
 			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
 			{
 				Text = x.Description,
@@ -505,8 +478,11 @@ namespace KadOzenka.Web.Controllers
             long queueId;
             try
 			{
-				queueId = HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
-			}
+                ////TODO для тестирования
+                //KadOzenka.Dal.GbuObject.HarmonizationCOD.Run(viewModel.ToHarmonizationCODSettings());
+                //queueId = 0;
+                queueId = HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
+            }
 			catch (Exception e)
 			{
 				ErrorManager.LogError(e);
@@ -523,11 +499,11 @@ namespace KadOzenka.Web.Controllers
             });
 		}
 
-		#endregion
+        #endregion
 
-		#region Unloading From Dict
+        #region Unloading From Dict
 
-		[HttpGet]
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_UNLOADING_FROM_DICT)]
 		public ActionResult UnloadingFromDict()
 		{
@@ -764,7 +740,8 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Helper
+
+		#region Support Methods
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
@@ -772,6 +749,21 @@ namespace KadOzenka.Web.Controllers
 			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
-		#endregion
-	}
+        private IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
+        {
+            return _service.GetGbuAttributesTree()
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
+        }
+
+        #endregion
+    }
 }

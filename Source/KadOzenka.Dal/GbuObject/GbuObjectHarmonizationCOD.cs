@@ -110,18 +110,18 @@ namespace KadOzenka.Dal.GbuObject
 
         #region Support Methods
 
-        public static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
+        private static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
         {
             var dt = setting.DateActual ?? DateTime.Now;
             RunOneItem(obj.CadastralNumber, obj.Id, dt, setting, dictionaryItem);
         }
 
-        public static void RunOneUnit(ObjectModel.KO.OMUnit unit, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
+        private static void RunOneUnit(ObjectModel.KO.OMUnit unit, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
         {
             RunOneItem(unit.CadastralNumber, unit.ObjectId, unit.CreationDate, setting, dictionaryItem);
         }
 
-        public static void RunOneItem(string cadastralNumber, long? objectId, DateTime? date, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
+        private static void RunOneItem(string cadastralNumber, long? objectId, DateTime? date, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
         {
             ////TODO для тестирования
             //objectId = 11188991;
@@ -163,8 +163,8 @@ namespace KadOzenka.Dal.GbuObject
                 setting.Level9Attribute,
                 setting.Level10Attribute
             };
-            //if (setting.AdditionalLevels != null && allLevelsAttributeIds.Count != 0)
-            //    allLevelsAttributeIds.AddRange(setting.AdditionalLevels.Select(x => x.AttributeId));
+            if (setting.AdditionalLevels != null && allLevelsAttributeIds.Count != 0)
+                allLevelsAttributeIds.AddRange(setting.AdditionalLevels.Select(x => x.AttributeId));
 
             return allLevelsAttributeIds;
         }

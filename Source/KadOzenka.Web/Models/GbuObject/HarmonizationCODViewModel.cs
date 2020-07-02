@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.Harmonization;
 
@@ -27,6 +25,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Документ")]
 		public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
 
+
         public HarmonizationCODSettings ToHarmonizationCODSettings()
 		{
 			var settings = new HarmonizationCODSettings
@@ -47,6 +46,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
+                AdditionalLevels = MapAdditionalCustomLevels(),
 				DefaultValue = DefaultValue,
 				IdDocument = Document.IdDocument,
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,

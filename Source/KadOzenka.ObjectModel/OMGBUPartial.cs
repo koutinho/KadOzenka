@@ -474,6 +474,10 @@ namespace ObjectModel.Gbu.Harmonization
         /// </summary>
         public long? Level10Attribute;
         /// <summary>
+        /// Факторы, добавленные юзером
+        /// </summary>
+        public List<AdditionalLevelsForHarmonization> AdditionalLevels;
+        /// <summary>
         /// Значение по умолчанию 
         /// </summary>
         public string DefaultValue;

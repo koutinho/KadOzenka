@@ -248,6 +248,7 @@
 </script>
     
 <script src="~/js/custom-validation.js"></script>
+<script src="~/js/harmonization.js"></script>
 <script type="text/javascript">
     function fillForm(data) {
         $('#valuesFilter').getKendoMultiSelect().value([]);
@@ -386,46 +387,12 @@
     }
 
 
-    var rowNumber = 1;
-    function addNewRow() {
-        kendo.ui.progress($('body'), true);
-        var data = [{ rowNumber }];
-        var templateContent = $("#templateRow").html();
-        var template = kendo.template(templateContent);
-        var result = kendo.render(template, data);
-        $("#levelsList").append(result);
-        var classWrapper = ".wrapper-" + rowNumber;
-        var url = "@Url.Action("GetRowWithNewLevel", "GbuObject")";
-        $(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
-            $(classWrapper).show(500);
-            rowNumber++;
-            kendo.ui.progress($('body'), false);
-        });
-    }
-
-
-    function addCustomLevels(formObject) {
-        if (!formObject) {
-            return formObject;
-        }
-        var customLevels = [];
-        for (var i = 1; i < rowNumber; i++) {
-            var attributeName = 'AttributeId_' + i;
-            var levelName = 'LevelNumber_' + i;
-            customLevels.push({
-                LevelNumber: formObject[levelName],
-                AttributeId: formObject[attributeName]
-            });
-            delete formObject[attributeName];
-        }
-        return Object.assign({}, formObject, { AdditionalCustomLevels: customLevels });
-    }
-
-
-
 
     $(document).ready(function () {
-        $('#addRow').on('click', addNewRow);
+            $('#addRow').on('click', function () {
+                var url = '@Url.Action("GetRowWithNewLevelForHarmonization", "GbuObject")';
+                addNewRow(url);
+            });
 
 		    $('#SelectAllObject').bind("change", function () {
 		        selectAllObjectChanged(this.checked);

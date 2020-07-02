@@ -115,12 +115,6 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public HarmonizationSettings ToHarmonizationSettings()
         {
-            var additionalLevels = AdditionalCustomLevels?.Select(x => new AdditionalLevelsForHarmonization
-            {
-                LevelNumber = x.LevelNumber,
-                AttributeId = x.AttributeId
-            }).ToList();
-
             var settings = new HarmonizationSettings
 			{
 				IdAttributeResult = IdAttributeResult,
@@ -138,13 +132,22 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
-                AdditionalLevels = additionalLevels,
+                AdditionalLevels = MapAdditionalCustomLevels(),
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
 				DateActual = IsDataActualUsed ? DataActual: null
 			};
 
 			return settings;
 		}
+
+        protected List<AdditionalLevelsForHarmonization> MapAdditionalCustomLevels()
+        {
+            return AdditionalCustomLevels?.Select(x => new AdditionalLevelsForHarmonization
+            {
+                LevelNumber = x.LevelNumber,
+                AttributeId = x.AttributeId
+            }).ToList();
+        }
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
@@ -217,5 +220,5 @@ namespace KadOzenka.Web.Models.GbuObject
 						memberNames: new[] { nameof(IdAttributeResult) });
 			}
 		}
-	}
+    }
 }
