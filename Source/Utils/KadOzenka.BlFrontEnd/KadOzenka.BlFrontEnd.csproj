@@ -45,7 +45,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
     <PackageReference Include="Npgsql" Version="4.0.4" />
-    <PackageReference Include="Platform.Web" Version="1.0.474" />
+    <PackageReference Include="Platform.Web" Version="1.0.476" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="83.0.4103.3900" />
