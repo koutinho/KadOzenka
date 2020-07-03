@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using Core.ObjectModel.CustomAttribute;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -14,13 +15,17 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.Register;
-using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Market;
+using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.Registers;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -28,15 +33,20 @@ namespace KadOzenka.Web.Controllers
 	public class ModelingController : KoBaseController
 	{
 		public ModelingService ModelingService { get; set; }
+        public TourFactorService TourFactorService { get; set; }
+        public RegisterAttributeService RegisterAttributeService { get; set; }
 
 
-        public ModelingController(ModelingService modelingService)
+        public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
+            RegisterAttributeService registerAttributeService)
         {
             ModelingService = modelingService;
-		}
+            TourFactorService = tourFactorService;
+            RegisterAttributeService = registerAttributeService;
+        }
 
-		
-		#region Model Card
+
+        #region Model Card
 
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
@@ -47,7 +57,32 @@ namespace KadOzenka.Web.Controllers
             return View(model);
 		}
 
-		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public JsonResult GetAllAttributes(long tourId, int objectType, List<long> exceptedAttributes)
+        {
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
+            if (exceptedAttributes != null && exceptedAttributes.Count > 0)
+            {
+                koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
+            }
+
+            //выбираем только параметры с типом: число, строка, дата
+            var marketObjectAttributes = RegisterAttributeService
+                .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+                .Where(x => x.Type == 1 || x.Type == 2 || x.Type == 4 || x.Type == 5);
+
+            var allAttributes = koAttributes.Concat(marketObjectAttributes);
+
+            var models = allAttributes.Select(x => new
+            {
+                Value = x.Id,
+                Text = x.Name
+            }).AsEnumerable();
+
+            return Json(models);
+        }
+
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId)
 		{
@@ -114,7 +149,7 @@ namespace KadOzenka.Web.Controllers
                 ModelId = modelId,
                 ModelType = modelType
             };
-            ////TODO код для отладки
+            //////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //    Status_Code = Status.Added,

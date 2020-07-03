@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.Modeling
                     ? unitsDictionary[modelObject.CadastralNumber]
                     : new List<long>();
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, objectUnitIds, dictionaries);
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, groupedObj.Id, objectUnitIds, dictionaries);
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 
@@ -176,21 +176,20 @@ namespace KadOzenka.Dal.Modeling
                     x.ProcessType_Code != ProcessStep.Excluded)
                 //TODO ждем выполнения CIPJSKO-307
                 //.And(territoryCondition)
+                .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.Price)
+                .Execute()
                 .GroupBy(x => new
                 {
                     x.CadastralNumber,
                     x.Price
                 })
-                .ExecuteSelect(x => new
+                .Select(x => new MarketObjectPure
                 {
-                    x.CadastralNumber,
-                    x.Price
-                }).Select(x => new MarketObjectPure
-                {
-                    CadastralNumber = x.CadastralNumber,
-                    Price = x.Price.GetValueOrDefault()
+                    Id = x.Max(y => y.Id),
+                    CadastralNumber = x.Key.CadastralNumber,
+                    Price = x.Key.Price.GetValueOrDefault()
                 }).ToList();
         }
 

@@ -28,6 +28,7 @@ using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
@@ -77,6 +78,7 @@ namespace CIPJS
 	        services.AddTransient<StatisticsReportsService>();
 	        services.AddTransient<StatisticsReportsExportService>();
 	        services.AddTransient<TourService>();
+	        services.AddTransient<RegisterAttributeService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

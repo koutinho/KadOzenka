@@ -504,7 +504,7 @@
 		var dataSource = new kendo.data.DataSource({
 			transport: {
 				read: {
-					url: '@Url.Action("GetKoAttributes", "Task")',
+					url: '@Url.Action("GetAllAttributes", "Modeling")',
 					data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds},
 					dataType: 'json',
 					traditional: true
