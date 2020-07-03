@@ -137,10 +137,10 @@ namespace KadOzenka.Dal.FastReports
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			var userIspName = userIsp.Name;
-			if (!string.IsNullOrWhiteSpace(userIsp.Surname) && !string.IsNullOrWhiteSpace(userIsp.Patronymic))
+			var userIspName = userIsp.Surname;
+			if (!string.IsNullOrWhiteSpace(userIsp.Name) && !string.IsNullOrWhiteSpace(userIsp.Patronymic))
 			{
-				userIspName += $" {userIsp.Surname.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
+				userIspName += $" {userIsp.Name.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
 			}
 
 			var signatoryId = GetQueryParam<long>("Podpisant", query);
