@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Core.ObjectModel.CustomAttribute;
+using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
@@ -24,6 +25,7 @@ using ObjectModel.Core.Register;
 using ObjectModel.Market;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
+using Kendo.Mvc.UI;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -69,17 +71,41 @@ namespace KadOzenka.Web.Controllers
             //выбираем только параметры с типом: число, строка, дата
             var marketObjectAttributes = RegisterAttributeService
                 .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
-                .Where(x => x.Type == 1 || x.Type == 2 || x.Type == 4 || x.Type == 5);
+                .Where(x => x.Type == 1 || x.Type == 2 || x.Type == 4 || x.Type == 5).ToList();
 
-            var allAttributes = koAttributes.Concat(marketObjectAttributes);
-
-            var models = allAttributes.Select(x => new
+            var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == koAttributes.FirstOrDefault()?.RegisterId);
+            var tourAttributesTree = new DropDownTreeItemModel
             {
-                Value = x.Id,
-                Text = x.Name
-            }).AsEnumerable();
+                Value = Guid.NewGuid().ToString(),
+                Text = tourFactorsRegister?.Description,
+                HasChildren = koAttributes.Count > 0,
+                Items = koAttributes.Select(x => new DropDownTreeItemModel
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList()
+            };
 
-            return Json(models);
+            var marketObjectsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == OMCoreObject.GetRegisterId());
+            var marketObjectsRegisterAttributes = new DropDownTreeItemModel
+            {
+                Value = Guid.NewGuid().ToString(),
+                Text = marketObjectsRegister?.Description,
+                HasChildren = marketObjectAttributes.Count > 0,
+                Items = marketObjectAttributes.Select(x => new DropDownTreeItemModel
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList()
+            };
+
+            var fullTree = new List<DropDownTreeItemModel>
+            {
+                tourAttributesTree,
+                marketObjectsRegisterAttributes
+            };
+
+            return Json(fullTree);
         }
 
         [HttpGet]

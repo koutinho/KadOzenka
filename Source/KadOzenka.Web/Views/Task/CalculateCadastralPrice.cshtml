@@ -252,6 +252,7 @@
                         dataValueField: 'Value',
                         dataSource: data
                     });
+                    //нельзя выбирать корневой элемент дерева (таблицу)
                     var subGroupTree = $(this).data("kendoDropDownTree");
                     var subGroupTreeSelect = function(e){
                         if(e.sender.dataItem(e.node).hasChildren) {

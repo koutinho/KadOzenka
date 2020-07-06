@@ -4,13 +4,13 @@
 
 <!-- Модальное окно для добавления аттрибута -->
 <div id="attributeAdditionModal" style="display: none; padding: 2%;">
-	<div class="form-horizontal col-sm-12">
-		<div class="form-group">
-			<div class="col-sm-12">
-				<div id="attribute"></div>
-			</div>
-		</div>
-	</div>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div id="attribute"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Модальное окно для добавления справочника -->
@@ -30,19 +30,19 @@
         <div class="form-group">
             <div class="col-sm-12" style="width: 100%;">
                 @(Html.Kendo().ButtonGroup()
-                    .Name("chooseModelType")
-                    .Selection("single")
-                    .Items(t =>
-                    {
-                        t.Add().Text(ModelType.Linear.GetEnumDescription())
-                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 100%;" });
-                        t.Add().Text(ModelType.Exponential.GetEnumDescription())
-                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
-                        t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
-                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
-                    })
-                    .HtmlAttributes(new { style = "width: 100%;" })
-                    .Events(ev => ev.Select("onModelTypeSelect")))
+                                    .Name("chooseModelType")
+                                    .Selection("single")
+                                    .Items(t =>
+                                    {
+                                        t.Add().Text(ModelType.Linear.GetEnumDescription())
+                                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 100%;" });
+                                        t.Add().Text(ModelType.Exponential.GetEnumDescription())
+                                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
+                                        t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
+                                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
+                                    })
+                                    .HtmlAttributes(new { style = "width: 100%;" })
+                                    .Events(ev => ev.Select("onModelTypeSelect")))
             </div>
         </div>
     </div>
@@ -50,78 +50,86 @@
 
 @using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
-	@Html.HiddenFor(x => x.Id)
-	<div style="padding: 2%">
-		<div id="mainToolbar"></div>
-		<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.Name)
-				</div>
-				<div class="col-sm-9">
-					@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
+    @Html.HiddenFor(x => x.Id)
+    <div style="padding: 2%">
+        <div id="mainToolbar"></div>
+        <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Name)
+                </div>
+                <div class="col-sm-9">
+                    @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
                     @Html.CustomLabelFor(x => x.GroupId)
-				</div>
-				<div class="col-sm-9">
+                </div>
+                <div class="col-sm-9">
                     @(Html.Kendo().DropDownListFor(m => m.GroupId)
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Filter(FilterType.Contains)
-                        .DataSource(source =>
-                        {
-                            source.Read("GetGroups", "Modeling");
-                        }))
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.TourId)
-				</div>
-				<div class="col-sm-9">
-					@(Html.Kendo().DropDownListFor(m => m.TourId)
-								.DataTextField("Text")
-								.DataValueField("Value")
-								.Filter(FilterType.Contains)
-								.DataSource(source =>
-								{
-									source.Read("GetRatingTours", "Tour");
-								})
-							.Events(e =>
-							{
-								e.Change("onTourChange");
-							}))
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.LabelFor(x => x.ObjectType)
-				</div>
-				<div class="col-sm-9">
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Filter(FilterType.Contains)
+                                        .DataSource(source =>
+                                        {
+                                            source.Read("GetGroups", "Modeling");
+                                        }))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.TourId)
+                </div>
+                <div class="col-sm-9">
+                    @(Html.Kendo().DropDownListFor(m => m.TourId)
+                                                .DataTextField("Text")
+                                                .DataValueField("Value")
+                                                .Filter(FilterType.Contains)
+                                                .DataSource(source =>
+                                                {
+                                                    source.Read("GetRatingTours", "Tour");
+                                                })
+                                            .Events(e =>
+                                            {
+                                                e.Change("onTourChange");
+                                            }))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.LabelFor(x => x.ObjectType)
+                </div>
+                <div class="col-sm-9">
                     @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                        .Label(ObjectType.Oks.GetEnumDescription())
-                        .Value((int)ObjectType.Oks)
-                        .Checked(Model.ObjectType == ObjectType.Oks))
+                                        .Label(ObjectType.Oks.GetEnumDescription())
+                                        .Value((int)ObjectType.Oks)
+                                        .Checked(Model.ObjectType == ObjectType.Oks))
 
                     @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                        .Label(ObjectType.ZU.GetEnumDescription())
-					    .Value((int)ObjectType.ZU)
-                        .Checked(Model.ObjectType == ObjectType.ZU)
-                        .HtmlAttributes(new {  style = "padding-left:1%;" }))
-				</div>
-			</div>
-			<div class="form-group">
-				<div style="padding-top: 2%;">
-					<div id="attributesToolbar"></div>
-				</div>
+                                        .Label(ObjectType.ZU.GetEnumDescription())
+                                        .Value((int)ObjectType.ZU)
+                                        .Checked(Model.ObjectType == ObjectType.ZU)
+                                        .HtmlAttributes(new { style = "padding-left:1%;" }))
+                </div>
+            </div>
+            <div class="form-group">
+                <div style="padding-top: 2%;">
+                    <div id="attributesToolbar"></div>
+                </div>
                 <div id="grid"></div>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 }
+
+
+<style>
+    .k-dropdowntree {
+        width: 100%;
+    }
+</style>
+
 
 
 <script src="~/js/common-modals.js"></script>
@@ -230,8 +238,7 @@
                 {
                     field: 'IsNormalized',
                     title: 'Нормализация',
-                    template:
-                        '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
+                    template: '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
                 },
                 {
                     field: 'DictionaryName',
@@ -302,12 +309,14 @@
         window.destroy();
     }
 
+
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
         isTrainingMode = true;
         setGroupButtonsState(true, false, false);
         showModelTypeWindow();
     }
+
     function onPredictModelBtnClick() {
         isTrainingMode = false;
         var hasLinearTrainingResult = '@Model.HasLinearTrainingResult' === "True";
@@ -464,8 +473,7 @@
 			Common.ShowError(messages.join("<br/>"));
 			return false;
 		}
-
-		return true;
+        return true;
 	}
 
 
@@ -500,38 +508,62 @@
 		var objectType = $('input[name="ObjectType"]:checked').val();
 		var alreadySelectedAttributeIds = getAttributesFromGrid().map(function(x) {
 			return x.AttributeId;
-		});
-		var dataSource = new kendo.data.DataSource({
-			transport: {
-				read: {
-					url: '@Url.Action("GetAllAttributes", "Modeling")',
-					data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds},
-					dataType: 'json',
-					traditional: true
-				}
-			}
-		});
-		var attribute = $('#attribute').data("kendoDropDownList");
-		if (attribute) {
-			attribute.setDataSource(dataSource);
-			attribute.value(-1);
-		}
-		else {
-			$("#attribute").kendoDropDownList({
-				dataTextField: 'Text',
-				dataValueField: 'Value',
-				optionLabel: " ",
-				dataSource: dataSource,
-				change: addAttributeToGrid,
-				filter: "contains"
-			});
-		}
-	}
+        });
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetAllAttributes", "Modeling")',
+            data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds },
+            dataType: "json",
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.Text,
+                        Value: item.Value,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.Text,
+                                Value: i.Value
+                            }
 
-	function addAttributeToGrid() {
-		var modal = $('#attributeAdditionModal');
+                        })
+                    }
+                });
+                var attribute = $('#attribute').data("kendoDropDownTree");
+                if (attribute) {
+                    attribute.setDataSource(data);
+                    attribute.value('');
+                } else {
+                    attribute = $("#attribute").kendoDropDownTree({
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data,
+                        change: addAttributeToGrid,
+                        filter: "contains"
+                    }).data("kendoDropDownTree");
+                }
+                //нельзя выбирать корневой элемент дерева (таблицу)
+                var attributeTableTreeSelect = function(e){
+                    if(e.sender.dataItem(e.node).hasChildren) {
+                        e.preventDefault();
+                    }
+                };
+                attribute.treeview.bind("select", attributeTableTreeSelect);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function addAttributeToGrid() {
+        var modal = $('#attributeAdditionModal');
 		modal.data("kendoWindow").close();
-		var list = $('#attribute').data("kendoDropDownList");
+        var list = $('#attribute').data("kendoDropDownTree");
 		var attributeId = list.value();
 		var attributeName = list.text();
 		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalized: false });
@@ -550,7 +582,7 @@
 			ShowModal(modal, '50%', '20%', "Добавление справочника");
 			initDictionaries();
 		} else {
-			UpdateDictionaryInfoInGridRow(null, null);
+			updateDictionaryInfoInGridRow(null, null);
 		}
 	}
 
@@ -586,12 +618,12 @@
 		var modal = $('#dictionaryAdditionModal');
 		modal.data("kendoWindow").close();
 		var list = $('#dictionary').data("kendoDropDownList");
-		UpdateDictionaryInfoInGridRow(list.value(), list.text());
+		updateDictionaryInfoInGridRow(list.value(), list.text());
 		changeToolBarButtonsClass();
 	}
 
 
-	function UpdateDictionaryInfoInGridRow(dictionaryId, dictionaryName) {
+	function updateDictionaryInfoInGridRow(dictionaryId, dictionaryName) {
 		var grid = $("#grid").data("kendoGrid");
 		var dataItem = grid.dataSource.get(currentAttributeId);
 		dataItem.DictionaryId = dictionaryId;
