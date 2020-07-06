@@ -4742,7 +4742,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 {
 
                     myOleDbCommand.CommandText = "select o.kn_object, ft.id_factor, ft.id_document, ft.value, ft.date_value, d.num_document, d.date_document, d.name_document from tbObject o, tbFactorDoubleValue ft, tbFactor f, tbDocument d " +
-                                                 "where o.kn_object='" + record.CadastralNumber + "' and o.id_object = ft.id_object and f.id_har = ft.id_factor and f.type_har = 1 and ft.id_factor>594 and ft.id_factor<=716 and f.id_source <> 2 and d.id_document = ft.id_document  order by id_factor";
+                                                 "where o.kn_object='" + record.CadastralNumber + "' and o.id_object = ft.id_object and f.id_har = ft.id_factor and f.type_har = 3 and ft.id_factor>594 and ft.id_factor<=716 and f.id_source <> 2 and d.id_document = ft.id_document  order by id_factor";
 
                     SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
                     while (myOleDbDataReader.Read())
@@ -4810,6 +4810,114 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             }
         }
 
+
+        public static void DoLoadBd2018Unit_Dop_Data_B()
+        {
+            DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes.Building);
+        }
+        public static void DoLoadBd2018Unit_Dop_Data_C()
+        {
+            DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes.Construction);
+        }
+        public static void DoLoadBd2018Unit_Dop_Data_U()
+        {
+            DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes.UncompletedBuilding);
+        }
+        public static void DoLoadBd2018Unit_Dop_Data_F()
+        {
+            DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes.Pllacement);
+        }
+        public static void DoLoadBd2018Unit_Dop_Data_P()
+        {
+            DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes.Stead);
+        }
+
+
+        public static void DoLoadBd2018Unit_Dop_Data_Obj(PropertyTypes type_code)
+        {
+
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_GBU"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                long count = 0;
+                List<ObjectModel.Gbu.OMMainObject> records = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == type_code).SelectAll().Execute();
+                List<OMInstance> docs = new List<OMInstance>();
+                foreach (OMMainObject record in records)
+                {
+
+                    myOleDbCommand.CommandText = "select o.kn_object, ft.id_factor, ft.id_document, ft.value, ft.date_value, d.num_document, d.date_document, d.name_document from tbObject o, tbFactorDateValue ft, tbFactor f, tbDocument d " +
+                                                 "where o.kn_object='" + record.CadastralNumber + "' and o.id_object = ft.id_object and f.id_har = ft.id_factor and f.type_har = 2 and ft.id_factor>594 and ft.id_factor<=716 and f.id_source <> 2 and d.id_document = ft.id_document  order by id_factor";
+
+                    SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                    while (myOleDbDataReader.Read())
+                    {
+                        string kn_obj = NullConvertor.ToString(myOleDbDataReader["kn_object"]);
+                        Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_document"]);
+                        OMInstance inputDoc = null;
+                        if (id_inputDoc > 0)
+                        {
+                            string inRegNumber = NullConvertor.ToString(myOleDbDataReader["num_document"]);
+                            DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["date_document"]);
+                            string inDescription = NullConvertor.ToString(myOleDbDataReader["name_document"]);
+
+                            inputDoc = docs.Find(x => x.Id == (id_inputDoc + 300000000));
+                            if (inputDoc == null)
+                            {
+                                inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 300000000)).SelectAll().ExecuteFirstOrDefault();
+                                if (inputDoc != null) docs.Add(inputDoc);
+                            }
+                            if (inputDoc == null)
+                            {
+                                inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                                if (inputDoc != null)
+                                {
+                                    inputDoc.Id = (id_inputDoc + 300000000);
+                                    docs.Add(inputDoc);
+                                }
+                            }
+                            if (inputDoc == null)
+                            {
+                                inputDoc = new OMInstance
+                                {
+                                    Id = id_inputDoc + 300000000,
+                                    RegNumber = inRegNumber,
+                                    CreateDate = inCreateDate,
+                                    ApproveDate = inCreateDate,
+                                    Description = inDescription,
+                                };
+                                inputDoc.Save();
+                                docs.Add(inputDoc);
+                            }
+
+                        }
+
+                        if (inputDoc != null)
+                        {
+                            long id_factor = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) + 1000;
+                            DateTime value = NullConvertor.DBToDateTime(myOleDbDataReader["value"]);
+                            DateTime date = NullConvertor.DBToDateTime(myOleDbDataReader["date_value"]);
+
+                            {
+                                #region Сохранение данных ГКН
+                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                #endregion
+                            }
+                        }
+                    }
+                    count++;
+                    if (count % 25 == 0) Console.WriteLine(count);
+                    myOleDbDataReader.Close();
+
+                }
+                Console.WriteLine(count);
+                connection.Close();
+            }
+        }
 
 
 
@@ -4967,8 +5075,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
-
-
         public static void DoLoadBd2018Unit_Dop_TEXT1()
         {
             List<ObjectModel.Gbu.OMMainObject> Records = new List<ObjectModel.Gbu.OMMainObject>();

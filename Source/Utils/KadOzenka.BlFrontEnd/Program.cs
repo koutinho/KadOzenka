@@ -175,6 +175,11 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("263", "Импорт данных ГБУ(БД) Новые факторы Число (ОНС)", MSExporter.DoLoadBd2018Unit_Dop_NUM_U);
 			consoleHelper.AddCommand("264", "Импорт данных ГБУ(БД) Новые факторы Число (Помещения)", MSExporter.DoLoadBd2018Unit_Dop_NUM_F);
 
+			consoleHelper.AddCommand("270", "Импорт данных ГБУ(БД) Новые факторы Дата (Земля)", MSExporter.DoLoadBd2018Unit_Dop_Data_P);
+			consoleHelper.AddCommand("271", "Импорт данных ГБУ(БД) Новые факторы Дата (Здания)", MSExporter.DoLoadBd2018Unit_Dop_Data_B);
+			consoleHelper.AddCommand("272", "Импорт данных ГБУ(БД) Новые факторы Дата (Сооружения)", MSExporter.DoLoadBd2018Unit_Dop_Data_C);
+			consoleHelper.AddCommand("273", "Импорт данных ГБУ(БД) Новые факторы Дата (ОНС)", MSExporter.DoLoadBd2018Unit_Dop_Data_U);
+			consoleHelper.AddCommand("274", "Импорт данных ГБУ(БД) Новые факторы Дата (Помещения)", MSExporter.DoLoadBd2018Unit_Dop_Data_F);
 
 			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
 			consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
