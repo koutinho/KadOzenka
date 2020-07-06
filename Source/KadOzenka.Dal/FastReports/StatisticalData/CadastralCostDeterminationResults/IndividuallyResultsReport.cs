@@ -14,7 +14,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return "CadastralCostDeterminationIndividuallyResultsReport";
         }
 
-        //TODO copy from first report. we wait comments from PM
         DataSet ICadastralCostDeterminationResultsReport.GetData(NameValueCollection query, List<long> taskIdList)
         {
             var operations = GetOperations(taskIdList);
@@ -36,7 +35,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
             var items = new List<ReportItem>();
 
-            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId))
+            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
+                 x.ParentGroup.GroupName.ToLower().Contains(CadastralCostDeterminationResultsMainReport.IndividuallyResultsGroupNamePhrase))
                 .Select(x => x.CadastralBlock)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.PropertyType_Code)

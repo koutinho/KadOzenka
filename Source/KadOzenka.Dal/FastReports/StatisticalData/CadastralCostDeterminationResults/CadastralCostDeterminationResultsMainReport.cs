@@ -10,6 +10,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 {
     public class CadastralCostDeterminationResultsMainReport : StatisticalDataReport
     {
+	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
         public Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
 
         public CadastralCostDeterminationResultsMainReport()
