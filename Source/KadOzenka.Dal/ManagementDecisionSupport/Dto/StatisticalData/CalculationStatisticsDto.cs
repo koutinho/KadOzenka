@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
+﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
 	public class CalculationStatisticsDto
 	{
@@ -11,7 +9,5 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 		public string FactorsSubgroups { get; set; }
 		public decimal? Coef { get; set; }
 		public string SighMarket { get; set; }
-		public DateTime? GeneralCalcDate { get; set; }
-		public DateTime? ResultCalcDate { get; set; }
 	}
 }

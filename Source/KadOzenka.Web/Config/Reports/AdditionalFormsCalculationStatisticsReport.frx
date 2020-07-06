@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/25/2020 13:56:59" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/06/2020 08:54:48" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -74,19 +74,7 @@ namespace FastReport
       table.Columns.Insert(table.ColumnCount, newCol);
       table[table.ColumnCount - 1, 0].SetStyle(table[1, 0]);
       table[table.ColumnCount - 1, 0].Text = &quot;Метка&quot;;
-      
-      newCol = new TableColumn();
-      newCol.AutoSize = true;
-      table.Columns.Insert(table.ColumnCount, newCol);
-      table[table.ColumnCount - 1, 0].SetStyle(table[1, 0]);
-      table[table.ColumnCount - 1, 0].Text = &quot;Дата общего расчета&quot;;
-      
-      newCol = new TableColumn();
-      newCol.AutoSize = true;
-      table.Columns.Insert(table.ColumnCount, newCol);
-      table[table.ColumnCount - 1, 0].SetStyle(table[1, 0]);
-      table[table.ColumnCount - 1, 0].Text = &quot;Дата итогового расчета&quot;;
-      
+
       for (int i = 1; i &lt; table.RowCount; i++)
       {
         DataSourceBase data = Report.GetDataSource(&quot;Data&quot;);
@@ -112,15 +100,6 @@ namespace FastReport
             table[2, i].SetStyle(table[3, i]);
             table[2, i].Text =  Report.GetColumnValue(&quot;Data.Formula&quot;).ToString();
             table[2, i].RowSpan = rowspan;
-            
-            table[table.ColumnCount - 2, i].SetStyle(table[3, i]);
-            table[table.ColumnCount - 2, i].Text =  Report.GetColumnValue(&quot;Data.GeneralCalcDate&quot;).ToString();
-            table[table.ColumnCount - 2, i].RowSpan = rowspan;
-            
-            table[table.ColumnCount - 1, i].SetStyle(table[3, i]);
-            table[table.ColumnCount - 1, i].Text =  Report.GetColumnValue(&quot;Data.ResultCalcDate&quot;).ToString();
-            table[table.ColumnCount - 1, i].RowSpan = rowspan;
-
             
             table[5, i].SetStyle(table[3, i]);
             table[5, i].RowSpan = rowspan;
@@ -158,8 +137,6 @@ namespace FastReport
       <Column Name="FactorsSubgroups" DataType="System.String"/>
       <Column Name="Coef" DataType="System.String"/>
       <Column Name="SighMarket" DataType="System.String"/>
-      <Column Name="GeneralCalcDate" DataType="System.String"/>
-      <Column Name="ResultCalcDate" DataType="System.String"/>
     </BusinessObjectDataSource>
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="397" PaperHeight="210" RawPaperSize="9" Guides="9.45,841.05,765.45,444.15,330.75" UnlimitedHeight="true" UnlimitedWidth="true">
@@ -193,6 +170,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="215.61" Width="1425.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="220.41" Width="1425.06" Height="47.25"/>
   </ReportPage>
 </Report>

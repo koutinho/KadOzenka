@@ -32,8 +32,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("FactorsSubgroups", typeof(string));
 			dataTable.Columns.Add("Coef", typeof(string));
 			dataTable.Columns.Add("SighMarket", typeof(string));
-			dataTable.Columns.Add("GeneralCalcDate", typeof(string));
-			dataTable.Columns.Add("ResultCalcDate", typeof(string));
 
 			var data = _service.GetCalculationStatisticsData(taskIdList);
 
@@ -45,9 +43,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 					unitDto.Formula,
 					unitDto.FactorsSubgroups,
 					unitDto.Coef,
-					unitDto.SighMarket,
-					unitDto.GeneralCalcDate?.ToString(DateFormat),
-					unitDto.ResultCalcDate?.ToString(DateFormat));
+					unitDto.SighMarket);
 			}
 
 			var dataSet = new DataSet();
