@@ -235,14 +235,40 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("901", "Тест API РЕОН", () =>
 			{
 				var service = new RosreestrDataApi();
-				
-				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(DateTime.Today.AddDays(-1), DateTime.Today);
+
+				Console.WriteLine("Введите дату, на которую нужно загрузить задания");
+				DateTime date = Console.ReadLine().ParseToDateTime();
+
+				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(date, date.AddDays(1));
 
                 Console.WriteLine($"Из РЕОН получено заданий: {result.Count}");
 				Console.WriteLine(String.Join("\n", result.Select(x => $"{x.DocNumber} от {x.DocDate.Value.ToShortDateString()}")));
 			});
 
-            consoleHelper.AddCommand("902", "Тест Сервиса для создания задач на основе данных из РЕОН", () =>
+			consoleHelper.AddCommand("901-2", "Загрузка заданий из РЕОН", () =>
+			{
+				Console.WriteLine("Введите дату, на которую нужно загрузить задания");
+				DateTime date = Console.ReadLine().ParseToDateTime();
+
+
+
+				var processType = OMProcessType.Where(x => x.ProcessName == "KoTaskFromReon").SelectAll().ExecuteFirstOrDefault();
+
+				processType.Parameters = date.ToString("dd.MM.yyyy HH:mm:ss");
+
+				OMQueue omQueue = new OMQueue
+				{
+					Status_Code = ObjectModel.Directory.Core.LongProcess.Status.Added,
+					ProcessTypeId = processType.Id,
+					CreateDate = DateTime.Now,
+					LastCheckDate = DateTime.Now,
+					UserId = SRDSession.GetCurrentUserId()
+				};
+
+				new KoTaskFromReon().StartProcess(processType, omQueue, new CancellationToken());
+			});
+
+			consoleHelper.AddCommand("902", "Тест Сервиса для создания задач на основе данных из РЕОН", () =>
             {
                 new KoTaskFromReon().StartProcess(null,
                     new OMQueue
