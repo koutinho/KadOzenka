@@ -22,6 +22,7 @@ namespace KadOzenka.Web.Models.Tour
         [Required(ErrorMessage = "Не заполнено имя группы")]
         public string Name { get; set; }
 
+        [Display(Name = "Номер")]
         [Required(ErrorMessage = "Не заполнен номер группы")]
         public int? Number { get; set; }
 

@@ -14,7 +14,7 @@
         @Html.HiddenFor(x => x.RatingTourId)
         <div class="form-group">
             <div class="col-sm-2">
-                <span id="numberTitle"></span>
+                @Html.CustomLabelFor(x => x.Number)
             </div>
             <div class="col-sm-8 col-sm-offset-1">
                 @Html.KendoNumericTextBoxFor(x => x.Number, id: "updateGroupNumberId", isReadonly: false)
@@ -213,14 +213,12 @@
             {
                 <text>
                     $("#cardName").html("Настройка подгруппы");
-                    $("#numberTitle").html("Номер подгруппы");
                 </text>
             }
             else
             {
                 <text>
                     $("#cardName").html("Настройка группы");
-                    $("#numberTitle").html("Номер группы");
                 </text>
             }
         }

@@ -93,12 +93,14 @@
                     .Items(tabstrip =>
                     {
                         tabstrip.Add().Text("Карточка")
+                            .HtmlAttributes(new {id="mainContentTab"})
                             .Selected(true)
                             .Content(@<text>
                                          <div id="mainContent" style="width: 98%">
                                          </div>
                                       </text>);
                         tabstrip.Add().Text("Настройка сегмента")
+                            .HtmlAttributes(new {id="segmentSettingsTab"})
                             .Content(@<text>
                                          <div id="segmentSettings" style="width: 98%">
                                          </div>
@@ -134,6 +136,18 @@
         });
         $("#saveGroup").click(function () {
             SaveGroup($("#groupForm").is(":visible"));
+        });
+
+
+        $("#tabStrip .k-tabstrip-items").on("click", "li.k-state-default", function (e) {
+            var selectedTabId = $(this).attr('id');
+            if (selectedTabId === "segmentSettingsTab") {
+                var row = GetSelectedRowInTree();
+                if (row.length > 0) {
+                    var data = GetDataFromRowInTree(row);
+                    $('#segmentSettings').load(data.UrlForSegmentSettings);
+                }
+            }
         });
 
 
@@ -222,20 +236,20 @@
 
 
 	function UpdateMainContent() {
-		var row = GetSelectedRowInTree();
-		if (row.length > 0) {
+        var row = GetSelectedRowInTree();
+        if (row.length > 0) {
             var data = GetDataFromRowInTree(row);
             $("#tabs").show();
             $('#mainContent').load(data.UrlForEdit);
             var tabStrip = $("#tabStrip").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.select(0);
+            var tabWithMarketSegmentSettings = tabStrip.tabGroup.children().eq(1);
             if (data.GroupType == "3" || data.GroupType == "4") {
                 $("#tabStrip-2").removeAttr("style");
                 $("#tabStrip-2").attr("style", "display: block");
-                $(tabStrip.items()[1]).show();
-                $('#segmentSettings').load(data.UrlForSegmentSettings);
+                tabStrip.enable(tabWithMarketSegmentSettings);
             } else {
-                tabStrip.select(0);
-                $(tabStrip.items()[1]).hide();
+                tabStrip.disable(tabWithMarketSegmentSettings);
             }
         }
     }
