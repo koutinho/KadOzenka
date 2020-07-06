@@ -1,5 +1,4 @@
-﻿@using System.Collections
-@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
 @using ObjectModel.Directory.Common
@@ -271,24 +270,39 @@
 
 @section scripts {
     <script type="text/x-kendo-template" id="templateRow">
-        <div class="wrapper-#: rowNumber #" style="display: none">
+        <div class="customLevelBlock-#: rowNumber #" style="display: none">
         </div>
     </script>
     <script src="~/js/custom-validation.js"></script>
     <script src="~/js/harmonization.js"></script>
     <script type="text/javascript">
+        var urlForNewCustomLevel = '@Url.Action("GetRowWithNewLevelForHarmonization", "GbuObject")';
+        globalRowNumber = 1;
+
         function fillForm(data) {
             $('#valuesFilter').getKendoMultiSelect().value([]);
             $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            clearCustomLevels();
+            globalRowNumber = 1;
+
             data.forEach(function (val) {
                 if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
-                    Object.keys(val)[0].includes('IdAttributeFilter') ) {
-                    $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
-                    $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
-				}
+                    Object.keys(val)[0].includes('IdAttributeFilter')) {
+                    var kendoDropDownTree = $('#' + Object.keys(val)[0]).data('kendoDropDownTree');
+                    if (kendoDropDownTree) {
+                        kendoDropDownTree.value(val[Object.keys(val)[0]] || '');
+                        kendoDropDownTree.trigger('change');
+                    }
+                }
 
-				if (Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
-	                $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+                if (Object.keys(val)[0].includes('@(nameof(Model.AdditionalCustomLevels))')) {
+                    var additionalCustomLevel = val[Object.keys(val)[0]];
+                    globalRowNumber = additionalCustomLevel.RowNumber + 1;
+                    addNewCustomLevel(urlForNewCustomLevel, additionalCustomLevel.RowNumber, additionalCustomLevel.AttributeId);
+                }
+
+                if (Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
+                    $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
                 }
 
                 if (Object.keys(val)[0].includes('ValuesFilter')) {
@@ -368,63 +382,63 @@
             selectAllObjectChanged(isSelectAllObjectsChecked);
         }
 
-    function changeDataActualAvailability(isDataActualUsed) {
-        if (isDataActualUsed) {
-            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(true);
-        } else {
-            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
-            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
+        function changeDataActualAvailability(isDataActualUsed) {
+            if (isDataActualUsed) {
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(true);
+            } else {
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
+            }
         }
-    }
 
-    function changeValuesFilterAvailability(isValuesFilterUsed) {
-        if (isValuesFilterUsed) {
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
-            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
-            $('#valuesFilter').data("kendoMultiSelect").enable(true);
-        } else {
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
-            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
+        function changeValuesFilterAvailability(isValuesFilterUsed) {
+            if (isValuesFilterUsed) {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
+                $('#valuesFilter').data("kendoMultiSelect").enable(true);
+            } else {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
 
-            $('#valuesFilter').data("kendoMultiSelect").value([]);
-            $('#valuesFilter').data("kendoMultiSelect").enable(false);
+                $('#valuesFilter').data("kendoMultiSelect").value([]);
+                $('#valuesFilter').data("kendoMultiSelect").enable(false);
+            }
         }
-    }
 
-    function changeTaskFilterAvailability(isTaskFilterUsed) {
-        if (isTaskFilterUsed) {
-            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
-        } else {
-            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+        function changeTaskFilterAvailability(isTaskFilterUsed) {
+            if (isTaskFilterUsed) {
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+            } else {
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+            }
         }
-    }
 
-    function selectAllObjectChanged(checked) {
-        if (checked) {
-            $('#IsValuesFilterUsed').prop('checked', false);
-            $('#IsValuesFilterUsed').attr("disabled", true);
-            $('#IsDataActualUsed').prop('checked', false);
-            $('#IsDataActualUsed').attr("disabled", true);
-            $('#IsTaskFilterUsed').prop('checked', false);
-            $('#IsTaskFilterUsed').attr("disabled", true);
+        function selectAllObjectChanged(checked) {
+            if (checked) {
+                $('#IsValuesFilterUsed').prop('checked', false);
+                $('#IsValuesFilterUsed').attr("disabled", true);
+                $('#IsDataActualUsed').prop('checked', false);
+                $('#IsDataActualUsed').attr("disabled", true);
+                $('#IsTaskFilterUsed').prop('checked', false);
+                $('#IsTaskFilterUsed').attr("disabled", true);
 
-            changeDataActualAvailability(false);
-            changeValuesFilterAvailability(false);
-            changeTaskFilterAvailability(false);
-        } else {
-            $('#IsValuesFilterUsed').attr("disabled", false);
-            $('#IsDataActualUsed').attr("disabled", false);
-            $('#IsTaskFilterUsed').attr("disabled", false);
+                changeDataActualAvailability(false);
+                changeValuesFilterAvailability(false);
+                changeTaskFilterAvailability(false);
+            } else {
+                $('#IsValuesFilterUsed').attr("disabled", false);
+                $('#IsDataActualUsed').attr("disabled", false);
+                $('#IsTaskFilterUsed').attr("disabled", false);
+            }
         }
-    }
 
 
         $(document).ready(function () {
             $('#addRow').on('click', function () {
-                var url = '@Url.Action("GetRowWithNewLevelForHarmonization", "GbuObject")';
-                addNewRow(url);
+                addNewCustomLevel(urlForNewCustomLevel, globalRowNumber);
+                globalRowNumber++;
             });
 
             $('#SelectAllObject').bind("change", function () {
@@ -439,7 +453,12 @@
             $('#IsTaskFilterUsed').bind("change", function () {
                 changeTaskFilterAvailability(this.checked);
             });
-            templateStorage.init(@((int)DataFormStorege.HarmonizationCOD), "SaveTemplateHarmonizationCODObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
+            templateStorage.init(@((int)DataFormStorege.HarmonizationCOD),
+                "SaveTemplateHarmonizationCODObject", "GbuObject",
+                "GetTemplatesOneGroup", "GbuObject",
+                fillForm, addCustomLevelsToForm);
+
 
             function onDataBound(e) {
                 $('.k-multiselect .k-input').unbind('keyup');
@@ -481,7 +500,7 @@
                     var formObject = Common.Functions.FormToObject(form);
                     formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
                     formObject.TaskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-                    formObject = addCustomLevels(formObject);
+                    formObject = addCustomLevelsToForm(formObject);
                     $.post(form.attr('action'), formObject).done(function(response) {
                         if (response.Errors) {
                             var errors = getErrors(response.Errors);

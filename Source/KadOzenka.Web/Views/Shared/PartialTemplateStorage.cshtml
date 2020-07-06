@@ -36,9 +36,10 @@
 			actionNameUrlSelectedTemplate: null,
 			controllerNameUrlSelectedTemplate: null,
 			currentFormType: 0,
-			setDataForm: null,
-			init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback) {
-				if (!actionNameUrlSaveTemplate ||
+            setDataForm: null,
+            additionalFormObjectMapping: null,
+            init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback, additionalFormObjectMapping) {
+                if (!actionNameUrlSaveTemplate ||
 					!controllerNameUrlSaveTemplate ||
 					!actionNameUrlSelectedTemplate ||
 					!controllerNameUrlSelectedTemplate ||
@@ -51,6 +52,7 @@
 				this.actionNameUrlSelectedTemplate = actionNameUrlSelectedTemplate;
 				this.controllerNameUrlSelectedTemplate = controllerNameUrlSelectedTemplate;
 				this.setDataForm = callback;
+                this.additionalFormObjectMapping = additionalFormObjectMapping;
 				this.subscribers();
 			},
 			subscribers: function () {
@@ -69,7 +71,9 @@
 
 				$('#templateName').keydown(function () {
 					$(this).removeClass('error');
-				});
+                });
+
+
 				$('#save').on('click',
 					function () {
 						if ($('#templateName').val() === "") {
@@ -85,6 +89,10 @@
 							formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
 						}
 						kendo.ui.progress($('body'), true);
+
+                        if (self.additionalFormObjectMapping) {
+                            formObject = self.additionalFormObjectMapping(formObject);
+                        }
 
 						var url = "/"+ self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate + "?nameTemplate=" + $('#templateName').val();
 
@@ -105,6 +113,7 @@
 						});
 					});
 
+
 				$('#select').on('click',
 					function() {
 						var url = "/" + self.controllerNameUrlSelectedTemplate + "/" + self.actionNameUrlSelectedTemplate + "?id=" + $('#selectedTemplate').data("kendoDropDownList").value();
@@ -124,8 +133,9 @@
 						});
 					});
 			},
-			parseData: function (data) {
-				function parseSample(obj) {
+            parseData: function (data) {
+                //парс простых типов данных
+                function parseSample(obj) {
 					return Object.keys(obj).map(function (str) {
 						if (typeof (obj[str]) !== "object" || obj[str] === null) {
 							var a = {};
@@ -136,23 +146,54 @@
 					}).filter(val => !!val);
 				}
 
+                //парс сложных типов данных (объектов и массивов из простых типов данных)
 				function parseTwoLevel(obj) {
 					var res = [];
-					Object.keys(obj).forEach(function (str) {
-						if (typeof (obj[str]) === "object" && obj[str] !== null) {
-							parseSample(obj[str]).forEach(function(val) {
-								var a = {};
-								var strTmp = str + '_' + Object.keys(val)[0];
-								a[strTmp] = val[Object.keys(val)[0]];
+                    Object.keys(obj).forEach(function (str) {
+                        if (typeof (obj[str]) === "object" && obj[str] !== null) {
+                            parseSample(obj[str]).forEach(function(val) {
+                                var a = {};
+                                var strTmp = str + '_' + Object.keys(val)[0];
+                                a[strTmp] = val[Object.keys(val)[0]];
 								res.push(a);
 							});
 						}
 					});
 					return res;
-				}
-				var jsonObj = JSON.parse(data);
-				return [...parseSample(jsonObj), ...parseTwoLevel(jsonObj)];
-			}
+                }
+
+                //парс сложных типов данных (массивов из объектов)
+                function parseThirdLevel(obj) {
+                    var res = [];
+                    Object.keys(obj).forEach(function (str) {
+                        var array = obj[str];
+                        if (typeof (array) === "object" && array && Array.isArray(array)) {
+                            var propertyName = str;
+                            var counter = 0;
+                            array.forEach(function (complexObject) {
+                                if (typeof (complexObject) === "object" && complexObject !== null) {
+                                    counter++;
+                                    var arrayOfComplexObjects = {};
+                                    var strTmp = propertyName + '_' + counter;
+                                    var currentComplexObject = {};
+                                    Object.keys(complexObject).forEach(function (complexObjectPropertyName) {
+                                        var complexObjectPropertyValue = complexObject[complexObjectPropertyName];
+                                        currentComplexObject[complexObjectPropertyName] = complexObjectPropertyValue;
+
+                                    });
+                                    arrayOfComplexObjects[strTmp] = currentComplexObject;
+                                    res.push(arrayOfComplexObjects);
+                                }
+                            });
+                        }
+                    });
+                    return res;
+                }
+
+                var jsonObj = JSON.parse(data);
+
+                return [...parseSample(jsonObj), ...parseTwoLevel(jsonObj), ...parseThirdLevel(jsonObj)];
+            }
 		}
 		return obj;
 	})($);

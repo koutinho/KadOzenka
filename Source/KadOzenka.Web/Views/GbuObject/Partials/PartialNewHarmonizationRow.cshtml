@@ -3,6 +3,7 @@
 
 <fieldset class="attrLevelFieldset">
     @Html.Hidden("LevelNumber_" + Model.RowNumber, Model.LevelNumber)
+    @Html.Hidden("RowNumber_" + Model.RowNumber, Model.RowNumber)
     <legend>@Model.LevelNumber уровень</legend>
     <div class="col-sm-2">
         @Html.CustomLabel("Характеристика")
