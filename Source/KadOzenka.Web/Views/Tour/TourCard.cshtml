@@ -16,10 +16,10 @@
                 <div class="col-sm-4">
                     <label>Тур:</label>
                 </div>
-	            <div class="col-sm-7 col-sm-offset-1">
-		            <input id="tourYearId" type="text" style="display: none" />
-		            <label id="tourYear"></label>
-	            </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <input id="tourYearId" type="text" style="display: none" />
+                    <label id="tourYear"></label>
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -47,10 +47,20 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-sm-4">
-                    <label for="addGroupInput"> Наименование </label>
+                    <label for="addGroupNumberInput"> Номер </label>
                 </div>
                 <div class="col-sm-7 col-sm-offset-1">
-                    <textarea id="addGroupInput" class="form-control" required="required" name="addGroupInput" rows="3"></textarea>
+                    <input id="addGroupNumberInput" type="number" class="form-control" required="required" name="addGroupNumberInput"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="addGroupNameInput"> Наименование </label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <textarea id="addGroupNameInput" class="form-control" required="required" name="addGroupNameInput" rows="3"></textarea>
                     <button class="btn btn-default" style="margin-top: 10px;" id="saveGroup"> Сохранить </button>
                 </div>
             </div>
@@ -434,17 +444,24 @@
 			RatingTourId: $('#tourYearId').val(),
             ParentGroupId: !isSubGroup ? null : $('#groupId').val(),
             GroupingAlgorithmId: $('#mainGroupId').val(),
-            Name: $('#addGroupInput').val()
+            Name: $('#addGroupNameInput').val(),
+            Number: $('#addGroupNumberInput').val()
         };
         $.ajax({
             url: '@Url.Action("EditGroup", "Tour")',
             type: 'POST',
             data: dto,
-			success: function (response) {
-				Common.ShowMessage('Сохранение выполнено');
-				$("#groupAdditionModal").data("kendoWindow").close();
-				var parentId = isSubGroup ? dto.ParentGroupId : dto.GroupingAlgorithmId;
-				ReloadTourCartTab(dto.RatingTourId, parentId, response.Id);
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage('Сохранение выполнено');
+                    $("#groupAdditionModal").data("kendoWindow").close();
+                    var parentId = isSubGroup ? dto.ParentGroupId : dto.GroupingAlgorithmId;
+                    ReloadTourCartTab(dto.RatingTourId, parentId, response.Id);
+                }
             },
             error: function (response) {
                 Common.ShowError(response.responseText);

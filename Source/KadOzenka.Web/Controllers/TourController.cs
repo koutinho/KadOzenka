@@ -506,62 +506,56 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public ActionResult EditGroup(long? id)
 		{
-			GroupModel dto = new GroupModel();
+            if (!id.HasValue)
+                return View(new GroupModel());
 
-			if (id.HasValue)
-			{
-				OMGroup group = OMGroup.Where(x => x.Id == id.Value)
-					.SelectAll().ExecuteFirstOrDefault();
-				OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == id.Value)
-					.SelectAll().ExecuteFirstOrDefault();
+            var group = GroupService.GetGroupById(id);
+            var tourGroup = OMTourGroup.Where(x => x.GroupId == id.Value)
+                .SelectAll().ExecuteFirstOrDefault();
+            group.RatingTourId = tourGroup.TourId;
 
-				dto.Id = id;
-				dto.Name = group.GroupName;
-				dto.ParentGroupId = group.ParentId;
-				dto.GroupingAlgorithmId = (long)group.GroupAlgoritm_Code;
-				dto.RatingTourId = tourGroup.TourId;
+            var model = GroupModel.ToModel(group);
 
-				KoGroupAlgoritm objType = KoGroupAlgoritm.MainOKS;
-				if (group.ParentId != -1 && group.ParentId != null)
-				{
-					while (true)
-					{
-						OMGroup parent = OMGroup.Where(x => x.Id == group.ParentId)
-							.SelectAll().ExecuteFirstOrDefault();
-						if (parent == null)
-						{							
-							break;
-						}
-						if (group.ParentId == parent.ParentId)
-						{
-							break;
-						}
-						if (parent.ParentId == -1 || parent.ParentId == null)
-						{
-							objType = parent.GroupAlgoritm_Code;
-							break;
-						}
-						
-						group = parent;
-					}
-				}
-				else
-				{
-					objType = group.GroupAlgoritm_Code;
-				}
+            var objType = KoGroupAlgoritm.MainOKS;
+            var baseParentId = group.ParentGroupId;
+            if (baseParentId != -1 && baseParentId != null)
+            {
+                while (true)
+                {
+                    var parent = OMGroup.Where(x => x.Id == baseParentId).SelectAll().ExecuteFirstOrDefault();
+                    if (parent == null)
+                    {
+                        break;
+                    }
+                    if (baseParentId == parent.ParentId)
+                    {
+                        break;
+                    }
+                    if (parent.ParentId == -1 || parent.ParentId == null)
+                    {
+                        objType = parent.GroupAlgoritm_Code;
+                        break;
+                    }
 
-				dto.ObjType = objType == KoGroupAlgoritm.MainOKS ? "OKS" : "Parcel";
-			}
+                    baseParentId = parent.ParentId;
+                }
+            }
+            else
+            {
+                objType = group.GroupAlgorithmCode;
+            }
 
-			return View(dto);			
-		}
+            model.ObjType = objType == KoGroupAlgoritm.MainOKS ? "OKS" : "Parcel";
+
+            return View(model);
+        }
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult EditGroup(GroupModel model)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-                throw new Exception("Не заполнено имя группы");
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
 
             var groupDto = GroupModel.FromModel(model);
 
@@ -1061,6 +1055,9 @@ namespace KadOzenka.Web.Controllers
                 .SelectAll().Execute();
 
             var groupIds = groupList.Select(x => x.ParentCalcGroupId).ToList();
+
+            if (groupIds.Count == 0)
+                return Json(string.Empty);
 
             var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
                 .Select(x => x.GroupName).Execute();

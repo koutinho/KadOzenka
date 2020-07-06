@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using ObjectModel.Directory;
@@ -17,14 +18,26 @@ namespace KadOzenka.Dal.Groups
         public GroupDto GetGroupById(long? groupId)
         {
             var group = GetGroupByIdInternal(groupId);
-            
-			return new GroupDto
+
+            var groupType = GetGroupType(group.ParentId);
+
+            int? number = null;
+            if (!string.IsNullOrWhiteSpace(group.Number))
+            {
+                number = groupType == GroupType.Group 
+                    ? group.Number.ParseToInt() 
+                    : GetSubGroupNumber(group.Number);
+            }
+
+            return new GroupDto
             {
                 Id = group.Id,
                 Name = group.GroupName,
+                Number = number,
 				ParentGroupId = group.ParentId,
 				GroupAlgorithmCode = group.GroupAlgoritm_Code,
-				GroupingAlgorithmId = (long)group.GroupAlgoritm_Code
+				GroupingAlgorithmId = (long)group.GroupAlgoritm_Code,
+                GroupType = groupType
 			};
         }
 
@@ -334,25 +347,79 @@ namespace KadOzenka.Dal.Groups
 
         private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
 		{
-			int groupId;
-			using (var ts = new TransactionScope())
-			{
-				group.GroupName = groupDto.Name;
-				group.ParentId = groupDto.ParentGroupId ?? -1;
-				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
-				groupId = group.Save();
+            if(string.IsNullOrWhiteSpace(groupDto.Name))
+                throw new Exception("Не заполнено имя группы");
+            if (groupDto.Number == null)
+                throw new Exception($"У группы '{groupDto.Name}' не заполнен номер");
+            if (groupDto.RatingTourId == null)
+                throw new Exception($"У группы '{groupDto.Name}' не заполнен тур");
 
-				tourGroup.GroupId = group.Id;
-				tourGroup.TourId = groupDto.RatingTourId.Value;
-				tourGroup.Save();
+            int groupId;
+            using (var ts = new TransactionScope())
+            {
+                string numberStr;
 
-				ts.Complete();
-			}
+                var groupType = GetGroupType(groupDto.ParentGroupId);
+                if (groupType == GroupType.Group)
+                {
+                    numberStr = groupDto.Number.ToString();
+                    if(numberStr != group.Number)
+                        UpdateSubgroupsNumber(groupDto.Id, numberStr);
+                }
+                else
+                {
+                    var parentGroupNumber = OMGroup.Where(x => x.Id == groupDto.ParentGroupId).Select(x => x.Number)
+                        .ExecuteFirstOrDefault()?.Number;
+                    numberStr = $"{parentGroupNumber}.{groupDto.Number}";
+                }
 
-			return groupId;
+                group.GroupName = groupDto.Name;
+                group.Number = numberStr;
+                group.ParentId = groupDto.ParentGroupId ?? -1;
+                group.GroupAlgoritm_Code = (KoGroupAlgoritm) groupDto.GroupingAlgorithmId;
+                groupId = group.Save();
+
+                tourGroup.GroupId = group.Id;
+                tourGroup.TourId = groupDto.RatingTourId.Value;
+                tourGroup.Save();
+
+                ts.Complete();
+            }
+
+            return groupId;
 		}
 
-		private OMGroup GetGroupByIdInternal(long? groupId)
+        private GroupType GetGroupType(long? parentGroupId)
+        {
+            return parentGroupId != null && parentGroupId != -1 && 
+                   parentGroupId != (long) KoGroupAlgoritm.MainOKS &&
+                   parentGroupId != (long) KoGroupAlgoritm.MainParcel
+                ? GroupType.SubGroup
+                : GroupType.Group;
+        }
+
+        private void UpdateSubgroupsNumber(long? parentGroupId, string parentGroupNumber)
+        {
+            if (parentGroupId.GetValueOrDefault() == 0 || parentGroupId == -1)
+                return;
+
+            var subgroups = OMGroup.Where(x => x.ParentId == parentGroupId).SelectAll().Execute();
+
+            subgroups.ForEach(x =>
+            {
+                var subGroupNumber = GetSubGroupNumber(x.Number);
+                x.Number = $"{parentGroupNumber}.{subGroupNumber}";
+                x.Save();
+            });
+        }
+
+        private int? GetSubGroupNumber(string fullNumber)
+        {
+            var subGroupNumberStr = fullNumber.Split('.')?.ElementAtOrDefault(1);
+            return subGroupNumberStr?.ParseToInt();
+        }
+
+        private OMGroup GetGroupByIdInternal(long? groupId)
         {
             if (groupId == null)
                 throw new Exception("Не передан идентификатор Группы для поиска");

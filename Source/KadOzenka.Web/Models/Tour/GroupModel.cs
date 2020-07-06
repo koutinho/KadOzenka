@@ -19,7 +19,11 @@ namespace KadOzenka.Web.Models.Tour
 		public long? ParentGroupId { get; set; }
 
 		[Display(Name = "Наименование")]
-		public string Name { get; set; }
+        [Required(ErrorMessage = "Не заполнено имя группы")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Не заполнен номер группы")]
+        public int? Number { get; set; }
 
         public bool IsReadOnly { get; set; }
 
@@ -27,11 +31,6 @@ namespace KadOzenka.Web.Models.Tour
         public static GroupModel ToModel(GroupDto group)
         {
             var parentId = group.ParentGroupId;
-
-            var groupType = parentId != null && parentId != -1 
-                ? GroupType.SubGroup 
-                : GroupType.Group;
-
             if (parentId == -1)
 	        {
 		        if (group.GroupAlgorithmCode == KoGroupAlgoritm.MainOKS)
@@ -49,8 +48,9 @@ namespace KadOzenka.Web.Models.Tour
                 Id = group.Id,
 				RatingTourId = group.RatingTourId,
                 Name = group.Name,
+                Number = group.Number,
 				ParentGroupId = parentId,
-                GroupType = groupType,
+                GroupType = group.GroupType,
                 GroupingAlgorithmId = group.GroupingAlgorithmId,
 				ObjType = group.GroupAlgorithmCode.GetEnumDescription()
 			};
@@ -58,12 +58,18 @@ namespace KadOzenka.Web.Models.Tour
 
         public static GroupDto FromModel(GroupModel group)
         {
+            var parentId = group.ParentGroupId == (long?) KoGroupAlgoritm.MainOKS ||
+                           group.ParentGroupId == (long?) KoGroupAlgoritm.MainParcel
+                ? -1
+                : group.ParentGroupId;
+
             return new GroupDto
             {
                 Id = group.Id,
                 Name = group.Name,
+                Number = group.Number,
                 GroupingAlgorithmId = group.GroupingAlgorithmId,
-                ParentGroupId = group.ParentGroupId,
+                ParentGroupId = parentId,
                 RatingTourId = group.RatingTourId
             };
         }
