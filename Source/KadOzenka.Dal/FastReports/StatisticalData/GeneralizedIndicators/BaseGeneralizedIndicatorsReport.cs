@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
 
-			return HadleData(dataSet);
+			return dataSet;
 		}
 	}
 }

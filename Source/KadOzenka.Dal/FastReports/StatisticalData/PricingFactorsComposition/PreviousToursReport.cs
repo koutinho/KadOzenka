@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
 
-            return HadleData(dataSet);
+            return dataSet;
         }
 
 

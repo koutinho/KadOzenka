@@ -114,30 +114,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         #endregion
 
-        #region Data Handling
-
-        protected DataSet HadleData(DataSet dataSet)
-        {
-            //TODO:SHOULD BE MOVED TO PLATFORM
-            foreach (DataTable table in dataSet.Tables)
-            {
-                string tableName = table.TableName;
-                Dictionary.Report.RegisterData(dataSet, tableName);
-                GetDataSource(tableName).Enabled = true;
-
-                // в файле *.frx банд должен называться Band<название_таблицы_в_DataSet>, например BandItem
-                DataBand dataBand = FindObject("Band" + tableName) as DataBand;
-                if (dataBand != null) dataBand.DataSource = GetDataSource(tableName);
-
-                MatrixObject matrix = FindObject("Matrix" + tableName) as MatrixObject;
-                if (matrix != null) matrix.DataSource = GetDataSource(tableName);
-            }
-
-            return new DataSet();
-        }
-
-        #endregion
-
         #region Reflection
 
         protected Dictionary<string, RegisterAttribute> GetAttributesFromTourSettingsForReport(long tourId)

@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
 
-            return HadleData(dataSet);
+            return dataSet;
         }
 
 

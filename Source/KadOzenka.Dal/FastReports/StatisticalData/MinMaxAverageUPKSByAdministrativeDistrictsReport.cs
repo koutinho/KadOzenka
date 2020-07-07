@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
 
-			return HadleData(dataSet);
+			return dataSet;
 		}
 
 		private string GetCommonTitle(MinMaxAverageUPKSByAdministrativeDistrictsType reportType)

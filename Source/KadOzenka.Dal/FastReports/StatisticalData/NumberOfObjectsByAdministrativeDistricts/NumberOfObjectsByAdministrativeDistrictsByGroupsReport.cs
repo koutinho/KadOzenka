@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 					throw new InvalidDataException($"Неизвестный тип деления для количества объектов по группам: {divisionType}");
 			}
 
-			return HadleData(dataset);
+			return dataset;
 		}
 
 		private DataSet GetDataForCadastralRegions(long[] taskList)

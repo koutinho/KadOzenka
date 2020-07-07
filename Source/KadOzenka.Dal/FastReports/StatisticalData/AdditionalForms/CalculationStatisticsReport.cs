@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 
-			return HadleData(dataSet);
+			return dataSet;
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
 			}
 
-			return HadleData(data);
+			return data;
 		}
 
 		private DataSet GetSubjectsUPKSByTypeReportData(long[] taskIdList)

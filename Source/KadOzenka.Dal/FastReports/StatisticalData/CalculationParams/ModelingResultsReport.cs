@@ -43,7 +43,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
 
-            return HadleData(dataSet);
+            return dataSet;
         }
 
 

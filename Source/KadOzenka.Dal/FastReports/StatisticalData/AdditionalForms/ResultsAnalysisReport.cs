@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
 
-			return HadleData(dataSet);
+			return dataSet;
 		}
 	}
 }
