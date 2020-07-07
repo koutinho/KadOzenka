@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/09/2020 10:00:33" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/07/2020 10:44:45" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -54,7 +54,6 @@ namespace FastReport
       table[0, 2].RowSpan = 1;
       table[0, 2].SetStyle(table[1,1]);   
       table[0, 3].Text = &quot;1&quot;;
-      table[0, 3].RowSpan = 4;
       table[0, 3].SetStyle(table[1,2]);
       
       newRow = new TableRow();
@@ -75,7 +74,7 @@ namespace FastReport
             { 
               string textName = Report.GetColumnValue(&quot;Data.PropertyType&quot;).ToString();
               if(textName == table[i, 1].Text) {
-                
+                table[0, 3].RowSpan = 4;
                 table[i, table.RowCount - 1].Text = Report.GetColumnValue(&quot;Data.ObjectsCount&quot;).ToString();
                 break;
               }

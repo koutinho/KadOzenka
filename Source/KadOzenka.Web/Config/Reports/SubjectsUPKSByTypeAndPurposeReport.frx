@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/09/2020 11:14:44" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/07/2020 10:45:17" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -63,7 +63,6 @@ namespace FastReport
       table[0, 3].RowSpan = 1;
       table[0, 3].SetStyle(table[1,3]);   
       table[0, 4].Text = &quot;1&quot;;
-      table[0, 4].RowSpan = 4;
       table[0, 4].SetStyle(table[1,4]);
       
       //adding ObjectsCount row
@@ -86,6 +85,7 @@ namespace FastReport
             string propertyTypeName = Report.GetColumnValue(&quot;Data.PropertyType&quot;).ToString();
             string purposeName = Report.GetColumnValue(&quot;Data.Purpose&quot;).ToString();
             bool hasPurpose = (bool)Report.GetColumnValue(&quot;Data.HasPurpose&quot;);
+            table[0, 4].RowSpan = 4;
             if(propertyTypeName == table[i, 1].Text) {
               if(!hasPurpose){
                 table[i, table.RowCount - 1].Text = Report.GetColumnValue(&quot;Data.ObjectsCount&quot;).ToString();
