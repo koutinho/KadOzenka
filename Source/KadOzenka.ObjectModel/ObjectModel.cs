@@ -22205,7 +22205,7 @@ namespace ObjectModel.ES
 
         private long _numberrange;
         /// <summary>
-        /// 60100200 Номер диапозона (NUMBER)
+        /// 60100200 Номер диапазона (NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 60100200)]
         public long NumberRange

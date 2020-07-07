@@ -88,7 +88,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild)
 			{
-				return SendErrorMessage("Не найден диапозон даты постройки или площади.");
+				return SendErrorMessage("Не найден диапазон даты постройки или площади.");
 			}
 
 			var condition = _service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType );
