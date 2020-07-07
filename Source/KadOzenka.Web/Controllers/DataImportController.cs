@@ -440,5 +440,87 @@ namespace KadOzenka.Web.Controllers
 	            reload = true
 	        });
         }
-    }
+
+
+        #region GbuCodDictionaryImport
+
+        [HttpGet]
+        [SRDFunction(Tag = "")]
+		public IActionResult CodDictionaryImport(long codId)
+        {
+			ViewBag.RegisterViewId = "GbuCodDictionary";
+            ViewBag.MainRegisterId = 214;
+            ViewBag.DictionaryId = codId;
+            ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
+
+			return View();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = "")]
+        public IActionResult ImportCodDictionaryDataFromExcel(ImportGbuCodDictionaryModel model)
+        {
+            var columns = model.Columns.Select(x => new DataExportColumn
+            {
+                AttributrId = x.AttributeId,
+                ColumnName = x.ColumnName,
+                IsKey = x.IsKey
+            }).ToList();
+
+            ExcelFile excelFile;
+            using (var stream = model.File.OpenReadStream())
+            {
+                excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+            }
+
+            // Инжектим в файл шапку и номер выбранного справочника
+            var cols = excelFile.Worksheets[0].CalculateMaxUsedColumns();
+            excelFile.Worksheets[0].Rows[0].Cells[cols].SetValue($"Номер справочника");
+            var cellRange = excelFile.Worksheets[0].GetUsedCellRange(true);
+            var rows = cellRange.LastRowIndex;
+            for (int curRow = 1; curRow < rows + 1; curRow++)
+            {
+                excelFile.Worksheets[0].Rows[curRow].Cells[cols].SetValue(model.DictionaryId);
+            }
+
+            // Добавляем связь колонки и атрибута
+            columns.Add(new DataExportColumn
+            {
+                AttributrId = 21400200,
+                ColumnName = "Номер справочника",
+                IsKey = false
+            });
+
+            if (model.IsBackgroundDownload)
+            {
+                long importDataLogId;
+                using (var excelStream = new MemoryStream())
+                {
+                    excelFile.Save(excelStream, SaveOptions.XlsxDefault);
+                    excelStream.Seek(0, SeekOrigin.Begin);
+					importDataLogId = DataImporterCommon.AddImportToQueue(model.MainRegisterId,
+                        model.RegisterViewId, model.File.FileName, excelStream, columns, null);
+                }
+
+                return new JsonResult(new
+                    {Message = "Фоновая загрузка начата.", Success = true, ImportDataLogId = importDataLogId});
+            }
+            else
+            {
+                var resultFile = (MemoryStream) DataImporterCommon.ImportDataFromExcel(model.MainRegisterId, excelFile,
+                    columns, null, out var success);
+                var resultFileName =
+                    $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
+                HttpContext.Session.Set(resultFileName, resultFile.ToArray());
+                var message = success
+                    ? "Загрузка завершена."
+                    : "Не удалось выполнить загрузку. Файл содержит некорректные данные";
+                return Content(
+                    JsonConvert.SerializeObject(new
+                        {Message = message, Success = success, ResultFileName = resultFileName}), "application/json");
+            }
+        }
+
+        #endregion
+	}
 }
