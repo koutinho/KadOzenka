@@ -876,7 +876,6 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Pages\" />
-    <Folder Include="Views\Report\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
