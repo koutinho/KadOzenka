@@ -206,14 +206,17 @@ namespace KadOzenka.Web.Controllers
 					ViewBag.FileSizeKb = Convert.ToString(fileSize / 1024);
 					ViewBag.FileSizeMb = Convert.ToString(fileSize / (1024 * 1024));
 				}
-
-			var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
-			var columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
+			List<ColumnsMappingDto> columnsMappingDtoList = null;
+			if (!string.IsNullOrEmpty(export.ColumnsMapping))
 			{
-				ColumnName = x.ColumnName,
-				AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
-				IsKey = x.IsKey
-			}).ToList();
+				var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
+				columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
+				{
+					ColumnName = x.ColumnName,
+					AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
+					IsKey = x.IsKey
+				}).ToList();
+			}
 			ViewBag.ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList);
 
 			return View(export);
