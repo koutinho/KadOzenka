@@ -24,40 +24,43 @@ namespace KadOzenka.Dal.LongProcess
 			var cancelToken = cancelSource.Token;
 			try
 			{
-				WorkerCommon.SetProgress(processQueue, 0);
+                WorkerCommon.SetProgress(processQueue, 0);
 
-				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
-				var t = Task.Run(() => {
-					while (true)
-					{
-						if (cancelToken.IsCancellationRequested)
-						{
-							break;
-						}
-						if (Harmonization.MaxCount > 0 && Harmonization.CurrentCount > 0)
-						{
-							var newProgress = (long)Math.Round(((double)Harmonization.CurrentCount / Harmonization.MaxCount) * 100);
-							if (newProgress != processQueue.Progress)
-							{
-								WorkerCommon.SetProgress(processQueue, newProgress);
-							}
-						}
-					}
-				}, cancelToken);
+                var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
+                var harmonization = new Harmonization(settings);
 
-				long reportId = Harmonization.Run(settings);
-				//TestLongRunningProcess(settings);
-				cancelSource.Cancel();
-				t.Wait(cancellationToken);
-				cancelSource.Dispose();
+                var t = Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        if (cancelToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        if (harmonization.MaxObjectsCount > 0 && harmonization.CurrentCount > 0)
+                        {
+                            var newProgress = (long)Math.Round(((double)harmonization.CurrentCount / harmonization.MaxObjectsCount) * 100);
+                            if (newProgress != processQueue.Progress)
+                            {
+                                WorkerCommon.SetProgress(processQueue, newProgress);
+                            }
+                        }
+                    }
+                }, cancelToken);
 
-				WorkerCommon.SetProgress(processQueue, 100);
+                var reportId = harmonization.Run();
+                //TestLongRunningProcess(settings);
+                cancelSource.Cancel();
+                t.Wait(cancellationToken);
+                cancelSource.Dispose();
 
-				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+                WorkerCommon.SetProgress(processQueue, 100);
 
-				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", message);
-			}
+                string message = "Операция успешно завершена." +
+                                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+
+                NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", message);
+            }
 			catch (Exception ex)
 			{
 				cancelSource.Cancel();
@@ -68,13 +71,17 @@ namespace KadOzenka.Dal.LongProcess
 
 		protected void TestLongRunningProcess(HarmonizationSettings setting)
 		{
-			Harmonization.MaxCount = 900;
-			Harmonization.CurrentCount = 0;
-			for (int i = 0; i < 900; i++)
-			{
-				Harmonization.CurrentCount++;
-				Thread.Sleep(1000);
-			}
-		}
+            var harmonization = new Harmonization(setting)
+            {
+                MaxObjectsCount = 500,
+                CurrentCount = 0
+            };
+
+            for (int i = 0; i < 500; i++)
+            {
+                harmonization.CurrentCount++;
+                Thread.Sleep(1000);
+            }
+        }
 	}
 }

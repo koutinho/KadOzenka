@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;
@@ -21,8 +22,10 @@ using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -387,8 +390,16 @@ namespace KadOzenka.Web.Controllers
             long queueId;
 			try
 			{
-                ////TODO для тестирования
-                //KadOzenka.Dal.GbuObject.Harmonization.Run(viewModel.ToHarmonizationSettings());
+                //TODO для тестирования (без процесса)
+                //new Harmonization(viewModel.ToHarmonizationSettings()).Run();
+                ////TODO для тестирования (с процессом)
+                //new HarmonizationProcess().StartProcess(new OMProcessType(), new OMQueue
+                //{
+                //    Status_Code = Status.Added,
+                //    UserId = SRDSession.GetCurrentUserId(),
+                //    Parameters = viewModel.ToHarmonizationSettings().SerializeToXml()
+                //}, new CancellationToken());
+                //queueId = 0;
                 queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
             }
 			catch (Exception e)
@@ -478,8 +489,15 @@ namespace KadOzenka.Web.Controllers
             long queueId;
             try
 			{
-                ////TODO для тестирования
-                //KadOzenka.Dal.GbuObject.HarmonizationCOD.Run(viewModel.ToHarmonizationCODSettings());
+                ////TODO для тестирования (без процесса)
+                //new HarmonizationCOD(viewModel.ToHarmonizationCODSettings()).Run();
+                ////TODO для тестирования (с процессом)
+                //new HarmonizationCodProcess().StartProcess(new OMProcessType(), new OMQueue
+                //{
+                //    Status_Code = Status.Added,
+                //    UserId = SRDSession.GetCurrentUserId(),
+                //    Parameters = viewModel.ToHarmonizationCODSettings().SerializeToXml()
+                //}, new CancellationToken());
                 //queueId = 0;
                 queueId = HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
             }

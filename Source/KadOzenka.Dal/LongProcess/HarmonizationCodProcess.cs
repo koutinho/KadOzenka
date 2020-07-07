@@ -27,16 +27,18 @@ namespace KadOzenka.Dal.LongProcess
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationCODSettings>();
-				var t = Task.Run(() => {
+                var harmonizationCOD = new HarmonizationCOD(settings);
+
+                var t = Task.Run(() => {
 					while (true)
 					{
 						if (cancelToken.IsCancellationRequested)
 						{
 							break;
 						}
-						if (HarmonizationCOD.MaxCount > 0 && HarmonizationCOD.CurrentCount > 0)
+						if (harmonizationCOD.MaxObjectsCount > 0 && harmonizationCOD.CurrentCount > 0)
 						{
-							var newProgress = (long)Math.Round(((double)HarmonizationCOD.CurrentCount / HarmonizationCOD.MaxCount) * 100);
+							var newProgress = (long)Math.Round(((double)harmonizationCOD.CurrentCount / harmonizationCOD.MaxObjectsCount) * 100);
 							if (newProgress != processQueue.Progress)
 							{
 								WorkerCommon.SetProgress(processQueue, newProgress);
@@ -45,14 +47,13 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancelToken);
 
-				long reportId = HarmonizationCOD.Run(settings);
+				var reportId = harmonizationCOD.Run();
 				//TestLongRunningProcess(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
 
 				WorkerCommon.SetProgress(processQueue, 100);
-
 
 				string message = "Операция успешно завершена." +
 				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
@@ -69,11 +70,15 @@ namespace KadOzenka.Dal.LongProcess
 
 		protected void TestLongRunningProcess(HarmonizationCODSettings setting)
 		{
-			HarmonizationCOD.MaxCount = 500;
-			HarmonizationCOD.CurrentCount = 0;
-			for (int i = 0; i < 500; i++)
+            var harmonizationCOD = new HarmonizationCOD(setting)
+            {
+                MaxObjectsCount = 500,
+                CurrentCount = 0
+            };
+
+            for (int i = 0; i < 500; i++)
 			{
-				HarmonizationCOD.CurrentCount++;
+                harmonizationCOD.CurrentCount++;
 				Thread.Sleep(1000);
 			}
 		}

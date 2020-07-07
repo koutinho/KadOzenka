@@ -219,6 +219,16 @@ namespace KadOzenka.Web.Models.GbuObject
 					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
 						memberNames: new[] { nameof(IdAttributeResult) });
 			}
-		}
+
+            if (IsDataActualUsed)
+            {
+                if (!IsValuesFilterUsed)
+                {
+                    yield return
+                        new ValidationResult(errorMessage: "Выберите характеристику и ее значение на выбранную дату актуальности",
+                            memberNames: new[] { nameof(IsValuesFilterUsed) });
+                }
+            }
+        }
     }
 }
