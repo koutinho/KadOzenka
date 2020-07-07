@@ -30,7 +30,18 @@ namespace KadOzenka.Dal.Modeling
 
         protected override string GetUrl()
         {
-            return $"{ModelingProcessConfig.Current.PredictionUrl}/{Model.InternalName}";
+            var baseUrl = ModelingProcessConfig.Current.PredictionBaseUrl;
+            switch (InputParameters.ModelType)
+            {
+                case ModelType.Linear:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionLinearTypeUrl}/{Model.InternalName}";
+                case ModelType.Exponential:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionExponentialTypeUrl}/{Model.InternalName}";
+                case ModelType.Multiplicative:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionMultiplicativeTypeUrl}/{Model.InternalName}";
+                default:
+                    throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
+            }
         }
 
         protected override void PrepareData()

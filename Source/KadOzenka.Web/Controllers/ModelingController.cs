@@ -63,15 +63,18 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetAllAttributes(long tourId, int objectType, List<long> exceptedAttributes)
         {
             var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
-            if (exceptedAttributes != null && exceptedAttributes.Count > 0)
-            {
-                koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
-            }
 
             //выбираем только параметры с типом: число, строка, дата
             var marketObjectAttributes = RegisterAttributeService
                 .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
                 .Where(x => x.Type == 1 || x.Type == 2 || x.Type == 4 || x.Type == 5).ToList();
+
+            if (exceptedAttributes != null && exceptedAttributes.Count > 0)
+            {
+                koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
+
+                marketObjectAttributes = marketObjectAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
+            }
 
             var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == koAttributes.FirstOrDefault()?.RegisterId);
             var tourAttributesTree = new DropDownTreeItemModel

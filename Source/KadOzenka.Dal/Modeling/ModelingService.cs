@@ -430,7 +430,7 @@ namespace KadOzenka.Dal.Modeling
 
         public List<OMEsReference> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
         {
-            var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value).ToList();
+            var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value).Distinct().ToList();
             return ScoreCommonService.GetDictionaries(dictionaryIds);
         }
 

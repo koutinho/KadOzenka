@@ -313,7 +313,7 @@
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
         isTrainingMode = true;
-        setGroupButtonsState(true, false, false);
+        setGroupButtonsState(true, true, true);
         showModelTypeWindow();
     }
 
@@ -503,8 +503,8 @@
 	}
 
 
-	function initAttributes() {
-		var tourId = $('#TourId').val();
+    function initAttributes() {
+        var tourId = $('#TourId').val();
 		var objectType = $('input[name="ObjectType"]:checked').val();
 		var alreadySelectedAttributeIds = getAttributesFromGrid().map(function(x) {
 			return x.AttributeId;
@@ -515,6 +515,7 @@
             url: '@Url.Action("GetAllAttributes", "Modeling")',
             data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds },
             dataType: "json",
+            traditional: true,
             success: function(response) {
                 var data = response.map(function(item) {
                     return {
@@ -541,14 +542,14 @@
                         change: addAttributeToGrid,
                         filter: "contains"
                     }).data("kendoDropDownTree");
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var attributeTableTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    attribute.treeview.bind("select", attributeTableTreeSelect);
                 }
-                //нельзя выбирать корневой элемент дерева (таблицу)
-                var attributeTableTreeSelect = function(e){
-                    if(e.sender.dataItem(e.node).hasChildren) {
-                        e.preventDefault();
-                    }
-                };
-                attribute.treeview.bind("select", attributeTableTreeSelect);
             },
             error: function(response) {
                 Common.ShowError(response.responseText);

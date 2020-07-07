@@ -33,9 +33,9 @@ namespace KadOzenka.Dal.Modeling
                 if (_httpClient == null)
                     _httpClient = new HttpClient();
 
-                AddLog("\nНачат сбор данных");
+                AddLog("Начат сбор данных");
                 PrepareData();
-                AddLog("\nЗакончен сбор данных");
+                AddLog("Закончен сбор данных");
                 WorkerCommon.SetProgress(ProcessQueue, 50);
 
                 AddLog("\nНачато формирование запроса на сервис");

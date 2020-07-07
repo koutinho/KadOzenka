@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Найдено {marketObjects.Count} объекта.");
 
             ModelingService.DestroyModelMarketObjects(Model.Id);
-            AddLog($"Удалены предыдущие данные.");
+            AddLog("Удалены предыдущие данные.");
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
             AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
-            AddLog($"Обработано объектов: ");
+            AddLog("Обработано объектов: ");
             marketObjects.ForEach(groupedObj =>
             {
                 var isForTraining = i < marketObjects.Count / 2;
@@ -123,8 +123,8 @@ namespace KadOzenka.Dal.Modeling
                 }
             });
 
-            if (RequestForService.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
+            if (RequestForService.Coefficients.Count < 2)
+                throw new Exception("Недостаточно данных для построения модели (у которых значения всех аттрибутов не пустые)");
 
             return RequestForService;
         }
@@ -155,17 +155,7 @@ namespace KadOzenka.Dal.Modeling
         private List<MarketObjectPure> GetMarketObjects()
         {
             var groupToMarketSegmentRelation = GetGroupToMarketSegmentRelation();
-            AddLog($"Найден тип: {groupToMarketSegmentRelation?.MarketSegment_Code.GetEnumDescription()}\n");
-
-            //TODO для тестирования
-            //return new List<MarketObjectPure>
-            //{
-            //    new MarketObjectPure
-            //    {
-            //        CadastralNumber = "77:22:0040131:36",
-            //        Price = 100
-            //    }
-            //};
+            AddLog($"Найден тип: {groupToMarketSegmentRelation.MarketSegment_Code.GetEnumDescription()}");
 
             //TODO ждем выполнения CIPJSKO-307
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
