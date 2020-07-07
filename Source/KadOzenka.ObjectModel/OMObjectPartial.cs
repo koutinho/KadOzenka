@@ -122,6 +122,7 @@ namespace ObjectModel.Sud
 				OMParam.AddInt(OMTableParam.Object, this.Id, "exception", Exception, ProcessingStatus.Processed);
 				OMParam.AddInt(OMTableParam.Object, this.Id, "additional_analysis", AdditionalAnalysis, ProcessingStatus.Processed);
 				OMParam.AddInt(OMTableParam.Object, this.Id, "is_satisfied", IsSatisfied, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Object, this.Id, "owner", Owner, ProcessingStatus.Processed);
 			}
 			else
 			{
