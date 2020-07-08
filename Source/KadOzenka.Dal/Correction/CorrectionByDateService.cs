@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.Correction
 
             objects.ForEach(obj =>
             {
-                var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
+                var date = obj.LastDateUpdate ?? obj.ParserTime ?? DateTime.Today;
                 var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
                 var isCoefExists = true;
