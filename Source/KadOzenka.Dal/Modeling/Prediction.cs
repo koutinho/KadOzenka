@@ -46,7 +46,9 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            if(InputParameters.ModelType == ModelType.Linear && string.IsNullOrWhiteSpace(Model.LinearTrainingResult))
+            AddLog($"Начата работа с моделью '{Model.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
+
+            if (InputParameters.ModelType == ModelType.Linear && string.IsNullOrWhiteSpace(Model.LinearTrainingResult))
                 throw new Exception(GetErrorMessage(ModelType.Linear));
 
             if (InputParameters.ModelType == ModelType.Exponential && string.IsNullOrWhiteSpace(Model.ExponentialTrainingResult))

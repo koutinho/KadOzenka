@@ -36,6 +36,7 @@ namespace KadOzenka.Dal.LongProcess
             }
 
             var strategy = GetModelingStrategy(inputParameters, processQueue);
+            AddLog(processQueue, $"Запущено моделирование вида '{inputParameters.Mode.GetEnumDescription()}'");
             strategy.Process();
         }
 

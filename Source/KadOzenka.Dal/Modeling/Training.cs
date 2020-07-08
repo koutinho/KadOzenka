@@ -50,6 +50,8 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
+            AddLog($"Начата работа с моделью '{Model.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
+
             var marketObjects = GetMarketObjects();
             AddLog($"Найдено {marketObjects.Count} объекта.");
 
