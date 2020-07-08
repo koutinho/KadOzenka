@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.Tours
 						}
 					} else if (typeRoom != null)
 					{
-						switch (typeRoom.Value.ToString())
+						switch (typeRoom.Value?.ToString())
 						{
 							case "Жилое": correctTypeOfRoom = KoTypeOfRoom.Residential; break;
 							case "Нежилое": correctTypeOfRoom = KoTypeOfRoom.NotResidential; break;
