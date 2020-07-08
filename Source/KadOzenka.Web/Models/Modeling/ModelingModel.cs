@@ -101,7 +101,7 @@ namespace KadOzenka.Web.Models.Modeling
                 if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
                     modelAttribute.DictionaryId.GetValueOrDefault() == 0)
                 {
-                    errors.Add(new ValidationResult($@"Для аттрибута '{attribute.Name}' нужно выбрать словарь"));
+                    errors.Add(new ValidationResult($@"Для атрибута '{attribute.Name}' нужно выбрать словарь"));
                 }
                 if (modelAttribute.DictionaryId.GetValueOrDefault() != 0)
                 {
@@ -129,7 +129,7 @@ namespace KadOzenka.Web.Models.Modeling
 
         private string GenerateMessage(string attributeName, ReferenceItemCodeType referenceItemCodeType)
         {
-            return $"Выберите словарь типа '{referenceItemCodeType.GetEnumDescription()}' для аттрибута '{attributeName}'";
+            return $"Выберите словарь типа '{referenceItemCodeType.GetEnumDescription()}' для атрибута '{attributeName}'";
         }
     }
 }

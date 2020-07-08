@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.Modeling
             });
 
             if (RequestForService.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
+                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех атрибутов не пустые)");
 
             return RequestForService;
         }

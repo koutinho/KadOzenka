@@ -2,7 +2,7 @@
 @using KadOzenka.Dal.Oks
 @model KadOzenka.Web.Models.Modeling.ModelingModel
 
-<!-- Модальное окно для добавления аттрибута -->
+<!-- Модальное окно для добавления атрибута -->
 <div id="attributeAdditionModal" style="display: none; padding: 2%;">
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
@@ -233,7 +233,7 @@
                 },
                 {
                     field: 'AttributeName',
-                    title: 'Аттрибут'
+                    title: 'Атрибут'
                 },
                 {
                     field: 'IsNormalized',
@@ -465,7 +465,7 @@
 		for (var i = 0; i < rows.length; i++) {
 			if (rows[i].IsNormalized) {
 				if (rows[i].DictionaryId == undefined || rows[i].DictionaryId === 0) {
-					messages.push("Не выбран словарь для аттрибута в стороке №" + (i + 1));
+					messages.push("Не выбран словарь для атрибута в стороке №" + (i + 1));
 				}
 			}
 		}
@@ -489,7 +489,7 @@
 
 	function addAttribute() {
 		var modal = $("#attributeAdditionModal");
-		ShowModal(modal, '50%', '20%', "Добавление аттрибута");
+		ShowModal(modal, '50%', '20%', "Добавление атрибута");
 		initAttributes();
 	}
 

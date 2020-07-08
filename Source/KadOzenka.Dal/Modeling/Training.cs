@@ -124,7 +124,7 @@ namespace KadOzenka.Dal.Modeling
             });
 
             if (RequestForService.Coefficients.Count < 2)
-                throw new Exception("Недостаточно данных для построения модели (у которых значения всех аттрибутов не пустые)");
+                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые)");
 
             return RequestForService;
         }
@@ -207,7 +207,7 @@ namespace KadOzenka.Dal.Modeling
         }
 
         /// <summary>
-        /// Заменяем имена аттрибутов на их Id
+        /// Заменяем имена атрибутов на их Id
         /// </summary>
         /// <param name="result"></param>
         private void PreprocessTrainingResult(TrainingResponse result)
