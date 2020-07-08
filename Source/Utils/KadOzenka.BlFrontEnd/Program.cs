@@ -350,9 +350,17 @@ namespace KadOzenka.BlFrontEnd
 				});
 
 
-			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
-		}
+            consoleHelper.AddCommand("556", "Корректировка на дату", () =>
+            {
+                new CorrectionByDateForMarketObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                {
+                    Status_Code = Status.Added,
+                    UserId = SRDSession.GetCurrentUserId()
+                }, new CancellationToken());
+            });
 
-	}
 
+            //consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
+        }
+    }
 }

@@ -5,7 +5,6 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
 using ObjectModel.Directory;
-using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.LongProcess
