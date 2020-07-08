@@ -1173,53 +1173,57 @@ div.forTooltips a[href=""]:empty {
 
 .dash-view1 {
     display: block;
-    background: url('../images/View 1.png') no-repeat;
+    background: url('../images/View_1.png') no-repeat;
 }
 
     .dash-view1.active {
-        background: url('../images/View 1 active.png') no-repeat;
+        background: url('../images/View_1_active.png') no-repeat;
     }
 
 .dash-view2 {
     display: block;
-    background: url('../images/View 2.png') no-repeat;
+    background: url('../images/View_2.png') no-repeat;
 }
 
     .dash-view2.active {
-        background: url('../images/View 2 active.png') no-repeat;
+        background: url('../images/View_2_active.png') no-repeat;
     }
 
 .dash-view3 {
     display: block;
-    background: url('../images/View 3.png') no-repeat;
+    background: url('../images/View_3.png') no-repeat;
 }
 
     .dash-view3.active {
-        background: url('../images/View 3 active.png') no-repeat;
+        background: url('../images/View_3_active.png') no-repeat;
     }
 
 .dash-view4 {
     display: block;
-    background: url('../images/View 4.png') no-repeat;
+    background: url('../images/View_4.png') no-repeat;
 }
 
     .dash-view4.active {
-        background: url('../images/View 4 active.png') no-repeat;
+        background: url('../images/View_4_active.png') no-repeat;
     }
 
 .dash-view5 {
     display: block;
-    background: url('../images/View 5.png') no-repeat;
+    background: url('../images/View_5.png') no-repeat;
 }
 
     .dash-view5.active {
-        background: url('../images/View 5 active.png') no-repeat;
+        background: url('../images/View_5_active.png') no-repeat;
     }
 
+.dash-view5.active {
+	background-position: center;
+}
+
 .register-grid {
-    flex: 1 1 auto;
-    display: flex;
-    flex-flow: column nowrap;
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column nowrap;
 }
 
     .register-grid .k-grid-content {
