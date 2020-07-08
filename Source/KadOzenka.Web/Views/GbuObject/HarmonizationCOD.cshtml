@@ -305,7 +305,7 @@
                     $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
                 }
 
-                if (Object.keys(val)[0].includes('ValuesFilter')) {
+                if (Object.keys(val)[0].startsWith('ValuesFilter')) {
                     var widget = $('#valuesFilter').getKendoMultiSelect();
                     var dataSource = widget.dataSource;
                     var newItem = {
