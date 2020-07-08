@@ -127,6 +127,39 @@
                                                 <LeftOperandLevel>0</LeftOperandLevel>
                                                 <RightOperandLevel>0</RightOperandLevel>
                                             </QSCondition>
+                                            <QSCondition xsi:type="QSConditionSimple">
+                                                <ConditionType>NotEqual</ConditionType>
+                                                <LeftOperand xsi:type="QSColumnSimple">
+                                                    <AttributeID>80901200</AttributeID>
+                                                    <Type>Value</Type>
+                                                </LeftOperand>
+                                                <RightOperand xsi:type="QSColumnConstant">
+                                                    <Value xsi:type="xsd:int">0</Value>
+                                                </RightOperand>
+                                                <RightOperandLevel>0</RightOperandLevel>
+                                            </QSCondition>
+                                            <QSCondition xsi:type="QSConditionSimple">
+                                                <ConditionType>NotEqual</ConditionType>
+                                                <LeftOperand xsi:type="QSColumnSimple">
+                                                    <AttributeID>80901200</AttributeID>
+                                                    <Type>Value</Type>
+                                                </LeftOperand>
+                                                <RightOperand xsi:type="QSColumnConstant">
+                                                    <Value xsi:type="xsd:int">1</Value>
+                                                </RightOperand>
+                                                <RightOperandLevel>0</RightOperandLevel>
+                                            </QSCondition>
+                                            <QSCondition xsi:type="QSConditionSimple">
+                                                <ConditionType>NotEqual</ConditionType>
+                                                <LeftOperand xsi:type="QSColumnSimple">
+                                                    <AttributeID>80901200</AttributeID>
+                                                    <Type>Value</Type>
+                                                </LeftOperand>
+                                                <RightOperand xsi:type="QSColumnConstant">
+                                                    <Value xsi:type="xsd:int">3</Value>
+                                                </RightOperand>
+                                                <RightOperandLevel>0</RightOperandLevel>
+                                            </QSCondition>
                                         </Conditions>
                                     </Condition>
                                 </SubQuery>
