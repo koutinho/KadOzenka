@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.Harmonization;
 
@@ -28,10 +29,13 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public HarmonizationCODSettings ToHarmonizationCODSettings()
 		{
-			var settings = new HarmonizationCODSettings
+            if (IdAttributeResult == null)
+                throw new Exception("Не заполнена результирующая характеристика");
+
+            var settings = new HarmonizationCODSettings
 			{
 				IdCodJob = IdCodJob,
-				IdAttributeResult = IdAttributeResult,
+				IdAttributeResult = IdAttributeResult.Value,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
 				SelectAllObject = SelectAllObject,
 				IdAttributeFilter = IdAttributeFilter,

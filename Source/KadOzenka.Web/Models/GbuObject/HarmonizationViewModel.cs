@@ -115,9 +115,12 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public HarmonizationSettings ToHarmonizationSettings()
         {
+            if (IdAttributeResult == null)
+                throw new Exception("Не заполнена результирующая характеристика");
+
             var settings = new HarmonizationSettings
 			{
-				IdAttributeResult = IdAttributeResult,
+				IdAttributeResult = IdAttributeResult.Value,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
 				SelectAllObject = SelectAllObject,
 				IdAttributeFilter = IdAttributeFilter,

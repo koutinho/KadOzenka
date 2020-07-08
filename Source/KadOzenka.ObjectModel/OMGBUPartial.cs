@@ -324,7 +324,7 @@ namespace ObjectModel.Gbu.Harmonization
         /// <summary>
         /// Идентификатор атрибута, куда будет записан результат 
         /// </summary>
-        public long? IdAttributeResult;
+        public long IdAttributeResult;
         /// <summary>
         /// Тип объекта 
         /// </summary>

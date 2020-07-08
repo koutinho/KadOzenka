@@ -7,12 +7,17 @@ using ObjectModel.Gbu;
 using System.Threading;
 using System.Threading.Tasks;
 using ObjectModel.KO;
+using Core.Register;
+using Core.Register.RegisterEntities;
+using Core.SRD;
 
 namespace KadOzenka.Dal.GbuObject
 {
     public abstract class GbuObjectHarmonizationBase
     {
-        protected object locked;
+        #region Fields
+
+        protected object Locked;
         public int MaxObjectsCount;
         public int CurrentCount;
 
@@ -22,9 +27,28 @@ namespace KadOzenka.Dal.GbuObject
         private const int SourceColumnNUmber = 3;
         private const int ErrorColumnNumber = 4;
 
+        protected abstract string ReportName { get; }
         private static ABaseHarmonizationSettings BaseSetting { get; set; }
         protected static GbuReportService ReportService { get; set; }
         private static GbuObjectService GbuObjectService { get; set; }
+
+        private RegisterAttribute _registerAttribute;
+        private RegisterAttribute ResultAttribute
+        {
+            get
+            {
+                if (_registerAttribute != null)
+                    return _registerAttribute;
+
+                //если во время гармонизации был создан новый атрибут, его может еще не быть в кеше
+                RegisterCache.UpdateCache(0, null);
+                _registerAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == BaseSetting.IdAttributeResult);
+
+                return _registerAttribute;
+            }
+        }
+
+        #endregion
 
 
         protected GbuObjectHarmonizationBase(ABaseHarmonizationSettings setting)
@@ -42,11 +66,10 @@ namespace KadOzenka.Dal.GbuObject
             ReportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             var objects = GetObjects();
-            var notNullAttributeIds = GetAllLevelsAttributeIds();
+            var levelsAttributesIds = GetLevelsAttributesIds();
             MaxObjectsCount = objects.Count;
-            CurrentCount = 0;
 
-            locked = new object();
+            Locked = new object();
             var cancelTokenSource = new CancellationTokenSource();
             var options = new ParallelOptions
             {
@@ -56,7 +79,7 @@ namespace KadOzenka.Dal.GbuObject
             
             Parallel.ForEach(objects, options, obj =>
             {
-                ProcessOneObject(obj, notNullAttributeIds);
+                ProcessOneObject(obj, levelsAttributesIds);
             });
 
             ReportService.SetStyle();
@@ -66,32 +89,82 @@ namespace KadOzenka.Dal.GbuObject
             ReportService.SetIndividualWidth(SourceColumnNUmber, 6);
             ReportService.SetIndividualWidth(ErrorColumnNumber, 5);
 
-            var reportId = ReportService.SaveReport("Отчет гармонизации");
+            var reportId = ReportService.SaveReport(ReportName);
+
+            //TODO для тестирования
+            var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
 
             return reportId;
         }
 
-        protected abstract bool CopyLevelData(Item item, long sourceAttributeId, long resultAttributeId, List<GbuObjectAttribute> allAttributes);
+        protected abstract bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute);
 
         protected abstract void SaveFailResult(Item item);
 
-        protected static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        protected void SaveGbuAttribute(Item item, long changeDocId, DateTime s, DateTime ot, string value, long? sourceAttributeId, string errorMessageForReport = "")
         {
-            var sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
-            var resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-            ReportService.AddValue(kn, KnColumnNumber, rowNumber);
-            ReportService.AddValue(resultName, ResultColumnNumber, rowNumber);
-            ReportService.AddValue(value, ValueColumnNumber, rowNumber);
-            ReportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
-            ReportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
+            var gbuAttribute = new GbuObjectAttribute
+            {
+                AttributeId = BaseSetting.IdAttributeResult,
+                ObjectId = item.ObjectId,
+                ChangeDocId = changeDocId,
+                S = s,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now,
+                Ot = ot
+            };
+
+            var convertingErrorMessage = string.Empty;
+            if (value != null)
+            {
+                switch (ResultAttribute.Type)
+                {
+                    case RegisterAttributeType.STRING:
+                        gbuAttribute.StringValue = value;
+                        break;
+                    case RegisterAttributeType.DECIMAL:
+                    case RegisterAttributeType.INTEGER:
+                        if (decimal.TryParse(value, out var number))
+                        {
+                            gbuAttribute.NumValue = number;
+                        }
+                        else
+                        {
+                            convertingErrorMessage = GetErrorMessage(value, RegisterAttributeType.DECIMAL);
+                        }
+                        break;
+                    case RegisterAttributeType.DATE:
+                        if (DateTime.TryParse(value, out var date))
+                        {
+                            gbuAttribute.DtValue = date;
+                        }
+                        else
+                        {
+                            convertingErrorMessage = GetErrorMessage(value, RegisterAttributeType.DATE);
+                        }
+
+                        break;
+                }
+            }
+
+            gbuAttribute.Save();
+
+            lock (Locked)
+            {
+                var row = ReportService.GetCurrentRow();
+                var savedValue = string.IsNullOrWhiteSpace(convertingErrorMessage) ? value : string.Empty;
+                var resultErrorMessage = $"{convertingErrorMessage} {errorMessageForReport}";
+
+                AddRowToReport(row, item.CadastralNumber, sourceAttributeId ?? 0, savedValue,
+                    BaseSetting.IdAttributeResult, resultErrorMessage);
+            }
         }
+
 
         #region Support Methods
 
         private static void ValidateInputParameters()
         {
-            if(BaseSetting.IdAttributeResult.GetValueOrDefault() == 0)
-                throw new Exception("Не выбрана результирующая характеристика");
             if(BaseSetting.DateActual != null && BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0)
                 throw new Exception("Выбрана только дата актуальности, но не выбрана характеристика");
         }
@@ -110,9 +183,7 @@ namespace KadOzenka.Dal.GbuObject
         private static List<Item> GetObjectsByTasks()
         {
             if (BaseSetting.TaskFilter == null || BaseSetting.TaskFilter.Count == 0)
-            {
                 throw new Exception("Была выбрана фильтрация по Заданиям на оценку, но не были выбраны задания.");
-            }
 
             var objects = new List<Item>();
             BaseSetting.TaskFilter.ForEach(taskId =>
@@ -183,7 +254,7 @@ namespace KadOzenka.Dal.GbuObject
             return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
         }
 
-        private static List<long> GetAllLevelsAttributeIds()
+        private static List<long> GetLevelsAttributesIds()
         {
             var allLevelsAttributeIds = new List<long?>
             {
@@ -206,20 +277,40 @@ namespace KadOzenka.Dal.GbuObject
 
         private void ProcessOneObject(Item item, List<long> levelsAttributeIds)
         {
-            lock (locked)
+            lock (Locked)
             {
                 CurrentCount++;
             }
 
-            var attributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
-            foreach (var attribute in levelsAttributeIds)
+            var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
+            foreach (var sourceAttributeId in levelsAttributeIds)
             {
-                var isDataSaved = CopyLevelData(item, attribute, BaseSetting.IdAttributeResult.Value, attributes);
+                var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
+                if (sourceAttribute == null)
+                    continue;
+
+                var isDataSaved = CopyLevelData(item, sourceAttribute);
                 if (isDataSaved)
                     return;
             }
 
             SaveFailResult(item);
+        }
+
+        private string GetErrorMessage(string value, RegisterAttributeType type)
+        {
+            return $"Не удалось преобразовать значение '{value}' к типу '{type.GetEnumDescription()}'.Cохранено пустое значение.";
+        }
+
+        private static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        {
+            var sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
+            var resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
+            ReportService.AddValue(kn, KnColumnNumber, rowNumber);
+            ReportService.AddValue(resultName, ResultColumnNumber, rowNumber);
+            ReportService.AddValue(value, ValueColumnNumber, rowNumber);
+            ReportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
+            ReportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
         }
 
         #endregion

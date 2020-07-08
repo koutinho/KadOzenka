@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ObjectModel.Gbu.Harmonization;
-using Core.SRD;
+﻿using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -11,7 +7,8 @@ namespace KadOzenka.Dal.GbuObject
     /// </summary>
     public class Harmonization : GbuObjectHarmonizationBase
     {
-        public HarmonizationSettings Setting { get; set; }
+        protected override string ReportName => "Отчет гармонизации";
+        private HarmonizationSettings Setting { get; }
 
         public Harmonization(HarmonizationSettings setting) : base(setting)
         {
@@ -19,58 +16,23 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        protected override bool CopyLevelData(Item item, long sourceAttributeId, long resultAttributeId, List<GbuObjectAttribute> allAttributes)
+        protected override bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute)
         {
-            var sourceAttribute = allAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
-            if (sourceAttribute == null)
-                return false;
-
             var sourceAttributeValueInString = sourceAttribute.GetValueInString();
-            if (string.IsNullOrEmpty(sourceAttributeValueInString))
+            if (string.IsNullOrWhiteSpace(sourceAttributeValueInString))
                 return false;
 
-            lock (locked)
-            {
-                var rowReport = ReportService.GetCurrentRow();
-                AddRowToReport(rowReport, item.CadastralNumber, sourceAttributeId, sourceAttributeValueInString, resultAttributeId, string.Empty);
-            }
-
-            new GbuObjectAttribute
-            {
-                Id = -1,
-                AttributeId = resultAttributeId,
-                ObjectId = item.ObjectId,
-                ChangeDocId = sourceAttribute.ChangeDocId,
-                S = sourceAttribute.S,
-                ChangeUserId = SRDSession.Current.UserID,
-                ChangeDate = DateTime.Now,
-                Ot = sourceAttribute.Ot,
-                StringValue = sourceAttributeValueInString
-            }.Save();
+            SaveGbuAttribute(item, sourceAttribute.ChangeDocId, sourceAttribute.S, sourceAttribute.Ot,
+                sourceAttributeValueInString, sourceAttribute.AttributeId);
 
             return true;
         }
 
         protected override void SaveFailResult(Item item)
         {
-            lock (locked)
-            {
-                var rowReport = ReportService.GetCurrentRow();
-                var message = "Для текущего объекта не было записанно значение, т.к не было найдено.";
-                AddRowToReport(rowReport, item.CadastralNumber, 0, string.Empty, Setting.IdAttributeResult.Value, message);
-            }
+            var errorMessageForReport = "Не найдено значение.";
 
-            new GbuObjectAttribute
-            {
-                Id = -1,
-                AttributeId = Setting.IdAttributeResult.Value,
-                ObjectId = item.ObjectId,
-                ChangeDocId = -1,
-                S = item.Date,
-                ChangeUserId = SRDSession.Current.UserID,
-                ChangeDate = DateTime.Now,
-                Ot = item.Date
-            }.Save();
+            SaveGbuAttribute(item, -1, item.Date, item.Date, null, null, errorMessageForReport);
         }
     }
 }
