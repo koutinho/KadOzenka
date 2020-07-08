@@ -31,116 +31,81 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
 	        var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
 
-	        var groupJoin = new QSJoin
-	        {
-		        RegisterId = OMGroup.GetRegisterId(),
-		        JoinCondition = new QSConditionSimple
-		        {
-			        ConditionType = QSConditionType.Equal,
-			        LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-			        RightOperand = OMGroup.GetColumn(x => x.Id)
-		        },
-		        JoinType = QSJoinType.Left
-	        };
-	        var quartalDictionaryJoin = new QSJoin
-	        {
-		        RegisterId = OMQuartalDictionary.GetRegisterId(),
-		        JoinCondition = new QSConditionSimple
-		        {
-			        ConditionType = QSConditionType.Equal,
-			        LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-			        RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-		        },
-		        JoinType = QSJoinType.Inner
-	        };
-            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, additionalJoins: new List<QSJoin>() { quartalDictionaryJoin, groupJoin });
+	        var groupsTable = OMGroup.Where(x => true)
+		        .Select(x => x.Id)
+		        .Select(x => x.ParentId)
+		        .Select(x => x.GroupName)
+		        .Execute();
+	        var quartalDictionaryTable = OMQuartalDictionary.Where(x => true)
+		        .Select(x => x.CadastralQuartal)
+		        .Select(x => x.Region_Code)
+		        .Select(x => x.District_Code)
+		        .Execute();
 
-            query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
-            query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
-            query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)));
-            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
+			var units = OMUnit.Where(x => taskList.Contains((long)x.TaskId) && x.ObjectId != null)
+				.Select(x => x.Id)
+				.Select(x => x.CadastralBlock)
+				.Select(x => x.GroupId)
+				.Select(x => x.PropertyType_Code)
+				.Select(x => x.ObjectId)
+				.Execute();
 
-            var subQuery = new QSQuery(OMGroup.GetRegisterId())
-            {
-	            Columns = new List<QSColumn>
-	            {
-		            OMGroup.GetColumn(x => x.GroupName)
-	            },
-	            Condition = new QSConditionGroup(QSConditionGroupType.And)
-	            {
-		            Conditions = new List<QSCondition>
-		            {
-			            new QSConditionSimple(
-				            OMGroup.GetColumn(x => x.Id),
-				            QSConditionType.Equal,
-				            OMGroup.GetColumn(x => x.ParentId))
-			            {
-				            RightOperandLevel = 1
-			            }
-		            }
-	            }
-            };
-            query.AddColumn(subQuery, "ParentGroup");
+			var gbuObjectIds = units.Select(x => x.ObjectId.Value).ToList();
+			var gbuAttributes = _gbuObjectService.GetAllAttributes(gbuObjectIds,
+				new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
+				new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
+				DateTime.Now.GetEndOfTheDay());
 
-            var table = query.ExecuteQuery();
+			var result = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>();
+			foreach (var unit in units)
+			{
+				var quartalDictionaryInfo =
+					quartalDictionaryTable.FirstOrDefault(x => x.CadastralQuartal == unit.CadastralBlock);
+				if (quartalDictionaryInfo != null)
+				{
+					string groupName = null;
+					var subgroup = groupsTable.FirstOrDefault(x => x.Id == unit.GroupId);
+					if (subgroup != null)
+					{
+						var group = groupsTable.FirstOrDefault(x => x.Id == subgroup.ParentId);
+						groupName = group?.GroupName;
+					}
 
-            var result = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>();
-            if (table.Rows.Count != 0)
-            {
-	            var objectIds = new List<long>();
-	            for (var i = 0; i < table.Rows.Count; i++)
-	            {
-		            objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
-	            }
+					var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
+					{
+						PropertyTypeCode = unit.PropertyType_Code,
+						PropertyType = unit.PropertyType_Code.GetEnumDescription(),
+						GbuObjectId = unit.ObjectId,
+						Group = string.IsNullOrEmpty(groupName) ? "Без группы" : groupName,
+						HasGroup = !string.IsNullOrEmpty(groupName),
+						Count = 1
+					};
 
-	            var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
-		            new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
-		            new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
-		            DateTime.Now.GetEndOfTheDay());
+					switch (divisionType)
+					{
+						case StatisticDataAreaDivisionType.RegionNumbers:
+							dto.Name = GetRegionNumberByCadastralQuarter(quartalDictionaryInfo.CadastralQuartal);
+							dto.ParentName = quartalDictionaryInfo.District_Code.GetShortTitle();
+							break;
+						case StatisticDataAreaDivisionType.Districts:
+							dto.Name = quartalDictionaryInfo.District_Code.GetShortTitle();
+							dto.ParentName = GetRegionNumberByCadastralQuarter(quartalDictionaryInfo.CadastralQuartal);
+							break;
+						case StatisticDataAreaDivisionType.Regions:
+							dto.Name = quartalDictionaryInfo.Region_Code.GetEnumDescription();
+							dto.ParentName = quartalDictionaryInfo.District_Code.GetShortTitle();
+							break;
+					}
 
-                for (var i = 0; i < table.Rows.Count; i++)
-                {
-                    var group = table.Rows[i]["ParentGroup"]
-                        .ParseToStringNullable();
-                    var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
-                    {
-                        ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle(),
-                        Name = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString()),
-                        PropertyTypeCode = (PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)].ParseToLong(),
-                        PropertyType = ((PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto.PropertyTypeCode)].ParseToLong()).GetEnumDescription(),
-                        GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
-                        Group = string.IsNullOrEmpty(group) ? "Без группы" : group,
-                        HasGroup = !string.IsNullOrEmpty(@group),
-                        Count = 1
-                    };
+					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
+					if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
+					{
+						result.Add(dto);
+					}
+				}
+			}
 
-                    switch (divisionType)
-                    {
-	                    case StatisticDataAreaDivisionType.RegionNumbers:
-		                    dto.Name = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString());
-                            dto.ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
-		                    break;
-	                    case StatisticDataAreaDivisionType.Districts:
-		                    dto.Name = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
-                            dto.ParentName = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString());
-                            break;
-	                    case StatisticDataAreaDivisionType.Regions:
-		                    dto.Name = ((Districts)table.Rows[i]["Region_Code"].ParseToLong()).GetEnumDescription();
-		                    dto.ParentName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
-                            break;
-                    }
-
-                    FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
-
-                    if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
-                    {
-	                    result.Add(dto);
-                    }
-                }
-            }
-
-            result =
+			result =
                 result.GroupBy(x => new { x.ParentName, x.Name, x.PropertyType, x.Purpose, x.HasPurpose, x.Group, x.HasGroup }).Select(
                 group => new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
                 {
@@ -162,82 +127,52 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
 	        var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
 
-            var groupJoin = new QSJoin
+	        var groupsTable = OMGroup.Where(x => true)
+		        .Select(x => x.Id)
+		        .Select(x => x.ParentId)
+		        .Select(x => x.GroupName)
+		        .Execute();
+
+	        var units = OMUnit.Where(x => taskList.Contains((long)x.TaskId) && x.ObjectId != null)
+		        .Select(x => x.Id)
+		        .Select(x => x.GroupId)
+		        .Select(x => x.PropertyType_Code)
+		        .Select(x => x.ObjectId)
+		        .Execute();
+
+	        var gbuObjectIds = units.Select(x => x.ObjectId.Value).ToList();
+	        var gbuAttributes = _gbuObjectService.GetAllAttributes(gbuObjectIds,
+		        new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
+		        new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
+		        DateTime.Now.GetEndOfTheDay());
+
+	        var result = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
+	        foreach (var unit in units)
 	        {
-		        RegisterId = OMGroup.GetRegisterId(),
-		        JoinCondition = new QSConditionSimple
+		        string groupName = null;
+		        var subgroup = groupsTable.FirstOrDefault(x => x.Id == unit.GroupId);
+		        if (subgroup != null)
 		        {
-			        ConditionType = QSConditionType.Equal,
-			        LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-			        RightOperand = OMGroup.GetColumn(x => x.Id)
-		        },
-		        JoinType = QSJoinType.Left
-	        };
-            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, additionalJoins: new List<QSJoin>() { groupJoin });
+			        var group = groupsTable.FirstOrDefault(x => x.Id == subgroup.ParentId);
+			        groupName = group?.GroupName;
+		        }
 
-            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)));
+		        var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto
+		        {
+			        PropertyTypeCode = unit.PropertyType_Code,
+			        PropertyType = unit.PropertyType_Code.GetEnumDescription(),
+			        GbuObjectId = unit.ObjectId,
+			        Group = string.IsNullOrEmpty(groupName) ? "Без группы" : groupName,
+			        HasGroup = !string.IsNullOrEmpty(groupName),
+			        Count = 1
+		        };
 
-            var subQuery = new QSQuery(OMGroup.GetRegisterId())
-            {
-	            Columns = new List<QSColumn>
-	            {
-		            OMGroup.GetColumn(x => x.GroupName)
-	            },
-	            Condition = new QSConditionGroup(QSConditionGroupType.And)
-	            {
-		            Conditions = new List<QSCondition>
-		            {
-			            new QSConditionSimple(
-				            OMGroup.GetColumn(x => x.Id),
-				            QSConditionType.Equal,
-				            OMGroup.GetColumn(x => x.ParentId))
-			            {
-				            RightOperandLevel = 1
-			            }
-		            }
-	            }
-            };
-            query.AddColumn(subQuery, "ParentGroup");
-
-            var table = query.ExecuteQuery();
-
-            var result = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
-            if (table.Rows.Count != 0)
-            {
-	            var objectIds = new List<long>();
-	            for (var i = 0; i < table.Rows.Count; i++)
-	            {
-		            objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
-	            }
-
-	            var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
-		            new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
-		            new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
-		            DateTime.Now.GetEndOfTheDay());
-
-                for (var i = 0; i < table.Rows.Count; i++)
-                {
-                    var group = table.Rows[i]["ParentGroup"]
-                        .ParseToStringNullable();
-                    var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto
-                    {
-                        PropertyTypeCode = (PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)].ParseToLong(),
-                        PropertyType = ((PropertyTypes)table.Rows[i][nameof(NumberOfObjectsByAdministrativeDistrictsBySubjectDto.PropertyTypeCode)].ParseToLong()).GetEnumDescription(),
-                        GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
-                        Group = string.IsNullOrEmpty(group) ? "Без группы" : group,
-                        HasGroup = !string.IsNullOrEmpty(@group),
-                        Count = 1
-                    };
-
-                    FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
-
-                    if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
-                    {
-	                    result.Add(dto);
-                    }
-                }
-            }
+		        FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
+		        if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
+		        {
+			        result.Add(dto);
+		        }
+	        }
 
             result =
                 result.GroupBy(x => new { x.PropertyType, x.Purpose, x.HasPurpose, x.Group, x.HasGroup }).Select(
