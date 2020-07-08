@@ -147,6 +147,15 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
 
+            //для атрибутов Росреестра есть индекс уникальности на object_id и ot
+            if (GbuObjectService.CheckExistsValueFromAttributeIdPartition(gbuAttribute.ObjectId, gbuAttribute.AttributeId, gbuAttribute.Ot) != null)
+            {
+                lock (Locked)
+                {
+                    gbuAttribute.Ot = GbuObjectService.GetNextOtFromAttributeIdPartition(gbuAttribute.ObjectId, gbuAttribute.AttributeId, gbuAttribute.Ot);
+                }
+            }
+
             gbuAttribute.Save();
 
             lock (Locked)
