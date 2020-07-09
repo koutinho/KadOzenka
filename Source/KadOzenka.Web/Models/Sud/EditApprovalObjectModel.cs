@@ -44,7 +44,7 @@ namespace KadOzenka.Web.Models.Sud
         [Display(Name = "Внесено в статистику ДГИ")]
         public string StatDgi { get; set; }
 
-        [Required(ErrorMessage = "Выбирите заказчика")]
+        [Required(ErrorMessage = "Выберите заказчика")]
         [Display(Name = "Заказчик / Истец")]
         public string Owner { get; set; }
 
