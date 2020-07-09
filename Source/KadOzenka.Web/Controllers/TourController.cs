@@ -308,7 +308,8 @@ namespace KadOzenka.Web.Controllers
 					FileName = Path.GetFileNameWithoutExtension(file.FileName),
 					CodeColumnName = model.CodeColumnName,
 					GroupColumnName = model.GroupColumnName,
-					RoomTypeColumnName = model.RoomTypeColumnName
+					RoomTypeColumnName = model.RoomTypeColumnName,
+					TerritoryTypeColumnName = model.TerritoryTypeColumnName
 				};
 
 				using (Stream stream = file.OpenReadStream())

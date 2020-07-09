@@ -22,6 +22,12 @@ namespace KadOzenka.Web.Models.Tour.EstimateGroup
 		[Required(ErrorMessage = "Выберите тмя столбца для значения группы")]
 		public string GroupColumnName { get; set; }
 
+
+		/// <summary>
+		/// Имя столбца где берем тип территории
+		/// </summary>
+		public string TerritoryTypeColumnName { get; set; }
+
 		/// <summary>
 		/// Имя столбца где берем тип жилое/нежилое
 		/// </summary>

@@ -36,6 +36,11 @@ namespace KadOzenka.Web.Models.Tour.EstimateGroup
 		public string Group { get; set; }
 
 		/// <summary>
+		/// Тип территории 
+		/// </summary>
+		public string TerritoryType { get; set; }
+
+		/// <summary>
 		/// Определяем устанавливается ли группа по типу помещения жилое/нежилое
 		/// </summary>
 		public bool IsByTypeRoom { get; set; } = false;
@@ -54,7 +59,8 @@ namespace KadOzenka.Web.Models.Tour.EstimateGroup
 				TypeOfRoom = compliance.TypeRoom_Code,
 				Group = compliance.SubGroup,
 				ObjectType = compliance.TypeProperty_Code,
-				Id = compliance.Id
+				Id = compliance.Id,
+				TerritoryType = compliance.TerritoryType
 			};
 			return model;
 		}
@@ -66,6 +72,7 @@ namespace KadOzenka.Web.Models.Tour.EstimateGroup
 			compliance.SubGroup = model.Group;
 			compliance.TypeProperty_Code = model.ObjectType.GetValueOrDefault(PropertyTypes.None);
 			compliance.TourId = model.TourId.GetValueOrDefault();
+			compliance.TerritoryType = model.TerritoryType;
 			return compliance;
 		}
 	}

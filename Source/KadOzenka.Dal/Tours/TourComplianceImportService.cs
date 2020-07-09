@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.Tours
 			var columnNames = new List<string>();
 			for (var i = 0; i < maxColumns; i++)
 			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value?.ToString());
 			}
 
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
@@ -66,6 +66,13 @@ namespace KadOzenka.Dal.Tours
 						.Cells[columnNames.IndexOf(fileDto.CodeColumnName)];
 					var group = mainWorkSheet.Rows[row.Index]
 						.Cells[columnNames.IndexOf(fileDto.GroupColumnName)];
+					ExcelCell territoryType = null;
+					if (!fileDto.TerritoryTypeColumnName.IsNullOrEmpty())
+					{
+						territoryType = mainWorkSheet.Rows[row.Index]
+							.Cells[columnNames.IndexOf(fileDto.TerritoryTypeColumnName)];
+					}
+				
 					ExcelCell typeRoom = null;
 					if (fileDto.RoomTypeColumnName.IsNotEmpty())
 					{
@@ -118,7 +125,8 @@ namespace KadOzenka.Dal.Tours
 						SubGroup = group.StringValue.Replace(',', '.'),
 						TypeRoom_Code = correctTypeOfRoom,
 						TypeProperty_Code = objectType,
-						TourId = tourId
+						TourId = tourId,
+						TerritoryType = territoryType?.Value != null ? territoryType.StringValue : ""
 					}.Save();
 
 					lock (locked)

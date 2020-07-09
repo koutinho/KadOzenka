@@ -9,5 +9,7 @@
 		public string GroupColumnName { get; set; }
 
 		public string RoomTypeColumnName { get; set; }
+
+		public string TerritoryTypeColumnName { get; set; }
 	}
 }
