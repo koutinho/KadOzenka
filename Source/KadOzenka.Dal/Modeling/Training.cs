@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.Modeling
                 if (i % 100 == 0)
                     AddLog($"{i}, ", false);
             });
-            AddLog($"{i}.", false);
+             AddLog($"{i}.", false);
         }
 
         protected override object GetRequestForService()
@@ -140,15 +140,13 @@ namespace KadOzenka.Dal.Modeling
 
             ResetCoefficientsForPredictedPrice();
 
-            UpdateModel(trainingResult);
+            var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
+            UpdateModelTrainingResult(jsonTrainingResult);
         }
 
         protected override void RollBackResult()
         {
-            Model.LinearTrainingResult = null;
-            Model.ExponentialTrainingResult = null;
-            Model.MultiplicativeTrainingResult = null;
-            Model.Save();
+            UpdateModelTrainingResult(null);
         }
 
 
@@ -171,6 +169,9 @@ namespace KadOzenka.Dal.Modeling
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.Price)
+                //TODO для тестирования
+                //.SetPackageIndex(0)
+                //.SetPackageSize(2000)
                 .Execute()
                 .GroupBy(x => new
                 {
@@ -252,19 +253,18 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private void UpdateModel(TrainingResponse trainingResult)
+        private void UpdateModelTrainingResult(string trainingResult)
         {
-            var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
             switch (InputParameters.ModelType)
             {
                 case ModelType.Linear:
-                    Model.LinearTrainingResult = jsonTrainingResult;
+                    Model.LinearTrainingResult = trainingResult;
                     break;
                 case ModelType.Exponential:
-                    Model.ExponentialTrainingResult = jsonTrainingResult;
+                    Model.ExponentialTrainingResult = trainingResult;
                     break;
                 case ModelType.Multiplicative:
-                    Model.MultiplicativeTrainingResult = jsonTrainingResult;
+                    Model.MultiplicativeTrainingResult = trainingResult;
                     break;
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
