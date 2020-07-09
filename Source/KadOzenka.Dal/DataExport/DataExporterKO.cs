@@ -4295,21 +4295,20 @@ namespace KadOzenka.Dal.DataExport
 
     public class SaveReportDownload
     {
-		public static readonly string StorageName = "KoExportResult";
 	    public static long SaveReportExcel(string nameReport, ExcelFile excel, long registerId, string registerViewId = "KoTasks")
 	    {
 		    var currentDate = DateTime.Now;
 		    long reportId = 0;
-			string fileExtension = ".xlsx";
-			try
+		    try
 		    {
 			    var export = new OMExportByTemplates
 			    {
 				    UserId = SRDSession.GetCurrentUserId().Value,
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
-				    TemplateFileName = nameReport + fileExtension,
-				    MainRegisterId = registerId,
+				    FileResultTitle = nameReport,
+                    FileExtension = "xlsx",
+                    MainRegisterId = registerId,
 				    RegisterViewId = registerViewId
 				};
 
@@ -4324,11 +4323,13 @@ namespace KadOzenka.Dal.DataExport
 			    excel.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
 			    stream.Seek(0, SeekOrigin.Begin);
 
-			    FileStorageManager.Save(stream, StorageName, currentDate, export.Id.ToString());
+                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+                export.DateFinished = DateTime.Now;
+                export.Status = (long)ImportStatus.Completed;
 
-			    export.Status = (long)ImportStatus.Completed;
-			    export.DateFinished = DateTime.Now;
-			    export.Save();
+                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+                export.Save();
+
 			    return reportId;
 		    }
 		    catch (Exception e)
@@ -4351,16 +4352,16 @@ namespace KadOzenka.Dal.DataExport
 	    {
 		    var currentDate = DateTime.Now;
 		    long reportId = 0;
-		    string fileExtension = ".xml";
-			try
+		    try
 		    {
 			    var export = new OMExportByTemplates
 			    {
 				    UserId = SRDSession.GetCurrentUserId().Value,
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
-				    TemplateFileName = nameReport + fileExtension,
-				    MainRegisterId = registerId,
+				    FileResultTitle = nameReport,
+				    FileExtension = "xml",
+                    MainRegisterId = registerId,
 				    RegisterViewId = registerViewId
 			    };
 
@@ -4370,12 +4371,12 @@ namespace KadOzenka.Dal.DataExport
 			    export.DateStarted = DateTime.Now;
 			    export.Save();
 
-
-			    FileStorageManager.Save(stream, StorageName, currentDate, export.Id.ToString());
-
-			    export.Status = (long)ImportStatus.Completed;
+			    export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
 			    export.DateFinished = DateTime.Now;
-			    export.Save();
+			    export.Status = (long)ImportStatus.Completed;
+                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+                export.Save();
+
 			    return reportId;
 		    }
 		    catch (Exception e)

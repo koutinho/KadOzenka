@@ -90,5 +90,24 @@ namespace KadOzenka.Web.Controllers
                 ContentType = contentType
             };
         }
+
+        protected string GetContentTypeByExtension(string fileExtension)
+        {
+	        switch (fileExtension)
+	        {
+                case "xlsx":
+	                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case "xls":
+	                return "application/xls";
+                case "xml":
+	                return "application/xml";
+                case "zip":
+	                return "application/zip";
+                case "rar":
+	                return "";
+                default:
+	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
+	        }
+        }
     }
 }

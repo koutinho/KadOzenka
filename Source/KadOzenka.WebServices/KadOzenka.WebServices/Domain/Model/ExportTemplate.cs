@@ -42,5 +42,16 @@ namespace KadOzenka.WebServices.Domain.Model
 		[Column("register_view_id")]
 		public string RegisterViewId { get; set; }
 
+		[Column("result_file_name")]
+		public string ResultFileName { get; set; }
+
+		[Column("file_extension")]
+		public string FileExtension { get; set; }
+
+		[Column("file_template_title")]
+		public string FileTemplateTitle { get; set; }
+
+		[Column("file_result_title")]
+		public string FileResultTitle { get; set; }
 	}
 }

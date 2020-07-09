@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 	public class SudExportAllDataToExcelProcess : SudExportLongProcess
 	{
 		public const string LongProcessName = "SudExportAllDataToExcelProcess";
-		public const string StorageName = "SudExportFiles";
 
 		public static void AddImportToQueue()
 		{
@@ -62,12 +61,16 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
-			var file = DataExporterSud.ExportAllDataToExcel();
-			FileStorageManager.Save(file, StorageName, DateTime.Now, $"Полная выгрузка {export.Id}");
+			export.FileResultTitle = $"Полная выгрузка {export.Id}";
+			export.FileExtension = "xlsx";
+			export.Save();
 
-			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
+			var file = DataExporterSud.ExportAllDataToExcel();
+
 			export.DateFinished = DateTime.Now;
-			export.TemplateFileName = $"Полная выгрузка {export.Id}";
+			export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
+			FileStorageManager.Save(file, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
 			export.Save();
 
 			WorkerCommon.SetProgress(processQueue, 100);

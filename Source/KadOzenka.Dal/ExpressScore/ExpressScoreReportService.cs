@@ -6,8 +6,10 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Enum;
 using ObjectModel.Common;
+using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 using ObjectModel.Sud;
@@ -16,9 +18,6 @@ namespace KadOzenka.Dal.ExpressScore
 {
 	public class ExpressScoreReportService
 	{
-
-		public static string ExpressScoreReportStorage = "ExpressScoreReportStorage";
-
 		/// <summary>
 		/// Матрица для обязательных параметров
 		/// </summary>
@@ -485,13 +484,18 @@ namespace KadOzenka.Dal.ExpressScore
 					UserId = SRDSession.GetCurrentUserId().Value,
 					DateCreated = currentDate,
 					Status = 0,
-					TemplateFileName = fileName,
+					FileResultTitle = fileName,
+					FileExtension = "xlsx",
 					MainRegisterId = OMExpressScore.GetRegisterId(),
 					RegisterViewId = "EsEstimateObjectCard"
 				};
 				export.Save();
 
-				FileStorageManager.Save(stream, ExpressScoreReportStorage, currentDate, export.Id.ToString());
+				export.DateFinished = DateTime.Now;
+				export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+				export.Status = (long)ImportStatus.Completed;
+				FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+				export.Save();
 
 				return export.Id;
 			}

@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 	public class SudExportStatisticCheckProcess : SudExportLongProcess
 	{
 		public const string LongProcessName = "SudExportStatisticCheckProcess";
-		public const string StorageName = "SudExportFiles";
 
 		public static void AddImportToQueue()
 		{
@@ -62,18 +61,21 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
+			export.FileResultTitle = $"Статистика по положительным судебным решениям {export.Id}";
+			export.FileExtension = "xlsx";
+			export.Save();
+
 			var file = DataExporterSud.ExportStatisticCheck();
 
             WorkerCommon.SetProgress(processQueue, 75);
 
-            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Статистика по положительным судебным решениям {export.Id}");
+            export.DateFinished = DateTime.Now;
+            export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+            export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
+            FileStorageManager.Save(file, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+            export.Save();
 
-			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
-			export.DateFinished = DateTime.Now;
-			export.TemplateFileName = $"Статистика по положительным судебным решениям {export.Id}";
-			export.Save();
-
-			WorkerCommon.SetProgress(processQueue, 100);
+            WorkerCommon.SetProgress(processQueue, 100);
 
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат выгрузки Статистики по положительным судебным решениям");
 		}

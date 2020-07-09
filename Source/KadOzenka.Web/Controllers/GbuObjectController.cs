@@ -735,30 +735,6 @@ namespace KadOzenka.Web.Controllers
 				.ToList();
 		}
 
-		#region Download result
-
-		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-        public FileResult GetFileResult(long reportId)
-        {
-	        var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-
-	        if (export == null)
-	        {
-		        throw new Exception("Файл не найден");
-	        }
-
-	        var file = FileStorageManager.GetFileStream(GbuReportService.ReportGbuStorage, export.DateCreated,
-		        export.Id.ToString());
-
-	        StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
-
-	        return File(file, contentType, export.TemplateFileName + $".{fileExtension}");
-		}
-
-
-		#endregion
-
-
 		#region Support Methods
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]

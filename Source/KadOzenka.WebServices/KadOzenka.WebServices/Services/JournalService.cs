@@ -92,11 +92,10 @@ namespace KadOzenka.WebServices.Services
 		/// <returns></returns>
 		public ResultLoadFileDto GetFileReport(Guid guidRecord)
 		{
-
-			string storageName = "KoExportResult";
+			string storageName = "DataExporterByTemplate";
 			string defaultContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 			var res =  new ResultLoadFileDto();
-			string defaultEx = ".xlsx";
+			string defaultEx = "xlsx";
 			FileStream stream;
 			try
 			{
@@ -114,14 +113,10 @@ namespace KadOzenka.WebServices.Services
 					return null;
 				}
 
-				stream = FileStorageManager.GetFileStream(storageName, template.DateCreate, template.Id.ToString());
+				stream = FileStorageManager.GetFileStream(storageName, template.DateFinished.GetValueOrDefault(), template.ResultFileName);
 				res.Stream = stream;
-				res.ContentType = GetContentType(template.TemplateFileName) ?? defaultContentType;
-				res.FileName = template.TemplateFileName;
-				if (string.IsNullOrEmpty(Path.GetExtension(res.FileName)))
-				{
-					res.FileName += defaultEx;
-				}
+				res.ContentType = GetContentType(template.FileExtension) ?? defaultContentType;
+				res.FileName = $"{template.FileResultTitle}.{(!string.IsNullOrEmpty(template.FileExtension) ? template.FileExtension : defaultEx)}";
 			}
 			catch (Exception e)
 			{
@@ -134,19 +129,17 @@ namespace KadOzenka.WebServices.Services
 
 		#region support method
 
-		private string GetContentType(string fileName)
+		private string GetContentType(string fileExtension)
 		{
-			string ex = Path.GetExtension(fileName);
-
-			if (string.IsNullOrEmpty(ex))
+			if (string.IsNullOrEmpty(fileExtension))
 			{
 				return null;
 			}
-			if (ex == ".xlsx")
+			if (fileExtension == "xlsx")
 			{
 				return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 			}
-			if (ex == ".xml")
+			if (fileExtension == "xml")
 			{
 				return "application/xml";
 			}

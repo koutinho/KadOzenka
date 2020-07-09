@@ -51,7 +51,7 @@
 	$(document).ready(function() {
 		$('#report').on('click',
 			function() {
-				var url = "@Url.Action("DownloadReport", "ExpressScore")" + `?reportId=${$(this).data('report-id')}`;
+                var url = "@Url.Action("DownloadExportResult", "DataExport")" + `?exportId=${$(this).data('report-id')}`;
 				var a = document.createElement('a');
 				a.setAttribute('href', url);
 				a.click();

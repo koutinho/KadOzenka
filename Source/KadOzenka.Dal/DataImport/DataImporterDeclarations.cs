@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.DataImport
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
 		{
-			var export = new OMImportDataLog
+			var import = new OMImportDataLog
 			{
 				UserId = SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
@@ -40,10 +40,10 @@ namespace KadOzenka.Dal.DataImport
 				MainRegisterId = mainRegisterId,
 				RegisterViewId = registerViewId
 			};
-			export.Save();
+			import.Save();
 
-			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)

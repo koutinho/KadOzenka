@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			string msg = "";
 			foreach (var item in result)
 			{
-				msg += $"<a href='/DataExport/DownloadKoExportResult?reportId={item.FileId}&isXml={item.IsXml}'>{item.FileName}</a>" + "<br>";
+				msg += $"<a href='/DataExport/DownloadExportResult?exportId={item.FileId}'>{item.FileName}</a>" + "<br>";
 			}
 
 			return msg;

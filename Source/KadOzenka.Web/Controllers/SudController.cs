@@ -1577,36 +1577,6 @@ namespace KadOzenka.Web.Controllers
 			{ Success = "Процедура выгрузки Статистики по объектам недвижимости успешно добавлена в очередь" });
 		}
 
-		[HttpGet]
-		public FileContentResult DownloadExportResult(long exportId, bool withXmlExtension)
-		{
-			var export = OMExportByTemplates
-				.Where(x => x.Id == exportId)
-				.SelectAll()
-				.Execute()
-				.FirstOrDefault();
-
-			if (export == null)
-			{
-				throw new Exception($"В журнале выгрузок не найдена запись с ИД {exportId}");
-			}
-
-			var fileName = export.TemplateFileName;
-			var templateFile = FileStorageManager.GetFileStream(SudExportDataToExcelGbuProcess.StorageName, export.DateCreated,
-				fileName);
-			var bytes = new byte[templateFile.Length];
-			templateFile.Read(bytes);
-			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
-
-			if (withXmlExtension)
-			{
-				fileExtension = "xml";
-				contentType = "application/xml";
-			}
-
-			return File(bytes, contentType, fileName.Replace(exportId.ToString(), Path.GetFileNameWithoutExtension(export.TemplateFileName)) + "." + fileExtension);
-		}
-
 		#endregion
 
 		#region Attachments

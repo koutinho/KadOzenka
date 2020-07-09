@@ -44,30 +44,54 @@
 			@Html.TextBox("dateFinished", Model.DateFinished?.ToString("dd.MM.yyyy HH:mm:ss"), new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
 		</div>
 	</div>
-	<div class="form-group">
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Наименование файла шаблона")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("fileTemplateTitle", $"{Model.FileTemplateTitle}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Наименование результирующего файла")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("fileResultTitle", $"{Model.FileResultTitle}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
 		<div class="col-sm-2">
-			@Html.CustomLabelFor("Имя файла шаблона")
+			@Html.CustomLabelFor("Объем файла шаблона(КБ)")
 		</div>
 		<div class="col-sm-4">
-			@Html.TextBox("templateFileName", Model.TemplateFileName, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+			@Html.TextBox("txtFileTemplateSizeKB", ViewBag.TemplateFileSizeKb != null ? (string)(ViewBag.TemplateFileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
 		</div>
 	</div>
-	<div class="form-group">
-		<div class="col-sm-2">
-			@Html.CustomLabelFor("Объем файла (КБ)")
-		</div>
-		<div class="col-sm-4">
-			@Html.TextBox("txtFileSizeKB", ViewBag.FileSizeKb != null ? (string)(ViewBag.FileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="col-sm-2">
-			@Html.CustomLabelFor("Объем файла (МБ)")
-		</div>
-		<div class="col-sm-4">
-			@Html.TextBox("txtFileSizeMB", ViewBag.FileSizeMb != null ? (string)(ViewBag.FileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
-		</div>
-	</div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем файла шаблона (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileTemplateSizeMB", ViewBag.TemplateFileSizeMb != null ? (string)(ViewBag.TemplateFileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем результирующего файла(КБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileResultSizeKB", ViewBag.ResultFileSizeKb != null ? (string)(ViewBag.ResultFileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем результирующего файла (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileResultSizeMB", ViewBag.ResultFileSizeMb != null ? (string)(ViewBag.ResultFileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
 	<div class="form-group">
 		<div class="col-sm-2">
 			@Html.CustomLabelFor("ИД Ошибки")

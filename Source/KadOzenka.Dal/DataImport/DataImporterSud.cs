@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.DataImport
 
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
 
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), export.Id);
 		}
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

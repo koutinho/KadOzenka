@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				long reportId = KoObjectSetEstimatedGroup.Run(param);
 
 				string message = "Присвоение оценочной группы успешно завершено." +
-				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", message);
 
                 WorkerCommon.SetProgress(processQueue, 100);

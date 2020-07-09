@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.LongProcess
             processQueue.Save();
 
             var reportId = GbuReportService.SaveReport("Получение графических факторов из ИС РЕОН");
-            var message = $"{info}\n" + $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+            var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН завершено", message, roleId);
 

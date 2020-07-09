@@ -90,7 +90,7 @@ namespace KadOzenka.Web.Controllers
             long exportByTemplateId;
             using (var stream = file.OpenReadStream())
 			{
-                exportByTemplateId = DataExporterCommon.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+                exportByTemplateId = DataExporterByTemplate.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
 					columns.Select(x => new DataExportColumn
 					{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 			}
@@ -109,7 +109,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
-			var resultStream = (MemoryStream)DataExporterCommon.ExportDataToExcel(mainRegisterId, excelFile,
+			var resultStream = (MemoryStream)DataExporterByTemplate.ExportDataToExcel(mainRegisterId, excelFile,
 				columns.Select(x => new DataExportColumn
 				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 
@@ -135,54 +135,60 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
         [SRDFunction(Tag = "")]
-		public ActionResult DownloadExcelTemplate(long objectId, string fileType)
+		public ActionResult DownloadExportTemplate(long exportId)
 		{
 			OMExportByTemplates export = OMExportByTemplates
-				.Where(x => x.Id == objectId)
+				.Where(x => x.Id == exportId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
 
 			if (export == null)
 			{
-				throw new Exception($"В журнале выгрузок не найдена запись с ИД {objectId}");
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {exportId}");
+			}
+			var file = DataExporterCommon.GetExportTemplateFileStream(exportId);
+
+			return File(file, GetContentTypeByExtension(export.FileExtension), DataExporterCommon.GetDownloadTemplateFileName(export));
+		}
+
+		[SRDFunction(Tag = "")]
+		public FileResult DownloadExportResult(long exportId)
+		{
+			OMExportByTemplates export = OMExportByTemplates
+				.Where(x => x.Id == exportId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {exportId}");
 			}
 
-			string FileStorageName = "DataExporterByTemplate";
-			string TemplateName = $"{export.Id}_{fileType}";
-			FileStream templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
+			var file = DataExporterCommon.GetExportResultFileStream(exportId);
 
-			byte[] bytes = new byte[templateFile.Length];
-			templateFile.Read(bytes);
-
-			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
-
-			return File(bytes, contentType, $"{Path.GetFileNameWithoutExtension(export.TemplateFileName)}_{fileType}.{fileExtensiton}");			
+			return File(file, GetContentTypeByExtension(export.FileExtension), DataExporterCommon.GetDownloadResultFileName(export));
 		}
 
 		[HttpGet]
         [SRDFunction(Tag = "")]
-		public ActionResult RepeatFormation(long objectId)
+		public ActionResult RepeatFormation(long exportId)
 		{
 			OMExportByTemplates export = OMExportByTemplates
-				.Where(x => x.Id == objectId)
+				.Where(x => x.Id == exportId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
 
 			if (export == null)
 			{
-				throw new Exception($"В журнале выгрузок не найдена запись с ИД {objectId}");
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {exportId}");
 			}
 
-			string FileStorageName = "DataExporterByTemplate";
-			string TemplateName = $"{export.Id}_Template";
-			FileStream fs = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
-			
-			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
-			DataExporterCommon.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.TemplateFileName, fs, columns);
+			var resultMessage = DataExporterCommon.RepeatFormation(export);
 
-			return Content($"Выполнено повторное формирование файла по шаблону {export.TemplateFileName}");				
+			return Content(resultMessage);
 		}
 
 		[HttpGet]
@@ -194,18 +200,26 @@ namespace KadOzenka.Web.Controllers
 			ViewBag.User = SRDCache.Users[(int)export.UserId].FullName;
 			ViewBag.StatusDescription = ((RegistersExportStatus)export.Status).GetEnumDescription();
 
-			string FileStorageName = "DataExporterByTemplate";
-			string fileLocation = FileStorageManager.GetPathForFileFolder(FileStorageName, export.DateCreated);
-
-			fileLocation = Path.Combine(fileLocation, $"{export.Id}_Template");
-	
-			if (!string.IsNullOrEmpty(fileLocation))
-				if (System.IO.File.Exists(fileLocation))
+			string templateFileLocation = FileStorageManager.GetPathForFileFolder(DataExporterCommon.FileStorageName, export.DateCreated);
+			templateFileLocation = Path.Combine(templateFileLocation, DataExporterCommon.GetStorageTemplateFileName(export.Id));
+			if (!string.IsNullOrEmpty(templateFileLocation))
+				if (System.IO.File.Exists(templateFileLocation))
 				{
-					long fileSize = new FileInfo(fileLocation).Length;
-					ViewBag.FileSizeKb = Convert.ToString(fileSize / 1024);
-					ViewBag.FileSizeMb = Convert.ToString(fileSize / (1024 * 1024));
+					long templateFileSize = new FileInfo(templateFileLocation).Length;
+					ViewBag.TemplateFileSizeKb = Convert.ToString(templateFileSize / 1024);
+					ViewBag.TemplateFileSizeMb = Convert.ToString(templateFileSize / (1024 * 1024));
 				}
+
+			string resultFileLocation = FileStorageManager.GetPathForFileFolder(DataExporterCommon.FileStorageName, export.DateFinished.GetValueOrDefault());
+			resultFileLocation = Path.Combine(resultFileLocation, DataExporterCommon.GetStorageResultFileName(export.Id));
+			if (!string.IsNullOrEmpty(resultFileLocation))
+				if (System.IO.File.Exists(resultFileLocation))
+				{
+					long resultFileSize = new FileInfo(resultFileLocation).Length;
+					ViewBag.ResultFileSizeKb = Convert.ToString(resultFileSize / 1024);
+					ViewBag.ResultFileSizeMb = Convert.ToString(resultFileSize / (1024 * 1024));
+				}
+
 			List<ColumnsMappingDto> columnsMappingDtoList = null;
 			if (!string.IsNullOrEmpty(export.ColumnsMapping))
 			{
@@ -222,15 +236,7 @@ namespace KadOzenka.Web.Controllers
 			return View(export);
 		}
 
-        [SRDFunction(Tag = "")]
-		public FileResult DownloadExportData(long exportId)
-        {
-            var file = DataExporterCommon.GetExportResultFileStream(exportId);
-
-            return File(file, Helpers.Consts.ExcelContentType, "Результат выгрузки данных по списку" + ".xlsx");
-        }
-
-        [SRDFunction(Tag = "")]
+		[SRDFunction(Tag = "")]
 		public ActionResult UnloadSettings()
 		{
 			KOUnloadSettings settings = new KOUnloadSettings();
@@ -251,44 +257,7 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
-        [SRDFunction(Tag = "")]
-		public FileResult DownloadKoExportResult(long reportId, bool isXml)
-		{
-			var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-
-			if (export == null)
-			{
-				throw new Exception($"В журнале выгрузок не найдена запись с ИД {reportId}");
-			}
-
-			var templateFile = FileStorageManager.GetFileStream(SaveReportDownload.StorageName, export.DateCreated,
-				export.Id.ToString());
-
-
-			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
-
-			string defaultEx = ".xlsx";
-			string reportName = export.TemplateFileName;
-
-			if (string.IsNullOrEmpty(Path.GetExtension(reportName)) && !isXml)
-			{
-				reportName += defaultEx;
-			}
-
-			if (isXml)
-			{
-				contentType = "application/xml";
-
-				if (string.IsNullOrEmpty(Path.GetExtension(reportName)))
-				{
-					reportName += ".xml";
-				}
-			}
-
-			return File(templateFile, contentType, reportName);
-		}
-
-        #region Support Methods
+		#region Support Methods
 
         private void ValidateColumns(List<DataColumnDto> columns)
         {

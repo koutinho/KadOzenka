@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.LongProcess
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
             var reportId = GbuReportService.SaveReport("олучение заданий на оценку из ИС РЕОН");
-            var message = $"{info}\n" + $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+            var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
 

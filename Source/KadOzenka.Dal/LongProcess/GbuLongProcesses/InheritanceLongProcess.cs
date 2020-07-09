@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
 				NotificationSender.SendNotification(processQueue, "Результат операции наследование", message);
 			}

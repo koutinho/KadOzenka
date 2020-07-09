@@ -11,6 +11,7 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using ObjectModel.Common;
@@ -77,13 +78,13 @@ namespace KadOzenka.Dal.LongProcess
 
                 var reportId = SaveReport();
                 var message = "Операция успешно завершена." +
-                              $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+                              $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
                 NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
 
                 WorkerCommon.SetProgress(processQueue, 100);
 
                 //TODO для тестирования
-                var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
+                var link = $"https://localhost:50252/DataExport/DownloadExportResult?exportId={reportId}";
             }
             catch (Exception ex)
             {
@@ -248,13 +249,18 @@ namespace KadOzenka.Dal.LongProcess
                     UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
                     DateCreated = currentDate,
                     Status = (int)ImportStatus.Added,
-                    TemplateFileName = _reportName,
+                    FileResultTitle = _reportName,
+                    FileExtension = "xlsx",
                     MainRegisterId = OMMainObject.GetRegisterId(),
                     RegisterViewId = "GbuObjects"
                 };
                 export.Save();
 
-                FileStorageManager.Save(stream, _reportGbuStorage, currentDate, export.Id.ToString());
+                export.DateFinished = DateTime.Now;
+                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+                export.Status = (long)ImportStatus.Completed;
+                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+                export.Save();
 
                 return export.Id;
             }

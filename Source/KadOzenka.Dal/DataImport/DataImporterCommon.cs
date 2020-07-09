@@ -137,7 +137,7 @@ namespace KadOzenka.Dal.DataImport
             };
             export.Save();
             FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
-            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), export.Id);
 
             return export.Id;
         }

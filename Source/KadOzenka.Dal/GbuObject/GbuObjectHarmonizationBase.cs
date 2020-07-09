@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.GbuObject
             var reportId = ReportService.SaveReport(ReportName);
 
             //TODO для тестирования
-            var link = $"https://localhost:50252/GbuObject/GetFileResult?reportId={reportId}";
+            var link = $"https://localhost:50252/DataExport/DownloadExportResult?exportId={reportId}";
 
             return reportId;
         }

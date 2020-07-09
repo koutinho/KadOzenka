@@ -41,14 +41,14 @@ namespace KadOzenka.Dal.LongProcess
             });
         }
 
-        public void SendExportResultNotificationWithAttachment(OMExportByTemplates export, string subject, bool withXmlExtension = false)
+        public void SendExportResultNotificationWithAttachment(OMExportByTemplates export, string subject)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
 				Addressers = new MessageAddressersDto{UserIds = new long[] { export.UserId } },
 				Subject = subject,
 				Message = $@"Статус операции: {((ObjectModel.Directory.Common.ImportStatus)export.Status).GetEnumDescription()}
-					<a href=""/Sud/DownloadExportResult?exportId={export.Id}&withXmlExtension={withXmlExtension}"">Скачать результат</a>",
+					<a href=""/DataExport/DownloadExportResult?exportId={export.Id}"">Скачать результат</a>",
 				IsUrgent = true,
 				IsEmail = true
 			});

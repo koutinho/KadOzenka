@@ -5,6 +5,7 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.ES;
@@ -16,7 +17,6 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		private ExcelFile _excelTemplate;
 		private ExcelWorksheet _mainWorkSheet;
-		public static string ReportGbuStorage = "SaveReportPath";
 
 		private int _currentRow { get; set; }
 
@@ -132,13 +132,18 @@ namespace KadOzenka.Dal.GbuObject
 					UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 					DateCreated = currentDate,
 					Status = (int)ImportStatus.Added,
-					TemplateFileName = fileName,
+					FileResultTitle = fileName,
+					FileExtension = "xlsx",
 					MainRegisterId = OMMainObject.GetRegisterId(),
 					RegisterViewId = "GbuObjects"
 				};
 				export.Save();
 
-				FileStorageManager.Save(stream, ReportGbuStorage, currentDate, export.Id.ToString());
+				export.DateFinished = DateTime.Now;
+				export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+				export.Status = (long)ImportStatus.Completed;
+				FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+				export.Save();
 
 				return export.Id;
 			}

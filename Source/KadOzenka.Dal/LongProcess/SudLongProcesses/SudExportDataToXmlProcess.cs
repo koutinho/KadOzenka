@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 	public class SudExportDataToXmlProcess : SudExportLongProcess
 	{
 		public const string LongProcessName = "SudExportDataToXmlProcess";
-		public const string StorageName = "SudExportFiles";
 
 		public static void AddImportToQueue()
 		{
@@ -62,18 +61,21 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
+			export.FileResultTitle = $"Выгрузка судебных решений на сайт в формате XML {export.Id}";
+			export.FileExtension = "xml";
+			export.Save();
+
 			var file = DataExporterSud.ExportDataToXml();
 
             WorkerCommon.SetProgress(processQueue, 75);
 
-            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений на сайт в формате XML {export.Id}");
+            export.DateFinished = DateTime.Now;
+            export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+            export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
+            FileStorageManager.Save(file, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+            export.Save();
 
-			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
-			export.DateFinished = DateTime.Now;
-			export.TemplateFileName = $"Выгрузка судебных решений на сайт в формате XML {export.Id}";
-			export.Save();
-
-            NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений на сайт в формате XML", true);
+            NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений на сайт в формате XML");
 
             WorkerCommon.SetProgress(processQueue, 100);
         }

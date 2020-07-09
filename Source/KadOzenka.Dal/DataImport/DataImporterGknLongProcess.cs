@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.DataImport
 
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
 
-            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), export.Id);
         }
 
 	    public static void RestartImport(long? importId)
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.DataImport
                 import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Added;
 	            import.Save();
 
-	            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), import.Id);
+	            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 
                 ts.Complete();
 	        }

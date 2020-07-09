@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 	public class SudExportDataToExcelGbuProcess : SudExportLongProcess
 	{
 		public const string LongProcessName = "SudExportDataToExcelGbuProcess";
-		public const string StorageName = "SudExportFiles";
 
 		public static void AddImportToQueue()
 		{
@@ -62,18 +61,21 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
+			export.FileResultTitle = $"Выгрузка судебных решений для ГБУ {export.Id}";
+			export.FileExtension = "xlsx";
+			export.Save();
+
 			var file = DataExporterSud.ExportDataToExcelGbu();
 
             WorkerCommon.SetProgress(processQueue, 75);
 
-            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений для ГБУ {export.Id}");
+            export.DateFinished = DateTime.Now;
+            export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+            export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
+            FileStorageManager.Save(file, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+            export.Save();
 
-			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
-			export.DateFinished = DateTime.Now;
-			export.TemplateFileName = $"Выгрузка судебных решений для ГБУ {export.Id}";
-			export.Save();
-
-			WorkerCommon.SetProgress(processQueue, 100);
+            WorkerCommon.SetProgress(processQueue, 100);
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений для ГБУ");
 		}
 	}
