@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/10/2020 11:33:25" ReportInfo.CreatorVersion="2019.4.11.0">
+  <ScriptText>
+        using System;
+        using System.Collections;
+        using System.Collections.Generic;
+        using System.ComponentModel;
+        using System.Windows.Forms;
+        using System.Drawing;
+        using System.Data;
+        using FastReport;
+        using FastReport.Data;
+        using FastReport.Dialog;
+        using FastReport.Barcode;
+        using FastReport.Table;
+        using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+        
+
+  }
+}
+    </ScriptText>
+  <Dictionary/>
+  <ReportPage Name="Page1" LeftMargin="20" TopMargin="70" RightMargin="0" BottomMargin="0" Watermark.Font="Arial, 60pt">
+    <DataBand Name="Data1" Width="718.2" Height="858.06" BeforePrintEvent="Data1_BeforePrint" AfterLayoutEvent="Data1_AfterLayout">
+      <TextObject Name="Text1" Left="198.45" Top="18.9" Width="302.4" Height="18.9" Text="Тестовый фоновый отчет" Font="Arial, 10pt"/>
+    </DataBand>
+  </ReportPage>
+</Report>

@@ -1,6 +1,9 @@
 ﻿@using KadOzenka.Web.Models.BackgroundScheduler.Common
 @model KadOzenka.Web.Models.BackgroundScheduler.BackgroundReportLongProcessModel
 
+
+<div id="reportViewerWindow"></div>
+
 @using (Html.BeginForm("ScheduleBackgroundProcess", "BackgroundScheduler", FormMethod.Post, new {id = "saveBackgroundProcess"}))
 {
 <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
@@ -20,23 +23,23 @@
 
     <div class="form-group">
         <div class="col-sm-3">
-            @Html.CustomLabelFor(x => x.SelectedFormId)
+            @Html.CustomLabelFor(x => x.SelectedReportId)
         </div>
         <div class="col-sm-7">
             @(Html.Kendo()
-                .DropDownListFor(m => m.SelectedFormId)
+                .DropDownListFor(m => m.SelectedReportId)
                 .DataTextField("Text")
                 .DataValueField("Value")
-                .BindTo(Model.Forms))
+                .BindTo(Model.Reports))
         </div>
         <div class="col-sm-1">
             @(Html.Kendo().Button()
-                .Name("tuneFormBtn")
+                .Name("tuneReportBtn")
                 .IconClass("k-icon k-i-gear")
                 .HtmlAttributes(new {type = "button"})
-                .Events(x => x.Click("tuneForm")))
+                .Events(x => x.Click("tuneReport")))
             @(Html.Kendo().Tooltip()
-                .For("#tuneFormBtn")
+                .For("#tuneReportBtn")
                 .Position(TooltipPosition.Top)
                 .Content("Настроить параметры формы"))
         </div>
@@ -99,50 +102,76 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script>
-	$(document).ready(function () {
-		$("#SaveModel").on('click', SaveModel);
+    var reportWindow;
+
+    $(document).ready(function () {
+        reportWindow = $('#reportViewerWindow').kendoWindow({
+            visible: false,
+            resizable: false,
+            modal: true,
+            iframe: true,
+            close: function() {
+                this.content("");
+            }
+        }).data('kendoWindow');
+
+        $("#tuneReportBtn").data('kendoButton').enable('@Model.Reports.Count' > 0);
+
+        $("#SaveModel").on('click', SaveModel);
     });
 
 
-    function tuneForm() {
 
+
+
+    function tuneReport() {
+        var selectedReportId = $("#@(nameof(Model.SelectedReportId))").data('kendoDropDownList').value();
+        if (selectedReportId === 0) {
+            Common.ShowError("Не выбрана форма");
+        } else {
+            reportWindow.refresh({
+                url: "/Report/Viewer?reportTypeId=" + selectedReportId
+            });
+            reportWindow.center();
+            reportWindow.open();
+            reportWindow.maximize();
+        }
     }
 
 
-
     function SaveModel() {
-		kendo.ui.progress($('body'), true);
-		var form = $('#saveBackgroundProcess');
-		var formObject = Common.Functions.FormToObject(form);
-		$.ajax({
-			type: 'POST',
-			url: form.attr('action'),
-			data: formObject,
-			success: function (response) {
-				if (response.Errors) {
-					var errors = getErrors(response.Errors);
-					Common.ShowError(errors);
-					return;
-				} else {
-					Common.ShowMessage("Процесс запланирован");
-					CloseMainWindow();
-				}
-			},
-			error: function (response) {
-				Common.ShowError(response.responseText);
-			},
-			complete: function () {
-				kendo.ui.progress($('body'), false);
-			}
-		});
-	}
+        kendo.ui.progress($('body'), true);
+        var form = $('#saveBackgroundProcess');
+        var formObject = Common.Functions.FormToObject(form);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage("Процесс запланирован");
+                    CloseMainWindow();
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 
-	function CloseMainWindow() {
-		setTimeout(function () {
+    function CloseMainWindow() {
+        setTimeout(function () {
             Common.UI.CloseWindow('registerModalWindow', window.parent);
         }, 1000);
-	}
+    }
 
 </script>
 

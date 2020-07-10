@@ -12,11 +12,10 @@ namespace KadOzenka.Web.Models.BackgroundScheduler
     {
         private const string KeyFromConfigForBasePathToFolders = "KoBaseFolderForBackgroundReportingForms";
 
-
         [Display(Name = "Отчетная форма")]
         [Required(ErrorMessage = "Не выбрана Отчетная форма")]
-        public long SelectedFormId { get; set; }
-        public List<SelectListItem> Forms { get; set; }
+        public long SelectedReportId { get; set; }
+        public List<SelectListItem> Reports { get; set; }
 
         [Display(Name = "Место сохранения")]
         [Required(ErrorMessage = "Не выбрано Место сохранения")]
@@ -26,7 +25,7 @@ namespace KadOzenka.Web.Models.BackgroundScheduler
 
         public BackgroundReportLongProcessModel()
         {
-            Forms = GetForms();
+            Reports = GetReports();
             Folders = GetFolders();
         }
 
@@ -43,13 +42,16 @@ namespace KadOzenka.Web.Models.BackgroundScheduler
 
         #region Support Methods
 
-        private List<SelectListItem> GetForms()
+        private List<SelectListItem> GetReports()
         {
-            return OMBackgroundReportingForms.Where(x => true).SelectAll().Execute().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).ToList();
+            return OMBackgroundReportingForms.Where(x => true)
+                .SelectAll()
+                .OrderBy(x => x.Name)
+                .Execute().Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }).ToList();
         }
 
         private List<SelectListItem> GetFolders()
