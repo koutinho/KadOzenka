@@ -24111,6 +24111,86 @@ namespace ObjectModel.Common
             }
         }
 
+
+        private string _resultfilename;
+        /// <summary>
+        /// 80101800 Имя результирующего файла (RESULT_FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101800)]
+        public string ResultFileName
+        {
+            get
+            {
+                CheckPropertyInited("ResultFileName");
+                return _resultfilename;
+            }
+            set
+            {
+                _resultfilename = value;
+                NotifyPropertyChanged("ResultFileName");
+            }
+        }
+
+
+        private string _fileextension;
+        /// <summary>
+        /// 80101900 Тип файла (FILE_EXTENSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101900)]
+        public string FileExtension
+        {
+            get
+            {
+                CheckPropertyInited("FileExtension");
+                return _fileextension;
+            }
+            set
+            {
+                _fileextension = value;
+                NotifyPropertyChanged("FileExtension");
+            }
+        }
+
+
+        private string _datafiletitle;
+        /// <summary>
+        /// 80102000 Наименование файла данных (DATA_FILE_TITLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80102000)]
+        public string DataFileTitle
+        {
+            get
+            {
+                CheckPropertyInited("DataFileTitle");
+                return _datafiletitle;
+            }
+            set
+            {
+                _datafiletitle = value;
+                NotifyPropertyChanged("DataFileTitle");
+            }
+        }
+
+
+        private string _resultfiletitle;
+        /// <summary>
+        /// 80102100 Наименование результирующего файла (RESULT_FILE_TITLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80102100)]
+        public string ResultFileTitle
+        {
+            get
+            {
+                CheckPropertyInited("ResultFileTitle");
+                return _resultfiletitle;
+            }
+            set
+            {
+                _resultfiletitle = value;
+                NotifyPropertyChanged("ResultFileTitle");
+            }
+        }
+
     }
 }
 
