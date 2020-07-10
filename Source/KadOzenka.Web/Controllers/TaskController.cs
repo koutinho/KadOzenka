@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,10 +12,12 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
@@ -24,12 +27,15 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectModel.SRD;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -41,6 +47,7 @@ namespace KadOzenka.Web.Controllers
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
         public GroupService GroupService { get; set; }
+        public RegisterAttributeService RegisterAttributeService { get; set; }
 
         public TaskController()
 		{
@@ -50,6 +57,7 @@ namespace KadOzenka.Web.Controllers
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
             GroupService = new GroupService();
+            RegisterAttributeService = new RegisterAttributeService();
 
         }
 
@@ -737,16 +745,64 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
-		public ActionResult DownloadGraphicFactorsFromReon(long taskId)
+        public ActionResult DownloadGraphicFactorsFromReon(long taskId)
         {
-            KoFactorsFromReon.AddProcessToQueue(taskId);
-            return View();
+            var model = new GraphicFactorsFromReonModel
+            {
+                TaskId = taskId
+            };
+
+            return View(model);
         }
 
-		#endregion
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
+        public JsonResult GetReonRegisterAttributes()
+        {
+            //1 - целое число, 2 - вещественное
+            var numericRegisterAttributes = RegisterAttributeService
+                .GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
+                .Where(x => x.Type == 1 || x.Type == 2)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name
+                });
+
+            return new JsonResult(numericRegisterAttributes);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
+        public JsonResult DownloadGraphicFactorsFromReon(GraphicFactorsFromReonModel model)
+        {
+            if(model.TaskId == 0)
+                throw new Exception("Не выбрано задание на оценку");
+            if (model.AttributeIds == null || model.AttributeIds.Count == 0)
+                throw new Exception("Не выбраны атрибуты");
+
+            var inputParameters = new KoFactorsFromReonInputParameters
+            {
+                TaskId = model.TaskId,
+                AttributeIds = model.AttributeIds
+            };
+            ////TODO код для отладки
+            //new KoFactorsFromReon().StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    Status_Code = Status.Added,
+            //    UserId = SRDSession.GetCurrentUserId(),
+            //    Parameters = inputParameters.SerializeToXml()
+            //}, new CancellationToken());
+
+            KoFactorsFromReon.AddProcessToQueue(inputParameters);
+
+            return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
+        }
+
+        #endregion
 
 
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult DataMapping(long taskId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)				

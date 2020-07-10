@@ -10,6 +10,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Registers;
 using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
@@ -23,7 +24,7 @@ namespace KadOzenka.Dal.LongProcess
 {
     public class KoFactorsFromReon : LongProcess
     {
-        private const long REOIN_SOURCE_REGISTER_ID = 44355304;
+        public static readonly long ReonSourceRegisterId = 44355304;
         private RosreestrDataApi ReonWebClientService { get; set; }
         private RegisterAttributeService RegisterAttributeService { get; set; }
         private GbuReportService GbuReportService { get; set; }
@@ -36,23 +37,32 @@ namespace KadOzenka.Dal.LongProcess
         }
 
 
-        public static void AddProcessToQueue(long taskId)
+        public static void AddProcessToQueue(KoFactorsFromReonInputParameters inputParameters)
         {
-            LongProcessManager.AddTaskToQueue(nameof(KoFactorsFromReon), objectId: taskId, registerId: OMTask.GetRegisterId());
+            LongProcessManager.AddTaskToQueue(nameof(KoFactorsFromReon), parameters: inputParameters.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
-            if (!processQueue.ObjectId.HasValue)
+            
+            var messageSubject = "Получение графических факторов из ИС РЕОН";
+            KoFactorsFromReonInputParameters inputParameters = null;
+            if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
+            {
+                inputParameters = processQueue.Parameters.DeserializeFromXml<KoFactorsFromReonInputParameters>();
+            }
+            if (inputParameters == null || inputParameters.TaskId == 0)
             {
                 WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
                 WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                NotificationSender.SendNotification(processQueue, messageSubject,
+                    "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
                 return;
             }
 
-            var task = GetTask(processQueue.ObjectId.Value);
+            var task = GetTask(inputParameters.TaskId);
             var document = GetDocument(task.DocumentId);
             var units = GetUnits(task.Id);
 
@@ -73,7 +83,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     var request = GetRequest(task, unit);
                     var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
-                    var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, response);
+                    var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, inputParameters.AttributeIds, response);
                     if (currentErrorIds?.Count > 0)
                     {
                         errors++;
@@ -97,16 +107,14 @@ namespace KadOzenka.Dal.LongProcess
             });
 
             var info = isError
-                ? $"При загрузке факторов возникли ошибки. Всего: {total}; Успешно: {success}; Ошибки: {errors}"
-                : $"Загрузка факторов выполнена без ошибок. Всего: {total}; Успешно: {success}; Ошибки: {errors}";
-
-            processQueue.Message = info;
-            processQueue.Save();
+                ? $"При загрузке факторов возникли ошибки. Всего единиц оценки: {total}; Успешно: {success}; Ошибки: {errors}"
+                : $"Загрузка факторов выполнена без ошибок. Всего единиц оценки: {total}; Успешно: {success}; Ошибки: {errors}";
+            WorkerCommon.SetMessage(processQueue, info);
 
             var reportId = GbuReportService.SaveReport("Получение графических факторов из ИС РЕОН");
             var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
-            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН завершено", message, roleId);
+            NotificationSender.SendNotification(processQueue, messageSubject, message, roleId);
 
             WorkerCommon.SetProgress(processQueue, 100);
         }
@@ -116,10 +124,15 @@ namespace KadOzenka.Dal.LongProcess
 
         private OMTask GetTask(long taskId)
         {
-            return OMTask.Where(x => x.Id == taskId)
+            var task = OMTask.Where(x => x.Id == taskId)
                 .Select(x => x.EstimationDate)
                 .Select(x => x.DocumentId)
                 .ExecuteFirstOrDefault();
+
+            if (task == null)
+                throw new Exception($"Не найдено задание на оценку с Id ='{taskId}'");
+
+            return task;
         }
 
         private OMInstance GetDocument(long? documentId)
@@ -142,10 +155,10 @@ namespace KadOzenka.Dal.LongProcess
 
         private FactorsFromReonRequest GetRequest(OMTask task, OMUnit unit)
         {
-            return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate);
+            return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate ?? DateTime.Today);
         }
 
-        public List<long> ProcessServiceResponse(long objectId, OMInstance taskDocument, GraphFactorsData response)
+        public List<long> ProcessServiceResponse(long objectId, OMInstance taskDocument, List<long> selectedAttributeIds, GraphFactorsData response)
         {
             var errorIds = new List<long>();
             response.GraphFactors?.ForEach(factor =>
@@ -159,7 +172,8 @@ namespace KadOzenka.Dal.LongProcess
                     if (attribute == null)
                         attribute = CreateAttribute(attributeName, attributeType);
 
-                    SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
+                    if(selectedAttributeIds.Contains(attribute.Id))
+                        SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
                 }
                 catch (Exception ex)
                 {
@@ -192,7 +206,7 @@ namespace KadOzenka.Dal.LongProcess
 
         private OMAttribute GetAttribute(string attributeName)
         {
-            return OMAttribute.Where(x => x.RegisterId == REOIN_SOURCE_REGISTER_ID && x.Name == attributeName)
+            return OMAttribute.Where(x => x.RegisterId == ReonSourceRegisterId && x.Name == attributeName)
                 .Select(x => x.Id)
                 .ExecuteFirstOrDefault();
         }
@@ -203,7 +217,7 @@ namespace KadOzenka.Dal.LongProcess
             using (var ts = new TransactionScope())
             {
                 omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName,
-                    REOIN_SOURCE_REGISTER_ID, type, false);
+                    ReonSourceRegisterId, type, false);
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
                 RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);

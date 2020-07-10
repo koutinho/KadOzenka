@@ -23,7 +23,7 @@
       </Parameters>
     </Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" SRDFunctionTag="KO.TASKS.EXPORT_TO_EXCEL" OpenInRadWindow="false" />
-    <Button Caption="Загрузка графических факторов из ИС РЕОН" NavigateURL="/Task/DownloadGraphicFactorsFromReon" SRDFunctionTag="KO.TASKS.DOWNLOAD_GRAPHIC_FACTORS_FROM_REON" Icon="fas fa-arrow-down" WindowHeight="100" WindowWidth="500">
+    <Button Caption="Загрузка графических факторов из ИС РЕОН" NavigateURL="/Task/DownloadGraphicFactorsFromReon" SRDFunctionTag="KO.TASKS.DOWNLOAD_GRAPHIC_FACTORS_FROM_REON" Icon="fas fa-arrow-down" WindowHeight="750" WindowWidth="700">
       <Parameters>
         <Parameter Key="TaskId" Value="[ObjectID]" />        
       </Parameters>
