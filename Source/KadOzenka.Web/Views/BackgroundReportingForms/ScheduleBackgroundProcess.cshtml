@@ -1,0 +1,148 @@
+﻿@using KadOzenka.Web.Models.BackgroundReportingForms
+@model BackgroundReportLongProcessModel
+
+@using (Html.BeginForm("ScheduleBackgroundProcess", "BackgroundReportingForms", FormMethod.Post, new {id = "saveBackgroundProcess"}))
+{
+<div class="form-horizontal" style="padding: 5% 5% 0 5%;">
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.BackgroundProcessType)
+        </div>
+        <div class="col-sm-8">
+            @(Html.Kendo()
+                .DropDownListFor(m => m.BackgroundProcessType)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .BindTo(ComboBoxHelper.GetSelectList(typeof(BackgroundProcessType))))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.SelectedFormId)
+        </div>
+        <div class="col-sm-7">
+            @(Html.Kendo()
+                .DropDownListFor(m => m.SelectedFormId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .BindTo(Model.Forms))
+        </div>
+        <div class="col-sm-1">
+            @(Html.Kendo().Button()
+                .Name("tuneFormBtn")
+                .IconClass("k-icon k-i-gear")
+                .HtmlAttributes(new {type = "button"})
+                .Events(x => x.Click("tuneForm")))
+            @(Html.Kendo().Tooltip()
+                .For("#tuneFormBtn")
+                .Position(TooltipPosition.Top)
+                .Content("Настроить параметры формы"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.SchedulerType)
+        </div>
+        <div class="col-sm-8">
+            @(Html.Kendo()
+                .DropDownListFor(m => m.SchedulerType)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .BindTo(ComboBoxHelper.GetSelectList(typeof(SchedulerType))))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FirstFormationDate)
+        </div>
+        <div class="col-sm-8">
+            @Html.Kendo().DatePickerFor(m => m.FirstFormationDate).Min(DateTime.Today)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FirstFormationTimeStr)
+        </div>
+        <div class="col-sm-8">
+            @(Html.Kendo().MaskedTextBoxFor(x => x.FirstFormationTimeStr)
+                .Mask("00:00")
+                .HtmlAttributes(new { style = "width: 100%" }))
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.SelectedFolderName)
+        </div>
+        <div class="col-sm-8">
+            @(Html.Kendo()
+                .DropDownListFor(m => m.SelectedFolderName)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .BindTo(Model.Folders))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+            @Html.KendoButton("SaveModel", "Сохранить", isReadonly: true)
+        </div>
+    </div>
+</div>
+}
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+	$(document).ready(function () {
+		$("#SaveModel").on('click', SaveModel);
+    });
+
+
+    function tuneForm() {
+
+    }
+
+
+
+    function SaveModel() {
+		kendo.ui.progress($('body'), true);
+		var form = $('#saveBackgroundProcess');
+		var formObject = Common.Functions.FormToObject(form);
+		$.ajax({
+			type: 'POST',
+			url: form.attr('action'),
+			data: formObject,
+			success: function (response) {
+				if (response.Errors) {
+					var errors = getErrors(response.Errors);
+					Common.ShowError(errors);
+					return;
+				} else {
+					Common.ShowMessage("Процесс запланирован");
+					CloseMainWindow();
+				}
+			},
+			error: function (response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function () {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+	function CloseMainWindow() {
+		setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 1000);
+	}
+
+</script>
+

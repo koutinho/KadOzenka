@@ -98,7 +98,7 @@
     <None Remove="Config\Registers\Views\CoreLongProcessQueue.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessQueueCard.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessService.xml" />
-    <None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
+	<None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
     <None Remove="Config\Registers\Views\CoreMessages.xml" />
     <None Remove="Config\Registers\Views\CoreMessagesMy.xml" />
     <None Remove="Config\Registers\Views\CoreMessagesRecipients.xml" />
