@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using Core.Main.FileStorages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Ko;
-using System.IO;
 
-namespace KadOzenka.Web.Models.BackgroundReportingForms
+namespace KadOzenka.Web.Models.BackgroundScheduler
 {
     public class BackgroundReportLongProcessModel : BackgroundLongProcessModel, IValidatableObject
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace KadOzenka.Web.Models.BackgroundReportingForms
+namespace KadOzenka.Web.Models.BackgroundScheduler.Common
 {
     public enum SchedulerType
     {

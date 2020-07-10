@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using KadOzenka.Web.Models.BackgroundReportingForms;
+﻿using KadOzenka.Web.Models.BackgroundScheduler;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KadOzenka.Web.Controllers
 {
-    public class BackgroundReportingFormsController : KoBaseController
+    public class BackgroundSchedulerController : KoBaseController
 	{
         [HttpGet]
         public ActionResult ScheduleBackgroundProcess()

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Web.Models.BackgroundScheduler.Common;
 
-namespace KadOzenka.Web.Models.BackgroundReportingForms
+namespace KadOzenka.Web.Models.BackgroundScheduler
 {
     public class BackgroundLongProcessModel : IValidatableObject
     {

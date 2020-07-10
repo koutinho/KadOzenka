@@ -1,7 +1,7 @@
-﻿@using KadOzenka.Web.Models.BackgroundReportingForms
-@model BackgroundReportLongProcessModel
+﻿@using KadOzenka.Web.Models.BackgroundScheduler.Common
+@model KadOzenka.Web.Models.BackgroundScheduler.BackgroundReportLongProcessModel
 
-@using (Html.BeginForm("ScheduleBackgroundProcess", "BackgroundReportingForms", FormMethod.Post, new {id = "saveBackgroundProcess"}))
+@using (Html.BeginForm("ScheduleBackgroundProcess", "BackgroundScheduler", FormMethod.Post, new {id = "saveBackgroundProcess"}))
 {
 <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
 
