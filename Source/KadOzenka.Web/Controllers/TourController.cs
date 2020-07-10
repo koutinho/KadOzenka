@@ -15,6 +15,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Attributes;
@@ -1158,6 +1159,31 @@ namespace KadOzenka.Web.Controllers
 
 			calcGroup.Destroy();
 			return Json(new { Success = "Удаление выполненно" });
+		}
+
+		#endregion
+
+		#region Выгрузка результатов оценки
+
+		[SRDFunction(Tag = "")]
+		public ActionResult UnloadSettings()
+		{
+			KOUnloadSettings settings = new KOUnloadSettings();
+			return View(settings);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = "")]
+		public ActionResult UnloadSettings(UnloadSettingsDto settings)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			KOUnloadSettings settingsUnload = UnloadSettingsDto.Map(settings);
+			KoDownloadResultProcess.AddImportToQueue(settingsUnload.IdTour, settingsUnload);
+			return Ok();
 		}
 
 		#endregion

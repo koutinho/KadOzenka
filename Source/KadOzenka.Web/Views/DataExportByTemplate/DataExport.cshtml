@@ -298,7 +298,7 @@
                         formData.append("registerViewId", registerViewId);
                         $.ajax({
                             type: 'POST',
-                            url: '@Url.Action("AddExportToQueue", "DataExport")',
+                            url: '@Url.Action("AddExportToQueue", "DataExportByTemplate")',
                             data: formData,
                             contentType: false,
                             processData: false,
@@ -322,7 +322,7 @@
                     } else {
                         $.ajax({
                             type: 'POST',
-                            url: '@Url.Action("ExportDataToExcel", "DataExport")',
+                            url: '@Url.Action("ExportDataToExcel", "DataExportByTemplate")',
                             data: formData,
                             contentType: false,
                             processData: false,
@@ -330,7 +330,7 @@
                                 kendo.ui.progress($('#exportForm'), false);
                                 $("#loadButton").data('kendoButton').enable(true);
                                 if (data.success) {
-                                    window.location = '@Url.Action("DownloadExcelFile", "DataExport")' +
+                                    window.location = '@Url.Action("DownloadExcelFile", "DataExportByTemplate")' +
                                         "?fileName=" +
                                         data.fileName;
                                 } else {
@@ -468,7 +468,7 @@
                 },
                 async: {
                     autoUpload: isForMarketObjects,
-                    saveUrl: '@Url.Action("ParseFileColumns", "DataExport")'
+                    saveUrl: '@Url.Action("ParseFileColumns", "DataExportByTemplate")'
                 },
                 select: function (e) {
                     if (isForMarketObjects)

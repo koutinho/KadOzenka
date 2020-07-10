@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.DataExport
 
 		public static string RepeatFormation(OMExportByTemplates export)
 		{
-			if (!string.IsNullOrEmpty(export.TemplateFileName))
+			if (string.IsNullOrEmpty(export.TemplateFileName))
 			{
 				throw new Exception("Не задан шаблон файла");
 			}

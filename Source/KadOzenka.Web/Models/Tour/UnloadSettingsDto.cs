@@ -1,11 +1,8 @@
-﻿using ObjectModel.KO;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using ObjectModel.KO;
 
-namespace KadOzenka.Web.Models.DataImporterLayout
+namespace KadOzenka.Web.Models.Tour
 {
 	public class UnloadSettingsDto
 	{

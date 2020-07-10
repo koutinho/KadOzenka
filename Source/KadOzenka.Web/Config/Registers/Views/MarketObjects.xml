@@ -19,7 +19,7 @@
           </Parameters>
       </Button>
 
-      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="MARKET.DATA_EXPORT" Icon="fas fa-arrow-circle-up">
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExportByTemplate/DataExport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="MARKET.DATA_EXPORT" Icon="fas fa-arrow-circle-up">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />
