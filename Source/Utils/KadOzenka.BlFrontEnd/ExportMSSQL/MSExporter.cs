@@ -1,5 +1,6 @@
 ﻿using Core.Register;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
 using ObjectModel.Core.Shared;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
@@ -4890,7 +4891,18 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                     ApproveDate = inCreateDate,
                                     Description = inDescription,
                                 };
-                                inputDoc.Save();
+
+                                try
+                                {
+                                    inputDoc.Save();
+                                }
+                                catch
+                                {
+                                    string error = String.Format("Ошибка при записи документа.Id ={0}, RegNumber={1}, CreateDate={2}, ApproveDate={3}, Description={4}", inputDoc.Id, inputDoc.RegNumber, inputDoc.CreateDate.ToString(), inputDoc.ApproveDate.Value.ToString(), inputDoc.Description);
+                                    Console.WriteLine(error);
+                                    throw new SystemException(error);
+                                }
+
                                 docs.Add(inputDoc);
                             }
 
@@ -4904,7 +4916,16 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                try
+                                {
+                                    KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                }
+                                catch
+                                {
+                                    string error = String.Format(String.Format("Ошибка при записи значения фактора. Id={0}, Value={1}, Object_id={2}, Document_id={3}, sDate={4}, otDate={5}", id_factor.ToString(), value.ToString(), record.Id.ToString(), inputDoc.Id.ToString(), date.ToString(), inputDoc.CreateDate.ToString()));
+                                    Console.WriteLine(error);
+                                    throw new SystemException(error);
+                                }
                                 #endregion
                             }
                         }
