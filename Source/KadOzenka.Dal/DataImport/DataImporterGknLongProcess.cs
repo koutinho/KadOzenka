@@ -29,22 +29,25 @@ namespace KadOzenka.Dal.DataImport
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, long registerId, long objectId)
 		{
-			var export = new OMImportDataLog
+			var import = new OMImportDataLog
 			{
 				UserId = SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
-				DataFileName = templateFileName,
+				DataFileTitle = DataImporterCommon.GetDataFileTitle(templateFileName),
+				FileExtension = DataImporterCommon.GetFileExtension(templateFileName),
 				RegisterId = registerId,
 				ObjectId = objectId,
 				MainRegisterId = mainRegisterId,
 				RegisterViewId = registerViewId
 			};
-			export.Save();
+			import.Save();
 
-			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
+			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+			import.Save();
 
-            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), export.Id);
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
         }
 
 	    public static void RestartImport(long? importId)
@@ -124,46 +127,46 @@ namespace KadOzenka.Dal.DataImport
 			import.DateStarted = DateTime.Now;
 			import.Save();
 					   
-			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			try
 			{
                 ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
                 if (omTask != null && omTask.NoteType_Code == KoNoteType.Petition)
                 {
-                    if (import.DataFileName.EndsWith(".zip"))
+                    if (import.FileExtension == "zip")
                     {
                         ImportGknFromZip(import, templateFileStream, ".xlsx");
                     }
-                    else if (import.DataFileName.EndsWith(".rar"))
+                    else if (import.FileExtension == "rar")
                     {
                         ImportGknFromRar(import, templateFileStream, ".xlsx");
                     }
-                    else if (import.DataFileName.EndsWith(".xlsx"))
+                    else if (import.FileExtension == "xlsx")
                     {
                         ImportGknFromXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
                     }
                     else
                     {
-                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}, поддерживаемые расширения: .zip, .rar, .xlsx.");
+                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}, поддерживаемые расширения: .zip, .rar, .xlsx.");
                     }
                 }
                 else
                 {
-                    if (import.DataFileName.EndsWith(".zip"))
+                    if (import.FileExtension == "zip")
                     {
                         ImportGknFromZip(import, templateFileStream, ".xml");
                     }
-                    else if (import.DataFileName.EndsWith(".rar"))
+                    else if (import.FileExtension == "rar")
                     {
                         ImportGknFromRar(import, templateFileStream, ".xml");
                     }
-                    else if (import.DataFileName.EndsWith(".xml"))
+                    else if (import.FileExtension == "xml")
                     {
                         ImportGknFromXml(templateFileStream, import.ObjectId, import, cancellationToken);
                     }
                     else
                     {
-                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}");
+                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}");
                     }
                 }
 

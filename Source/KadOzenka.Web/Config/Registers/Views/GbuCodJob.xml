@@ -34,7 +34,7 @@
 	        </Parameters>
 	    </Button>
 
-    <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/CodDictionaryImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="GBU.COD.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
+    <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/CodDictionaryImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="GBU.COD.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
       <Parameters>
         <Parameter Key="CodId" Value="[ObjectId]" />
       </Parameters>

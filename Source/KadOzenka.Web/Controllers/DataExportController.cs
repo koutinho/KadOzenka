@@ -12,7 +12,7 @@ using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
 using KadOzenka.Web.Attributes;
-using KadOzenka.Web.Models.DataImporterLayout;
+using KadOzenka.Web.Models.DataImport;
 
 namespace KadOzenka.Web.Controllers
 {

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 
-namespace KadOzenka.Web.Models.DataImporterLayout
+namespace KadOzenka.Web.Models.DataImport
 {
 	public class DataImporterLayoutDto
 	{
@@ -29,13 +29,18 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public DateTime? DateFinished { get; set; }
 
         [Display(Name = "Имя файла")]
-        public string TemplateFileName { get; set; }
+        public string DataFileName { get; set; }
+
+        [Display(Name = "Имя результирующего файла")]
+        public string ResultFileName { get; set; }
 		public long? ErrorId { get; set; }
 		public long? MainRegisterId { get; set; }
 		public string RegisterViewId { get; set; }
 		public string ResultMessage { get; set; }
-		public string FileSizeKb { get; set; }
-		public string FileSizeMb { get; set; }
+		public string DataFileSizeKb { get; set; }
+		public string DataFileSizeMb { get; set; }
+		public string ResultFileSizeKb { get; set; }
+		public string ResultFileSizeMb { get; set; }
 		public string ColumnsMappingDtoListJson { get; set; }
         public long? NumberOfImportedObjects { get; set; }
         public long? TotalNumberOfObjects { get; set; }
@@ -48,14 +53,20 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				return new DataImporterLayoutDto();
 			}
 
-			var fileLocation =
-				Path.Combine(
-					FileStorageManager.GetPathForFileFolder(DataImporterCommon.FileStorageName, entity.DateCreated),
-					DataImporterCommon.GetTemplateName(entity.Id));
-			long? fileSize = null;
-			if (!string.IsNullOrEmpty(fileLocation) && System.IO.File.Exists(fileLocation))
+			long? dataFileSize = null;
+			string dataFileLocation = FileStorageManager.GetPathForFileFolder(DataImporterCommon.FileStorageName, entity.DateCreated);
+			dataFileLocation = Path.Combine(dataFileLocation, DataImporterCommon.GetStorageDataFileName(entity.Id));
+			if (!string.IsNullOrEmpty(dataFileLocation) && System.IO.File.Exists(dataFileLocation))
 			{
-				fileSize = new FileInfo(fileLocation).Length;
+				dataFileSize = new FileInfo(dataFileLocation).Length;
+			}
+
+			long? resultFileSize = null;
+			string resultFileLocation = FileStorageManager.GetPathForFileFolder(DataImporterCommon.FileStorageName, entity.DateFinished.GetValueOrDefault());
+			resultFileLocation = Path.Combine(resultFileLocation, DataImporterCommon.GetStorageResultFileName(entity.Id));
+			if (!string.IsNullOrEmpty(resultFileLocation) && System.IO.File.Exists(resultFileLocation))
+			{
+				resultFileSize = new FileInfo(resultFileLocation).Length;
 			}
 
 			List<ColumnsMappingDto> columnsMappingDtoList = null;
@@ -80,13 +91,16 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				DateCreated = entity.DateCreated,
 				DateStarted = entity.DateStarted,
 				DateFinished = entity.DateFinished,
-				TemplateFileName = entity.DataFileName,
+				DataFileName = entity.DataFileTitle,
+				ResultFileName = entity.ResultFileTitle,
 				ErrorId = entity.ErrorId,
 				MainRegisterId = entity.MainRegisterId,
 				RegisterViewId = entity.RegisterViewId,
 				ResultMessage = entity.ResultMessage,
-				FileSizeKb = fileSize.HasValue ? Convert.ToString(fileSize / 1024) : string.Empty,
-				FileSizeMb = fileSize.HasValue ? Convert.ToString(fileSize / (1024 * 1024)) : string.Empty,
+				DataFileSizeKb = dataFileSize.HasValue ? Convert.ToString(dataFileSize / 1024) : string.Empty,
+				DataFileSizeMb = dataFileSize.HasValue ? Convert.ToString(dataFileSize / (1024 * 1024)) : string.Empty,
+				ResultFileSizeKb = resultFileSize.HasValue ? Convert.ToString(resultFileSize / 1024) : string.Empty,
+				ResultFileSizeMb = resultFileSize.HasValue ? Convert.ToString(resultFileSize / (1024 * 1024)) : string.Empty,
 				ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList),
 			    NumberOfImportedObjects = entity.NumberOfImportedObjects,
                 TotalNumberOfObjects = entity.TotalNumberOfObjects

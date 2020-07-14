@@ -12,7 +12,7 @@
       </Parameters>
     </Button>
 
-      <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="MARKET.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
+      <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/DataImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="MARKET.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />

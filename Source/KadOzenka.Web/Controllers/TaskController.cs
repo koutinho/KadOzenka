@@ -21,7 +21,6 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
-using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ObjectModel.Core.Register;
@@ -31,6 +30,7 @@ using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
+using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -111,7 +111,7 @@ namespace KadOzenka.Web.Controllers
 					Id = x.Id,
 					DateCreated = x.CreationDate,
 					UserName = x.Author,
-					TemplateFileName = x.FileName,
+					DataFileName = x.FileName,
 				    NumberOfImportedObjects = x.NumberOfImportedObjects,
 				    TotalNumberOfObjects = x.TotalNumberOfObjects,
                 });

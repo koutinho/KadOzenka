@@ -308,7 +308,7 @@
 					}
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("ImportCodDictionaryDataFromExcel", "DataImport")',
+                        url: '@Url.Action("ImportCodDictionaryDataFromExcel", "DataImportByTemplate")',
                         data: formData,
                         contentType: false,
                         processData: false,
@@ -326,7 +326,7 @@
                                 goToJournalBtn.attr('href', hrefForJournal);
                             }
                             if (data.ResultFileName) {
-                                window.location = '@Url.Action("DownloadExcelResultFile", "DataImport")' +
+                                window.location = '@Url.Action("DownloadExcelResultFile", "DataImportByTemplate")' +
                                     "?resultFileName=" +
                                     data.ResultFileName;
                             }
@@ -443,7 +443,7 @@
                 },
                 async: {
                     autoUpload: 'True',
-                    saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
+                    saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
                 },
                 validation: {
                     allowedExtensions: ['.xls', '.xlsx']

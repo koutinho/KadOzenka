@@ -343,7 +343,7 @@
 					}
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("ImportDataFromExcel", "DataImport")',
+                        url: '@Url.Action("ImportDataFromExcel", "DataImportByTemplate")',
                         data: formData,
                         contentType: false,
                         processData: false,
@@ -361,7 +361,7 @@
                                 goToJournalBtn.attr('href', hrefForJournal);
                             }
                             if (data.ResultFileName) {
-                                window.location = '@Url.Action("DownloadExcelResultFile", "DataImport")' +
+                                window.location = '@Url.Action("DownloadExcelResultFile", "DataImportByTemplate")' +
                                     "?resultFileName=" +
                                     data.ResultFileName;
                             }
@@ -466,7 +466,7 @@
                 else
                 {
                 {<text>
-                url: '/DataImport/GetTreeAttributes',
+                url: '/DataImportByTemplate/GetTreeAttributes',
                 </text>}
                 }
 				success: function (data) {
@@ -497,7 +497,7 @@
                 },
                 async: {
                     autoUpload: isForMarketObjects,
-                    saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
+                    saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
                 },
                 select: function (e) {
                     if (isForMarketObjects)

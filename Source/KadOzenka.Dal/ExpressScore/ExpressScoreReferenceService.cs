@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Shared.Extensions;
@@ -39,11 +40,6 @@ namespace KadOzenka.Dal.ExpressScore
 	        }
 
 	        return false;
-        }
-
-        public string GetFileName()
-        {
-	        return "";
         }
 
         public long CreateReference(string name, ReferenceItemCodeType valueType)
@@ -186,7 +182,7 @@ namespace KadOzenka.Dal.ExpressScore
             item.Destroy();
         }
 
-        public void CreateOrUpdateReferenceThroughLongProcess(Stream file, ImportFileFromExcelDto settings, string fileName, long idFile)
+        public void CreateOrUpdateReferenceThroughLongProcess(OMImportDataLog import, ImportFileFromExcelDto settings)
         {
 	        OMEsReference reference;
 	        if (settings.IsNewReference)
@@ -224,11 +220,14 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 			}
 
-	        var resFile = ImportReferenceItemsFromExcel(file, reference, settings.FileInfo);
-	        var fileResultSavedName = $"{fileName}_Result";
-	        var idFileRes = SaveFileToStorage(resFile, fileResultSavedName);
-	        SendImportResultNotification(reference, settings.FileInfo.FileName, idFileRes, idFile);
+	        var dataFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+		        import.DataFileName);
+
+            var resFileStream = ImportReferenceItemsFromExcel(dataFileStream, reference, settings.FileInfo);
+            SaveResultFile(import, resFileStream);
+            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id);
 		}
+
         public void UpdateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, long referenceId, bool deleteOldValues)
         {
             var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
@@ -274,14 +273,56 @@ namespace KadOzenka.Dal.ExpressScore
         public void PreparingForImportAndImport(Stream fileStream, OMEsReference reference,
 	        ImportReferenceFileInfoDto fileImportInfo)
         {
+	        var import = CreateDataFileImport(fileStream, fileImportInfo);
+	        try
+	        {
+		        import.Status_Code = ImportStatus.Running;
+		        import.DateStarted = DateTime.Now;
+		        import.Save();
+
+		        var resFileStream = ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
+		        SaveResultFile(import, resFileStream);
+
+		        import.Status_Code = ImportStatus.Completed;
+		        import.Save();
+
+                SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(fileImportInfo.FileName), import.Id);
+	        }
+	        catch (Exception ex)
+	        {
+		        long errorId = ErrorManager.LogError(ex);
+		        import.Status_Code = ImportStatus.Faulted;
+		        import.DateFinished = DateTime.Now;
+		        import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+		        import.Save();
+
+		        throw;
+            }
+        }
+
+        public static OMImportDataLog CreateDataFileImport(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo)
+        {
 	        var currentTime = DateTime.Now;
-	        var fileSavedName = $"{fileImportInfo.FileName} ({currentTime.GetString().Replace(":", "_")})";
-	        long idFile = SaveFileToStorage(fileStream, fileSavedName);
-	        var resFile = ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
-	        var fileResultSavedName = $"{fileSavedName}_Result";
-	        var idFileRes = SaveFileToStorage(resFile, fileResultSavedName);
-	        SendImportResultNotification(reference, fileImportInfo.FileName, idFileRes, idFile);
-		}
+	        var fileName = $"{DataImporterCommon.GetDataFileTitle(fileImportInfo.FileName)} ({currentTime.GetString().Replace(":", "_")})";
+
+            var import = new OMImportDataLog
+	        {
+		        UserId = SRDSession.GetCurrentUserId().Value,
+		        DateCreated = currentTime,
+		        Status_Code = ImportStatus.Added,
+		        DataFileTitle = fileName,
+		        FileExtension = DataImporterCommon.GetFileExtension(fileImportInfo.FileName),
+		        MainRegisterId = MainRegisterId,
+		        RegisterViewId = RegisterViewId
+	        };
+	        import.Save();
+
+	        import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+	        FileStorageManager.Save(fileStream, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+	        import.Save();
+
+	        return import;
+        }
 
         private Stream ImportReferenceItemsFromExcel(Stream fileStream, OMEsReference reference,
             ImportReferenceFileInfoDto fileImportInfo)
@@ -401,28 +442,16 @@ namespace KadOzenka.Dal.ExpressScore
 			return stream;
         }
 
-        public static long SaveFileToStorage(Stream file, string fileSavedName)
+        private void SaveResultFile(OMImportDataLog import, Stream streamResult)
         {
-	        DateTime currentTime = DateTime.Now;
-
-
-	        var import = new OMImportDataLog
-	        {
-		        UserId = SRDSession.GetCurrentUserId().Value,
-		        DateCreated = currentTime,
-		        Status_Code = ImportStatus.Added,
-		        DataFileName = fileSavedName,
-		        MainRegisterId = MainRegisterId,
-		        RegisterViewId = RegisterViewId
-			};
+	        import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
+	        import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
+	        import.DateFinished = DateTime.Now;
+	        FileStorageManager.Save(streamResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
 	        import.Save();
-
-			FileStorageManager.Save(file, DataImporterCommon.FileStorageName, import.DateCreated, import.Id.ToString());
-
-			return import.Id;
         }
 
-        private void SendImportResultNotification(OMEsReference reference, string fileName, long idFileRes, long idFile)
+        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId)
         {
             new MessageService().SendMessages(new MessageDto
             {
@@ -430,12 +459,13 @@ namespace KadOzenka.Dal.ExpressScore
                     new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
                 Subject = $"Результат загрузки данных в справочник: {reference.Name} от ({DateTime.Now.GetString()})",
                 Message = $@"Загрузка файла ""{fileName}"" была завершена.
-<a href=""/ExpressScopeReference/DownloadImportedFile?idFile={idFileRes}"">Скачать результат</a>
-<a href=""/ExpressScopeReference/DownloadImportedFile?idFile={idFile}"">Скачать исходный файл</a>",
+<a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
+<a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
                 IsUrgent = true,
                 IsEmail = true
             });
         }
+
         private long GetCountRows(Stream fileStream)
         {
 	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);

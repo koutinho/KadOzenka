@@ -2,14 +2,13 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Common;
 using ObjectModel.ES;
 
 namespace KadOzenka.Dal.LongProcess.ExpressScore
@@ -20,11 +19,8 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 
 		public static void AddProcessToQueue(Stream file, ImportFileFromExcelDto settings)
 		{
-			var fileSavedName = $"{settings.FileInfo.FileName} ({DateTime.Now.GetString().Replace(":", "_")})";
-
-			long fileId = ExpressScoreReferenceService.SaveFileToStorage(file, fileSavedName);
-
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMEsReference.GetRegisterId(), fileId, settings.SerializeToXml());
+			var import = ExpressScoreReferenceService.CreateDataFileImport(file, settings.FileInfo);
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMEsReference.GetRegisterId(), import.Id, settings.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -45,11 +41,11 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 					return;
 				}
 
+				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+				import.DateStarted = DateTime.Now;
+				import.Save();
+
 				var settings = processQueue.Parameters.DeserializeFromXml<ImportFileFromExcelDto>();
-
-				var file = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-					import.Id.ToString());
-
 
 				var refService = new ExpressScoreReferenceService();
 				var t = Task.Run(() => {
@@ -70,7 +66,11 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 					}
 				}, cancelToken);
 
-				refService.CreateOrUpdateReferenceThroughLongProcess(file, settings, import.DataFileName, import.Id);
+				refService.CreateOrUpdateReferenceThroughLongProcess(import, settings);
+
+				import.Status_Code = ImportStatus.Completed;
+				import.Save();
+
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
@@ -83,6 +83,24 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 				throw;
 			}
 			
+		}
+
+		public override void LogError(long? objectId, Exception ex, long? errorId = null)
+		{
+			OMImportDataLog import = OMImportDataLog
+				.Where(x => x.Id == objectId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (import == null)
+			{
+				return;
+			}
+
+			import.Status_Code = ImportStatus.Faulted;
+			import.DateFinished = DateTime.Now;
+			import.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : string.Empty)}";
+			import.Save();
 		}
 	}
 }

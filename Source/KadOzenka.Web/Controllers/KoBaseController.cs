@@ -104,7 +104,7 @@ namespace KadOzenka.Web.Controllers
                 case "zip":
 	                return "application/zip";
                 case "rar":
-	                return "";
+	                return "application/octet-stream";
                 default:
 	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
 	        }

@@ -35,14 +35,18 @@ namespace KadOzenka.Dal.DataImport
 				UserId = SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
-				DataFileName = templateFileName,
+				DataFileTitle = DataImporterCommon.GetDataFileTitle(templateFileName),
+				FileExtension = DataImporterCommon.GetFileExtension(templateFileName),
 				ColumnsMapping = JsonConvert.SerializeObject(columns),
 				MainRegisterId = mainRegisterId,
 				RegisterViewId = registerViewId
 			};
 			import.Save();
 
-			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+			import.Save();
+
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 		}
 
@@ -93,7 +97,7 @@ namespace KadOzenka.Dal.DataImport
 			import.Save();
 
 			// Запустить формирование файла
-			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
 			var columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
@@ -104,11 +108,13 @@ namespace KadOzenka.Dal.DataImport
 
             WorkerCommon.SetProgress(processQueue, 75);
 
-            // Сохранение файла
-            FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
+			// Сохранение файла
+			import.DateFinished = DateTime.Now;
+			import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
+			import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
+			FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
 
 			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
-			import.DateFinished = DateTime.Now;
 			import.Save();
 
 			// Отправка уведомления о завершении загрузки

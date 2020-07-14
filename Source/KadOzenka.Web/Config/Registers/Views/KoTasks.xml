@@ -17,7 +17,7 @@
         <Parameter Key="Create" Value="true" />        
       </Parameters>
     </Button>
-    <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" SRDFunctionTag="KO.TASKS.IMPORT_GKN" Icon="fas fa-code" WindowHeight="750" WindowWidth="1150">
+    <Button Caption="Импорт данных ГКН" NavigateURL="/GknDataImport/ImportGkn" SRDFunctionTag="KO.TASKS.IMPORT_GKN" Icon="fas fa-code" WindowHeight="750" WindowWidth="1150">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>

@@ -1,5 +1,5 @@
 ﻿
-@model KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto
+@model KadOzenka.Web.Models.DataImport.DataImporterLayoutDto
 
 <form>
 	<input type="hidden" name="Id" value="@Model.Id" />
@@ -45,31 +45,55 @@
 				<input class="k-textbox" readonly value="@Model.DateFinished?.ToString("dd.MM.yyyy HH:mm:ss")" />
 			</div>
 		</div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Имя файла данных</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.DataFileName" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Имя результирующего файла</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileName" />
+            </div>
+        </div>
 		<div class="form-group">
 			<div class="col-sm-2">
-				<label class="control-label">Имя шаблона файла</label>
+                <label class="control-label">Объем файла данных (КБ)</label>
 			</div>
 			<div class="col-sm-4">
-				<input class="k-textbox" readonly value="@Model.TemplateFileName" />
+				<input class="k-textbox" readonly value="@Model.DataFileSizeKb" />
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				<label class="control-label">Объем файла (КБ)</label>
-			</div>
-			<div class="col-sm-4">
-				<input class="k-textbox" readonly value="@Model.FileSizeKb" />
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				<label class="control-label">Объем файла (MБ)</label>
-			</div>
-			<div class="col-sm-4">
-				<input class="k-textbox" readonly value="@Model.FileSizeMb" />
-			</div>
-		</div>
-		<div class="form-group">
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем файла данных (MБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.DataFileSizeMb" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем результирующего файла (КБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileSizeKb" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем результирующего файла (MБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileSizeMb" />
+            </div>
+        </div>
+        <div class="form-group">
 			<div class="col-sm-2">
 				<label class="control-label">ИД ошибки</label>
 			</div>

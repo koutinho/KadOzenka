@@ -184,73 +184,73 @@ namespace KadOzenka.Web.Controllers
             }
 
             long? referenceId = null;
+            object returnedData;
             try
             {
 	            using (Stream fileStream = file.OpenReadStream())
-                {
+	            {
 
-	                var importInfo = new ImportReferenceFileInfoDto
-                    {
-                        FileName = Path.GetFileNameWithoutExtension(file.FileName),
-                        ValueColumnName = viewModel.Value,
-                        CalcValueColumnName = viewModel.CalcValue,
-                        ValueType = viewModel.ValueType
-                    };
+		            var importInfo = new ImportReferenceFileInfoDto
+		            {
+			            FileName = file.FileName,
+			            ValueColumnName = viewModel.Value,
+			            CalcValueColumnName = viewModel.CalcValue,
+			            ValueType = viewModel.ValueType
+		            };
 
-				if (ReferenceService.UseLongProcess(fileStream))
-				{
-						fileStream.Seek(0, SeekOrigin.Begin);
-						EsUnloadReferenceFromExcel.AddProcessToQueue(fileStream, new ImportFileFromExcelDto
-		                {
-							DeleteOldValues = viewModel.Reference.DeleteOldValues,
-							FileInfo = importInfo,
-							IdReference = viewModel.Reference.IdReference.GetValueOrDefault(),
-							IsNewReference = viewModel.Reference.IsNewReference,
-							NewReferenceName = viewModel.Reference.NewReferenceName
-		                });
+		            if (ReferenceService.UseLongProcess(fileStream))
+		            {
+			            fileStream.Seek(0, SeekOrigin.Begin);
+			            EsUnloadReferenceFromExcel.AddProcessToQueue(fileStream, new ImportFileFromExcelDto
+			            {
+				            DeleteOldValues = viewModel.Reference.DeleteOldValues,
+				            FileInfo = importInfo,
+				            IdReference = viewModel.Reference.IdReference.GetValueOrDefault(),
+				            IsNewReference = viewModel.Reference.IsNewReference,
+				            NewReferenceName = viewModel.Reference.NewReferenceName
+			            });
 
-		                return Json(new { Success = true, message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.", isLongProcess = true });
-				}
-				fileStream.Seek(0, SeekOrigin.Begin);
+			            returnedData = new
+			            {
+				            Success = true,
+				            message =
+					            "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.",
+				            isLongProcess = true
+			            };
+		            }
+		            else
+		            {
+			            fileStream.Seek(0, SeekOrigin.Begin);
 
-					if (viewModel.Reference.IsNewReference)
-                    {
-                        referenceId = ReferenceService.CreateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.NewReferenceName);
-                       
+			            if (viewModel.Reference.IsNewReference)
+			            {
+				            referenceId = ReferenceService.CreateReferenceFromExcel(fileStream, importInfo,
+					            viewModel.Reference.NewReferenceName);
+
+			            }
+			            else
+			            {
+				            ReferenceService.UpdateReferenceFromExcel(fileStream, importInfo,
+					            viewModel.Reference.IdReference.Value, viewModel.Reference.DeleteOldValues);
+			            }
+
+			            returnedData = new
+			            {
+				            Success = true,
+				            message = "Справочник успешно импортирован",
+				            idNewReference = viewModel.Reference.IsNewReference ? referenceId : null,
+			            };
                     }
-                    else
-                    {
-                        ReferenceService.UpdateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.IdReference.Value, viewModel.Reference.DeleteOldValues);
-                    }
-				}
-			}
+
+	            }
+            }
             catch (Exception ex)
             {
                 ErrorManager.LogError(ex);
                 return SendErrorMessage(ex.Message);
             }
 
-            return Json(new { Success = true, idNewReference = viewModel.Reference.IsNewReference ? referenceId : null, message = "Справочник успешно импортирован" });
-        }
-
-        [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
-        public FileContentResult DownloadImportedFile(int idFile)
-        {
-	        var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();
-
-	        if (import == null)
-	        {
-		        throw new Exception("Указанный файл не найден.");
-	        }
-
-            var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-                import.Id.ToString());
-            var bytes = new byte[templateFile.Length];
-            templateFile.Read(bytes);
-            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
-
-            return File(bytes, contentType, $"{import.DataFileName}.{fileExtension}");
+            return Json(returnedData);
         }
     }
 }

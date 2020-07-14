@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Web.Models.DataImporterLayout
+﻿namespace KadOzenka.Web.Models.DataImport
 {
 	public class ColumnsMappingDto
 	{

@@ -876,6 +876,8 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Pages\" />
+    <Folder Include="Views\GknDataImport\" />
+    <Folder Include="Views\DataImportByTemplate\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 

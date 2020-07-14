@@ -226,7 +226,7 @@ namespace KadOzenka.Dal.Tasks
                 .Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == taskId)
                 .SelectAll()
                 .Execute()
-                .Where(x => x.DataFileName.EndsWith(".xlsx") || x.DataFileName.EndsWith(".xml"))
+                .Where(x => x.FileExtension == "xlsx" || x.FileExtension == "xml")
                 .ToList();
 
             commonNumberOfImportedObjects = taskObjectImports.Sum(x => x.NumberOfImportedObjects);

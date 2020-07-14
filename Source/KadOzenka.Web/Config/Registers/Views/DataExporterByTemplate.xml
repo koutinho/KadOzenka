@@ -38,7 +38,8 @@
         <ConditionGroups>
             <ConditionGroup HideOrDisable="Disable">
                 <Conditions>
-                    <Condition Key="[80000700]" Operation="NotEmpty" />
+                    <Condition Key="[80000700]" Operation="Empty" AndOr="Or" />
+                    <Condition Key="[80000800]" Operation="Empty" AndOr="Or" />
                 </Conditions>
             </ConditionGroup>
         </ConditionGroups>

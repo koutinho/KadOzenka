@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Directory
+﻿@using KadOzenka.Web.Models.DataImport
+@using ObjectModel.Directory
 @using Platform.Web.Models.CoreAttachment
 @model KadOzenka.Web.Models.Task.TaskEditModel
 
@@ -119,18 +120,18 @@
             </div>
             <div class="form-group col-sm-12">
                 <div style="padding: 1%;">
-                    @(Html.Kendo().Grid<KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto>()
+                    @(Html.Kendo().Grid<DataImporterLayoutDto>()
                                                   .Name("Grid")
                                                   .Columns(columns =>
                                                   {
                                                       columns.Bound(p => p.Id)
                                                           .ClientTemplate("<div style='text-align:center'> <a href='" +
-                                                                          Url.Action("Download", "DataImporterLayout", new { importId = "#= Id #", downloadResult = false, fileNameWithExtension = "#= TemplateFileName #" }, null) +
+                                                                          Url.Action("DownloadImportDataFile", "DataImport", new { importId = "#= Id #" }, null) +
                                                                           "' class='k-icon k-i-download'></a> </div>")
                                                           .Title("Файл").Width(80);
                                                       columns.Bound(p => p.DateCreated).Format("{0:dd.MM.yyyy hh:mm:ss}");
                                                       columns.Bound(p => p.UserName);
-                                                      columns.Bound(p => p.TemplateFileName);
+                                                      columns.Bound(p => p.DataFileName);
                                                       columns.Template("<div class='progress'></div>").Title("Загрузка объектов");
                                                       columns.Bound(p => p.NumberOfImportedObjects).Hidden();
                                                       columns.Bound(p => p.TotalNumberOfObjects).Hidden();
@@ -220,7 +221,7 @@
                 },
                 async: {
                     autoUpload: true,
-                    saveUrl: '@Url.Action("ImportGknFromTask", "DataImport")'
+                    saveUrl: '@Url.Action("ImportGknFromTask", "GknDataImport")'
                 },
                 upload: function (e) {
                     e.data = { taskId: '@Model.Id' }

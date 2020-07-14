@@ -2,7 +2,6 @@
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +16,7 @@ using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Dal.DataImport
 {
-    public class DataImporterSud : ILongProcess
+	public class DataImporterSud : ILongProcess
 	{
 		public const string LongProcessName = "DataImporterSud";
 
@@ -35,20 +34,22 @@ namespace KadOzenka.Dal.DataImport
 		
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile)
 		{
-			var export = new OMImportDataLog
+			var import = new OMImportDataLog
 			{
 				UserId = SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
-				DataFileName = templateFileName,
+				DataFileTitle = DataImporterCommon.GetDataFileTitle(templateFileName),
+				FileExtension = DataImporterCommon.GetFileExtension(templateFileName),
 				MainRegisterId = mainRegisterId,
 				RegisterViewId = registerViewId
 			};
-			export.Save();
+			import.Save();
 
-			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
-
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), export.Id);
+			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
+			import.Save();
 		}
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -80,7 +81,7 @@ namespace KadOzenka.Dal.DataImport
 			import.Save();
 
 			// Запустить формирование файла
-			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
 
@@ -91,10 +92,12 @@ namespace KadOzenka.Dal.DataImport
             WorkerCommon.SetProgress(processQueue, 75);
 
             // Сохранение файла
-            FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
+			import.DateFinished = DateTime.Now;
+			import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
+            import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
+            FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
 
 			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
-			import.DateFinished = DateTime.Now;
 			import.Save();
 
 			// Отправка уведомления о завершении загрузки

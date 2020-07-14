@@ -4,36 +4,49 @@
               ShowActualDate="false" UseMasterPage="true" 
               DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT" ShowObjectCards="true">
   <Buttons>
-      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-arrow-down">
+      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImport/DownloadImportDataFile" OpenInNewWindow="true" Icon="fas fa-arrow-down">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
-              <Parameter Key="downloadResult" Value="false" />
           </Parameters>
-      </Button>
-    
-      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
-          <Parameters>
-              <Parameter Key="importId" Value="[ObjectID]" />
-              <Parameter Key="downloadResult" Value="true" />
-          </Parameters>
-          <!--<ConditionGroups>
+          <ConditionGroups>
               <ConditionGroup HideOrDisable="Disable">
                   <Conditions>
-                      <Condition Key="[80100300]" Operation="NotEqual" Value="2" />
+                      <Condition Key="[80100700]" Operation="NotEmpty" />
                   </Conditions>
               </ConditionGroup>
-          </ConditionGroups>-->
+          </ConditionGroups>
       </Button>
     
-      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"
+      <Button Caption="Скачать результат" NavigateURL="~/DataImport/DownloadImportResultFile" OpenInNewWindow="true" Icon="fas fa-file-download">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+          </Parameters>
+          <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="[80101800]" Operation="NotEmpty" AndOr="And" />
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>
+      </Button>
+    
+      <Button Caption="Повторить формирование" NavigateURL="~/DataImport/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"
               NeedRefresh="true" WindowHeight="200" WindowWidth="400">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
           </Parameters>
+          <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="[80100800]" Operation="Empty" AndOr="Or" />
+                      <Condition Key="[80100700]" Operation="Empty" AndOr="Or"/>
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>
       </Button>
   </Buttons>
   <Tabs>
-    <Tab Caption="Основные данные" NavigateURL="~/DataImporterLayout/MainData">
+    <Tab Caption="Основные данные" NavigateURL="~/DataImport/MainData">
       <Parameters>
         <Parameter Key="importId" Value="[ObjectID]" />
       </Parameters>

@@ -105,7 +105,6 @@ namespace KadOzenka.Web.Controllers
 				MemoryStream str = new MemoryStream();
 				excelFile.Save(str, SaveOptions.XlsxDefault);
 				str.Seek(0, SeekOrigin.Begin);
-				DataImporterCommission.SaveImportFile(str, excelFile, registerViewId, mainRegisterId);
 				DataImporterCommission.ImportDataCommissionFromExcel(excelFile, registerViewId, mainRegisterId);
 			}
 			catch (Exception e)

@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var attachments = OMImportDataLog.Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == id)
                 .SelectAll().Execute();
-            var omImportDataLogs = attachments.Where(a => a.DataFileName.EndsWith(".xml")).ToList();
+            var omImportDataLogs = attachments.Where(a => a.FileExtension == "xml").ToList();
             xmlImportGkn.FillDictionary(FileStorageManager.GetPathForStorage("SchemaPath"));
 
             var allObjects = new xmlObjectList();
@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.LongProcess
                 xmlObjectList doc;
                 try
                 {
-                    var fileName = DataImporterCommon.GetTemplateName(log.Id);
+                    var fileName = DataImporterCommon.GetStorageDataFileName(log.Id);
                     Console.WriteLine($"Log name: {fileName}");
                     var fs = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, log.DateCreated,
                         fileName);

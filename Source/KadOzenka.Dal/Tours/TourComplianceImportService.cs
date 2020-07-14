@@ -34,152 +34,193 @@ namespace KadOzenka.Dal.Tours
 				throw new Exception("Не задан ид тура");
 			}
 
-			long idFile = SaveFileToStorage(fileStream, fileDto.FileName);
-			fileStream.Seek(0, SeekOrigin.Begin);
-			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-			var mainWorkSheet = excelFile.Worksheets[0];
-
-			AllRows = mainWorkSheet.Rows.Count;
-			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-			ParallelOptions options = new ParallelOptions
+			var import = CreateDataFileImport(fileStream, fileDto.FileName);
+			try
 			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 10
-			};
-			object locked = new object();
+				import.Status_Code = ImportStatus.Running;
+				import.DateStarted = DateTime.Now;
+				import.Save();
 
-			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-			var columnNames = new List<string>();
-			for (var i = 0; i < maxColumns; i++)
-			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value?.ToString());
-			}
+				fileStream.Seek(0, SeekOrigin.Begin);
+				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+				var mainWorkSheet = excelFile.Worksheets[0];
 
-			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
-
-			Parallel.ForEach(dataRows, options, row =>
-			{
-				try
+				AllRows = mainWorkSheet.Rows.Count;
+				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+				ParallelOptions options = new ParallelOptions
 				{
-					var code = mainWorkSheet.Rows[row.Index]
-						.Cells[columnNames.IndexOf(fileDto.CodeColumnName)];
-					var group = mainWorkSheet.Rows[row.Index]
-						.Cells[columnNames.IndexOf(fileDto.GroupColumnName)];
-					ExcelCell territoryType = null;
-					if (!fileDto.TerritoryTypeColumnName.IsNullOrEmpty())
-					{
-						territoryType = mainWorkSheet.Rows[row.Index]
-							.Cells[columnNames.IndexOf(fileDto.TerritoryTypeColumnName)];
-					}
-				
-					ExcelCell typeRoom = null;
-					if (fileDto.RoomTypeColumnName.IsNotEmpty())
-					{
-						typeRoom = mainWorkSheet.Rows[row.Index]
-							.Cells[columnNames.IndexOf(fileDto.RoomTypeColumnName)];
-					}
+					CancellationToken = cancelTokenSource.Token,
+					MaxDegreeOfParallelism = 10
+				};
+				object locked = new object();
 
-					if(code.Value == null || group.Value == null)
-					{
-						throw new Exception("Нет обязательных параметров");
-					}
+				var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+				var columnNames = new List<string>();
+				for (var i = 0; i < maxColumns; i++)
+				{
+					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value?.ToString());
+				}
 
-					if (!decimal.TryParse(group.Value?.ToString().Replace('.',','), out var d))
-					{
-						throw new Exception("Неверное значение группы");
-					}
+				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
+				var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
 
-					KoTypeOfRoom correctTypeOfRoom = KoTypeOfRoom.None;
-					if (typeRoom != null && typeRoom.Value !=null && int.TryParse(typeRoom.Value?.ToString(), out var val))
+				Parallel.ForEach(dataRows, options, row =>
+				{
+					try
 					{
-						switch ((KoTypeOfRoom)val)
+						var code = mainWorkSheet.Rows[row.Index]
+							.Cells[columnNames.IndexOf(fileDto.CodeColumnName)];
+						var group = mainWorkSheet.Rows[row.Index]
+							.Cells[columnNames.IndexOf(fileDto.GroupColumnName)];
+						ExcelCell territoryType = null;
+						if (!fileDto.TerritoryTypeColumnName.IsNullOrEmpty())
 						{
-							case KoTypeOfRoom.Residential: correctTypeOfRoom = KoTypeOfRoom.Residential; break;
-							case KoTypeOfRoom.NotResidential: correctTypeOfRoom = KoTypeOfRoom.NotResidential; break;
+							territoryType = mainWorkSheet.Rows[row.Index]
+								.Cells[columnNames.IndexOf(fileDto.TerritoryTypeColumnName)];
 						}
-					} else if (typeRoom != null)
-					{
-						switch (typeRoom.Value?.ToString())
-						{
-							case "Жилое": correctTypeOfRoom = KoTypeOfRoom.Residential; break;
-							case "Нежилое": correctTypeOfRoom = KoTypeOfRoom.NotResidential; break;
-						}
-					}
 
-					if (OMComplianceGuide.Where(x => x.Code == code.StringValue && x.SubGroup == group.StringValue
-					                                                            && x.TourId == tourId &&
-					                                                            x.TypeRoom_Code == correctTypeOfRoom && x.TypeProperty_Code == objectType)
-						.ExecuteFirstOrDefault() != null)
+						ExcelCell typeRoom = null;
+						if (fileDto.RoomTypeColumnName.IsNotEmpty())
+						{
+							typeRoom = mainWorkSheet.Rows[row.Index]
+								.Cells[columnNames.IndexOf(fileDto.RoomTypeColumnName)];
+						}
+
+						if (code.Value == null || group.Value == null)
+						{
+							throw new Exception("Нет обязательных параметров");
+						}
+
+						if (!decimal.TryParse(group.Value?.ToString().Replace('.', ','), out var d))
+						{
+							throw new Exception("Неверное значение группы");
+						}
+
+						KoTypeOfRoom correctTypeOfRoom = KoTypeOfRoom.None;
+						if (typeRoom != null && typeRoom.Value != null &&
+						    int.TryParse(typeRoom.Value?.ToString(), out var val))
+						{
+							switch ((KoTypeOfRoom) val)
+							{
+								case KoTypeOfRoom.Residential:
+									correctTypeOfRoom = KoTypeOfRoom.Residential;
+									break;
+								case KoTypeOfRoom.NotResidential:
+									correctTypeOfRoom = KoTypeOfRoom.NotResidential;
+									break;
+							}
+						}
+						else if (typeRoom != null)
+						{
+							switch (typeRoom.Value?.ToString())
+							{
+								case "Жилое":
+									correctTypeOfRoom = KoTypeOfRoom.Residential;
+									break;
+								case "Нежилое":
+									correctTypeOfRoom = KoTypeOfRoom.NotResidential;
+									break;
+							}
+						}
+
+						if (OMComplianceGuide.Where(x => x.Code == code.StringValue && x.SubGroup == group.StringValue
+						                                                            && x.TourId == tourId &&
+						                                                            x.TypeRoom_Code ==
+						                                                            correctTypeOfRoom &&
+						                                                            x.TypeProperty_Code == objectType)
+							.ExecuteFirstOrDefault() != null)
+						{
+							lock (locked)
+							{
+								mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение уже существует");
+							}
+
+							return;
+						}
+
+						new OMComplianceGuide
+						{
+							Code = code.StringValue,
+							SubGroup = group.StringValue.Replace(',', '.'),
+							TypeRoom_Code = correctTypeOfRoom,
+							TypeProperty_Code = objectType,
+							TourId = tourId,
+							TerritoryType = territoryType?.Value != null ? territoryType.StringValue : ""
+						}.Save();
+
+						lock (locked)
+						{
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение сохранено");
+						}
+
+					}
+					catch (Exception e)
 					{
 						lock (locked)
 						{
-							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение уже существует");
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {e.Message}");
+							for (int i = 0; i < maxColumns; i++)
+							{
+								mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern
+									.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+							}
+
 						}
-						return;
 					}
+				});
 
-					new OMComplianceGuide
-					{
-						Code = code.StringValue,
-						SubGroup = group.StringValue.Replace(',', '.'),
-						TypeRoom_Code = correctTypeOfRoom,
-						TypeProperty_Code = objectType,
-						TourId = tourId,
-						TerritoryType = territoryType?.Value != null ? territoryType.StringValue : ""
-					}.Save();
+				MemoryStream stream;
+				stream = new MemoryStream();
+				excelFile.Save(stream, SaveOptions.XlsxDefault);
+				stream.Seek(0, SeekOrigin.Begin);
 
-					lock (locked)
-					{
-						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение сохранено");
-					}
+				SaveResultFile(import, stream);
+				SendImportResultNotification(import.DataFileTitle, import.Id);
+			}
+			catch (Exception ex)
+			{
+				long errorId = ErrorManager.LogError(ex);
+				import.Status_Code = ImportStatus.Faulted;
+				import.DateFinished = DateTime.Now;
+				import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+				import.Save();
 
-				}
-				catch (Exception e)
-				{
-					lock (locked)
-					{
-						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {e.Message}");
-						for (int i = 0; i < maxColumns; i++)
-						{
-							mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
-						}
-
-					}
-				}
-			});
-
-			MemoryStream stream;
-			stream = new MemoryStream();
-			excelFile.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			long idResFile = SaveFileToStorage(stream, fileDto.FileName + "_Result");
-			SendImportResultNotification(fileDto.FileName, idResFile, idFile);
+				throw;
+			}
 		}
 
-
-		public static long SaveFileToStorage(Stream file, string fileSavedName)
+		private static OMImportDataLog CreateDataFileImport(Stream fileStream, string fileSavedName)
 		{
-			DateTime currentTime = DateTime.Now;
-
-		
-			var import = new OMImportDataLog
+			var import = new OMImportDataLog()
 			{
-				UserId = SRDSession.GetCurrentUserId().Value,
-				DateCreated = currentTime,
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 				Status_Code = ImportStatus.Added,
-				DataFileName = fileSavedName,
-				MainRegisterId = MainRegisterId,
-				RegisterViewId = RegisterViewId
+				DataFileTitle = DataImporterCommon.GetDataFileTitle(fileSavedName),
+				FileExtension = DataImporterCommon.GetFileExtension(fileSavedName),
+				DateCreated = DateTime.Now,
+				RegisterViewId = RegisterViewId,
+				MainRegisterId = MainRegisterId
 			};
 			import.Save();
-			FileStorageManager.Save(file, DataImporterCommon.FileStorageName, import.DateCreated, import.Id.ToString());
 
-			return import.Id;
+			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(fileStream, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+			import.Save();
+
+			return import;
 		}
 
-		private void SendImportResultNotification(string fileName, long idFileRes, long idFile)
+		private static void SaveResultFile(OMImportDataLog import, MemoryStream streamResult)
+		{
+			import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
+			import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
+			import.DateFinished = DateTime.Now;
+			FileStorageManager.Save(streamResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
+			import.Status_Code = ImportStatus.Completed;
+			import.Save();
+		}
+
+		private void SendImportResultNotification(string fileName, long importId)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
@@ -187,8 +228,8 @@ namespace KadOzenka.Dal.Tours
 					new MessageAddressersDto { UserIds = new long[] { SRDSession.GetCurrentUserId().GetValueOrDefault() } },
 				Subject = $"Результат загрузки таблицы соответствия от ({DateTime.Now.GetString()})",
 				Message = $@"Загрузка файла ""{fileName}"" была завершена.
-<a href=""/Tour/DownloadImportedFile?idFile={idFileRes}"">Скачать результат</a>
-<a href=""/Tour/DownloadImportedFile?idFile={idFile}"">Скачать исходный файл</a>",
+<a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
+<a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
 				IsUrgent = true,
 				IsEmail = true
 			});

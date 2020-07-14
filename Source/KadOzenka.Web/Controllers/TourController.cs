@@ -306,7 +306,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				var importFileDto = new ImportFileComplianceDto
 				{
-					FileName = Path.GetFileNameWithoutExtension(file.FileName),
+					FileName = file.FileName,
 					CodeColumnName = model.CodeColumnName,
 					GroupColumnName = model.GroupColumnName,
 					RoomTypeColumnName = model.RoomTypeColumnName,
@@ -326,27 +326,6 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(e.Message);
 			}
 			return Json(new {message = "Данные успешно загружены"});
-		}
-
-
-		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
-		public FileContentResult DownloadImportedFile(int idFile)
-		{
-			var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();
-
-			if (import == null)
-			{
-				throw new Exception("Указанный файл не найден.");
-			}
-
-			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-				import.Id.ToString());
-			var bytes = new byte[templateFile.Length];
-			templateFile.Read(bytes);
-			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
-
-			return File(bytes, contentType, $"{import.DataFileName}.{fileExtension}");
 		}
 
 		[HttpGet]
