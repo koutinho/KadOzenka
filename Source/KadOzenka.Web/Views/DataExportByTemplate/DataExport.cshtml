@@ -1,14 +1,25 @@
-﻿@using ObjectModel.Market
+﻿@using ObjectModel.Gbu
+@using ObjectModel.Market
 
 <form id="exportForm">
-	<ul id="upload_panelbar" class="panelBar">
-		<li id="Section_UploadBuilding" data-expand>
-			<span>Формирование выгрузки</span>
-			<div>
+    @if((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
+    {
+        <div class="form-group" style="margin-bottom: 20px;">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=ExportGbuObjects" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+    }
+    <ul id="upload_panelbar" class="panelBar">
+        <li id="Section_UploadBuilding" data-expand>
+            <span>Формирование выгрузки</span>
+            <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
                     <div class="form-group">
-                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx"/>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-5">
@@ -33,7 +44,7 @@
                             </div>
                             <div class="row filterParamsContainer">
                                 <span class="filterInput">
-                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск по атрибутам" />
+                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск по атрибутам"/>
                                 </span>
                                 <div class="filterAttrParamsContainer">
                                     <div id="treeview"></div>
@@ -54,22 +65,22 @@
                         <a class="k-button k-state-disabled" id="goToJournalBtn" href="" target="_blank"><span>Перейти в журнал</span></a>
                     </div>
                 </div>
-			</div>
-		</li>
-		<li id="Section_Matching" data-expand>
-			<span>Сопоставление</span>
-			<div>
-				<div class="form-horizontal col-sm-12">
-					<div class="form-group"></div>
-					<div class="form-group">
-						<div class="col-sm-12 paramsContainer matchParamsContainer">
-							<div id="listView"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</li>
-	</ul>
+            </div>
+        </li>
+        <li id="Section_Matching" data-expand>
+            <span>Сопоставление</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12 paramsContainer matchParamsContainer">
+                            <div id="listView"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
 </form>
 
 @section styles {

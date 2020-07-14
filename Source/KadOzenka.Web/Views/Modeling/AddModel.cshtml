@@ -2,20 +2,27 @@
 
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
-	<div class="form-horizontal" style="padding: 5% 5% 0 5%;">
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.Name)
-			</div>
-			<div class="col-sm-9">
-				@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.GroupId)
-			</div>
-			<div class="col-sm-9">
+    <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=AddModel" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Name)
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.GroupId)
+            </div>
+            <div class="col-sm-9">
                 @(Html.Kendo().DropDownListFor(m => m.GroupId)
                     .DataTextField("Text")
                     .DataValueField("Value")
@@ -24,29 +31,29 @@
                     {
                         source.Read("GetGroups", "Modeling");
                     }))
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.TourId)
-			</div>
-			<div class="col-sm-9">
-				@(Html.Kendo().DropDownListFor(m => m.TourId)
-					.DataTextField("Text")
-					.DataValueField("Value")
-					.Filter(FilterType.Contains)
-					.DataSource(source =>
-					{
-						source.Read("GetRatingTours", "Tour");
-					}))
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-				@Html.KendoButton("SaveModel", "Сохранить")
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.TourId)
+            </div>
+            <div class="col-sm-9">
+                @(Html.Kendo().DropDownListFor(m => m.TourId)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter(FilterType.Contains)
+                    .DataSource(source =>
+                    {
+                        source.Read("GetRatingTours", "Tour");
+                    }))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+                @Html.KendoButton("SaveModel", "Сохранить")
+            </div>
+        </div>
+    </div>
 }
 
 

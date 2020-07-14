@@ -11,109 +11,116 @@
 
 @using (Html.BeginForm("CalculateCadastralPrice", "Task", FormMethod.Post))
 {
-    <div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("Тур оценки")
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().DropDownList()
-                                            .Name("RatingTour")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value"))
-            </div>
+<div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
+    <div class="form-group">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=CalculateCadastralPrice" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
         </div>
-
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.TaskFilter)
-            </div>
-            <div class="col-sm-9">
-                <select id="TaskFilter"></select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.LabelFor(x => x.IsParcel)
-            </div>
-            <div class="col-sm-9">
-                @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("ОКС").Value(false))
-                @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("Земельные участки").Value(true).Checked(true).HtmlAttributes(new { style = "padding-left:1%;" }))
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-8 col-sm-offset-2">
-                @Html.CheckBoxFor(x => x.IsEstimation)
-                @Html.LabelFor(x => x.IsEstimation, htmlAttributes: new { @class = "check-box-label" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-8 col-sm-offset-2">
-                @Html.CheckBoxFor(x => x.IsCorrectionsOrCoefficients)
-                @Html.LabelFor(x => x.IsCorrectionsOrCoefficients, htmlAttributes: new { @class = "check-box-label" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-8 col-sm-offset-2">
-                @Html.CheckBoxFor(x => x.IsFinalCalculation)
-                @Html.LabelFor(x => x.IsFinalCalculation, htmlAttributes: new { @class = "check-box-label" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-2 col-sm-offset-2">
-                @(Html.Kendo().Button()
-                            .Name("CalculationSettingsBtn")
-                            .IconClass("k-icon k-i-gear")
-                            .HtmlAttributes(new {type = "button"})
-                            .Events(x => x.Click("openCalculationSettingsWindow")))
-                @(Html.Kendo().Tooltip()
-                            .For("#CalculationSettingsBtn")
-                            .Position(TooltipPosition.Top)
-                            .Content("Настроить порядок расчета"))
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Все группы").Value(true))
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Список выбранных групп").Value(false).Checked(true))
-            </div>
-        </div>
-
-        <div id="groups" class="col-sm-9 col-sm-offset-2 group" style="border: 1px solid #cccdcf;">
-            <div id="groupsList" class="form-group">
-                <div class="group col-sm-12">
-                    <div id="SubGroupId1"></div>
-                </div>
-                <div class="group">
-                    <div id="SubGroupId2"></div>
-                </div>
-                <div class="group">
-                    <div id="SubGroupId3"></div>
-                </div>
-                <div class="group">
-                    <div id="SubGroupId4"></div>
-                </div>
-                <div class="group">
-                    <div id="SubGroupId5"></div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().Button().Name("addGroup").Icon("add").HtmlAttributes(new { @type = "button" }))
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
-                @(Html.Kendo().Button().Name("execute").Content("Расчет").HtmlAttributes(new { @type = "button" }))
-            </div>
-        </div>
-
     </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тур оценки")
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().DropDownList()
+                    .Name("RatingTour")
+                    .DataTextField("Text")
+                    .DataValueField("Value"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.TaskFilter)
+        </div>
+        <div class="col-sm-9">
+            <select id="TaskFilter"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.LabelFor(x => x.IsParcel)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("ОКС").Value(false))
+            @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("Земельные участки").Value(true).Checked(true).HtmlAttributes(new {style = "padding-left:1%;"}))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsEstimation)
+            @Html.LabelFor(x => x.IsEstimation, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsCorrectionsOrCoefficients)
+            @Html.LabelFor(x => x.IsCorrectionsOrCoefficients, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsFinalCalculation)
+            @Html.LabelFor(x => x.IsFinalCalculation, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-2">
+            @(Html.Kendo().Button()
+                    .Name("CalculationSettingsBtn")
+                    .IconClass("k-icon k-i-gear")
+                    .HtmlAttributes(new {type = "button"})
+                    .Events(x => x.Click("openCalculationSettingsWindow")))
+            @(Html.Kendo().Tooltip()
+                    .For("#CalculationSettingsBtn")
+                    .Position(TooltipPosition.Top)
+                    .Content("Настроить порядок расчета"))
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Все группы").Value(true))
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Список выбранных групп").Value(false).Checked(true))
+        </div>
+    </div>
+
+    <div id="groups" class="col-sm-9 col-sm-offset-2 group" style="border: 1px solid #cccdcf;">
+        <div id="groupsList" class="form-group">
+            <div class="group col-sm-12">
+                <div id="SubGroupId1"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId2"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId3"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId4"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId5"></div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().Button().Name("addGroup").Icon("add").HtmlAttributes(new {@type = "button"}))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
+            @(Html.Kendo().Button().Name("execute").Content("Расчет").HtmlAttributes(new {@type = "button"}))
+        </div>
+    </div>
+
+</div>
 }
 
 <script type="text/x-kendo-template" id="templateRow">
