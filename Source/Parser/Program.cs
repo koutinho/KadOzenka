@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.AddressChecker;
@@ -11,15 +12,24 @@ namespace Parser
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(args[0]);
             Console.WriteLine("===Старт парсинга ЦИАНа===");
-            Console.WriteLine("1. Получение данных с RestApp");
-            new Data().Detect();
-            //Console.WriteLine("2. Присвоение формализованных адресов");
-            //new Addresses().Detect();
-            //Console.WriteLine("3. Присвоение кадастровых номеров по формализованным адресам");
-            //new KadNumbers().Detect();
-            //Console.WriteLine("4. Парсинг объявлений со снятием скриншотов");
-            //new Cian().RefreshAllData(15000, false);
+            if(args[0] == "1")
+            {
+                Console.WriteLine("1. Получение данных с RestApp");
+                string[] logins = ConfigurationManager.AppSettings["restAppLogin001"].Split(','),
+                tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
+                for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
+            }
+            else if(args[0] == "2")
+            {
+                Console.WriteLine("2. Присвоение формализованных адресов");
+                new Addresses().Detect();
+                Console.WriteLine("3. Присвоение кадастровых номеров по формализованным адресам");
+                new KadNumbers().Detect();
+                Console.WriteLine("4. Парсинг объявлений со снятием скриншотов");
+                new Cian().RefreshAllData(15000, false);
+            }
         }
     }
 }
