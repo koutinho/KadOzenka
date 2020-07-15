@@ -98,7 +98,7 @@
     <None Remove="Config\Registers\Views\CoreLongProcessQueue.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessQueueCard.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessService.xml" />
-	<None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
     <None Remove="Config\Registers\Views\CoreMessages.xml" />
     <None Remove="Config\Registers\Views\CoreMessagesMy.xml" />
     <None Remove="Config\Registers\Views\CoreMessagesRecipients.xml" />
@@ -754,13 +754,37 @@
     <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\AdditionalFormsCalculationsAnalysisReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AdditionalFormsChangesUploadingReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AdditionalFormsMarketDataInfoReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AdditionalFormsResultsAnalysisReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CadastralCostDeterminationIndividuallyResultsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CadastralCostDeterminationResultsReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CalculationPagesReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CalculationParamsModelingResultsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CalculationParamsReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CalculationReport.frx">
@@ -770,6 +794,90 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CCC_OUReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\InfoAboutCadastralCostDeterminingMethodReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionForOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionForParcelsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionForPreviousToursReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionForZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionNonuniformReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\PricingFactorsCompositionUniformReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsGroupingReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForBuildingsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForConstructionsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForParcelsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForParkingReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForPlacementsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\TestBackgroundReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
       <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
@@ -882,50 +990,50 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.Charts.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Charts.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.Charts.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.CodeParser.v19.2">
-      <HintPath>..\_Dll\DevExpress.CodeParser.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.CodeParser.v20.1">
+      <HintPath>..\_Dll\DevExpress.CodeParser.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v19.2">
-      <HintPath>..\_Dll\DevExpress.Data.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.Data.v20.1">
+      <HintPath>..\_Dll\DevExpress.Data.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.DataAccess.v19.2">
-      <HintPath>..\_Dll\DevExpress.DataAccess.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.DataAccess.v20.1">
+      <HintPath>..\_Dll\DevExpress.DataAccess.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Office.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.Office.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Office.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.Office.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Pdf.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.Pdf.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Pdf.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.Pdf.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.PivotGrid.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.PivotGrid.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.PivotGrid.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.PivotGrid.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Printing.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.Printing.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Printing.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.Printing.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.RichEdit.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v19.2.Export">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v19.2.Export.dll</HintPath>
+    <Reference Include="DevExpress.RichEdit.v20.1.Export">
+      <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Export.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Sparkline.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.Sparkline.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Sparkline.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.Sparkline.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Xpo.v19.2">
-      <HintPath>..\_Dll\DevExpress.Xpo.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.Xpo.v20.1">
+      <HintPath>..\_Dll\DevExpress.Xpo.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraCharts.v19.2">
-      <HintPath>..\_Dll\DevExpress.XtraCharts.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraCharts.v20.1">
+      <HintPath>..\_Dll\DevExpress.XtraCharts.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraGauges.v19.2.Core">
-      <HintPath>..\_Dll\DevExpress.XtraGauges.v19.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.XtraGauges.v20.1.Core">
+      <HintPath>..\_Dll\DevExpress.XtraGauges.v20.1.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraReports.v19.2">
-      <HintPath>..\_Dll\DevExpress.XtraReports.v19.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraReports.v20.1">
+      <HintPath>..\_Dll\DevExpress.XtraReports.v20.1.dll</HintPath>
     </Reference>
     <Reference Include="Kendo.Mvc">
       <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
