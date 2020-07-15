@@ -453,6 +453,42 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'result_file_name')) then
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "result_file_name" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'file_extension')) then
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "file_extension" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'file_template_title')) then
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "file_template_title" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'file_result_title')) then
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "file_result_title" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_800_q_pk')) then
     execute 'alter table COMMON_EXPORT_BY_TEMPLATES add constraint reg_800_q_pk primary key (id)';
   end if;
@@ -506,7 +542,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'data_file_name')) then
-        execute 'alter table COMMON_IMPORT_DATA_LOG add "data_file_name" VARCHAR(512) NOT NULL';
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "data_file_name" VARCHAR(512)';
     end if;
 end $$;
 
@@ -615,6 +651,42 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'document_id')) then
         execute 'alter table COMMON_IMPORT_DATA_LOG add "document_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'result_file_name')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "result_file_name" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'file_extension')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "file_extension" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'data_file_title')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "data_file_title" VARCHAR(512)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'result_file_title')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "result_file_title" VARCHAR(512)';
     end if;
 end $$;
 
@@ -24750,6 +24822,40 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_BACKGROUND_REPORTING_FORMS')) then
+		execute 'create table KO_BACKGROUND_REPORTING_FORMS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_BACKGROUND_REPORTING_FORMS', 'id')) then
+        execute 'alter table KO_BACKGROUND_REPORTING_FORMS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_BACKGROUND_REPORTING_FORMS', 'name')) then
+        execute 'alter table KO_BACKGROUND_REPORTING_FORMS add "name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_223_q_pk')) then
+    execute 'alter table KO_BACKGROUND_REPORTING_FORMS add constraint reg_223_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_CALC_GROUP')) then
 		execute 'create table KO_CALC_GROUP ("id" BIGINT NOT NULL)';
 	end if;
@@ -24986,6 +25092,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ko_compliance_guide', 'territory_type')) then
+        execute 'alter table ko_compliance_guide add "territory_type" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('ko_compliance_guide_pkey')) then
     execute 'alter table ko_compliance_guide add constraint ko_compliance_guide_pkey primary key (id)';
   end if;
@@ -25067,6 +25182,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'tour_id')) then
         execute 'alter table KO_COMPLIANCE_GUIDE add "tour_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'territory_type')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "territory_type" VARCHAR';
     end if;
 end $$;
 
@@ -29268,6 +29392,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field_252')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field_252" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47410289')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47410289" VARCHAR(255)';
     end if;
 end $$;
 
