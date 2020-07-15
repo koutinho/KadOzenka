@@ -18,14 +18,15 @@ namespace KadOzenka.Dal.LongProcess
         {
             Console.WriteLine("===Старт парсинга ЦИАНа===");
             Console.WriteLine("1. Получение данных с RestApp");
-            new Data().Detect();
-            Console.WriteLine("2. Присвоение формализованных адресов");
-            new Addresses().Detect();
-            Console.WriteLine("3. Присвоение кадастровых номеров по формализованным адресам");
-            new KadNumbers().Detect();
-            Console.WriteLine("4. Парсинг объявлений со снятием скриншотов");
-            new Cian().RefreshAllData(15000, false);
-            //Console.ReadLine();
+            string[] logins = ConfigurationManager.AppSettings["restAppLogin001"].Split(','),
+                     tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
+            for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
+            //Console.WriteLine("2. Присвоение формализованных адресов");
+            //new Addresses().Detect();
+            //Console.WriteLine("3. Присвоение кадастровых номеров по формализованным адресам");
+            //new KadNumbers().Detect();
+            //Console.WriteLine("4. Парсинг объявлений со снятием скриншотов");
+            //new Cian().RefreshAllData(15000, false);
         }
     }
 }

@@ -10,24 +10,22 @@ namespace KadOzenka.Dal.WebRequest
     public class RestApp
     {
 
-        private string login = ConfigurationManager.AppSettings["restAppLogin001"];
-        private string token = ConfigurationManager.AppSettings["restAppToken001"];
         private string metaInfoLink = ConfigurationManager.AppSettings["restAppMetaLink"];
         private string restAppCIANLink = ConfigurationManager.AppSettings["restAppCIANLink"];
         private string restAppAvitoLink = ConfigurationManager.AppSettings["restAppAvitoLink"];
         private string restAppTimeTemplate = ConfigurationManager.AppSettings["restAppTimeTmp"];
 
-        public string GetMetaInfoDataValues() => 
+        public string GetMetaInfoDataValues(string login, string token) => 
             new StreamReader(System.Net.WebRequest.Create(string.Format(metaInfoLink, login, token)).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
 
-        public string GetCIANDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2) => 
+        public string GetCIANDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2, string login, string token) =>
             new StreamReader(
                 System.Net.WebRequest.Create(string.Format(restAppCIANLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
                 .GetResponse()
                 .GetResponseStream(),Encoding.UTF8)
                 .ReadToEnd();
 
-        public string GetAvitoDataByMultipleValues(string regionId, string categoryId, DateTime date1, DateTime date2) => 
+        public string GetAvitoDataByMultipleValues(string regionId, string categoryId, DateTime date1, DateTime date2, string login, string token) => 
             new StreamReader(
                 System.Net.WebRequest.Create(string.Format(restAppAvitoLink, login, token, categoryId, regionId, date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
                 .GetResponse()

@@ -68,7 +68,11 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
 
             /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
-            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => { new Data().Detect(); });
+            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => {
+				string[] logins = ConfigurationManager.AppSettings["restAppLogin001"].Split(','),
+						 tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
+				for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
+			});
             consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexChecker().FormMarketObjects(); });
 		    consoleHelper.AddCommand("194", "Запуск выгрузки объявлений объектов-аналогов с Avito", () => { new AvitoParsingService().ParseAllObjects(); });
 
@@ -340,6 +344,11 @@ namespace KadOzenka.BlFrontEnd
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 },
 					new System.Threading.CancellationToken()));
 
+			//consoleHelper.AddCommand("554", "эксель импорт", 
+			//	() => new DataImporterCommon().StartProcess(null, 
+			//		new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
+			//		new System.Threading.CancellationToken()));
+						
 			consoleHelper.AddCommand("5551", "Корректировка на этажность",
 				() => 
 				{

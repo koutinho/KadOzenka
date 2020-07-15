@@ -14,15 +14,28 @@ namespace KadOzenka.Dal.RestAppParser
     public class Data
     {
 
-        List<OMCoreObject> AllObjects = new List<OMCoreObject>();
-        DateTime LastUpdateDate =
-            OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian && x.ParserTime != null)
-                        .Select(x => x.ParserTime)
-                        .OrderByDescending(x => x.ParserTime)
-                        .ExecuteFirstOrDefault()
-                        .ParserTime
-                        .GetValueOrDefault();
-        int restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues());
+        private static string login { get; set; }
+        private static string token { get; set; }
+        private static List<OMCoreObject> AllObjects { get; set; }
+        private static DateTime LastUpdateDate { get; set; }
+        private static int restData { get; set; }
+
+        public Data(string login, string token)
+        {
+            Console.WriteLine(login);
+            Console.WriteLine(token);
+            Data.login = login;
+            Data.token = token;
+            AllObjects = new List<OMCoreObject>();
+            LastUpdateDate =
+                   OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian && x.ParserTime != null)
+                               .Select(x => x.ParserTime)
+                               .OrderByDescending(x => x.ParserTime)
+                               .ExecuteFirstOrDefault()
+                               .ParserTime
+                               .GetValueOrDefault();
+            restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues(login, token));
+        }
 
         public void Detect()
         {
@@ -45,11 +58,11 @@ namespace KadOzenka.Dal.RestAppParser
                         {
                             //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
                             List<OMCoreObject> coreObjs = 
-                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetCIANDataByMultipleValues(region, deal, currentTime, LastUpdateDate), ref RACOR, ref RAERR);
+                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetCIANDataByMultipleValues(region, deal, currentTime, LastUpdateDate, login, token), ref RACOR, ref RAERR);
                             AllObjects.AddRange(coreObjs);
                             Logger.ConsoleLog.WriteData("Получение данных из сторонних источников", restData, AllObjects.Count, RACOR, RAERR);
                         }
-                        catch (Exception){ EXCEPTION = true; }
+                        catch (Exception ex){ Console.WriteLine(ex); Console.WriteLine(ex.StackTrace); EXCEPTION = true; }
                     }
                     if (EXCEPTION) break;
                 }
