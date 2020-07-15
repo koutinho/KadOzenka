@@ -365,14 +365,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-    /// <summary>
-    /// 28 Источник 28 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 28)]
-    [Serializable]
-    public partial class OMSource28 : OMBaseClass<OMSource28>
-    {
-    }
+	/// <summary>
+	/// 28 Источник 28 (GBU_MAIN_OBJECT)
+	/// </summary>
+	[RegisterInfo(RegisterID = 28)]
+	[Serializable]
+	public partial class OMSource28 : OMBaseClass<OMSource28>
+	{
+	}
 }
 
 namespace ObjectModel.Gbu
@@ -6150,6 +6150,26 @@ namespace ObjectModel.KO
             {
                 _responsedocid = value;
                 NotifyPropertyChanged("ResponseDocId");
+            }
+        }
+
+
+        private string _buildingcadastralnumber;
+        /// <summary>
+        /// 20102400 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102400)]
+        public string BuildingCadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
+            }
+            set
+            {
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
             }
         }
 
