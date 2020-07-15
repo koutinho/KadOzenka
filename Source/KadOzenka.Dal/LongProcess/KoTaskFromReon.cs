@@ -31,9 +31,9 @@ namespace KadOzenka.Dal.LongProcess
             GbuReportService = new GbuReportService();
         }
 
+        public const string LongProcessName = "KoTaskFromReon";
 
-        public override void StartProcess(OMProcessType processType, OMQueue processQueue,
-            CancellationToken cancellationToken)
+        public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
             

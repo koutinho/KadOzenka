@@ -28,11 +28,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         protected string Url;
         public List<ObjectCategoryCorrelation> ObjectTypeList { get; protected set; }
 
-        protected AvitoParser()
-        {
-            ExistedAvitoObjects = OMCoreObject
-                .Where(x => x.Market_Code == MarketTypes.Avito).Select(x => new { x.Url, x.MarketId }).Execute();
-        }
+        protected AvitoParser() => ExistedAvitoObjects = OMCoreObject.Where(x => x.Market_Code == MarketTypes.Avito).Select(x => new { x.Url, x.MarketId }).Execute();
 
         public void HandleObjects()
         {
@@ -57,7 +53,6 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                         ChooseDealType(dealType, driver);
                         SelectObjectTypeCategory(driver, objectType.AvitoName);
                         ApplyFilter(driver);
-
                         var objectsUrls = GetObjectsUrlList((IJavaScriptExecutor)driver);
                         var pagerButton = GetPagerNextButton(driver);
                         while (pagerButton != null)
@@ -68,18 +63,13 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                             pagerButton = GetPagerNextButton(driver);
                         }
                         Console.WriteLine($"Найдено {objectsUrls.Count} объектов для категории '{objectType.AvitoName}' типа сделки '{dealType.GetEnumDescription()}'");
-
                         var uniqueObjectsUrls = new List<string>();
                         foreach (var objUrl in objectsUrls.Distinct().ToList())
                         {
                             var marketId = long.Parse(objUrl.Split("_").Last());
-                            if (ExistedAvitoObjects.All(x => x.MarketId != marketId))
-                            {
-                                uniqueObjectsUrls.Add(objUrl);
-                            }
+                            if (ExistedAvitoObjects.All(x => x.MarketId != marketId)) uniqueObjectsUrls.Add(objUrl);
                         }
                         Console.WriteLine($"Новых объектов: {uniqueObjectsUrls.Count}");
-
                         int totalCount = uniqueObjectsUrls.Count, currentCount = 0, correctCount = 0, errorCount = 0;
                         foreach (var objectUrl in uniqueObjectsUrls)
                         {
@@ -87,11 +77,8 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                             {
                                 driver.Navigate().GoToUrl(objectUrl);
                                 CheckCapcha((ChromeDriver)driver, objectUrl);
-
-                                ((IJavaScriptExecutor)driver).ExecuteScript(
-                                    File.ReadAllText(ConfigurationManager.AppSettings["AvitoGetObjectInfo"]), objectUrl);
-                                var jsObjectData = new WebDriverWait(driver, TimeSpan.FromSeconds(30)).Until(_ =>
-                                    ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
+                                ((IJavaScriptExecutor)driver).ExecuteScript(File.ReadAllText(ConfigurationManager.AppSettings["AvitoGetObjectInfo"]), objectUrl);
+                                var jsObjectData = new WebDriverWait(driver, TimeSpan.FromSeconds(30)).Until(_ => ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
                                 var deserializedObject = (JObject)JsonConvert.DeserializeObject(jsObjectData.ToString());
                                 var marketObject = FillMarketObject(dealType, objectType, deserializedObject, objectUrl);
                                 marketObject.Save();
@@ -102,13 +89,10 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                                 Console.WriteLine($"\nНе удалось обработать объект по ссылке '{objectUrl}':{ex.Message}, {ex.StackTrace}");
                                 errorCount++;
                             }
-
                             currentCount++;
                             ConsoleLog.WriteData("Обработка объектов", totalCount, currentCount, correctCount, errorCount);
                         }
-
-                        Console.WriteLine(
-                            $"\nПарсинг для категории '{objectType.AvitoName}' типа сделки '{dealType.GetEnumDescription()}' завершен. Добавлено объектов: { correctCount }.");
+                        Console.WriteLine($"\nПарсинг для категории '{objectType.AvitoName}' типа сделки '{dealType.GetEnumDescription()}' завершен. Добавлено объектов: { correctCount }.");
                     }
                     catch (Exception ex)
                     {
@@ -134,33 +118,16 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             MarketTypes type, long objectId = 0, bool testBoot = false)
         {
             var screenShot = new FullScreen().TakeScreenShot(driver, type);
-            if (screenShot != null)
-                FileStorageManager.Save(new MemoryStream(screenShot),
-                    ConfigurationManager.AppSettings["screenShotFolder"], screenShotData,
-                    screenshot.Save().ToString());
-            if (testBoot)
-                File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png",
-                    screenShot);
+            if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
+            if (testBoot) File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png", screenShot);
         }
 
         private static void ChooseDealType(DealType dealType, IWebDriver driver)
         {
             IWebElement button;
-            if (dealType == DealType.SaleSuggestion)
-            {
-                button = ((ChromeDriver)driver).ExecuteScript(
-                    ConfigurationManager.AppSettings["getAvitoBuyButton"]) as IWebElement;
-            }
-            else if (dealType == DealType.RentSuggestion)
-            {
-                button = ((ChromeDriver)driver).ExecuteScript(
-                    ConfigurationManager.AppSettings["getAvitoRentButton"]) as IWebElement;
-            }
-            else
-            {
-                throw new Exception($"Передан неподдерживаемый тип сделки: {dealType.GetEnumDescription()}");
-            }
-
+            if (dealType == DealType.SaleSuggestion) button = ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoBuyButton"]) as IWebElement;
+            else if (dealType == DealType.RentSuggestion) button = ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoRentButton"]) as IWebElement;
+            else throw new Exception($"Передан неподдерживаемый тип сделки: {dealType.GetEnumDescription()}");
             button.Click();
             WaitUntilPageLoad(driver);
         }
@@ -173,63 +140,40 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             marketObject.DealType_Code = dealType;
             marketObject.PropertyMarketSegment_Code = objectType.MarketSegment;
             marketObject.PropertyTypesCIPJS_Code = objectType.PropertyType;
-
             marketObject.Url = objectUrl;
             marketObject.ParserTime = DateTime.Now;
             marketObject.Region = null;
             marketObject.City = "Москва";
             marketObject.MarketId = jObject.SelectToken("marketId").Value<long>();
             marketObject.Description = jObject.SelectToken("description")?.Value<string>();
-            marketObject.Lat = !jObject.SelectToken("lat").IsNullOrEmpty()
-                ? jObject.SelectToken("lat").Value<decimal>()
-                : (decimal?)null;
-            marketObject.Lng = !jObject.SelectToken("lon").IsNullOrEmpty()
-                ? jObject.SelectToken("lon").Value<decimal>()
-                : (decimal?)null;
-            marketObject.Address = !jObject.SelectToken("address").IsNullOrEmpty()
-                ? jObject.SelectToken("address").Value<string>()
-                : null;
+            marketObject.Lat = !jObject.SelectToken("lat").IsNullOrEmpty() ? jObject.SelectToken("lat").Value<decimal>() : (decimal?)null;
+            marketObject.Lng = !jObject.SelectToken("lon").IsNullOrEmpty() ? jObject.SelectToken("lon").Value<decimal>() : (decimal?)null;
+            marketObject.Address = !jObject.SelectToken("address").IsNullOrEmpty() ? jObject.SelectToken("address").Value<string>() : null;
             marketObject.Price = GetPrice(jObject, dealType);
-
             if (!jObject.SelectToken("metroList").IsNullOrEmpty())
             {
                 var metroList = new List<string>();
-                for (var i = 0; i < jObject.SelectToken("metroList").Count(); i++)
-                {
-                    metroList.Add(jObject.SelectToken($"metroList[{i}]")?.Value<string>());
-                }
+                for (var i = 0; i < jObject.SelectToken("metroList").Count(); i++) metroList.Add(jObject.SelectToken($"metroList[{i}]")?.Value<string>());
                 marketObject.Metro = string.Join(',', metroList.Where(x => !string.IsNullOrWhiteSpace(x)));
             }
             if (!jObject.SelectToken("imageUrls").IsNullOrEmpty())
             {
                 var imageUrls = new List<string>();
-                for (var i = 0; i < jObject.SelectToken("imageUrls").Count(); i++)
-                {
-                    imageUrls.Add(jObject.SelectToken($"imageUrls[{i}]")?.Value<string>());
-                }
+                for (var i = 0; i < jObject.SelectToken("imageUrls").Count(); i++) imageUrls.Add(jObject.SelectToken($"imageUrls[{i}]")?.Value<string>());
                 var uri = new Uri(objectUrl);
                 marketObject.Images = string.Join(',', imageUrls.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => uri.Scheme + ":" + x));
             }
-
-            marketObject.FloorNumber = !jObject.SelectToken("floorNumber").IsNullOrEmpty()
-                ? jObject.SelectToken("floorNumber").Value<long>()
-                : (long?)null;
-            marketObject.FloorsCount = !jObject.SelectToken("floorCount").IsNullOrEmpty()
-                ? jObject.SelectToken("floorCount").Value<long>()
-                : (long?)null;
-
+            marketObject.FloorNumber = !jObject.SelectToken("floorNumber").IsNullOrEmpty() ? jObject.SelectToken("floorNumber").Value<long>() : (long?)null;
+            marketObject.FloorsCount = !jObject.SelectToken("floorCount").IsNullOrEmpty() ? jObject.SelectToken("floorCount").Value<long>() : (long?)null;
             FillObjectLandInfo(marketObject, jObject);
             FillObjectWallMaterialInfo(marketObject, jObject);
             FillObjectClassType(marketObject, jObject);
-
             return marketObject;
         }
 
         private void FillObjectClassType(OMCoreObject marketObject, JObject jObject)
         {
-            var buildingClass = !jObject.SelectToken("buildingClass").IsNullOrEmpty()
-                    ? jObject.SelectToken("buildingClass").Value<string>()
-                    : null;
+            var buildingClass = !jObject.SelectToken("buildingClass").IsNullOrEmpty() ? jObject.SelectToken("buildingClass").Value<string>() : null;
             if (!string.IsNullOrWhiteSpace(buildingClass))
             {
                 QualityClass? result = null;
@@ -245,18 +189,14 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                         result = QualityClass.B;
                         break;
                 }
-
                 marketObject.QualityClass_Code = result.GetValueOrDefault();
             }
         }
 
         protected virtual void FillObjectWallMaterialInfo(OMCoreObject marketObject, JObject jObject)
         {
-            var val = !jObject.SelectToken("wallMaterial").IsNullOrEmpty()
-                ? jObject.SelectToken("wallMaterial").Value<string>()
-                : !jObject.SelectToken("houseType").IsNullOrEmpty()
-                    ? jObject.SelectToken("houseType").Value<string>()
-                    : null;
+            var val = !jObject.SelectToken("wallMaterial").IsNullOrEmpty() ? jObject.SelectToken("wallMaterial").Value<string>() : !jObject.SelectToken("houseType").IsNullOrEmpty()
+                                                                           ? jObject.SelectToken("houseType").Value<string>() : null;
             if (!string.IsNullOrWhiteSpace(val))
             {
                 WallMaterial? result = null;
@@ -276,28 +216,19 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                         result = WallMaterial.Other;
                         break;
                 }
-
                 marketObject.WallMaterial_Code = result.Value;
             }
         }
 
         protected virtual void FillObjectLandInfo(OMCoreObject marketObject, JObject jObject)
         {
-            var areaString = !jObject.SelectToken("area").IsNullOrEmpty()
-                ? jObject.SelectToken("area").Value<string>()
-                : !jObject.SelectToken("houseArea").IsNullOrEmpty()
-                    ? jObject.SelectToken("houseArea").Value<string>()
-                    : null;
-
+            var areaString = !jObject.SelectToken("area").IsNullOrEmpty() ? jObject.SelectToken("area").Value<string>() : !jObject.SelectToken("houseArea").IsNullOrEmpty()
+                                                                          ? jObject.SelectToken("houseArea").Value<string>() : null;
             if (!string.IsNullOrEmpty(areaString))
             {
                 var areaStringParts = areaString.Split(' ');
-                if (!decimal.TryParse(areaStringParts[0].Replace(".", ","), out var area))
-                {
-                    area = decimal.Parse(areaStringParts[1].Replace(".", ","));
-                }
+                if (!decimal.TryParse(areaStringParts[0].Replace(".", ","), out var area)) area = decimal.Parse(areaStringParts[1].Replace(".", ","));
                 var unit = areaStringParts.Last().ToLower().Trim();
-
                 var coef = 1.0m;
                 switch (unit)
                 {
@@ -311,22 +242,14 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                         coef = 10000;
                         break;
                 }
-
                 marketObject.Area = area * coef;
             }
-
-            var areaLandString = !jObject.SelectToken("siteArea").IsNullOrEmpty()
-                ? jObject.SelectToken("siteArea").Value<string>()
-                : null;
+            var areaLandString = !jObject.SelectToken("siteArea").IsNullOrEmpty() ? jObject.SelectToken("siteArea").Value<string>() : null;
             if (!string.IsNullOrEmpty(areaLandString))
             {
                 var areaLandStringParts = areaLandString.Split(' ');
-                if (!decimal.TryParse(areaLandStringParts[0].Replace(".", ","), out var areaLand))
-                {
-                    areaLand = decimal.Parse(areaLandStringParts[1].Replace(".", ","));
-                }
+                if (!decimal.TryParse(areaLandStringParts[0].Replace(".", ","), out var areaLand)) areaLand = decimal.Parse(areaLandStringParts[1].Replace(".", ","));
                 var unitLand = areaLandStringParts.Last().ToLower().Trim();
-
                 var landCoef = 1.0m;
                 switch (unitLand)
                 {
@@ -340,7 +263,6 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                         landCoef = 100;
                         break;
                 }
-
                 marketObject.AreaLand = areaLand * landCoef;
             }
         }
@@ -348,17 +270,9 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         private decimal? GetPrice(JObject jObject, DealType dealType)
         {
             decimal? price = null;
-            if (dealType == DealType.RentSuggestion || dealType == DealType.SaleSuggestion)
-            {
-                price = !jObject.SelectToken("price").IsNullOrEmpty()
-                    ? jObject.SelectToken("price").Value<decimal>()
-                    : (decimal?)null;
-            }
-            else
-            {
-                throw new Exception($"Передан неподдерживаемый тип сделки: {dealType.GetEnumDescription()}");
-            }
-
+            if (dealType == DealType.RentSuggestion || dealType == DealType.SaleSuggestion) 
+                price = !jObject.SelectToken("price").IsNullOrEmpty() ? jObject.SelectToken("price").Value<decimal>() : (decimal?)null;
+            else throw new Exception($"Передан неподдерживаемый тип сделки: {dealType.GetEnumDescription()}");
             return price;
         }
 
@@ -379,24 +293,17 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         protected List<string> GetObjectsUrlList(IJavaScriptExecutor javaScriptExecutor) =>
             ((ReadOnlyCollection<object>)javaScriptExecutor.ExecuteScript(ConfigurationManager.AppSettings["getAvitoUrlList"])).Select(x => (string)x).ToList();
 
-
         private static void WaitUntilPageLoad(IWebDriver driver)
         {
             IWait<IWebDriver> wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30.00));
-            wait.Until(driver1 =>
-                ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+            wait.Until(driver1 => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
         }
 
-        private static IWebElement GetPagerNextButton(IWebDriver driver)
-        {
-            return ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoPaginationNextButton"]) as IWebElement;
-        }
+        private static IWebElement GetPagerNextButton(IWebDriver driver) => ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoPaginationNextButton"]) as IWebElement;
 
         private static void ApplyFilter(IWebDriver driver)
         {
-            var applyFilterButton =
-                (((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoApplyFilterButton"]) as
-                    IWebElement);
+            var applyFilterButton = (((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getAvitoApplyFilterButton"]) as IWebElement);
             applyFilterButton.Click();
             WaitUntilPageLoad(driver);
         }

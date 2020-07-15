@@ -146,7 +146,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             DataTable dt = new DataTable();
             ExcelRow headerRow = ws.Rows[0];
             for (int i = 0; i < headerRow.AllocatedCells.Count; i++) dt.Columns.Add(headerRow.Cells[i].Value != null ? headerRow.Cells[i].Value.ToString() : i.ToString());
-            ExtractToDataTableOptions options = new ExtractToDataTableOptions(1, 0, ws.Rows.Count - 1){ ExtractDataOptions = ExtractDataOptions.SkipEmptyRows };
+            ExtractToDataTableOptions options = new ExtractToDataTableOptions(1, 0, ws.Rows.Count - 1) { ExtractDataOptions = ExtractDataOptions.SkipEmptyRows };
             options.ExcelCellToDataTableCellConverting += (sender, e) =>
             {
                 if (e.IsDataTableValueValid) return;
@@ -167,7 +167,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             List<string> errorLog = new List<string>();
             foreach (var row in worksheet.Rows)
             {
-                if(row.Cells[1].Value == null && CCur < ACtr)
+                if (row.Cells[1].Value == null && CCur < ACtr)
                 {
                     string address = row.Cells[0].Value.ToString();
                     if (!address.Contains("Москва")) address = $"Москва, {address}";
@@ -178,12 +178,12 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                         row.Cells[1].Value = yAddress.FormalizedAddress;
                         SCtr++;
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         errorLog.Add($"[{DateTime.Now}]: {address}\n{ex.Message}\n");
-                        ECtr++; 
+                        ECtr++;
                     }
-                    if(yAddress == null)
+                    if (yAddress == null)
                     {
                         row.Cells[1].Value = defaultExcelValue;
                         row.Cells[2].Value = defaultExcelValue;
