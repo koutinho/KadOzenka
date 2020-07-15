@@ -332,6 +332,128 @@ namespace KadOzenka.Dal.Groups
 
         #endregion
 
+        #region Group Explanation Settings
+
+        public GroupExplanationSettingsDto GetGroupExplanationSettings(long groupId)
+        {
+	        var group = OMGroup.Where(x => x.Id == groupId)
+		        .Select(x => x.Id)
+		        .Select(x => x.AppliedApproachesInCadastralCost)
+		        .Select(x => x.AppliedEvaluationMethodsInCadastralCost)
+		        .Select(x => x.CadastralCostDetermingMethod)
+		        .Select(x => x.ModelJustification)
+		        .Select(x => x.ObjectsSegment)
+		        .Select(x => x.ObjectsSubgroup)
+		        .Select(x => x.CadastralCostCalculationOrderDescription)
+		        .Select(x => x.PriceZoneCharacteristic)
+		        .Select(x => x.MarketSegment)
+		        .Select(x => x.MarketSegmentFunctioningFeatures)
+		        .ExecuteFirstOrDefault();
+	        if (group == null)
+	        {
+                throw new Exception($"Не найдена группа с ИД {groupId}");
+	        }
+
+            var result = new GroupExplanationSettingsDto
+            {
+                GroupId = group.Id,
+                AppliedApproachesInCadastralCost = group.AppliedApproachesInCadastralCost,
+                AppliedEvaluationMethodsInCadastralCost = group.AppliedEvaluationMethodsInCadastralCost,
+                CadastralCostDetermingMethod = group.CadastralCostDetermingMethod,
+                ModelJustification = group.ModelJustification,
+                ObjectsSegment = group.ObjectsSegment,
+                ObjectsSubgroup = group.ObjectsSubgroup,
+                CadastralCostCalculationOrderDescription = group.CadastralCostCalculationOrderDescription,
+                PriceZoneCharacteristic = group.PriceZoneCharacteristic,
+                MarketSegment = group.MarketSegment,
+                MarketSegmentFunctioningFeatures = group.MarketSegmentFunctioningFeatures
+            };
+
+            return result;
+        }
+
+        public void UpdateGroupExplanationSettings(GroupExplanationSettingsDto dto)
+        {
+	        var group = OMGroup.Where(x => x.Id == dto.GroupId)
+		        .Select(x => x.Id)
+		        .Select(x => x.AppliedApproachesInCadastralCost)
+		        .Select(x => x.AppliedEvaluationMethodsInCadastralCost)
+		        .Select(x => x.CadastralCostDetermingMethod)
+		        .Select(x => x.ModelJustification)
+		        .Select(x => x.ObjectsSegment)
+		        .Select(x => x.ObjectsSubgroup)
+		        .Select(x => x.CadastralCostCalculationOrderDescription)
+		        .Select(x => x.PriceZoneCharacteristic)
+		        .Select(x => x.MarketSegment)
+		        .Select(x => x.MarketSegmentFunctioningFeatures)
+                .ExecuteFirstOrDefault();
+	        if (group == null)
+	        {
+		        throw new Exception($"Не найдена группа с ИД {dto.GroupId}");
+	        }
+
+	        group.AppliedApproachesInCadastralCost = dto.AppliedApproachesInCadastralCost;
+            group.AppliedEvaluationMethodsInCadastralCost = dto.AppliedEvaluationMethodsInCadastralCost;
+	        group.CadastralCostDetermingMethod = dto.CadastralCostDetermingMethod;
+	        group.ModelJustification = dto.ModelJustification;
+	        group.ObjectsSegment = dto.ObjectsSegment;
+	        group.ObjectsSubgroup = dto.ObjectsSubgroup;
+	        group.CadastralCostCalculationOrderDescription = dto.CadastralCostCalculationOrderDescription;
+	        group.PriceZoneCharacteristic = dto.PriceZoneCharacteristic;
+	        group.MarketSegment = dto.MarketSegment;
+	        group.MarketSegmentFunctioningFeatures = dto.MarketSegmentFunctioningFeatures;
+	        group.Save();
+        }
+
+        #endregion Group Explanation Settings
+
+        #region Group Cadastral Cost Definition Act Settings
+
+        public GroupCadastralCostDefinitionActSettingsDto GetGroupCadastralCostDefinitionActSettings(long groupId)
+        {
+            var group = OMGroup.Where(x => x.Id == groupId)
+                .Select(x => x.Id)
+                .Select(x => x.CadastralCostEstimationModelsReferences)
+                .Select(x => x.AssumptionsReference)
+                .Select(x => x.OtherCostRelatedInfo)
+                .ExecuteFirstOrDefault();
+            if (group == null)
+            {
+                throw new Exception($"Не найдена группа с ИД {groupId}");
+            }
+
+            var result = new GroupCadastralCostDefinitionActSettingsDto
+            {
+                GroupId = group.Id,
+                CadastralCostEstimationModelsReferences = group.CadastralCostEstimationModelsReferences,
+                AssumptionsReference = group.AssumptionsReference,
+                OtherCostRelatedInfo = group.OtherCostRelatedInfo,
+            };
+
+            return result;
+        }
+
+        public void UpdateGroupCadastralCostDefinitionActSettings(GroupCadastralCostDefinitionActSettingsDto dto)
+        {
+	        var group = OMGroup.Where(x => x.Id == dto.GroupId)
+		        .Select(x => x.Id)
+		        .Select(x => x.CadastralCostEstimationModelsReferences)
+		        .Select(x => x.AssumptionsReference)
+		        .Select(x => x.OtherCostRelatedInfo)
+		        .ExecuteFirstOrDefault();
+            if (group == null)
+            {
+                throw new Exception($"Не найдена группа с ИД {dto.GroupId}");
+            }
+
+            group.CadastralCostEstimationModelsReferences = dto.CadastralCostEstimationModelsReferences;
+            group.AssumptionsReference = dto.AssumptionsReference;
+            group.OtherCostRelatedInfo = dto.OtherCostRelatedInfo;
+            group.Save();
+        }
+
+        #endregion Group Explanation Settings
+
 
         #region Support Methods
 

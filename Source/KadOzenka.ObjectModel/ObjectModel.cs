@@ -365,14 +365,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-	/// <summary>
-	/// 28 Источник 28 (GBU_MAIN_OBJECT)
-	/// </summary>
-	[RegisterInfo(RegisterID = 28)]
-	[Serializable]
-	public partial class OMSource28 : OMBaseClass<OMSource28>
-	{
-	}
+    /// <summary>
+    /// 28 Источник 28 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 28)]
+    [Serializable]
+    public partial class OMSource28 : OMBaseClass<OMSource28>
+    {
+    }
 }
 
 namespace ObjectModel.Gbu
@@ -6611,6 +6611,266 @@ namespace ObjectModel.KO
             {
                 _number = value;
                 NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private string _appliedapproachesincadastralcost;
+        /// <summary>
+        /// 20500600 Настройки для разъяснений: Примененные подходы при определении КС объекта недвижимости (APPLIED_APPROACHES_IN_CADASTRAL_COST)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20500600)]
+        public string AppliedApproachesInCadastralCost
+        {
+            get
+            {
+                CheckPropertyInited("AppliedApproachesInCadastralCost");
+                return _appliedapproachesincadastralcost;
+            }
+            set
+            {
+                _appliedapproachesincadastralcost = value;
+                NotifyPropertyChanged("AppliedApproachesInCadastralCost");
+            }
+        }
+
+
+        private string _appliedevaluationmethodsincadastralcost;
+        /// <summary>
+        /// 20500700 Настройки для разъяснений: Примененные методы оценки при определении КС объекта недвижимости (APPLIED_EVALUATION_METHODS_IN_CADASTRAL_COST)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20500700)]
+        public string AppliedEvaluationMethodsInCadastralCost
+        {
+            get
+            {
+                CheckPropertyInited("AppliedEvaluationMethodsInCadastralCost");
+                return _appliedevaluationmethodsincadastralcost;
+            }
+            set
+            {
+                _appliedevaluationmethodsincadastralcost = value;
+                NotifyPropertyChanged("AppliedEvaluationMethodsInCadastralCost");
+            }
+        }
+
+
+        private string _cadastralcostdetermingmethod;
+        /// <summary>
+        /// 20500800 Настройки для разъяснений: Способ определения КС объекта недвижимости (CADASTRAL_COST_DETERMING_METHOD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20500800)]
+        public string CadastralCostDetermingMethod
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostDetermingMethod");
+                return _cadastralcostdetermingmethod;
+            }
+            set
+            {
+                _cadastralcostdetermingmethod = value;
+                NotifyPropertyChanged("CadastralCostDetermingMethod");
+            }
+        }
+
+
+        private string _modeljustification;
+        /// <summary>
+        /// 20500900 Настройки для разъяснений: Обоснование модели (MODEL_JUSTIFICATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20500900)]
+        public string ModelJustification
+        {
+            get
+            {
+                CheckPropertyInited("ModelJustification");
+                return _modeljustification;
+            }
+            set
+            {
+                _modeljustification = value;
+                NotifyPropertyChanged("ModelJustification");
+            }
+        }
+
+
+        private string _objectssegment;
+        /// <summary>
+        /// 20501000 Настройки для разъяснений: Сегмент объектов недвижимости (OBJECTS_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501000)]
+        public string ObjectsSegment
+        {
+            get
+            {
+                CheckPropertyInited("ObjectsSegment");
+                return _objectssegment;
+            }
+            set
+            {
+                _objectssegment = value;
+                NotifyPropertyChanged("ObjectsSegment");
+            }
+        }
+
+
+        private string _objectssubgroup;
+        /// <summary>
+        /// 20501100 Настройки для разъяснений: Группа (подгруппа) объектов недвижимости (OBJECTS_SUBGROUP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501100)]
+        public string ObjectsSubgroup
+        {
+            get
+            {
+                CheckPropertyInited("ObjectsSubgroup");
+                return _objectssubgroup;
+            }
+            set
+            {
+                _objectssubgroup = value;
+                NotifyPropertyChanged("ObjectsSubgroup");
+            }
+        }
+
+
+        private string _cadastralcostcalculationorderdescription;
+        /// <summary>
+        /// 20501200 Настройки для разъяснений: Краткое описание последовательности определения КС объекта недвижимости (CADASTRAL_COST_CALCULATION_ORDER_DESCRIPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501200)]
+        public string CadastralCostCalculationOrderDescription
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostCalculationOrderDescription");
+                return _cadastralcostcalculationorderdescription;
+            }
+            set
+            {
+                _cadastralcostcalculationorderdescription = value;
+                NotifyPropertyChanged("CadastralCostCalculationOrderDescription");
+            }
+        }
+
+
+        private string _pricezonecharacteristic;
+        /// <summary>
+        /// 20501300 Настройки для разъяснений: Характеристика ценовой зоны, в которой находится объект недвижимости (PRICE_ZONE_CHARACTERISTIC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501300)]
+        public string PriceZoneCharacteristic
+        {
+            get
+            {
+                CheckPropertyInited("PriceZoneCharacteristic");
+                return _pricezonecharacteristic;
+            }
+            set
+            {
+                _pricezonecharacteristic = value;
+                NotifyPropertyChanged("PriceZoneCharacteristic");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 20501400 Настройки для разъяснений: Сегмент рынка недвижимости, к которому отнесен объект недвижимости (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501400)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private string _marketsegmentfunctioningfeatures;
+        /// <summary>
+        /// 20501500 Настройки для разъяснений: Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости (MARKET_SEGMENT_FUNCTIONING_FEATURES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501500)]
+        public string MarketSegmentFunctioningFeatures
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegmentFunctioningFeatures");
+                return _marketsegmentfunctioningfeatures;
+            }
+            set
+            {
+                _marketsegmentfunctioningfeatures = value;
+                NotifyPropertyChanged("MarketSegmentFunctioningFeatures");
+            }
+        }
+
+
+        private string _cadastralcostestimationmodelsreferences;
+        /// <summary>
+        /// 20501600 Настройки для акта определения: Ссылки на модели оценки кадастровой стоимости (CADASTRAL_COST_ESTIMATION_MODELS_REFERENCES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501600)]
+        public string CadastralCostEstimationModelsReferences
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostEstimationModelsReferences");
+                return _cadastralcostestimationmodelsreferences;
+            }
+            set
+            {
+                _cadastralcostestimationmodelsreferences = value;
+                NotifyPropertyChanged("CadastralCostEstimationModelsReferences");
+            }
+        }
+
+
+        private string _assumptionsreference;
+        /// <summary>
+        /// 20501700 Настройки для акта определения: Ссылка на допущения (ASSUMPTIONS_REFERENCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501700)]
+        public string AssumptionsReference
+        {
+            get
+            {
+                CheckPropertyInited("AssumptionsReference");
+                return _assumptionsreference;
+            }
+            set
+            {
+                _assumptionsreference = value;
+                NotifyPropertyChanged("AssumptionsReference");
+            }
+        }
+
+
+        private string _othercostrelatedinfo;
+        /// <summary>
+        /// 20501800 Настройки для акта определения: Иная отражающаяся на стоимости информация (OTHER_COST_RELATED_INFO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20501800)]
+        public string OtherCostRelatedInfo
+        {
+            get
+            {
+                CheckPropertyInited("OtherCostRelatedInfo");
+                return _othercostrelatedinfo;
+            }
+            set
+            {
+                _othercostrelatedinfo = value;
+                NotifyPropertyChanged("OtherCostRelatedInfo");
             }
         }
 

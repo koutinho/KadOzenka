@@ -1,0 +1,130 @@
+﻿@model KadOzenka.Web.Models.Tour.GroupExplanationSettingsModel
+
+@using (Html.BeginForm("GroupExplanationSettingsSubCard", "Tour", FormMethod.Post, new {id = "updateGroupExplanationSettingsForm", enctype = "multipart/form-data"}))
+{
+    <div class="form-horizontal" style="padding-top: 5%;">
+        @Html.HiddenFor(x => x.ExplanationSettingsGroupId)
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.AppliedApproachesInCadastralCost)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.AppliedApproachesInCadastralCost, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.AppliedEvaluationMethodsInCadastralCost)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.AppliedEvaluationMethodsInCadastralCost, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.CadastralCostDetermingMethod)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.CadastralCostDetermingMethod, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.ModelJustification)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.ModelJustification, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.ObjectsSegment)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.ObjectsSegment, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.ObjectsSubgroup)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.ObjectsSubgroup, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.CadastralCostCalculationOrderDescription)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.CadastralCostCalculationOrderDescription, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.PriceZoneCharacteristic)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.PriceZoneCharacteristic, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.MarketSegment)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.MarketSegment, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                @Html.CustomLabelFor(x => x.MarketSegmentFunctioningFeatures)
+            </div>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.MarketSegmentFunctioningFeatures, 6, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 col-sm-offset-9">
+                <input class="btn btn-default" style="margin-top: 10px;" id="explanationSettingsSaveBtn" type="button" value="Сохранить" />
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#explanationSettingsSaveBtn").click(save);
+    });
+
+
+
+    function save() {
+        kendo.ui.progress($('body'), true);
+        var form = $('#updateGroupExplanationSettingsForm');
+        var formObject = Common.Functions.FormToObject(form);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                }
+                Common.ShowMessage(response.Message);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+</script>

@@ -169,6 +169,54 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
+		#region Настройка для разъяснений
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+		public ActionResult GroupExplanationSettingsSubCard(long groupId)
+		{
+			var settings = GroupService.GetGroupExplanationSettings(groupId);
+			return PartialView("~/Views/Tour/Partials/GroupExplanationSettingsSubCard.cshtml", GroupExplanationSettingsModel.FromDto(settings));
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+		public JsonResult GroupExplanationSettingsSubCard(GroupExplanationSettingsModel model)
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			GroupService.UpdateGroupExplanationSettings(model.ToDto());
+
+			return new JsonResult(new { Message = "Обновление выполнено" });
+		}
+
+		#endregion Настройка для разъяснений
+
+		#region Настройка для акта определения
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+		public ActionResult GroupCadastralCostDefinitionActSettingsSubCard(long groupId)
+		{
+			var settings = GroupService.GetGroupCadastralCostDefinitionActSettings(groupId);
+			return PartialView("~/Views/Tour/Partials/GroupCadastralCostDefinitionActSettingsSubCard.cshtml", GroupCadastralCostDefinitionActSettingsModel.FromDto(settings));
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+		public JsonResult GroupCadastralCostDefinitionActSettingsSubCard(GroupCadastralCostDefinitionActSettingsModel model)
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			GroupService.UpdateGroupCadastralCostDefinitionActSettings(model.ToDto());
+
+			return new JsonResult(new { Message = "Обновление выполнено" });
+		}
+
+		#endregion Настройка для акта определения
+
 		#region Настройки атрибутов тура
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
