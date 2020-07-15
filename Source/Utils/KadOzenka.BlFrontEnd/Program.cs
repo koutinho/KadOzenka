@@ -335,10 +335,10 @@ namespace KadOzenka.BlFrontEnd
 				string MNAME = row["MNAME"].ToString();
 			});
 
-			consoleHelper.AddCommand("554", "эксель импорт", 
-				() => new DataImporterCommon().StartProcess(null, 
-					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
-					new System.Threading.CancellationToken()));
+			//consoleHelper.AddCommand("554", "эксель импорт", 
+			//	() => new DataImporterCommon().StartProcess(null, 
+			//		new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
+			//		new System.Threading.CancellationToken()));
 						
 			consoleHelper.AddCommand("5551", "Корректировка на этажность",
 				() => 
