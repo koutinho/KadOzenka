@@ -68,11 +68,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
-					FillingCalcData(calcType, dto, table, i);
 					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
 
 					if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
 					{
+						FillingCalcData(calcType, dto, table, i);
 						data.Add(dto);
 					}
 				}
@@ -129,11 +129,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
-					FillingCalcData(calcType, dto, table, i);
 					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
 
 					if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
 					{
+						FillingCalcData(calcType, dto, table, i);
 						data.Add(dto);
 					}
 				}
@@ -230,11 +230,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             }
 			else if (calcType == MinMaxAverageByGroupsCalcType.Uprs)
 			{
-				dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 				OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
 				if (marketObject != null)
                 {
-	                dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0
+	                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+					dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0
 		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare
 		                : null;
 					dto.UprsCalcDto.ObjectCost = marketObject.Price;
@@ -246,11 +246,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
                 dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 
-                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
                 OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
                 if (marketObject != null)
                 {
-	                dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0 
+	                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+					dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0 
 		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare 
 		                : null;
 	                dto.UprsCalcDto.ObjectCost = marketObject.Price;
