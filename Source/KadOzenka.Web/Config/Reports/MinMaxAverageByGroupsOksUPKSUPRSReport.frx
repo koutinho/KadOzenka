@@ -73,11 +73,12 @@ namespace FastReport
           }
         }
       }
-      
+      int dataCount = 0;
       for (int i = 4; i &lt; table.ColumnCount; i++)
       {
           DataSourceBase data = Report.GetDataSource(&quot;Data&quot;);
           data.Init();
+          dataCount = data.RowCount;
           while (data.HasMoreRows)
           { 
             string propertyTypeName = Report.GetColumnValue(&quot;Data.PropertyType&quot;).ToString();
@@ -91,6 +92,10 @@ namespace FastReport
             }
             data.Next();
           }     
+      }
+
+      if(dataCount == 0){
+        table.Rows.RemoveAt(table.Rows.Count - 1);
       }
 
       //adding report title

@@ -59,11 +59,13 @@ namespace FastReport
       table[2, 0].SetStyle(table[0, 0]);
       table[2, 0].Text = &quot;Количество объектов недвижимости&quot;;
       table[2, 0].RowSpan = 3;
+      int dataCount = 0;
       for (int i = 3; i &lt; table.RowCount; i++)
       {
         if(table[1, i].RowSpan &gt; 1){
           DataSourceBase data = Report.GetDataSource(&quot;Data&quot;);
           data.Init();
+          dataCount = data.RowCount;
           while (data.HasMoreRows)
           { 
             string groupName = Report.GetColumnValue(&quot;Data.GroupName&quot;).ToString();
@@ -92,6 +94,10 @@ namespace FastReport
           }
         }
       }  
+
+      if(dataCount == 0){
+        table.Rows.RemoveAt(table.Rows.Count - 1);
+      }
 
       //adding report title
       TableRow newRow = new TableRow();

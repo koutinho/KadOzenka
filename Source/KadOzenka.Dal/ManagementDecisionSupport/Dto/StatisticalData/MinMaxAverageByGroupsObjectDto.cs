@@ -12,5 +12,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 		public long? GbuObjectId { get; set; }
 		public CalcDto UpksCalcDto { get; set; }
 		public CalcDto UprsCalcDto { get; set; }
+		public string CadastralNumber { get; set; }
 	}
 }

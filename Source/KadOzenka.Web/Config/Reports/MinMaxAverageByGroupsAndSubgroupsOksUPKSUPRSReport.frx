@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/11/2020 15:50:29" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/16/2020 16:45:23" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -101,11 +101,12 @@ namespace FastReport
           }
         }
       }  
-      
+      int dataCount = 0;
       for (int i = 4; i &lt; table.ColumnCount; i++)
       {
           DataSourceBase data = Report.GetDataSource(&quot;Data&quot;);
           data.Init();
+          dataCount = data.RowCount;
           while (data.HasMoreRows)
           { 
             string propertyTypeName = Report.GetColumnValue(&quot;Data.PropertyType&quot;).ToString();
@@ -119,6 +120,10 @@ namespace FastReport
             }
             data.Next();
           }     
+      }
+      
+      if(dataCount == 0){
+        table.Rows.RemoveAt(table.Rows.Count - 1);
       }
 
       //adding report title
@@ -212,6 +217,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="216.41" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="220.41" Width="1047.06" Height="47.25"/>
   </ReportPage>
 </Report>

@@ -11,6 +11,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -63,7 +64,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						HasGroup = !string.IsNullOrEmpty(group),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
 						UpksCalcDto = new CalcDto(),
-						UprsCalcDto = new CalcDto()
+						UprsCalcDto = new CalcDto(),
+						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
 					FillingCalcData(calcType, dto, table, i);
@@ -123,7 +125,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						HasSubgroup = !string.IsNullOrEmpty(subgroup),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
 						UpksCalcDto = new CalcDto(),
-						UprsCalcDto = new CalcDto()
+						UprsCalcDto = new CalcDto(),
+						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
 					FillingCalcData(calcType, dto, table, i);
@@ -188,6 +191,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
             query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
             query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 
 			var subQuery = new QSQuery(OMGroup.GetRegisterId())
 			{
@@ -226,10 +230,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             }
 			else if (calcType == MinMaxAverageByGroupsCalcType.Uprs)
 			{
-				//TODO: How to calculate uprs?
-				dto.UprsCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-                dto.UprsCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
-                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+				dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+				OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
+				if (marketObject != null)
+                {
+	                dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0
+		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare
+		                : null;
+					dto.UprsCalcDto.ObjectCost = marketObject.Price;
+                }
 			}
 			else
 			{
@@ -237,11 +246,43 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
                 dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 
-				//TODO: How to calculate uprs?
-				dto.UprsCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-                dto.UprsCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
                 dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+                OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
+                if (marketObject != null)
+                {
+	                dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0 
+		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare 
+		                : null;
+	                dto.UprsCalcDto.ObjectCost = marketObject.Price;
+                }
 			}
+		}
+
+		private OMCoreObject GetMarketObject(string cadastralNumber)
+		{
+			OMCoreObject marketObject = null;
+			var marketObjects = OMCoreObject.Where(x =>
+					x.CadastralNumber == cadastralNumber && 
+					x.ProcessType_Code == ProcessStep.Dealed 
+					&& (x.DealType_Code == DealType.SaleDeal || x.DealType_Code == DealType.SaleSuggestion))
+				.Select(x => x.Market_Code)
+				.Select(x => x.LastDateUpdate)
+				.Select(x => x.ParserTime)
+				.Select(x => x.Price)
+				.Execute();
+
+			if (marketObjects.Count > 1)
+			{
+				marketObject = marketObjects.Any(x => x.Market_Code == MarketTypes.Rosreestr)
+					? marketObjects.Where(x => x.Market_Code == MarketTypes.Rosreestr).OrderByDescending(x => x.LastDateUpdate ?? x.ParserTime).First()
+					: marketObjects.OrderByDescending(x => x.LastDateUpdate ?? x.ParserTime).First();
+			}
+			else
+			{
+				marketObject = marketObjects.FirstOrDefault();
+			}
+
+			return marketObject;
 		}
 
 		private void FillPurposeData(MinMaxAverageByGroupsObjectDto dto, List<GbuObjectAttribute> gbuAttributes,
