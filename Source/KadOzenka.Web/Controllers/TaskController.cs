@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,12 +11,12 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
-using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
@@ -33,8 +32,6 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -48,8 +45,9 @@ namespace KadOzenka.Web.Controllers
 		public TourFactorService TourFactorService { get; set; }
         public GroupService GroupService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
+		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 
-        public TaskController()
+		public TaskController()
 		{
 			TaskService = new TaskService();
 			ModelService = new ModelService();
@@ -58,8 +56,9 @@ namespace KadOzenka.Web.Controllers
 		    TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             RegisterAttributeService = new RegisterAttributeService();
+            UpdateCadastralDataService = new UpdateCadastralDataService();
 
-        }
+		}
 
 		#region Карточка задачи
 
@@ -799,10 +798,71 @@ namespace KadOzenka.Web.Controllers
             return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
         }
 
-        #endregion
+		#endregion
+
+		#region Актуализация кадастровых данных
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateTaskCadastralData(long taskId)
+		{
+			var task = OMTask.Where(x => x.Id == taskId).ExecuteFirstOrDefault();
+			if (task == null)
+			{
+				throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
+			}
+
+			var taskName = TaskService.GetTemplateForTaskName(taskId);
+			UpdateTaskCadastralDataLongProcess.AddProcessToQueue(taskId);
+
+			return Content($"Процесс Актуализация кадастровых данных для задания на оценку '{taskName}' успешно добавлен в очередь");
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateCadastralDataAttributeSettings()
+		{
+			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
+
+			var model = new UpdateTaskCadastralDataAttributeSettingsModel();
+			model.CadastralQuarterGbuAttributeId =
+				UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
+			model.BuildingCadastralNumberGbuAttributeId = UpdateCadastralDataService
+				.GetCadastralDataBuildingCadastralNumberAttributeId();
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult UpdateCadastralDataAttributeSettings(UpdateTaskCadastralDataAttributeSettingsModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId.Value,
+				model.BuildingCadastralNumberGbuAttributeId.Value);
+
+			return Json(new { Success = "Сохранено успешно" });
+		}
 
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		#endregion Актуализация кадастровых данных
+
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult DataMapping(long taskId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)				

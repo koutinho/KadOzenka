@@ -2132,6 +2132,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 261 Реестр с настройками атрибутов для Актуализации кадастровых данных
+    /// </summary>
+    public partial class OMUpdateCadastralDataAttributeSettings
+    {
+
+        public OMUpdateCadastralDataAttributeSettings()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUpdateCadastralDataAttributeSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

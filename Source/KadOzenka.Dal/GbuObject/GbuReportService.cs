@@ -118,7 +118,7 @@ namespace KadOzenka.Dal.GbuObject
 			_mainWorkSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
-		public long SaveReport(string fileName)
+		public long SaveReport(string fileName, long? mainRegisterId = null, string registerViewId = null)
 		{
 			try
 			{
@@ -131,11 +131,12 @@ namespace KadOzenka.Dal.GbuObject
 				{
 					UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 					DateCreated = currentDate,
+					DateStarted = currentDate,
 					Status = (int)ImportStatus.Added,
 					FileResultTitle = fileName,
 					FileExtension = "xlsx",
-					MainRegisterId = OMMainObject.GetRegisterId(),
-					RegisterViewId = "GbuObjects"
+					MainRegisterId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId(),
+					RegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects"
 				};
 				export.Save();
 

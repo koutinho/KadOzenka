@@ -10480,6 +10480,31 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип атрибута для актуализации кадастровых данных (219)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 219)]
+    public enum KoUpdateCadastralDataAttributeType : long
+    {
+		/// <summary>
+		/// Атрибут кадастрового квартала (1)
+		/// </summary>
+		[Description("Атрибут кадастрового квартала")]
+        [EnumCode("1")]
+        [ShortTitle("Атрибут кадастрового квартала")]
+        CadastralQuarterAttribute = 1,
+		/// <summary>
+		/// Атрибут кадастрового номера здания (2)
+		/// </summary>
+		[Description("Атрибут кадастрового номера здания")]
+        [EnumCode("2")]
+        [ShortTitle("Атрибут кадастрового номера здания")]
+        BuildingCadastralNumberAttribute = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
