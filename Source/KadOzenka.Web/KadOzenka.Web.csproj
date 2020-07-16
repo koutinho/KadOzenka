@@ -877,6 +877,9 @@
     <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\TestBackgroundReport2.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\TestBackgroundReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1604,6 +1607,7 @@
     <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
+    <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
   </ItemGroup>
 
   <ItemGroup>

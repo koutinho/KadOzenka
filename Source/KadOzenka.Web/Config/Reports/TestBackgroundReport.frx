@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/10/2020 11:33:25" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/16/2020 17:54:59" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
         using System;
         using System.Collections;
@@ -26,8 +26,12 @@ namespace FastReport
     </ScriptText>
   <Dictionary/>
   <ReportPage Name="Page1" LeftMargin="20" TopMargin="70" RightMargin="0" BottomMargin="0" Watermark.Font="Arial, 60pt">
-    <DataBand Name="Data1" Width="718.2" Height="858.06" BeforePrintEvent="Data1_BeforePrint" AfterLayoutEvent="Data1_AfterLayout">
-      <TextObject Name="Text1" Left="198.45" Top="18.9" Width="302.4" Height="18.9" Text="Тестовый фоновый отчет" Font="Arial, 10pt"/>
+    <DataBand Name="Data" Width="718.2" Height="47.25" BeforePrintEvent="Data1_BeforePrint" AfterLayoutEvent="Data1_AfterLayout">
+      <TextObject Name="Text1" Left="198.45" Top="18.9" Width="302.4" Height="18.9" Text="Тестовый фоновый отчет 1" Font="Arial, 10pt"/>
+      <DataBand Name="BandCOMMON" Top="49.54" Width="718.2" Height="132.3">
+        <TextObject Name="Text3" Left="18.9" Top="85.05" Width="340.2" Height="18.9" Text="Входной параметр: [COMMON.InputParameter]" Font="Arial, 10pt"/>
+        <TextObject Name="Text2" Left="18.9" Top="18.9" Width="302.4" Height="18.9" Text="Тестовое значение: [COMMON.TestValue]" Font="Arial, 10pt"/>
+      </DataBand>
     </DataBand>
   </ReportPage>
 </Report>

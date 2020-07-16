@@ -5,25 +5,17 @@ using System.Data;
 
 namespace KadOzenka.Dal.FastReports
 {
-    public class TestBackgroundReport : FastReportBase
+    public class TestBackgroundReport2 : FastReportBase
     {
         protected override string TemplateName(NameValueCollection query)
         {
-            return "TestBackgroundReport";
+            return "TestBackgroundReport2";
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-            var testInputParameter = GetQueryParam<string>("TestInputParameter", query);
-
-            var dataTable = new DataTable("COMMON");
-            dataTable.Columns.Add("TestValue");
-            dataTable.Columns.Add("InputParameter");
-
-            dataTable.Rows.Add("WORKS!", testInputParameter);
-
             var dataSet = new DataSet();
-            dataSet.Tables.Add(dataTable);
+            
 
             return dataSet;
         }
