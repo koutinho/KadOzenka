@@ -1848,30 +1848,6 @@ namespace ObjectModel.Ko
     }
 }
 
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 223 Таблица с отчетами для фоновых операций
-    /// </summary>
-    public partial class OMBackgroundReportingForms
-    {
-
-        public OMBackgroundReportingForms()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMBackgroundReportingForms(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
 namespace ObjectModel.KO
 {
     /// <summary>

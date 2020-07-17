@@ -8927,58 +8927,6 @@ namespace ObjectModel.Ko
     }
 }
 
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 223 Таблица с отчетами для фоновых операций (KO_BACKGROUND_REPORTING_FORMS)
-    /// </summary>
-    [RegisterInfo(RegisterID = 223)]
-    [Serializable]
-    public partial class OMBackgroundReportingForms : OMBaseClass<OMBackgroundReportingForms>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 22300100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 22300100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private string _name;
-        /// <summary>
-        /// 22300200 Имя (NAME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 22300200)]
-        public string Name
-        {
-            get
-            {
-                CheckPropertyInited("Name");
-                return _name;
-            }
-            set
-            {
-                _name = value;
-                NotifyPropertyChanged("Name");
-            }
-        }
-
-    }
-}
-
 namespace ObjectModel.KO
 {
     /// <summary>
