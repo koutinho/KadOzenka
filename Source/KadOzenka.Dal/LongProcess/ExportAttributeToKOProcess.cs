@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
@@ -32,7 +33,9 @@ namespace KadOzenka.Dal.LongProcess
             }
 			catch (Exception ex)
 			{
-				SendFailureNotification(processQueue, ex.Message);
+				var errorId = ErrorManager.LogError(ex);
+				var message = $"{ex.Message} (Подробнее в журнале: {errorId})";
+				SendFailureNotification(processQueue, message);
 				throw;
 			}
 		}
