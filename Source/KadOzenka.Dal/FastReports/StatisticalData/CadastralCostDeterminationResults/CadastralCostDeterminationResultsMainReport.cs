@@ -5,13 +5,16 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using Core.Shared.Extensions;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
     public class CadastralCostDeterminationResultsMainReport : StatisticalDataReport
     {
 	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
-        public Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
+        private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
 
         public CadastralCostDeterminationResultsMainReport()
         {
@@ -29,9 +32,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             var taskIdList = GetTaskIdList(query).ToList();
 
             var report = GetReport(query);
-            return report.GetData(query, taskIdList);
-        }
+            var units = report.GetUnitsForCadastralCostDetermination(taskIdList);
+            var operations = GetOperations(units);
 
+            var dataSet = new DataSet();
+            var itemTable = GetItemDataTable(operations);
+            dataSet.Tables.Add(itemTable);
+
+            return dataSet;
+        }
 
         #region Support Methods
 
@@ -58,6 +67,62 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             }
 
             return concreteReport;
+        }
+
+        private List<ReportItem> GetOperations(List<OMUnit> units)
+        {
+            if (units.Count == 0)
+                return new List<ReportItem>();
+
+            return units.Select(unit => new ReportItem
+            {
+                CadastralDistrict = GetCadastralDistrict(unit.CadastralBlock),
+                CadastralNumber = unit.CadastralNumber,
+                Type = unit.PropertyType_Code,
+                Square = unit.Square,
+                Upks = unit.Upks,
+                Cost = unit.CadastralCost
+            }).ToList();
+        }
+
+        private DataTable GetItemDataTable(List<ReportItem> operations)
+        {
+            var dataTable = new DataTable("ITEM");
+
+            dataTable.Columns.Add("Number");
+            dataTable.Columns.Add("CadastralDistrict");
+            dataTable.Columns.Add("CadastralNumber");
+            dataTable.Columns.Add("Type");
+            dataTable.Columns.Add("Square");
+            dataTable.Columns.Add("Upks");
+            dataTable.Columns.Add("Cost");
+
+            for (var i = 0; i < operations.Count; i++)
+            {
+                dataTable.Rows.Add(i + 1,
+                    operations[i].CadastralDistrict,
+                    operations[i].CadastralNumber,
+                    operations[i].Type.GetEnumDescription(),
+                    operations[i].Square,
+                    operations[i].Upks,
+                    operations[i].Cost);
+            }
+
+            return dataTable;
+        }
+
+        #endregion
+
+        #region Entities
+
+        private class ReportItem
+        {
+            public string CadastralDistrict { get; set; }
+            public string CadastralNumber { get; set; }
+            public PropertyTypes Type { get; set; }
+            public decimal? Square { get; set; }
+            public decimal? Upks { get; set; }
+            public decimal? Cost { get; set; }
         }
 
         #endregion

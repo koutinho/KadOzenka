@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
@@ -15,29 +12,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return "CadastralCostDeterminationResultsReport";
         }
 
-        DataSet ICadastralCostDeterminationResultsReport.GetData(NameValueCollection query, List<long> taskIdList)
+        public List<OMUnit> GetUnitsForCadastralCostDetermination(List<long> taskIds)
         {
-            var operations = GetOperations(taskIdList);
+            if (taskIds.Count == 0)
+                return new List<OMUnit>();
 
-            var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
-
-            return dataSet;
-        }
-
-        
-        #region Support Methods
-
-        private List<ReportItem> GetOperations(List<long> taskIds)
-        {
-            if(taskIds.Count == 0)
-                return new List<ReportItem>();
-
-            var items = new List<ReportItem>();
-
-            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
-                 !x.ParentGroup.GroupName.ToLower().Contains(CadastralCostDeterminationResultsMainReport.IndividuallyResultsGroupNamePhrase))
+            return OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long) x.TaskId) &&
+                                     !x.ParentGroup.GroupName.ToLower().Contains(
+                                         CadastralCostDeterminationResultsMainReport
+                                             .IndividuallyResultsGroupNamePhrase))
                 .Select(x => x.CadastralBlock)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.PropertyType_Code)
@@ -46,63 +29,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
                 .Select(x => x.CadastralCost)
                 .OrderBy(x => x.CadastralBlock)
                 .Execute();
-
-            units.ForEach(unit =>
-            {
-                items.Add(new ReportItem
-                {
-                    CadastralDistrict = GetCadastralDistrict(unit.CadastralBlock),
-                    CadastralNumber = unit.CadastralNumber,
-                    Type = unit.PropertyType_Code,
-                    Square = unit.Square,
-                    Upks = unit.Upks,
-                    Cost = unit.CadastralCost
-                });
-            });
-
-            return items;
         }
-
-        private DataTable GetItemDataTable(List<ReportItem> operations)
-        {
-            var dataTable = new DataTable("ITEM");
-
-            dataTable.Columns.Add("Number");
-            dataTable.Columns.Add("CadastralDistrict");
-            dataTable.Columns.Add("CadastralNumber");
-            dataTable.Columns.Add("Type");
-            dataTable.Columns.Add("Square");
-            dataTable.Columns.Add("Upks");
-            dataTable.Columns.Add("Cost");
-
-            for (var i = 0; i < operations.Count; i++)
-            {
-                dataTable.Rows.Add(i + 1,
-                    operations[i].CadastralDistrict,
-                    operations[i].CadastralNumber,
-                    operations[i].Type.GetEnumDescription(),
-                    operations[i].Square,
-                    operations[i].Upks,
-                    operations[i].Cost);
-            }
-            
-            return dataTable;
-        }
-
-        #endregion
-
-        #region Entities
-
-        private class ReportItem
-        {
-            public string CadastralDistrict { get; set; }
-            public string CadastralNumber { get; set; }
-            public PropertyTypes Type { get; set; }
-            public decimal? Square { get; set; }
-            public decimal? Upks { get; set; }
-            public decimal? Cost { get; set; }
-        }
-
-        #endregion
     }
 }
