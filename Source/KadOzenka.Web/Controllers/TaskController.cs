@@ -693,9 +693,9 @@ namespace KadOzenka.Web.Controllers
                 throw new ArgumentException("Не выбраны группы");
 
             var settings = CadastralPriceCalculationModel.UnMap(model);
-            OMGroup.CalculateSelectGroup(settings);
+            CalculateCadastralPriceLongProcess.AddProcessToQueue(settings);
 
-            return Json(new {Message = "Операция выполнена успешно"});
+            return Json(new {Message = "Операция Расчета кадастровой стоимости добавлена в очередь" });
         }
 
         [HttpGet]
