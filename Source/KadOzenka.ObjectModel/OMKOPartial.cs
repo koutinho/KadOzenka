@@ -2255,9 +2255,7 @@ namespace ObjectModel.KO
 
 	    public string FileName { get; set; }
 
-	    public bool IsXml { get; set; }
-
-		public bool NoResult { get; set; }
+	    public bool NoResult { get; set; }
 
 		public long TaskId { get; set; }
     }

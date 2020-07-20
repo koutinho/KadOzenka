@@ -249,7 +249,6 @@ namespace KadOzenka.Dal.DataExport
             {
 	            FileId = id,
 				FileName = filename,
-	            IsXml = false,
 				TaskId = settings.TaskFilter.FirstOrDefault()
             };
         }
@@ -294,7 +293,6 @@ namespace KadOzenka.Dal.DataExport
 						{
 							FileName = file_name,
 							FileId = id,
-							IsXml = true,
 							TaskId = taskId
 						});
                         //using (FileStream output = new FileStream(file_name, FileMode.Create))
@@ -323,7 +321,6 @@ namespace KadOzenka.Dal.DataExport
 				{
 					FileName = file_name,
 					FileId = id1,
-					IsXml = true,
 					TaskId = taskId
 				});
 			}
@@ -551,7 +548,6 @@ namespace KadOzenka.Dal.DataExport
                         {
 							FileName = file_name,
 							FileId = id,
-							IsXml = true,
 							TaskId = taskId
                         });
 
@@ -1268,7 +1264,6 @@ namespace KadOzenka.Dal.DataExport
 	            {
 		            FileId = id,
 		            FileName = fileName,
-		            IsXml = false,
 		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
 	            });
             }
@@ -1882,7 +1877,6 @@ namespace KadOzenka.Dal.DataExport
 	            {
 		            FileId = id,
 		            FileName = fileName,
-		            IsXml = false,
 		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
 	            });
             }
@@ -2139,7 +2133,6 @@ namespace KadOzenka.Dal.DataExport
 		  {
 			  FileId = id,
 			  FileName = file_name,
-			  IsXml = false,
 			  TaskId = _taskid
 		  };
             //excel_edit.Save(file_name);
@@ -2327,8 +2320,7 @@ namespace KadOzenka.Dal.DataExport
             {
 	            FileId = id,
 	            FileName = file_name,
-	            IsXml = false,
-				TaskId = _taskid
+	            TaskId = _taskid
             };
 
         }
@@ -2396,7 +2388,6 @@ namespace KadOzenka.Dal.DataExport
 			{
 				FileName = file_name,
 				FileId = id,
-				IsXml = false,
 				TaskId = _taskid
 			};
         }
@@ -2678,7 +2669,6 @@ namespace KadOzenka.Dal.DataExport
 			{
 				FileId = id,
 				FileName = file_name,
-				IsXml = false,
 				TaskId = firrsTaskId
 			};
             //excel_edit.Save(file_name);
@@ -2851,7 +2841,6 @@ namespace KadOzenka.Dal.DataExport
 			{
 				FileName = file_name,
 				FileId = id,
-				IsXml = false,
 				TaskId = firstTaskId
 			};
         }
@@ -2955,7 +2944,6 @@ namespace KadOzenka.Dal.DataExport
 			{
 				FileName = file_name,
 				FileId = id,
-				IsXml = false,
 				TaskId = _taskid
 			};
         }
@@ -3096,7 +3084,6 @@ namespace KadOzenka.Dal.DataExport
 			{
 				FileName = file_name,
 				FileId = id,
-				IsXml = false,
 				TaskId = _taskid
 			};
         }
@@ -3347,8 +3334,7 @@ namespace KadOzenka.Dal.DataExport
             {
 	            FileName = file_name,
 	            FileId = id,
-	            IsXml = false,
-				TaskId = _taskid
+	            TaskId = _taskid
             };
         }
 
