@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using ObjectModel.Directory.Core.LongProcess;
+using Platform.Reports.BackgroundExporterScheduler;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -362,6 +363,15 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("556", "Корректировка на дату", () =>
             {
                 new CorrectionByDateForMarketObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                {
+                    Status_Code = Status.Added,
+                    UserId = SRDSession.GetCurrentUserId()
+                }, new CancellationToken());
+            });
+
+            consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов по кастомному пути (процесс из платформы)", () =>
+            {
+                new BackgroundExporterLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 {
                     Status_Code = Status.Added,
                     UserId = SRDSession.GetCurrentUserId()
