@@ -34,19 +34,28 @@ using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
+using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
+using Serilog;
+using DevExpress.DataProcessing.InMemoryDataProcessor;
+using DevExpress.Data.Helpers;
 
 namespace CIPJS
 {
     public class Startup
     {
+
+       
         public Startup(IConfiguration configuration)
         {
-			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+           
+
+            SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 
 			Configuration = configuration;
 
-			// Запуск службы фоновых процессов (для отладки)
-			if (ConfigurationManager.AppSettings["StartLongProcessService"].ParseToBoolean())
+            // Запуск службы фоновых процессов (для отладки)
+            if (ConfigurationManager.AppSettings["StartLongProcessService"].ParseToBoolean())
 			{
 				LongProcessManagementService service = new LongProcessManagementService();
 				service.Start();
@@ -58,6 +67,8 @@ namespace CIPJS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Log.Information("ConfigureServices called");
+      
             //Добавляет поддержку кодировок 1251, 866
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -108,8 +119,10 @@ namespace CIPJS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            Log.Information("Configure called");
+            loggerFactory.AddSerilog();
             //if (env.IsDevelopment())
             //{
             //    app.UseBrowserLink();
@@ -120,6 +133,7 @@ namespace CIPJS
             //{
             //    app.UseExceptionHandler("/Home/Error");
             //}
+
             app.UseFastReport();
             app.UseExceptionHandler(
               builder =>
@@ -130,6 +144,7 @@ namespace CIPJS
                         IExceptionHandlerFeature error = context.Features.Get<IExceptionHandlerFeature>();
                         if (error != null)
                         {
+                            Log.Error("Ошибка ExceptionHandlerFeature {error}", error.Error);
                             await Task.Factory.StartNew(() => ErrorManager.LogServerError(error.Error));
                         }
                     });
@@ -157,6 +172,7 @@ namespace CIPJS
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseSerilogRequestLogging();
             app.UseWebSockets();
 
             app.Use(async (context, next) =>

@@ -459,6 +459,19 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
     <PackageReference Include="Platform.Web" Version="1.0.496" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="Serilog.Enrichers.AspNetCore.HttpContext" Version="1.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
+    <PackageReference Include="Serilog.Enrichers.HttpContextData" Version="0.1.3" />
+    <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
@@ -754,39 +767,39 @@
     <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Reports\AdditionalFormsCalculationsAnalysisReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsChangesUploadingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsMarketDataInfoReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsResultsAnalysisReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+	  <None Update="Config\Reports\AdditionalFormsCalculationsAnalysisReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsChangesUploadingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsMarketDataInfoReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsResultsAnalysisReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
     <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Reports\CadastralCostDeterminationIndividuallyResultsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CadastralCostDeterminationResultsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+	  <None Update="Config\Reports\CadastralCostDeterminationIndividuallyResultsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\CadastralCostDeterminationResultsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
     <None Update="Config\Reports\CalculationPagesReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CalculationParamsModelingResultsReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Reports\CalculationParamsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+	  <None Update="Config\Reports\CalculationParamsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
     <None Update="Config\Reports\CalculationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -796,94 +809,94 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Reports\InfoAboutCadastralCostDeterminingMethodReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForParcelsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForPreviousToursReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionNonuniformReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionUniformReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsGroupingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForBuildingsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForConstructionsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForParcelsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForParkingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForPlacementsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\TestBackgroundReport2.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\TestBackgroundReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-      <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
+	  <None Update="Config\Reports\InfoAboutCadastralCostDeterminingMethodReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForParcelsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForPreviousToursReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionNonuniformReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionUniformReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsGroupingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForBuildingsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForConstructionsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForParcelsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForParkingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForPlacementsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\TestBackgroundReport2.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\TestBackgroundReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
@@ -987,56 +1000,56 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Pages\" />
-    <Folder Include="Views\GknDataImport\" />
-    <Folder Include="Views\DataImportByTemplate\" />
+	  <Folder Include="Views\GknDataImport\" />
+	  <Folder Include="Views\DataImportByTemplate\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.Charts.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.CodeParser.v20.1">
-      <HintPath>..\_Dll\DevExpress.CodeParser.v20.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Data.v20.1">
-      <HintPath>..\_Dll\DevExpress.Data.v20.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.DataAccess.v20.1">
-      <HintPath>..\_Dll\DevExpress.DataAccess.v20.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Office.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.Office.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Pdf.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.Pdf.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.PivotGrid.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.PivotGrid.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Printing.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.Printing.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.RichEdit.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.RichEdit.v20.1.Export">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Export.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Sparkline.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.Sparkline.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Xpo.v20.1">
-      <HintPath>..\_Dll\DevExpress.Xpo.v20.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraCharts.v20.1">
-      <HintPath>..\_Dll\DevExpress.XtraCharts.v20.1.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraGauges.v20.1.Core">
-      <HintPath>..\_Dll\DevExpress.XtraGauges.v20.1.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.XtraReports.v20.1">
-      <HintPath>..\_Dll\DevExpress.XtraReports.v20.1.dll</HintPath>
+	  <Reference Include="DevExpress.Charts.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Charts.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.CodeParser.v20.1">
+		  <HintPath>..\_Dll\DevExpress.CodeParser.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Data.v20.1">
+		  <HintPath>..\_Dll\DevExpress.Data.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.DataAccess.v20.1">
+		  <HintPath>..\_Dll\DevExpress.DataAccess.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Office.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Office.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Pdf.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Pdf.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.PivotGrid.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.PivotGrid.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Printing.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Printing.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.RichEdit.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.RichEdit.v20.1.Export">
+		  <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Export.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Sparkline.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Sparkline.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Xpo.v20.1">
+		  <HintPath>..\_Dll\DevExpress.Xpo.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraCharts.v20.1">
+		  <HintPath>..\_Dll\DevExpress.XtraCharts.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraGauges.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.XtraGauges.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraReports.v20.1">
+		  <HintPath>..\_Dll\DevExpress.XtraReports.v20.1.dll</HintPath>
     </Reference>
     <Reference Include="Kendo.Mvc">
       <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
@@ -1194,354 +1207,354 @@
     <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\themedata.thmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual.htm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\colorschememapping.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\filelist.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\header.htm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image001.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image002.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image003.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image004.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image005.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image006.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image007.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image008.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image009.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image010.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image011.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image012.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image013.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image014.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image015.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image016.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image017.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image018.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image019.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image020.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image021.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image022.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image023.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image024.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image025.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image026.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image027.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image028.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image029.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image030.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image031.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image032.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image033.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image034.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image035.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image036.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image037.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image038.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image039.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image040.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image041.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image042.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image043.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image044.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image045.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image046.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image047.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image048.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image049.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image050.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image051.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image052.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image053.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image054.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image055.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image056.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image057.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image058.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image059.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image060.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image061.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image062.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image063.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image064.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image065.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image066.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image067.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image068.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image069.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image070.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image071.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image072.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image073.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image074.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image075.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image076.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image077.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image078.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image079.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image080.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image081.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image082.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image083.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image084.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image085.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image086.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image087.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image088.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image089.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image090.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image091.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image092.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image093.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image094.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image095.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image096.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image097.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image098.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image099.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image100.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image101.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image102.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image103.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image104.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image105.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image106.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image107.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image108.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image109.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\item0001.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\props002.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\themedata.thmx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual.htm">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\colorschememapping.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\filelist.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\header.htm">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image001.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image002.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image003.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image004.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image005.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image006.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image007.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image008.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image009.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image010.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image011.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image012.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image013.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image014.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image015.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image016.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image017.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image018.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image019.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image020.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image021.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image022.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image023.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image024.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image025.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image026.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image027.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image028.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image029.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image030.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image031.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image032.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image033.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image034.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image035.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image036.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image037.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image038.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image039.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image040.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image041.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image042.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image043.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image044.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image045.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image046.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image047.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image048.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image049.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image050.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image051.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image052.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image053.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image054.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image055.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image056.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image057.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image058.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image059.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image060.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image061.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image062.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image063.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image064.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image065.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image066.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image067.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image068.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image069.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image070.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image071.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image072.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image073.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image074.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image075.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image076.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image077.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image078.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image079.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image080.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image081.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image082.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image083.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image084.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image085.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image086.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image087.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image088.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image089.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image090.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image091.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image092.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image093.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image094.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image095.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image096.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image097.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image098.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image099.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image100.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image101.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image102.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image103.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image104.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image105.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image106.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image107.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image108.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image109.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\item0001.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\props002.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\themedata.thmx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -1607,7 +1620,7 @@
     <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
-    <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
+	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1630,5 +1643,6 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
