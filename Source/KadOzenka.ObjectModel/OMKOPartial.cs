@@ -2174,6 +2174,10 @@ namespace ObjectModel.KO
         /// </summary>
         public List<long> TaskFilter;
         /// <summary>
+        /// Исходящий документ
+        /// </summary>
+        public long IdResponseDocument;
+        /// <summary>
         /// Объекты выгрузки: true-Земельный участок, false-ОКС
         /// </summary>
         public bool UnloadParcel;
@@ -2225,11 +2229,19 @@ namespace ObjectModel.KO
         /// Выгрузка XML 2 результатов Кадастровой оценки по группам.
         /// </summary>
         public bool UnloadXML2;
+        /// <summary>
+        /// Выгрузка XML результатов Кадастровой оценки по исходящим документам.
+        /// </summary>
+        public bool UnloadDEKOResponseDocExportToXml;
+        /// <summary>
+        /// Выгрузка XML результатов Кадастровой оценки для ВУОН.
+        /// </summary>
+        public bool UnloadDEKOVuonExportToXml;
 
-		/// <summary>
-		/// Отправка результатов в РЕОН
-		/// </summary>
-		public bool SendResultToReon { get; set; }
+        /// <summary>
+        /// Отправка результатов в РЕОН
+        /// </summary>
+        public bool SendResultToReon { get; set; }
     }
 
     public class ResultKoUnloadSettings

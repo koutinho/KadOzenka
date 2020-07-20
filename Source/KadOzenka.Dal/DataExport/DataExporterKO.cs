@@ -1,6 +1,5 @@
 ﻿using Core.Register;
 using Core.Register.RegisterEntities;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using GemBox.Document;
@@ -14,16 +13,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Configuration;
+using System.Text;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
+using Ionic.Zip;
 using ObjectModel.Common;
 using ObjectModel.KO;
-using ObjectModel.Ko;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
-using ObjectModel.ES;
+using SaveOptions = GemBox.Document.SaveOptions;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -289,7 +289,7 @@ namespace KadOzenka.Dal.DataExport
 
                         file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
                         Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
-                        long id = SaveReportDownload.SaveReportToXml(file_name, resultFile, OMUnit.GetRegisterId());
+                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
 						res.Add(new ResultKoUnloadSettings
 						{
 							FileName = file_name,
@@ -318,7 +318,7 @@ namespace KadOzenka.Dal.DataExport
 				//{
 				//    resultFile1.CopyTo(output);
 				//}
-				long id1 = SaveReportDownload.SaveReportToXml(file_name, resultFile1, OMUnit.GetRegisterId());
+				long id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
 				res.Add(new ResultKoUnloadSettings
 				{
 					FileName = file_name,
@@ -545,7 +545,7 @@ namespace KadOzenka.Dal.DataExport
                         //    resultFile.CopyTo(output);
                         //}
 
-                        long id = SaveReportDownload.SaveReportToXml(file_name, resultFile, OMGroup.GetRegisterId());
+                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
 
                         res.Add(new ResultKoUnloadSettings
                         {
@@ -1239,23 +1239,44 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Экспорт в Xml - КОценка по исходящим документам.
         /// </summary>
-        public static void ExportToXml(OMInstance _doc, string _dir_name)
+        public static List<ResultKoUnloadSettings> ExportToXml(OMInstance _doc, string _dir_name)
         {
+	        var result = new List<ResultKoUnloadSettings>();
             List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id).SelectAll().Execute();
-            if (units.Count == 0) return;
+            if (units.Count == 0) return result;
 
             List<ActOpredel> list_act = new List<ActOpredel>();
             List<OMInstance> list_doc_in = new List<OMInstance>();
             List<string> list_bads = new List<string>();
+            using (ZipFile zipFile = new ZipFile())
+            {
+	            zipFile.AlternateEncoding = Encoding.UTF8;
+	            zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
-            int num_pp = 0;
-            list_bads.AddRange(CalcXMLResponseDoc(ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, _dir_name));
-            list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
-            list_act.AddRange(list_act_out);
-            ObjectNotChange(list_bads, list_act, list_doc_in, _dir_name);
+                int num_pp = 0;
+	            list_bads.AddRange(CalcXMLResponseDoc(ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, _dir_name, zipFile));
+	            list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
+	            list_act.AddRange(list_act_out);
+	            ObjectNotChange(list_bads, list_act, list_doc_in, _dir_name, zipFile);
+
+	            MemoryStream stream = new MemoryStream();
+	            zipFile.Save(stream);
+	            stream.Seek(0, SeekOrigin.Begin);
+	            var fileName = $"Выгрузка XML результатов Кадастровой оценки по исходящим документам ({ _doc.RegNumber} { _doc.Description})";
+	            long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+	            result.Add(new ResultKoUnloadSettings
+	            {
+		            FileId = id,
+		            FileName = fileName,
+		            IsXml = false,
+		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
+	            });
+            }
+
+            return result;
         }
 
-        private static string[] CalcXMLResponseDoc(ref int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path)
+        private static string[] CalcXMLResponseDoc(ref int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -1309,19 +1330,29 @@ namespace KadOzenka.Dal.DataExport
                                        ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                         DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                        if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                            Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
+                        //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
+                        //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
+                        //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
+                        //             "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                        //             "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                        //             "_" + DateTime.Now.ToString("ddMMyyyy") +
+                        //             "_" + ((int)unit.PropertyType_Code).ToString() +
+                        //             "_" + unit.Id.ToString() + ".xml");
 
-                        xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                                                  "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                                  "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                                  "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                                  "_" + ((int)unit.PropertyType_Code).ToString() +
-                                                  "_" + unit.Id.ToString() + ".xml");
+                        string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                          "_" + ((int) unit.PropertyType_Code).ToString() +
+                                          "_" + unit.Id.ToString() + ".xml";
+                        MemoryStream stream = new MemoryStream();
+                        xmlFile.Save(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        zipFile.AddEntry(fileName, stream);
 
-                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes);
-                        XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out);
-                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp);
+                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                        XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
+                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
                         bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
                     }
                     else
@@ -1334,18 +1365,29 @@ namespace KadOzenka.Dal.DataExport
                                        ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                         DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                        if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                            Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
+                        //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
+                        //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
 
-                        xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                                                  "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                                  "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                                  "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                                  "_" + ((int)unit.PropertyType_Code).ToString() +
-                                                  "_" + unit.Id.ToString() + ".xml");
+                        //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
+                        //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                        //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                        //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                        //                          "_" + ((int)unit.PropertyType_Code).ToString() +
+                        //                          "_" + unit.Id.ToString() + ".xml");
 
-                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes);
-                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp);
+                        string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                          "_" + ((int)unit.PropertyType_Code).ToString() +
+                                          "_" + unit.Id.ToString() + ".xml";
+                        MemoryStream stream = new MemoryStream();
+                        xmlFile.Save(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        zipFile.AddEntry(fileName, stream);
+
+                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
                         bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
 
                         string dateapp = "01.01.2018";
@@ -1363,7 +1405,7 @@ namespace KadOzenka.Dal.DataExport
             return bads.ToArray();
         }
 
-        public static void ObjectNotChange(List<string> list_bads, List<ActOpredel> _list_act, List<OMInstance> _list_doc, string _dir_name)
+        public static void ObjectNotChange(List<string> list_bads, List<ActOpredel> _list_act, List<OMInstance> _list_doc, string _dir_name, ZipFile zipFile)
         {
             List<string> baditems = new List<string>();
             List<string> gooditems = new List<string>();
@@ -1423,9 +1465,15 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.AddRow(mainWorkSheet, curcount - curindval, objvals, curindval); 
                 }
 
-                if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
-                string filenn_temp = _dir_name + "\\" + "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + "_без_изменений.xlsx";
-                excelTemplate.Save(filenn_temp); 
+                //if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
+                //string filenn_temp = _dir_name + "\\" + "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + "_без_изменений.xlsx";
+                //excelTemplate.Save(filenn_temp);
+
+                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + "_без_изменений.xlsx";
+                MemoryStream stream = new MemoryStream();
+                excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
             }
             #endregion
 
@@ -1473,10 +1521,15 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.AddRow(sheet_edit, curcount - curindval, objvals, curindval);
                 }
 
-                if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
-                string filenn = _dir_name + "\\" + "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
-                excel_edit.Save(filenn);
+                //if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
+                //string filenn = _dir_name + "\\" + "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                //excel_edit.Save(filenn);
 
+                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                MemoryStream stream = new MemoryStream();
+                excel_edit.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
             }
             #endregion
 
@@ -1534,15 +1587,21 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.AddRow(asheet, acurcount - acurindval, aobjvals, acurindval); 
                 }
 
-                if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
-                string afilenn = _dir_name + "\\" + "DOC" + "\\Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
-                aexcell.Save(afilenn);
+                //if (!Directory.Exists(_dir_name + "\\" + "DOC")) Directory.CreateDirectory(_dir_name + "\\" + "DOC");
+                //string afilenn = _dir_name + "\\" + "DOC" + "\\Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                //aexcell.Save(afilenn);
+
+                string fileName = "DOC" + "\\Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                MemoryStream stream = new MemoryStream();
+                aexcell.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
             }
             #endregion
 
         }
 
-        public static bool XmlVuonExport(OMGroup _group_unit, OMUnit _unit, string _dir_name, OMInstance _doc_in, OMInstance _doc_out, Dictionary<Int64, XmlNode> dictNodes)
+        public static bool XmlVuonExport(OMGroup _group_unit, OMUnit _unit, string _dir_name, OMInstance _doc_in, OMInstance _doc_out, Dictionary<Int64, XmlNode> dictNodes, ZipFile zipFile)
         {
             List<OMUnit> units = new List<OMUnit> { _unit };
             _group_unit.Unit = units;
@@ -1557,19 +1616,28 @@ namespace KadOzenka.Dal.DataExport
                 DEKOGroup.AddXmlGeneralInfo(xmlFile, xnLandValuation);
                 DEKOGroup.AddXmlPackage(xmlFile, xnLandValuation, _group_unit, dictNodes, ""); //"Выгрузка XML для ФД"
 
-                if (!Directory.Exists(_dir_name))
-                    Directory.CreateDirectory(_dir_name);
+                //if (!Directory.Exists(_dir_name))
+                //    Directory.CreateDirectory(_dir_name);
 
-                xmlFile.Save(_dir_name + "\\FD_State_Cadastral_Valuation_" + _group_unit.Id.ToString().PadLeft(5, '0') +
-                    "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
-                    "_" + ((int)_unit.PropertyType_Code).ToString() +
-                    "_" + _unit.Id.ToString() + ".xml");
+                //xmlFile.Save(_dir_name + "\\FD_State_Cadastral_Valuation_" + _group_unit.Id.ToString().PadLeft(5, '0') +
+                //    "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
+                //    "_" + ((int)_unit.PropertyType_Code).ToString() +
+                //    "_" + _unit.Id.ToString() + ".xml");
+
+                string fileName = _unit.CadastralNumber.Replace(":", "_") + "\\FD_State_Cadastral_Valuation_" + _group_unit.Id.ToString().PadLeft(5, '0') +
+                        "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
+                        "_" + ((int)_unit.PropertyType_Code).ToString() +
+                        "_" + _unit.Id.ToString() + ".xml";
+                MemoryStream stream = new MemoryStream();
+                xmlFile.Save(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
             }
 
             return true;
         }
 
-        public static bool XmlWebExport(OMGroup _group_unit, OMUnit _unit, string _dir_name, OMInstance _doc_in, OMInstance _doc_out)
+        public static bool XmlWebExport(OMGroup _group_unit, OMUnit _unit, string _dir_name, OMInstance _doc_in, OMInstance _doc_out, ZipFile zipFile)
         {
             if (_unit == null) return false;
             XmlDocument xmlFile = new XmlDocument();
@@ -1690,24 +1758,33 @@ namespace KadOzenka.Dal.DataExport
             xnLandValuation.AppendChild(xnobject);
             xmlFile.AppendChild(xnLandValuation);
 
-            if (!Directory.Exists(_dir_name))
-                Directory.CreateDirectory(_dir_name);
-            if (!Directory.Exists(_dir_name + "\\" + "_web_obmen_"))
-                Directory.CreateDirectory(_dir_name + "\\" + "_web_obmen_");
-            xmlFile.Save(_dir_name + "\\" + "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml");
+            //if (!Directory.Exists(_dir_name))
+            //    Directory.CreateDirectory(_dir_name);
+            //if (!Directory.Exists(_dir_name + "\\" + "_web_obmen_"))
+            //    Directory.CreateDirectory(_dir_name + "\\" + "_web_obmen_");
+            //xmlFile.Save(_dir_name + "\\" + "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml");
+
+
+            string fileName = "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml";
+            MemoryStream stream = new MemoryStream();
+            xmlFile.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+            zipFile.AddEntry(fileName, stream);
 
             return true;
         }
 
-        public static void GetOtvetDocX(OMUnit _unit, string _dir_name, OMInstance _doc_out, int numpp)
+        public static void GetOtvetDocX(OMUnit _unit, string _dir_name, OMInstance _doc_out, int numpp, ZipFile zipFile)
         {
-            string file_name = _dir_name + "\\Акты по объектам";
-            if (!Directory.Exists(file_name)) Directory.CreateDirectory(file_name);
+            //string file_name = _dir_name + "\\Акты по объектам";
+	        //if (!Directory.Exists(file_name)) Directory.CreateDirectory(file_name);
             string num = _doc_out.RegNumber;
             num = num.Replace("/", "");
             string kn = _unit.CadastralNumber;
             kn = kn.Replace(":", "_");
-            file_name = file_name + "\\" + num + "_" + kn + ".docx";
+            //file_name = file_name + "\\" + num + "_" + kn + ".docx"
+            string fileName = "Акты по объектам" + "\\" + num + "_" + kn + ".docx";
+
 
             ComponentInfo.SetLicense("DN-2020Feb27-7KwYZ43Y+lJR5YBeTLWW8F+pXE9Aj3uU2ru+Jk1lHxILYWKJhT8TZQLCztE1qx6MQx/MnAR8BGGPC6QpAmIgm2EZh0w==A");
             var document = new DocumentModel();
@@ -1757,7 +1834,12 @@ namespace KadOzenka.Dal.DataExport
             section.PageSetup = ps;
             document.Sections.Add(section);
 
-            document.Save(file_name);
+            //document.Save(file_name);
+
+            MemoryStream stream = new MemoryStream();
+            document.Save(stream, SaveOptions.DocxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            zipFile.AddEntry(fileName, stream);
         }
     }
 
@@ -1769,24 +1851,48 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Экспорт в Xml - КОценка для ВУОН.
         /// </summary>
-        public static void ExportToXml(OMInstance _doc, string _dir_name)
+        public static List<ResultKoUnloadSettings> ExportToXml(OMInstance _doc, string _dir_name)
         {
-            List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id).SelectAll().Execute();
-            if (units.Count == 0) return;
+	        var result = new List<ResultKoUnloadSettings>();
+            List <OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id).SelectAll().Execute();
+            if (units.Count == 0) return result;
 
-            List<ActOpredel> list_act = new List<ActOpredel>();
-            List<OMInstance> list_doc_in = new List<OMInstance>();
-            List<string> list_bads = new List<string>();
+            using (ZipFile zipFile = new ZipFile())
+            {
+	            zipFile.AlternateEncoding = Encoding.UTF8;
+	            zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
-            int num_pp = 0;
-            list_bads.AddRange(CalcXMLFromVuon(num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, _dir_name));
-            list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
-            list_act.AddRange(list_act_out);
+                List<ActOpredel> list_act = new List<ActOpredel>();
+	            List<OMInstance> list_doc_in = new List<OMInstance>();
+	            List<string> list_bads = new List<string>();
 
-            DEKOResponseDoc.ObjectNotChange(list_bads, list_act, list_doc_in, _dir_name);
+	            int num_pp = 0;
+	            list_bads.AddRange(CalcXMLFromVuon(num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, _dir_name, zipFile));
+	            list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
+	            list_act.AddRange(list_act_out);
+
+	            DEKOResponseDoc.ObjectNotChange(list_bads, list_act, list_doc_in, _dir_name, zipFile);
+
+                MemoryStream stream = new MemoryStream();
+	            zipFile.Save(stream);
+	            stream.Seek(0, SeekOrigin.Begin);
+	            var fileName = $"Выгрузка XML результатов Кадастровой оценки для ВУОН ({ _doc.RegNumber} { _doc.Description})";
+	            long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+	            result.Add(new ResultKoUnloadSettings
+	            {
+		            FileId = id,
+		            FileName = fileName,
+		            IsXml = false,
+		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
+	            });
+            }
+
+            
+
+            return result;
         }
 
-        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path)
+        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -1843,19 +1949,30 @@ namespace KadOzenka.Dal.DataExport
                                    ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                     DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                    if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                        Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
+                    //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
+                    //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
 
-                    xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                                              "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                              "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                              "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                              "_" + ((int)unit.PropertyType_Code).ToString() +
-                                              "_" + unit.Id.ToString() + ".xml");
+                    //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
+                    //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                    //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                    //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                    //                          "_" + ((int)unit.PropertyType_Code).ToString() +
+                    //                          "_" + unit.Id.ToString() + ".xml");
 
-                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes);
-                    DEKOResponseDoc.XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out);
-                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp);
+                    string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                                                "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                                                "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                                                                "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                                                "_" + ((int)unit.PropertyType_Code).ToString() +
+                                                                "_" + unit.Id.ToString() + ".xml";
+                    MemoryStream stream = new MemoryStream();
+                    xmlFile.Save(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    zipFile.AddEntry(fileName, stream);
+
+                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                    DEKOResponseDoc.XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
+                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
                     bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
                 }
                 else
@@ -1868,18 +1985,29 @@ namespace KadOzenka.Dal.DataExport
                                    ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                     DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                    if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                        Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
+                    //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
+                    //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
 
-                    xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
+                    //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
+                    //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                    //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                    //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                    //                          "_" + ((int)unit.PropertyType_Code).ToString() +
+                    //                          "_" + unit.Id.ToString() + ".xml");
+
+                    string fileName = unit.CadastralNumber.Replace(":", "_") +
                                               "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
                                               "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
                                               "_" + DateTime.Now.ToString("ddMMyyyy") +
                                               "_" + ((int)unit.PropertyType_Code).ToString() +
-                                              "_" + unit.Id.ToString() + ".xml");
+                                              "_" + unit.Id.ToString() + ".xml";
+                    MemoryStream stream = new MemoryStream();
+                    xmlFile.Save(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    zipFile.AddEntry(fileName, stream);
 
-                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes);
-                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp);
+                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
                     bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
 
                     string dateapp = "01.01.2018";
@@ -4264,8 +4392,9 @@ namespace KadOzenka.Dal.DataExport
         public static List<ResultKoUnloadSettings> Unload(KOUnloadSettings setting)
         {
 	        setting.DirectoryName = "";
+            var responseDocument = OMInstance.Where(x => x.Id == setting.IdResponseDocument).SelectAll().ExecuteFirstOrDefault();
 
-			List<ResultKoUnloadSettings> result = new List<ResultKoUnloadSettings>();
+            List<ResultKoUnloadSettings> result = new List<ResultKoUnloadSettings>();
 
             if (setting.UnloadChange)
 	            result.Add(DEKOChange.ExportUnitChangeToExcel(setting));
@@ -4287,6 +4416,10 @@ namespace KadOzenka.Dal.DataExport
 	            result.AddRange(DEKOUnit.ExportToXml(setting));
             if (setting.UnloadXML2)
                 result.AddRange(DEKOGroup.ExportToXml(setting));
+            if (setting.UnloadDEKOResponseDocExportToXml)
+	            result.AddRange(DEKOResponseDoc.ExportToXml(responseDocument, setting.DirectoryName));
+            if (setting.UnloadDEKOVuonExportToXml)
+	            result.AddRange(DEKOVuon.ExportToXml(responseDocument, setting.DirectoryName));
 
             return result;
         }
@@ -4348,7 +4481,7 @@ namespace KadOzenka.Dal.DataExport
 		    }
 	    }
 
-	    public static long SaveReportToXml(string nameReport, Stream stream, long registerId, string registerViewId = "KoTasks")
+	    public static long SaveReport(string nameReport, Stream stream, long registerId, string registerViewId = "KoTasks", string reportExtension = "xml")
 	    {
 		    var currentDate = DateTime.Now;
 		    long reportId = 0;
@@ -4360,7 +4493,7 @@ namespace KadOzenka.Dal.DataExport
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
 				    FileResultTitle = nameReport,
-				    FileExtension = "xml",
+				    FileExtension = reportExtension,
                     MainRegisterId = registerId,
 				    RegisterViewId = registerViewId
 			    };

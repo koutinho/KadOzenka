@@ -1,9 +1,12 @@
-﻿@model ObjectModel.KO.KOUnloadSettings
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+
+@model KadOzenka.Web.Models.Tour.UnloadSettingsDto
 
 <style>
-	input {
-		cursor: pointer;
-	}
+    input {
+        cursor: pointer;
+    }
 </style>
 
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
@@ -43,6 +46,14 @@
                     })
                         .ServerFiltering(false);
                 }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Исходящий документ")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.IdResponseDocument, (IEnumerable)ViewData["Documents"])
         </div>
     </div>
     <div class="form-group">
@@ -123,13 +134,25 @@
     <div class="form-group">
         <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
             @Html.CheckBoxFor(x => x.UnloadXML1)
-            @Html.CustomLabel("Выгрузка XML 1")
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по объектам")
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
             @Html.CheckBoxFor(x => x.UnloadXML2)
-            @Html.CustomLabel("Выгрузка XML 2")
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по группам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadDEKOResponseDocExportToXml)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по исходящим документам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadDEKOVuonExportToXml)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки для ВУОН")
         </div>
     </div>
     <div class="form-group">
@@ -162,6 +185,7 @@
                 IdTour: $('[name="Tour"]').val(),
                 UnloadParcel: $('input[name="ObjType"]:checked')[0].id === "Parcel",
                 TaskFilter: $('#TaskFilter').data("kendoMultiSelect").value(),
+                IdResponseDocument: $('#IdResponseDocument').data("kendoDropDownList").value(),
                 UnloadChange: $('#UnloadChange').prop('checked'),
                 UnloadHistory: $('#UnloadHistory').prop('checked'),
                 UnloadTable04: $('#UnloadTable04').prop('checked'),
@@ -172,11 +196,13 @@
                 UnloadTable10: $('#UnloadTable10').prop('checked'),
                 UnloadTable11: $('#UnloadTable11').prop('checked'),
                 UnloadXML1: $('#UnloadXML1').prop('checked'),
-				UnloadXML2: $('#UnloadXML2').prop('checked'),
-				SendResultToReon: $('#SendResultToReon').prop('checked')
-            };            
-                        
-            $.ajax({                
+                UnloadXML2: $('#UnloadXML2').prop('checked'),
+                UnloadDEKOResponseDocExportToXml: $('#UnloadDEKOResponseDocExportToXml').prop('checked'),
+                UnloadDEKOVuonExportToXml: $('#UnloadDEKOVuonExportToXml').prop('checked'),
+                SendResultToReon: $('#SendResultToReon').prop('checked')
+            };
+
+            $.ajax({
                 type: 'POST',
                 data: dto,
 				success: function (data) {
@@ -185,9 +211,9 @@
 						Common.ShowError(errors);
 						return;
 					}
-                    Common.ShowMessage('Выполнение операции поставлено в очередь. По окончанию расчета вы получите уведомление.');                    
+                    Common.ShowMessage('Выполнение операции поставлено в очередь. По окончанию расчета вы получите уведомление.');
                 },
-                error: function (response) {                    
+                error: function (response) {
                     Common.ShowError(response.responseText);
                 },
                 complete: function() {
@@ -195,6 +221,6 @@
                 }
             });
         });
-        
+
     });
 </script>

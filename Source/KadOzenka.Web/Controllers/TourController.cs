@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
@@ -26,8 +25,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using ObjectModel.Common;
 using ObjectModel.Core.Register;
+using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.SRD;
@@ -1195,7 +1194,13 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "")]
 		public ActionResult UnloadSettings()
 		{
-			KOUnloadSettings settings = new KOUnloadSettings();
+			UnloadSettingsDto settings = new UnloadSettingsDto();
+			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				Text = $"{x.RegNumber} {x.Description}",
+				Value = x.Id,
+			}).ToList();
+
 			return View(settings);
 		}
 

@@ -438,7 +438,7 @@ namespace KadOzenka.Web.Controllers
 
 			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
 			{
-				Text = x.Description,
+				Text = $"{x.RegNumber} {x.Description}",
 				Value = x.Id,
 			}).ToList();
 

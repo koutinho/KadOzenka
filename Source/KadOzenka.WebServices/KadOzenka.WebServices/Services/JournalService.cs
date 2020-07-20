@@ -143,6 +143,14 @@ namespace KadOzenka.WebServices.Services
 			{
 				return "application/xml";
 			}
+			if (fileExtension == "docx")
+			{
+				return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			}
+			if (fileExtension == "zip")
+			{
+				return "application/zip";
+			}
 
 			return null;
 		}

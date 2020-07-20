@@ -469,12 +469,11 @@ namespace KadOzenka.Dal.DataExport
         public static string GetFullNumberGroup(OMGroup _group)
         {
             string full_group_num = "";
-            if (_group.ParentId > 0)
+            OMGroup parent_group = OMGroup.Where(x => x.Id == _group.ParentId).SelectAll().ExecuteFirstOrDefault();
+            if (parent_group != null)
             {
-                OMGroup parent_group = OMGroup.Where(x => x.Id == _group.ParentId).SelectAll().ExecuteFirstOrDefault();
-
-                full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
-                                                ((_group.Number == null ? _group.Id.ToString() : _group.Number));
+	            full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
+	                             ((_group.Number == null ? _group.Id.ToString() : _group.Number));
             }
             else
             {
