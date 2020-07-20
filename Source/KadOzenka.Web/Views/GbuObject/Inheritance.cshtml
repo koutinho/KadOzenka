@@ -138,7 +138,8 @@
 			$(classWrapper).show(500);
 			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
 			rowNumber++;
-			kendo.ui.progress($('body'), false);
+            kendo.ui.progress($('body'), false);
+            addSelectionHandlersForDropDowns();
 		});
 	}
 	function handlerData() {
@@ -152,7 +153,77 @@
 		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
 	}
 
-	$(document).ready(function () {
+	function getDataSource() {
+        return $.find('[class^=Attributes_]').map(d => $(d).data('kendoDropDownTree'));
+    }
+
+    function getSelectedValues() {
+        return getDataSource().map(d => d.value());
+    }
+
+    function getAllUidsToDisable(arrValues) {
+        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+
+    function flattenDataSource(d) {
+        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+    }
+
+    function blockAlreadySelectedNodes(arr) {
+        var uidsToBlock = getAllUidsToDisable(arr);
+        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+
+    function clearTreeStates() {
+        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+
+    function updateSelected(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+
+        clearTreeStates();
+
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValues();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodes(filtered);
+    };
+
+    function updateStates() {
+        clearTreeStates();
+        var arr = getSelectedValues();
+        blockAlreadySelectedNodes(arr);
+    }
+
+    function addSelectionHandlersForDropDowns() {
+        getDataSource().forEach(function (d) {
+                d.treeview.unbind('select');
+                d.treeview.bind('select', e => updateSelected(e));
+            }
+        );
+
+        updateStates();
+
+        var clearButtons = $.find('[class^=clear-button-Attributes]');
+
+        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+    }
+
+    $(document).ready(function () {
+        addSelectionHandlersForDropDowns();
+
 		$('#addRow').on('click', addNewRow);
 		$("#RatingTour").data('kendoDropDownList').bind('change', dropdownlist_select);
 		$("#RatingTour").data('kendoDropDownList').bind('dataBound', dropdownlist_select);

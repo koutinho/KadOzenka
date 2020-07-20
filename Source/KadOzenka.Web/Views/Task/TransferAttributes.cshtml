@@ -203,7 +203,7 @@
 
 		var result = kendo.render(template, data);
 
-		$("#attributesList").append(result);
+        $("#attributesList").append(result);
 
 		var classWrapper = ".wrapper-" + rowNumber;
 
@@ -211,36 +211,109 @@
 		var objectType = $('input[name="ObjType"]:checked').val();
 
         var url = "@Url.Action("GetRowExport", "Task")";
-        $(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' }, function (response) {
-			$(classWrapper).show(500);
-			rowNumber++;
-			kendo.ui.progress($('body'), false);
-        });
-    }   
+        $(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
+            function(response) {
+                $(classWrapper).show(500);
+                rowNumber++;
+                kendo.ui.progress($('body'), false);
+                addSelectionHandlersForDropDowns();
+            });
+    }
 
-	$(document).ready(function () {
-		$('#addRow').on('click', addNewRow);
+    function getDataSource() {
+        return $.find('[class^=IdAttributeG]').map(d => $(d).data('kendoDropDownTree'));
+    }
 
-		$('[name="RatingTour"]')
-			.kendoDropDownList({
-				dataTextField: 'Text',
-				dataValueField: 'Value',
-				dataSource:
-				{
-					transport: {
-						read: {
-							url: '@Url.Action("GetRatingTours", "Tour")',
-							dataType: 'json'
-						}
-					}
-				}
-			});
+    function getSelectedValues() {
+        return getDataSource().map(d => d.value());
+    }
 
-		$('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
-		$('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
-		$('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
-		$('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
-		$('[name="ObjType"]').on('change', initKoAttributes);
+    function getAllUidsToDisable(arrValues) {
+        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+
+    function flattenDataSource(d) {
+        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+    }
+
+    function blockAlreadySelectedNodes(arr) {
+        var uidsToBlock = getAllUidsToDisable(arr);
+        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+
+    function clearTreeStates() {
+        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+
+    function updateSelected(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+
+        clearTreeStates();
+
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValues();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodes(filtered);
+    };
+
+    function updateStates() {
+        clearTreeStates();
+        var arr = getSelectedValues();
+        blockAlreadySelectedNodes(arr);
+    }
+
+    function addSelectionHandlersForDropDowns() {
+        getDataSource().forEach(function (d) {
+                d.treeview.unbind('select');
+                d.treeview.bind('select', e => updateSelected(e));
+            }
+        );
+
+        updateStates();
+
+        var clearButtons = $.find('[class^=clear-button-IdAttributeG]');
+
+        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+    }
+
+    $(document).ready(function() {
+
+        addSelectionHandlersForDropDowns();
+
+        $('#addRow').on('click', addNewRow);
+
+        $('[name="RatingTour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Tour")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
+        $('[name="ObjType"]').on('change', initKoAttributes);
 
         $('#execute').on('click', transferAttributes);
 
@@ -248,7 +321,7 @@
         {<Text>
         beforeLoad();
         </Text>}
-        });
+    });
 
     function beforeLoad() {
         $('[id^="IdAttributeKO"]').parents(".col-sm-5").hide();
@@ -256,12 +329,12 @@
         gbuCells.removeClass("col-sm-5").addClass("col-sm-10 col-sm-offset-2");
     }
 
-	function initTasksList() {
-		var tourId = $('#RatingTour').val();
-		var dataSource = new kendo.data.DataSource({
-			transport: {
-				read: {
-					url: '@Url.Action("GetTasksByTour", "Task")',
+    function initTasksList() {
+        var tourId = $('#RatingTour').val();
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTasksByTour", "Task")',
 					data: { tourId: tourId },
 					dataType: 'json'
 				}

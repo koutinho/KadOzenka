@@ -162,19 +162,9 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+            ViewBag.TreeAttributes = GetGbuAttributesTree();
 
-            return View(new GroupingObject());
+			return View(new GroupingObject());
 		}
 
 		[HttpPost]
@@ -360,7 +350,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization()
 		{
-			ViewData["TreeAttributes"] = GetGbuAttributesTree();
+			//ViewData["TreeAttributes"] = GetGbuAttributesTree();
+            ViewBag.TreeAttributes = GetGbuAttributesTree();
 
 			var viewModel = new HarmonizationViewModel();
 

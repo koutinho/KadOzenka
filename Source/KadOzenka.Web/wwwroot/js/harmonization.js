@@ -23,6 +23,11 @@ function addNewCustomLevel(url, rowNumber, attributeId) {
             fillLevelFromTemplate(rowNumber, attributeId);
         } 
         kendo.ui.progress($('body'), false);
+        try {
+            addSelectionHandlersForDropDowns();
+        } catch (e) {
+            console.log(e);
+        }
     });
 }
 

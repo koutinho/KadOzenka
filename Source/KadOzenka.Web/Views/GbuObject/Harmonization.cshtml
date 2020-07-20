@@ -56,7 +56,7 @@
                     @Html.CustomLabelFor(m => m.IdAttributeFilter)
                 </div>
                 <div class="col-sm-4">
-                    @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], isReadonly: true)
+                    @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes, isReadonly: true)
                 </div>
                 <div class="col-sm-1">
                     @Html.CustomLabelFor(m => m.ValuesFilter)
@@ -102,93 +102,93 @@
         </fieldset>
         <div id="levelsList">
             <fieldset class="attrLevelFieldset">
-                <legend>1 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level1Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>2 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level2Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>3 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level3Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>4 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level4Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>5 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level5Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>6 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level6Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>7 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level7Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>8 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level8Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>9 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </fieldset>
+            <legend>1 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level1Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>2 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level2Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>3 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level3Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>4 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level4Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>5 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level5Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>6 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level6Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>7 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level7Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>8 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level8Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
+        <fieldset class="attrLevelFieldset">
+            <legend>9 уровень</legend>
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+            </div>
+        </fieldset>
             <fieldset class="attrLevelFieldset">
                 <legend>10 уровень</legend>
                 <div class="col-sm-2">
                     @Html.CustomLabel("Характеристика")
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
                 </div>
             </fieldset>
         </div>
@@ -408,9 +408,83 @@
         }
     }
 
+    function getDataSource() {
+        return $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).map(d => $(d).data('kendoDropDownTree'));
+    }
 
+    function getSelectedValues() {
+        return getDataSource().map(d => d.value());
+    }
+
+    function getAllUidsToDisable(arrValues) {
+        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+
+    function flattenDataSource(d) {
+        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+    }
+
+    function blockAlreadySelectedNodes(arr) {
+        var uidsToBlock = getAllUidsToDisable(arr);
+        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+
+    function clearTreeStates() {
+        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+
+    function updateSelected(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+
+        clearTreeStates();
+
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValues();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodes(filtered);
+    };
+
+    function updateStates() {
+        clearTreeStates();
+        var arr = getSelectedValues();
+        blockAlreadySelectedNodes(arr);
+    }
+
+    function addSelectionHandlersForDropDowns() {
+        getDataSource().forEach(function (d) {
+                d.treeview.unbind('select');
+                d.treeview.bind('select', e => updateSelected(e));
+            }
+        );
+
+        updateStates();
+
+        var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'));
+
+        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+    }
 
     $(document).ready(function () {
+        // костыль, данные в выпадающий список еще не загружены в момент готовности документа
+        var checkExist = setInterval(function() {
+            if ($('#Level1Attribute').data('kendoDropDownTree') != undefined) {
+                addSelectionHandlersForDropDowns();
+                clearInterval(checkExist);
+            }
+        }, 100);
+
         $('#addRow').on('click', function () {
             addNewCustomLevel(urlForNewCustomLevel, globalRowNumber);
             globalRowNumber++;
@@ -434,6 +508,7 @@
             "GetTemplatesOneGroup", "GbuObject",
             fillForm, addCustomLevelsToForm);
 
+        
 
         function onDataBound(e) {
             $('.k-multiselect .k-input').unbind('keyup');
