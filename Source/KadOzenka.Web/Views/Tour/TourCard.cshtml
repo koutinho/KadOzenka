@@ -4,11 +4,11 @@
     <div id="tourAdditionModal" style="display: none;  padding: 2%;">
         <div class="form-group">
             <label for="addTourInput"> Наименование </label>
-            <input id="addTourInput" class="form-control" required="required" type="number" name="addTour"/>
+            <input id="addTourInput" class="form-control" required="required" type="number" name="addTour" />
             <button class="btn btn-default" style="margin-top: 10px;" id="saveTour"> Сохранить </button>
         </div>
     </div>
-    
+
     <!-- Модальное окно для добавления Группы/Подгруппы -->
     <div id="groupAdditionModal" style="display: none; padding: 2%;">
         <div class="form-group">
@@ -50,7 +50,7 @@
                     <label for="addGroupNumberInput"> Номер </label>
                 </div>
                 <div class="col-sm-7 col-sm-offset-1">
-                    <input id="addGroupNumberInput" type="number" class="form-control" required="required" name="addGroupNumberInput"/>
+                    <input id="addGroupNumberInput" type="number" class="form-control" required="required" name="addGroupNumberInput" />
                 </div>
             </div>
         </div>
@@ -105,6 +105,18 @@
                                          <div id="segmentSettings" style="width: 98%">
                                          </div>
                                       </text>);
+                        tabstrip.Add().Text("Настройка для разъяснений")
+                            .HtmlAttributes(new {id="explanationSettingsTab"})
+                            .Content(@<text>
+                                         <div id="explanationSettings" style="width: 98%">
+                                         </div>
+                                      </text>);
+                        tabstrip.Add().Text("Настройка для акта определения")
+                            .HtmlAttributes(new {id="cadastralCostDefinitionActSettingsTab"})
+                            .Content(@<text>
+                                         <div id="cadastralCostDefinitionActSettings" style="width: 98%">
+                                         </div>
+                                      </text>);
                     }))
             </div>
         </div>
@@ -114,6 +126,8 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/groups.js"></script>
 <script type="text/javascript">
+    const GROUP_TYPE = { NONE: "0", UNDEFINED: "1", MAIN: "2", GROUP: "3", SUBGROUP: "4" };
+
     $(document).ready(function () {
         $('#additionToolbar').removeClass("k-widget");
 
@@ -141,20 +155,27 @@
 
         $("#tabStrip .k-tabstrip-items").on("click", "li.k-state-default", function (e) {
             var selectedTabId = $(this).attr('id');
-            if (selectedTabId === "segmentSettingsTab") {
-                var row = GetSelectedRowInTree();
-                if (row.length > 0) {
-                    var data = GetDataFromRowInTree(row);
-                    $('#segmentSettings').load(data.UrlForSegmentSettings);
+            var row = GetSelectedRowInTree();
+            var data = GetDataFromRowInTree(row);
+            if (row.length > 0) {
+                switch (selectedTabId) {
+                    case "segmentSettingsTab":
+                        $('#segmentSettings').load(data.UrlForSegmentSettings);
+                        break;
+                    case "explanationSettingsTab":
+                        $('#explanationSettings').load(data.UrlForExplanationSettings);
+                        break;
+                    case "cadastralCostDefinitionActSettingsTab":
+                        $('#cadastralCostDefinitionActSettings').load(data.UrlForCadastralCostDefinitionActSettings);
+                        break;
                 }
             }
         });
 
-
-		DownloadTours();
+        DownloadTours();
     });
 
-	
+
 
 	function DownloadTours() {
 		kendo.ui.progress($('body'), true);
@@ -240,16 +261,36 @@
         if (row.length > 0) {
             var data = GetDataFromRowInTree(row);
             $("#tabs").show();
+            $('#segmentSettings').html("");
+            $('#explanationSettings').html("");
+            $('#cadastralCostDefinitionActSettings').html("");
             $('#mainContent').load(data.UrlForEdit);
             var tabStrip = $("#tabStrip").kendoTabStrip().data("kendoTabStrip");
             tabStrip.select(0);
             var tabWithMarketSegmentSettings = tabStrip.tabGroup.children().eq(1);
-            if (data.GroupType == "3" || data.GroupType == "4") {
+            var tabWithExplanationSettings = tabStrip.tabGroup.children().eq(2);
+            var tabWithCadastralCostDefinitionActSettings = tabStrip.tabGroup.children().eq(3);
+            if (data.GroupType == GROUP_TYPE.GROUP || data.GroupType == GROUP_TYPE.SUBGROUP) {
                 $("#tabStrip-2").removeAttr("style");
                 $("#tabStrip-2").attr("style", "display: block");
                 tabStrip.enable(tabWithMarketSegmentSettings);
+
+                if (data.GroupType == GROUP_TYPE.SUBGROUP) {
+                    $("#tabStrip-3").removeAttr("style");
+                    $("#tabStrip-3").attr("style", "display: block");
+                    tabStrip.enable(tabWithExplanationSettings);
+
+                    $("#tabStrip-4").removeAttr("style");
+                    $("#tabStrip-4").attr("style", "display: block");
+                    tabStrip.enable(tabWithCadastralCostDefinitionActSettings);
+                } else {
+                    tabStrip.disable(tabWithExplanationSettings);
+                    tabStrip.disable(tabWithCadastralCostDefinitionActSettings);
+                }
             } else {
                 tabStrip.disable(tabWithMarketSegmentSettings);
+                tabStrip.disable(tabWithExplanationSettings);
+                tabStrip.disable(tabWithCadastralCostDefinitionActSettings);
             }
         }
     }
@@ -389,7 +430,7 @@
             success: function (response) {
                 $("#tourAdditionModal").data("kendoWindow").close();
                 Common.ShowMessage(response.Success);
-                window.parent.location.reload(); 
+                window.parent.location.reload();
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -407,7 +448,7 @@
             ShowInfoWindow("Для добавления группы нужно выбрать строку из дерева c основной группой");
         } else {
             var data = GetDataFromRowInTree(row);
-            if (data.GroupType != "2")
+            if (data.GroupType != GROUP_TYPE.MAIN)
                 ShowInfoWindow("Нужно выбрать основную группу из дерева");
             else { ;
 	            var parentYear = GetParentFromTree(row);
@@ -429,7 +470,7 @@
             ShowInfoWindow("Для добавления подгруппы нужно выбрать строку из дерева c неосновной группой");
         } else {
             var data = GetDataFromRowInTree(row);
-            if (data.GroupType != "3")
+            if (data.GroupType != GROUP_TYPE.GROUP)
                 ShowInfoWindow("Нужно выбрать неосновную группу из дерева");
             else {
 	            var parentMainGroup = GetParentFromTree(row);
