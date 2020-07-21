@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="956" DefaultLayoutId="1009561" Description="Менеджер загрузки" LinkedRegistersList="956,933,930,950"
               ShowActualDate="false" UseMasterPage="true"
-              SearchPanel="CoreRegisterLayoutExportAll" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
+              SearchPanel="CoreRegisterLayoutExportAll" DockNavigationPanel="true" SRDFunctionTag="ADMIN">
   <Buttons>
     <Button Caption="Скачать результат" NavigateURL="/CoreRegisterLayout/ExportDownload" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
       <Parameters>
