@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 				return;
 
 			var reportType =
-				int.Parse((StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsOks).GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
+				int.Parse((StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu).GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
 					nameof(StatisticalDataFmReportCodeAttribute.Code)));
 			var tourKey = $"Report{reportType}TourId";
 			var secondTourKey = $"Report{reportType}SecondTourId";
