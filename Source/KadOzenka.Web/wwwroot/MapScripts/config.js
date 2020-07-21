@@ -3,7 +3,8 @@ var AppData = {
     version: "2.1",
     lang: "ru_RU",
     key: "5b7a0369-63be-4edd-ac27-716d52c64d46",
-    defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl", "zoomControl"]
+    defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl", "zoomControl"],
+    ProxyIp: "10.80.214.37:8888"
 };
 
 var MapSettings = {
