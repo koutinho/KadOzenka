@@ -21,19 +21,11 @@ namespace KadOzenka.Dal.Groups
 
             var groupType = GetGroupType(group.ParentId);
 
-            int? number = null;
-            if (!string.IsNullOrWhiteSpace(group.Number))
-            {
-                number = groupType == GroupType.Group 
-                    ? group.Number.ParseToInt() 
-                    : GetSubGroupNumber(group.Number);
-            }
-
             return new GroupDto
             {
                 Id = group.Id,
                 Name = group.GroupName,
-                Number = number,
+                Number = ParseGroupNumber(group.ParentId, group.Number),
 				ParentGroupId = group.ParentId,
 				GroupAlgorithmCode = group.GroupAlgoritm_Code,
 				GroupingAlgorithmId = (long)group.GroupAlgoritm_Code,
@@ -65,6 +57,7 @@ namespace KadOzenka.Dal.Groups
             query.AddColumn(OMGroup.GetColumn(x => x.ParentId, "ParentId"));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupAlgoritm_Code, "GroupAlgoritm"));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "GroupName"));
+            query.AddColumn(OMGroup.GetColumn(x => x.Number, nameof(GroupTreeDto.CombinedNumber)));
             query.AddColumn(OMTourGroup.GetColumn(x => x.TourId, "TourId"));
 
             var table = query.ExecuteQuery();
@@ -119,6 +112,8 @@ namespace KadOzenka.Dal.Groups
                 }
 
                 str.GroupName = row["GroupName"].ToString();
+                str.CombinedNumber = row[nameof(GroupTreeDto.CombinedNumber)].ParseToStringNullable();
+                str.Number = ParseGroupNumber(str.ParentId, str.CombinedNumber);
                 str.TourId = long.Parse(row["TourId"].ToString());
 
                 groups.Add(str);
@@ -147,34 +142,29 @@ namespace KadOzenka.Dal.Groups
 
 	        var models = new List<GroupTreeDto>();
 	        var mainGroups = GetMainGroups();
-	        mainGroups.ForEach(mainGroup =>
-	        {
-		        var groupCounter = 0;
-				var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id).Select(group =>
-		        {
-			        groupCounter++;
-			        var subGroupCounter = 0;
-					return new GroupTreeDto
-			        {
-				        Id = group.Id,
-				        GroupName = $"{groupCounter}. {group.GroupName}",
-				        GroupType = group.GroupType,
-				        TourId = tourId,
-				        Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
-				        {
-					        subGroupCounter++;
-					        return new GroupTreeDto
-					        {
-						        Id = subGroup.Id,
-						        GroupName = $"{groupCounter}.{subGroupCounter}. {subGroup.GroupName}",
-						        GroupType = subGroup.GroupType,
-						        TourId = tourId
-					        };
-				        }).ToList()
-			        };
-		        }).ToList();
-				
-				if (groups.Count > 0)
+            mainGroups.ForEach(mainGroup =>
+            {
+                var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id)
+                    .OrderBy(group => group.Number)
+                    .Select(group =>
+                        new GroupTreeDto
+                        {
+                            Id = group.Id,
+                            GroupName = $"{group.CombinedNumber}. {group.GroupName}",
+                            GroupType = group.GroupType,
+                            TourId = tourId,
+                            Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id)
+                                .OrderBy(subGroup => subGroup.Number)
+                                .Select(subGroup => new GroupTreeDto
+                                {
+                                    Id = subGroup.Id,
+                                    GroupName = $"{subGroup.CombinedNumber}. {subGroup.GroupName}",
+                                    GroupType = subGroup.GroupType,
+                                    TourId = tourId
+                                }).ToList()
+                        }).ToList();
+
+                if (groups.Count > 0)
 		        {
 			        models.Add(new GroupTreeDto
 					{
@@ -533,6 +523,20 @@ namespace KadOzenka.Dal.Groups
                 x.Number = $"{parentGroupNumber}.{subGroupNumber}";
                 x.Save();
             });
+        }
+
+        private int? ParseGroupNumber(long? parentId, string combinedNumber)
+        {
+            if (string.IsNullOrWhiteSpace(combinedNumber))
+                return null;
+
+            var groupType = GetGroupType(parentId);
+
+            var number = groupType == GroupType.Group
+                ? combinedNumber.ParseToInt()
+                : GetSubGroupNumber(combinedNumber);
+
+            return number;
         }
 
         private int? GetSubGroupNumber(string fullNumber)
