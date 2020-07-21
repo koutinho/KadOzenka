@@ -1029,6 +1029,76 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('CORE_BACKGROUND_EXPORTS')) then
+		execute 'create table CORE_BACKGROUND_EXPORTS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'id')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'name')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'scheduler_type')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "scheduler_type" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'next_run_date')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "next_run_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'input_parameters')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "input_parameters" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'is_for_report')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "is_for_report" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_979_q_pk')) then
+    execute 'alter table CORE_BACKGROUND_EXPORTS add constraint reg_979_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('CORE_CACHE_UPDATES')) then
 		execute 'create table CORE_CACHE_UPDATES ("id" BIGINT NOT NULL)';
 	end if;
@@ -2565,7 +2635,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_MESSAGES', 'message')) then
-        execute 'alter table CORE_MESSAGES add "message" VARCHAR(4000) NOT NULL';
+        execute 'alter table CORE_MESSAGES add "message" VARCHAR(10485760) NOT NULL';
     end if;
 end $$;
 
@@ -3804,6 +3874,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'change_date')) then
         execute 'alter table CORE_REGISTER_ATTRIBUTE add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'hidden')) then
+        execute 'alter table CORE_REGISTER_ATTRIBUTE add "hidden" BIGINT DEFAULT 0';
     end if;
 end $$;
 
@@ -24822,40 +24901,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('KO_BACKGROUND_REPORTING_FORMS')) then
-		execute 'create table KO_BACKGROUND_REPORTING_FORMS ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_BACKGROUND_REPORTING_FORMS', 'id')) then
-        execute 'alter table KO_BACKGROUND_REPORTING_FORMS add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_BACKGROUND_REPORTING_FORMS', 'name')) then
-        execute 'alter table KO_BACKGROUND_REPORTING_FORMS add "name" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_223_q_pk')) then
-    execute 'alter table KO_BACKGROUND_REPORTING_FORMS add constraint reg_223_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_CALC_GROUP')) then
 		execute 'create table KO_CALC_GROUP ("id" BIGINT NOT NULL)';
 	end if;
@@ -25558,6 +25603,123 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_GROUP', 'number')) then
         execute 'alter table KO_GROUP add "number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'applied_approaches_in_cadastral_cost')) then
+        execute 'alter table KO_GROUP add "applied_approaches_in_cadastral_cost" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'applied_evaluation_methods_in_cadastral_cost')) then
+        execute 'alter table KO_GROUP add "applied_evaluation_methods_in_cadastral_cost" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_determing_method')) then
+        execute 'alter table KO_GROUP add "cadastral_cost_determing_method" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'model_justification')) then
+        execute 'alter table KO_GROUP add "model_justification" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'objects_segment')) then
+        execute 'alter table KO_GROUP add "objects_segment" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'objects_subgroup')) then
+        execute 'alter table KO_GROUP add "objects_subgroup" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_calculation_order_description')) then
+        execute 'alter table KO_GROUP add "cadastral_cost_calculation_order_description" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'price_zone_characteristic')) then
+        execute 'alter table KO_GROUP add "price_zone_characteristic" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'market_segment')) then
+        execute 'alter table KO_GROUP add "market_segment" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'market_segment_functioning_features')) then
+        execute 'alter table KO_GROUP add "market_segment_functioning_features" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_estimation_models_references')) then
+        execute 'alter table KO_GROUP add "cadastral_cost_estimation_models_references" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'assumptions_reference')) then
+        execute 'alter table KO_GROUP add "assumptions_reference" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'other_cost_related_info')) then
+        execute 'alter table KO_GROUP add "other_cost_related_info" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -26844,6 +27006,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT', 'response_document_id')) then
         execute 'alter table KO_UNIT add "response_document_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'building_cadastral_number')) then
+        execute 'alter table KO_UNIT add "building_cadastral_number" VARCHAR(255)';
     end if;
 end $$;
 
@@ -29410,6 +29581,74 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_251_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_ZU_2018 add constraint reg_251_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS')) then
+		execute 'create table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'id')) then
+        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_using_type')) then
+        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_using_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_using_type_code')) then
+        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_using_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_id')) then
+        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_update_cadastral_data_attr_set_attribute_using_type_code_key')) then
+    execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add constraint ko_update_cadastral_data_attr_set_attribute_using_type_code_key unique (attribute_using_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_261_q_pk')) then
+    execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add constraint reg_261_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_update_cadastral_data_attr_set_attribute_using_type_code_key')) then
+	execute 'CREATE UNIQUE INDEX ko_update_cadastral_data_attr_set_attribute_using_type_code_key on KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS (attribute_using_type_code)';
   end if;
 end $$;
 --<DO>--
