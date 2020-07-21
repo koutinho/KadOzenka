@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="false" RegisterId="801" DefaultLayoutId="1008012" LinkedRegistersList="801,950,930,203" SRDFunctionTag="ADMIN.IMPORT"
+<RegisterView IsBasic="false" RegisterId="801" DefaultLayoutId="1008012" LinkedRegistersList="801,950,930,203" SRDFunctionTag="ADMIN"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
               UseMasterPage="false">
   <Buttons>
