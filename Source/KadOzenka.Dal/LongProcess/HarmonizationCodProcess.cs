@@ -20,8 +20,8 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			//var cancelSource = new CancellationTokenSource();
-			//var cancelToken = cancelSource.Token;
+			var cancelSource = new CancellationTokenSource();
+			var cancelToken = cancelSource.Token;
 			try
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
@@ -29,29 +29,29 @@ namespace KadOzenka.Dal.LongProcess
 				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationCODSettings>();
                 var harmonizationCOD = new HarmonizationCOD(settings);
 
-    //            var t = Task.Run(() => {
-				//	while (true)
-				//	{
-				//		if (cancelToken.IsCancellationRequested)
-				//		{
-				//			break;
-				//		}
-				//		if (harmonizationCOD.MaxObjectsCount > 0 && harmonizationCOD.CurrentCount > 0)
-				//		{
-				//			var newProgress = (long)Math.Round(((double)harmonizationCOD.CurrentCount / harmonizationCOD.MaxObjectsCount) * 100);
-				//			if (newProgress != processQueue.Progress)
-				//			{
-				//				WorkerCommon.SetProgress(processQueue, newProgress);
-				//			}
-				//		}
-				//	}
-				//}, cancelToken);
+                var t = Task.Run(() => {
+					while (true)
+					{
+						if (cancelToken.IsCancellationRequested)
+						{
+							break;
+						}
+						if (harmonizationCOD.MaxObjectsCount > 0 && harmonizationCOD.CurrentCount > 0)
+						{
+							var newProgress = (long)Math.Round(((double)harmonizationCOD.CurrentCount / harmonizationCOD.MaxObjectsCount) * 100);
+							if (newProgress != processQueue.Progress)
+							{
+								WorkerCommon.SetProgress(processQueue, newProgress);
+							}
+						}
+					}
+				}, cancelToken);
 
 				var reportId = harmonizationCOD.Run();
 				//TestLongRunningProcess(settings);
-				//cancelSource.Cancel();
-				//t.Wait(cancellationToken);
-				//cancelSource.Dispose();
+				cancelSource.Cancel();
+				t.Wait(cancellationToken);
+				cancelSource.Dispose();
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
@@ -62,7 +62,7 @@ namespace KadOzenka.Dal.LongProcess
 			}
 			catch (Exception ex)
 			{
-				//cancelSource.Cancel();
+				cancelSource.Cancel();
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
