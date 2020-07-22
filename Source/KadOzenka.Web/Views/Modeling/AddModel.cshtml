@@ -23,14 +23,7 @@
                 @Html.CustomLabelFor(x => x.GroupId)
             </div>
             <div class="col-sm-9">
-                @(Html.Kendo().DropDownListFor(m => m.GroupId)
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .Filter(FilterType.Contains)
-                    .DataSource(source =>
-                    {
-                        source.Read("GetGroups", "Modeling");
-                    }))
+               <div id="groups"></div>
             </div>
         </div>
         <div class="form-group">
@@ -45,6 +38,10 @@
                     .DataSource(source =>
                     {
                         source.Read("GetRatingTours", "Tour");
+                    })
+                    .Events(e =>
+                    {
+                        e.Change("onTourChange").DataBound("onTourChange");
                     }))
             </div>
         </div>
@@ -59,22 +56,52 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script>
-	$(document).ready(function () {
-		$("#SaveModel").on('click', SaveModel);
+    $(document).ready(function () {
+        $("#SaveModel").on('click', SaveModel);
 	});
 
 
 
-	function SaveModel() {
+    function onTourChange() {
+        kendo.ui.progress($('body'), true);
+        var selectedTour = $("#TourId").data("kendoDropDownList").value();
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetGroups", "Modeling")',
+                    data: { tourId: selectedTour},
+                    dataType: 'json'
+                }
+            }
+        });
+        var groups = $('#groups').data("kendoDropDownList");
+        if (groups) {
+            groups.setDataSource(dataSource);
+            groups.value(-1);
+        }
+        else {
+            $("#groups").kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource: dataSource,
+                filter: "contains"
+            });
+        }
+        kendo.ui.progress($('body'), false);
+    }
+
+
+    function SaveModel() {
 		kendo.ui.progress($('body'), true);
 		var form = $('#saveModelForm');
-		var formObject = Common.Functions.FormToObject(form);
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.GroupId = $('#groups').data("kendoDropDownList").value();
 		$.ajax({
-			type: 'POST',
+            type: form.attr('method'),
 			url: form.attr('action'),
 			data: formObject,
-			success: function (response) {
-				if (response.Errors) {
+            success: function (response) {
+                if (response.Errors) {
 					var errors = getErrors(response.Errors);
 					Common.ShowError(errors);
 					return;

@@ -111,35 +111,24 @@ namespace KadOzenka.Dal.Modeling
 			return model;
 		}
 
-        public List<GroupDto> GetGroups()
+        public List<GroupDto> GetGroups(long tourId)
         {
-            var query = new QSQuery
-            {
-                MainRegisterID = ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetRegisterId(),
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMGroup.GetColumn(x => x.Id),
-                            RightOperand = ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetColumn(x => x.GroupId)
-                        },
-                        JoinType = QSJoinType.Inner
-                    }
-                }
-            };
-            query.AddColumn(ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetColumn(x => x.GroupId, nameof(GroupDto.GroupId)));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupDto.Name)));
-            query.OrderBy.Add(new QSOrder
-            {
-                Column = OMGroup.GetColumn(x => x.GroupName),
-                Order = QSOrderType.ASC
-            });
+            var groupsInTour = OMTourGroup.Where(x => x.TourId == tourId).Select(x => x.GroupId).Execute()
+                .Select(x => x.GroupId).ToList();
+            if (groupsInTour.Count == 0)
+                return new List<GroupDto>();
 
-            return query.ExecuteQuery<GroupDto>();
+            var groupsToMarketSegmentInTour = ObjectModel.Ko.OMGroupToMarketSegmentRelation.Where(x => groupsInTour.Contains(x.GroupId))
+                .Select(x => x.GroupId)
+                .Select(x => x.ParentGroup.GroupName)
+                .Execute().Select(
+                    x => new GroupDto
+                    {
+                        GroupId = x.GroupId,
+                        Name = x.ParentGroup?.GroupName
+                    }).OrderBy(x => x.Name).ToList();
+
+            return groupsToMarketSegmentInTour;
         }
 
         public List<ModelAttributeRelationDto> GetModelAttributes(long modelId)
@@ -511,7 +500,11 @@ namespace KadOzenka.Dal.Modeling
 			if(modelDto.GroupId == 0)
 				message.AppendLine("Для модели не выбрана группа");
 
-			if (message.Length != 0)
+            var isGroupBelongToTour = OMTourGroup.Where(x => x.TourId == modelDto.TourId && x.GroupId == modelDto.GroupId).ExecuteExists();
+            if (!isGroupBelongToTour)
+                message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
+
+            if (message.Length != 0)
 				throw new Exception(message.ToString());
 		}
 

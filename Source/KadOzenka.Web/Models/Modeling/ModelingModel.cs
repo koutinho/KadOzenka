@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Register;
@@ -32,7 +33,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		[Display(Name = "Группа")]
 		[Required(ErrorMessage = "Не выбрана Группа")]
-		public long GroupId { get; set; }
+		public long? GroupId { get; set; }
 
         [Display(Name = "Группа")]
         public string GroupName { get; set; }
@@ -65,13 +66,16 @@ namespace KadOzenka.Web.Models.Modeling
         }
 
 		public static ModelingModelDto FromModel(ModelingModel model)
-		{
-			return new ModelingModelDto
+        {
+            if (model.GroupId == null)
+                throw new Exception("Не выбрана Группа");
+
+            return new ModelingModelDto
 			{
 				ModelId =  model.Id,
 				Name = model.Name,
 				TourId = model.TourId,
-                GroupId = model.GroupId,
+                GroupId = model.GroupId.Value,
 				Attributes = model.Attributes,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks
 			};

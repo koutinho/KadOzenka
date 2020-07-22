@@ -120,9 +120,9 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetGroups()
+        public JsonResult GetGroups(long tourId)
         {
-            var groups = ModelingService.GetGroups()
+            var groups = ModelingService.GetGroups(tourId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.GroupId.ToString(),
