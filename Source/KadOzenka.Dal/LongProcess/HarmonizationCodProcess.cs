@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.LongProcess
 				WorkerCommon.SetProgress(processQueue, 100);
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId=={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", message);
 			}
