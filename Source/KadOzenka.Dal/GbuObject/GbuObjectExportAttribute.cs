@@ -58,7 +58,6 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
                 WorkerCommon.LogState(processQueue, $"Найдено {Objs.Count} единиц оценки.");
-                WorkerCommon.LogState(processQueue, "Обработано единиц оценки:");
                 Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, lstIds); });
                 CurrentCount = 0;
                 MaxCount = 0;
