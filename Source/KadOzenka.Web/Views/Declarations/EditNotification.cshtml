@@ -160,9 +160,10 @@
 	var isEditApproveNotifications = @(Model.IsEditApproveNotifications ? "true" : "false");
 	var isEditOtherNotifications = @(Model.IsEditOtherNotifications ? "true" : "false");
 
-	$(document).ready(function () {
+    $(document).ready(function () {
 		setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
-		var value = $('#Type').data('kendoDropDownList').value();
+        var value = $('#Type').data('kendoDropDownList').value();
+        setupPermissionRestrictions(value);
 		changeRejectionReasonVisability(value);
 		changeAnnexVisability(value);
 		$('#Type').data('kendoDropDownList').bind("change", onTypeChanged);
@@ -201,7 +202,50 @@
 				    kendo.ui.progress($('body'), false);
 				});
 			});
-	});
+    });
+
+    function setupPermissionRestrictions(notificationValue) {
+        var typeList = $('#Type').data('kendoDropDownList');
+        var oldData = typeList.dataSource.data();
+        oldData.filter(x => x.Value == '@UvedType.None.GetEnumCode()').forEach(x => typeList.dataSource.remove(x));
+        if ($('#@Html.IdFor(m => m.Id)').val() == -1) {
+            if (!isEditApproveNotifications) {
+                oldData.filter(x => x.Value == '@UvedType.Item1.GetEnumCode()').forEach(x => typeList.dataSource.remove(x));
+            }
+            if (!isEditOtherNotifications) {
+                oldData.filter(x => x.Value != '@UvedType.Item1.GetEnumCode()').forEach(x => typeList.dataSource.remove(x));
+            }
+        } else {
+            if (!isEditApproveNotifications) {
+                if (notificationValue == '@UvedType.Item1.GetEnumCode()') {
+                    doFormReadonly();
+                } else {
+                    oldData.filter(x => x.Value == '@UvedType.Item1.GetEnumCode()').forEach(x => typeList.dataSource.remove(x));
+                }
+            }
+            if (!isEditOtherNotifications) {
+                if (notificationValue == '@UvedType.Item1.GetEnumCode()') {
+                    oldData.filter(x => x.Value != '@UvedType.Item1.GetEnumCode()').forEach(x => typeList.dataSource.remove(x));
+                } else {
+                    doFormReadonly();
+                }
+            }
+        }
+    }
+
+    function doFormReadonly() {
+        $('#BookDisplay').attr("disabled", true);
+        $('#Type').data('kendoDropDownList').enable(false);
+        $('.clear-button-BookDisplay').hide();
+        $('.search-button-BookDisplay').hide();
+        $('#Number').attr('disabled', true);
+        $('#Date').data("kendoDatePicker").enable(false);
+        $('#MailNumber').attr('disabled', true);
+        $('#MailDate').data("kendoDatePicker").enable(false);
+        $('fieldset[id="rejectionReasonTypesFieldset"] input[type="checkbox"]').attr("disabled", true);
+        $('#RejectionReason').attr('disabled', true);
+        $('#Annex').attr('disabled', true);
+    }
 
 	function selectBookEvent() {
 		$('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);

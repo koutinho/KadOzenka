@@ -7,15 +7,28 @@
         </button>
     </div>
 </form>
+<script src="~/js/custom-validation.js"></script>
 <script>
     $('form').submit(function() {
         $.post(
             '@Url.Action("DeleteNotification", "Declarations")',
-            { notificationId: @Model },
-            function () {
-                $('form').html('<p>Уведомление удалено</p>');
+            { notificationId: @Model }
+        ).done(function (response) {
+            debugger;
+            if (response.Errors && response.Errors.length > 0) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
             }
-        );
+
+            $('form').html('<p>Уведомление удалено</p>');
+        }).fail(function (response, textStatus, errorThrown) {
+            debugger;
+            Common.ShowError(response.responseText);
+        }).always(function () {
+            kendo.ui.progress($('body'), false);
+        });
+
         return false;
     });
 </script>

@@ -52,6 +52,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Тип уведомления (TYPE)
 		/// </summary>
 		[Display(Name = "Тип уведомления")]
+		[Required(ErrorMessage = "Выберете тип уведомления")]
 		public UvedType? Type { get; set; }
 
 		/// <summary>
