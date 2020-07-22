@@ -39,7 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using ObjectModel.Directory.Core.LongProcess;
-using Platform.Reports.BackgroundExporterScheduler;
+using Platform.Web.Services.BackgroundExporterScheduler;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -369,7 +369,7 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
-            consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов по кастомному пути (процесс из платформы)", () =>
+            consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов/раскладок по кастомному пути (процесс из платформы)", () =>
             {
                 new BackgroundExporterLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 {
