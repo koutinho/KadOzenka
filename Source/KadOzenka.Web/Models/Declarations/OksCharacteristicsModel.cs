@@ -14,7 +14,7 @@ namespace KadOzenka.Web.Models.Declarations
 		public const string AvailabilityConnectionToPowerGridsName = "Возможность/отсутствие возможности подключения к сетям инженерно-технического обеспечения";
 		public const string ConnectionToGasGridsName = "Наличие/отсутствие подключения к сетям газораспределения";
 		public const string AvailabilityConnectionToGasGridsName = "Возможность/отсутствие возможности подключения к сетям газораспределения";
-		public const string GasPowerName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
+		public const string GasPowerName = "Мощность сетей газораспределения";
 		public const string ConnectionToWaterSupplyName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
 		public const string AvailabilityConnectionToWaterSupplyName = "Возможность/отсутствие возможности подключения к системе водоснабжения";
 		public const string ConnectionToHeatSupplyName = "Наличие/отсутствие централизованного подключения к системе теплоснабжения";
@@ -37,12 +37,14 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Вид объекта недвижимости (HAR_1)
 		/// </summary>
 		[Display(Name = "Вид объекта недвижимости")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Вид объекта недвижимости' составляет 4096 символа")]
 		public CharacteristicModel ObjectType { get; set; }
 
 		/// <summary>
 		/// Адрес (описание местоположения) (HAR_2)
 		/// </summary>
 		[Display(Name = "Адрес (описание местоположения)")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Адрес (описание местоположения)' составляет 4096 символа")]
 		public CharacteristicModel Address { get; set; }
 
 		/// <summary>
@@ -55,24 +57,28 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Тип и значение основной характеристики сооружения (HAR_4)
 		/// </summary>
 		[Display(Name = "Тип и значение основной характеристики сооружения")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Тип и значение основной характеристики сооружения' составляет 4096 символа")]
 		public CharacteristicModel TypeAndValueMainCharacteristic { get; set; }
 
 		/// <summary>
 		/// Степень готовности объекта незавершенного строительства (HAR_5)
 		/// </summary>
 		[Display(Name = "Степень готовности объекта незавершенного строительства")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Степень готовности объекта незавершенного строительства' составляет 4096 символа")]
 		public CharacteristicModel ReadinessDegreeOns { get; set; }
 
 		/// <summary>
 		/// Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства) (HAR_6)
 		/// </summary>
 		[Display(Name = "Проектируемый тип и значение основной характеристики объекта незавершенного строительства")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Проектируемый тип и значение основной характеристики объекта незавершенного строительства' составляет 4096 символа")]
 		public CharacteristicModel DesignedTypeAndValueOfMainCharacteristicsOns { get; set; }
 
 		/// <summary>
 		/// Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства) (HAR_7)
 		/// </summary>
 		[Display(Name = "Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства)")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства)' составляет 4096 символа")]
 		public CharacteristicModel DesignedPurposeOns { get; set; }
 
 		/// <summary>
@@ -91,18 +97,21 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Материал наружных стен, если объектом недвижимости является здание (HAR_10)
 		/// </summary>
 		[Display(Name = "Материал наружных стен, если объектом недвижимости является здание")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Материал наружных стен, если объектом недвижимости является здание' составляет 4096 символа")]
 		public CharacteristicModel BuildingWallMaterial { get; set; }
 
 		/// <summary>
 		/// Материал основных несущих конструкций, перекрытий (HAR_11)
 		/// </summary>
 		[Display(Name = "Материал основных несущих конструкций, перекрытий")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Материал основных несущих конструкций, перекрытий' составляет 4096 символа")]
 		public CharacteristicModel MainSupportingStructuresMaterial { get; set; }
 
 		/// <summary>
 		/// Материал кровли (HAR_12)
 		/// </summary>
 		[Display(Name = "Материал кровли")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Материал кровли' составляет 4096 символа")]
 		public CharacteristicModel RoofMaterial { get; set; }
 
 		/// <summary>
@@ -133,30 +142,35 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Вид жилого помещения (HAR_17)
 		/// </summary>
 		[Display(Name = "Вид жилого помещения")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Вид жилого помещения' составляет 4096 символа")]
 		public CharacteristicModel DwellingType { get; set; }
 
 		/// <summary>
 		/// Вид или виды разрешенного использования (HAR_18)
 		/// </summary>
 		[Display(Name = "Вид или виды разрешенного использования объектов капитального строительства")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Вид или виды разрешенного использования объектов капитального строительства' составляет 4096 символа")]
 		public CharacteristicModel PermittedUseType { get; set; }
 
 		/// <summary>
 		/// Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия (HAR_19)
 		/// </summary>
 		[Display(Name = "Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия (памятников истории и культуры) народов Российской Федерации ")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия (памятников истории и культуры) народов Российской Федерации' составляет 4096 символа")]
 		public CharacteristicModel ObjectInclusionIntoCulturalHeritageInfo { get; set; }
 
 		/// <summary>
 		/// Физический износ (HAR_20)
 		/// </summary>
 		[Display(Name = "Физический износ")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Физический износ' составляет 4096 символа")]
 		public CharacteristicModel PhysicalDeterioration { get; set; }
 
 		/// <summary>
 		/// Описание коммуникаций, в том числе их удаленность (HAR_21)
 		/// </summary>
 		[Display(Name = "Описание коммуникаций, в том числе их удаленность")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Описание коммуникаций, в том числе их удаленность' составляет 4096 символа")]
 		public CharacteristicModel CommunicationsDescription { get; set; }
 
 		/// <summary>
@@ -175,6 +189,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Мощность электрической сети (HAR_21_1_3)
 		/// </summary>
 		[Display(Name = "Мощность электрической сети")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Мощность электрической сети' составляет 4096 символа")]
 		public CharacteristicModel ElectricPower { get; set; }
 
 		/// <summary>
@@ -190,9 +205,10 @@ namespace KadOzenka.Web.Models.Declarations
 		public CharacteristicModel AvailabilityConnectionToGasGrids { get; set; }
 
 		/// <summary>
-		/// Мощность электрической сети (HAR_21_2_3)
+		/// Мощность сетей газораспределения (HAR_21_2_3)
 		/// </summary>
 		[Display(Name = GasPowerName)]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Мощность сетей газораспределения' составляет 4096 символа")]
 		public CharacteristicModel GasPower { get; set; }
 
 		/// <summary>

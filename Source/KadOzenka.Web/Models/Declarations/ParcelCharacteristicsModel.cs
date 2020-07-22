@@ -13,7 +13,6 @@ namespace KadOzenka.Web.Models.Declarations
 		public const string AvailabilityConnectionToPowerGridsName = "Возможность/отсутствие возможности подключения к сетям";
 		public const string ConnectionToGasGridsName = "Наличие/отсутствие подключения к сетям газораспределения";
 		public const string AvailabilityConnectionToGasGridsName = "Возможность/отсутствие возможности подключения к сетям газораспределения";
-		public const string GasPowerName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
 		public const string ConnectionToWaterSupplyName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
 		public const string AvailabilityConnectionToWaterSupplyName = "Возможность/отсутствие возможности подключения к системе водоснабжения";
 		public const string ConnectionToHeatSupplyName = "Наличие/отсутствие централизованного подключения к системе теплоснабжения";
@@ -36,6 +35,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Адрес земельного участка (HAR_1)
 		/// </summary>
 		[Display(Name = "Адрес земельного участка (описание местоположения земельного участка)")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Адрес земельного участка (описание местоположения земельного участка)' составляет 4096 символа")]
 		public CharacteristicModel Address { get; set; }
 
 		/// <summary>
@@ -48,66 +48,77 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Категория земель (HAR_3)
 		/// </summary>
 		[Display(Name = "Категория земель")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Категория земель' составляет 4096 символа")]
 		public CharacteristicModel LandCategory { get; set; }
 
 		/// <summary>
 		/// Вид разрешенного использования (HAR_4)
 		/// </summary>
 		[Display(Name = "Вид разрешенного использования")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Вид разрешенного использования' составляет 4096 символа")]
 		public CharacteristicModel PermittedUseType { get; set; }
 
 		/// <summary>
 		/// Фактическое использование земельного участка (HAR_5)
 		/// </summary>
 		[Display(Name = "Фактическое использование земельного участка, соответствующее виду разрешенного использования")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Фактическое использование земельного участка, соответствующее виду разрешенного использования' составляет 4096 символа")]
 		public CharacteristicModel FactUse { get; set; }
 
 		/// <summary>
 		/// Сведения о лесах, водных объектах и об иных природных объектах (HAR_6)
 		/// </summary>
 		[Display(Name = "Сведения о лесах, водных объектах и об иных природных объектах, расположенных в пределах земельного участка")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о лесах, водных объектах и об иных природных объектах, расположенных в пределах земельного участка' составляет 4096 символа")]
 		public CharacteristicModel NaturalObjectsInformation { get; set; }
 
 		/// <summary>
 		/// Сведения о том, что земельный участок полностью или частично расположен в границах зоны с особыми условиями (HAR_7)
 		/// </summary>
 		[Display(Name = "Сведения о том, что земельный участок полностью или частично расположен в границах зоны с особыми условиями использования территории или территории объекта культурного наследия")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о том, что земельный участок полностью или частично расположен в границах зоны с особыми условиями использования территории или территории объекта культурного наследия' составляет 4096 символа")]
 		public CharacteristicModel ZonesWithSpecialUsingConditionsInformation { get; set; }
 
 		/// <summary>
 		/// Сведения о том, что земельный участок расположен в границах особо охраняемой природной территории (HAR_8)
 		/// </summary>
 		[Display(Name = "Сведения о том, что земельный участок расположен в границах особо охраняемой природной территории, охотничьих угодий, лесничеств, лесопарков")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о том, что земельный участок расположен в границах особо охраняемой природной территории, охотничьих угодий, лесничеств, лесопарков' составляет 4096 символа")]
 		public CharacteristicModel ProtectedNaturalZonesInformation { get; set; }
 
 		/// <summary>
 		/// Сведения о том, что земельный участок расположен в границах особой экономической зоны (HAR_9)
 		/// </summary>
 		[Display(Name = "Сведения о том, что земельный участок расположен в границах особой экономической зоны, территории опережающего развития, зоны территориального развития в Российской Федерации, игровой зоны")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о том, что земельный участок расположен в границах особой экономической зоны, территории опережающего развития, зоны территориального развития в Российской Федерации, игровой зоны' составляет 4096 символа")]
 		public CharacteristicModel EconomicZonesInformation { get; set; }
 
 		/// <summary>
 		/// Сведения об установленных сервитутах (HAR_10)
 		/// </summary>
 		[Display(Name = "Сведения об установленных сервитутах, публичных сервитутах")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения об установленных сервитутах, публичных сервитутах' составляет 4096 символа")]
 		public CharacteristicModel EstablishedEasementsInformation { get; set; }
 
 		/// <summary>
 		/// Удаленность от автомобильных дорог с твердым покрытием (HAR_11)
 		/// </summary>
 		[Display(Name = "Удаленность от автомобильных дорог с твердым покрытием")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность от автомобильных дорог с твердым покрытием' составляет 4096 символа")]
 		public CharacteristicModel DistanceFromPavedRoads { get; set; }
 
 		/// <summary>
 		/// Сведения о наличии/отсутствии подъездных путей (HAR_12)
 		/// </summary>
 		[Display(Name = "Сведения о наличии/отсутствии подъездных путей")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Сведения о наличии/отсутствии подъездных путей' составляет 4096 символа")]
 		public CharacteristicModel PrecenceOfAccessRoads { get; set; }
 
 		/// <summary>
 		/// Описание коммуникаций, в том числе их удаленность  (HAR_13)
 		/// </summary>
 		[Display(Name = "Описание коммуникаций, в том числе их удаленность")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Описание коммуникаций, в том числе их удаленность' составляет 4096 символа")]
 		public CharacteristicModel CommunicationsDescription { get; set; }
 
 		/// <summary>
@@ -126,6 +137,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Мощность электрической сети (HAR_13_1_3)
 		/// </summary>
 		[Display(Name = "Мощность электрической сети")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Мощность электрической сети' составляет 4096 символа")]
 		public CharacteristicModel ElectricPower { get; set; }
 
 		/// <summary>
@@ -144,6 +156,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Мощность электрической сети (HAR_13_2_3)
 		/// </summary>
 		[Display(Name = "Мощность сетей газораспределения ")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Мощность сетей газораспределения' составляет 4096 символа")]
 		public CharacteristicModel GasPower { get; set; }
 
 		/// <summary>
@@ -186,48 +199,56 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Удаленность относительно ближайшего водного объекта (HAR_14)
 		/// </summary>
 		[Display(Name = "Удаленность относительно ближайшего водного объекта")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность относительно ближайшего водного объекта' составляет 4096 символа")]
 		public CharacteristicModel NearestWaterbodyDistance { get; set; }
 
 		/// <summary>
 		/// Удаленность относительно ближайшей рекреационной зоны (HAR_15)
 		/// </summary>
 		[Display(Name = "Удаленность относительно ближайшей рекреационной зоны")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность относительно ближайшей рекреационной зоны' составляет 4096 символа")]
 		public CharacteristicModel NearestRecreationalZoneDistance { get; set; }
 
 		/// <summary>
 		/// Удаленность относительно железных дорог (HAR_16)
 		/// </summary>
 		[Display(Name = "Удаленность относительно железных дорог")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность относительно железных дорог' составляет 4096 символа")]
 		public CharacteristicModel RailwaysDistance { get; set; }
 
 		/// <summary>
 		/// Удаленность относительно железнодорожных вокзалов (станций) (HAR_17)
 		/// </summary>
 		[Display(Name = "Удаленность относительно железнодорожных вокзалов (станций)")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность относительно железнодорожных вокзалов (станций)' составляет 4096 символа")]
 		public CharacteristicModel RailwayStationsDistance { get; set; }
 
 		/// <summary>
 		/// Удаленность от зоны разработки полезных ископаемых (HAR_18)
 		/// </summary>
 		[Display(Name = "Удаленность от зоны разработки полезных ископаемых, зоны особого режима использования в границах земельных участков, промышленной зоны")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Удаленность от зоны разработки полезных ископаемых, зоны особого режима использования в границах земельных участков, промышленной зоны' составляет 4096 символа")]
 		public CharacteristicModel MiningZoneDistance { get; set; }
 
 		/// <summary>
 		/// Вид угодий (HAR_19)
 		/// </summary>
 		[Display(Name = "Вид угодий")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Вид угодий' составляет 4096 символа")]
 		public CharacteristicModel TypeOfLand { get; set; }
 
 		/// <summary>
 		/// Показатели состояния почв (HAR_20)
 		/// </summary>
 		[Display(Name = "Показатели состояния почв")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Показатели состояния почв' составляет 4096 символа")]
 		public CharacteristicModel SoilConditionIndicators { get; set; }
 
 		/// <summary>
 		/// Наличие недостатков, препятствующих рациональному использованию и охране земель (HAR_21)
 		/// </summary>
 		[Display(Name = "Наличие недостатков, препятствующих рациональному использованию и охране земель")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage ="Максимальная длина значения для поля 'Наличие недостатков, препятствующих рациональному использованию и охране земель' составляет 4096 символа")]
 		public CharacteristicModel DisadvantagesPresence { get; set; }
 
 		public bool IsEditDeclarationCharacteristics { get; set; }

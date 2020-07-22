@@ -47,12 +47,14 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		/// Положительный отзыв по декларации ("TEXT_YES")
 		/// </summary>
 		[Display(Name = "Принятые хар-ки")]
+		[MaxLength(1024, ErrorMessage = "Максимальная длина значения для поля 'Принятые хар-ки' составляет 1024 символа")]
 		public string ApprovedCharacteristic { get; set; }
 
 		/// <summary>
 		/// Отрицательный отзыв по декларации ("TEXT_NO")
 		/// </summary>
 		[Display(Name = "Непринятые хар-ки")]
+		[MaxLength(1024, ErrorMessage = "Максимальная длина значения для поля 'Непринятые хар-ки' составляет 1024 символа")]
 		public string RejectedCharacteristic { get; set; }
 
 		/// <summary>

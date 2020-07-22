@@ -39,6 +39,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Номер (NUM)
 		/// </summary>
 		[Display(Name = "Номер")]
+		[MaxLength(255, ErrorMessage = "Максимальная длина значения для поля 'Номер' составляет 255 символа")]
 		public string Number { get; set; }
 
 		/// <summary>
@@ -57,6 +58,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Номер почтового уведомления (MAIL_NUM)
 		/// </summary>
 		[Display(Name = "Номер почтового уведомления")]
+		[MaxLength(255, ErrorMessage = "Максимальная длина значения для поля 'Номер почтового уведомления' составляет 255 символа")]
 		public string MailNumber { get; set; }
 
 		/// <summary>
@@ -69,6 +71,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Причина отказа (REJECTION_REASON)
 		/// </summary>
 		[Display(Name = "Причина отказа")]
+		[MaxLength(1024, ErrorMessage = "Максимальная длина значения для поля 'Причина отказа' составляет 1024 символа")]
 		public string RejectionReason { get; set; }
 
 		/// <summary>
@@ -87,6 +90,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Приложение (ANNEX)
 		/// </summary>
 		[Display(Name = "Приложение")]
+		[MaxLength(512, ErrorMessage = "Максимальная длина значения для поля 'Приложение' составляет 512 символа")]
 		public string Annex { get; set; }
 
 		public bool IsEditApproveNotifications { get; set; }
