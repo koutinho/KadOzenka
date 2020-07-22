@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
@@ -32,6 +34,8 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -216,6 +220,14 @@ namespace KadOzenka.Web.Controllers
 				settings = model.ToGbuExportAttributeSettings();
 				ValidateExportAttributeItems(settings.Attributes);
 			}
+
+            ////TODO код для отладки
+            //new ExportAttributeToKoProcess().StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    Status_Code = Status.Added,
+            //    UserId = SRDSession.GetCurrentUserId(),
+            //    Parameters = settings.SerializeToXml()
+            //}, new CancellationToken());
 
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
         }

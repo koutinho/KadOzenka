@@ -1,19 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Data;
-using System.Globalization;
-using System.Data.Common;
-using System.Collections.Generic;
-using Microsoft.Practices.EnterpriseLibrary.Data;
-
+﻿using System.Collections.Generic;
 using Core.Register;
-using Core.Numerator;
-using Core.Shared.Misc;
 using Core.Shared.Extensions;
-using Core.Register.RegisterEntities;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.SRD;
+using Core.Register.LongProcessManagment;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.ExportAttribute;
 using ObjectModel.Core.Shared;
 
@@ -39,7 +30,7 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции переноса атрибутов
         /// </summary>
-        public static void Run(GbuExportAttributeSettings setting)
+        public static void Run(GbuExportAttributeSettings setting, OMQueue processQueue)
         {
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -54,7 +45,8 @@ namespace KadOzenka.Dal.GbuObject
             {
                 lstIds.Add(item.IdAttributeGBU);
             }
-
+            WorkerCommon.LogState(processQueue, $"Найдено {setting.Attributes.Count} пар атрибутов.");
+            WorkerCommon.LogState(processQueue, $"Найдено {setting.TaskFilter.Count} заданий на оценку.");
 
             if (setting.TaskFilter.Count > 0)
             {
@@ -65,6 +57,8 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                WorkerCommon.LogState(processQueue, $"Найдено {Objs.Count} единиц оценки.");
+                WorkerCommon.LogState(processQueue, "Обработано единиц оценки:");
                 Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, lstIds); });
                 CurrentCount = 0;
                 MaxCount = 0;
@@ -120,11 +114,6 @@ namespace KadOzenka.Dal.GbuObject
                     RegisterStorage.Save(registerObject);
                 }
             }
-
-
-
         }
-
     }
-
 }

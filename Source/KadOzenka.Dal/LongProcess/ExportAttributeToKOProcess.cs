@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.ExportAttribute;
+using System.Threading.Tasks;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -21,14 +22,35 @@ namespace KadOzenka.Dal.LongProcess
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			try
+            var cancelProgressCounterSource = new CancellationTokenSource();
+            var cancelProgressCounterToken = cancelProgressCounterSource.Token;
+            try
 			{
                 WorkerCommon.SetProgress(processQueue, 0);
+                WorkerCommon.LogState(processQueue, "Начата обработка процесса переноса атрибутов из ГБУ в КО.");
+
+                var progressCounterTask = Task.Run(() => {
+                    while (true)
+                    {
+                        if (cancelProgressCounterToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        LogProgress(processQueue);
+                    }
+                }, cancelProgressCounterToken);
 
                 var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
-				ExportAttributeToKO.Run(settings);
-				SendSuccessNotification(processQueue);
+                ExportAttributeToKO.Run(settings, processQueue);
+                //TestLongRunningProcess(settings);
 
+                cancelProgressCounterSource.Cancel();
+                progressCounterTask.Wait(cancellationToken);
+                cancelProgressCounterSource.Dispose();
+
+                WorkerCommon.LogState(processQueue, "Отправка уведомления о завершении операции.");
+                SendSuccessNotification(processQueue);
                 WorkerCommon.SetProgress(processQueue, 100);
             }
 			catch (Exception ex)
@@ -40,7 +62,8 @@ namespace KadOzenka.Dal.LongProcess
 			}
 		}
 
-		public void LogError(long? objectId, Exception ex, long? errorId = null)
+
+        public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
 			throw new NotImplementedException();
 		}
@@ -50,7 +73,17 @@ namespace KadOzenka.Dal.LongProcess
 			return true;
 		}
 
-		private void SendSuccessNotification(OMQueue processQueue)
+        private static void LogProgress(OMQueue processQueue)
+        {
+            if (ExportAttributeToKO.MaxCount <= 0 || ExportAttributeToKO.CurrentCount <= 0)
+                return;
+
+            var newProgress = (long)Math.Round(((double)ExportAttributeToKO.CurrentCount / ExportAttributeToKO.MaxCount) * 100);
+            if (newProgress != processQueue.Progress)
+                WorkerCommon.SetProgress(processQueue, newProgress);
+        }
+
+        private void SendSuccessNotification(OMQueue processQueue)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
@@ -73,5 +106,16 @@ namespace KadOzenka.Dal.LongProcess
 				IsEmail = true
 			});
 		}
-	}
+
+        protected void TestLongRunningProcess(GbuExportAttributeSettings setting)
+        {
+            ExportAttributeToKO.MaxCount = 900;
+            ExportAttributeToKO.CurrentCount = 0;
+            for (int i = 0; i < 900; i++)
+            {
+                ExportAttributeToKO.CurrentCount++;
+                Thread.Sleep(1000);
+            }
+        }
+    }
 }

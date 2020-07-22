@@ -13,10 +13,9 @@
             </div>
             <div class="col-sm-4">
                 @(Html.Kendo().DropDownList()
-                              .Name("RatingTour")
-                              .DataTextField("Text")
-                              .DataValueField("Value")
-                )
+                    .Name("RatingTour")
+                    .DataTextField("Text")
+                    .DataValueField("Value"))
             </div>
         </div>
 
@@ -298,6 +297,7 @@
             .kendoDropDownList({
                 dataTextField: 'Text',
                 dataValueField: 'Value',
+                filter: "contains",
                 dataSource:
                 {
                     transport: {
