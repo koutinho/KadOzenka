@@ -20,8 +20,8 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			var cancelSource = new CancellationTokenSource();
-			var cancelToken = cancelSource.Token;
+			//var cancelSource = new CancellationTokenSource();
+			//var cancelToken = cancelSource.Token;
 			try
 			{
                 WorkerCommon.SetProgress(processQueue, 0);
@@ -29,30 +29,30 @@ namespace KadOzenka.Dal.LongProcess
                 var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
                 var harmonization = new Harmonization(settings);
 
-                var t = Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        if (cancelToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                        if (harmonization.MaxObjectsCount > 0 && harmonization.CurrentCount > 0)
-                        {
-                            var newProgress = (long)Math.Round(((double)harmonization.CurrentCount / harmonization.MaxObjectsCount) * 100);
-                            if (newProgress != processQueue.Progress)
-                            {
-                                WorkerCommon.SetProgress(processQueue, newProgress);
-                            }
-                        }
-                    }
-                }, cancelToken);
+                //var t = Task.Run(() =>
+                //{
+                //    while (true)
+                //    {
+                //        if (cancelToken.IsCancellationRequested)
+                //        {
+                //            break;
+                //        }
+                //        if (harmonization.MaxObjectsCount > 0 && harmonization.CurrentCount > 0)
+                //        {
+                //            var newProgress = (long)Math.Round(((double)harmonization.CurrentCount / harmonization.MaxObjectsCount) * 100);
+                //            if (newProgress != processQueue.Progress)
+                //            {
+                //                WorkerCommon.SetProgress(processQueue, newProgress);
+                //            }
+                //        }
+                //    }
+                //}, cancelToken);
 
                 var reportId = harmonization.Run();
                 //TestLongRunningProcess(settings);
-                cancelSource.Cancel();
-                t.Wait(cancellationToken);
-                cancelSource.Dispose();
+                //cancelSource.Cancel();
+                //t.Wait(cancellationToken);
+                //cancelSource.Dispose();
 
                 WorkerCommon.SetProgress(processQueue, 100);
 
@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.LongProcess
             }
 			catch (Exception ex)
 			{
-				cancelSource.Cancel();
+				//cancelSource.Cancel();
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
