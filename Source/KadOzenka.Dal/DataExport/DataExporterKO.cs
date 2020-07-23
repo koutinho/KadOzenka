@@ -24,6 +24,7 @@ using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using SaveOptions = GemBox.Document.SaveOptions;
+using KadOzenka.Dal.GbuObject;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -3493,7 +3494,7 @@ namespace KadOzenka.Dal.DataExport
                 throw new Exception($"Не найдена группа для Единицы оценки с Id = '{_unit.Id}'");
             }
             OMGroup calc_group = null;
-            OMUnit   calc_unit = null;
+            OMUnit calc_unit = null;
             if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
             {
                 // Определяем объект, по которому был расcчитан _unit, и у этого объекта берем группу
@@ -3546,7 +3547,7 @@ namespace KadOzenka.Dal.DataExport
                         case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
                             strActReq_01_10 = "-";
                             strActReq_01_06 = DataExportCommon.GetFullNameDoc(doc_out);
-                            strActReq_01_07 = "Ковалев Д.В." +"$ $"+ "Капитонов К.С.";
+                            strActReq_01_07 = "Ковалев Д.В." + "$ $" + "Капитонов К.С.";
                             str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 16 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
                             break;
@@ -3953,9 +3954,9 @@ namespace KadOzenka.Dal.DataExport
                                 RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
                                 factor.FillMarkCatalogs(model_calc);
 
-                                string name = attribute_factor.Name;
-                                //string desc = attribute_factor.Description;
-                                string value = "-";
+                                string attribute_name = attribute_factor.Name;
+                                long attribute_id = attribute_factor.Id;
+                                string attribute_value = "-";
 
                                 int? factorReestrId = OMGroup.GetFactorReestrId(calc_group);
                                 List<CalcItem> FactorValuesGroup = new List<CalcItem>();
@@ -3970,18 +3971,18 @@ namespace KadOzenka.Dal.DataExport
                                 CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
                                 if (factor_item != null)
                                 {
-                                    value = factor_item.Value;
+                                    attribute_value = factor_item.Value;
                                 }
 
                                 pp++;
                                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
                                 DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
                                      "2.3." + pp.ToString(),
-                                     name,
-                                     value,
-                                     "-",
+                                     attribute_name,
+                                     attribute_value,
+                                     GetSourceAttributeFromGbu(_unit, attribute_id, attribute_value, task.EstimationDate),
                                      12,
-                                     HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                                     HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
                                      true, false);
                             }
                         }
@@ -4001,9 +4002,9 @@ namespace KadOzenka.Dal.DataExport
                         RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
                         factor.FillMarkCatalogs(model);
 
-                        string name = attribute_factor.Name;
-                        //string desc = attribute_factor.Description;
-                        string value = "-";
+                        string attribute_name = attribute_factor.Name;
+                        long attribute_id = attribute_factor.Id;
+                        string attribute_value = "-";
 
                         int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
                         List<CalcItem> FactorValuesGroup = new List<CalcItem>();
@@ -4018,18 +4019,18 @@ namespace KadOzenka.Dal.DataExport
                         CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
                         if (factor_item != null)
                         {
-                            value = factor_item.Value;
+                            attribute_value = factor_item.Value;
                         }
 
                         pp++;
                         idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
                         DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
                              "2.3." + pp.ToString(),
-                             name,
-                             value,
-                             "-",
+                             attribute_name,
+                             attribute_value,
+                             GetSourceAttributeFromGbu(_unit, attribute_id, attribute_value, task.EstimationDate),
                              12,
-                             HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                             HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
                              true, false);
                     }
                 }
@@ -4047,8 +4048,8 @@ namespace KadOzenka.Dal.DataExport
 
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
                 {
-                    if ( (calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty) )
-                    { 
+                    if ((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
+                    {
                         formula = OMGroup.GetFormulaKoeff(calc_group, true, "УПКС здания, в котором расположено помещение(" + calc_unit.CadastralNumber + ")");
                         dd = true;
                     }
@@ -4059,17 +4060,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         jj = false;
                     }
@@ -4081,17 +4082,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", по субъекту)") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited) //subgroup.Type_SubGroup == 11)
@@ -4101,17 +4102,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Min) //subgroup.Type_SubGroup == 12)
@@ -4126,17 +4127,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4144,38 +4145,38 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (!dd)
                     {
-                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     else
                     {
-                        formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
-                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                        formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))
                 {
-                    if((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
+                    if ((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
                     {
                         string[] kk = _unit.ParentCalcNumber.Split(':');
                         string calc_group_num = calc_group.Number;
                         if (kk.Length == 1)
                         {
-                            formula = formula +"$$"+
+                            formula = formula + "$$" +
                                 "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
-                            formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                            formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
-                            formula = formula +"$$"+ "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                            formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" +"$$"+ "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4339,6 +4340,7 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
+
         public static void GetCalcGroupFromUnit(OMUnit _unit, DateTime? _estimatedate, out OMUnit unit_out, out OMGroup group_out)
         {
             unit_out = null;
@@ -4364,6 +4366,50 @@ namespace KadOzenka.Dal.DataExport
             }
 
             return;
+        }
+
+        /// <summary>
+        /// Получить источник аттрибута объекта КО из ГБУ
+        /// </summary>
+        /// <param name="_unit">Объект КО</param>
+        /// <param name="_id">Идентификатор аттрибута объекта КО</param>
+        /// <param name="_value">Значение аттрибута объекта КО</param>
+        /// <param name="_date">Дата задания на оценку</param>
+        /// <returns></returns>
+        public static string GetSourceAttributeFromGbu(OMUnit _unit, long _id, string _value, DateTime? _date)
+        {
+            string source_out = "-";
+
+            OMTransferAttributes transferAttribute = OMTransferAttributes
+                .Where(x => x.KoId == _id)
+                .SelectAll()
+                .ExecuteFirstOrDefault();
+
+            if (transferAttribute != null)
+            {
+                List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value,
+                    null,
+                    new List<long> { transferAttribute.GbuId },
+                    _date);
+
+                if (attribs.Count > 0)
+                {
+                    if (attribs[0].NumValue.ToString() == _value)
+                    {
+                        var gbuAttribute = new GbuObjectService().GetGbuAttributes().FirstOrDefault(x => x.Id == transferAttribute.GbuId);
+                        if (gbuAttribute != null)
+                        {
+                            var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == gbuAttribute.RegisterId);
+                            if (attribute_source != null)
+                            {
+                                source_out = attribute_source.Description;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return source_out;
         }
     }
 
