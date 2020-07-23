@@ -5,6 +5,8 @@
             GroupName: mainGroup.GroupName,
             UrlForEdit: mainGroup.UrlForEdit,
             UrlForSegmentSettings: mainGroup.UrlForSegmentSettings,
+            UrlForExplanationSettings: mainGroup.UrlForExplanationSettings,
+            UrlForCadastralCostDefinitionActSettings: mainGroup.UrlForCadastralCostDefinitionActSettings,
             GroupType: mainGroup.GroupType,
             items: mainGroup.Items.map(function(group) {
                 return {
@@ -12,6 +14,8 @@
                     GroupName: group.GroupName,
                     UrlForEdit: group.UrlForEdit,
                     UrlForSegmentSettings: group.UrlForSegmentSettings,
+                    UrlForExplanationSettings: group.UrlForExplanationSettings,
+                    UrlForCadastralCostDefinitionActSettings: group.UrlForCadastralCostDefinitionActSettings,
                     GroupType: group.GroupType,
                     items: group.Items.map(function(subgroup) {
                         return {
@@ -19,6 +23,8 @@
                             GroupName: subgroup.GroupName,
                             UrlForEdit: subgroup.UrlForEdit,
                             UrlForSegmentSettings: subgroup.UrlForSegmentSettings,
+                            UrlForExplanationSettings: subgroup.UrlForExplanationSettings,
+                            UrlForCadastralCostDefinitionActSettings: subgroup.UrlForCadastralCostDefinitionActSettings,
                             GroupType: subgroup.GroupType
                         };
                     })
