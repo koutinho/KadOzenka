@@ -541,7 +541,7 @@ namespace KadOzenka.Dal.Groups
 
         private int? GetSubGroupNumber(string fullNumber)
         {
-            var subGroupNumberStr = fullNumber.Split('.')?.ElementAtOrDefault(1);
+            var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(1);
             return subGroupNumberStr?.ParseToInt();
         }
 
