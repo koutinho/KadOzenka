@@ -39,6 +39,8 @@ namespace KadOzenka.Dal.GbuObject
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 20
             };
+            //если используется "Перенос с созданием атрибутов", нужно обновить кеш, т.к. нового атрибута может не быть в нем
+            RegisterCache.UpdateCache(0, null);
 
             List<long> lstIds = new List<long>();
             foreach (ExportAttributeItem item in setting.Attributes)

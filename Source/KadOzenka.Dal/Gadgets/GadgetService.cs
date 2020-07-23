@@ -271,6 +271,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/RegistersView/ModelingModels", "Перейти к справочнику моделей", string.Empty);
             data.Rows.Add("/Task/TransferAttributes", "Перенос атрибутов", _moveToPageSymbol);
             data.Rows.Add("/Task/TransferAttributes?create=true", "Перенос и создание атрибутов", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/KoToursFactors", "Ценообразующие факторы", _moveToPageSymbol);
 
             return data;
         }

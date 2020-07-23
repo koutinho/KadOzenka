@@ -6,6 +6,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.Tours;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.ExportAttribute;
@@ -84,7 +85,15 @@ namespace KadOzenka.Web.Models.Task
 
 		public List<PartialExportAttributesRowModel> ExportAttribute { get; set; }
 
-		public GbuExportAttributeSettings ToGbuExportAttributeSettings()
+        private TourFactorService TourFactorService { get; set; }
+
+        public ExportAttributesModel()
+        {
+            TourFactorService = new TourFactorService();
+        }
+
+
+        public GbuExportAttributeSettings ToGbuExportAttributeSettings()
 		{
 			return new GbuExportAttributeSettings
 			{
@@ -124,10 +133,8 @@ namespace KadOzenka.Web.Models.Task
 						IdAttributeKO = (long)idKo,
 						IdAttributeGBU = (long)idGbu
 					});
-
-				}
-
-			}
+                }
+            }
 
 			if (ExportAttribute != null && ExportAttribute.Count > 0)
 			{
@@ -141,8 +148,7 @@ namespace KadOzenka.Web.Models.Task
 					{
 						IdAttributeGBU = (long)idGbu,
 						IdAttributeKO = (long)idKo
-
-					});
+                    });
 				}
 			}
 
@@ -157,22 +163,20 @@ namespace KadOzenka.Web.Models.Task
 			foreach (var prop in GetType().GetProperties())
 			{
 				Control attr = GetAttribute(prop);
-				if (attr != null && attr.Name == "GBU")
-				{
-					if (!GetPropertyByNameAttribute("GBU", attr.NumberControl).GetValue(this, null).TryParseToDecimal(out var idGbu))
-					continue;
+                if (attr != null && attr.Name == "GBU")
+                {
+                    if (!GetPropertyByNameAttribute("GBU", attr.NumberControl).GetValue(this, null).TryParseToDecimal(out var idGbu))
+                        continue;
 
-				long idKo = CreateKoAttribute((long)idGbu, RatingTour, objectType);
+                    var idKo = CreateKoAttribute((long) idGbu, RatingTour, objectType);
 
-				res.Add(new ExportAttributeItem
-					{
-						IdAttributeKO = (long)idKo,
-						IdAttributeGBU = (long)idGbu
-					});
-
-				}
-
-			}
+                    res.Add(new ExportAttributeItem
+                    {
+                        IdAttributeKO = (long)idKo,
+                        IdAttributeGBU = (long)idGbu
+                    });
+                }
+            }
 
 			if (ExportAttribute != null && ExportAttribute.Count > 0)
 			{
@@ -186,15 +190,14 @@ namespace KadOzenka.Web.Models.Task
 					{
 						IdAttributeGBU = (long)idGbu,
 						IdAttributeKO = (long)idKo
-
-					});
+                    });
 				}
 			}
 
 			return res;
 		}
 
-		private static long CreateKoAttribute(long idGbu, long tourId, ObjectType objectType)
+		private long CreateKoAttribute(long idGbu, long tourId, ObjectType objectType)
 		{
 			bool isOks = objectType == ObjectType.Oks;			
 
@@ -216,12 +219,11 @@ namespace KadOzenka.Web.Models.Task
 					.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
 					.SelectAll().ExecuteFirstOrDefault();
 
-			if (existedTourFactorRegister == null)
-				return 0;
+            var registerId = existedTourFactorRegister == null 
+                ? TourFactorService.CreateTourFactorRegister(tourId, objectType == ObjectType.ZU).RegisterId 
+                : existedTourFactorRegister.RegisterId.GetValueOrDefault();
 
-			long registerId = existedTourFactorRegister.RegisterId.GetValueOrDefault();
-
-			OMAttribute attributeGbu = OMAttribute.Where(x => x.Id == idGbu).SelectAll().ExecuteFirstOrDefault();
+            OMAttribute attributeGbu = OMAttribute.Where(x => x.Id == idGbu).SelectAll().ExecuteFirstOrDefault();
 			CharacteristicDto characteristicDto = new CharacteristicDto
 			{
 				Name = attributeGbu.Name,
