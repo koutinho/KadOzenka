@@ -10,6 +10,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -995,6 +996,9 @@
     <None Update="Config\Reports\TestReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="___Test.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -1060,6 +1064,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Views\ExpressScore\Index.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
@@ -1068,6 +1075,9 @@
     </Content>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
