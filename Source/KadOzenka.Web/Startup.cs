@@ -19,7 +19,6 @@ using Newtonsoft.Json.Serialization;
 using Platform.Web;
 using System;
 using System.Configuration;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,21 +34,15 @@ using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Microsoft.Extensions.Logging;
-using Serilog.Extensions.Logging;
 using Serilog;
-using DevExpress.DataProcessing.InMemoryDataProcessor;
-using DevExpress.Data.Helpers;
+using KadOzenka.Dal.CommonFunctions;
 
 namespace CIPJS
 {
     public class Startup
     {
-
-       
         public Startup(IConfiguration configuration)
         {
-           
-
             SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 
 			Configuration = configuration;
@@ -91,6 +84,7 @@ namespace CIPJS
 	        services.AddTransient<TourService>();
 	        services.AddTransient<RegisterAttributeService>();
 	        services.AddTransient<UpdateCadastralDataService>();
+	        services.AddTransient<TemplateService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

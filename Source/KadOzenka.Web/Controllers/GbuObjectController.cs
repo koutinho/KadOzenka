@@ -7,11 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
 using Core.Register;
-using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
@@ -39,14 +38,15 @@ namespace KadOzenka.Web.Controllers
 		private readonly GbuObjectService _service;
 		private readonly TaskService _taskService;
 	    private TourFactorService _tourFactorService;
+	    private TemplateService _templateService;
 
-        public GbuObjectController(GbuObjectService service, TaskService taskService, TourFactorService tourFactorService)
+        public GbuObjectController(GbuObjectService service, TaskService taskService, TourFactorService tourFactorService, TemplateService templateService)
 		{
 			_service = service;
 			_taskService = taskService;
 		    _tourFactorService = tourFactorService;
-
-		}
+            _templateService = templateService;
+        }
 
 		#endregion
 
@@ -210,43 +210,38 @@ namespace KadOzenka.Web.Controllers
 		
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesGrouping()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Normalisation)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
+        {
+            return _templateService.GetTemplates(DataFormStorege.Normalisation)
+                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesUnloadingForm()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.UnloadingFromDict)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
+        {
+            return _templateService.GetTemplates(DataFormStorege.UnloadingFromDict)
+                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesHarmonization()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Harmonization)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
+        {
+            return _templateService.GetTemplates(DataFormStorege.Harmonization)
+                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesHarmonizationCOD()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.HarmonizationCOD)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
+        {
+            return _templateService.GetTemplates(DataFormStorege.HarmonizationCOD)
+                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public List<SelectListItem> GetTemplatesEstimated()
-	    {
-	        return OMDataFormStorage.Where(x =>
-	                x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.EstimatedGroup)
-	            .SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-	    }
+        {
+            return _templateService.GetTemplates(DataFormStorege.EstimatedGroup)
+                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult GetTemplatesOneGroup(int id)
