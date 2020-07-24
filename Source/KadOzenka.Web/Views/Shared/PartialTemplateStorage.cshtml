@@ -18,7 +18,10 @@
 				.DataSource(source => {
 					                      source.Read(read =>
 					                      {
-						                      read.Action(Model.ActionName, Model.ControllerName);
+                                              if(string.IsNullOrWhiteSpace(Model.Parameters))
+						                        read.Action(Model.ActionName, Model.ControllerName);
+                                              else
+                                                  read.Action(Model.ActionName, Model.ControllerName).Data("parseInputParametersToDownloadTemplates");
 					                      }); 
 				})
 				.OptionLabel(null))
@@ -84,8 +87,8 @@
 						$('.template-name-wrapper').hide(500);
 
 						var form = $('form');
-						var formObject = Common.Functions.FormToObject(form);
-						if ($("#valuesFilter").data('kendoMultiSelect')) {
+                        var formObject = Common.Functions.FormToObject(form);
+                        if ($("#valuesFilter").data('kendoMultiSelect')) {
 							formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
 						}
 						kendo.ui.progress($('body'), true);
@@ -96,7 +99,7 @@
 
 						var url = "/"+ self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate + "?nameTemplate=" + $('#templateName').val();
 
-						$.post(url, formObject).done(function (response) {
+                        $.post(url, formObject).done(function (response) {
 							kendo.ui.progress($('body'), false);
 							if (response.Error) {
 								kendo.ui.progress($('body'), false);
@@ -120,17 +123,21 @@
 						kendo.ui.progress($('body'), true);
 						$.get(url).done(function (response) {
 							if (response.error) {
-								kendo.ui.progress($('body'), false);
-								Common.ShowError(response.Error);
+                                Common.ShowError(response.Error);
 								return;
 							}
 							if (response.data && self.setDataForm) {
 								self.setDataForm(self.parseData(response.data));
 							}
 							$('.template-select-wrapper').hide(500);
-							kendo.ui.progress($('body'), false);
-							Common.ShowMessage("Данные заполнены");
-						});
+                            Common.ShowMessage("Данные заполнены");
+                        })
+                            .fail(function (response) {
+                                Common.ShowError(response.responseText);
+                            })
+                            .always(function () {
+                                kendo.ui.progress($('body'), false);
+                            });
 					});
 			},
             parseData: function (data) {
@@ -196,5 +203,17 @@
             }
 		}
 		return obj;
-	})($);
+        })($);
+
+
+
+    function parseInputParametersToDownloadTemplates() {
+        var hashes = '@Model.Parameters'.split('&amp;');
+        var params = {}
+        hashes.map(hash => {
+            var parameter = hash.split('=');
+            params[parameter[0]] = parameter[1];
+        });
+        return params;
+    }
 </script>

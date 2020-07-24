@@ -12,7 +12,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
-using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
@@ -34,7 +34,9 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -50,8 +52,9 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
+		public TemplateService TemplateService { get; set; }
 
-		public TaskController()
+		public TaskController(TemplateService templateService)
 		{
 			TaskService = new TaskService();
 			ModelService = new ModelService();
@@ -61,8 +64,8 @@ namespace KadOzenka.Web.Controllers
             GroupService = new GroupService();
             RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
-
-		}
+            TemplateService = templateService;
+        }
 
 		#region Карточка задачи
 
@@ -261,6 +264,46 @@ namespace KadOzenka.Web.Controllers
 
 			return PartialView("/Views/Task/PartialTransferAttributeRow.cshtml", new PartialExportAttributesRowModel());
 		}
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public List<SelectListItem> GetTemplatesForTransferAttributes(bool isCreateMode)
+        {
+            var formType = isCreateMode
+                ? DataFormStorege.TransferAttributesWithCreate
+                : DataFormStorege.TransferAttributesWithoutCreate;
+
+            return TemplateService.GetTemplates(formType)
+                .Select(x => new SelectListItem(x.TemplateName ?? string.Empty, x.Id.ToString())).ToList();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public JsonResult SaveTemplateForTransferAttributesWithCreate(string nameTemplate, [FromForm]ExportAttributesModel viewModel)
+        {
+            return SaveTemplate(nameTemplate, DataFormStorege.TransferAttributesWithCreate, viewModel.SerializeToXml());
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public JsonResult SaveTemplateForTransferAttributesWithoutCreate(string nameTemplate, [FromForm]ExportAttributesModel viewModel)
+        {
+            return SaveTemplate(nameTemplate, DataFormStorege.TransferAttributesWithoutCreate, viewModel.SerializeToXml());
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+        public JsonResult GetTemplateForTransferAttributes(int id)
+        {
+            if (id == 0)
+                return new JsonResult(Ok());
+
+            var storage = OMDataFormStorage.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            if (storage == null)
+                throw new Exception($"Не найдено хранилище шаблонов с Id='{id}'");
+
+            var viewModel = storage.Data.DeserializeFromXml<ExportAttributesModel>();
+
+            return Json(new { data = JsonConvert.SerializeObject(viewModel) });
+        }
 
 
         #region Support Methods

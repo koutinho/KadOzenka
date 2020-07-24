@@ -618,7 +618,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetRatingTours()
 		{
-			var tours = OMTour.Where(x => true).SelectAll().Execute()
+			var tours = OMTour.Where(x => true).OrderBy(x => x.Year).SelectAll().Execute()
 				.Select(x => new SelectListItem
 				{
 					Value = x.Id.ToString(),

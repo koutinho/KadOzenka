@@ -11484,6 +11484,20 @@ namespace ObjectModel.Directory.Common
         [EnumCode("5")]
         [ShortTitle("Проставление оценочной группы")]
         EstimatedGroup = 5,
+		/// <summary>
+		/// Перенос атрибутов (без создания) (6)
+		/// </summary>
+		[Description("Перенос атрибутов (без создания)")]
+        [EnumCode("6")]
+        [ShortTitle("Перенос атрибутов (без создания)")]
+        TransferAttributesWithoutCreate = 6,
+		/// <summary>
+		/// Перенос атрибутов (с созданием) (7)
+		/// </summary>
+		[Description("Перенос атрибутов (с созданием)")]
+        [EnumCode("7")]
+        [ShortTitle("Перенос атрибутов (с созданием)")]
+        TransferAttributesWithCreate = 7,
     }
 }
 

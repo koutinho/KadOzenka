@@ -7,6 +7,7 @@ using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Web.Controllers;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.ExportAttribute;
@@ -23,7 +24,12 @@ namespace KadOzenka.Web.Models.Task
 
 		public bool CreateAttributes { get; set; }
 
-		[Control("KO", 1)]
+        public string MethodToSaveTemplate => CreateAttributes
+            ? nameof(TaskController.SaveTemplateForTransferAttributesWithCreate)
+            : nameof(TaskController.SaveTemplateForTransferAttributesWithoutCreate);
+        public string MethodToGetTemplate => nameof(TaskController.GetTemplateForTransferAttributes);
+
+        [Control("KO", 1)]
         public long? IdAttributeKO1 { get; set; }
 
         [Control("KO", 2)]
