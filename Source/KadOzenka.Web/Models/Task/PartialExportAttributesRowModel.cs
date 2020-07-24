@@ -1,8 +1,4 @@
-﻿using System;
-using System.Dynamic;
-using System.Linq.Expressions;
-
-namespace KadOzenka.Web.Models.Task
+﻿namespace KadOzenka.Web.Models.Task
 {
 	public class PartialExportAttributesRowModel
 	{

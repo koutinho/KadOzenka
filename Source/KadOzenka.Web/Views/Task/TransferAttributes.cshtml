@@ -2,6 +2,7 @@
 @using KadOzenka.Dal.Oks
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
+@using KadOzenka.Web.Models.Task
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
@@ -173,10 +174,10 @@
         </div>
         
         <div class="form-group">
-            <div class="col-sm-2 col-sm-offset-2">
-                <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+                <div class="col-sm-2 col-sm-offset-2">
+                    <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+                </div>
             </div>
-        </div>
 
         <div class="form-group">
             <div class="col-sm-7 col-sm-offset-2">
@@ -211,24 +212,37 @@
 <script>
 	var rowNumber = 1;
 
-	function addNewRow() {
+    function addNewRow(localRowNumber, idAttributeKo, idAttributeGbu) {
 		kendo.ui.progress($('body'), true);
-		var data = [{ rowNumber }];
+        var data = [{ rowNumber: localRowNumber }];
         var templateContent = $("#templateRow").html();
 		var template = kendo.template(templateContent);
         var result = kendo.render(template, data);
         $("#attributesList").append(result);
-        var classWrapper = ".wrapper-" + rowNumber;
+        var classWrapper = ".wrapper-" + localRowNumber;
         var idTour = $('#RatingTour').data('kendoDropDownList').value();
 		var objectType = $('input[name="ObjType"]:checked').val();
         var url = "@Url.Action("GetRowExport", "Task")";
-        $(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
+        $(classWrapper).load(url, { rowNumber: localRowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
             function(response) {
                 $(classWrapper).show(500);
-                rowNumber++;
+                if (idAttributeKo || idAttributeGbu) {
+                    var attributeKoElement = '@nameof(PartialExportAttributesRowModel.IdAttributeKO)';
+                    var attributeGbuElement = '@nameof(PartialExportAttributesRowModel.IdAttributeGbu)';
+                    fillLevelFromTemplate(attributeKoElement, "kendoDropDownList", localRowNumber, idAttributeKo);
+                    fillLevelFromTemplate(attributeGbuElement, "kendoDropDownTree", localRowNumber, idAttributeGbu);
+                }
                 kendo.ui.progress($('body'), false);
                 addSelectionHandlersForDropDowns();
             });
+    }
+
+    function fillLevelFromTemplate(elementName, elementType, localRowNumber, value) {
+        var dropDownTree = $("#" + elementName + "_" + localRowNumber).data(elementType);
+        if (dropDownTree) {
+            dropDownTree.value(value || '');
+            dropDownTree.trigger('change');
+        }
     }
 
     function getDataSource() {
@@ -299,7 +313,10 @@
 
     $(document).ready(function() {
         addSelectionHandlersForDropDowns();
-        $('#addRow').on('click', addNewRow);
+        $('#addRow').on('click', function() {
+            addNewRow(rowNumber);
+            rowNumber++;
+        });
         $('[name="RatingTour"]')
             .kendoDropDownList({
                 dataTextField: 'Text',
@@ -387,7 +404,7 @@
 	}
 
 
-	function parseFormObject(formObject) {
+	function addCustomLevelsToForm(formObject) {
 		if (!formObject) {
 			return formObject;
 		}
@@ -411,7 +428,7 @@
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
 		formObject['ObjType'] = $('input[name="ObjType"]:checked').val();
-        formObject = parseFormObject(formObject);
+        formObject = addCustomLevelsToForm(formObject);
         kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
@@ -432,8 +449,8 @@
 
     function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-        //clearCustomLevels();
-        //globalRowNumber = 1;
+        clearCustomLevels();
+        rowNumber = 1;
         data.forEach(function (val) {
             if (Object.keys(val)[0] === '@(nameof(Model.RatingTour))') {
                 var tourDropDownList = $('#@(nameof(Model.RatingTour))').data("kendoDropDownList");
@@ -468,34 +485,19 @@
                 }
             }
 
-            @*if (Object.keys(val)[0].includes('@(nameof(Model.AdditionalCustomLevels))')) {
+            if (Object.keys(val)[0].startsWith('@(nameof(Model.ExportAttribute))')) {
                 var additionalCustomLevel = val[Object.keys(val)[0]];
-                globalRowNumber = additionalCustomLevel.RowNumber + 1;
-                addNewCustomLevel(urlForNewCustomLevel, additionalCustomLevel.RowNumber, additionalCustomLevel.AttributeId);
-            }*@
+                addNewRow(rowNumber, additionalCustomLevel.IdAttributeKO, additionalCustomLevel.IdAttributeGbu);
+                rowNumber++;
+            }
         });
     }
 
-
-    function addCustomLevelsToForm(formObject) {
-        if (!formObject) {
-            return formObject;
-        }
-
-        return formObject;
-        //var customLevels = [];
-        //for (var i = 1; i < globalRowNumber; i++) {
-        //    var attributeName = 'AttributeId_' + i;
-        //    var levelName = 'LevelNumber_' + i;
-        //    var rowName = 'RowNumber_' + i;
-        //    customLevels.push({
-        //        RowNumber: formObject[rowName],
-        //        LevelNumber: formObject[levelName],
-        //        AttributeId: formObject[attributeName]
-        //    });
-        //    delete formObject[attributeName];
-        //}
-        //return Object.assign({}, formObject, { AdditionalCustomLevels: customLevels });
+    function clearCustomLevels() {
+        var existedCustomLevels = $("div[class^='wrapper-']");
+        existedCustomLevels.each(function () {
+            this.remove();
+        });
     }
 
 </script>
