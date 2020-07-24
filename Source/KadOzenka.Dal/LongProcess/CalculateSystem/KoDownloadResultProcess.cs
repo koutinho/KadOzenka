@@ -17,10 +17,9 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 
 		public static void AddImportToQueue(long tourId, KOUnloadSettings setting)
-		{
-
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), tourId, setting.SerializeToXml());
-		}
+        {
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), tourId, setting.SerializeToXml());
+        }
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
@@ -28,13 +27,12 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			{
 				var data = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
 				WorkerCommon.SetProgress(processQueue, 0);
-				var res = KOUnloadResult.Unload(data);
+				var res = KOUnloadResult.Unload(data,processQueue);
 				WorkerCommon.SetProgress(processQueue, 90);
 
-				var correctRes = res.Where(x => !x.NoResult).ToList();
+                var correctRes = res.Where(x => !x.NoResult).ToList();
 
 				string msg = GetMessage("Результат операции:", correctRes, true);
-
 
 				if (data.SendResultToReon)
 				{
