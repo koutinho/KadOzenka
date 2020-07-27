@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.LongProcess
     public class KoFactorsFromReon : LongProcess
     {
         public static readonly long ReonSourceRegisterId = 44355304;
+        public static readonly string AttributeNameSeparator = " - ";
         private RosreestrDataApi ReonWebClientService { get; set; }
         private RegisterAttributeService RegisterAttributeService { get; set; }
         private GbuReportService GbuReportService { get; set; }
@@ -201,7 +202,7 @@ namespace KadOzenka.Dal.LongProcess
 
         private string CreateAttributeName(GraphFactor factor)
         {
-            return string.Join(" - ", new List<string> {factor.LayerSourceName, factor.LayerTargetName, factor.FactorName});
+            return string.Join(AttributeNameSeparator, new List<string> {factor.LayerSourceName, factor.LayerTargetName, factor.FactorName});
         }
 
         private OMAttribute GetAttribute(string attributeName)

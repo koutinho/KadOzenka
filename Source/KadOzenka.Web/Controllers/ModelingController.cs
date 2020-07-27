@@ -25,6 +25,7 @@ using ObjectModel.Core.Register;
 using ObjectModel.Market;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Web.Helpers;
 using Kendo.Mvc.UI;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
@@ -64,10 +65,14 @@ namespace KadOzenka.Web.Controllers
         {
             var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
 
-            //выбираем только параметры с типом: число, строка, дата
+            var availableAttributeTypes = new[]
+            {
+                Consts.IntegerAttributeType, Consts.DecimalAttributeType,
+                Consts.StringAttributeType, Consts.DateAttributeType
+            };
             var marketObjectAttributes = RegisterAttributeService
                 .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
-                .Where(x => x.Type == 1 || x.Type == 2 || x.Type == 4 || x.Type == 5).ToList();
+                .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             if (exceptedAttributes != null && exceptedAttributes.Count > 0)
             {

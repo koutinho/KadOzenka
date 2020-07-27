@@ -31,6 +31,7 @@ using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
+using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -813,15 +814,51 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
         public JsonResult GetReonRegisterAttributes()
         {
-            //1 - целое число, 2 - вещественное
+            var availableAttributeTypes = new[]
+            {
+                Consts.IntegerAttributeType, Consts.DecimalAttributeType
+            };
             var numericRegisterAttributes = RegisterAttributeService
                 .GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
-                .Where(x => x.Type == 1 || x.Type == 2)
-                .Select(x => new
+                .Where(x => availableAttributeTypes.Contains(x.Type) && !string.IsNullOrWhiteSpace(x.Name))
+                .Select(x =>
                 {
-                    x.Id,
-                    x.Name
-                });
+                    var lastSeparatorIndex = x.Name.LastIndexOf(KoFactorsFromReon.AttributeNameSeparator);
+                    if (lastSeparatorIndex == -1)
+                    {
+                        return new
+                        {
+                            Id = x.Id,
+                            Category = x.Name,
+                            Name = string.Empty
+                        };
+                    }
+                    var category = x.Name.Substring(0, lastSeparatorIndex).Trim();
+                    var nameStartPosition = lastSeparatorIndex + KoFactorsFromReon.AttributeNameSeparator.Length;
+                    var name = x.Name.Substring(nameStartPosition, x.Name.Length - nameStartPosition).Trim();
+                    return new
+                    {
+                        Id = x.Id,
+                        Category = category,
+                        Name = name
+                    };
+                })
+                .GroupBy(x => x.Category)
+                .Select(x =>
+                {
+                    var factorsInGroup = x.ToList();
+                    return new DropDownTreeItemModel
+                    {
+                        Value = Guid.NewGuid().ToString(),
+                        Text = x.Key,
+                        HasChildren = factorsInGroup.Count > 0,
+                        Items = factorsInGroup.Select(y => new DropDownTreeItemModel
+                        {
+                            Value = y.Id.ToString(),
+                            Text = y.Name
+                        }).ToList()
+                    };
+                }).ToList();
 
             return new JsonResult(numericRegisterAttributes);
         }
@@ -830,10 +867,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
         public JsonResult DownloadGraphicFactorsFromReon(GraphicFactorsFromReonModel model)
         {
-            if(model.TaskId == 0)
-                throw new Exception("Не выбрано задание на оценку");
-            if (model.AttributeIds == null || model.AttributeIds.Count == 0)
-                throw new Exception("Не выбраны атрибуты");
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
 
             var inputParameters = new KoFactorsFromReonInputParameters
             {

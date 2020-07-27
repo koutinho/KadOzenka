@@ -4,10 +4,10 @@
 {
     @Html.HiddenFor(x => x.TaskId)
     <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
-        <div id="checkboxList"></div>
-        <div class="form-group" id="downloadBtnBlock" style="display: none">
+        <div id="factorsTreeList"></div>
+        <div class="form-group" id="confirmBtnBlock" style="display: none">
             <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("DownloadFactors", "Загрузить")
+                @Html.KendoButton("confirmBtn", "Загрузить")
             </div>
         </div>
     </div>
@@ -15,24 +15,12 @@
 
 
 
-<script>
-    var template = kendo.template(
-        "<div class='form-group'>" +
-        "<div class='col-sm-2'>" +
-        "<div class='custom-checkbox'>" +
-        "<input class='k-checkbox' editmode='true' id='#: Id #' name='#: Id #' type='checkbox' value='true'>" +
-        "<label class='k-checkbox-label' for='#: Id #'>" + "#: Name #" + "</label>" +
-        "</div>" +
-        "</div>" +
-        "</div>");
-</script>
-
 
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
         getReonAttributes();
-        $("#DownloadFactors").on('click', downloadFactors);
+        $("#confirmBtn").on('click', confirm);
     });
 
 
@@ -41,28 +29,55 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetReonRegisterAttributes", "Task")',
-            success: function (attributes) {
-                var html = kendo.render(template, attributes);
-                $("#checkboxList").html(html);
-                $("#downloadBtnBlock").show();
+            url: "@Url.Action("GetReonRegisterAttributes", "Task")",
+            dataType: "json",
+            success: function(response) {
+                var data = response.map(function(factorBase) {
+                    return {
+                        Value: factorBase.Value,
+                        Text: factorBase.Text,
+                        items: factorBase.Items.map(function(factor) {
+                            return {
+                                Value: factor.Value,
+                                Text: factor.Text
+                            }
+                        })
+                    }
+                });
+                $("#factorsTreeList").kendoTreeView({
+                    dataSource: data,
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    checkboxes: {
+                        checkChildren: true
+                    }
+                });
+                $("#factorsTreeList").kendoTooltip({
+                    filter: ".k-in",
+                    content: function (e) {
+                        var factorsTreeList = $("#factorsTreeList").data("kendoTreeView");
+                        var text= $(e.target)[0].innerText;
+                        var model = factorsTreeList.findByText(text);
+                        var dataItem = factorsTreeList.dataItem(model);
+                        return dataItem.Text;
+                    }
+                });
+                $("#confirmBtnBlock").show();
             },
-            error: function (response) {
+            error: function(response) {
                 Common.ShowError(response.responseText);
             },
-            complete: function () {
+            complete: function() {
                 kendo.ui.progress($('body'), false);
             }
         });
     }
 
 
-    function downloadFactors() {
+    function confirm() {
         var attributeIds = [];
-        var selectedCheckboxes = $("input[type='checkbox']:checked");
-        selectedCheckboxes.each(function() {
-            attributeIds.push($(this).attr('id'));
-        });
+        var factorsTreeList = $("#factorsTreeList").data("kendoTreeView");
+        getCheckedAttributes(factorsTreeList.dataSource.view(), attributeIds);
         if (attributeIds.length === 0) {
             Common.ShowError("Не выбраны атрибуты");
             return;
@@ -72,7 +87,7 @@
         formObject['AttributeIds'] = attributeIds;
         kendo.ui.progress($('body'), true);
         $.ajax({
-            type: 'POST',
+            type: form.attr('method'),
             url: form.attr('action'),
             data: formObject,
             success: function (response) {
@@ -95,10 +110,22 @@
     }
 
 
+    function getCheckedAttributes(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            //не выбирать корневой элемент
+            if (nodes[i].checked && !nodes[i].hasChildren) {
+                checkedNodes.push(nodes[i].Value);
+            }
+            if (nodes[i].hasChildren) {
+                getCheckedAttributes(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+
     function CloseMainWindow() {
         setTimeout(function () {
             Common.UI.CloseWindow('registerModalWindow', window.parent);
         }, 5000);
     }
-
 </script>
