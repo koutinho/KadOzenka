@@ -86,6 +86,8 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception($"Не найдена единица оценки с Id = '{unitId}'");
 
             var fileStream = (MemoryStream)DEKODocOtvet.ExportToDoc(unit);
+            if (fileStream == null)
+                throw new Exception("Не возможно сформировать файл. Обратитесь к администратору.");
 
             HttpContext.Session.Set(unitId.ToString(), fileStream.ToArray());
 
