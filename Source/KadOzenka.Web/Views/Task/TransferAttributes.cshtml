@@ -209,6 +209,8 @@
      
 </style>
 
+
+<script src="~/js/custom-validation.js"></script>
 <script>
 	var rowNumber = 1;
 
@@ -431,12 +433,18 @@
         formObject = addCustomLevelsToForm(formObject);
         kendo.ui.progress($('body'), true);
 		$.ajax({
-			type: 'POST',
+            type: form.attr('method'),
 			url: form.attr('action'),
 			data: formObject,
-			success: function() {
-				Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
-			},
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
+                }
+            },
 			error: function(response) {
 				Common.ShowError(response.responseText);
 			},

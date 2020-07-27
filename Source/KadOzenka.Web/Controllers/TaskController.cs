@@ -209,10 +209,10 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-		public void TransferAttributes(ExportAttributesModel model)
-		{
-			if (model.TaskFilter == null || model.TaskFilter.Count == 0)
-				throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
+		public JsonResult TransferAttributes(ExportAttributesModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
 
 			GbuExportAttributeSettings settings;
 			if (model.CreateAttributes)
@@ -234,13 +234,14 @@ namespace KadOzenka.Web.Controllers
             //}, new CancellationToken());
 
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
+
+            return new JsonResult(Ok());
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType, [FromForm] bool create)
 		{
-
-			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
 				.Select(x => new DropDownTreeItemModel
 				{
 					Value = Guid.NewGuid().ToString(),

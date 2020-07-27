@@ -15,7 +15,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
-    public class ExportAttributesModel
+    public class ExportAttributesModel : IValidatableObject
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
@@ -98,6 +98,16 @@ namespace KadOzenka.Web.Models.Task
             TourFactorService = new TourFactorService();
         }
 
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var errors = new List<ValidationResult>();
+
+            if (TaskFilter == null || TaskFilter.Count == 0)
+                errors.Add(new ValidationResult("Не выбрано задание на оценку"));
+
+            return errors;
+        }
 
         public GbuExportAttributeSettings ToGbuExportAttributeSettings()
 		{
@@ -286,7 +296,7 @@ namespace KadOzenka.Web.Models.Task
 		}
 
 		#endregion
-	}
+    }
 
     public class Control : Attribute
     {
