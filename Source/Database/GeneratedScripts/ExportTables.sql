@@ -27929,6 +27929,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2016', 'field47498556')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2016 add "field47498556" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2016', 'field47498632')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2016 add "field47498632" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_252_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2016 add constraint reg_252_q_pk primary key (id)';
   end if;
@@ -28539,6 +28557,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47496575')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47496575" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -28917,6 +28944,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field_215')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field_215" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47498757')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47498757" VARCHAR(255)';
     end if;
 end $$;
 
@@ -29579,8 +29615,168 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47496138')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47496138" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47496143')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47496143" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47496560')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47496560" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47496596')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47496596" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_251_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_ZU_2018 add constraint reg_251_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_UNLOAD_RESULT_QUEUE')) then
+		execute 'create table KO_UNLOAD_RESULT_QUEUE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'id')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'user_id')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'status')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "status" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'date_created')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "date_created" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'date_started')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "date_started" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'date_finished')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "date_finished" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'error_message')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "error_message" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'unload_types_mapping')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "unload_types_mapping" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'unload_total_count')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "unload_total_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'unload_current_count')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "unload_current_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'current_unload_type')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "current_unload_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'current_unload_progress')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "current_unload_progress" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_262_q_pk')) then
+    execute 'alter table KO_UNLOAD_RESULT_QUEUE add constraint reg_262_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
