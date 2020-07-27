@@ -163,11 +163,15 @@ namespace KadOzenka.Web.Controllers
         public JsonResult FindFilters()
         {
             var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
-            var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
+            var filters = (userFilter != null && userFilter.Condition != null) ? JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition) : null;
             string typeControl = "value", type = "REFERENCE";
-            long[] propertyTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
-            long[] dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
-            long[] marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+            long[] propertyTypes = null, dealTypes = null, marketSegments = null;
+            if (filters != null)
+            {
+                propertyTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+                dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+                marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+            }
             var propertyTypeList =
                 OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
