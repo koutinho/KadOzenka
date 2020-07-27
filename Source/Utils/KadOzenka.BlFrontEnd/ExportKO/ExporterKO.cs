@@ -12,6 +12,12 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 {
     public static class ExporterKO
     {
+        public static void ReportProgress(int prog, bool endOfProcess, string progressMessage)
+        {
+            // TO DO
+        }
+
+
         /// <summary>
         /// Выгрузка в XML из ObjectModel.KO.OMUnit по Response Document
         /// Обертка для вызова DEKOResponseDoc.ExportToXml
@@ -24,7 +30,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 
             OMInstance response_doc = OMInstance.Where(x => x.Id == 100000008).SelectAll().ExecuteFirstOrDefault();
             if (response_doc != null)
-                DEKOResponseDoc.ExportToXml(response_doc, dir_name);
+                DEKOResponseDoc.ExportToXml(response_doc, dir_name, ReportProgress);
         }
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 
             OMInstance response_doc = OMInstance.Where(x => x.Id == 100000008).SelectAll().ExecuteFirstOrDefault();
             if (response_doc != null)
-                DEKOVuon.ExportToXml(response_doc, dir_name);
+                DEKOVuon.ExportToXml(response_doc, dir_name, ReportProgress);
         }
 
         /// <summary>
