@@ -4475,7 +4475,7 @@ namespace KadOzenka.Dal.DataExport
             {
                 Console.WriteLine(e);
                 ErrorManager.LogError(e);
-                return null;
+                throw;
             }
         }
 
