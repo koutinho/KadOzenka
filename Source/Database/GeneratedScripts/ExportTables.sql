@@ -28566,6 +28566,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499248')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499248" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499253')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499253" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499257')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499257" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -29644,6 +29671,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47496596')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47496596" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499255')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499255" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499259')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499259" VARCHAR(255)';
     end if;
 end $$;
 
