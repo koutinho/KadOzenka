@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="100" DefaultLayoutId="1001002" LinkedRegistersList="100"
+             IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+             ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
+
+	<Buttons>
+		<Button Caption="Пересчитать стоимость" NavigateURL="/ExpressScore/RecalculateAnalog" WindowHight="200" WindowWidth="400" Icon="fas fa-trash-alt">
+			<Parameters>
+				<Parameter Key="esId" Value="{Get:EsId}" />
+			</Parameters>
+		</Button>
+	</Buttons>
+
+</RegisterView>

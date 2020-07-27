@@ -1,0 +1,81 @@
+﻿@model ObjectModel.KO.OMCalcGroup
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Группа")
+        </div>
+        <div class="col-sm-8">
+            @(Html.Kendo().DropDownList()
+                                .Name("Subgroups")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+            )
+        </div>
+        <div class="col-sm-1">
+            <button class="btn btn-default" id="save-group">Сохранить</button>
+        </div>
+    </div>    
+</div>
+
+<script>
+    $(document).ready(function () {        
+        $('#save-group').on('click', function() {
+            var data = {
+                id: '@Model.Id',
+                groupId: '@Model.GroupId',
+                parentCalcGroupId: $('[name="Subgroups"]').val()
+            }    
+
+            kendo.ui.progress($('body'), true);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("EditCalcGroup", "Tour")',
+                data: data,
+                success: function (response) {
+                    Common.ShowMessage(response.Success); 
+                    Common.UI.CloseWindow('editCalcWindow', window.parent, true);             
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        });
+
+        $('#cancel').on('click', function () {
+            Common.UI.CloseWindow('editCalcWindow', window.parent);
+        });
+
+        $('[name="Subgroups"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                height: 150,
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetSubgroups", "Tour")'+'?groupId=@Model.GroupId',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        @if (Model.Id != -1)
+        {
+        <Text>
+        $('[name="Subgroups"]').data("kendoDropDownList").bind("dataBound", function () {
+            $('[name="Subgroups"]').data("kendoDropDownList").select(function (dataItem) {
+                return dataItem.Value == '@Model.ParentCalcGroupId.Value';
+            });
+        });
+        </Text>
+        }
+        
+    });
+</script>

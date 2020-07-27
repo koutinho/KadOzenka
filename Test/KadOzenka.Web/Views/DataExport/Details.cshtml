@@ -1,0 +1,185 @@
+﻿@using ObjectModel.Common;
+
+@model OMExportByTemplates
+
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Имя пользователя")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("userName", (string)ViewBag.User, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Статус")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("status", (string)ViewBag.StatusDescription, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Дата создания")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("dateCreated", Model.DateCreated.ToString("dd.MM.yyyy HH:mm:ss"), new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Дата запуска")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("dateStarted", Model.DateStarted?.ToString("dd.MM.yyyy HH:mm:ss"), new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Дата завершения")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("dateFinished", Model.DateFinished?.ToString("dd.MM.yyyy HH:mm:ss"), new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Наименование файла шаблона")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("fileTemplateTitle", $"{Model.FileTemplateTitle}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Наименование результирующего файла")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("fileResultTitle", $"{Model.FileResultTitle}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Объем файла шаблона(КБ)")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("txtFileTemplateSizeKB", ViewBag.TemplateFileSizeKb != null ? (string)(ViewBag.TemplateFileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем файла шаблона (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileTemplateSizeMB", ViewBag.TemplateFileSizeMb != null ? (string)(ViewBag.TemplateFileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем результирующего файла(КБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileResultSizeKB", ViewBag.ResultFileSizeKb != null ? (string)(ViewBag.ResultFileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем результирующего файла (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileResultSizeMB", ViewBag.ResultFileSizeMb != null ? (string)(ViewBag.ResultFileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("ИД Ошибки")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("errorId", Model.ErrorId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("ИД основного реестра")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("mainRegisterId", Model.MainRegisterId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("ИД представления реестра")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("registerViewId", Model.RegisterViewId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Параметры соответствия колонок и показателей")
+		</div>
+		<div class="col-sm-4">
+			<div id="listView"></div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Результирующее сообщение")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextAreaFor(m => m.ResultMessage, 10, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "true" })
+		</div>
+	</div>
+</div>
+
+@section styles {
+	<style>
+		#listView {
+			max-height: 200px;
+			overflow: auto;
+			padding: 0.4em;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+		}
+
+		.matchItem {
+			margin-top: 0.4em;
+			border: #ceced2;
+		}
+
+		.matchItem > div {
+			white-space: nowrap;
+		}
+	</style>
+}
+
+@section scripts {
+	<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="return false;" /></span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeName#</span>
+				</span>
+			</div>
+		</div>
+	</script>
+	<script>
+		var dataSource = new kendo.data.DataSource({
+			data: @Html.Raw((string)ViewBag.ColumnsMappingDtoListJson)
+		});
+
+		$(document).ready(function () {
+			$("#listView").kendoListView({
+				dataSource: dataSource,
+				template: kendo.template($("#template").html())
+			});
+		});
+	</script>
+}

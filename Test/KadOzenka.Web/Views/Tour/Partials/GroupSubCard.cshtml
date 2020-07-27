@@ -1,0 +1,271 @@
+﻿@using KadOzenka.Dal.Groups.Dto.Consts
+@model KadOzenka.Web.Models.Tour.GroupModel
+
+<div class="container">
+@using (Html.BeginForm("EditGroup", "Tour", FormMethod.Post, new { id = "updateGroupForm", enctype = "multipart/form-data" }))
+{
+	<div class="row" style="padding-top: 2%;">
+        <b id="cardName"></b>
+	</div>
+    <div class="form-horizontal row" style="padding-top: 5%;">
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.ParentGroupId)
+        @Html.HiddenFor(x => x.GroupingAlgorithmId)
+        @Html.HiddenFor(x => x.RatingTourId)
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Number)
+            </div>
+            <div class="col-sm-8 col-sm-offset-1">
+                @Html.KendoNumericTextBoxFor(x => x.Number, id: "updateGroupNumberId", isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Name)
+            </div>
+            <div class="col-sm-8 col-sm-offset-1">
+                @Html.TextAreaFor(x => x.Name, new { @class = "k-textbox col-sm-8", id = "updateGroupNameId", style = "padding: 1%; resize: none; width: 100%;", rows = 3 })
+            </div>
+        </div>
+    </div>
+	<div class="row">
+		<div class="col-sm-2 col-sm-offset-9">
+			<button class="btn btn-default" id="updateGroupBtn">Сохранить</button>
+		</div>
+	</div>
+}
+
+	<div class="row">
+		<div class="form-horizontal" style="margin-top: 10px">
+			<div class="form-group col-sm-12">
+				<div id="modelContent">
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+			<div class="form-group col-sm-12">
+				<div style="padding-top: 2%;">
+					<div id="reestrToolbar"></div>
+				</div>
+
+				<div style="display: flex;">
+					<div style="align-items: stretch">
+						<div id="reestrGrid"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#reestrToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'add-group',
+                    text: '',
+                    attributes: { title: "Добавить" },
+                    icon: 'add'
+                },
+                {
+                    type: 'button',
+                    id: 'edit-group',
+                    text: '',
+                    attributes: { title: "Изменить" },
+                    icon: 'edit'
+                },
+                {
+                    type: 'button',
+                    id: 'remove-group',
+                    text: '',
+                    attributes: { title: "Удалить" },
+                    icon: 'delete'
+                }
+            ]
+        });
+
+        var reestrGridDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetCalcGroups", "Tour")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { groupId: @Model.Id },
+                    dataType: 'json'
+                }
+            }, pageSize: 4
+        });
+        $('#reestrGrid').kendoGrid({
+            dataSource: reestrGridDataSource,
+            columns: [
+                {
+                    field: 'Id', hidden: true
+                }, {
+                    field: 'GroupId', hidden: true
+                }, {
+                    field: 'ParentCalcGroupId', hidden: true
+                }, {
+                    field: 'Title', title: 'Группа, на основе которой считается текущая группа'
+                }
+            ],
+            width: '100%',
+            pageable: true,
+            scrollable: true,
+            selectable: true
+        });
+
+        $("#reestrGrid").data("kendoGrid").bind('change', ReestrGridChanged);
+        function ReestrGridChanged() {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length == 0) {
+                $('#edit-group').addClass('k-state-disabled');
+                $('#remove-group').addClass('k-state-disabled');
+            }
+            else {
+                $('#edit-group').removeClass('k-state-disabled');
+                $('#remove-group').removeClass('k-state-disabled');
+            }
+        }
+
+        $('#edit-group').addClass('k-state-disabled');
+        $('#remove-group').addClass('k-state-disabled');
+
+        $('#add-group').on('click', function () {
+            Common.UI.ShowWindow('Редактирование группы',
+                '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id',
+                'editCalcWindow',
+                function (e, param) {
+                        if (param == true) {
+                            UpdateView();
+                        }
+                    },
+                800, 200);
+        });
+
+        $('#edit-group').on('click', function () {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                Common.UI.ShowWindow('Редактирование группы',
+                    '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id&id=' + data.Id,
+                'editCalcWindow',
+                function (e, param) {
+                        if (param == true) {
+                            UpdateView();
+                        }
+                    },
+                800, 200);
+            }
+        });
+
+        $('#remove-group').on('click', function () {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                Common.UI.ShowConfirm({
+                    title: '',
+                    content: 'Удалить группу?',
+                    onSuccess: function () {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            url: '@Url.Action("DeleteCalcGroup", "Tour")',
+                            type: 'POST',
+                            data: { id: data.Id },
+                            success: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                if (response.Success) {
+                                    Common.ShowMessage(response.Success);
+                                    UpdateView();
+                                }
+                            },
+                            error: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(response.responseText);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        @{
+            if (Model.IsReadOnly)
+            {
+                <text>
+                    $("#updateGroupNameId").prop("disabled", true);
+                    $("#updateGroupNumberId").prop("disabled", true);
+                    $("#updateGroupBtn").prop( "disabled", true);
+                </text>
+            }
+            if (Model.GroupType == GroupType.SubGroup)
+            {
+                <text>
+                    $("#cardName").html("Настройка подгруппы");
+                </text>
+            }
+            else
+            {
+                <text>
+                    $("#cardName").html("Настройка группы");
+                </text>
+            }
+        }
+
+		kendo.ui.progress($('#modelContent'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("Model", "Task")',
+			data: { 'groupId': '@Model.Id', isPartial : true },
+            success: function (response) {
+                $('#modelContent').html(response);
+				kendo.ui.progress($('#modelContent'), false);
+            },
+			error: function (response) {
+				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
+				kendo.ui.progress($('#modelContent'), false);
+            }
+        });
+
+		$("#updateGroupBtn").click(function (e) {
+			e.preventDefault();
+            kendo.ui.progress($('body'), true);
+			var form = $('#updateGroupForm');
+			var formObject = Common.Functions.FormToObject(form);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+				data: formObject,
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    } else {
+                        Common.ShowMessage("Данные обновлены");
+                        //метод из TourCard
+                        ReloadTourCartTab('@Model.RatingTourId', '@Model.ParentGroupId', response.Id);
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        });
+
+    });
+</script>

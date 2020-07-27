@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="983" DefaultLayoutId="1009831" Description="Представление для элементов справочников" LinkedRegistersList="982,983"
+              ShowObjectCards="false" ShowSettingsPanel="false" ShowFilterMenu="false" UseMasterPage="false" SearchPanel="CoreSharedReferenceItem">
+  <Buttons>
+    <Button Caption="Добавить" Icon="icon-plus" NavigateURL="~/CoreUi/ReferenceItemCreate" NeedRefresh="true" WindowHeight="160" WindowWidth="350">
+      <Parameters>
+        <Parameter Key="refId" Value="{Get:98300200}" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:ReadOnly}" Operation="Equal" Value="1" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    
+    <Button Caption="Изменить" Icon="fas fa-edit" NavigateURL="~/CoreUi/ReferenceItemEdit" NeedRefresh="true" WindowHeight="160" WindowWidth="350">
+      <Parameters>
+        <Parameter Key="itemId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:ReadOnly}" Operation="Equal" Value="1" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+
+    <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects" WindowTitleTemplate="Все данные">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectId]" />
+        <Parameter Key="RegisterId" Value="[RegisterId]" />
+        <Parameter Key="LightMode" Value="true" />
+      </Parameters>
+    </Button>
+  </Buttons>
+</RegisterView>

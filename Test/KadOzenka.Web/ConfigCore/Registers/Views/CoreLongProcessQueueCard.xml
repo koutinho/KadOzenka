@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="975" DefaultLayoutId="1000975" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowFilterMenuOnToolbar="true"
+              ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="ADMIN.LONG_PROCESS">
+    <Buttons>
+        <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects" SRDFunctionTag="ADMIN.LONG_PROCESS">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+        </Button>
+        <Button Caption="Перезапустить" Icon="fas fa-redo-alt" NavigateURL="~/LongProcessManagement/Restart" WindowHeight="160" WindowWidth="520">
+          <Parameters>
+            <Parameter Key="queueId" Value="[ObjectID]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="[97500900]" Operation="NotEqual" Value="3" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="4" AndOr="And" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="5" AndOr="And" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="6" AndOr="And" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Отменить задание" Icon="fas fa-ban" NavigateURL="~/LongProcessManagement/CancelTask" WindowHeight="300" WindowWidth="500">
+          <Parameters>
+            <Parameter Key="TaskId" Value="[ObjectID]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="[97500900]" Operation="NotEqual" Value="0" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="1" AndOr="And" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="2" AndOr="And" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
+        <Button Caption="Открыть карточку" NavigateURL="~/LongProcessManagement/QueueCard" OpenInNewWindow="true" WindowHeight="700" WindowWidth="500">
+          <Parameters>
+            <Parameter Key="queueId" Value="[ObjectID]" />
+          </Parameters>
+        </Button>
+        <Button Caption="Скачать лог" Icon="fas fa-file-download" NavigateURL="~/LongProcessManagement/DownloadLog" OpenInNewWindow="true">
+          <Parameters>
+            <Parameter Key="queueId" Value="[ObjectID]" />
+          </Parameters>
+        </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

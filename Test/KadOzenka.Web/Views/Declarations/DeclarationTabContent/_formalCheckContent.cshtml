@@ -1,0 +1,89 @@
+﻿@using KadOzenka.Web.Models.Declarations
+@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Declarations.DeclarationModel
+
+<div id="formalCheckTab">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.MatchingApprovedFormCheck)
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.MatchingApprovedFormCheck).Label(CheckStatus.Yes.GetEnumDescription()).Value((long)CheckStatus.Yes).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.MatchingApprovedFormCheck).Label(CheckStatus.No.GetEnumDescription()).Value((long)CheckStatus.No).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.MatchingApprovedFormCheck).Label(CheckStatus.InWork.GetEnumDescription()).Value((long)CheckStatus.InWork).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.PresenceMainDataCheck)
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.PresenceMainDataCheck).Label(CheckStatus.Yes.GetEnumDescription()).Value((long)CheckStatus.Yes).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.PresenceMainDataCheck).Label(CheckStatus.No.GetEnumDescription()).Value((long)CheckStatus.No).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.PresenceMainDataCheck).Label(CheckStatus.InWork.GetEnumDescription()).Value((long)CheckStatus.InWork).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.FurtherDeclarationCheck)
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.FurtherDeclarationCheck).Label(CheckStatus.Yes.GetEnumDescription()).Value((long)CheckStatus.Yes).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.FurtherDeclarationCheck).Label(CheckStatus.No.GetEnumDescription()).Value((long)CheckStatus.No).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.FurtherDeclarationCheck).Label(CheckStatus.InWork.GetEnumDescription()).Value((long)CheckStatus.InWork).Enable(Model.IsEditDeclarationFormalChecking))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.DateCheckPlan)
+            </div>
+            <div class="col-sm-4">
+                <input editmode="@(Model.IsEditDeclarationFormalChecking ? "true" : "false")" id="FormalCheckModel_DateCheckPlan" name="FormalCheckModel.DateCheckPlan" type="text" value="@Model.FormalCheckModel.DateCheckPlan" />
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.DateCheckFact)
+            </div>
+            <div class="col-sm-4">
+                <input editmode="@(Model.IsEditDeclarationFormalChecking ? "true" : "false")" id="FormalCheckModel_DateCheckFact" name="FormalCheckModel.DateCheckFact" type="text" value="@Model.FormalCheckModel.DateCheckFact" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.CheckTime)
+            </div>
+            <div class="col-sm-4">
+                <input editmode="@(Model.IsEditDeclarationFormalChecking ? "true" : "false")" id="FormalCheckModel_CheckTime" name="FormalCheckModel.CheckTime" type="text" value="@Model.FormalCheckModel.CheckTime" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.ApprovedCharacteristic)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.FormalCheckModel.ApprovedCharacteristic, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationFormalChecking ? "true" : "false" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FormalCheckModel.RejectedCharacteristic)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.FormalCheckModel.RejectedCharacteristic, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationFormalChecking ? "true" : "false" })
+            </div>
+        </div>
+    </div>
+</div>

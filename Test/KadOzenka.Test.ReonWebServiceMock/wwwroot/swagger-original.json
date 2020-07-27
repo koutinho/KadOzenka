@@ -1,0 +1,230 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "v1",
+    "title" : "CadAppraisalDataApi"
+  },
+  "host" : "10.64.121.53",
+  "basePath" : "/CadAppraisal/CadAppraisalDataApi",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/RosreestrData/xml_by_date" : {
+      "get" : {
+        "tags" : [ "RosreestrData" ],
+        "summary" : "Возвращает данные Росреестра по диапазону дат включительно",
+        "operationId" : "RosreestrData_GetRRData",
+        "consumes" : [ ],
+        "produces" : [ "application/json", "text/json", "application/xml", "text/xml" ],
+        "parameters" : [ {
+          "name" : "dateFrom",
+          "in" : "query",
+          "description" : "Дата с",
+          "required" : true,
+          "type" : "string",
+          "format" : "date-time"
+        }, {
+          "name" : "dateTo",
+          "in" : "query",
+          "description" : "Дата по",
+          "required" : true,
+          "type" : "string",
+          "format" : "date-time"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/RRDataLoadModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/RosreestrData/file_zd_by_id/{id}/{fname}" : {
+      "get" : {
+        "tags" : [ "RosreestrData" ],
+        "summary" : "Возвращает документ из файлового хранилища по id",
+        "operationId" : "RosreestrData_GetFileByIdZD",
+        "consumes" : [ ],
+        "produces" : [ "application/json", "text/json", "application/xml", "text/xml" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "fname",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/RosreestrData/file_ca_by_id/{load_id}/{fname}" : {
+      "get" : {
+        "tags" : [ "RosreestrData" ],
+        "summary" : "Возвращает документ из папки для загрузок кадастровой оценки",
+        "operationId" : "RosreestrData_GetFileByIdCA",
+        "consumes" : [ ],
+        "produces" : [ "application/json", "text/json", "application/xml", "text/xml" ],
+        "parameters" : [ {
+          "name" : "load_id",
+          "in" : "path",
+          "description" : "Идентификатор загрузки",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "fname",
+          "in" : "path",
+          "description" : "Название файла",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/RosreestrData/graph_factors_by_cad_num" : {
+      "get" : {
+        "tags" : [ "RosreestrData" ],
+        "summary" : "Возвращает графические факторы по кадастровому номеру",
+        "operationId" : "RosreestrData_GetGraphFactorsByCadNum",
+        "consumes" : [ ],
+        "produces" : [ "application/json", "text/json", "application/xml", "text/xml" ],
+        "parameters" : [ {
+          "name" : "cad_num",
+          "in" : "query",
+          "description" : "Кадастровый номер",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "date_appraisal",
+          "in" : "query",
+          "description" : "Дата оценки",
+          "required" : true,
+          "type" : "string",
+          "format" : "date-time"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "RRDataLoadModel" : {
+      "type" : "object",
+      "properties" : {
+        "Id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "LoadDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Дата загрузки"
+        },
+        "DocNumber" : {
+          "type" : "string",
+          "description" : "Номер документа"
+        },
+        "DocDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Дата документа"
+        },
+        "DocName" : {
+          "type" : "string",
+          "description" : "Наименование документа"
+        },
+        "OrgName" : {
+          "type" : "string",
+          "description" : "Организация"
+        },
+        "DateAppraisal" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Дата оценки"
+        },
+        "LoadType" : {
+          "type" : "string",
+          "description" : "Тип загрузки"
+        },
+        "DocBaseUrl" : {
+          "description" : "Ссылка на файл основание",
+          "$ref" : "#/definitions/DocUrl"
+        },
+        "XmlDocUrls" : {
+          "type" : "array",
+          "description" : "Список ссылок на файлы xml",
+          "items" : {
+            "$ref" : "#/definitions/DocUrl"
+          }
+        }
+      },
+      "example" : {
+        "LoadDate" : "2000-01-23T04:56:07.000+00:00",
+        "DateAppraisal" : "2000-01-23T04:56:07.000+00:00",
+        "DocBaseUrl" : {
+          "FileName" : "FileName",
+          "Url" : "Url"
+        },
+        "DocDate" : "2000-01-23T04:56:07.000+00:00",
+        "DocNumber" : "DocNumber",
+        "DocName" : "DocName",
+        "OrgName" : "OrgName",
+        "Id" : 0,
+        "XmlDocUrls" : [ {
+          "FileName" : "FileName",
+          "Url" : "Url"
+        }, {
+          "FileName" : "FileName",
+          "Url" : "Url"
+        } ],
+        "LoadType" : "LoadType"
+      }
+    },
+    "DocUrl" : {
+      "type" : "object",
+      "properties" : {
+        "FileName" : {
+          "type" : "string",
+          "description" : "Название файла"
+        },
+        "Url" : {
+          "type" : "string",
+          "description" : "Относительная сылка для скачивания"
+        }
+      },
+      "example" : {
+        "FileName" : "FileName",
+        "Url" : "Url"
+      }
+    }
+  }
+}

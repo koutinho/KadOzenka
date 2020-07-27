@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="214" LinkedRegistersList="215" DefaultLayoutId="1002141"
+              IsBasic="false" ShowActualDate="false" ShowObjectCards="false"
+              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false"
+               SearchPanel="GbuCodDictionary">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="380" WindowWidth="840">
+            <Parameters>
+                <Parameter Key="jobId" Value="{Get:CodJobId}" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="{Get:CodJobId}" Operation="Equal" Value="-1" AndOr="Or" />
+                        <Condition Key="{Get:CodJobId}" Operation="IsNull" AndOr="Or" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+        <Button Caption="Редактировать" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="380" WindowWidth="840">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectID]" />
+                <Parameter Key="jobId" Value="{Get:CodJobId}" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Удалить" NavigateURL="/GbuCod/DeleteCodDictionary" WindowHeight="180" WindowWidth="840">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="codDictionaryId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+    </Buttons>
+</RegisterView>

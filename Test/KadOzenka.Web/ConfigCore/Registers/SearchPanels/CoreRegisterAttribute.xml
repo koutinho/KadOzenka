@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+    <ControlElement Caption="Показатель" OwnType="RadPanel">
+        <children>
+            <ControlElement ID="cmbRegister" Caption="Наименование реестра" OwnType="Combo" HasLinkedCombos="true" RegisterId="930" AttributeNumber="93100300" TextFieldAttribute="93000300" ValueFieldAttribute="93000100" QueryOperation="Equal"/>
+            <ControlElement ID="cmbRegAttr" Caption="Наименование показателя" OwnType="Combo" RegisterId="931" AttributeNumber="93100100" ParentFilterAttribute="93100300" TextFieldAttribute="93100200" ValueFieldAttribute="93100100" QueryOperation="Equal">
+                <parentComboBox>
+                    <string>cmbRegister</string>
+                </parentComboBox>
+            </ControlElement>
+            <ControlElement ID="regAttrId" Caption="Номер реестра" OwnType="AutoCompleteBox" MinTypedCharsForSearch="1" AttributeNumber="93100300" ValueFieldAttribute="93000100" QueryOperation="Equal" />
+            <ControlElement ID="attrId" Caption="Номер показателя" OwnType="AutoCompleteBox" MinTypedCharsForSearch="1" AttributeNumber="93100100" ValueFieldAttribute="93100100" QueryOperation="Equal"/>
+
+            <ControlElement ID="reference" Caption="Справочник" OwnType="Combo" AttributeNumber="93100600" RegisterId="982" TextFieldAttribute="98200200" ValueFieldAttribute="98200100" QueryOperation="Equal"/>
+
+            <ControlElement ID="type" Caption="Тип данных" OwnType="ListBox" AllowItemSelection="true" AttributeNumber="93100400" QueryOperation="Equal" Height="150">
+                <CustomItems>
+                    <KeyValuePair>
+                        <Key>1</Key>
+                        <Value>1- Целое</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>2</Key>
+                        <Value>2 - Вещественное</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>3</Key>
+                        <Value>3 - Логическое</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>4</Key>
+                        <Value>4 - Строка</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>5</Key>
+                        <Value>5 - Дата</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>6</Key>
+                        <Value>6 - Массив байт</Value>
+                    </KeyValuePair>
+                </CustomItems>
+            </ControlElement>
+
+            <ControlElement ID="pk" Caption="Главный ключ" OwnType="CheckBox" AttributeNumber="93101000" QueryOperation="Equal" Value="1" />
+
+            <ControlElement ID="virtual" Caption="Виртуальная" OwnType="CheckBox" QueryOperation="Equal" Value="Да" DataType="4">
+                <QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+                    <Alias>Виртуальный</Alias>
+                    <Blocks>
+                        <QSColumnIfBlock>
+                            <Condition xsi:type="QSConditionSimple">
+                                <ConditionType>IsNotNull</ConditionType>
+                                <LeftOperand xsi:type="QSColumnSimple">
+                                    <Alias>93101200</Alias>
+                                    <AttributeID>93101200</AttributeID>
+                                    <Type>Value</Type>
+                                </LeftOperand>
+                                <LeftOperandLevel>0</LeftOperandLevel>
+                                <RightOperandLevel>0</RightOperandLevel>
+                            </Condition>
+                            <Result xsi:type="QSColumnConstant">
+                                <Alias>Да</Alias>
+                                <Value xsi:type="xsd:string">Да</Value>
+                            </Result>
+                        </QSColumnIfBlock>
+                        <QSColumnIfBlock>
+                            <Result xsi:type="QSColumnConstant">
+                                <Alias>Пусто</Alias>
+                            </Result>
+                        </QSColumnIfBlock>
+                    </Blocks>
+                </QSColumn>
+            </ControlElement>
+
+            <ControlElement ID="value_field" Caption="Колонка значения" OwnType="AutoCompleteBox" MinTypedCharsForSearch="2" AttributeNumber="93100700" ValueFieldAttribute="93100700" QueryOperation="Equal"/>
+
+            <ControlElement ID="code_field" Caption="Колонка кода" OwnType="AutoCompleteBox" MinTypedCharsForSearch="2" AttributeNumber="93100800" ValueFieldAttribute="93100800" QueryOperation="Equal"/>
+
+        </children>
+    </ControlElement>
+</RootElement>

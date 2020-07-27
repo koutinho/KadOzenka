@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="315" DefaultLayoutId="1003151" LinkedRegistersList="300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317" 
+              AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" 
+              ShowObjectCards="false" ShowActualDate="false" ShowRowMenu="true" SRDFunctionTag="SUD.OBJECTS">
+  <Buttons>
+    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTag="SUD.OBJECTS.HISTORY">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+        <Parameter Key="RegisterId" Value="[RegisterId]" />
+      </Parameters>
+    </Button>
+
+    <Button Caption="Все действия" NavigateURL="/RegistersView/CoreAuditCommon" WindowTitleTemplate="Все действия" Icon="fas fa-user-shield" >
+      <Parameters>
+        <Parameter Key="ObjectRegisterId" Value="[RegisterId]" />
+        <Parameter Key="ObjectId" Value="[ObjectId]" />
+        <Parameter Key="NotSetTitle" Value="true" />
+      </Parameters>
+    </Button>
+
+	  <Button Caption="Загрузка данных" NavigateURL="~/Sud/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down" SRDFunctionTag="SUD.IMPORT">
+	      <Parameters>
+	      </Parameters>
+	  </Button>
+
+      <Button Caption="Добавить" NavigateURL="/Sud/ObjectCard" Icon="fas fa-plus">
+          <Parameters>
+          </Parameters>
+      </Button>
+
+	  <Button Caption="Выгрузка в Excel" Icon="icon-excel" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="SUD.EXPORT">
+		  <DropDownButtons>
+			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.EXCEL"/>
+
+			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.EXPORT.GBU"/>
+			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.EXPORT.ALL"/>
+		  </DropDownButtons>
+	  </Button>
+	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.EXPORT.XML"/>
+
+	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="SUD.OBJECTS.STATISTICS">
+		  <DropDownButtons>
+			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.OBJECTS.STATISTICS.TRUE"/>
+			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic" OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.OBJECTS.STATISTICS.SUMMARY"/>
+			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="true" WindowHeight="200" WindowWidth="600" SRDFunctionTag="SUD.OBJECTS.STATISTICS.OBJECT"/>
+		  </DropDownButtons>
+	  </Button>
+
+	  <Button Caption="Удалить объект" NeedRefresh="true"  NavigateURL="/Sud/RemoveObject" WindowHeight="300" WindowWidth="1000" Icon="fas  fa-trash-alt" SRDFunctionTag="SUD.OBJECTS.REMOVE">
+		  <Parameters>
+			  <Parameter Key="objectId" Value="[ObjectId]" />
+		  </Parameters>
+	  </Button>
+  </Buttons>
+
+  <ObjectCardButtons>
+    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+        <Parameter Key="RegisterId" Value="[RegisterId]" />
+      </Parameters>
+    </Button>
+    <Button Caption="Все действия" NavigateURL="/RegistersView/CoreAuditCommon" WindowTitleTemplate="Все действия" Icon="fas fa-user-shield">
+      <Parameters>
+        <Parameter Key="ObjectRegisterId" Value="[RegisterId]" />
+        <Parameter Key="ObjectId" Value="[ObjectId]" />
+        <Parameter Key="NotSetTitle" Value="true" />
+      </Parameters>
+    </Button>
+  </ObjectCardButtons>
+  
+  <Tabs>
+      <Tab Caption="Основные данные" NavigateURL="/Sud/ObjectCard" SRDFunctionTag="SUD.OBJECTS.EDIT">
+          <Parameters>
+              <Parameter Key="id" Value="[ObjectId]" />
+          </Parameters>
+      </Tab>
+  </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
+</RegisterView>

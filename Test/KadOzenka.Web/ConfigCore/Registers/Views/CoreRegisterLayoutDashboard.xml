@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RegisterView IsBasic="true" RegisterId="933" Description="Раскладки" LinkedRegistersList="933,930"
+              ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false"
+              SearchPanel="CoreRegisterLayout" DockNavigationPanel="true">
+</RegisterView>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="201" DefaultLayoutId="1002011" LinkedRegistersList="201,203,250,251,252,253" 
+              IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"  SearchPanel="KoObjectsCard"
+              ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
+              UseMasterPage="false">
+  <Buttons>
+    
+    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+        <Parameter Key="RegisterId" Value="[RegisterId]" />
+      </Parameters>
+    </Button>
+
+    <Button Caption="Все действия" NavigateURL="/RegistersView/CoreAuditCommon" WindowTitleTemplate="Все действия" Icon="fas fa-user-shield">
+      <Parameters>
+        <Parameter Key="ObjectRegisterId" Value="[RegisterId]" />
+        <Parameter Key="ObjectId" Value="[ObjectId]" />
+        <Parameter Key="NotSetTitle" Value="true" />
+      </Parameters>
+    </Button>
+
+    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+    
+    <Button Caption="Конвертировать исходные данные в Excel" Icon="icon-excel" NavigateURL="/GknXmlToExcel/Configurator" WindowWidth="600" WindowHeight="800" OpenInRadWindow="true">
+      <Parameters>
+        <Parameter Key="TaskId" Value="{Get:20100400}"/>
+      </Parameters>
+    </Button>
+    
+    
+  </Buttons>
+
+</RegisterView>

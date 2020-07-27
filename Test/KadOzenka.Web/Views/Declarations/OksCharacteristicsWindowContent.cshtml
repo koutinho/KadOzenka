@@ -1,0 +1,874 @@
+﻿@using ObjectModel.Directory.Declarations;
+@using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+
+@model KadOzenka.Web.Models.Declarations.OksCharacteristicsModel
+
+@using (Html.BeginForm("EditOksCharacteristics", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.DeclarationId)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ObjectType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ObjectType.StringValue) || Model.ObjectType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ObjectType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectType.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ObjectType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ObjectType.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.Address.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.Address.StringValue) || Model.Address.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.Address.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.Address.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.Address)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.Address.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">3</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.Square.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.Square.DecimalValue.HasValue || Model.Square.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.Square.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.Square.DecimalValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.Square)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.Kendo().NumericTextBoxFor(m => m.Square.DecimalValue).Format($"N{2}").Decimals(2).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">4</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.TypeAndValueMainCharacteristic.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.TypeAndValueMainCharacteristic.StringValue) || Model.TypeAndValueMainCharacteristic.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.TypeAndValueMainCharacteristic.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.TypeAndValueMainCharacteristic.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.TypeAndValueMainCharacteristic)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.TypeAndValueMainCharacteristic.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">5</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ReadinessDegreeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ReadinessDegreeOns.StringValue) || Model.ReadinessDegreeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ReadinessDegreeOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ReadinessDegreeOns.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ReadinessDegreeOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ReadinessDegreeOns.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">6</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue) || Model.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">7</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.DesignedPurposeOns.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DesignedPurposeOns.StringValue) || Model.DesignedPurposeOns.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.DesignedPurposeOns.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DesignedPurposeOns.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DesignedPurposeOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DesignedPurposeOns.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">8</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.FloorCount.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorCount.LongValue.HasValue || Model.FloorCount.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.FloorCount.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorCount.LongValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.FloorCount)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.Kendo().NumericTextBoxFor(m => m.FloorCount.LongValue).Format($"N{0}").Decimals(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">9</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.FloorNumber.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorNumber.LongValue.HasValue || Model.FloorNumber.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.FloorNumber.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorNumber.LongValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.FloorNumber)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.Kendo().NumericTextBoxFor(m => m.FloorNumber.LongValue).Format($"N{0}").Decimals(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">10</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.BuildingWallMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.BuildingWallMaterial.StringValue) || Model.BuildingWallMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.BuildingWallMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.BuildingWallMaterial.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.BuildingWallMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.BuildingWallMaterial.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">11</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.MainSupportingStructuresMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.MainSupportingStructuresMaterial.StringValue) || Model.MainSupportingStructuresMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.MainSupportingStructuresMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.MainSupportingStructuresMaterial.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.MainSupportingStructuresMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.MainSupportingStructuresMaterial.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">12</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.RoofMaterial.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.RoofMaterial.StringValue) || Model.RoofMaterial.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.RoofMaterial.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.RoofMaterial.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.RoofMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.RoofMaterial.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">13</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.CommissioningYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.CommissioningYear.DateTimeValue.HasValue || Model.CommissioningYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.CommissioningYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CommissioningYear.DateTimeValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CommissioningYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.CommissioningYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">14</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.CompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.CompletionYear.DateTimeValue.HasValue || Model.CompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.CompletionYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.CompletionYear.DateTimeValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CompletionYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.CompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">15</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.OverhaulCompletionYear.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.OverhaulCompletionYear.DateTimeValue.HasValue || Model.OverhaulCompletionYear.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.OverhaulCompletionYear.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.OverhaulCompletionYear.DateTimeValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.OverhaulCompletionYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.OverhaulCompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">16</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ReconstructionDate.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.ReconstructionDate.DateTimeValue.HasValue || Model.ReconstructionDate.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ReconstructionDate.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.ReconstructionDate.DateTimeValue.HasValue)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ReconstructionDate)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.ReconstructionDate.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">17</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.DwellingType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.DwellingType.StringValue) || Model.DwellingType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.DwellingType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.DwellingType.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DwellingType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DwellingType.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">18</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.PermittedUseType.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.PermittedUseType.StringValue) || Model.PermittedUseType.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.PermittedUseType.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PermittedUseType.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.PermittedUseType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.PermittedUseType.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">19</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ObjectInclusionIntoCulturalHeritageInfo.StringValue) || Model.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ObjectInclusionIntoCulturalHeritageInfo.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ObjectInclusionIntoCulturalHeritageInfo)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ObjectInclusionIntoCulturalHeritageInfo.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">20</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.PhysicalDeterioration.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.PhysicalDeterioration.StringValue) || Model.PhysicalDeterioration.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.PhysicalDeterioration.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.PhysicalDeterioration.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.PhysicalDeterioration)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.PhysicalDeterioration.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.CommunicationsDescription.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.CommunicationsDescription.StringValue) || Model.CommunicationsDescription.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.CommunicationsDescription.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.CommunicationsDescription.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CommunicationsDescription)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.CommunicationsDescription.StringValue, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.1 Электроснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToPowerGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToPowerGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToPowerGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToPowerGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.3</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ElectricPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.ElectricPower.StringValue) || Model.ElectricPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ElectricPower.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.ElectricPower.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ElectricPower)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ElectricPower.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.2 Газоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToGasGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToGasGrids.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToGasGrids.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToGasGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.3</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.GasPower.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.GasPower.StringValue) || Model.GasPower.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.GasPower.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.GasPower.StringValue))
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.GasPower)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.GasPower.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.3 Водоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.3.1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToWaterSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.3.2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.4 Теплоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.4.1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToHeatSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.4.2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToHeatSupply.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToHeatSupply.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToHeatSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.5 Водоотведение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.5.1</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.ConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.ConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToWaterDisposal)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.5.2</label>
+            </div>
+            <div class="col-sm-1">
+                @Html.KendoCheckBoxFor(m => m.AvailabilityConnectionToWaterDisposal.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || Model.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None || Model.AvailabilityConnectionToWaterDisposal.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+            </div>
+            <div class="col-sm-2">
+                @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || Model.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault(HarAvailability.None) == HarAvailability.None)
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterDisposal)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button disabled="@(!Model.IsEditDeclarationCharacteristics)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('textarea[editmode="false"]').attr("readonly", "true");
+        @if (!Model.IsEditDeclarationCharacteristics)
+        {
+            @Html.Raw(@" $('span[class*=""k-numeric-wrap""] input').attr('readonly', 'readonly');");
+        }
+
+        $("input[id*='HarAvailabilityValue'").each(function() {
+            $(this).data('kendoDropDownList').bind("change", onHarAvailabilityTypeChanged);;
+        });
+        $("input[id*='DateTimeValue'").each(function () {
+            var datePicker = $(this).data('kendoDatePicker');
+            //datePicker.setOptions({ format: "{0:yyyy}", parseFormats: ["yyyy", "dd.MM.yyyy", "MM.yyyy" ] });
+            datePicker.bind("change", onDateTimeChanged);
+        });
+
+        $("input[id*='DecimalValue'").each(function () {
+            $(this).data('kendoNumericTextBox').bind("change", onNumericTextBoxChanged);;
+        });
+        $("input[id*='LongValue'").each(function () {
+            $(this).data('kendoNumericTextBox').bind("change", onNumericTextBoxChanged);;
+        });
+
+        $("input[id*='StringValue'").each(function () {
+            $(this).bind("change", onTextBoxChanged);;
+        });
+        $("textarea[id*='StringValue'").each(function () {
+            $(this).bind("change", onTextBoxChanged);;
+        });
+
+        @if (Model.CanIncludeInFormalChecking)
+        {
+            @Html.Raw(@"
+            $('input[id*=""AdditionalInfo_HarStatus""').each(function () {
+                $(this).data('kendoDropDownList').bind('change', onHarStatusTypeChanged);
+             });");
+        }
+
+
+
+        $('#save').on('click',
+            function() {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                formObject['CommissioningYear.DateTimeValue'] =
+                    kendo.toString($('#CommissioningYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['CompletionYear.DateTimeValue'] = kendo.toString($('#CompletionYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['OverhaulCompletionYear.DateTimeValue'] = kendo.toString($('#OverhaulCompletionYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['ReconstructionDate.DateTimeValue'] = kendo.toString($('#ReconstructionDate_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+
+                $.post(form.attr('action'), formObject).done(function(response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success && response.data) {
+                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                        Common.ShowMessage(response.Success);
+                    }
+                }).fail(function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
+                });
+            });
+    });
+
+    function onHarAvailabilityTypeChanged(e) {
+        var value = this.value();
+        var id = e.sender.element.attr("id");
+        var firstPart = id.substring(0, id.indexOf('_'));
+        if (!value || value == '@HarAvailability.None.GetEnumCode()') {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').value('@HarStatus.None.GetEnumCode()');
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').trigger("change");
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(false);
+        } else {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(true);
+        }
+    }
+
+    function onDateTimeChanged(e) {
+        var value = this.value();
+        var id = e.sender.element.attr("id");
+        var firstPart = id.substring(0, id.indexOf('_'));
+        if (!value) {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').value('@HarStatus.None.GetEnumCode()');
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').trigger("change");
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(false);
+        } else {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(true);
+        }
+    }
+
+    function onNumericTextBoxChanged(e) {
+        var value = this.value();
+        var id = e.sender.element.attr("id");
+        var firstPart = id.substring(0, id.indexOf('_'));
+        if (!value) {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').value('@HarStatus.None.GetEnumCode()');
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').trigger("change");
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(false);
+        } else {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(true);
+        }
+    }
+
+    function onTextBoxChanged(e) {
+        var value = this.value;
+        var id = this.id;
+        var firstPart = id.substring(0, id.indexOf('_'));
+        if (!value) {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').value('@HarStatus.None.GetEnumCode()');
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').trigger("change");
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(false);
+        } else {
+            $('#' + firstPart + '_AdditionalInfo_HarStatus').data('kendoDropDownList').enable(true);
+        }
+    }
+
+    function onHarStatusTypeChanged(e) {
+        var value = this.value();
+        var id = e.sender.element.attr("id");
+        var firstPart = id.substring(0, id.indexOf('_'));
+        if (!value || value == '@HarStatus.None.GetEnumCode()') {
+            $('#' + firstPart + '_AdditionalInfo_IsShownInDeclaration').prop('checked', false);
+            $('#' + firstPart + '_AdditionalInfo_IsShownInDeclaration').attr("disabled", true);
+        } else {
+            $('#' + firstPart + '_AdditionalInfo_IsShownInDeclaration').attr("disabled", false);
+        }
+    }
+</script>

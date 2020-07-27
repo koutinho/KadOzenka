@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/01/2020 15:09:07" ReportInfo.CreatorVersion="2017.4.7.0">
+  <Dictionary>
+    <BusinessObjectDataSource Name="Common" ReferenceName="Common" DataType="null" Enabled="true">
+      <Column Name="Title" DataType="System.String"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
+      <Column Name="DataNum" />
+      <Column Name="Kn"/>
+      <Column Name="PropertyType"/>
+      <Column Name="Square"/>
+      <Column Name="PermittedUsing"/>
+      <Column Name="Address"/>
+      <Column Name="Kladr"/>
+      <Column Name="Location"/>
+      <Column Name="CadastralQuarter"/>
+      <Column Name="LandCategory"/>
+      <Column Name="Upks"/>
+      <Column Name="CadastralCost"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="497" PaperHeight="210" RawPaperSize="9" Guides="7.56,1658.05,94.5,273.67,273.81,440.13,439.58,568.86,568.89,731.43,730.64,927.2,1033.42,1033.07,1167.26,9.45,1285.2,1389.15,1512,1653.75" UnlimitedWidth="true">
+    <DataBand Name="BandCommon" Width="1803.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
+      <TextObject Name="Text6" Left="7.56" Top="28.35" Width="1650.49" Height="56.7" CanGrow="true" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="BandData" Top="244.25" Width="1803.06" Height="18.9" CanGrow="true" Guides="0,18.9">
+      <TextObject Name="CadastralNumberText" Left="94.5" Width="179.17" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Kn]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="CreationDateText" Left="273.81" Width="166.32" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.PropertyType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="StatusRepeatCalcText" Left="439.58" Width="129.28" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="SquareText" Left="568.89" Width="162.54" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.PermittedUsing]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="PropertyTypeText" Left="730.64" Width="196.56" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="StatusText" Left="927.2" Width="106.22" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Kladr]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="ChangedFactorsText" Left="1033.07" Width="134.19" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Location]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text3" Left="9.45" Width="85.05" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.DataNum]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text7" Left="1167.26" Width="117.94" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CadastralQuarter]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text10" Left="1285.2" Width="103.95" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.LandCategory]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text13" Left="1389.15" Width="122.85" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text16" Left="1512" Width="141.75" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="89.05" Width="1803.06" Height="151.2" Guides="132.3,151.2,0">
+        <TextObject Name="ColumnNumber1" Left="94.5" Top="132.3" Width="179.17" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber2" Left="273.81" Top="132.3" Width="166.32" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber3" Left="439.58" Top="132.3" Width="129.28" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber4" Left="568.89" Top="132.3" Width="162.54" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber5" Left="730.64" Top="132.3" Width="196.56" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber6" Left="927.2" Top="132.3" Width="106.22" Height="18.9" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber7" Left="1033.07" Top="132.3" Width="134.19" Height="18.9" Border.Lines="All" Text="8" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="CadastralNumberHeaderText" Left="94.5" Width="179.17" Height="132.3" Border.Lines="All" Text="КН" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="CreationDateHeaderText" Left="273.81" Width="166.32" Height="132.3" Border.Lines="All" Text="Тип" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="StatusRepeatCalcHeaderText" Left="439.58" Width="129.28" Height="132.3" Border.Lines="All" Text="Площадь" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="SquareHeaderText" Left="568.89" Width="162.54" Height="132.3" Border.Lines="All" Text="Разрешенное использование" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="PropertyTypeHeaderText" Left="730.64" Width="196.56" Height="132.3" Border.Lines="All" Text="Адрес" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Left="927.2" Width="106.22" Height="132.3" Border.Lines="All" Text="КЛАДР" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ChangedFactorsHeaderText" Left="1033.07" Width="134.19" Height="132.3" Border.Lines="All" Text="Местоположение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ColumnNumber0" Left="9.45" Top="132.3" Width="85.05" Height="18.9" Border.Lines="All" CanGrow="true" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text2" Left="9.45" Width="85.05" Height="132.3" Border.Lines="All" CanGrow="true" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text4" Left="1167.26" Width="117.94" Height="132.3" Border.Lines="All" Text="Кадастровый квартал" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text5" Left="1167.26" Top="132.3" Width="117.94" Height="18.9" Border.Lines="All" Text="9" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text8" Left="1285.2" Width="103.95" Height="132.3" Border.Lines="All" Text="Категория земель" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text9" Left="1285.2" Top="132.3" Width="103.95" Height="18.9" Border.Lines="All" Text="10" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text11" Left="1389.15" Width="122.85" Height="132.3" Border.Lines="All" Text="УПКС объекта недвижимости, руб./кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text12" Left="1389.15" Top="132.3" Width="122.85" Height="18.9" Border.Lines="All" Text="11" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text14" Left="1512" Width="141.75" Height="132.3" Border.Lines="All" Text="Кадастровая стоимость объекта недвижимости, руб." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text15" Left="1512" Top="132.3" Width="141.75" Height="18.9" Border.Lines="All" Text="12" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      </DataHeaderBand>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="267.15" Width="1803.06" Height="47.25"/>
+  </ReportPage>
+</Report>

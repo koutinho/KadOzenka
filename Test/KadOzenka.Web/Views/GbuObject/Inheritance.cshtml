@@ -1,0 +1,268 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
+
+@using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
+{
+	<div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=Inheritance" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Тур оценки")
+			</div>
+			<div class="col-sm-4">
+				@(Html.Kendo().DropDownList()
+											.Name("RatingTour")
+											.DataTextField("Text")
+											.DataValueField("Value")
+											.DataSource(data => data.Read("GetRatingTours", "GbuObject"))
+				)
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Задания на оценку")
+			</div>
+			<div class="col-sm-10">
+				@(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+									.DataTextField("Text")
+									.DataValueField("Value")
+									.Filter("contains")
+									.DataSource(source =>
+									{
+										source.Read(read =>
+										{
+											read.Action("GetTasksByTour", "Task").Data("handlerData");
+										})
+											.ServerFiltering(false);
+									}))
+			</div>
+		</div>
+		<fieldset>
+			<legend>Тип наследования</legend>
+			<div class="form-group">
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToParcel).Label("Кадастровый квартал \u2192 Земельный участок").Value(true).Checked(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.ParcelToBuilding).Label("Земельный участок \u2192 Здание").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToBuilding).Label("Кадастровый квартал \u2192 Здание").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.ParcelToConstruction).Label("Земельный участок \u2192 Сооружение").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToConstruction).Label("Кадастровый квартал \u2192 Сооружение").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.ParcelToUncomplited).Label("Земельный участок \u2192 Объект незавершенного строительства").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToUncomplited).Label("Кадастровый квартал \u2192 Объект незавершенного строительства").Value(true))
+				</div>
+				<div class="col-sm-6">
+					@(Html.Kendo().RadioButtonFor(m => m.BuildToFlat).Label("Здание \u2192 Помещение").Value(true))
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-4">
+					@Html.CustomLabel("Фактор с родительским номером")
+				</div>
+				<div class="col-sm-8">
+					@Html.KendoDropDownListTreeWithButton(m => m.ParentCadastralNumberAttribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+				</div>
+			</div>
+		</fieldset>
+		<div id="wrapperCustomRow">
+			<div class="form-group">
+				<div class="col-sm-12">
+					<h4>Наследуемые факторы</h4>
+				</div>
+			</div>
+			<div class="form-group"></div>
+			@for (int i = 0; i < Model.Attributes.Count; i++)
+			{
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						@Html.KendoDropDownListTreeWithButton(m => m.Attributes[i], (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+					</div>
+				</div>
+			}
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10" style="margin-top: 8px">
+				<a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-12">
+				<button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
+			</div>
+		</div>
+	</div>
+}
+<script type="text/x-kendo-template" id="templateRow">
+	<div class="wrapper-#: rowNumber #" style="display: none"></div>
+</script>
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+
+	var rowNumber = @Model.Attributes.Count + 1 || 0;
+
+	function addNewRow(e) {
+		e.preventDefault();
+		kendo.ui.progress($('body'), true);
+		var data = [{ rowNumber }];
+
+		var templateContent = $("#templateRow").html();
+		var template = kendo.template(templateContent);
+
+		var result = kendo.render(template, data);
+
+		$("#wrapperCustomRow").append(result);
+
+		var classWrapper = ".wrapper-" + rowNumber;
+
+		var url = "@Url.Action("GetRow", "GbuObject")";
+		$(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
+			$(classWrapper).show(500);
+			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
+			rowNumber++;
+            kendo.ui.progress($('body'), false);
+            addSelectionHandlersForDropDowns();
+		});
+	}
+	function handlerData() {
+		return {
+			tourId: $('#RatingTour').data('kendoDropDownList').value()
+		}
+	}
+
+	function dropdownlist_select(e) {
+		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
+		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
+	}
+
+	function getDataSource() {
+        return $.find('[class^=Attributes_]').map(d => $(d).data('kendoDropDownTree'));
+    }
+
+    function getSelectedValues() {
+        return getDataSource().map(d => d.value());
+    }
+
+    function getAllUidsToDisable(arrValues) {
+        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+
+    function flattenDataSource(d) {
+        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+    }
+
+    function blockAlreadySelectedNodes(arr) {
+        var uidsToBlock = getAllUidsToDisable(arr);
+        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+
+    function clearTreeStates() {
+        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+
+    function updateSelected(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+
+        clearTreeStates();
+
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValues();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodes(filtered);
+    };
+
+    function updateStates() {
+        clearTreeStates();
+        var arr = getSelectedValues();
+        blockAlreadySelectedNodes(arr);
+    }
+
+    function addSelectionHandlersForDropDowns() {
+        getDataSource().forEach(function (d) {
+                d.treeview.unbind('select');
+                d.treeview.bind('select', e => updateSelected(e));
+            }
+        );
+
+        updateStates();
+
+        var clearButtons = $.find('[class^=clear-button-Attributes]');
+
+        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+    }
+
+    $(document).ready(function () {
+        addSelectionHandlersForDropDowns();
+
+		$('#addRow').on('click', addNewRow);
+		$("#RatingTour").data('kendoDropDownList').bind('change', dropdownlist_select);
+		$("#RatingTour").data('kendoDropDownList').bind('dataBound', dropdownlist_select);
+
+		$('input[type=radio]').change(function() {
+			$('input[type=radio]:checked').not(this).prop('checked', false);
+		});
+
+		$('#performInheritance').on('click',
+			function() {
+				var form = $('form');
+				var formObject = Common.Functions.FormToObject(form);
+				formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
+
+				var attributes = [];
+				Object.keys(formObject).forEach(function (key) {
+					if (key.includes('Attributes')) {
+						attributes.push(formObject[key]);
+						delete formObject[key];
+					}
+				});
+				attributes = attributes.filter(function (val) { return !!val});
+				var data = Object.assign({}, formObject, { Attributes: attributes });
+
+				$.post(form.attr('action'), data).done(function(response) {
+					if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+					if (response.Success) {
+						Common.ShowMessage(response.Success);
+					}
+				}).fail(function (response, textStatus, errorThrown) {
+					Common.ShowError(response.responseText);
+				}).always(function () {
+				    kendo.ui.progress($('body'), false);
+				});
+			});
+	});
+
+</script>

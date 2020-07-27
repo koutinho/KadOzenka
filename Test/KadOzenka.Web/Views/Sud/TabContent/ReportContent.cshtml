@@ -1,0 +1,317 @@
+﻿@using KadOzenka.Dal.Enum
+@using ObjectModel.Sud
+@model List<KadOzenka.Web.Models.Sud.EditApprovalReportLinkModel>
+@{ 
+    int i = 0;
+}
+@if (Model.Count == 0)
+{
+    <div>
+        <p class="text">Нет отчетов</p>
+    </div>
+}
+<div id="reportTabstrip">
+    <ul>
+
+        @{
+			foreach (var m in Model)
+			{
+				var textTab = !string.IsNullOrEmpty(m.Report.NumberForTab) && !string.IsNullOrEmpty(m.Report.DateForTab) ?
+					$"Отчет {m.Report.NumberForTab} от {m.Report.DateForTab}"
+					: string.IsNullOrEmpty(m.Report.DateForTab) && !string.IsNullOrEmpty(m.Report.NumberForTab) ? $"Отчет {m.Report.NumberForTab}"
+						: string.IsNullOrEmpty(m.Report.NumberForTab) && !string.IsNullOrEmpty(m.Report.DateForTab) ? $"Отчет от {m.Report.DateForTab}" : "Отчет";
+
+                <li class="@(i == 0 ? "k-state-active" : "")">@(textTab)</li>
+                i++;
+            }
+            i = 0;
+        }
+    </ul> 
+    @foreach (var m in Model)
+    {
+        int j = i;
+        <div>
+        @using (Html.BeginForm("EditApprovalReportLink", "Sud", FormMethod.Post, new { @class = "report-link-content", @Id = $"{m.Id}" }))
+        {
+            @Html.HiddenFor(r => r[j].Id)
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(r => r[j].IdReport)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(r => r[j].IdReport, "GetApprovalFieldData", "Sud",
+                        new {idTable = OMTableParam.OtchetLink, objectId = m.Id, paramName = ParamNameEnum.IdReport.GetEnumDescription(), isActual = m.IdReport != null}
+                        , isReadonly: m.IdReport != null, id: $"reportLink-{j}-1")
+                </div>
+            </div>
+            <fieldset id="@($"reportData-{j}")">
+                <legend>Данные об отчете</legend>
+                @Html.HiddenFor(r => r[j].Report.Id)
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.Number)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.Number, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.Number.GetEnumDescription(), isActual = m.Report.Number != null}
+                                    , isReadonly: m.Report.Number != null, id: $"report-{j}-1")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.ReportDate)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.ReportDate, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.ReportDate.GetEnumDescription(), isActual = m.Report.ReportDate != null}
+                                    , isReadonly: m.Report.ReportDate != null, id: $"report-{j}-2")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.DateIn)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.DateIn, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.DateIn.GetEnumDescription(), isActual = m.Report.DateIn != null}
+                                    , isReadonly: m.Report.DateIn != null, id: $"report-{j}-3")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.Claim)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.Claim, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.Claim.GetEnumDescription(), isActual = m.Report.Claim != null}
+                                    , isReadonly: m.Report.Claim != null, id: $"report-{j}-4")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.Org)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.Org, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.Org.GetEnumDescription(), isActual = m.Report.Org != null}
+                                    , isReadonly: m.Report.Org != null, id: $"report-{j}-5")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.Fio)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.Fio, "GetApprovalFieldData", "Sud",
+                                    new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.Fio.GetEnumDescription(), isActual = m.Report.Fio != null}
+                                    , isReadonly: m.Report.Fio != null, id: $"report-{j}-6")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(r => r[j].Report.Sro)
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.KendoDropDownListFor(r => r[j].Report.Sro, "GetApprovalFieldData", "Sud",
+									new {idTable = OMTableParam.Otchet, objectId = m.Report.Id, paramName = ParamNameEnum.Sro.GetEnumDescription(), isActual = m.Report.Sro != null}
+									, isReadonly: m.Report.Sro != null, id: $"report-{j}-7")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button style="float: right" disabled="@m.Report.IsDisableButton" data-action="@Url.Action("EditApprovalReport", "Sud")" data-id-tab="@j" data-id="@m.Id" class="k-button saveReport" type="button">Утвердить</button>
+                            </div>
+                        </div>
+                    </div>
+            </fieldset>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(r => r[j].Rs)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(r => r[j].Rs, "GetApprovalFieldData", "Sud",
+                        new {idTable = OMTableParam.OtchetLink, objectId = m.Id, paramName = ParamNameEnum.Rs.GetEnumDescription(), isActual = m.Rs != null}
+                        , isReadonly: m.Rs != null, id: $"reportLink-{j}-2")
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(r => r[j].Uprs)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(r => r[j].Uprs, "GetApprovalFieldData", "Sud",
+                        new {idTable = OMTableParam.OtchetLink, objectId = m.Id, paramName = ParamNameEnum.Uprs.GetEnumDescription(), isActual = m.Uprs != null}
+                        , isReadonly: m.Uprs != null, id: $"reportLink-{j}-3")
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(r => r[j].Use)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(r => r[j].Use, "GetApprovalFieldData", "Sud",
+                        new {idTable = OMTableParam.OtchetLink, objectId = m.Id, paramName = ParamNameEnum.Use.GetEnumDescription(), isActual = m.Use != null}
+                        , isReadonly: m.Use != null, id: $"reportLink-{j}-4")
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(r => r[j].Descr)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(r => r[j].Descr, "GetApprovalFieldData", "Sud",
+						new {idTable = OMTableParam.OtchetLink, objectId = m.Id, paramName = ParamNameEnum.Use.GetEnumDescription(), isActual = m.Descr != null}
+						, isReadonly: m.Descr != null, id: $"reportLink-{j}-5")
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button style="float: right" disabled="@m.IsDisableButton" data-id-tab="@j" data-id="@m.Id" class="k-button saveReportLink" type="button">Утвердить</button>
+                </div>
+            </div>
+        </div>
+        }
+        </div>
+        i++;
+    }
+</div>
+
+
+@section styles{
+    <style>
+        .report-link-content .k-content {
+            padding: 10px !important;
+        }
+        .text {
+            text-align: center;
+            font-family: 'Roboto';
+            font-style: normal;
+            font-size: 20px;
+        }
+    </style>
+}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#reportTabstrip").kendoTabStrip();
+
+        function distinctErrors(errors) {
+            var result = [];
+            $.each(errors, function (index, event) {
+                var events = $.grep(result, function (e) {
+                    return event.Message === e.Message;
+                });
+                if (events.length === 0) {
+                    result.push(event);
+                }
+            });
+
+            return result;
+		}
+
+		function stylingDropDown() {
+			$('.report-link-content .k-widget.k-dropdown').each(function() {
+				if ($(this).find('input').attr('readonly')) {
+					$(this).find('span.k-select').css('display', 'none');
+					$(this).find('span.k-input').css('font-weight', 'bold');
+				}
+			});
+		};
+
+		stylingDropDown();
+
+    
+        $(".saveReportLink").on('click', function () {
+            var id = $(this).data("id");
+            var idTab = $(this).data("id-tab");
+			var form = $(`form.report-link-content#${id}`);
+            var reportData = `#reportData-${idTab}`;
+			var self = this;
+
+            var formObject = Common.Functions.FormToObject(form);
+  
+
+            var data = {
+                IdReport: formObject[`[${idTab}].IdReport`],
+                Use: formObject[`[${idTab}].Use`],
+                Rs: formObject[`[${idTab}].Rs`],
+                Uprs: formObject[`[${idTab}].Uprs`],
+                Descr: formObject[`[${idTab}].Descr`],
+                Id: formObject[`[${idTab}].Id`]
+            }
+
+            kendo.ui.progress($('body'), true);
+            $.post(form.attr('action'), data).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function (el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
+
+				if (response.Success) {
+					$(self).attr('disabled', true);
+					form.find('input').not('readonly').each(function () {
+						if (!$(this).parents(reportData)[0] && $(this).data("kendoDropDownList")) {
+							$(this).data("kendoDropDownList").readonly();
+						}
+					});
+					stylingDropDown();
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
+
+        $(".saveReport").on('click', function () {
+            var id = $(this).data("id");
+            var idTab = $(this).data("id-tab");
+            var action = $(this).data("action");
+			var form = $(`form.report-link-content#${id}`);
+            var reportData = $(`#reportData-${idTab}`);
+            var self = this;
+
+            var formObject = Common.Functions.FormToObject(form);
+
+            var data = {
+                Number: formObject[`[${idTab}].Report.Number`],
+                Name: formObject[`[${idTab}].Report.Name`],
+                ReportDate: formObject[`[${idTab}].Report.ReportDate`],
+                Org: formObject[`[${idTab}].Report.Org`],
+                Fio: formObject[`[${idTab}].Report.Fio`],
+                Sro: formObject[`[${idTab}].Report.Sro`],
+                DateIn: formObject[`[${idTab}].Report.DateIn`],
+                Claim: formObject[`[${idTab}].Report.Claim`],
+                Id: formObject[`[${idTab}].Report.Id`]
+            }
+
+            kendo.ui.progress($('body'), true);
+            $.post(action, data).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function (el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
+
+                if (response.Success) {
+					$(self).attr('disabled', true);
+					reportData.find('input').not('readonly').each(function () {
+						if ($(this).data("kendoDropDownList")) {
+							$(this).data("kendoDropDownList").readonly();
+						}
+					});
+					stylingDropDown();
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
+    });
+</script>

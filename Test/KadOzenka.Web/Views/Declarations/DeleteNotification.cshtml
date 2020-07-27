@@ -1,0 +1,34 @@
+﻿@model long
+<form style="padding:5px;height:100%">
+    <p id="confirm">Вы уверены что хотите удалить запись &quot;@Model&quot;?</p>
+    <div style="position:absolute;bottom:10px">
+        <button class="k-button k-button-icontext">
+            <span class="k-icon k-i-check"></span>Удалить
+        </button>
+    </div>
+</form>
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $('form').submit(function() {
+        $.post(
+            '@Url.Action("DeleteNotification", "Declarations")',
+            { notificationId: @Model }
+        ).done(function (response) {
+            debugger;
+            if (response.Errors && response.Errors.length > 0) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+
+            $('form').html('<p>Уведомление удалено</p>');
+        }).fail(function (response, textStatus, errorThrown) {
+            debugger;
+            Common.ShowError(response.responseText);
+        }).always(function () {
+            kendo.ui.progress($('body'), false);
+        });
+
+        return false;
+    });
+</script>

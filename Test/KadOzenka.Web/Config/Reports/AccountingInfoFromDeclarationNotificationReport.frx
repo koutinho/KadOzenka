@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="12/24/2019 16:43:21" ReportInfo.CreatorVersion="2017.4.7.0">
+    <ScriptText>
+        using System;
+        using System.Collections;
+        using System.Collections.Generic;
+        using System.ComponentModel;
+        using System.Windows.Forms;
+        using System.Drawing;
+        using System.Data;
+        using FastReport;
+        using FastReport.Data;
+        using FastReport.Dialog;
+        using FastReport.Barcode;
+        using FastReport.Table;
+        using FastReport.Utils;
+
+        namespace FastReport
+        {
+        public class ReportScript
+        {
+        private void Data1_BeforePrint(object sender, EventArgs e)
+        {
+        NotificationTitle.Top = Owner.Height + 37.8F;
+        MainText.Top = NotificationTitle.Top + NotificationTitle.Height + 26.46F;
+        GeneralManagerLabel.Top = MainText.Top + MainText.Height + 56.7F;
+        GeneralManagerName.Top = MainText.Top + MainText.Height + 56.7F;
+        MainText.HorzAlign=HorzAlign.Justify;
+        //Data1.Height = 600.06F;
+        }
+
+        private void Data1_AfterLayout(object sender, EventArgs e)
+        {
+        UserIspName.Top=763.56F;
+        // Data1.Height = 600.06F;
+        }
+        }
+
+        }
+    </ScriptText>
+    <Dictionary/>
+    <ReportPage Name="Page1" LeftMargin="20" TopMargin="70" RightMargin="0" BottomMargin="0" Guides="378,661.5,0,236.25,472.5,387.45">
+        <DataBand Name="Data1" CanGrow="false" Width="718.2" Height="858.06" BeforePrintEvent="Data1_BeforePrint" AfterLayoutEvent="Data1_AfterLayout" Guides="0,86.94,124.74,170.1,198.45,378,434.7,453.6,763.56,782.46">
+            <TextObject Name="Owner" Left="378" Width="283.5" Height="86.94" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.OwnerName]&#13;&#10; &#13;&#10;[Data.OwnerAddress]" Font="Times New Roman, 13pt" HtmlTags="true"/>
+            <TextObject Name="NotificationTitle" Top="124.74" Width="661.5" Height="45.36" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="Уведомление&#13;&#10;об учете информации из декларации от [Data.DeclarationDateIn] № [Data.DeclarationNumber]" HorzAlign="Center" Font="Times New Roman, 13pt"/>
+            <TextObject Name="MainText" Top="198.45" Width="661.5" Height="179.55" CanGrow="true" CanShrink="true" GrowToBottom="true" WordWrap="true" HtmlTags="true" Text="[Data.MainData]" FirstTabOffset="35.5" HorzAlign="Justify" Font="Times New Roman, 13pt"/>
+            <TextObject Name="GeneralManagerLabel" Top="434.7" Width="349" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.SignatoryPosition]" Font="Times New Roman, 13pt"/>
+            <TextObject Name="GeneralManagerName" Left="360.55" Top="434.7" Width="300.89" CanGrow="true" CanShrink="true" GrowToBottom="true" Height="18.9" Text="[Data.SignatoryName]" HorzAlign="Right" Font="Times New Roman, 13pt"/>
+            <TextObject Name="UserIspName" Top="763.56" Width="387.45" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.UserIspName]" Font="Times New Roman, 12pt" TextFill.Color="DarkGray"/>
+        </DataBand>
+    </ReportPage>
+</Report>

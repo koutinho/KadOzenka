@@ -1,0 +1,67 @@
+﻿@using DocumentFormat.OpenXml.Wordprocessing
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			@Html.CustomLabelFor("Выполнить перерасчет?", htmlAttributes: new {style = "padding-top: 10px; font-weight: bold;" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-8 col-sm-3">
+			<button style="float: right" class="k-button re-calculate" type="button">Пересчитать стоимость</button>
+		</div>
+	</div>
+</div>
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+
+	function updateQueryStringParameter(uri, key, value) {
+		var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+		var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+		if (uri.match(re)) {
+			return uri.replace(re, '$1' + key + "=" + value + '$2');
+		}
+		else {
+			return uri + separator + key + "=" + value;
+		}
+	}
+
+	$(document).ready(function () {
+		var analogIds = @Html.Raw(Json.Serialize(ViewBag.DeleteAnalogIds)) || [];
+		var expressScoreId = "@ViewBag.EsId";
+
+		var $bodyTop = $(window.top.document.body);
+
+
+
+		$('.re-calculate').on('click',
+			function () {
+				var data = {
+					analogIds,
+					expressScoreId
+				}
+				kendo.ui.progress($bodyTop, true);
+
+				$.post("@Url.Action("RecalculateAnalog", "ExpressScore")", data).done(function (data) {
+					if (data.Errors) {
+						var errors = getErrors(data.Errors);
+						Common.ShowError(errors);
+					}
+					if (data.success) {
+						debugger;
+						if (parent.updateCost) {
+							parent.updateCost(data.success.cost, data.success.squareCost);
+						}
+						if (parent.updateReportId) {
+							parent.updateReportId(data.success.reportId);
+						}
+						Common.ShowMessage("Перерасчет успешно выполнен. Закройте окно.");
+					}
+
+				}).always(function() {
+					kendo.ui.progress($bodyTop, false);
+				});
+			});
+	});
+</script>

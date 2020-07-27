@@ -1,0 +1,167 @@
+﻿@model KadOzenka.Web.Models.Modeling.TrainingDetailsModel
+
+@if (Model == null)
+{
+    <div class="form-horizontal col-sm-12" style="padding: 2%">
+        <div class="form-group">
+            <span>Не найдено информации</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-horizontal col-sm-12" style="padding: 3%">
+        <div class="form-group">
+            @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
+                .Name("priceHistoryGrid")
+                .Columns(columns =>
+                {
+                    columns.Group(g => g.Title("Средняя абсолютная ошибка")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
+                            c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
+                        }));
+                    columns.Group(g => g.Title("Критерий Фишера")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.FisherCriterionTrain).Title("Train");
+                            c.Bound(x => x.FisherCriterionTest).Title("Test");
+                        }));
+                    columns.Group(g => g.Title("Коэффициент детерминации (R²)")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.R2Train).Title("Train");
+                            c.Bound(x => x.R2Test).Title("Test");
+                        }));
+                })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(false)
+                    .Model(x =>
+                    {
+                        x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
+                        x.Field(c => c.MeanSquaredErrorTest).Editable(false);
+                        x.Field(c => c.FisherCriterionTrain).Editable(false);
+                        x.Field(c => c.FisherCriterionTest).Editable(false);
+                        x.Field(c => c.R2Train).Editable(false);
+                        x.Field(c => c.R2Test).Editable(false);
+                    }))
+                .HtmlAttributes(new {@class = "coefficients-grid" }))
+        </div>
+        <div class="form-group" style="padding-top: 2%">
+            <div class="col-sm-5 center">
+                @Html.CustomLabel("Разброс:")
+            </div>
+            <div class="col-sm-5 center">
+                @Html.CustomLabel("Корреляция:")
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-5 center" id="scatterDiv">
+                <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено"/>
+            </div>
+            <div class="col-sm-5 center" id="correlationDiv">
+                <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено"/>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
+<style>
+    .coefficients-block {
+        padding-left: 2%;
+    }
+
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+
+    .k-header {
+        text-align: center !important;
+    }
+
+    .coefficients-grid {
+        text-align: center;
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function() {
+        @if (Model != null)
+        {
+            <text>
+                //картинки не всегда подгружаются сразу (особенности сервиса моделирования),
+                //поэтому, если картинка не загрузилась - отправляем еще несколько запросов на сервис
+                $("#scatterImg")
+                    .on('load', () => onImageLoad(scatter))
+                    .on('error', () => onImageFail(scatter, $("#scatterImg"), "@Model.ScatterImageLink"));
+
+                $("#correlationImg")
+                    .on('load', () => onImageLoad(correlation))
+                    .on('error', () => onImageFail(correlation, $("#correlationImg"), "@Model.CorrelationImageLink"));
+            </text>
+        }
+    });
+
+
+
+    var requestsMaxNumber = 25;
+    var scatter = {
+        Timer: -1,
+        Counter: 0
+    };
+    var correlation = {
+        Timer: -1,
+        Counter: 0
+    }
+
+
+    function onImageLoad(imgObject) {
+        //console.log('success');
+        if (imgObject.Timer !== -1) {
+            clearInterval(imgObject.Timer);
+            alignImagesMiddle();
+        }
+    }
+
+
+    function onImageFail(imgObject, jqObject, srcValue) {
+        //console.log('error');
+        imgObject.Counter++;
+        //console.log('counter', imgObject.Counter);
+        if (imgObject.Timer === -1) {
+            // повторить с интервалом 2 секунды
+            imgObject.Timer = setInterval(() => jqObject.attr("src", srcValue), 2000);
+            //console.log('set sheduler', imgObject.Timer);
+        }
+        else if (imgObject.Counter > requestsMaxNumber) {
+            // остановить вывод
+            clearInterval(imgObject.Timer);
+            //console.log('stop calling', imgObject.Timer);
+        }
+    }
+
+
+    function alignImagesMiddle() {
+        var scatterDivHeight = $("#scatterDiv").height();
+        var scatterImgHeight = $("#scatterImg").height();
+
+        var correlationDivHeight = $("#correlationDiv").height();
+        var correlationImgHeight = $("#correlationImg").height();
+
+        if (scatterDivHeight != correlationDivHeight) {
+            var max = Math.max(scatterDivHeight, correlationDivHeight);
+            $("#correlationImg").css('margin-top', ((max - correlationImgHeight) / 2) + 'px');
+            $("#scatterImg").css('margin-top', ((max - scatterImgHeight) / 2) + 'px');
+        }
+    };
+</script>

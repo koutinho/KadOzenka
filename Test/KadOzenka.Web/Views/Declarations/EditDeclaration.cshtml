@@ -1,0 +1,507 @@
+﻿@using ObjectModel.Core.SRD
+@using ObjectModel.Declarations
+@using KadOzenka.Web.Models.Declarations
+@using ObjectModel.Directory.Declarations
+@using Platform.Web.Models.CoreAttachment
+
+@model KadOzenka.Web.Models.Declarations.DeclarationModel
+
+@using (Html.BeginForm("EditDeclaration", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.OwnerId)
+    @Html.HiddenFor(m => m.AgentId)
+    @Html.HiddenFor(m => m.BookId)
+    @Html.HiddenFor(m => m.UserIspId)
+    @Html.HiddenFor(m => m.SpdAppId)
+    @Html.HiddenFor(m => m.SpdAppName)
+    @Html.HiddenFor(m => m.SpdAppDate)
+    @Html.HiddenFor(m => m.FromSpd)
+    <div class="form-group" style="margin-bottom: 20px;">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=AddEditDeclaration" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
+        </div>
+    </div>
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="Section_Making_Declaration" data-expand>
+            <span>Подача декларации</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.OwnerType)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group form-group-with-frame">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.OwnerId)
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.IsEditDeclarationSupplyBlock)
+                            {
+                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent")
+                            }
+                            else
+                            {
+                                @Html.KendoTextBoxFor(m => m.OwnerDisplay, isReadonly: true)
+                            }
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeOwner)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group form-group-with-frame">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.AgentId)
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.IsEditDeclarationSupplyBlock)
+                            {
+                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent")
+                            }
+                            else
+                            {
+                                @Html.KendoTextBoxFor(m => m.AgentDisplay, isReadonly: true)
+                            }
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeAgent)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CertificateName)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateNum)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CadastralObjectNumber)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.ObjectType)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.NumberIn)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.BookId)
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @if (Model.IsEditDeclarationSupplyBlock)
+                                {
+                                    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent")
+                                }
+                                else
+                                {
+                                    @Html.KendoTextBoxFor(m => m.BookDisplay, isReadonly: true)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Section_Attachment" data-expand>
+            <span>Образы</span>
+            <div class="form-group">
+                <div class="attachment-declaration @(Model.Id == -1 ? "hidden" : "")">
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel { ObjectId = (int)Model.Id, RegisterId = Model.RegisterId, IsReadonlyMode = !Model.IsEditDeclarationAttachments })
+                </div>
+            </div>
+        </li>
+        <li id="Section_Process_Declaration" data-expand>
+            <span>Обработка декларации</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInPlan)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateInPlan, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UserIspId)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(m => m.UserIspDisplay, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInIsp)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateInIsp, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInFact)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoDatePickerFor(m => m.DateInFact, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.DurationDateIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DurationDateIn, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.DateEnd)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateEnd, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.Status)
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Accepted.GetEnumDescription()).Value((long)StatusDec.Accepted).Enable(Model.IsEditDeclarationStatus))
+                                </div>
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Considered.GetEnumDescription()).Value((long)StatusDec.Considered).Enable(Model.IsEditDeclarationStatus))
+                                </div>
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Rejection.GetEnumDescription()).Value((long)StatusDec.Rejection).Enable(Model.IsEditDeclarationStatus))
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="form-group">
+        <div class="k-content col-sm-12">
+            <div id="tabstrip-wrap">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button disabled="@(Model.Id == -1 ? !Model.IsCreateDeclaration : !Model.IsEditDeclaration)" style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+        </div>
+    </div>
+    <div class="form-group"></div>
+}
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+    <style>
+        #ls_panelbar {
+            width: 99% !important;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-group-with-frame {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-right: 0 !important;
+            margin-left: 0px !important;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+            panelbar.expand('li[data-expand]');
+
+            $("#navigation-menu a").mPageScroll2id({
+                highlightSelector: "#navigation-menu a"
+            });
+
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.OwnerId)', '#@Html.IdFor(m => m.OwnerDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.AgentId)', '#@Html.IdFor(m => m.AgentDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.UserIspId)', '#@Html.IdFor(m => m.UserIspDisplay)');
+
+            var partialViewCheckContent = '';
+            @{
+            <text>
+                partialViewCheckContent = `@await Html.PartialAsync("/Views/Declarations/DeclarationTabContent/_formalCheckContent.cshtml", Model)`;
+            </text>
+            }
+            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.append(
+                [
+                    {
+                        text: "Формальная проверка / Уведомление",
+                        content: partialViewCheckContent
+                    },
+                    {
+                        text: "Характеристика деклараций",
+                        contentUrl: "@Url.Action("GetCharacteristicTabContent", "Declarations", new { declarationId = Model.Id })"
+                    },
+                    {
+                        text: "Уведомления",
+                        contentUrl:  "@Url.Action("GetNotificationTabContent", "Declarations", new { declarationId = Model.Id })"
+                    }
+                ]
+            );
+            tabStrip.select(0);
+
+			if (jQuery("#FormalCheckModel_DateCheckPlan").attr("editmode") == "false") {
+				$("#FormalCheckModel_DateCheckPlan").addClass("k-textbox");
+				if ($("#FormalCheckModel_DateCheckPlan").val()) {
+					$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_DateCheckPlan").val()), "dd.MM.yyyy"));
+				}
+				$("#FormalCheckModel_DateCheckPlan").attr("readonly", true);
+			} else {
+				jQuery("#FormalCheckModel_DateCheckPlan").kendoDatePicker(
+					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+			}
+
+			if (jQuery("#FormalCheckModel_DateCheckFact").attr("editmode") == "false") {
+				$("#FormalCheckModel_DateCheckFact").addClass("k-textbox");
+				if ($("#FormalCheckModel_DateCheckFact").val()) {
+					$('#FormalCheckModel_DateCheckFact').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_DateCheckFact").val()), "dd.MM.yyyy"));
+				}
+				$("#FormalCheckModel_DateCheckFact").attr("readonly", true);
+			} else {
+				jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
+					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+			}
+			if (jQuery("#FormalCheckModel_CheckTime").attr("editmode") == "false") {
+				$("#FormalCheckModel_CheckTime").addClass("k-textbox");
+				if ($("#FormalCheckModel_CheckTime").val()) {
+					$('#FormalCheckModel_CheckTime').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_CheckTime").val()), "dd.MM.yyyy"));
+		        }
+				$("#FormalCheckModel_CheckTime").attr("readonly", true);
+	        } else {
+				jQuery("#FormalCheckModel_CheckTime").kendoDatePicker(
+			        { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+	        }
+
+	        $('textarea[editmode="false"]').attr("readonly", "true");
+            $('#save').on('click',
+                function() {
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+
+                    kendo.ui.progress($('body'), true);
+
+                    $.post(form.attr('action'), formObject).done(function (response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+						if (response.Success && response.data) {
+							var oldId = $('#@Html.IdFor(m => m.Id)').val();
+                            $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                            $('#save').attr("disabled", !response.data.IsEditDeclaration);
+
+							//uploadData - объект из частичного представления AttachPartialGrid
+							if (uploadData && oldId === '-1') {
+								uploadData.setObjectId(response.data.Id);
+								var grid = $('#AttachmentGrid').data('kendoGrid');
+								var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
+								grid.dataSource.transport.options.read.url = url;
+							}
+                            if (response.data.DurationDateIn) {
+								$('#DurationDateIn').val(kendo.toString(kendo.parseDate(response.data.DurationDateIn), "dd.MM.yyyy"));
+                            } else {
+                                $('#DurationDateIn').val(null);
+                            }
+                            if (response.data.FormalCheckModel && response.data.FormalCheckModel.DateCheckPlan) {
+								$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.DateCheckPlan), "dd.MM.yyyy"));
+                            } else {
+                                $('#FormalCheckModel_DateCheckPlan').val(null);
+                            }
+                            if (response.data.FormalCheckModel && response.data.FormalCheckModel.CheckTime) {
+								$('#FormalCheckModel_CheckTime').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.CheckTime), "dd.MM.yyyy"));
+						    } else {
+                                $('#FormalCheckModel_CheckTime').val(null);
+						    }
+							Common.ShowMessage(response.Success);
+                            $('.attachment-declaration').removeClass('hidden');
+                            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+                            $(".k-link:contains('Уведомления')").attr('data-content-url', '/Declarations/GetNotificationTabContent?declarationId=' + response.data.Id);
+                            $(".k-link:contains('Характеристика деклараций')").attr('data-content-url', '/Declarations/GetCharacteristicTabContent?declarationId=' + response.data.Id);
+                            tabStrip.reload("li:eq(2)");
+                            tabStrip.reload("li:eq(1)");
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false);
+                    });
+                });
+
+        });
+
+        function selectOwnerEvent() {
+            $('#@Html.IdFor(m => m.OwnerId)').val(this.e.dataItem.Id);
+        }
+        function clearOwnerEvent() {
+            $('#@Html.IdFor(m => m.OwnerId)').val(0);
+        }
+        function selectAgentEvent() {
+            $('#@Html.IdFor(m => m.AgentId)').val(this.e.dataItem.Id);
+        }
+        function clearAgentEvent() {
+            $('#@Html.IdFor(m => m.AgentId)').val(0);
+        }
+        function selectBookEvent() {
+            $('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);
+        }
+        function clearBookEvent() {
+            $('#@Html.IdFor(m => m.BookId)').val(0);
+        }
+
+        function editOwner () {
+            var contentUrl = '@Url.Action("DeclarationsSubjectSelect", "RegistersView")';
+            var title = 'Выбор Заявителя';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="OwnerId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetSubjectData", "Declarations")',
+                    data: { 'subjectId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.OwnerDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMSubject.GetRegisterId()');
+        };
+
+        function editAgent () {
+            var contentUrl = '@Url.Action("DeclarationsSubjectSelect", "RegistersView")';
+            var title = 'Выбор Представителя';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="AgentId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetSubjectData", "Declarations")',
+                    data: { 'subjectId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.AgentDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMSubject.GetRegisterId()');
+        };
+
+        function editBook () {
+            var contentUrl = '@Url.Action("DeclarationsBookSelect", "RegistersView")';
+            var title = 'Выбор Книги';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="BookId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetBookData", "Declarations")',
+                    data: { 'bookId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.BookDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
+        };
+
+        function setOnBlurHandlerForAutocomplete(idField, displayField) {
+            $(displayField).on('blur', function () {
+                if ($(displayField).val() === "") {
+                    $(idField).val(0);
+                    return;
+                }
+
+                if ($(idField).val() === "0" || $(idField).val() === "") {
+                    $(displayField).val("");
+                }
+            });
+        }
+    </script>
+}
+

@@ -1,0 +1,48 @@
+﻿@using Core.Shared.Extensions;
+@using System.Data;
+
+@model DataTable
+
+    @{ 
+        Layout = null;
+    }
+
+<div id="windowHistory">
+
+    <table id="GridHistory">
+        <colgroup>
+            <col style="width:300px" />
+            <col />
+            <col />
+            <col />
+            <col />
+        </colgroup>
+        <thead>
+            <tr>
+                <th data-field="TEXT_VALUE">Значение</th>
+                <th data-field="S">Дата с</th>
+                <th data-field="PO">Дата по</th>
+                <th data-field="USER">Пользователь</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (DataRow row in Model.Rows)
+        {
+            <tr>
+                <td>@row["VALUE"]</td>
+                <td>@row["S"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+                <td>@row["PO"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+                <td>@row["USER"]</td>
+            </tr>
+        }  
+        </tbody>
+    </table>
+
+    <script>
+        $(function () {
+            $('#GridHistory').kendoGrid({
+            });
+        });
+    </script>
+
+</div>
