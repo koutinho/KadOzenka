@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="986" DefaultLayoutId="1000986"  LinkedRegistersList="986,987,988,963,964,965,953" ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" SearchPanel="CoreSharedAttachment" DockNavigationPanel="true">
+    <Buttons>
+        <Button Caption="Прикрепить" NavigateURL="~/CoreAttachment/AttachDetach" NeedRefresh="true" WindowWidth="400" WindowHeight="150">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="AttachmentRegisterId" Value="{Get:AttachmentRegisterId}" />
+                <Parameter Key="AttachmentObjectId" Value="{Get:AttachmentObjectId}" />
+                <Parameter Key="AttachmentId" Value="[ObjectId]" />
+                <Parameter Key="Mode" Value="Attach"/>
+            </Parameters>
+        </Button>
+        <Button Caption="Открепить" NavigateURL="~/CoreAttachment/AttachDetach" NeedRefresh="true" WindowWidth="400" WindowHeight="150">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="AttachmentRegisterId" Value="{Get:AttachmentRegisterId}" />
+                <Parameter Key="AttachmentObjectId" Value="{Get:AttachmentObjectId}" />
+                <Parameter Key="AttachmentId" Value="[ObjectId]" />
+                <Parameter Key="Mode" Value="Detach"/>
+            </Parameters>
+        </Button>
+        <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreAttachment/AttachmentDelete" NeedRefresh="true" WindowWidth="400" WindowHeight="150">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="AttachmentRegisterId" Value="{Get:AttachmentRegisterId}" />
+                <Parameter Key="AttachmentObjectId" Value="{Get:AttachmentObjectId}" />
+                <Parameter Key="AttachmentId" Value="[ObjectId]" />
+            </Parameters>
+        </Button>
+        <Button Caption="Загрузить" Icon="fas fa-file-upload" NavigateURL="~/CoreAttachment/AttachmentUpload" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="AttachmentRegisterId" Value="{Get:AttachmentRegisterId}" />
+                <Parameter Key="AttachmentObjectId" Value="{Get:AttachmentObjectId}" />
+            </Parameters>
+        </Button>
+        <!--<Button Caption="Печать" NavigateURL="~/CoreUI/Attachments/PrintImages.aspx">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="AttachmentId" Value="[ObjectId]" />
+            </Parameters>
+        </Button>-->
+    </Buttons>
+    <Tabs>
+        <Tab Caption="Файлы образа" NavigateURL="~/CoreAttachment/AttachmentCard">
+            <Parameters>
+                <Parameter Key="AttachmentId" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

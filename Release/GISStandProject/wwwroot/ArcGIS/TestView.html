@@ -1,0 +1,470 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>ArcGIS API for JavaScript Hello World App</title>
+	<style>
+	
+		html, body {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		
+		#viewDiv {
+			position: absolute;
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 80%;
+			left: 20%;
+		}
+		
+	</style>
+	
+	<link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/css/main.css">
+	<script src="https://js.arcgis.com/4.13/"></script>
+	
+	<style>
+	
+		::-webkit-scrollbar {
+			width: 5px;
+			border-radius: 3px;
+		}
+		
+		::-webkit-scrollbar-track {
+			background: #f1f1f1;
+			border-radius: 3px;
+		}
+		
+		::-webkit-scrollbar-thumb {
+			background: #888;
+			border-radius: 3px;
+		}
+
+		.esri-layer-list__item .esri-layer-list__item-container .esri-layer-list__item-title {
+			word-break: keep-all;
+			white-space: nowrap;
+		}
+
+		.esri-layer-list__item .esri-layer-list__list .esri-layer-list__item-container .esri-layer-list__item-title {
+			white-space: normal;
+		}
+
+	
+		.esri-ui-inner-container.esri-ui-corner-container {
+			top:15px !important;
+			bottom:15px !important;
+		}
+	
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel {
+			max-height: 400px;
+			border-radius: 3px;
+			margin-bottom: 0px;
+			padding: 0px;
+			overflow-y: hidden;
+			background: #eee
+		}
+		
+		.esri-layer-list__list.esri-layer-list__list--root.esri-layer-list__list--independent {
+			margin: 5px;
+			position: relative;
+			max-height: 390px;
+			overflow-y: hidden;
+		}
+		
+		.esri-layer-list__item {
+			border: none;
+			background: #F8F8F8;
+		}
+
+		.esri-layer-list__list.esri-layer-list__list--root.esri-layer-list__list--independent::-webkit-scrollbar-track {
+			background: #EEE;
+		}
+		
+		.esri-layer-list__list.esri-layer-list__list--root.esri-layer-list__list--independent li:first-child {
+			margin-top: 0px;
+			margin-bottom: 5px;
+		}
+		
+		.esri-layer-list__list.esri-layer-list__list--root.esri-layer-list__list--independent li:last-child {
+			margin-top: 5px;
+			margin-bottom: 0px;
+		}
+
+		.esri-component.esri-attribution.esri-widget {
+			display: none;
+		}
+
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel li {
+			background: white;
+			visibility: collapse;
+		}
+
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel {
+			max-height: 35px;
+			max-width: 35px;
+			min-height: 35px;
+			min-width: 35px;
+			background: white;
+			background-image: url("method-draw-image.svg");
+			background-repeat: no-repeat;
+			background-size: 35px;
+			transition: all 0.5s;
+    	}
+
+		.esri-ui-bottom-right .esri-component {
+			margin: 0px;
+		}
+
+		.esri-ui-top-right .esri-component {
+			margin-bottom: 0px;
+		}
+
+		.esri-ui-top-right.esri-ui-corner .esri-component:first-child {
+			border-radius: 5px 5px 0px 0px !important;
+		}
+
+		.esri-ui-top-right.esri-ui-corner .esri-component:last-child {
+			border-radius: 0px 0px 5px 5px !important;
+		}
+
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel:hover {
+			width: 400px;
+			height: auto;
+			max-width: 400px;
+			max-height: 300px;
+			background-image: none;
+			cursor: pointer;
+		}
+
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel:hover li {
+			display: block;
+			visibility: visible;
+		}
+
+		.esri-component.esri-layer-list.esri-widget.esri-widget--panel:hover .esri-layer-list__list.esri-layer-list__list--root.esri-layer-list__list--independent {
+			overflow-y: auto;
+		}
+
+		.esri-ui-top-right.esri-ui-corner .esri-component:first-child:hover {
+			border-radius: 5px 5px 0px 5px !important;
+		}
+
+		.esri-ui-top-right.esri-ui-corner .esri-component:hover {
+			border-radius: 5px 0px 0px 5px !important;
+		}
+
+		.esri-ui-top-right.esri-ui-corner .esri-component:last-child:hover {
+			border-radius: 5px 0px 5px 5px !important;
+		}
+
+		.esri-widget.esri-component.menu-component {
+			max-height: 35px;
+			max-width: 35px;
+			min-height: 35px;
+			min-width: 35px;
+			background: white;
+			background-repeat: no-repeat;
+			background-size: 35px;
+			transition: all 0.5s;
+		}
+
+		.esri-widget.esri-component.menu-component.flex {
+			display: flex;
+		}
+
+		.esri-widget.esri-component.menu-component.measure-component .measure-button {
+			height: 35px;
+			width: 35px;
+			background-size: 35px;
+			visibility: collapse;
+		}
+
+		.esri-widget.esri-component.menu-component.measure-component .measure-button:first-child {
+			transition: all 0.5s;
+		}
+
+		.esri-widget.esri-component.menu-component.measure-component .measure-button.active {
+			background-color: rgba(0, 122, 194, 1);
+		}
+
+		.esri-widget.esri-component.menu-component .measure-button.measure-space {
+			background-image: url("measure.svg");
+		}
+
+		.esri-widget.esri-component.menu-component .measure-button.measure-square {
+			background-image: url("area.svg");
+		}
+
+		.esri-widget.esri-component.menu-component .measure-button.measure-space.active {
+			background-image: url("measure-active.svg");
+		}
+
+		.esri-widget.esri-component.menu-component .measure-button.measure-square.active {
+			background-image: url("area-active.svg");
+		}
+
+		.esri-widget.esri-component.menu-component.layer-component {
+			background-image: url("layer.svg");
+		}
+
+		.esri-widget.esri-component.menu-component.measure-component {
+			background-image: url("measure.svg");
+		}
+
+
+		.stop-measure-container .esri-widget.measure-button {
+			background-color: white;
+			cursor: pointer;
+			padding: 7px 15px 7px 15px;
+			border-radius: 5px;
+			margin-top: 5px;
+		}
+
+		.stop-measure-container .esri-widget.measure-button.text-center {
+			text-align: center;
+		}
+
+		.stop-measure-container .esri-widget.measure-label {
+			padding: 7px 15px 7px 15px;
+			text-align: center;
+			border-radius: 5px;
+		}
+
+		.stop-measure-container .esri-widget.measure-button:hover {
+			background-color: rgba(0, 122, 194, 1);
+			color: white;
+			transition: all 0.5s;
+		}
+
+		.esri-widget.esri-component.menu-component:hover {
+			background-image: none;
+			max-height: 400px;
+			max-width: 400px;
+			height: auto;
+			width: auto;
+		}
+
+		.esri-widget.esri-component.menu-component.measure-component:hover .measure-button:first-child {
+			border-radius: 5px 0px 0px 5px;
+		}
+
+		.esri-widget.esri-component.menu-component:hover .switcher-div {
+			visibility: visible;
+			white-space: normal;
+		}
+
+		.esri-widget.esri-component.menu-component:hover .measure-button {
+			visibility: visible;
+		}
+
+		.esri-widget.esri-component.menu-component .switcher-div {
+			margin-right: 7.5px;
+			margin-left: 7.5px;
+			visibility: collapse;
+			white-space: nowrap;
+			overflow-x: hidden;
+		}
+
+		.esri-widget.esri-component.menu-component .switcher-div:first-child {
+			margin-top: 7.5px;
+		}
+
+		.esri-widget.esri-component.menu-component .switcher-div:last-child {
+			margin-bottom: 7.5px;
+		}
+
+</style>
+	<script>
+		
+		function setMap(map, type) { map.basemap = type; }
+		
+		require([
+			"esri/Map",
+			"esri/views/MapView",
+			"esri/layers/WMSLayer",
+			"esri/widgets/LayerList",
+			"esri/config",
+			"esri/Basemap",
+			"esri/layers/MapImageLayer",
+			"esri/widgets/DistanceMeasurement2D",
+			"esri/widgets/AreaMeasurement2D",
+			"dojo/domReady!"
+		], 	
+		function(
+			Map, 
+			MapView, 
+			WMSLayer,
+			LayerList,
+			esriConfig,
+			Basemap,
+			MapImageLayer,
+			DistanceMeasurement2D,
+			AreaMeasurement2D
+		) {
+
+			var layer_rus = new WMSLayer({
+				url:"https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?",
+				title: "Межевание росреестра"
+			});
+		
+			var map = new Map({ basemap: "hybrid", layers: [layer_rus] });
+
+			var view = new MapView({
+				container: "viewDiv",
+				map: map,
+				ui: { components: [ "attribution" ] }, //Данное свойство убирает зум
+				center:  [37.638, 55.737],
+				zoom: 9
+			});
+
+			var layerlist = new LayerList({ view: view });
+			var coordsWidget = document.createElement("div");
+			var customBasemapWidget = document.createElement("div");
+			var measureWidget = document.createElement("div");
+			var activeWidget = null;
+			var onMeasure = false;
+			coordsWidget.id = "coordsWidget";
+			coordsWidget.className = "esri-widget esri-component";
+			coordsWidget.style.padding = "7px 15px 5px";
+			coordsWidget.style.borderRadius = "3px";
+			coordsWidget.style.marginRight = "0px";
+			customBasemapWidget.id = "customBasemapWidget";
+			customBasemapWidget.className  = "esri-widget esri-component menu-component layer-component";
+			measureWidget.id = "customMeasureWidget";
+			measureWidget.className  = "esri-widget esri-component menu-component measure-component flex";
+
+			function showCoordinates(pt) {
+				coordsWidget.innerHTML ="X: " + pt.longitude.toFixed(3) + " Y: " + pt.latitude.toFixed(3) + " Z: " + view.zoom.toFixed(0) + " | Масштаб 1:" + Math.round(view.scale * 1) / 1;
+			}
+			
+			view.watch("stationary", function(isStationary) { showCoordinates(view.center); });
+
+			view.on("pointer-move", function(evt) { showCoordinates(view.toMap({ x: evt.x, y: evt.y })); });
+
+            addBaseMapLayerToCustomWidget("custom-basemap-widget-hybrid-switcher", "hybrid", "Гибридная карта", "https://js.arcgis.com/4.13/esri/images/basemap/hybrid.jpg", "hybrid");
+            addBaseMapLayerToCustomWidget("custom-basemap-widget-topo-switcher", "topo", "Топографическая карта", "https://js.arcgis.com/4.13/esri/images/basemap/topo.jpg", "topo-vector", 5);
+
+            function addBaseMapLayerToCustomWidget(id, type, legend, imageLink, basemap, marginTop) {
+                var switcher_div = document.createElement("div"), switcher_div_image = document.createElement("div"), switcher_div_label = document.createElement("div");
+                switcher_div.id = id;
+                switcher_div.style.display = "flex";
+                switcher_div.style.alignItems = "center";
+				switcher_div.style.cursor = "pointer";
+				if(marginTop != null) switcher_div.style.marginTop = marginTop + 'px';
+                switcher_div_image.id = id + "-image";
+                switcher_div_image.style.backgroundImage =  "url(\'" + imageLink + "\')";
+				switcher_div_image.style.minWidth = 32;
+                switcher_div_image.style.width = 32;
+                switcher_div_image.style.height = 32;
+                switcher_div_label.id = id + "-label";
+                switcher_div_label.innerText = legend;
+                switcher_div_label.style.height = "fit-content";
+                switcher_div_label.style.marginLeft = "5px";
+                switcher_div.appendChild(switcher_div_image);
+                switcher_div.appendChild(switcher_div_label);
+				switcher_div.classList.add("switcher-div");
+				customBasemapWidget.appendChild(switcher_div);
+				switcher_div.onclick = function() {setMap(map, basemap);}
+            }
+
+			function addMeasureWidget(id, className, method) {
+				var measure_div = document.createElement("div");
+				measure_div.classList.add("measure-button");
+				measure_div.classList.add(className);
+				measure_div.id = id;
+				measure_div.onclick = method;
+				measureWidget.appendChild(measure_div);
+			}
+
+			addMeasureWidget("measureSpace", "measure-space", setMeasurement);
+			addMeasureWidget("measureSquare", "measure-square", setMeasurement);
+
+			function setMeasurement() {
+				clearMeasureWidget();
+				var currentElement = this;
+				Array.prototype.forEach.call(document.getElementsByClassName('measure-button'), function (element) { if(element.id != currentElement.id) element.classList.remove("active"); });
+				switch (currentElement.id) {
+					case "measureSquare":
+						if(currentElement.classList.contains("active")){
+							currentElement.classList.remove("active");
+							clearMeasureWidget();
+						}
+						else {
+							currentElement.classList.add("active");
+							startMeasuring("area");
+						}
+						break;
+					case "measureSpace":
+						if(currentElement.classList.contains("active")) {
+							currentElement.classList.remove("active");
+							clearMeasureWidget();
+						}
+						else {
+							currentElement.classList.add("active");
+							startMeasuring("space");
+						}
+						break;
+				}
+			}
+
+			function clearMeasureWidget(complete = false) {
+				if(activeWidget != null) {
+					view.ui.remove(activeWidget);
+					activeWidget.destroy();
+					activeWidget = null;
+					document.getElementById("measuringContainer").remove();
+					if(complete) Array.prototype.forEach.call(document.getElementsByClassName('measure-button'), function (element) { element.classList.remove("active"); });
+				}
+			}
+
+			function newMeasuring() { activeWidget.viewModel.newMeasurement(); }
+
+			function startMeasuring(type) {
+				activeWidget = type == "area" ? new AreaMeasurement2D({view: view}) : new DistanceMeasurement2D({view: view});
+				activeWidget.viewModel.newMeasurement();
+				var end_measuring_container = document.createElement("div");
+				end_measuring_container.id = "measuringContainer";
+				end_measuring_container.classList.add("stop-measure-container");
+				var end_measuring_button = document.createElement("div");
+				end_measuring_button.id = "endMeasuring";
+				end_measuring_button.innerText = "Завершить изменение";
+				end_measuring_button.classList.add("esri-widget");
+				end_measuring_button.classList.add("measure-button");
+				end_measuring_button.classList.add("text-center");
+				end_measuring_button.onclick = function(){ clearMeasureWidget(true); };
+				var new_measuring_button = document.createElement("div");
+				new_measuring_button.id = "newMeasuring";
+				new_measuring_button.innerText = "Новое измерение";
+				new_measuring_button.classList.add("esri-widget");
+				new_measuring_button.classList.add("measure-button");
+				new_measuring_button.classList.add("text-center");
+				new_measuring_button.onclick = function(){ newMeasuring(); };
+				var measuring_label = document.createElement("div");
+				measuring_label.id = "measuringLabel";
+				measuring_label.classList.add("esri-widget");
+				measuring_label.classList.add("measure-label");
+				measuring_label.innerText = "0 " +  (type == "area" ? "м² 0 м" : "м");
+				end_measuring_container.appendChild(measuring_label);
+				end_measuring_container.appendChild(new_measuring_button);
+				end_measuring_container.appendChild(end_measuring_button);
+				activeWidget.watch("viewModel.measurementLabel", function(label) {
+					if(label != null) measuring_label.innerText = type == "area" ? label.area + "; " + label.perimeter : label;
+				});
+				view.ui.add(end_measuring_container, "bottom-right");
+			}
+
+			view.ui.add(customBasemapWidget, "top-right");
+			view.ui.add(measureWidget, "top-right");
+			view.ui.add(layerlist, "top-right");
+			view.ui.add(coordsWidget, "bottom-left");
+
+		});
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

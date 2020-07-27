@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        input[type=text] {
+          width: 120px;
+          background-color: rgba(0, 0, 0, 0);
+          box-sizing: border-box;
+          border: none;
+          text-align: center;
+          margin-left: 10px;
+          border-bottom: 1px solid #9e9e9e !important;
+        }
+        input[type=text]:focus { outline: none; }
+        .startCheckingButton
+        {
+            height: 30px; 
+            background: #fff; 
+            border: 2px solid #6fd0d0; 
+            margin-left: 15px; 
+            text-align: center; 
+            line-height: 30px; 
+            padding: 0px 10px; 
+            font-size: 17px; 
+            font-weight: bold; 
+            color: #6fd0d0;
+        }
+        .startCheckingButton:hover
+        {
+            background: #6fd0d0; 
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        var currentProgress = 0;
+        var inProgress = false;
+
+        var socket = new WebSocket(`ws://${location.hostname + (location.port ? ':' + location.port : '')}/DuplicateProgress`);
+
+        socket.onmessage = function (event) { updateProgress(JSON.parse(event.data)); };
+        socket.onclose = function (event) { console.log(event); };
+        socket.onerror = function (event) { console.log(event); };
+
+        function setInputFilter(textbox, inputFilter) {
+            ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+                textbox.addEventListener(event, function() {
+                    if (inputFilter(this.value)) {
+                        this.oldValue = this.value;
+                        this.oldSelectionStart = this.selectionStart;
+                        this.oldSelectionEnd = this.selectionEnd;
+                    }
+                    else if (this.hasOwnProperty("oldValue")) {
+                        this.value = this.oldValue;
+                        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                    }
+                    else this.value = "";
+                });
+            });
+        }
+
+        function lockPanel() {
+            document.getElementById("startCheckingButton").style.background = "#6fd0d0";
+            document.getElementById("startCheckingButton").style.color = "#fff";
+            document.getElementById("startCheckingButton").innerHTML = "Идёт&nbsp;проверка"; 
+        }
+
+        function unlockPanel() {
+            document.getElementById("startCheckingButton").style.background = "#fff";
+            document.getElementById("startCheckingButton").style.color = "#6fd0d0";
+            document.getElementById("startCheckingButton").innerHTML = "Начать&nbsp;проверку"; 
+        }
+
+        function waitPanel() {
+            document.getElementById("startCheckingButton").style.background = "#6fd0d0";
+            document.getElementById("startCheckingButton").style.color = "#fff";
+            document.getElementById("startCheckingButton").innerHTML = "Загрузка<div style=\"background-image:url('../MapIcons/preloaderWhite.svg');width:22px;height:22px;background-size:22px;margin-left:10px;\"></div>"; 
+        }
+
+        function setDefaultProgress() {
+            document.getElementById("progressBar").style.width = "0%";
+            document.getElementById("progressCounter").innerHTML = "0&nbsp;%";
+        }
+
+        function updateProgressBar(currentProgress) {
+            document.getElementById("progressBar").style.width = `${currentProgress}%`;
+            document.getElementById("progressCounter").innerHTML = `${(currentProgress).toFixed(2)}&nbsp;%`;
+        }
+
+        function updateLastCheckPanel(data) {
+            document.getElementById("lastChechResults").innerHTML = data.marketSegment == null ? `<div>Пока проверка не проводилась</div>` :
+                `<div>Последняя&nbsp;проверка&nbsp;${data.marketSegment}&nbsp;(${data.checkDate}):&nbsp;площадь&nbsp;${data.areaDelta},&nbsp;цена:&nbsp;${data.priceDelta}</div>
+                 <div>Всего объектов: ${data.commonCount}. Из них дубликатов: ${data.duplicateCount} (${(data.duplicateCount / data.commonCount * 100).toFixed(2)}%) и объектов "в работе": ${data.inProgressCount} (${(data.inProgressCount / data.commonCount * 100).toFixed(2)}%)</div>`;
+        }
+
+        function sendInitialData(data) {
+            $.ajax({
+                type: "POST",
+                url: "CheckDuplicates/StartDuplicatesChecking",
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (result) {}
+            });
+        }
+
+        function updateProgress(data) {
+            currentProgress = data.currentProgress;
+            inProgress = data.inProgress;
+            updateLastCheckPanel(data);
+            if (currentProgress != 0) {
+                lockPanel();
+                updateProgressBar(currentProgress);
+                inProgress = false;
+            }
+            else {
+                if (inProgress) waitPanel();
+                else {
+                    unlockPanel();
+                    setDefaultProgress();
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function (event) {
+            setInputFilter(document.getElementById("priceTextBox"), function (value) { return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 100); });
+            setInputFilter(document.getElementById("areaTextBox"), function (value) { return /^\d*$/.test(value) && (value === "" || parseInt(value) <= 100); });
+            document.getElementById("startCheckingButton").addEventListener("click", function () {
+                if (currentProgress == 0 && !inProgress) {
+                    var price = Number.parseInt(document.getElementById("priceTextBox").value);
+                    var area = Number.parseInt(document.getElementById("areaTextBox").value);
+                    price = isNaN(price) ? 5 : price;
+                    area = isNaN(area) ? 1 : area;
+                    inProgress = true;
+                    var data = { Area: area, Price: price, InProgress: inProgress };
+                    sendInitialData(data);
+                    waitPanel();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <div style="display: flex; margin:5px; align-items: center;">
+            <div id="progressCounter" class="current-content" style="width:80px;font-size:18px;text-align:center">0&nbsp;%</div>
+            <div style="background-color:#f1f1f1; width:calc(100% - 516.109px)">
+                <div id="progressBar" style="height:24px;width:0%;background:#6fd0d0"></div>
+            </div>
+            <div style="display: flex; align-items: center; margin-left: 5px">
+                <input type="text" id="priceTextBox" placeholder="цена">
+                <input type="text" id="areaTextBox" placeholder="площадь">
+                <div id="startCheckingButton" class="startCheckingButton" style="display:flex; align-items:center;">Начать&nbsp;проверку</div>
+            </div>
+        </div>
+        <div id="lastChechResults" style="margin:5px; margin-left:30px; color:darkgray"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,226 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+
+@model KadOzenka.Web.Models.Tour.UnloadSettingsDto
+
+<style>
+    input {
+        cursor: pointer;
+    }
+</style>
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=UnloadSettings" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тур оценки")
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().DropDownList()
+                .Name("Tour")
+                .DataTextField("Text")
+                .DataValueField("Value")
+                )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Задание на оценку")
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().MultiSelectFor(x => x.TaskFilter)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter("contains")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetTasksData", "GbuObject");
+                    })
+                        .ServerFiltering(false);
+                }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Исходящий документ")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.IdResponseDocument, (IEnumerable)ViewData["Documents"])
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тип объекта")
+        </div>
+        <div class="col-sm-10">
+            <div class="radio-inline">
+                <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
+            </div>
+            <div class="radio-inline">
+                <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Отправить результат в РЕОН")
+        </div>
+        <div class="col-sm-10 ">
+            @Html.CheckBoxFor(x => x.SendResultToReon)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadChange)
+            @Html.CustomLabel("Выгрузка изменений")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadHistory)
+            @Html.CustomLabel("Выгрузка истории по объектам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable04)
+            @Html.CustomLabel("Таблица 4. Группировка объектов недвижимости")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable05)
+            @Html.CustomLabel("Таблица 5. Результаты моделирования")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable07)
+            @Html.CustomLabel("Таблица 7. Обобщенные показатели по кадастровым районам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable08)
+            @Html.CustomLabel("Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable09)
+            @Html.CustomLabel("Таблица 9. Результаты определения кадастровой стоимости")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable10)
+            @Html.CustomLabel("Таблица 10. Результаты государственной кадастровой оценки")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadTable11)
+            @Html.CustomLabel("Таблица 11. Сводные результаты по кадастровому району")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadXML1)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по объектам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadXML2)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по группам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadDEKOResponseDocExportToXml)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по исходящим документам")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+            @Html.CheckBoxFor(x => x.UnloadDEKOVuonExportToXml)
+            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки для ВУОН")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-10">
+            <button class="btn btn-default btn-block" id="save">Расчет</button>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        $('[name="Tour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Tour")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        $('#save').on('click', function () {
+            var dto = {
+                IdTour: $('[name="Tour"]').val(),
+                UnloadParcel: $('input[name="ObjType"]:checked')[0].id === "Parcel",
+                TaskFilter: $('#TaskFilter').data("kendoMultiSelect").value(),
+                IdResponseDocument: $('#IdResponseDocument').data("kendoDropDownList").value(),
+                UnloadChange: $('#UnloadChange').prop('checked'),
+                UnloadHistory: $('#UnloadHistory').prop('checked'),
+                UnloadTable04: $('#UnloadTable04').prop('checked'),
+                UnloadTable05: $('#UnloadTable05').prop('checked'),
+                UnloadTable07: $('#UnloadTable07').prop('checked'),
+                UnloadTable08: $('#UnloadTable08').prop('checked'),
+                UnloadTable09: $('#UnloadTable09').prop('checked'),
+                UnloadTable10: $('#UnloadTable10').prop('checked'),
+                UnloadTable11: $('#UnloadTable11').prop('checked'),
+                UnloadXML1: $('#UnloadXML1').prop('checked'),
+                UnloadXML2: $('#UnloadXML2').prop('checked'),
+                UnloadDEKOResponseDocExportToXml: $('#UnloadDEKOResponseDocExportToXml').prop('checked'),
+                UnloadDEKOVuonExportToXml: $('#UnloadDEKOVuonExportToXml').prop('checked'),
+                SendResultToReon: $('#SendResultToReon').prop('checked')
+            };
+
+            $.ajax({
+                type: 'POST',
+                data: dto,
+				success: function (data) {
+					if (data.Errors) {
+						var errors = getErrors(data.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+                    Common.ShowMessage('Выполнение операции поставлено в очередь. По окончанию расчета вы получите уведомление.');
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        });
+
+    });
+</script>

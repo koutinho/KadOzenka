@@ -1,0 +1,730 @@
+﻿@using System.Collections
+@using DevExpress.DataProcessing
+@using FastReport.Fonts
+@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
+@model KadOzenka.Web.Models.GbuObject.GroupingObject;
+
+<style>
+	fieldset {
+		border: 1px solid #c8c6cc;
+		border-radius: 6px;
+		margin-bottom: 10px;
+	}
+
+	fieldset legend {
+		font-size: initial;
+		font-style: italic;
+		margin: 0;
+	}
+
+	.error {
+		border: 1px solid red;
+		border-color: red !important;
+	}
+
+	#valuesFilter-list {
+		display: none !important;
+	}
+	.wrap-level {
+		padding-top: 5px;
+	}
+	.row {
+		padding: inherit;
+	}
+
+	.k-multiselect-wrap
+	{
+		overflow: auto;
+		max-height: 100px;
+	}
+</style>
+
+@using (Html.BeginForm("GroupingObject", "GbuObject", FormMethod.Post))
+{
+    <div class="form-horizontal col-sm-12">
+    <div class="form-group">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=GroupingObject" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.IdCodJob)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"])
+        </div>
+    </div>
+    <fieldset class="wrap-level">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.SelectAllObject))
+                    Все объекты
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.IsValuesFilterUsed).Enable(!Model.SelectAllObject))
+                    По значению
+                </label>
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.IdAttributeFilter)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], isReadonly: true)
+            </div>
+            <div class="col-sm-1">
+                @Html.CustomLabelFor(m => m.ValuesFilter)
+            </div>
+            <div class="col-sm-3">
+                <select id="valuesFilter" style="width: 100%;"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
+                    Дата актуализации
+                </label>
+            </div>
+	        <div class="col-sm-4">
+	            @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <div class="col-sm-2">
+	            <label>
+	                @(Html.Kendo().CheckBoxFor(m => m.IsTaskFilterUsed).Enable(!Model.SelectAllObject))
+	                Задания на оценку
+	            </label>
+	        </div>
+	        <div class="col-sm-10">
+	            @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+	                  .DataTextField("Text")
+	                  .DataValueField("Value")
+	                  .Filter("contains")
+	                  .Enable(Model.IsTaskFilterUsed)
+	                  .DataSource(source =>
+	                  {
+	                      source.Read(read =>
+	                      {
+	                          read.Action("GetTasksData", "GbuObject");
+	                      })
+	                          .ServerFiltering(false);
+	                  }))
+	        </div>
+	    </div>
+	</fieldset>
+<fieldset class="wrap-level">
+	<legend>1 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level1.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level1.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div id="level1div" class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level1.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>2 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level2.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level2.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level2.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>3 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level3.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level3.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level3.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>4 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level4.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level4.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level4.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>5 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level5.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level5.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level5.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>6 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level6.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level6.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level6.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>7 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level7.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">, 
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level7.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level7.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>8 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level8.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level8.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level8.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>9 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level9.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level9.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level9.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>10 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level10.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level10.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level10.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
+	<legend>11 Уровень</legend>
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level11.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level11.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListTreeWithButton(m => m.Level11.IdFactor, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+		</div>
+	</div>
+</fieldset>
+<div class="form-group"></div>
+@(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
+{
+	IdAttributeResult = Model.IdAttributeResult,
+	IsNewAttribute = Model.IsNewAttribute,
+	NameNewAttribute = Model.NameNewAttribute,
+	RegistryId = Model.RegistryId,
+	TypeNewAttribute = Model.TypeNewAttribute
+}))
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.IdAttributeSource)
+    </div>
+    <div class="col-sm-10">
+        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeSource, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.IdAttributeDocument)
+    </div>
+    <div class="col-sm-10">
+        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeDocument, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes )
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-7">
+        @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+            {
+                ControllerName = "GbuObject",
+                ActionName = "GetTemplatesGrouping"
+            }))
+        </div>
+
+        <div class="col-sm-1 col-sm-offset-1">
+            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+        </div>
+        <div class="col-sm-3">
+            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+        </div>
+    </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    
+    function fillForm(data) {
+        $('#valuesFilter').getKendoMultiSelect().value([]);
+        $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        data.forEach(function (val) {
+            if (Object.keys(val)[0].includes('IdFactor') || Object.keys(val)[0].includes('IdAttributeResult')
+                || Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument')) {
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
+            }
+
+            if (Object.keys(val)[0].includes('IdCodJob')) {
+                $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+            }
+
+            if (Object.keys(val)[0].includes('ValuesFilter')) {
+                var widget = $('#valuesFilter').getKendoMultiSelect();
+                var dataSource = widget.dataSource;
+                var newItem = {
+                    valuesFilter: val[Object.keys(val)[0]],
+                    valuesFilterName: val[Object.keys(val)[0]]
+                };
+
+                dataSource.add(newItem);
+                var newValue = newItem.valuesFilter;
+                widget.value(widget.value().concat([newValue]));
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.SelectAllObject))') {
+                if (!!val[Object.keys(val)[0]]) {
+                    $('#@(nameof(Model.SelectAllObject))').prop("checked", true);
+                    selectAllObjectChanged(true);
+                    return;
+                }
+                $('#@(nameof(Model.SelectAllObject))').prop("checked", false);
+                selectAllObjectChanged(false);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsDataActualUsed))') {
+                if (!!val[Object.keys(val)[0]]) {
+                    $('#@(nameof(Model.IsDataActualUsed))').prop("checked", true);
+                    changeDataActualAvailability(true);
+                    return;
+                }
+                $('#@(nameof(Model.IsDataActualUsed))').prop("checked", false);
+                changeDataActualAvailability(false);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsTaskFilterUsed))') {
+                if (!!val[Object.keys(val)[0]]) {
+                    $('#@(nameof(Model.IsTaskFilterUsed))').prop("checked", true);
+                    changeTaskFilterAvailability(true);
+                    return;
+                }
+                $('#@(nameof(Model.IsTaskFilterUsed))').prop("checked", false);
+                changeTaskFilterAvailability(false);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsValuesFilterUsed))') {
+                if (!!val[Object.keys(val)[0]]) {
+                    $('#@(nameof(Model.IsValuesFilterUsed))').prop("checked", true);
+                    changeValuesFilterAvailability(true);
+                    return;
+                }
+                $('#@(nameof(Model.IsValuesFilterUsed))').prop("checked", false);
+                changeValuesFilterAvailability(false);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.DataActual))') {
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(kendo.parseDate(val[Object.keys(val)[0]]));
+            }
+
+            if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
+                var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                currentValue.push([val[Object.keys(val)[0]]]);
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
+            }
+
+            if (Object.keys(val)[0].includes('UseDictionary') || Object.keys(val)[0].includes('SkipDefis')) {
+                $('#' + Object.keys(val)[0]).prop("checked", val[Object.keys(val)[0]]);
+            }
+        });
+        var isSelectAllObjectsChecked =
+            $('#SelectAllObject').prop('checked');
+        selectAllObjectChanged(isSelectAllObjectsChecked);
+    }
+
+    function changeDataActualAvailability(isDataActualUsed) {
+        if (isDataActualUsed) {
+            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(true);
+        } else {
+            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
+            $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
+        }
+    }
+
+    function changeValuesFilterAvailability(isValuesFilterUsed) {
+        if (isValuesFilterUsed) {
+            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
+            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
+            $('#valuesFilter').data("kendoMultiSelect").enable(true);
+            Common.UI.ShowInfo({
+                content: "Вводите значения через 'Shift + Enter'",
+                onSuccess: function() {
+                    Common.UI.CloseWindow('Dashboard', window.parent);
+                }
+            });
+        } else {
+            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
+            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
+            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
+
+            $('#valuesFilter').data("kendoMultiSelect").value([]);
+            $('#valuesFilter').data("kendoMultiSelect").enable(false);
+        }
+    }
+
+    function changeTaskFilterAvailability(isTaskFilterUsed) {
+        if (isTaskFilterUsed) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+        } else {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+        }
+    }
+
+    function selectAllObjectChanged(checked) {
+        if (checked) {
+            $('#IsValuesFilterUsed').prop('checked', false);
+            $('#IsValuesFilterUsed').attr("disabled", true);
+            $('#IsDataActualUsed').prop('checked', false);
+            $('#IsDataActualUsed').attr("disabled", true);
+            $('#IsTaskFilterUsed').prop('checked', false);
+            $('#IsTaskFilterUsed').attr("disabled", true);
+
+            changeDataActualAvailability(false);
+            changeValuesFilterAvailability(false);
+            changeTaskFilterAvailability(false);
+        } else {
+            $('#IsValuesFilterUsed').attr("disabled", false);
+            $('#IsDataActualUsed').attr("disabled", false);
+            $('#IsTaskFilterUsed').attr("disabled", false);
+        }
+    }
+
+	function getDataSource() {
+        return $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).map(d => $(d).data('kendoDropDownTree'));
+    }
+
+    function getSelectedValues() {
+        return getDataSource().map(d => d.value());
+    }
+
+    function getAllUidsToDisable(arrValues) {
+        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+
+    function flattenDataSource(d) {
+        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+    }
+
+    function blockAlreadySelectedNodes(arr) {
+        var uidsToBlock = getAllUidsToDisable(arr);
+        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+
+    function clearTreeStates() {
+        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+
+    function updateSelected(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+
+        clearTreeStates();
+
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValues();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodes(filtered);
+    };
+
+    function updateStates() {
+        clearTreeStates();
+        var arr = getSelectedValues();
+        blockAlreadySelectedNodes(arr);
+    }
+
+    function addSelectionHandlersForDropDowns() {
+        getDataSource().forEach(function (d) {
+                d.treeview.unbind('select');
+                d.treeview.bind('select', e => updateSelected(e));
+            }
+        );
+
+        updateStates();
+
+        var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'));
+
+        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+    }
+
+    $(document).ready(function () {
+        addSelectionHandlersForDropDowns();
+
+        $('#SelectAllObject').bind("change",
+            function() {
+                selectAllObjectChanged(this.checked);
+            });
+        $('#IsValuesFilterUsed').bind("change",
+            function() {
+                changeValuesFilterAvailability(this.checked);
+            });
+        $('#IsDataActualUsed').bind("change",
+            function() {
+                changeDataActualAvailability(this.checked);
+            });
+        $('#IsTaskFilterUsed').bind("change",
+            function() {
+                changeTaskFilterAvailability(this.checked);
+            });
+
+		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
+		function onDataBound(e) {
+			$('.k-multiselect .k-input').unbind('keyup');
+            $('.k-multiselect .k-input').on('keyup', onClickEnter); 
+		}
+        function onClickEnter(e) {
+			if (e.keyCode === 13) {
+				var widget = $('#valuesFilter').getKendoMultiSelect();
+				var dataSource = widget.dataSource;
+				var input = $('.k-multiselect .k-input');
+				var value = input.val().trim();
+				if (!value || value.length === 0) {
+					return;
+				}
+				var newItem = {
+					valuesFilter: value,
+					valuesFilterName: value
+				};
+
+				dataSource.add(newItem);
+				var newValue = newItem.valuesFilter;
+				widget.value(widget.value().concat([newValue]));
+			}
+		}
+		$("#valuesFilter").kendoMultiSelect({
+			dataTextField: "valuesFilterName",
+			dataValueField: "valuesFilter",
+			enable: false,
+			dataSource: {
+				data: []
+			},
+			dataBound: onDataBound
+		});
+
+		$('#execute').on('click',
+			function () {
+				var form = $('form');
+				var formObject = Common.Functions.FormToObject(form);
+				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+				
+				kendo.ui.progress($('body'), true);
+
+			    $.post(form.attr('action'), formObject).done(function(response) {
+			            if (response.Errors) {
+			                var errors = getErrors(response.Errors);
+			                Common.ShowError(errors);
+			                return;
+			            }
+			            if (response.success) {
+			                if (response.idResultAttribute && updateResultControl) {
+			                    updateResultControl(response.idResultAttribute);
+			                }
+			                Common.ShowMessage(
+                                "Процедура нормализации данных успешно добавлена в очередь, по результатам операции будет отправлено сообщение");
+
+                            if (response.QueueId) {
+                                var hrefForJournal = "/RegistersView/CoreLongProcessQueue?Transition=1&97500100=" + response.QueueId;
+                                var goToProcessBtn = $("#goToProcessBtn");
+                                goToProcessBtn.removeClass('k-state-disabled');
+                                goToProcessBtn.attr('href', hrefForJournal);
+                            }
+			            }
+			        })
+			        .fail(function(response, textStatus, errorThrown) {
+			            Common.ShowError(response.responseText);
+			        })
+			        .always(function() {
+			            kendo.ui.progress($('body'), false);
+			        });
+			});
+	});
+</script>

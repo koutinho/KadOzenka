@@ -1,0 +1,91 @@
+﻿@model long
+
+<div id="splitter" style="height: inherit; flex:1; box-sizing: border-box;">
+    <div id="left-pane">
+        <div id="LinkedTree" style="overflow-x:hidden;width:100%;">
+        </div>
+    </div>
+    <div id="right-pane">
+        <iframe id="DetailsFrame"></iframe>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var objectId = @Model;
+
+    $(document).ready(function () {
+        $("#splitter").kendoSplitter({
+            orientation: "horizontal",
+            panes: [
+                { collapsible: false, size: "30%" },
+                { collapsible: false }
+            ]
+        });
+
+        var linkedTreeView = $('#LinkedTree').kendoTreeView({
+            dataTextField: "NodeText",
+            select: function (e) {
+                var dataItem = this.dataItem(e.node);
+                if (dataItem.ContentUrl && dataItem.ContentUrl.length > 0) {
+                    loadDetails(dataItem.ContentUrl);
+                }
+            },
+            dataBound: function (e) {
+                if (e.node === undefined) {
+                    var rootItems = this.dataItems();
+                    if (rootItems && rootItems.length > 0) {
+                        for(var i=0; i < rootItems.length; i++) {
+                            if (rootItems[i].ContentUrl && rootItems[i].ContentUrl.length > 0) {
+                                this.select(this.findByUid(rootItems[i].uid))
+                                loadDetails(rootItems[i].ContentUrl);
+                                break;
+                            }
+                        }
+                    }
+                }
+            },
+            dataSource: new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("TreeList", "GbuObject")',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        data: function (e) {
+                            var treeView = $('#LinkedTree').data('kendoTreeView');
+
+                            if (treeView) {
+                                var currentNode = treeView.current();
+                                if (currentNode.length > 0) {
+                                    var dataItem = treeView.dataItem(currentNode);
+
+                                    return {
+                                        objectId: objectId,
+                                        parentNodeId: dataItem.NodeId,
+                                    };
+                                }
+                            }
+
+                            return {
+                                id: objectId,
+                                objectId: objectId,
+                            };
+                        }
+                    }
+                },
+                schema: {
+                    model: {
+                        id: 'NodeId',
+                        hasChildren: 'HasChilds',
+                    }
+                }
+            })
+        }).data('kendoTreeView');
+
+        function loadDetails(url) {
+            var detailsFrame = $('#DetailsFrame');
+            if (url && url.length > 0 && detailsFrame.length > 0) {
+                detailsFrame.attr('src', url);
+            }
+        }
+    });
+</script>

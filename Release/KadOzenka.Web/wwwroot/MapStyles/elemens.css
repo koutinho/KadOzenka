@@ -1,0 +1,44 @@
+.ymaps-2-1-76-copyrights-pane {
+    display: none;
+}
+
+.ymaps-2-1-76-searchbox-button {
+    background-color: #4590ff !important;
+    color: #fff !important;
+}
+
+.ymaps-2-1-76-float-button.ymaps-2-1-76-_checked {
+    background-color: #4590ff !important;
+    color: #fff !important;
+}
+
+.ymaps-2-1-76-float-button.ymaps-2-1-76-_checked .ymaps-2-1-76-float-button-icon_icon_ruler {
+    background-image: url(/MapIcons/roulette.svg);
+}
+
+.ymaps-2-1-76-searchbox-input.ymaps-2-1-76-_focused {
+    box-shadow: inset 0 0 0 2px #98c2ff !important;
+}
+
+.ymaps-2-1-76-listbox__list-item:hover {
+    background-color: #4590ff !important;
+    color: #fff !important;
+}
+
+.ymaps-2-1-76-listbox__list-item_selected_yes .ymaps-2-1-76-listbox__list-item-text:hover::before {
+    background-image: url(/MapIcons/checked.svg);
+    color: #fff !important;
+}
+
+.ymaps-2-1-76-islets_serp-item.ymaps-2-1-76-islets__selected {
+    background-color: #8cbaff !important;
+}
+
+.ymaps-2-1-76-islets_serp-item.ymaps-2-1-76-islets__selected .ymaps-2-1-76-islets_card__description {
+    color: #fff !important;
+}
+
+.ymaps-2-1-76-search__suggest.ymaps-2-1-76-popup .ymaps-2-1-76-search__suggest-item_selected_yes {
+    background: #61a0ff !important;
+    color: #fff !important;
+}

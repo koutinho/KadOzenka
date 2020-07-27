@@ -1,0 +1,903 @@
+﻿@using Core.Shared.Extensions
+@using ObjectModel.Market
+@using ObjectModel.Directory;
+
+@model KadOzenka.Web.Models.MarketObject.CoreObjectDto
+
+<form>
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="Section_Main" data-expand>
+            <span>Основные данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Источник данных</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Market" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Тип сделки</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.DealType" />
+                        </div>
+                        <div class="col-sm-2">
+                            @if (Model.DealTypeCode == DealType.RentDeal || Model.DealTypeCode == DealType.SaleDeal)
+                            {<label class="control-label">Дата сделки</label>}
+                            else
+                            {<label class="control-label">Дата предложения</label>}
+                        </div>
+                        <div class="col-sm-2">
+                            @if (Model.LastDateUpdate != null)
+                            {<input class="k-textbox" readonly value="@Model.LastDateUpdate.Value.ToString("dd.MM.yyyy")" />}
+                            else
+                            {<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("dd.MM.yyyy")" />}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Адрес</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input class="k-textbox" readonly value="@Model.Address" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Метро</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Metro" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Площадь</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Area" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Статус</label>
+                        </div>
+                        <div class="col-sm-2">
+                            @*<input class="k-textbox" readonly value="@Model.Status" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.Status)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down" id="ObjectStatusSelectedValue"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Статус обработки обязательное" editmode="true" id="ObjectStatus" name="ObjectStatus" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Описание</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea class="k-textbox" readonly rows="5" style="resize:none; padding: 5px">@Model.Description</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Цена</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="priceInput" class="k-textbox" readonly value="@Model.Price" />
+                        </div>
+                        <div class="col-sm-1">
+                            @if (@Model.PriceHistories?.Count > 0)
+                            {
+                                <img id="historyImg" src="/images/Icons/24x24_Help.png" style="float: left; margin-top: .4em;" />
+                                if (@Model.IsRangePriceHistory)
+                                {
+                                    @(Html.Kendo().Tooltip()
+                                                  .For("#historyImg")
+                                                  .Name("priceHistoryTooltip")
+                                                  .ContentTemplateId("historyRangeGrid")
+                                                  .Position(TooltipPosition.Right)
+                                                  .AutoHide(false)
+                                    )
+                                }
+                                else
+                                {
+                                    @(Html.Kendo().Tooltip()
+                                                  .For("#historyImg")
+                                                  .Name("priceHistoryTooltip")
+                                                  .ContentTemplateId("historyGrid")
+                                                  .Position(TooltipPosition.Right)
+                                                  .AutoHide(false)
+                                    )
+                                }
+
+                            }
+                        </div>
+                        <div class="col-sm-1">
+                            <label class="control-label">Тип ОН</label>
+                        </div>
+                        <div class="col-sm-2">
+                            @*<input id="priceInput" class="k-textbox" readonly value="@Model.CIPJSType" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.CIPJSType)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down" id="ObjectTypeSelectedValue"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Тип объекта обязательное" editmode="true" id="ObjectType" name="ObjectType" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Сегмент рынка</label>
+                        </div>
+                        <div class="col-sm-2">
+                            @*<input id="priceInput" class="k-textbox" readonly value="@Model.MarketSegment" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.MarketSegment)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Сегмент рынка обязательное" editmode="true" id="ObjectMarketSegment" name="ObjectMarketSegment" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Ссылка на объявление</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="@Model.Url" target="_blank">@Model.Url</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Coordinates_Group" data-expand>
+            <span>Координаты</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Долгота</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="lngTextBox" class="k-textbox" value="@Model.Longitude" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Широта</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="latTextBox" class="k-textbox" value="@Model.Latitude" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (@Model.PriceHistories?.Count > 0)
+        {
+            <li id="Section_PriceHistoryChart" data-expand>
+                <span>График истории изменения цены</span>
+                <div>
+                    <div class="col-sm-12">
+                        <div class="priceHistoryChartContainer">
+                            <div id="priceHistoryChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+        @if (Model.MarketType != MarketTypes.Rosreestr /*&& Model.ProcessType == ProcessStep.InProcess*/)
+        {
+            <li id="Section_ScreenShots" data-expand>
+                <span>Скриншоты</span>
+                <div>
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group"></div>
+                        @if (((List<(long, DateTime?)>)ViewBag.ScreenShots).IsNotEmpty())
+                        {
+                            <ol>
+                                @foreach (var screen in (List<(long, DateTime?)>)ViewBag.ScreenShots)
+                                {
+                                    <li>
+                                        <div class="form-group">
+                                            <div class="col-sm-2">
+                                                <label class="control-label">@screen.Item2.ParseToString()</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <a href="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" data-fancybox="gallery" data-caption="@screen.Item2.Value">
+                                                    <img src="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" alt="" style="height:92px; width:192px" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ol>
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+        <li id="Section_Reestr" data-expand>
+            <span>Данные Росреестра</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Кадастровый номер</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="k-textbox" readonly value="@Model.CadastralNumber" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Кадастровый квартал</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="k-textbox" readonly value="@Model.CadastralQuartal" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Район</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="k-textbox" readonly value="@Model.District" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Кадастровый номер здания</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="k-textbox" readonly value="@Model.BuildingCadastralNumber" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Section_OKS" data-expand>
+            <span>Данные ОКС</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Год постройки</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.BuildingYear" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Этажноcть</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.FloorsCount" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Номер этажа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.FloorNumber" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Площадь кухни</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.AreaKitchen" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Площадь жилая</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.AreaLiving" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Section_Group" data-expand>
+            <span>Группировка</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Зона</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Zone" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Группа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Group" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Подгруппа</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea class="k-textbox" readonly rows="2" style="resize:none; padding: 5px">@Model.Subgroup</textarea>
+                        </div>
+                    </div>
+                    <div id="gu_list">
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
+        {
+            <li id="Section_Map" data-expand>
+                <span>На карте</span>
+                <div>
+                    <div class="form-horizontal col-sm-12">
+                        <div class="MapContainer">
+                            <div id="objectMap" class="Map"></div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+    <div class="static-nav">
+        <nav id="navigation-menu">
+            <a href="#Section_Main">Основные данные</a>
+            <a href="#Coordinates_Group">Координаты</a>
+            @if (@Model.PriceHistories?.Count > 0) { <a href="#Section_PriceHistoryChart">График истории изменения цены</a>  }
+            <a href="#Section_Reestr">Данные Росреестра</a>
+            <a href="#Section_OKS">Данные ОКС</a>
+            <a href="#Section_Group">Группировка</a>
+            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess) { <a href="#Section_Map">На карте</a> }
+            <div style="position:absolute; bottom:0px; width:100%; display:flex; justify-content: space-between;" id="toolbar" data-role="toolbar" class="k-toolbar k-widget k-toolbar-resizable" tabindex="0">
+                <div tabindex="0" class="k-overflow-anchor k-button" style="visibility: hidden; width: 1px;">
+                    <span class="k-icon k-i-more-vertical"></span>
+                </div>
+                <a tabindex="0" class="k-button k-button-icon blocked" id="saveBtn" data-overflow="auto" style="width:110px;">
+                    Сохранить
+                    <span class="k-icon k-i-save"></span>
+                </a>
+                <a tabindex="0" class="k-button k-button-icon blocked" id="cancelBtn" data-overflow="auto" style="width:110px">
+                    Отменить
+                    <span class="k-icon k-i-cancel"></span>
+                </a>
+            </div>
+        </nav>
+    </div>
+</form>
+
+<script id="historyGrid" type="text/x-kendo-template">
+    @(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
+                                                          (Model.PriceHistories)
+                                                          .Name("priceHistoryGrid")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
+                                                              columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
+                                                          })
+                                                          .ToolBar(t =>
+                                                          {
+                                                              t.ClientTemplate("История изменения цены");
+                                                          })
+                                                          .Resizable(resize => resize.Columns(true))
+                                                          .Scrollable()
+                                                          .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .ServerOperation(false)
+                                                              .Model(x =>
+                                                              {
+                                                                  x.Field(y => y.ChangingDate).Editable(false);
+                                                                  x.Field(y => y.PriceValueTo).Editable(false);
+                                                              })
+                                                          ).ToClientTemplate())
+
+</script>
+<script id="historyRangeGrid" type="text/x-kendo-template">
+    @(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
+                                                          (Model.PriceHistories)
+                                                          .Name("priceHistoryGrid")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
+                                                              columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
+                                                              columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
+                                                          })
+                                                          .ToolBar(t =>
+                                                          {
+                                                              t.ClientTemplate("История изменения цены");
+                                                          })
+                                                          .Resizable(resize => resize.Columns(true))
+                                                          .Scrollable()
+                                                          .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .ServerOperation(false)
+                                                              .Model(x =>
+                                                              {
+                                                                  x.Field(y => y.ChangingDate).Editable(false);
+                                                                  x.Field(y => y.PriceValueFrom).Editable(false);
+                                                                  x.Field(y => y.PriceValueTo).Editable(false);
+                                                              })
+                                                          ).ToClientTemplate())
+
+</script>
+<script id="priceHistoryChartTooltip" type="text/x-kendo-template">
+    <div>
+        <div style="white-space: nowrap;">
+            <span>Цена: </span>
+            <span style="font-weight: bold;">#= kendo.toString(value, "c0") #</span>
+        </div>
+        <div style="white-space: nowrap;">
+            <span>Дата: </span>
+            <span style="font-weight: bold;">#= kendo.toString(new Date(category), "dd.MM.yyyy HH:mm:ss") #</span>
+        </div>
+    </div>
+</script>
+<script charset="utf-8">
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetAvaliableValues", "Map")',
+        data: { },
+        contentType: 'application/json; charset=utf-8',
+        success: function (avaliableData) {
+            kendo.syncReady(function () {
+                jQuery("#ObjectType").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.CIPJSTypeCode)",
+                    "dataSource": avaliableData.CIPJSType.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.CIPJSTypeCode) ? false : true } })
+                });
+            });
+             kendo.syncReady(function () {
+                jQuery("#ObjectMarketSegment").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.MarketSegmentCode)",
+                    "dataSource": avaliableData.MarketSegment.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.MarketSegmentCode) ? false : true } })
+                });
+            });
+            kendo.syncReady(function () {
+                jQuery("#ObjectStatus").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.StatusCode)",
+                    "dataSource": avaliableData.Status.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.StatusCode) ? false : true } })
+                });
+            });
+        }
+    });
+
+    document.getElementById("lngTextBox").addEventListener("input", function () { dataChanged(); });
+    document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
+    jQuery("#ObjectType").change(function () { dataChanged(); });
+    jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
+    jQuery("#ObjectStatus").change(function () { dataChanged(); });
+    document.getElementById("cancelBtn").addEventListener("click", function () { cancelData(); });
+    document.getElementById("saveBtn").addEventListener("click", function () { saveData(); });
+
+    function dataChanged() {
+        if ("@Model.Longitude.ToString()" != document.getElementById("lngTextBox").value ||
+            "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
+            "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
+            "@Html.Raw((int)Model.StatusCode)" != jQuery("#ObjectStatus").data("kendoDropDownList").value() ||
+            "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value()) {
+            document.getElementById("saveBtn").classList.remove("blocked");
+            document.getElementById("cancelBtn").classList.remove("blocked");
+        }
+        else {
+            document.getElementById("saveBtn").classList.add("blocked");
+            document.getElementById("cancelBtn").classList.add("blocked");
+        }
+    };
+
+    function cancelData() { document.location.reload(); };
+
+    function saveData() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ChangeObject", "Map")',
+            data: {
+                id: @Model.Id,
+                lng: parseFloat(document.getElementById("lngTextBox").value.replace(',', '.')),
+                lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
+                propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
+                marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
+                statusCode: parseInt(jQuery("#ObjectStatus").get()[0].value)
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function () { document.location.reload(); }
+        });
+    };
+    
+</script>
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+    <style>
+        .price-grid-cell {
+            color: #484847;
+            cursor: inherit;
+        }
+
+        .price-grid-cell-positive-diff {
+            color: #ee161f;
+        }
+
+        .price-grid-cell-negative-diff {
+            color: #1db360;
+        }
+
+        #priceHistoryGrid .k-grid-header {
+            display: none;
+        }
+
+        #priceHistoryGrid > .k-grid-toolbar {
+            font-weight: bold;
+        }
+
+        #priceHistoryGrid .k-detail-cell .k-grid {
+            border-left: none;
+            color: gray;
+        }
+
+        #priceHistoryGrid.k-grid td {
+            border-width: 0 0 0 0;
+        }
+
+        .k-tooltip-content {
+            max-width: 600px !important;
+            max-height: 400px !important;
+            overflow: scroll !important;
+        }
+
+        .MapContainer {
+            display: flex;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 400px;
+        }
+
+            .MapContainer .Map {
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 400px;
+            }
+
+        .mapButton {
+            background-color: #f1f2f6;
+            border-color: #ceced2;
+        }
+
+        .customControl {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border-color: #ceced2;
+            -webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
+            box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
+        }
+
+        .priceHistoryChartContainer {
+            border: 1px solid #7ea700;
+            padding: 5px;
+            margin: 5px 0 5px 0;
+            background-color: white;
+            max-height: 300px;
+        }
+
+        .k-button.blocked:hover {
+            background-color: white;
+            cursor: default;
+            border: 1px solid #E5E8F0;
+            color: #9398A7;
+            border-left: 1px solid #E5E8F0 !important;
+        }
+    </style>
+    <link rel="stylesheet" href="~/MapStyles/style.css" />
+    <link rel="stylesheet" href="~/MapStyles/elemens.css" />
+}
+
+@section scripts {
+    <script src="~/js/jquery.fancybox.min.js"></script>
+    <script src="~/MapScripts/config.js" charset="utf-8"></script>
+
+    <script>
+		var objectMap;
+		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
+		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
+		var objectPricePerSquareMeter = '@(Model.PricePerSquareMeter.HasValue ? Math.Round(Model.PricePerSquareMeter.Value).ToString("#,0") : "")';
+
+		$(function() {
+			var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+			panelbar.expand('li[data-expand]');
+
+			$("#navigation-menu a").mPageScroll2id({
+				highlightSelector: "#navigation-menu a"
+			});
+
+			$("#priceInput").kendoNumericTextBox({
+				format: "c0",
+				decimals: 0,
+				spinners: false
+			});
+			@if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
+			{
+				@Html.Raw(@"initMap();");
+			}
+		});
+
+		function onDataBoundPriceHistory(e) {
+			var items = e.sender.items();
+			var grid = $("#priceHistoryGrid").data("kendoGrid");
+			items.each(function(index) {
+				const dataItem = grid.dataItem(this);
+				Array.prototype.forEach.call(this.cells,
+					cell => {
+						cell.className += " price-grid-cell";
+					});
+				//TODO: presentation of changes between history records will be implemented later
+				//if (dataItem.PriceValueDiff) {
+				//	if (dataItem.PriceValueDiff >= 0) {
+				//		this.cells[2].className += " price-grid-cell-positive-diff";
+				//	} else {
+				//		this.cells[2].className += " price-grid-cell-negative-diff";
+				//	}
+				//}
+			});
+		}
+
+		function onDataBoundPriceRangeHistory(e) {
+			onDataBoundPriceHistory(e);
+			var items = e.sender.items();
+			var grid = $("#priceHistoryGrid").data("kendoGrid");
+			debugger;
+			items.each(function(index) {
+				const dataItem = grid.dataItem(this);
+				Array.prototype.forEach.call(this.cells,
+					cell => {
+						cell.className += " price-grid-cell";
+					});
+				//TODO: presentation of changes between history records will be implemented later
+			});
+		}
+
+		function initMap() {
+			var script = document.createElement('script');
+			script.src =
+				`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+			document.head.appendChild(script);
+			script.onload = function() {
+				ymaps.ready(function() {
+					if (objectLatitude && objectLongitude) {
+						objectMap = new ymaps.Map(
+							'objectMap',
+							{
+								center: [objectLatitude, objectLongitude],
+								zoom: MapWithDefinedObjectSettings.zoom
+							},
+							{ suppressMapOpenBlock: true }
+						);
+						AppData.defaultRemoveElements.forEach(x => objectMap.controls.remove(x));
+						configureMapControls();
+						addGeoObject();
+					}
+				});
+			}
+		};
+
+		function configureMapControls() {
+			objectMap.controls.remove("searchControl");
+			objectMap.controls.get("rulerControl").options.set({ position: { bottom: 10, right: 10 } });
+
+			if (objectPricePerSquareMeter) {
+				var CustomControl = function(options) {
+					CustomControl.superclass.constructor.call(this, options);
+				};
+				ymaps.util.defineClass(CustomControl,
+					ymaps.collection.Item,
+					{
+						onAddToMap: function(map) {
+							CustomControl.superclass.onAddToMap.call(this, map);
+							this.getParent().getChildElement(this).then(this._onChildElementGet, this);
+						},
+						onRemoveFromMap: function(oldMap) {
+							if (this._$content) {
+								this._$content.remove();
+							}
+							CustomControl.superclass.onRemoveFromMap.call(this, oldMap);
+						},
+						_onChildElementGet: function(parentElementContainer) {
+							this._$content = $('<div class="Lable">Стоимость за 1м²: <strong>' +
+									objectPricePerSquareMeter +
+									' &#x20bd;</strong></div>')
+								.appendTo(parentElementContainer);
+						}
+					});
+
+				var customControl = new CustomControl();
+				objectMap.controls.add(customControl, { position: { top: 10, left: 127 } });
+			}
+
+			var buttonLayout = ymaps.templateLayoutFactory.createClass([
+					'<div class="ButtonMap" title="{{ data.title }}"> ',
+					'<img style="width:19px; height: 19px;" src="{{ data.image }}" alt="{{ data.title }}">',
+					'<span>&nbsp</span>',
+					'<span>{{ data.content }}</span>',
+					'</div>'
+				].join('')),
+				button = new ymaps.control.Button({
+					data: {
+						content: "На карту",
+						image: '../images/mapIconWhite.png',
+						title: 'Нажмите, чтобы перейти на карту'
+					},
+					options: { layout: buttonLayout, maxWidth: [170, 190, 220] }
+				});
+			button.events.add('click',
+				function() {
+					window.parent !== undefined
+						? window.parent.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})'
+						: window.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})';
+				});
+			objectMap.controls.add(button, { position: { top: 10, left: 10 } });
+
+			var placemarkLayout = ymaps.templateLayoutFactory.createClass(`<div class="targetControl"></div>`),
+				placemark = new ymaps.control.Button({
+					data: { title: 'Нажмите, чтобы перейти к метке' },
+					options: { layout: placemarkLayout }
+				});
+			placemark.events.add('click',
+				function() {
+					objectMap.setCenter([objectLatitude, objectLongitude], MapWithDefinedObjectSettings.zoom, "map")
+				});
+			objectMap.controls.add(placemark, { position: { bottom: 10, left: 10 } });
+		}
+
+		function addGeoObject() {
+			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude], {}, SelectedTargetOnCard);
+			objectMap.geoObjects.add(geoObject);
+		}
+
+		function createPriceHistoryChart() {
+			$("#priceHistoryChart").kendoChart({
+				render: function(e) {
+					var currentMin;
+					var currentMax;
+					var deviation;
+					var data = e.sender.options.series[0].data;
+					if (data.length === 1) {
+						deviation = Math.trunc(data[0].PriceValue * 0.1);
+						currentMin = data[0].PriceValue - deviation;
+						currentMax = data[0].PriceValue + deviation;
+					} else {
+						currentMin = Number.MAX_SAFE_INTEGER;
+						currentMax = Number.MIN_SAFE_INTEGER;
+						for (let i = 0; i < data.length; i++) {
+							if (data[i].PriceValue < currentMin) {
+								currentMin = data[i].PriceValue;
+							}
+							if (data[i].PriceValue > currentMax) {
+								currentMax = data[i].PriceValue;
+							}
+						}
+						deviation = Math.trunc((currentMax - currentMin) * 0.1);
+						currentMin -= deviation;
+						currentMax += deviation;
+					}
+
+					var oldMin = e.sender.options.valueAxis.min;
+					var oldMax = e.sender.options.valueAxis.max;
+					if (oldMin !== currentMin || oldMax !== currentMax) {
+						e.sender.options.valueAxis.min = currentMin;
+						e.sender.options.valueAxis.max = currentMax;
+						e.sender.redraw();
+					}
+				},
+				dataSource: {
+					transport: {
+						read: {
+							type: 'GET',
+							url: '@Url.Action("GetChartData", "MarketObjects")',
+							dataType: "json",
+							data: { id: @Model.Id }
+						}
+					}
+				},
+				legend: {
+					visible: false
+				},
+				series: [
+					{
+						type: "line",
+						highlight: {
+							toggle: function (e) {
+								var transform = null;
+								if (e.show) {
+									e.visual.opacity(0.5);
+									var center = e.visual._geometry.center;
+									transform = kendo.geometry.transform().scale(1.5, 1.5, center);
+								} else {
+									e.visual.opacity(1);
+								}
+								e.visual.transform(transform);
+							}
+						},
+						markers: {
+							visible: true,
+							size: function(point) {
+								if (point.dataItem.ScreenshotId) {
+									return 18;
+								}
+								return 6;
+							},
+							//background: function (point) {
+							//	if (!point.dataItem.ScreenshotId) {
+							//		return getPointColor(point);
+							//	}
+							//	return null;
+							//}
+						},
+						color: function (point) {
+							return getPointColor(point);
+						},
+						field: "PriceValue",
+						categoryField: "ChangingDate"
+					}
+				],
+				seriesColors: ["#b3b3b4"],
+				valueAxis: {
+					visible: false
+				},
+				categoryAxis: {
+					visible: false,
+					baseUnit: "fit"
+				},
+				tooltip: {
+					visible: true,
+					template: kendo.template($("#priceHistoryChartTooltip").html())
+				},
+				seriesClick: function(e) {
+					if (!e.dataItem.ScreenshotId) {
+						return;
+					}
+					$.fancybox.open({
+						src: '@(Url.Action("ShowFile", "MarketObjects") + "?id=")' + e.dataItem.ScreenshotId,
+						opts : {
+							caption: kendo.toString(new Date(e.dataItem.ChangingDate), "dd.MM.yyyy HH:mm:ss")
+						}
+					});
+				}
+			});
+		}
+
+		function getPointColor(point) {
+			if (point.dataItem.IsPriceUp) {
+				return "red";
+			}
+			if (point.dataItem.IsPriceDown) {
+				return "green";
+			}
+			return "gray";
+		}
+
+	$(document).ready(createPriceHistoryChart);
+	$(document).bind("kendo:skinChange", createPriceHistoryChart);
+    </script>
+}

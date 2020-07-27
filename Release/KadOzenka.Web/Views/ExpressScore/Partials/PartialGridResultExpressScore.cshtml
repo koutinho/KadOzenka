@@ -1,0 +1,63 @@
+﻿@using KadOzenka.Dal.Enum
+@using KadOzenka.Dal.ExpressScore.Dto
+@model ResultCalculateDto
+
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	@if (Model.DealType == DealTypeShort.Sale)
+	{
+		<div class="form-group">
+			<div class="col-sm-12">
+				<text>Рыночная стоимость объекта оценки, руб: </text><text id="cost">@Model.SummaryCost</text>
+			</div>
+			<div class="col-sm-12">
+				<text>Удельный показатель рыночной стоимости объекта оценки, руб/кв.м: </text><text id="squareCost">@Model.SquareCost</text>
+			</div>
+		</div>
+	}
+	
+	@if (Model.DealType == DealTypeShort.Rent)
+	{
+		<div class="form-group">
+			<div class="col-sm-12">
+				<text>Арендная ставка объекта оценки, руб/год : </text><text id="cost">@(Model.SummaryCost * 12) </text>
+			</div>
+			<div class="col-sm-12">
+				<text>Арендная ставка объекта оценки, руб/кв. м/год: </text><text id="squareCost">@(Model.SquareCost * 12)</text>
+			</div>
+		</div>
+	}
+	
+	<div class="form-group">
+		<div class="col-sm-12">
+			<button id="report" data-report-id="@Model.ReportId" class="k-button">Сгенерировать отчет</button>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<p>Аналоги (@Model.Analogs.Count)</p>
+		</div>
+		<div class="col-sm-12" style="padding: 0">
+			<div style="height: auto">
+				<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content($"~/RegistersView/MarketObjectCard?Transition=1&{ViewBag.Filter}")"
+				     data-param-Pageable="true" data-param-Scrollable="true" data-param-EsId="@ViewBag.EsId"
+				     data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid100"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#report').on('click',
+			function() {
+                var url = "@Url.Action("DownloadExportResult", "DataExport")" + `?exportId=${$(this).data('report-id')}`;
+				var a = document.createElement('a');
+				a.setAttribute('href', url);
+				a.click();
+				console.log('report id', $(this).data('report-id'));
+			});
+	});
+</script>
+
+

@@ -1,0 +1,126 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
+@model EstimatedGroupViewModel
+
+<style>
+	.footer {
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+	}
+</style>
+@using (Html.BeginForm("SetEstimatedGroup", "GbuObject", FormMethod.Post))
+{
+	<div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <a style="float: right" href="/Help/Help?CurrentLocation=SetEstimatedGroup" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="col-sm-2">
+	            @Html.CustomLabelFor(m => m.IdTask)
+	        </div>
+	        <div class="col-sm-10">
+	            @(Html.Kendo().DropDownListFor(m => m.IdTask)
+                      .DataTextField("Text")
+                      .DataValueField("Value")
+                      .Filter("contains")
+                      .OptionLabel(new SelectListItem { Value = null, Text = " " })
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetTasksData", "GbuObject");
+                          })
+                              .ServerFiltering(false);
+                      }))
+	        </div>
+	    </div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Атрибут для проставления оценочной группы", alignCenter: false)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.IdEstimatedSubGroup, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+
+		<div class="form-group footer">
+			<div class="col-sm-7">
+				@( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+			{
+				ControllerName = "GbuObject",
+				ActionName = "GetTemplatesEstimated"
+			}))
+			</div>
+
+            <div class="col-sm-1 col-sm-offset-1">
+                <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+            </div>
+            <div class="col-sm-3">
+                <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+            </div>
+		</div>
+	</div>
+}
+
+<script src="/js/custom-validation.js"></script>
+<script type="text/javascript">
+	function fillForm(data) {
+		data.forEach(function (val) {
+			if ($('#' + Object.keys(val)[0]).data('kendoDropDownTree')) {
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
+            }
+            if (Object.keys(val)[0].includes('IsOksObjType')) {
+                if (val[Object.keys(val)[0]]) {
+                    $('#IsOksObjType_True').prop("checked", true);
+                    $('#IsOksObjType_False').prop("checked", false);
+                } else {
+                    $('#IsOksObjType_True').prop("checked", false);
+                    $('#IsOksObjType_False').prop("checked", true);
+                }
+		    }
+            if (Object.keys(val)[0].includes('IdTask')) {
+                $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+            }
+
+		});
+	}
+
+	$(document).ready(function() {
+        templateStorage.init(@((int) DataFormStorege.EstimatedGroup), "SaveTemplateEstimatedGroupObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
+		$('#execute').on('click', function() {
+			kendo.ui.progress($('body'), true);
+			var form = $('form');
+			var formObject = Common.Functions.FormToObject(form);
+			$.post(form.attr('action'), formObject)
+				.done(function (response) {
+			        if (response.Errors) {
+			            var errors = getErrors(response.Errors);
+			            Common.ShowError(errors);
+			            return;
+			        }
+			        if (response.Success) {
+                        Common.ShowMessage("Операция успешно добавлена в очередь");
+                        if (response.QueueId) {
+                            var hrefForJournal = "/RegistersView/CoreLongProcessQueue?Transition=1&97500100=" + response.QueueId;
+                            var goToProcessBtn = $("#goToProcessBtn");
+                            goToProcessBtn.removeClass('k-state-disabled');
+                            goToProcessBtn.attr('href', hrefForJournal);
+                        }
+			        }
+				}).fail(function (response, textStatus, errorThrown) {
+			        Common.ShowError(response.responseText);
+			    }).always(function () {
+				kendo.ui.progress($('body'), false);
+			});
+		});
+    });
+</script>

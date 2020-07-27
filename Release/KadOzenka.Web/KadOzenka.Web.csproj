@@ -1,0 +1,1658 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <!--<PropertyGroup>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+  </PropertyGroup>-->
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\Config\**" />
+    <Content Remove="wwwroot\Config\**" />
+    <EmbeddedResource Remove="wwwroot\Config\**" />
+    <None Remove="wwwroot\Config\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <Content Remove="Views\Tour\GroupCard.cshtml" />
+    <Content Remove="Views\Tour\TourSubCard.cshtml" />
+    <Content Remove="wwwroot\images\magazine.png" />
+    <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Config\Common\MainMenu.xml" />
+    <None Remove="Config\Param\Core.DataBase.Connections.Dev.xml" />
+    <None Remove="Config\Param\Core.DataBase.Connections.Prod.xml" />
+    <None Remove="Config\Param\Core.Diagnostics.xml" />
+    <None Remove="Config\Param\Core.DocNumeration.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Dev.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Ppr.Ppr2.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Ppr.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Prod.xml" />
+    <None Remove="Config\Param\Core.FileStorages.xml" />
+    <None Remove="Config\Param\Core.HealthCheck.xml" />
+    <None Remove="Config\Param\Core.LongProcess.Prod.Db.xml" />
+    <None Remove="Config\Param\Core.LongProcess.Prod.xml" />
+    <None Remove="Config\Param\Core.LongProcess.xml" />
+    <None Remove="Config\Param\Core.Numeration.xml" />
+    <None Remove="Config\Param\Core.Srd.Dev.xml" />
+    <None Remove="Config\Param\Core.Srd.Ppr.xml" />
+    <None Remove="Config\Param\Core.Srd.Prod.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Dev.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Ppr.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Prod.xml" />
+    <None Remove="Config\Param\FmReportTypes.xml" />
+    <None Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
+    <None Remove="Config\Param\ModelingProcessConfig.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Dev.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Ppr.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Prod.xml" />
+    <None Remove="Config\Param\ReonService.Ppr.xml" />
+    <None Remove="Config\ReadMe.txt" />
+    <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreLongProcessService.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreMessages.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterAttribute.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayout.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayoutExport.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayoutExportAll.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterList.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterQry.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterRegister.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedAttachment.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedDiagnostics.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedErrorLog.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedReference.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedReferenceItem.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDAudit.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDDepartment.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDRegisterAudit.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDRole.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDSession.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDUser.xml" />
+    <None Remove="Config\Registers\SearchPanels\InspectorPerson.xml" />
+    <None Remove="Config\Registers\SearchPanels\PrimaryMatching.xml" />
+    <None Remove="Config\Registers\SearchPanels\SignatoriesPerson.xml" />
+    <None Remove="Config\Registers\Views\BankSearch.xml" />
+    <None Remove="Config\Registers\Views\CalculatePersonSelect.xml" />
+    <None Remove="Config\Registers\Views\CharacteristicsList.xml" />
+    <None Remove="Config\Registers\Views\CommissionCost.xml" />
+    <None Remove="Config\Registers\Views\CoreAuditCommon.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessQueue.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessQueueCard.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessService.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
+    <None Remove="Config\Registers\Views\CoreMessages.xml" />
+    <None Remove="Config\Registers\Views\CoreMessagesMy.xml" />
+    <None Remove="Config\Registers\Views\CoreMessagesRecipients.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterAttribute.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterAttributeCard.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayout.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayoutExport.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayoutExportAll.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterList.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterListObject.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterQry.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterQrySelect.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterRegister.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterRelation.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedAttachment.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedDiagnostics.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedErrorLog.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReference.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReferenceItem.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReferenceRegItem.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDAudit.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDDepartment.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDFunctionRoles.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDFunctionUsers.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRegisterAudit.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRole.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleFilter.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleSelect.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleUsers.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDSession.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUser.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUserSelect.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
+    <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
+    <None Remove="Config\Registers\Views\DataImporter.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsBook.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsDeclaration.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsSpdRegister.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsSubject.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
+    <None Remove="Config\Registers\Views\EsConstructorCard.xml" />
+    <None Remove="Config\Registers\Views\EsEstimateObjectCard.xml" />
+    <None Remove="Config\Registers\Views\EsEstimates.xml" />
+    <None Remove="Config\Registers\Views\EsReferenceItems.xml" />
+    <None Remove="Config\Registers\Views\EsReferences.xml" />
+    <None Remove="Config\Registers\Views\EsWallMaterials.xml" />
+    <None Remove="Config\Registers\Views\GbuCodDictionary.xml" />
+    <None Remove="Config\Registers\Views\GbuCodJob.xml" />
+    <None Remove="Config\Registers\Views\GbuObjects.xml" />
+    <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
+    <None Remove="Config\Registers\Views\KoComplianceGuide.xml" />
+    <None Remove="Config\Registers\Views\KoObjects.xml" />
+    <None Remove="Config\Registers\Views\KoObjectsCard.xml" />
+    <None Remove="Config\Registers\Views\KoObjectsWithoutDefaultSearchControls.xml" />
+    <None Remove="Config\Registers\Views\KoResultSendJournal.xml" />
+    <None Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
+    <None Remove="Config\Registers\Views\KoTasks.xml" />
+    <None Remove="Config\Registers\Views\KoTours.xml" />
+    <None Remove="Config\Registers\Views\KoToursFactors.xml" />
+    <None Remove="Config\Registers\Views\KoToursFactorsList.xml" />
+    <None Remove="Config\Registers\Views\MarketObjectCard.xml" />
+    <None Remove="Config\Registers\Views\MarketObjects.xml" />
+    <None Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <None Remove="Config\Registers\Views\ModelingModels.xml" />
+    <None Remove="Config\Registers\Views\Payments.xml" />
+    <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
+    <None Remove="Config\Registers\Views\SignatoriesPersonSelect.xml" />
+    <None Remove="Config\Registers\SearchPanels\DamageAnalysis.xml" />
+    <None Remove="Config\Registers\SearchPanels\DamagePayment.xml" />
+    <None Remove="Config\Registers\Views\DamagePayment.xml" />
+    <None Remove="Config\Registers\Views\SudDictOcenschik.xml" />
+    <None Remove="Config\Registers\Views\SudDictOcenschikSelect.xml" />
+    <None Remove="Config\Registers\Views\SudDictOrganisations.xml" />
+    <None Remove="Config\Registers\Views\SudDictOrganisationsSelect.xml" />
+    <None Remove="Config\Registers\Views\SudDictSro.xml" />
+    <None Remove="Config\Registers\Views\SudDictSroSelect.xml" />
+    <None Remove="Config\Registers\Views\SudObjects.xml" />
+    <None Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
+    <None Remove="Config\Registers\Views\SudOtchet.xml" />
+    <None Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
+    <None Remove="Config\Registers\Views\SudOtchetSelect.xml" />
+    <None Remove="Config\Registers\Views\SudResh.xml" />
+    <None Remove="Config\Registers\Views\SudReshLinkCard.xml" />
+    <None Remove="Config\Registers\Views\SudReshSelect.xml" />
+    <None Remove="Config\Registers\Views\SudSpdRegister.xml" />
+    <None Remove="Config\Registers\Views\SudZak.xml" />
+    <None Remove="Config\Registers\Views\SudZakLinkCard.xml" />
+    <None Remove="Config\Registers\Views\SudZakSelect.xml" />
+    <None Remove="Config\Reports\RegisterOfPayment.frx" />
+    <None Remove="Config\Reports\SubmitDocForApproval.frx" />
+    <None Remove="Config\Reports\СalculationReport.frx" />
+    <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Config\Common\MainMenu.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+      <Content Include="Config\Param\ModelingProcessConfig.Dev.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    <Content Include="Config\Param\ReonService.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+      <Content Include="Config\Param\ModelingProcessConfig.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    <Content Include="Config\Param\Core.LongProcess.Prod.Db.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.LongProcess.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.HealthCheck.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Srd.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Srd.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Srd.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.SystemCommon.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.LongProcess.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DataBase.Connections.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DataBase.Connections.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.SystemCommon.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\FmReportTypes.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ReadMe.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Config\Param\Core.Diagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DocNumeration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Numeration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CharacteristicsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CommissionCost.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsBook.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsBookSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsDeclaration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoComplianceGuide.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoResultSendJournal.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsSubject.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsUved.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\MdsStatisticalDataCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsConstructorCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsEstimateObjectCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsEstimates.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsReferenceItems.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsReferences.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsWallMaterials.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\GbuCodDictionary.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\GbuCodJob.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoObjectsCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoObjectsWithoutDefaultSearchControls.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTaskGknFilesCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DataImporter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\GbuObjects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoObjects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTasks.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingModels.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTours.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoToursFactors.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoToursFactorsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\MarketObjectCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\MarketObjects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictOcenschik.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictOcenschikSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictOrganisations.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictOrganisationsSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictSro.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudDictSroSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\DeclarationsSpdRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudSpdRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudObjectsCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudObjects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudObjectsRemoved.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ObjectsCharacteristics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudOtchet.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudOtchetLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudOtchetSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudResh.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudReshLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudReshSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudZak.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudZakLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="___Create_Plugins_Folder_for_WinService.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
+    <PackageReference Include="Platform.Web" Version="1.0.509" />
+    <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="Serilog.Enrichers.AspNetCore.HttpContext" Version="1.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
+    <PackageReference Include="Serilog.Enrichers.HttpContextData" Version="0.1.3" />
+    <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDUser.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreAuditCommon.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessQueueCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessType.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessagesMy.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessagesRecipients.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterAttributeCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutDashboard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutExportDashboard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterListObject.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterQrySelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterRelation.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReferenceRegItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDFunctionRoles.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDFunctionUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleFilter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleFunctions.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUser.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserAction.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionaryMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionarySqlMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectFlagInsur.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapBuilding.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapFlat.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\GbuCodDictionary.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\InsurMfcPackages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\KoObjectsCard.xml">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\Pfhd.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\PfhdFact.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudOtchetSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudReshSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\InsurMfcPackages.xml">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\InsurMfcPackages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\Pfhd.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\PfhdAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\PfhdFact.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	  <None Update="Config\Reports\AdditionalFormsCalculationsAnalysisReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsChangesUploadingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsMarketDataInfoReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\AdditionalFormsResultsAnalysisReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+    <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	  <None Update="Config\Reports\CadastralCostDeterminationIndividuallyResultsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\CadastralCostDeterminationResultsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+    <None Update="Config\Reports\CalculationPagesReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CalculationParamsModelingResultsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	  <None Update="Config\Reports\CalculationParamsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+    <None Update="Config\Reports\CalculationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCC_OUReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	  <None Update="Config\Reports\InfoAboutCadastralCostDeterminingMethodReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForParcelsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForPreviousToursReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionForZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionNonuniformReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\PricingFactorsCompositionUniformReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsGroupingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsOksReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\QualityPricingFactorsEncodingResultsZuReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForBuildingsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForConstructionsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForParcelsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForParkingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForPlacementsReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\TestBackgroundReport2.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\TestBackgroundReport.frx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByGroupsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\GeneralizedIndicatorsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubjectsUPKSByTypeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsForApprovalUpksAverageReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ResultsForApprovalReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisteredChangedObjectsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisteredObjectsDefaultReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CorrectionByBargainReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CorrectionByDateReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\InformationCardReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MFCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport_NoSign.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentOIReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ReturnPermIOReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubmitDocForApprovalReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\TestReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="___Test.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Config\LeftPanel\" />
+    <Folder Include="Pages\" />
+	  <Folder Include="Views\GknDataImport\" />
+	  <Folder Include="Views\DataImportByTemplate\" />
+    <Folder Include="wwwroot\images\Icons\Panels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Reference Include="DevExpress.Charts.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Charts.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.CodeParser.v20.1">
+		  <HintPath>..\_Dll\DevExpress.CodeParser.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Data.v20.1">
+		  <HintPath>..\_Dll\DevExpress.Data.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.DataAccess.v20.1">
+		  <HintPath>..\_Dll\DevExpress.DataAccess.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Office.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Office.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Pdf.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Pdf.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.PivotGrid.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.PivotGrid.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Printing.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Printing.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.RichEdit.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.RichEdit.v20.1.Export">
+		  <HintPath>..\_Dll\DevExpress.RichEdit.v20.1.Export.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Sparkline.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.Sparkline.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.Xpo.v20.1">
+		  <HintPath>..\_Dll\DevExpress.Xpo.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraCharts.v20.1">
+		  <HintPath>..\_Dll\DevExpress.XtraCharts.v20.1.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraGauges.v20.1.Core">
+		  <HintPath>..\_Dll\DevExpress.XtraGauges.v20.1.Core.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DevExpress.XtraReports.v20.1">
+		  <HintPath>..\_Dll\DevExpress.XtraReports.v20.1.dll</HintPath>
+    </Reference>
+    <Reference Include="Kendo.Mvc">
+      <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Kendo.Mvc.resources">
+      <HintPath>..\_Dll\Kendo.Mvc.resources.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\ExpressScore\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\GbuObject\GroupingObject.cshtml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\_ViewImports.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\colorschememapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\filelist.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\header.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image002.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image003.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image004.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image005.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image006.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image007.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image008.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image009.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image010.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image011.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image012.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image013.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image014.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image015.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image016.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image017.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image018.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image019.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image020.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image021.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image022.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image023.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image024.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image025.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image026.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image027.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image028.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image029.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image030.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image031.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image032.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image033.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image034.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image035.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image036.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image037.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\image038.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\item0001.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\preview.wmf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\props002.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\themedata.thmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual.htm">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\colorschememapping.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\filelist.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\header.htm">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image001.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image002.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image003.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image004.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image005.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image006.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image007.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image008.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image009.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image010.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image011.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image012.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image013.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image014.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image015.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image016.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image017.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image018.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image019.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image020.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image021.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image022.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image023.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image024.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image025.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image026.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image027.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image028.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image029.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image030.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image031.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image032.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image033.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image034.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image035.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image036.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image037.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image038.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image039.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image040.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image041.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image042.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image043.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image044.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image045.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image046.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image047.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image048.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image049.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image050.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image051.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image052.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image053.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image054.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image055.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image056.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image057.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image058.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image059.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image060.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image061.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image062.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image063.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image064.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image065.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image066.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image067.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image068.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image069.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image070.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image071.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image072.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image073.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image074.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image075.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image076.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image077.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image078.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image079.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image080.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image081.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image082.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image083.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image084.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image085.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image086.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image087.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image088.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image089.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image090.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image091.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image092.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image093.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image094.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image095.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image096.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image097.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image098.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image099.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image100.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image101.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image102.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image103.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image104.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image105.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image106.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image107.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image108.jpg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image109.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\item0001.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\props002.xml">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\themedata.thmx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ConfigPath Include="$(ProjectDir)Config\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
+    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
+    <ConfigPath Remove="Config\Param\ModelingProcessConfig.xml" />
+    <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
+    <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
+    <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
+    <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSpdRegister.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\EsConstructorCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\EsReferenceItems.xml" />
+    <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />
+    <ConfigPath Remove="Config\Registers\Views\EsWallMaterials.xml" />
+    <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoResultSendJournal.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
+    <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
+    <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdditionalFormsResultsAnalysisReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByGroupsReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx" />
+    <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />
+    <ConfigPath Remove="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx" />
+    <ConfigPath Remove="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx" />
+    <ConfigPath Remove="Config\Reports\RegisteredObjectsDefaultReport.frx" />
+    <ConfigPath Remove="Config\Reports\ResultsForApprovalReport.frx" />
+    <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
+    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
+    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
+	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
+  </ItemGroup>
+  <Target Name="CopyConfigFiles" AfterTargets="Publish">
+    <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
+  </Target>
+  <ItemGroup>
+      <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
+    <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\GbuObject\GroupingObject.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\GbuObject\GroupingObject.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

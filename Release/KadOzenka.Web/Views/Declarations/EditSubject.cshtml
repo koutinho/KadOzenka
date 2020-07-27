@@ -1,0 +1,351 @@
+﻿@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Declarations.SubjectModel
+
+@using (Html.BeginForm("EditSubject", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Юридическое лицо").Value((long)SubjectType.Ul).Enable(Model.Id == -1))
+            </div>
+            <div class="col-sm-3">
+                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Физическое лицо").Value((long)SubjectType.Fl).Enable(Model.Id == -1))
+            </div>
+        </div>
+        <div class="form-group" id="ulName">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.Name)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.Name, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.Surname)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.Surname, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.FirstName)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.MiddleName)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.MiddleName, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <fieldset id="addressFieldset">
+            <legend>Почтовый адрес</legend>
+            <div id="address_multiple_fields">
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Zip)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.Zip, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.City)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.City, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Street)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.Street, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.House)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.House, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Building)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(m => m.Building, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Flat)
+                    </div>
+	                <div class="col-sm-4">
+		                @Html.KendoNumericTextBoxFor(m => m.Flat, 0, false)
+	                </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.Mail)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.Mail, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(m => m.Phone)
+            </div>
+            <div class="col-sm-9">
+                @Html.TextBoxFor(m => m.Phone, new { @class = "k-textbox", @style = "width: 100%;" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button disabled="@(Model.Id == -1 ? !Model.IsCreateSubject : !Model.IsEditSubject)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fias.min.css" />
+    
+    <style>
+        fieldset#addressFieldset {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        fieldset#addressFieldset legend {
+            font-size: initial;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/js/custom-validation.js"></script>
+    <script src="~/js/jquery.fias.min.js"></script>
+    <script type="text/javascript">
+        const cityTypeShortList = ['г. ', 'пгт. ','п. ', 'д. ', 'c. ', 'тер. '];
+        const streetTypeShortList = ['ул. ', 'пл. ', 'пер. ', 'туп. ', 'б-р. ', 'проезд. ', 'аллея. ', 'пр-кт. ', 'кв-л. ', 'просека. ', 'км. '];
+        const houseTypeShortList = ['д. '];
+
+        $(document).ready(function() {
+            let fieldReadonly = '@((Model.Type == (long) SubjectType.Fl))';
+            changeFieldsVisability(fieldReadonly == 'True');
+
+            $('input[type="radio"][name="Type"][value="@((long) SubjectType.Ul)"] ').change(function() {
+                if (this.checked) {
+                    changeFieldsVisability(false);
+                } else {
+                    changeFieldsVisability(true);
+                }
+            });
+            $('input[type="radio"][name="Type"][value="@((long) SubjectType.Fl)"] ').change(function() {
+                if (this.checked) {
+                    changeFieldsVisability(true);
+                    $('#@Html.IdFor(m => m.Name)').val(null);
+                } else {
+                    changeFieldsVisability(false);
+                }
+            });
+
+            setAddressAutocomplete();
+
+            $('#save').on('click',
+                function() {
+                    kendo.ui.progress($('body'), true);
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+
+                    $.post(form.attr('action'), formObject).done(function(response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (response.Success && response.data) {
+                            $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                            $('#save').attr("disabled", !response.data.IsEditSubject);
+                            $('input[type="radio"][name="Type"][value="@((long) SubjectType.Fl)"] ')
+                                .attr("disabled", true);
+                            $('input[type="radio"][name="Type"][value="@((long) SubjectType.Ul)"] ')
+                                .attr("disabled", true);
+                            Common.ShowMessage(response.Success);
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false);
+                    });
+                });
+        });
+
+        function changeFieldsVisability(hide) {
+            if (hide) {
+                $('#ulName').hide();
+            } else {
+                $('#ulName').show();
+            }
+        }
+
+        function setAddressAutocomplete() {
+            let cityId, streetId;
+
+            if ($('input#City').val()) {
+                var cityShortTypePart = defineShortTypePart($('input#City').val(), cityTypeShortList);
+                $.ajax({
+                    url: 'https://kladr-api.ru/api.php?' +
+                        'contentType=city&limit=1&query=' +
+                        $('input#City').val().substr(cityShortTypePart.length),
+                    dataType: "jsonp",
+                    success: function(data) {
+                        var result = data.result.filter(r => r.id != "Free") || [];
+                        if (result.length > 0) {
+                            cityId = result[0].id;
+                            if ($('input#Street').val()) {
+                                var streetShortTypePart = defineShortTypePart($('input#Street').val(), streetTypeShortList);
+                                $.ajax({
+                                    url: 'https://kladr-api.ru/api.php?' +
+                                        'contentType=street&limit=1&cityId=' +
+                                        cityId +
+                                        '&query=' +
+                                        $('input#Street').val().substr(streetShortTypePart.length),
+                                    dataType: "jsonp",
+                                    success: function(data) {
+                                        var result = data.result.filter(r => r.id != "Free") || [];
+                                        if (result.length > 0) {
+                                            streetId = result[0].id;
+                                            initAddressAutocomplete(cityId, streetId);
+                                        } else {
+                                            initAddressAutocomplete(cityId, null);
+                                        }
+                                    }
+                                });
+                            } else {
+                                initAddressAutocomplete(cityId, null);
+                            }
+                        } else {
+                            initAddressAutocomplete(null, null);
+                        }
+                    }
+                });
+            } else {
+                initAddressAutocomplete(null, null);
+            }
+        }
+
+        function defineShortTypePart(name, shortTypeList) {
+            for (let i = 0; i < shortTypeList.length; i++) {
+                if (name.startsWith(shortTypeList[i])) {
+                    return shortTypeList[i];
+                }
+            }
+
+            return '';
+        }
+
+        function initAddressAutocomplete(cityId, streetId) {
+            let cityTypeShort = '', streetTypeShort = '', houseTypeShort = '';
+            if ($('input#City').val()) {
+                cityTypeShort = defineShortTypePart($('input#City').val(), cityTypeShortList);
+            }
+            if ($('input#Street').val()) {
+                streetTypeShort = defineShortTypePart($('input#Street').val(), streetTypeShortList);
+            }
+            if ($('input#House').val()) {
+                houseTypeShort = defineShortTypePart($('input#House').val(), houseTypeShortList);
+            }
+
+            let $container = $(document.getElementById('#address_multiple_fields')),
+                $zip = $('#Zip'),
+                $city = $('#City'),
+                $street = $('#Street'),
+                $house = $('#House');
+
+            $city.fias({
+                parentInput: null,
+                type: $.fias.type.city,
+                valueFormat: function(obj, query) {
+                    return (obj.typeShort ? obj.typeShort + '. ' : '') + obj.name;
+                },
+                select: function(obj) {
+                    cityTypeShort = obj.typeShort ? obj.typeShort + '. ' : '';
+                    if (obj.zip) $zip.val(obj.zip);
+                },
+                sendBefore: function(query) {
+                    if (query.name && cityTypeShort && query.name.startsWith(cityTypeShort)) {
+                        query.name = query.name.substr(cityTypeShort.length);
+                    } else {
+                        cityTypeShort = '';
+                    }
+                }
+            });
+
+            $street.fias({
+                parentInput: $city,
+                parentType: $.fias.type.city,
+                parentId: cityId,
+                type: $.fias.type.street,
+                valueFormat: function(obj, query) {
+                    return (obj.typeShort ? obj.typeShort + '. ' : '') + obj.name;
+                },
+                select: function(obj) {
+                    streetTypeShort = obj.typeShort ? obj.typeShort + '. ' : '';
+                    if (obj.zip) $zip.val(obj.zip);
+                },
+                sendBefore: function(query) {
+                    if (query.name && streetTypeShort && query.name.startsWith(streetTypeShort)) {
+                        query.name = query.name.substr(streetTypeShort.length);
+                    } else {
+                        streetTypeShort = '';
+                    }
+                }
+            });
+
+            $house.fias({
+                parentInput: $street,
+                parentType: $.fias.type.street,
+                parentId: streetId,
+                type: $.fias.type.building,
+                select: function(obj) {
+                    if (obj.name && obj.name.includes("строение")) {
+                        var n = obj.name.indexOf("строение");
+                        $('#House').val((obj.typeShort ? obj.typeShort + '. ' : '') + obj.name.substr(0, n - 1));
+                        $('#Building').val('стр. ' + obj.name.substr(n + "строение ".length));
+                    } else {
+                        $('#House').val((obj.typeShort ? obj.typeShort + '. ' : '') + obj.name);
+                        $('#Building').val(null);
+                    }
+
+                    houseTypeShort = obj.typeShort ? obj.typeShort + '. ' : '';
+                    if (obj.zip) $zip.val(obj.zip);
+                },
+                sendBefore: function(query) {
+                    if (query.name && houseTypeShort && query.name.startsWith(houseTypeShort)) {
+                        query.name = query.name.substr(houseTypeShort.length);
+                    } else {
+                        houseTypeShort = '';
+                    }
+                }
+            });
+
+            $street.fias('withParents', true);
+            $zip.fiasZip($container);
+        }
+    </script>
+}

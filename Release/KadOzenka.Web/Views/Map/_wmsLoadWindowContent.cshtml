@@ -1,0 +1,49 @@
+﻿<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            <label class="control-label">URL адрес сервиса</label>
+        </div>
+        <div class="col-sm-8">
+            <select id="wmsServiceDropDown">
+                <option value="Empty"></option>
+                <option value="Rosreestr">https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <button id="connectButton" type="button" >Подключиться</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var initWmsLoadWindowContent = function () {
+        debugger;
+        let connectButton =$("#connectButton").kendoButton({
+            enable: false,
+            click: () => {
+                debugger;
+                $.ajax({
+                    type: "GET",
+                    url: wmsServiceDropDown.text() + "?version=1.3.0&service=WMS&request=GetCapabilities",
+                    success: function (xml) {
+                        Common.ShowMessage('Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers');
+
+                        //TODO: дальнейший парсинг xml ответа от сервиса для получения информации о слоях
+                        //TODO: отображение информации о слоях пользователю для выбора
+                        //TODO: загрузка выбранных пользователем слоев на карту
+                    },
+                    error: function (error) {
+                        Common.ShowError('Не удалось подключиться к WMS сервису');
+                    }
+                });
+            }
+        }).data('kendoButton');
+
+        let wmsServiceDropDown = $('#wmsServiceDropDown').kendoDropDownList({
+            change: () => {
+                connectButton.enable(wmsServiceDropDown.value() !== "Empty");
+            }
+        }).data('kendoDropDownList');
+    }
+</script>

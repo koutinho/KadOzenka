@@ -1,0 +1,89 @@
+﻿@using System.Globalization
+@model KadOzenka.Web.Models.Sud.ExportDataFormModel
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.CustomLabel(Model.NotifyMessage)
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-group" style="display: inline-flex;">
+        <div class="col-sm-8">
+            @Html.CustomLabel("Фоновая выгрузка")
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoCheckBox("", "isBackgroundExport", false, isReadonly: false)
+        </div>
+    </div>
+    <div id="fileName" style="display: none">@Model.Filename</div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button style="float: right" id="performExport" class="k-button" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var exportDataAction = '@Url.Action(Model.ExportDataMethodName, "Sud")';
+    var exportDataInBackgroundModeAction = '@Url.Action(Model.ExportDataInBackgroundModeMethodName, "Sud")';
+
+    $(document).ready(function () {
+        $('#performExport').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                if ($('#isBackgroundExport').prop('checked')) {
+                    $.post(exportDataInBackgroundModeAction).done(function(response) {
+                        kendo.ui.progress($('body'), false);
+                        if (response.Errors) {
+                            var errors = $.map(distinctErrors(response.Errors),
+                                function(el) {
+                                    return el.Message;
+                                });
+                            Common.ShowError(errors);
+                            return;
+                        }
+                        if (response.Success) {
+                            Common.ShowMessage(response.Success);
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        kendo.ui.progress($('body'), false);
+                        Common.ShowError(response.responseText);
+                    });
+                } else {
+                    fetch(exportDataAction)
+                        .then(resp => resp.blob())
+                        .then(blob => {
+                            kendo.ui.progress($('body'), false);
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.download = $('#fileName')[0].innerText;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        })
+                        .catch(() => { kendo.ui.progress($('body'), false); });
+                }
+            });
+    });
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors,
+            function(index, event) {
+                var events = $.grep(result,
+                    function(e) {
+                        return event.Message === e.Message;
+                    });
+                if (events.length === 0) {
+                    result.push(event);
+                }
+            });
+
+        return result;
+    }
+</script>

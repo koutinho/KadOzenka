@@ -1,0 +1,131 @@
+﻿@model KadOzenka.Web.Models.Task.GraphicFactorsFromReonModel
+
+@using (Html.BeginForm("DownloadGraphicFactorsFromReon", "Task", FormMethod.Post, new { id = "downloadFactorsForm" }))
+{
+    @Html.HiddenFor(x => x.TaskId)
+    <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+        <div id="factorsTreeList"></div>
+        <div class="form-group" id="confirmBtnBlock" style="display: none">
+            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+                @Html.KendoButton("confirmBtn", "Загрузить")
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        getReonAttributes();
+        $("#confirmBtn").on('click', confirm);
+    });
+
+
+
+    function getReonAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("GetReonRegisterAttributes", "Task")",
+            dataType: "json",
+            success: function(response) {
+                var data = response.map(function(factorBase) {
+                    return {
+                        Value: factorBase.Value,
+                        Text: factorBase.Text,
+                        items: factorBase.Items.map(function(factor) {
+                            return {
+                                Value: factor.Value,
+                                Text: factor.Text
+                            }
+                        })
+                    }
+                });
+                $("#factorsTreeList").kendoTreeView({
+                    dataSource: data,
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    checkboxes: {
+                        checkChildren: true
+                    }
+                });
+                $("#factorsTreeList").kendoTooltip({
+                    filter: ".k-in",
+                    content: function (e) {
+                        var factorsTreeList = $("#factorsTreeList").data("kendoTreeView");
+                        var text= $(e.target)[0].innerText;
+                        var model = factorsTreeList.findByText(text);
+                        var dataItem = factorsTreeList.dataItem(model);
+                        return dataItem.Text;
+                    }
+                });
+                $("#confirmBtnBlock").show();
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function confirm() {
+        var attributeIds = [];
+        var factorsTreeList = $("#factorsTreeList").data("kendoTreeView");
+        getCheckedAttributes(factorsTreeList.dataSource.view(), attributeIds);
+        if (attributeIds.length === 0) {
+            Common.ShowError("Не выбраны атрибуты");
+            return;
+        }
+        var form = $('#downloadFactorsForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject['AttributeIds'] = attributeIds;
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage(response.Message);
+                    CloseMainWindow();
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function getCheckedAttributes(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            //не выбирать корневой элемент
+            if (nodes[i].checked && !nodes[i].hasChildren) {
+                checkedNodes.push(nodes[i].Value);
+            }
+            if (nodes[i].hasChildren) {
+                getCheckedAttributes(nodes[i].children.view(), checkedNodes);
+            }
+        }
+    }
+
+
+    function CloseMainWindow() {
+        setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 5000);
+    }
+</script>

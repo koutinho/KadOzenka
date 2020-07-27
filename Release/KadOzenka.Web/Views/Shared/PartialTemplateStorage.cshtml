@@ -1,0 +1,219 @@
+﻿@model KadOzenka.Web.Models.GbuObject.TemplateStorageViewModel
+
+<div style="display: flex">
+	<button style="float: left" id="showSelectedTemplate" class="k-button" type="button">Загрузить шаблон</button>
+	<button style="float: left; margin-left: 4px;" id="showSaveForm" class="k-button" type="button">Сохранить шаблон</button>
+	<div class="template-name-wrapper"  style="display: none; flex-grow: 0.8">
+		<div style="display: flex; padding-left: 4px;">
+			@Html.Kendo().TextBox().Name("templateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" })
+			<button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button"><i class="fas fa-check"></i></button>
+		</div>
+	</div>
+	<div class="template-select-wrapper"  style="display: none; flex-grow: 0.8">
+		<div style="display: flex; padding-left: 4px;">
+			@(Html.Kendo().DropDownList()
+				.Name("selectedTemplate")
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.DataSource(source => {
+					                      source.Read(read =>
+					                      {
+                                              if(string.IsNullOrWhiteSpace(Model.Parameters))
+						                        read.Action(Model.ActionName, Model.ControllerName);
+                                              else
+                                                  read.Action(Model.ActionName, Model.ControllerName).Data("parseInputParametersToDownloadTemplates");
+					                      }); 
+				})
+				.OptionLabel(null))
+			<button style="float: left; margin-left: 4px;" id="select" class="k-button" type="button"><i class="fas fa-check"></i></button>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var templateStorage = templateStorage ||
+	(function($) {
+		var obj = {
+			actionNameUrlSaveTemplate: null,
+			controllerNameUrlSaveTemplate: null,
+			actionNameUrlSelectedTemplate: null,
+			controllerNameUrlSelectedTemplate: null,
+			currentFormType: 0,
+            setDataForm: null,
+            additionalFormObjectMapping: null,
+            init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback, additionalFormObjectMapping) {
+                if (!actionNameUrlSaveTemplate ||
+					!controllerNameUrlSaveTemplate ||
+					!actionNameUrlSelectedTemplate ||
+					!controllerNameUrlSelectedTemplate ||
+					!callback) {
+					return;
+				}
+				this.currentFormType = typeForm;
+				this.actionNameUrlSaveTemplate = actionNameUrlSaveTemplate;
+				this.controllerNameUrlSaveTemplate = controllerNameUrlSaveTemplate;
+				this.actionNameUrlSelectedTemplate = actionNameUrlSelectedTemplate;
+				this.controllerNameUrlSelectedTemplate = controllerNameUrlSelectedTemplate;
+				this.setDataForm = callback;
+                this.additionalFormObjectMapping = additionalFormObjectMapping;
+				this.subscribers();
+			},
+			subscribers: function () {
+				var self = this;
+				$('#showSaveForm').on('click',
+					function () {
+						$('.template-select-wrapper').hide();
+						$('.template-name-wrapper').show(500);
+					});
+
+				$('#showSelectedTemplate').on('click', function () {
+					$('.template-name-wrapper').hide();
+					$('.template-select-wrapper').show(500);
+				});
+
+
+				$('#templateName').keydown(function () {
+					$(this).removeClass('error');
+                });
+
+
+				$('#save').on('click',
+					function () {
+						if ($('#templateName').val() === "") {
+							Common.ShowError("Имя шаблона обязательно для заполнения");
+							$('#templateName').addClass('error');
+							return;
+						}
+						$('.template-name-wrapper').hide(500);
+
+						var form = $('form');
+                        var formObject = Common.Functions.FormToObject(form);
+                        if ($("#valuesFilter").data('kendoMultiSelect')) {
+							formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+						}
+						kendo.ui.progress($('body'), true);
+
+                        if (self.additionalFormObjectMapping) {
+                            formObject = self.additionalFormObjectMapping(formObject);
+                        }
+
+						var url = "/"+ self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate + "?nameTemplate=" + $('#templateName').val();
+
+                        $.post(url, formObject).done(function (response) {
+							kendo.ui.progress($('body'), false);
+							if (response.Error) {
+								kendo.ui.progress($('body'), false);
+								Common.ShowError(response.Error);
+								return;
+							}
+							if (response.success) {
+								kendo.ui.progress($('body'), false);
+								Common.ShowMessage("Выполнено");
+								$('#templateName').val("");
+								$('#selectedTemplate').data("kendoDropDownList").dataSource.read();
+								$('#selectedTemplate').data("kendoDropDownList").refresh();
+							}
+						});
+					});
+
+
+				$('#select').on('click',
+					function() {
+						var url = "/" + self.controllerNameUrlSelectedTemplate + "/" + self.actionNameUrlSelectedTemplate + "?id=" + $('#selectedTemplate').data("kendoDropDownList").value();
+						kendo.ui.progress($('body'), true);
+						$.get(url).done(function (response) {
+							if (response.error) {
+                                Common.ShowError(response.Error);
+								return;
+							}
+							if (response.data && self.setDataForm) {
+								self.setDataForm(self.parseData(response.data));
+							}
+							$('.template-select-wrapper').hide(500);
+                            Common.ShowMessage("Данные заполнены");
+                        })
+                            .fail(function (response) {
+                                Common.ShowError(response.responseText);
+                            })
+                            .always(function () {
+                                kendo.ui.progress($('body'), false);
+                            });
+					});
+			},
+            parseData: function (data) {
+                //парс простых типов данных
+                function parseSample(obj) {
+					return Object.keys(obj).map(function (str) {
+						if (typeof (obj[str]) !== "object" || obj[str] === null) {
+							var a = {};
+							a[str] = obj[str];
+							return a;
+						}
+						return null;
+					}).filter(val => !!val);
+				}
+
+                //парс сложных типов данных (объектов и массивов из простых типов данных)
+				function parseTwoLevel(obj) {
+					var res = [];
+                    Object.keys(obj).forEach(function (str) {
+                        if (typeof (obj[str]) === "object" && obj[str] !== null) {
+                            parseSample(obj[str]).forEach(function(val) {
+                                var a = {};
+                                var strTmp = str + '_' + Object.keys(val)[0];
+                                a[strTmp] = val[Object.keys(val)[0]];
+								res.push(a);
+							});
+						}
+					});
+					return res;
+                }
+
+                //парс сложных типов данных (массивов из объектов)
+                function parseThirdLevel(obj) {
+                    var res = [];
+                    Object.keys(obj).forEach(function (str) {
+                        var array = obj[str];
+                        if (typeof (array) === "object" && array && Array.isArray(array)) {
+                            var propertyName = str;
+                            var counter = 0;
+                            array.forEach(function (complexObject) {
+                                if (typeof (complexObject) === "object" && complexObject !== null) {
+                                    counter++;
+                                    var arrayOfComplexObjects = {};
+                                    var strTmp = propertyName + '_' + counter;
+                                    var currentComplexObject = {};
+                                    Object.keys(complexObject).forEach(function (complexObjectPropertyName) {
+                                        var complexObjectPropertyValue = complexObject[complexObjectPropertyName];
+                                        currentComplexObject[complexObjectPropertyName] = complexObjectPropertyValue;
+
+                                    });
+                                    arrayOfComplexObjects[strTmp] = currentComplexObject;
+                                    res.push(arrayOfComplexObjects);
+                                }
+                            });
+                        }
+                    });
+                    return res;
+                }
+
+                var jsonObj = JSON.parse(data);
+
+                return [...parseSample(jsonObj), ...parseTwoLevel(jsonObj), ...parseThirdLevel(jsonObj)];
+            }
+		}
+		return obj;
+        })($);
+
+
+
+    function parseInputParametersToDownloadTemplates() {
+        var hashes = '@Model.Parameters'.split('&amp;');
+        var params = {}
+        hashes.map(hash => {
+            var parameter = hash.split('=');
+            params[parameter[0]] = parameter[1];
+        });
+        return params;
+    }
+</script>

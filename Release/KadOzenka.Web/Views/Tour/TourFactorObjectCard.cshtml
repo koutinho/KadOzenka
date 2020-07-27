@@ -1,0 +1,110 @@
+﻿@using Core.Register
+@using Core.UI.Registers.Services
+@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Tour.TourFactorObjectModel
+
+
+@using (Html.BeginForm("EditTourFactorObjectCard", "Tour", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.TourId)
+    @Html.HiddenFor(m => m.IsSteadObjectType)
+    @Html.HiddenFor(m => m.RegisterFactorId)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Name)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoTextBoxFor(m => m.Name, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Type)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo()
+                      .DropDownListFor(m => m.Type)
+                      .DataTextField("Text")
+                      .DataValueField("Value")
+                      .BindTo(ComboBoxHelper.GetSelectList(typeof(RegisterAttributeType),
+                          new[]{ (long)RegisterAttributeType.INTEGER,
+                              (long)RegisterAttributeType.DECIMAL,
+                              (long)RegisterAttributeType.BOOLEAN,
+                              (long)RegisterAttributeType.STRING,
+                              (long)RegisterAttributeType.DATE,
+                              (long)RegisterAttributeType.REFERENCE }))
+                      .Enable(Model.Id == -1))
+            </div>
+        </div>
+        <div class="form-group" id="referenceSection" style="@(Model.Type == RegisterAttributeType.REFERENCE ? "" : "display: none;")">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.ReferenceId)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo()
+                      .DropDownListFor(m => m.ReferenceId)
+                      .Filter(FilterType.Contains)
+                      .DataTextField("Text")
+                      .DataValueField("Value")
+                      .BindTo(CoreUiService.GetReferenceList())
+                      .HtmlAttributes(new { @style = "width: 100%" })
+                      .Enable(Model.Id == -1)
+                      )
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#@Html.IdFor(m => m.Type)').data('kendoDropDownList').bind("change", onFactorTypeChanged);
+        $('#save').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                $.post(form.attr('action'), formObject).done(function (response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = $.map(distinctErrors(response.Errors),
+                            function(el) {
+                                return el.Message;
+                            });
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success && response.data) {
+                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                        $('#@Html.IdFor(m => m.RegisterFactorId)').val(response.data.RegisterFactorId);
+                        $('#@Html.IdFor(m => m.Type)').data('kendoDropDownList').enable(false);
+                        $('#@Html.IdFor(m => m.ReferenceId)').data('kendoDropDownList').enable(false);
+                        Common.ShowMessage(response.Success);
+                    }
+                }).fail(function (response, textStatus, errorThrown) {
+                    kendo.ui.progress($('body'), false);
+                    Common.ShowError(response.responseText);
+                });
+            });
+    });
+
+    function onFactorTypeChanged(e) {
+        var value = this.value();
+        if (value == @((long)RegisterAttributeType.REFERENCE)) {
+            $('#referenceSection').show();
+        } else {
+            $('#@Html.IdFor(m => m.ReferenceId)').data('kendoDropDownList').value(null);
+            $('#referenceSection').hide();
+        }
+    }
+    </script>

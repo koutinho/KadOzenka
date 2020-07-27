@@ -1,0 +1,132 @@
+﻿@model KadOzenka.Web.Models.Task.ModelFactorDto
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Фактор")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                            .Name("Factor")
+                                                            .DataTextField("Text")
+                                                            .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Коэффициент")
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.B0, precision: 5, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Вес фактора")
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.Weight, precision: 15, isReadonly: false)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Деление на фактор")
+        </div>
+        <div class="col-sm-9">
+            @Html.CheckBoxFor(x => x.SignDiv)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Суммировать фактор")
+        </div>
+        <div class="col-sm-9">
+            @Html.CheckBoxFor(x => x.SignAdd)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Использовать метку")
+        </div>
+        <div class="col-sm-9">
+            @Html.CheckBoxFor(x => x.SignMarket)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#save').on('click', function () {
+            var dto = {
+                Id: '@Model.Id',
+                B0: $('#B0').val(),
+                Weight: $('#Weight').val(),
+                SignDiv: $('#SignDiv').prop('checked'),
+                SignAdd: $('#SignAdd').prop('checked'),
+                SignMarket: $('#SignMarket').prop('checked'),
+                ModelId: '@Model.ModelId',
+                MarkerId: '@Model.MarkerId',
+                FactorId: $('[name="Factor"]').data("kendoDropDownList").value()
+            };            
+                        
+            $.ajax({                
+                type: 'POST',
+                data: dto,
+                success: function (response) {                    
+                    kendo.ui.progress($('body'), false);
+                    Common.ShowMessage('Сохранение выполнено');
+                    Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+                },
+                error: function (response) {                    
+                    kendo.ui.progress($('body'), false);
+                    Common.ShowError(response.responseText);
+                }
+            });
+        });
+
+        $('#cancel').on('click', function () {
+            Common.UI.CloseWindow('editFactorWindow', window.parent);
+        });
+
+        $('[name="Factor"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetModelFactorName", "Task")',
+                            data: {
+                                modelId: '@Model.ModelId'
+                            },
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        @if (Model.Id != -1)
+        {
+        <Text>
+        $('[name="Factor"]').data("kendoDropDownList").bind("dataBound", function () {
+            $('[name="Factor"]').data("kendoDropDownList").select(function (dataItem) {
+                return dataItem.Value == '@Model.FactorId.Value';
+            });
+        });
+        </Text>
+        }
+    });
+</script>

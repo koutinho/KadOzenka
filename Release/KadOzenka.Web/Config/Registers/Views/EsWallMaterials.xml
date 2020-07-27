@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="603" DefaultLayoutId="1006031" LinkedRegistersList="603" AllowSearchPanelResize="false"
+              Description="Экспресс оценка. Материал стен" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" ShowRowMenu="true">
+	<Buttons>
+		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+			<Parameters>
+				<Parameter Key="ObjectId" Value="[ObjectID]" />
+				<Parameter Key="RegisterId" Value="[RegisterId]" />
+			</Parameters>
+		</Button>
+
+	    <Button Caption="Добавить" NavigateURL="/ExpressScore/WallMaterial" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
+	    </Button>
+
+	    <Button Caption="Редактировать" NavigateURL="/ExpressScore/WallMaterial" WindowHeight="200" WindowWidth="900" Icon="fas fa-edit" >
+	        <ConditionGroups>
+	            <ConditionGroup HideOrDisable="Disable">
+	                <Conditions>
+	                    <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+	                </Conditions>
+	            </ConditionGroup>
+	        </ConditionGroups>
+	        <Parameters>
+	            <Parameter Key="id" Value="[ObjectID]" />
+	        </Parameters>
+	    </Button>
+	</Buttons>
+
+    <RowMenuButtons>
+        <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" WindowWidth="900" WindowHeight="200" NavigateURL="/ExpressScore/WallMaterial">
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectId]" />
+            </Parameters>
+        </Button>
+    </RowMenuButtons>
+</RegisterView>

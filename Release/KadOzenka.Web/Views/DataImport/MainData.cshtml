@@ -1,0 +1,186 @@
+﻿
+@model KadOzenka.Web.Models.DataImport.DataImporterLayoutDto
+
+<form>
+	<input type="hidden" name="Id" value="@Model.Id" />
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group"></div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Имя пользователя</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.UserName" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Статус</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.Status?.GetEnumDescription()" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Дата создания</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.DateCreated?.ToString("dd.MM.yyyy HH:mm:ss")" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Дата запуска</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.DateStarted?.ToString("dd.MM.yyyy HH:mm:ss")" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Дата завершения</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.DateFinished?.ToString("dd.MM.yyyy HH:mm:ss")" />
+			</div>
+		</div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Имя файла данных</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.DataFileName" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Имя результирующего файла</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileName" />
+            </div>
+        </div>
+		<div class="form-group">
+			<div class="col-sm-2">
+                <label class="control-label">Объем файла данных (КБ)</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.DataFileSizeKb" />
+			</div>
+		</div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем файла данных (MБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.DataFileSizeMb" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем результирующего файла (КБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileSizeKb" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Объем результирующего файла (MБ)</label>
+            </div>
+            <div class="col-sm-4">
+                <input class="k-textbox" readonly value="@Model.ResultFileSizeMb" />
+            </div>
+        </div>
+        <div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">ИД ошибки</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.ErrorId" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">ИД основного реестра</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.MainRegisterId" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">ИД представления реестра</label>
+			</div>
+			<div class="col-sm-4">
+				<input class="k-textbox" readonly value="@Model.RegisterViewId" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Параметры соответствия колонок и показателей</label>
+			</div>
+			<div class="col-sm-4">
+				<div id="listView"></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				<label class="control-label">Результирующее сообщение</label>
+			</div>
+			<div class="col-sm-4">
+				<textarea class="k-textbox" readonly rows="10" style="resize:none;">@Model.ResultMessage</textarea>
+			</div>
+		</div>
+	</div>
+</form>
+
+@section styles {
+	<style>
+		#listView {
+			max-height: 200px;
+			overflow: auto;
+			padding: 0.4em;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+		}
+		.matchItem {
+			margin-top: 0.4em;
+			border: #ceced2;
+		}
+
+		.matchItem > div {
+			white-space: nowrap;
+		}
+	</style>
+}
+
+@section scripts {
+	<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="return false;"/></span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeName#</span>
+				</span>
+			</div>
+		</div>
+	</script>
+	<script>
+		var dataSource = new kendo.data.DataSource({
+			data: @Html.Raw(Model.ColumnsMappingDtoListJson)
+		});
+
+		$(document).ready(function () {
+			$("#listView").kendoListView({
+				dataSource: dataSource,
+				template: kendo.template($("#template").html())
+			});
+		});
+	</script>
+}

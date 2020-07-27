@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LeftPanelParam ViewUrl="~/Views/CoreUi/Dashboard/IndexWithoutInterface.cshtml">
+  <Buttons>
+      <Button Caption="Рабочий стол" Type="DropDown" Icon="icon-monitor" Id="dashBoardList" LoadItemsURL="/Dashboard/GetDashboardList" AfterLoadFunction="SetTitle">
+        <Parameters>
+          <Parameter Key="Subsystem" Value="{Get:Subsystem}" />
+        </Parameters>
+      </Button>      
+      <Button Caption="Инструменты" Type="DropDown" Icon="icon-settings">
+        <DropDownButtons>
+          <Button Caption="Создать рабочий стол" Id="buttonCreateDashBoard" />
+          <Button Caption="Изменить рабочий стол" Id="buttonChangeDashBoard" />
+          <Button Caption="Копировать рабочий стол" Id="buttonCopyDashBoard" />
+          <Button Caption="Удалить рабочий стол" Id="buttonDeleteDashBoard" />
+          <!--<Button Caption="Сделать по умолчанию" Id="buttonDefaultDashBoard" />-->
+          <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" Id="buttoExportToExcel" />
+          <Button Caption="Печать" Id="buttonPrintDashBoard" />
+        </DropDownButtons>
+      </Button>
+      <Button Caption="Гаджеты" Icon="icon-plus" Id="buttonAddGadget"/>
+      <Button Type="Toggle" Caption="Редактировать" Icon="k-icon k-i-edit" Id="cbEditMode" />
+      <Button Caption="Изменить вид" Type="HorizontalList" Icon="icon-view" Id="dashBoardLayoutList" AfterLoadFunction="SetActiveLayout">
+        <DropDownButtons>
+          <Button Id="view1" Icon="dash-view dash-view1" >
+            <Parameters>
+              <Parameter Key="Value" Value="100" />
+            </Parameters>
+          </Button>
+          <Button Id="view2" Icon="dash-view dash-view2" >
+            <Parameters>
+              <Parameter Key="Value" Value="200" />
+            </Parameters>
+          </Button>
+          <Button Id="view3" Icon="dash-view dash-view3" >
+            <Parameters>
+              <Parameter Key="Value" Value="230" />
+            </Parameters>
+          </Button>
+          <Button Id="view4" Icon="dash-view dash-view4" >
+            <Parameters>
+              <Parameter Key="Value" Value="260" />
+            </Parameters>
+          </Button>
+          <Button Id="view5" Icon="dash-view dash-view5" >
+            <Parameters>
+              <Parameter Key="Value" Value="300" />
+            </Parameters>
+          </Button>
+        </DropDownButtons>
+      </Button>
+  </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</LeftPanelParam>

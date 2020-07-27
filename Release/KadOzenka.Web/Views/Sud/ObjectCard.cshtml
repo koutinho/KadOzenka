@@ -1,0 +1,801 @@
+﻿@using Newtonsoft.Json;
+@using System.ComponentModel.DataAnnotations;
+
+@model KadOzenka.Web.Models.Sud.ObjectCardModel
+
+@using (Html.BeginForm("EditObjectCard", "Sud", FormMethod.Post))
+{
+	@if (Model.Id == -1)
+	{
+	    <div class="form-group">
+            <div class="col-sm-12">
+                <a href="/Help/Help?CurrentLocation=SudObjectCard" target="_blank">
+                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+                </a>
+            </div>
+        </div>
+	}
+	<input type="hidden" name="Id" value="@Model.Id" id="Id" />
+	<ul id="ls_panelbar" class="panelbar">
+		<li id="Section_Object" data-expand>
+			<span>Основные данные</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Kn)
+						</div>
+						<div class="col-sm-4 kendo-auto-complite">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoTextBoxFor(m => m.Kn)
+							}
+							else
+							{
+								<input id="Kn" name="Kn" style="width: 100%" value="@Model.Kn"/>
+							}
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Date)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoDatePickerFor(m => m.Date)
+							}
+							else
+							{
+								@Html.KendoDatePickerFor(m => m.Date, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Square)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Square, precision: 2)
+							}
+							else
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, isReadonly: false)
+							}
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Kc)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Kc, precision: 2)
+							}
+							else
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Kc, precision: 2, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.ApplicantType)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoEnumDropDownListFor(m => m.ApplicantType)
+							}
+							else
+							{
+								@Html.KendoEnumDropDownListFor(m => m.ApplicantType, false)
+							}
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.TypeOfOwnership)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoEnumDropDownListFor(m => m.TypeOfOwnership)
+							}
+							else
+							{
+								@Html.KendoEnumDropDownListFor(m => m.TypeOfOwnership, false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.ObjectType)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoEnumDropDownListFor(m => m.ObjectType)
+							}
+							else
+							{
+								@Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Address)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.TextAreaFor(m => m.Address, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @readonly = "readonly", @editMode="true" })
+							}
+							else
+							{
+								@Html.TextAreaFor(m => m.Address, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px" })
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.NameCenter)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.TextAreaFor(m => m.NameCenter, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly", @editMode = "true" })
+							}
+							else
+							{
+								@Html.TextAreaFor(m => m.NameCenter, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px" })
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.StatDgi)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.TextAreaFor(m => m.StatDgi, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly", @editMode = "true" })
+							}
+							else
+							{
+								@Html.TextAreaFor(m => m.StatDgi, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px" })
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Owner)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.TextAreaFor(m => m.Owner, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly", @editMode = "true" })
+							}
+							else
+							{
+								@Html.TextAreaFor(m => m.Owner, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px" })
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.AdditionalAnalysisRequired)
+						</div>
+						<div class="col-sm-2">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired)
+							}
+							else
+							{
+								@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired, isReadonly: false)
+							}
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.IsException)
+						</div>
+						<div class="col-sm-2">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoCheckBoxFor(m => m.IsException)
+							}
+							else
+							{
+								@Html.KendoCheckBoxFor(m => m.IsException, isReadonly: false)
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+		@if (Model.Id != -1)
+		{
+			<li id="Section_Reports" data-expand>
+				<span>Отчеты</span>
+				<div style="height: auto">
+					<div class="form-horizontal col-sm-12">
+						<div class="form-group"></div>
+						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetLinkCard")"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid304"></div>
+						<div class="form-group"></div>
+					</div>
+				</div>
+			</li>
+			<li id="Section_Conclusions" data-expand>
+				<span>Заключения</span>
+				<div style="height: auto">
+					<div class="form-horizontal col-sm-12">
+						<div class="form-group"></div>
+						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudZakLinkCard")"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid302"></div>
+						<div class="form-group"></div>
+					</div>
+				</div>
+			</li>
+			<li id="Section_Judgments" data-expand>
+				<span>Судебные решения</span>
+				<div style="height: auto">
+					<div class="form-horizontal col-sm-12">
+						<div class="form-group"></div>
+						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudReshLinkCard")"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid314"></div>
+						<div class="form-group"></div>
+					</div>
+				</div>
+			</li>
+		}
+		<li id="Section_DrsCalculation" data-expand>
+			<span>Расчет ДРС</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.DrsGroup)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoTextBoxFor(m => m.DrsGroup)
+							}
+							else
+							{
+								@Html.KendoTextBoxFor(m => m.DrsGroup, isReadonly: false)
+							}
+						</div>
+					</div>
+					<fieldset id="drsSquareFieldset">
+						<legend>Площадь</legend>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Basement)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Basement, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Basement, precision: 2, isReadonly: false)
+								}
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Socle)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Socle, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Socle, precision: 2, isReadonly: false)
+								}
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Trade)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Trade, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Trade, precision: 2, isReadonly: false)
+								}
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Office)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Office, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Office, precision: 2, isReadonly: false)
+								}
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Production)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Production, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Production, precision: 2, isReadonly: false)
+								}
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Parking)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Parking, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Parking, precision: 2, isReadonly: false)
+								}
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Social)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Social, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Social, precision: 2, isReadonly: false)
+								}
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Apartments)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Apartments, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.Apartments, precision: 2, isReadonly: false)
+								}
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.OtherPurpose)
+							</div>
+							<div class="col-sm-4">
+								@if (Model.Id != -1)
+								{
+									@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, precision: 2)
+								}
+								else
+								{
+									@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, precision: 2, isReadonly: false)
+								}
+							</div>
+						</div>
+					</fieldset>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.TechnicalCondition)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoTextBoxFor(m => m.TechnicalCondition)
+							}
+							else
+							{
+								@Html.KendoTextBoxFor(m => m.TechnicalCondition, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.RecountReason)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoTextBoxFor(m => m.RecountReason)
+							}
+							else
+							{
+								@Html.KendoTextBoxFor(m => m.RecountReason, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Updrs)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Updrs, precision: 2)
+							}
+							else
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Updrs, precision: 2, isReadonly: false)
+							}
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Drs)
+						</div>
+						<div class="col-sm-4">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Drs, precision: 2)
+							}
+							else
+							{
+								@Html.KendoNumericTextBoxFor(m => m.Drs, precision: 2, isReadonly: false)
+							}
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.DrsOwner)
+						</div>
+						<div class="col-sm-10">
+							@if (Model.Id != -1)
+							{
+								@Html.KendoTextBoxFor(m => m.DrsOwner)
+							}
+							else
+							{
+								@Html.KendoTextBoxFor(m => m.DrsOwner, isReadonly: false)
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+	<div class="static-nav">
+		<nav id="navigation-menu">
+			<a href="#Section_Object">Основные данные</a>
+			@if (Model.Id != -1)
+			{
+				<a href="#Section_Reports">Отчеты</a>
+				<a href="#Section_Judgments">Заключения</a>
+				<a href="#Section_Judgments">Судебные решения</a>
+			}
+			<a href="#Section_DrsCalculation">Расчет ДРС</a>
+			<div id="toolbar"></div>
+		</nav>
+	</div>
+}
+
+@section styles {
+	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<style>
+		fieldset#drsSquareFieldset {
+			border: 1px solid #c8c6cc;
+			border-radius: 6px;
+			margin-bottom: 10px;
+		}
+
+		fieldset#drsSquareFieldset legend {
+			font-size: initial;
+		}
+
+		#toolbar {
+			position: absolute;
+			bottom: 20px;
+			width: 95%;
+		}
+	</style>
+}
+
+@section scripts {
+	<script src="~/js/jquery.fancybox.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			//Автокомлит для кадастрового номера
+			function onSelect(e) {
+				var url = "@Url.Action("GetAutoFillDataByKn", "Sud")" + `?kn=${e.dataItem.value}`;
+				$.get(url).done(function (response) {
+					$('#Address').val(response.Address);
+					$('#ObjectType').data('kendoDropDownList').value(response.Type);
+					console.log('response', response);
+				});
+			}
+
+			var dataSource = new kendo.data.DataSource({
+				serverFiltering: true,
+				transport: {
+					read: {
+						url: "@Url.Action("GetKnData", "Sud")",
+						dataType: "json",
+						data: function(opt) {
+							return {
+								searchText: $("#Kn").val()
+							}
+						}
+					}
+				}
+			});
+			$("#Kn").kendoAutoComplete({
+				dataTextField: "text",
+				select: onSelect,
+				filter: "contains",
+				minLength: 3,
+				clearButton: false,
+				dataSource: dataSource
+			});
+			// end auto complete
+
+			const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+			panelbar.expand('li[data-expand]');
+
+			$("#navigation-menu a").mPageScroll2id({
+				highlightSelector: "#navigation-menu a"
+			});
+			/*$.ajaxDataLoader.addMethod('resizeGrid302', function() {
+			    resizeGrid($("#Grid-302"));
+			});
+
+			$.ajaxDataLoader.addMethod('resizeGrid304', function () {
+			    resizeGrid($("#Grid-304"));
+			});
+
+			$.ajaxDataLoader.addMethod('resizeGrid314', function () {
+			    resizeGrid($("#Grid-314"));
+			});
+
+			function resizeGrid(grid) {
+			    if (grid.length) {
+			        var dataArea = grid.find(".k-grid-content");
+			        grid.css('height', '100%');
+			        dataArea.css('height', '100%');
+			    }
+			}*/
+			var isEditPermission = "@Model.IsEditPermission" === "True";
+			var isApprovePermission = "@Model.IsApprovePermission" === "True";
+			var isRemoved = "@Model.IsRemovedObject" === "True";
+
+			isEditPermission = isEditPermission && !isRemoved;
+			isApprovePermission = isApprovePermission && !isRemoved;
+
+			const toolbar = $("#toolbar").kendoToolBar({
+				items: [
+					@if (Model.Id != -1)
+					{
+						@Html.Raw(@"{
+						type: 'button',
+						id: 'reloadCardBtn',
+						text: '',
+						click: function() {
+							updateData(() => { Common.ShowMessage('Данные успешно обновлены'); });
+						},
+						icon: 'refresh',
+						hidden: false
+					}," +
+
+								  @"{
+						type: 'button',
+						id: 'editBtn',
+						text: '',
+						click: function () {
+						KendoExtension.ToggleEditMode(true);
+						toolbar.hide($('#editBtn'));
+						toolbar.show($('#saveBtn'));
+						toolbar.show($('#cancelBtn'));
+					},
+					icon: 'edit',
+					hidden: !isEditPermission && isRemoved
+					}," +
+								  @"{
+						type: 'button',
+						id: 'saveBtn',
+						text: '',
+						click: function() {
+							kendo.ui.progress($('body'), true);
+							var form = $('form');
+							var formObject = Common.Functions.FormToObject(form);
+							$.ajax({
+								type: form.attr('method'),
+								url: form.attr('action'),
+								data: formObject,
+								success: function(data) {
+									kendo.ui.progress($('body'), false);
+									if (data.Errors) {
+										var errors = $.map(distinctErrors(data.Errors),
+											function(el) {
+												return el.Message;
+											});
+										Common.ShowError(errors);
+										return;
+									}
+									if (data.Success) {
+										Common.ShowMessage(data.Success);
+										updateData(() => {
+											KendoExtension.ToggleEditMode(false);
+											toolbar.show($('#editBtn'));
+											toolbar.hide($('#saveBtn'));
+											toolbar.hide($('#cancelBtn'));
+										});
+									}
+								},
+								error: function(response) {
+									kendo.ui.progress($('body'), false);
+									Common.ShowError(response.responseText);
+								}
+							});
+						},
+						icon: 'save',
+						hidden: true
+					}," +
+								  @"{
+						type: 'button',
+						id: 'cancelBtn',
+						text: '',
+						click: function() {
+							kendo.ui.progress($('body'), true);
+
+							var rootWindow = window;
+							if (rootWindow.parent !== undefined)
+								rootWindow = rootWindow.parent;
+							rootWindow.location = '" + ("~/ObjectCard?ObjId=" + @Model.Id + @"&RegisterViewId=SudObjects&isVertical=true&useMasterPage=true").ResolveClientUrl() + @"';
+						},
+						icon: 'cancel',
+					hidden: !isEditPermission
+					}," + @"{
+                        type: 'button',
+                        id: 'approveBtn',
+						text: '',
+						click: function() {
+							var contentUrl = '" + @Url.Action("EditApprovalObject", "Sud", new {idObject = @Model.Id}) + @"';
+					        var title = 'Утверждение данных';
+                            Common.UI.ChooseWindow(title, contentUrl);
+                                 },
+						icon: 'check',
+                        hidden: !isApprovePermission
+                        }")
+						;
+					}
+					else
+					{
+						@Html.Raw(@"{
+						type: 'button',
+						id: 'saveBtn',
+						text: '',
+						click: function() {
+							kendo.ui.progress($('body'), true);
+							var form = $('form');
+							var formObject = Common.Functions.FormToObject(form);
+							$.ajax({
+								type: form.attr('method'),
+								url: form.attr('action'),
+								data: formObject,
+								success: function(data) {
+									kendo.ui.progress($('body'), false);
+									if (data.Errors) {
+										var errors = $.map(distinctErrors(data.Errors),
+											function(el) {
+												return el.Message;
+											});
+										Common.ShowError(errors);
+										return;
+									}
+									if (data.Success) {
+										Common.ShowMessage(data.Success);
+										if (data.ObjectId) {
+											var rootWindow = window;
+											if (rootWindow.parent !== undefined)
+												rootWindow = rootWindow.parent;
+											rootWindow.location = '" + ("~/").ResolveClientUrl() + @"'" + @"+'ObjectCard?ObjId='" + @"+data.ObjectId" + @"+'&RegisterViewId=SudObjects&isVertical=true&useMasterPage=true'" + @";
+										}
+									}
+								},
+								error: function(response) {
+									kendo.ui.progress($('body'), false);
+									Common.ShowError(response.responseText);
+								}
+							});
+						},
+						icon: 'save',
+						hidden: !isEditPermission
+					}")
+					}
+			]
+		}).data('kendoToolBar');
+
+		$("#toolbar").kendoTooltip({
+			filter: "a.k-button",
+			content: function(e) {
+				switch ($(e.target).attr('id')) {
+				case "reloadCardBtn":
+					return "Обновить";
+				case "editBtn":
+					return "Редактировать";
+				case "saveBtn":
+					return "Сохранить";
+				case "cancelBtn":
+					return "Отмена";
+				case "print":
+					return "Печать";
+				case "approveBtn":
+					return "Утвердить";
+				}
+			},
+			position: "top",
+			autoHide: true,
+			showAfter: 500
+		});
+		});
+
+		function distinctErrors(errors) {
+			var result = [];
+			$.each(errors,
+				function(index, event) {
+					var events = $.grep(result,
+						function(e) {
+							return event.Message === e.Message;
+						});
+					if (events.length === 0) {
+						result.push(event);
+					}
+				});
+
+			return result;
+		}
+
+		function updateData(successCallbackFunc) {
+			var id = $('#Id').val();
+			kendo.ui.progress($('body'), true);
+			$.ajax({
+				type: 'GET',
+				url: '@Url.Action("GetObjectInfo", "Sud")',
+				data: { 'id': id },
+				success: function(response) {
+					kendo.ui.progress($('body'), false);
+
+					if (response.Errors && response.Errors[0]) {
+						Common.ShowError(response.Errors);
+						return;
+					}
+					var form = $('form');
+					Common.Functions.ObjectToForm(response.Data, form);
+
+					if (successCallbackFunc) {
+						successCallbackFunc();
+					}
+				},
+				error: function(response) {
+					kendo.ui.progress($('body'), false);
+					Common.ShowError(response && response.responseText);
+				}
+			});
+		}
+	</script>
+}

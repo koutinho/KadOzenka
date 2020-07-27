@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+    <ControlElement Caption="Выгрузка" OwnType="RadPanel">
+        <children>
+            <ControlElement ID="date_panel" Caption="Дата начала загрузки" OwnType="Panel">
+                <children>
+                    <ControlElement ID="date_from" Caption="с " OwnType="Calendar" AttributeNumber="95600400" QueryOperation="MoreOrEqual" />
+                    <ControlElement ID="date_to" Caption="по" OwnType="Calendar" AttributeNumber="95600400" QueryOperation="LessOrEqual" />
+                </children>
+            </ControlElement>
+
+            <ControlElement ID="IsMine" Caption="Только мои загрузки"  OwnType="CheckBox" AttributeNumber="95600300" QueryOperation="Equal" Value="{SRDSession:UserID}" DefaultValue="true" />
+
+        </children>
+    </ControlElement>
+</RootElement>

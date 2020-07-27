@@ -1,0 +1,49 @@
+﻿
+@using (Html.BeginForm("RemoveGroupsByTour", "Tour", FormMethod.Post))
+{
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group"></div>
+		<div class="form-group">
+			<div class="col-sm-12">
+				@Html.CustomLabel("Вы уверены что хотите удалить все группы тура?")
+			</div>
+		</div>
+		<div class="form-group"></div>
+		<div class="form-group"></div>
+		<div class="form-group"></div>
+		<div class="form-group">
+			<div class="col-sm-12">
+				<button class="k-button k-button-icontext" style="float: right" id="delete" type="button">
+					<span class="k-icon k-i-check"></span>Удалить
+				</button>
+			</div>
+		</div>
+	</div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#delete').on('click',
+			function () {
+				var btn = this;
+				kendo.ui.progress($('body'), true);
+				$.post($('form').attr('action'), {tourId: @ViewBag.TourId}).done(function (response) {
+					if (response.Errors) {
+						var errors = getErrors(response.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+
+					if (response.Success) {
+						Common.ShowMessage("Группы успешно удалены");
+						$(btn).attr('disabled', true);
+					}
+				}).fail(function (response, textStatus, errorThrown) {
+					Common.ShowError(response.responseText);
+				}).always(function () {
+					kendo.ui.progress($('body'), false);
+				});
+			});
+	});
+</script>

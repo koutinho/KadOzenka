@@ -1,0 +1,600 @@
+﻿<form id="importForm">
+    <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
+        <li id="Section_UploadBuilding" data-expand>
+            <span>Формирование загрузки</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx"/>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-5">
+                            <div class="row">
+                                <label class="control-label">Колонки в файле Excel:</label>
+                            </div>
+                            <div class="row paramsContainer">
+                                <select id="columnsListBox"></select>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="row">
+                                <span>&nbsp;</span>
+                            </div>
+                            <div class="row matchButtonContainer">
+                                <button id="matchButton" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="row">
+                                <label class="control-label">Атрибуты реестров:</label>
+                            </div>
+                            <div class="row filterParamsContainer">
+                                <span class="filterInput">
+                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск по атрибутам"/>
+                                </span>
+                                <div class="filterAttrParamsContainer">
+                                    <div id="treeview"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <span>
+                                <button id="loadButton" type="button">Загрузить</button>
+                                <input id="backgroundDownloadCheckbox" type="checkbox"/>
+                                <label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <a class="k-button k-state-disabled" id="goToJournalBtn" href="" target="_blank"><span>Перейти в журнал</span></a>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Section_Matching" data-expand>
+            <span>Сопоставление</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12 paramsContainer matchParamsContainer">
+                            <div id="listView"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</form>
+
+@section styles {
+	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<style>
+		.my-custom-icon-class:before {
+			content: "\21D4";
+			font-weight: bold;
+			font: icon;
+			font-size: large;
+		}
+
+		.paramsContainer {
+			overflow: auto;
+			width: 100%;
+			height: 255px;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+		}
+
+		.matchParamsContainer {
+			height: 204px !important;
+		}
+
+		.filterParamsContainer {
+			width: 100%;
+			height: 255px;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+			overflow: hidden;
+		}
+
+		.filterInput {
+			height: 10%;
+		}
+
+		.filterAttrParamsContainer {
+			width: inherit;
+			height: calc(0.9*240px);
+			overflow: auto;
+		}
+
+		.paramsContainer .k-listbox {
+			border: none;
+			width: 100%;
+			height: 100%
+		}
+
+		#listView {
+			border: none;
+			width: 100%;
+			height: 100%
+		}
+
+		.matchItem {
+			margin-top: 0.4em;
+			border: #ceced2;
+		}
+
+		.matchItem > div {
+			white-space: nowrap;
+		}
+
+		.paramsContainer .k-listbox .k-item {
+			border: none;
+		}
+
+		.paramsContainer .k-listbox .k-item.k-state-selected {
+			color: #6699FF;
+			background-color: white;
+			border: none;
+		}
+
+		.matchButtonContainer {
+			height: 255px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.form-horizontal .form-group {
+			margin-right: 0;
+			margin-left: 0;
+		}
+
+		#backgroundDownloadCheckbox {
+			-webkit-appearance: checkbox !important;
+		}
+
+		.deleteButton {
+			background-color: rgba(1, 0, 0, 0);
+		}
+
+		div.k-treeview {
+			overflow: unset !important;
+		}
+
+		#importForm {
+			height: 100%;
+		}
+
+		.panelBar {
+			height: 99%;
+		}
+
+		#Section_Matching > .k-content {
+			border-width: 0;
+		}
+	</style>
+}
+
+@section scripts {
+	<script src="~/js/jquery.fancybox.min.js"></script>
+
+    <script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="checkboxChange(this)" data-bind="checked: IsKey" 
+                                  #=IsReadOnly ? disabled='disabled' : '' #/></span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeDescription#</span>
+					<span #=IsReadOnly ? 'style="display: none"' : '' #>
+                        <a class="k-button k-delete-button deleteButton" href="\\#">
+                            <span class="k-icon k-i-close"></span>
+                        </a>
+                    </span>
+				</span>
+			</div>
+		</div>
+	</script>
+
+    <script>
+		var dataSource = new kendo.data.DataSource({
+			data: [ ]
+		});
+
+		$(document).ready(function () {
+            var mainRegisterId = @((long)ViewBag.MainRegisterId);
+            const registerViewId = '@((string)ViewBag.RegisterViewId)';
+            const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
+            const dictionaryId = @((int)ViewBag.DictionaryId);
+
+			$("#filter").on("input", function () {
+				var query = this.value.toLowerCase();
+                const treeView = $("#treeview").data("kendoTreeView");
+
+				// Отключаем кнопку сопоставления после изменения результатов поиска и сбрасываем выделение
+                treeView.select(null);
+                treeView.dataItem(null);
+                $("#matchButton").data('kendoButton').enable(false);
+
+                var dataSource = treeView.dataSource;
+                filter(dataSource, query);
+				treeView.expand(".k-item");
+            });
+
+            $("#filter").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+			$("#matchButton").kendoButton({
+				iconClass: "my-custom-icon-class",
+				enable: false,
+				click: function (e) {
+					const treeView = $("#treeview").data('kendoTreeView');
+					const listBox = $("#columnsListBox").data('kendoListBox');
+                    if (treeView && listBox) {
+                        var treeViewData = treeView.dataItem(treeView.select());
+
+                        @if ((long)ViewBag.MainRegisterId != 100)
+                        {<text>
+                        //change or set mainregister
+                        if (treeViewData != null) {
+                            mainRegisterId = treeViewData.parentId;
+                        }
+                        </text>}
+
+						var listBoxData = listBox.dataItem(listBox.select());
+						if (treeViewData && listBoxData) {
+							treeView.enable(treeView.select(), false);
+							listBox.enable(listBox.select(), false);
+							$("#matchButton").data('kendoButton').enable(false);
+							var listView = $("#listView").data('kendoListView');
+							listView.dataSource.add({
+                                IsKey: false,
+                                IsReadOnly: false,
+								ColumnName: listBoxData.Name,
+								ColumnId: listBoxData.Id,
+								ColumnUid: listBoxData.uid,
+								AttributeDescription: treeViewData.text,
+								AttributeId: treeViewData.id,
+								AttributeUid: treeViewData.uid
+							});
+                            $("#loadButton").data('kendoButton').enable(true);
+						}
+					}
+				}
+			});
+
+			$("#loadButton").kendoButton({
+				enable: true,
+				click: function (e) {
+					kendo.ui.progress($('#importForm'), true);
+					$("#loadButton").data('kendoButton').enable(false);
+					var listView = $("#listView").data('kendoListView');
+					var data = listView.dataSource.data();
+					var columns = $.map(data, function (item) {
+						return {
+							ColumnName: item.ColumnName,
+							AttributeId: item.AttributeId,
+							IsKey: item.IsKey
+						};
+                    });
+
+                    var file = $('#files').data('kendoUpload').getFiles()[0];
+                    var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
+
+                    var formData = new FormData();
+					formData.append("MainRegisterId", mainRegisterId);
+                    formData.append("File", file.rawFile);
+                    formData.append("RegisterViewId", registerViewId);
+                    formData.append("DictionaryId", dictionaryId);
+                    formData.append("IsBackgroundDownload", isBackgroundDownload);
+
+                    for (var i = 0; i !== columns.length; i++) {
+						formData.append("columns[" + i + "].ColumnName", columns[i].ColumnName);
+						formData.append("columns[" + i + "].AttributeId", columns[i].AttributeId);
+						formData.append("columns[" + i + "].IsKey", columns[i].IsKey);
+					}
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ImportCodDictionaryDataFromExcel", "DataImportByTemplate")',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.Success) {
+                                Common.ShowMessage(data.Message);
+                            }
+                            else {
+                                Common.ShowError(data.Message);
+                            }
+                            if (data.ImportDataLogId) {
+                                var hrefForJournal = "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
+                                var goToJournalBtn = $("#goToJournalBtn");
+                                goToJournalBtn.removeClass('k-state-disabled');
+                                goToJournalBtn.attr('href', hrefForJournal);
+                            }
+                            if (data.ResultFileName) {
+                                window.location = '@Url.Action("DownloadExcelResultFile", "DataImportByTemplate")' +
+                                    "?resultFileName=" +
+                                    data.ResultFileName;
+                            }
+                        },
+                        error: function (response) {
+                            Common.ShowError(response.responseText);
+                        },
+                        complete: function (data) {
+                            kendo.ui.progress($('#importForm'), false);
+                            $("#loadButton").data('kendoButton').enable(true);
+                        }
+                    });
+                }
+            });
+
+            $("#listView").kendoListView({
+                dataSource: dataSource,
+                template: kendo.template($("#template").html()),
+                remove: function (e) {
+                    const columnsListBox = $("#columnsListBox").data("kendoListBox");
+                    columnsListBox.enable($(`.k-item[data-uid=${e.model.ColumnUid}]`), true);
+
+                    const treeView = $("#treeview").data("kendoTreeView");
+                    var attrElement = treeView.dataSource.get(e.model.AttributeId);
+                    attrElement.set("enabled", true);
+                },
+                dataBound: function () {
+                    if (dataSource.data().length === 0) {
+                        $("#loadButton").data('kendoButton').enable(false);
+                    } else {
+                        $("#loadButton").data('kendoButton').enable(true);
+                    }
+                }
+            }).data("kendoListView");
+
+            $("#columnsListBox").kendoListBox({
+				draggable: false,
+				selectable: "single",
+				dataValueField: "Id",
+				dataTextField: "Name",
+				change: function (e) {
+					const treeView = $("#treeview").data('kendoTreeView');
+                    if (treeView) {
+                        var element = e.sender.select();
+                        var dataItem = e.sender.dataItem(element[0]);
+
+                        var dataSource = treeView.dataSource;
+                        var treeData = dataSource.data().map(i => i.items.map(j => j)).flat();
+
+                        treeView.select(null);
+                        $('#filter').val('').trigger('input');
+
+                        var select = selectAssist(treeData,dataItem.Name);
+                        var node = (select.uid != null) ? treeView.findByUid(select.uid) : null;
+
+                        $('#filter').val(select.filterText).trigger('input');
+                        treeView.select(node);
+                        if (node != null)
+                            treeView.trigger('select', { node: node });
+
+                        var selected = treeView.select();
+                        var data = treeView.dataItem(selected);
+                        if (data) {
+                            $("#matchButton").data('kendoButton').enable(true);
+                        }
+                    }
+				}
+			});
+
+			$("#treeview").kendoTreeView({
+				loadOnDemand: false,
+				autoScroll: true,
+				select: function (e) {
+					var item = this.dataItem(e.node);
+					if (!item.parentId) {
+						e.preventDefault();
+						return;
+					}
+					const listBox = $("#columnsListBox").data('kendoListBox');
+					if (listBox) {
+						var selected = listBox.select();
+						var data = listBox.dataItem(selected);
+						if (data) {
+							$("#matchButton").data('kendoButton').enable(true);
+						}
+					}
+				}
+			});
+
+			$('#upload_panelbar')
+				.kendoPanelBar()
+				.data('kendoPanelBar')
+				.expand('li[data-expand]');
+
+			$.ajax({
+                type: 'GET',
+                url: '/CoreUi/GetAttributes',
+                data: { registerViewId: registerViewId },
+                success: function (data) {
+                    if (data) {
+                        $("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
+                    }
+                },
+				error: function (response) {
+                    Common.ShowError(response.responseText);
+                }
+			});
+
+            $('#files').kendoUpload({
+                multiple: false,
+                localization: {
+                    select: 'Загрузить Файл',
+                    clearSelectedFiles: 'Очистить'
+                },
+                async: {
+                    autoUpload: 'True',
+                    saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
+                },
+                validation: {
+                    allowedExtensions: ['.xls', '.xlsx']
+                },
+                success: function (e) {
+                    if (e.operation === "upload") {
+                        var columnNames = e.response.ColumnsNames;
+                        var dataCount = e.response.DataCount;
+                        var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
+                        excelColumnsListBox.setDataSource(columnNames);
+                        if (dataCount > dataCountForBackgroundLoading) {
+                            $("#backgroundDownloadCheckbox").prop('checked', true);
+                        } else {
+                            $("#backgroundDownloadCheckbox").prop('checked', false);
+                        }
+                        resetData();
+                    }
+                },
+                error: function (e) {
+                    $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                    resetData();
+                    if (e.XMLHttpRequest.responseText) {
+                        Common.ShowError(e.XMLHttpRequest.responseText);
+                    } else {
+                        Common.ShowError("Не удалось загрузить выбранный файл");
+                    }
+                },
+                clear: function (e) {
+                    $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                    resetData();
+                }
+			}).data('kendoUpload');
+        });
+
+        function selectAssist(treeData,searchText) {
+            var select = { uid:null, filterText:null };
+
+            // Полное совпадение
+            var exactMatch = treeData.filter(i => i.text.toLowerCase() === searchText.toLowerCase());
+
+            if (exactMatch.length === 1) {
+                select.uid = exactMatch[0].uid;
+                select.filterText = searchText;
+                return select;
+            }
+
+            var wordArray = searchText.toLowerCase().split(' ');
+
+            // Поиск по первым двум словам
+            if (wordArray.length > 1) {
+                var twoWordFilter = wordArray[0] + ' ' + wordArray[1];
+
+                var twoWordMatch = treeData.filter(i => i.text.toLowerCase().includes(twoWordFilter));
+                if (twoWordMatch.length === 1) {
+                    select.uid = twoWordMatch[0].uid;
+                    select.filterText = twoWordFilter;
+                    return select;
+                }
+                if (twoWordMatch.length > 1) {
+                    select.filterText = twoWordFilter;
+                    return select;
+                }
+            }
+
+            // Поиск по первому слову
+            var firstWordFilter = wordArray[0];
+            var firstWordMatch =
+                treeData.filter(i => i.text.toLowerCase().includes(firstWordFilter));
+
+            if (firstWordMatch.length === 1) {
+                select.uid = firstWordMatch[0].uid;
+                select.filterText = firstWordFilter;
+                return select;
+            }
+            if (firstWordMatch.length > 1) {
+                select.filterText = firstWordFilter;
+                return select;
+            }
+            return select;
+        }
+
+		function getAttributesDataSource(data) {
+			var source = [];
+
+			if (data && data.length) {
+				var parantItems = data.filter(function (item) {
+					return (item.ParentId == null);
+				});
+
+				if (parantItems.length) {
+					for (var i = 0; i < parantItems.length; i++) {
+						var child = {};
+						child.text = parantItems[i].Description;
+
+						var childItems = data.filter(function (item) {
+							return item.ParentId === parantItems[i].ItemId;
+						});
+
+						if (childItems) {
+							child.items = $.map(childItems, function (item) {
+								return {
+									text: item.Description,
+									id: item.AttributeId,
+									parentId: item.ParentId,
+									referenceId: item.ReferenceId,
+									type: item.Type
+								};
+							});
+						}
+						source.push(child);
+					}
+				}
+			}
+
+			return source;
+		}
+
+		function checkboxChange(e) {
+			const check = e.checked;
+			const listView = $("#listView").data('kendoListView');
+			const node = $(e).closest(".matchItem");
+			listView.dataItem(node).IsKey = check;
+		};
+
+		function resetData() {
+			$("#matchButton").data('kendoButton').enable(false);
+			$("#treeview").data('kendoTreeView').enable(true);
+			$("#treeview").data('kendoTreeView').select($());
+			dataSource.data([]);
+			$("#loadButton").data('kendoButton').enable(false);
+		}
+
+		function filter(dataSource, query) {
+			var hasVisibleChildren = false;
+			var data = dataSource instanceof kendo.data.HierarchicalDataSource && dataSource.data();
+
+			for (var i = 0; i < data.length; i++) {
+				var item = data[i];
+				var text = item.text.toLowerCase();
+				var itemVisible =
+					query === "" || text.indexOf(query) >= 0;
+				var anyVisibleChildren = filter(item.children, query);
+				hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
+				item.hidden = !itemVisible && !anyVisibleChildren;
+			}
+
+			if (data) {
+				dataSource.filter({ field: "hidden", operator: "neq", value: true });
+			}
+
+			return hasVisibleChildren;
+		}
+    </script>
+}

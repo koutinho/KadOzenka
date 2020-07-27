@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="931" DefaultLayoutId="1009312" LinkedRegistersList="931, 950, 982"
+              IsBasic="false" ShowActualDate="false" ShowObjectCards="false"
+              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/Tour/TourFactorObjectCard" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="tourId" Value="{Get:TourId}" />
+                <Parameter Key="isSteadObjectType" Value="{Get:IsSteadObjectType}" />
+                <Parameter Key="registerFactorId" Value="{Get:RegisterFactorId}" />
+            </Parameters>
+        </Button>
+        <Button Caption="Редактировать" NavigateURL="/Tour/TourFactorObjectCard" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectID]" />
+                <Parameter Key="tourId" Value="{Get:TourId}" />
+                <Parameter Key="isSteadObjectType" Value="{Get:IsSteadObjectType}" />
+                <Parameter Key="registerFactorId" Value="{Get:RegisterFactorId}" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+
+        <Button Caption="Удалить" NavigateURL="/Tour/DeleteTourFactorObject" WindowHeight="180" WindowWidth="840" NeedRefresh="true">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Все данные" Icon="icon-contract" NavigateURL="~/LinkedRegisterObjects">
+            <Parameters>
+                <Parameter Key="RegisterId" Value="930" />
+                <Parameter Key="ObjectId" Value="{Get:RegisterFactorId}" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <!--<Condition Key="NeedSelectedRow" Operation="" Value="true" />-->
+                        <Condition Key="{Get:RegisterFactorId}" Operation="Equal" Value="-1" AndOr="Or" />
+                        <Condition Key="{Get:RegisterFactorId}" Operation="IsNull" AndOr="Or" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+    </Buttons>
+</RegisterView>

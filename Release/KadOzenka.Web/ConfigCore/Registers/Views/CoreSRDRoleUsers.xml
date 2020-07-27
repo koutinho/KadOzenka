@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="false" RegisterId="950" DefaultLayoutId="1000006" Description="Список пользователей роли" LinkedRegistersList="945,952,950" SRDFunctionTag="CORE.CONF.SRD"
+              ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" ShowObjectCards="false">
+  <Buttons>
+    <Button Caption="Исключить из роли" NavigateURL="~/CoreUI/UserExclude" NeedRefresh="true" WindowHeight="240" WindowWidth="320">
+      <Parameters>        
+        <Parameter Key="roleId" Value="{Get:95200200}"/>        
+        <Parameter Key="userId" Value="[95000100]" />        
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:95200200}" Operation="Equal" Value="" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Добавить пользователей" NavigateURL="~/CoreUI/UserInclude" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="roleId" Value="{Get:95200200}"/>
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:95200200}" Operation="Equal" Value="" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+  </Buttons>
+  <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

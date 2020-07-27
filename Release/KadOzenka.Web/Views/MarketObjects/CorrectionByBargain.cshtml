@@ -1,0 +1,103 @@
+﻿@using KadOzenka.Dal.Correction
+@model KadOzenka.Web.Models.MarketObject.CorrectionByBargainModel
+
+@using (Html.BeginForm("CorrectionByBargain", "MarketObjects", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.Kendo().RadioButtonFor(m => m.UseAllSegments).Label("По всем сегментам").Value(true)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.Kendo().RadioButtonFor(m => m.UseAllSegments).Label("Выбрать сегменты").Value(false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Сегменты", false)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().MultiSelectFor(m => m.MarketSegmentFilter)
+                                  .DataTextField("Text")
+                                  .DataValueField("Value")
+                                  .BindTo((System.Collections.IEnumerable)ViewData["Segments"])
+                                  .Enable(!Model.UseAllSegments))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Географический охват", false)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoEnumDropDownListFor(x => x.CoverageAreaType, false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Дата с")
+        </div>
+        <div class="col-sm-4">
+            @(Html.Kendo().DatePickerFor(m => m.DateFrom))
+        </div>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Дата по")
+        </div>
+        <div class="col-sm-4">
+            @(Html.Kendo().DatePickerFor(m => m.DateTo))
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-10">
+            <button style="float: right" id="performProc" class="k-button" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+}
+
+@section scripts {
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('input[type="radio"][name="UseAllSegments"][value="True"] ').change(function () {
+                if (this.checked) {
+                    $('#MarketSegmentFilter').data("kendoMultiSelect").value([]);
+                    $('#MarketSegmentFilter').data("kendoMultiSelect").enable(false);
+                }
+            });
+            $('input[type="radio"][name="UseAllSegments"][value="False"] ').change(function () {
+                if (this.checked) {
+                    $('#MarketSegmentFilter').data("kendoMultiSelect").enable(true);
+                }
+            });
+
+            $('#performProc').on('click',
+                function() {
+                    kendo.ui.progress($('body'), true);
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+                    formObject.MarketSegmentFilter = $('#@(nameof(Model.MarketSegmentFilter))').data("kendoMultiSelect").value();
+                    $.post(form.attr('action'), formObject).done(function(response) {
+                        if (response.Errors) {
+                            var errors = $.map(distinctErrors(response.Errors),
+                                function(el) {
+                                    return el.Message;
+                                });
+                            Common.ShowError(errors);
+                            return;
+                        }
+                        if (response.Success) {
+                            Common.ShowMessage(response.Success);
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false); 
+                    });
+                });
+        });
+    </script>
+}

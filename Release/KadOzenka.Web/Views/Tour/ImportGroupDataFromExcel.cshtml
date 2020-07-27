@@ -1,0 +1,174 @@
+﻿@model KadOzenka.Web.Models.Tour.ImportGroupDataModel
+
+@using (Html.BeginForm("ImportGroupDataFromExcel", "Tour", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.TourId)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().DropDownListFor(m => m.TourId).DataTextField("Text").DataValueField("Value").DataSource(source =>
+                              {
+                                  source.Read(read => read.Action("GetTours", "Tour"));
+                              }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Статус единицы оценки").Value(true)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoEnumDropDownListFor(m => m.UnitStatus, isReadonly: !Model.IsUnitStatusUsed)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Задания на оценку").Value(false)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetTasksData", "GbuObject");
+                        })
+                        .ServerFiltering(false);
+                    }).Enable(!Model.IsUnitStatusUsed))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button class="k-button k-button-icontext" style="float: right" id="perform" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+}
+
+<script>
+    $(document).ready(function () {
+        initIsUnitStatusUsedChangedHandler();
+
+        $('#file').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить файл'
+            },
+            async: {
+                autoUpload: true
+            },
+            validation: {
+                allowedExtensions: ['.xls','.xlsx']
+            }
+        }).data('kendoUpload');
+
+        $('#perform').on('click',
+            function () {
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                var files = $('#file').data('kendoUpload').getFiles();
+                if (files.length === 0) {
+                    Common.ShowError("Файл не выбран");
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append("viewModel.TourId", formObject.TourId);
+                formData.append("viewModel.IsUnitStatusUsed", formObject.IsUnitStatusUsed);
+                formData.append("viewModel.UnitStatus", formObject.UnitStatus);
+                var taskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                if (taskFilter.length > 0) {
+                    for (var i = 0; i !== taskFilter.length; i++) {
+                        formData.append(`viewModel.TaskFilter[${i}]`, taskFilter[i]);
+                    }
+                }
+                formData.append("viewModel.File", files[0].rawFile);
+
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.FileName) {
+                            window.location = '@Url.Action("DownloadImportGroupResult", "Tour")' + '?fileName=' + data.FileName;;
+                        }
+                        Common.ShowMessage("Импорт группы из Excel успешно выполнен");
+                    },
+                    error: function (response) {
+                        try {
+                            var errorObj = JSON.parse(response.responseText);
+                            if (errorObj.Errors) {
+                                var errors = $.map(distinctErrors(errorObj.Errors),
+                                    function(el) {
+                                        return el.Message;
+                                    });
+                                Common.ShowError(errors);
+                            } else {
+                                Common.ShowError(response.responseText);
+                            }
+                        } catch(e) {
+                            Common.ShowError(response.responseText);
+                        }
+                    },
+                    complete: function (data) {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            });
+    });
+
+    function initIsUnitStatusUsedChangedHandler() {
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="True"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(true);
+            }
+        });
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="False"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(false);
+            }
+        });
+    }
+
+    function changeUnitStatusAvailability(isUnitStatusUsed) {
+        if (isUnitStatusUsed) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(true);
+        } else {
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').value('');
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(false);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+        }
+    }
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors,
+            function (index, event) {
+                var events = $.grep(result,
+                    function (e) {
+                        return event.Message === e.Message;
+                    });
+                if (events.length === 0) {
+                    result.push(event);
+                }
+            });
+
+        return result;
+    }
+</script>

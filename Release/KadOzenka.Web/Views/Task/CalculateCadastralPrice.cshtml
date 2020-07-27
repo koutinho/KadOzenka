@@ -1,0 +1,342 @@
+﻿@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
+
+<!-- Модальное окно для настройки порядка расчета -->
+<div id="calculationSettingsModal" style="display: none; padding: 2%;">
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group">
+			<div id="calculationSettingsModalContent"></div>
+		</div>
+	</div>
+</div>
+
+@using (Html.BeginForm("CalculateCadastralPrice", "Task", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
+    <div class="form-group">
+        <div class="col-sm-12">
+            <a style="float: right" href="/Help/Help?CurrentLocation=CalculateCadastralPrice" target="_blank">
+                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тур оценки")
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().DropDownList()
+                    .Name("RatingTour")
+                    .DataTextField("Text")
+                    .DataValueField("Value"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.TaskFilter)
+        </div>
+        <div class="col-sm-9">
+            <select id="TaskFilter"></select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.LabelFor(x => x.IsParcel)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("ОКС").Value(false))
+            @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("Земельные участки").Value(true).Checked(true).HtmlAttributes(new {style = "padding-left:1%;"}))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsEstimation)
+            @Html.LabelFor(x => x.IsEstimation, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsCorrectionsOrCoefficients)
+            @Html.LabelFor(x => x.IsCorrectionsOrCoefficients, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-8 col-sm-offset-2">
+            @Html.CheckBoxFor(x => x.IsFinalCalculation)
+            @Html.LabelFor(x => x.IsFinalCalculation, htmlAttributes: new { @class = "check-box-label" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-2">
+            @(Html.Kendo().Button()
+                    .Name("CalculationSettingsBtn")
+                    .IconClass("k-icon k-i-gear")
+                    .HtmlAttributes(new {type = "button"})
+                    .Events(x => x.Click("openCalculationSettingsWindow")))
+            @(Html.Kendo().Tooltip()
+                    .For("#CalculationSettingsBtn")
+                    .Position(TooltipPosition.Top)
+                    .Content("Настроить порядок расчета"))
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Все группы").Value(true))
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Список выбранных групп").Value(false).Checked(true))
+        </div>
+    </div>
+
+    <div id="groups" class="col-sm-9 col-sm-offset-2 group" style="border: 1px solid #cccdcf;">
+        <div id="groupsList" class="form-group">
+            <div class="group col-sm-12">
+                <div id="SubGroupId1"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId2"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId3"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId4"></div>
+            </div>
+            <div class="group">
+                <div id="SubGroupId5"></div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            @(Html.Kendo().Button().Name("addGroup").Icon("add").HtmlAttributes(new {@type = "button"}))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
+            @(Html.Kendo().Button().Name("execute").Content("Расчет").HtmlAttributes(new {@type = "button"}))
+        </div>
+    </div>
+
+</div>
+}
+
+<script type="text/x-kendo-template" id="templateRow">
+    <div class="group dynamicGroup" style="display: none">
+        <div id="SubGroupId#: rowNumber #"></div>
+    </div>
+</script>
+
+<style>
+    .group {
+        padding: 1%;
+    }
+
+    .check-box-label {
+        padding-left: 2%;
+    }
+
+    #groupsList .k-dropdowntree {
+        width: 100%;
+    }
+</style>
+
+<script src="~/js/common-modals.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('[name="RatingTour"]')
+			.kendoDropDownList({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				dataSource:
+				{
+					transport: {
+						read: {
+							url: '@Url.Action("GetRatingTours", "Tour")',
+							dataType: 'json'
+						}
+					}
+				}
+            });
+
+        $('[name="IsAllGroups"]').change(SetGroupsVisibility);
+
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', resetGroupList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', resetGroupList);
+
+        $('[name="IsParcel"]').on('change', resetGroupList);
+
+        $('#addGroup').on('click', addGroup);
+        $('#execute').on('click', calculateCadastralPrice);
+	});
+
+
+
+    var rowNumber = 6;
+    function addGroup() {
+        var data = [{ rowNumber }];
+        var templateContent = $("#templateRow").html();
+        var template = kendo.template(templateContent);
+        var result = kendo.render(template, data);
+        $("#groupsList").append(result);
+        $(".dynamicGroup").show(500);
+        initGroupList();
+        rowNumber++;
+    }
+
+
+	function initTasksList() {
+		var tourId = $('#RatingTour').val();
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetTasksByTour", "Task")',
+					data: { tourId: tourId },
+					dataType: 'json'
+				}
+			}
+		});
+		var tasksMultiSelect = $("#TaskFilter").data("kendoMultiSelect");
+		if (tasksMultiSelect) {
+			tasksMultiSelect.setDataSource(dataSource);
+		} else {
+			$('#TaskFilter').kendoMultiSelect({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				optionLabel: "--Выберите задание--",
+                dataSource: dataSource,
+                filter: "contains"
+			});
+		}
+    }
+
+
+    function resetGroupList() {
+        initGroupListInternal(true);
+    }
+    function initGroupList() {
+        initGroupListInternal(false);
+    }
+    function initGroupListInternal(resetGroups) {
+        var tourId = $('#RatingTour').val();
+        var isParcel = $('input[name="IsParcel"]:checked').val();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("GetGroupsByTourAndMainGroup", "Tour")",
+            data: { tourId: tourId, isParcel: isParcel },
+            dataType: "json",
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.GroupName,
+                        Value: item.Id,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.GroupName,
+                                Value: i.Id
+                            }
+
+                        })
+                    }
+                });
+                if (resetGroups) {
+                    $('[id^="SubGroupId"]').each(function () {
+                        var subGroupTree = $(this).data("kendoDropDownTree");
+                        if (subGroupTree) {
+                            subGroupTree.value('');
+                        }
+                    });
+                }
+                $('[id^="SubGroupId"]').each(function() {
+                    $(this).kendoDropDownTree({
+                        filter: "contains",
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data
+                    });
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var subGroupTree = $(this).data("kendoDropDownTree");
+                    var subGroupTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    subGroupTree.treeview.bind("select", subGroupTreeSelect);
+                });
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function SetGroupsVisibility () {
+        var value = $(this).filter(':checked').val();
+        if (value === "True") {
+            $('#groups').hide();
+        } else {
+            $('#groups').show();
+        }
+    }
+
+
+    function calculateCadastralPrice() {
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        var tourId = $('#RatingTour').val();
+        formObject['TourId'] = tourId;
+        formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
+        formObject = addGroupsToFormObject(formObject);
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formObject,
+            success: function(response) {
+                Common.ShowMessage(response.Message);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function addGroupsToFormObject(formObject) {
+        if (!formObject) {
+            return formObject;
+        }
+        var subGroups = [];
+        for (var i = 1; i < rowNumber; i++) {
+            var id = '#SubGroupId' + i;
+            var value = $(id).data("kendoDropDownTree").value();
+            if (value) {
+                var result = parseInt(value);
+                subGroups.push(result);
+            }
+        }
+        return Object.assign({}, formObject, { SubGroups: subGroups });
+    }
+
+    function openCalculationSettingsWindow() {
+        @*window.open('@Url.Action("CalculationOrderSettings", "Task")');*@
+        var tourId = $('#RatingTour').val();
+        var isParcel = $('input[name="IsParcel"]:checked').val();
+        $('#calculationSettingsModalContent').load('@Url.Action("CalculationOrderSettings", "Task")'
+            + "?tourId=" + tourId + "&isParcel=" + isParcel);
+        var modal = $("#calculationSettingsModal");
+        ShowModal(modal, '80%', '85%', "Настройка автоматического расчета");
+    }
+</script>

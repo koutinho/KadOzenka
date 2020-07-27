@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LeftPanelParam>
+  <Buttons>
+    <Button Caption="Руководство пользователя" Icon="icon-user" NavigateURL="/Help/Help?fileName=user_manual" OpenInRadWindow="false"/>
+    <Button Caption="Руководство администратора" Icon="icon-user" NavigateURL="/Help/Help?fileName=admin_manual" OpenInRadWindow="false"/>
+    <Button Caption="Общесистемные функции" Icon="icon-settings" NavigateURL="/Help/Help?fileName=common_functions_manual" OpenInRadWindow="false"/>
+  </Buttons>
+</LeftPanelParam>

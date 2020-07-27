@@ -1,0 +1,76 @@
+﻿@model KadOzenka.Web.Models.ObjectsCharacteristics.SourceModel
+
+@using (Html.BeginForm("EditSource", "ObjectsCharacteristics", FormMethod.Post))
+{
+@Html.HiddenFor(x => x.RegisterId)
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div id="toolbar" style="position: fixed;width: 96%;z-index: 999;"></div>
+</div>
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group" style="height: 60px;"></div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(x => x.Name)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+        </div>
+    </div>
+</div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#toolbar').kendoToolBar({
+            items: [{
+                id: "saveBtn",
+                type: "button",
+                icon: "save",
+                text: "Сохранить",
+                click: function (e) {
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+
+                    $.ajax({
+                        type: form.attr('method'),
+                        url: form.attr('action'),
+                        data: formObject,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.Errors) {
+                                var errors = $.map(distinctErrors(data.Errors),
+                                    function(el) {
+                                        return el.Message;
+                                    });
+                                Common.ShowError(errors);
+                                return;
+                            }
+                            else {
+                                Common.ShowMessage(data.Message);
+                                setTimeout(function () {
+                                    window.parent.location.reload();
+                                }, 2000);
+                            }
+                        },
+                        error: function (data) {
+                            Common.ShowError(data.responseText);
+                        }
+                    });
+                }
+            },
+            {
+                id: "cancelBtn",
+                type: "button",
+                text: "Отмена",
+                click: function (e) {
+                    Common.UI.CloseWindow('registerModalWindow', window.parent);
+                }
+            }]
+        }).data("kendoToolBar");
+    });
+</script>
