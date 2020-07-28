@@ -1,4 +1,5 @@
-﻿@model long
+﻿@using KadOzenka.Web.Models.Unit
+@model long
 
 
 <div class="form-horizontal" style="padding: 1%;">
@@ -64,8 +65,12 @@
                     title: "Удельный показатель",
                 },
                 {
-                    field: "Group",
+                    field: '@nameof(UnitHistoryDto.ParentGroupName)',
                     title: "Группа",
+                },
+                {
+                    field: '@nameof(UnitHistoryDto.SubGroupName)',
+                    title: "Подгруппа"
                 },
                 {
                     field: "OutputDoc",

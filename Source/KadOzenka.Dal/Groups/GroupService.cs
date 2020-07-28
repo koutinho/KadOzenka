@@ -33,6 +33,14 @@ namespace KadOzenka.Dal.Groups
 			};
         }
 
+        public List<OMGroup> GetGroupsByIds(List<long> groupIds)
+        {
+           if(groupIds == null || groupIds.Count == 0)
+               return new List<OMGroup>();
+
+           return OMGroup.Where(x => groupIds.Contains(x.Id)).SelectAll().Execute();
+        }
+
         public List<GroupTreeDto> GetGroups(long? mainParentId = null)
         {
             var query = new QSQuery

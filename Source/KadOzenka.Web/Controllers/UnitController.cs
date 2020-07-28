@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Core.Register.Enums;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Web.Attributes;
 using ObjectModel.SRD;
 
@@ -15,7 +16,15 @@ namespace KadOzenka.Web.Controllers
 {
 	public class UnitController : KoBaseController
 	{
-		[HttpGet]
+        public GroupService GroupService { get; set; }
+
+        public UnitController(GroupService groupService)
+        {
+            GroupService = groupService;
+        }
+
+
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
 		public ActionResult ObjectCard(long unitId)
 		{
@@ -66,15 +75,22 @@ namespace KadOzenka.Web.Controllers
 				IsBad = x.IsBad
 			}).ToList();
 
-			List<long?> groupIds = result.Select(x => x.GroupId).Distinct().ToList();
-			List<OMGroup> groups = OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.GroupName).Execute();
+            var subGroupIds = result.Where(x => x.GroupId != null).Select(x => x.GroupId.Value).Distinct().ToList();
+            var subGroups = GroupService.GetGroupsByIds(subGroupIds);
 
-			result.ForEach(res =>
-			{
-				res.Group = groups.Find(x => x.Id == res.GroupId)?.GroupName;
-			});
+            var parentGroupIds = subGroups.Where(x => x.ParentId != null).Select(x => x.ParentId.Value).Distinct().ToList();
+            var parentGroups = GroupService.GetGroupsByIds(parentGroupIds);
 
-			return Json(result);
+            result.ForEach(res =>
+            {
+                var subGroup = subGroups.FirstOrDefault(x => x.Id == res.GroupId);
+                var parent = parentGroups.FirstOrDefault(x => x.Id == subGroup?.ParentId);
+
+                res.ParentGroupName = $"{parent?.Number}. {parent?.GroupName}";
+                res.SubGroupName = $"{subGroup?.Number}. {subGroup?.GroupName}";
+            });
+
+            return Json(result);
 		}
 
         [HttpGet]

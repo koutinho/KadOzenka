@@ -19,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 using Platform.Web;
 using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ using KadOzenka.Web.SignalR;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Groups;
 
 namespace CIPJS
 {
@@ -85,6 +87,7 @@ namespace CIPJS
 	        services.AddTransient<RegisterAttributeService>();
 	        services.AddTransient<UpdateCadastralDataService>();
 	        services.AddTransient<TemplateService>();
+	        services.AddTransient<GroupService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

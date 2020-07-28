@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KadOzenka.Web.Models.Unit
 {
@@ -15,8 +12,9 @@ namespace KadOzenka.Web.Models.Unit
 		public decimal? CadastralCost { get; set; }
 		public decimal? Upks { get; set; }
 		public long? GroupId { get; set; }
-		public string Group { get; set; }
-		public string OutputDoc { get; set; }
+        public string ParentGroupName { get; set; }
+        public string SubGroupName { get; set; }
+        public string OutputDoc { get; set; }
 
 		public bool IsActual { get; set; }
 		public bool IsBad { get; set; }
