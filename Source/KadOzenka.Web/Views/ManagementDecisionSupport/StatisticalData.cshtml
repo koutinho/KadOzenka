@@ -302,6 +302,9 @@
             modal: true,
             //title: 'Характеристики',
             iframe: true,
+            //content  : {
+            //    template: '<iframe id="report_frame_id" frameborder="0" class="k-content-frame"></iframe>'
+            //},
             close: function() {
                 this.content("");
             },
@@ -365,6 +368,15 @@
         window1.refresh({
             url: response.reportUrl
         });
+        ////TODO не доделано, т.к. появилась более приоритетная задача.
+        //window1.bind('refresh',
+        //    function () {
+        //        var formReportButton = $('#buttonView', $("#report_frame_id").contents());
+        //        formReportButton.click(function() {
+        //            console.log('click');
+        //            //TODO найти фрейм с id=fastReport
+        //        });
+        //    });
         //kendo.ui.progress($('#reportViewerWindow'), true);
         //kendoWindow.bind('refresh', function () {
         //    kendo.ui.progress($('#reportViewerWindow'), false);
