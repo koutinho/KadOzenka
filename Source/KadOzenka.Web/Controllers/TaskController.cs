@@ -190,21 +190,17 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-		public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
-		{
-			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
-			if (exceptedAttributes != null && exceptedAttributes.Count > 0)
-			{
-				koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
-			}
+		public JsonResult GetKoAttributes(long tourId, ObjectTypeExtended objectType, List<long> exceptedAttributes)
+        {
+            var koAttributes = GetOmAttributesForKo(tourId, objectType, exceptedAttributes);
 
-			var models = koAttributes.Select(x => new
-			{
-				Value = x.Id,
-				Text = x.Name
-			}).AsEnumerable();
+            var models = koAttributes.Select(x => new
+            {
+                Value = x.Id,
+                Text = x.Name
+            }).AsEnumerable();
 
-			return Json(models);
+            return Json(models);
 		}
 
 		[HttpPost]
@@ -218,12 +214,15 @@ namespace KadOzenka.Web.Controllers
 			if (model.CreateAttributes)
 			{
 				settings = model.ToGbuExportAndCreateAttributeSettings();
-			}
+            }
 			else
 			{
 				settings = model.ToGbuExportAttributeSettings();
 				ValidateExportAttributeItems(settings.Attributes);
 			}
+
+            if (settings.Attributes == null || settings.Attributes.Count == 0)
+                throw new Exception("Не выбраны атрибуты для переноса.");
 
             ////TODO код для отладки
             //new ExportAttributeToKoProcess().StartProcess(new OMProcessType(), new OMQueue
@@ -239,33 +238,34 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType, [FromForm] bool create)
-		{
+        public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId,
+            [FromForm] ObjectTypeExtended objectType, [FromForm] bool create)
+        {
             ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
 
-			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType) ?? new List<OMAttribute>();
+            var koAttributes = GetOmAttributesForKo(tourId, objectType, null) ?? new List<OMAttribute>();
 
-			ViewData["KoAttributes"] = koAttributes.Select(x => new
-			{
-				Value = x.Id,
-				Text = x.Name
-			}).AsEnumerable();
+            ViewData["KoAttributes"] = koAttributes.Select(x => new
+            {
+                Value = x.Id,
+                Text = x.Name
+            }).AsEnumerable();
 
-			ViewData["RowNumber"] = rowNumber.ToString();
-			ViewData["CreateAttributes"] = create;
+            ViewData["RowNumber"] = rowNumber.ToString();
+            ViewData["CreateAttributes"] = create;
 
-			return PartialView("/Views/Task/PartialTransferAttributeRow.cshtml", new PartialExportAttributesRowModel());
-		}
+            return PartialView("/Views/Task/PartialTransferAttributeRow.cshtml", new PartialExportAttributesRowModel());
+        }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
         public List<SelectListItem> GetTemplatesForTransferAttributes(bool isCreateMode)
@@ -321,7 +321,28 @@ namespace KadOzenka.Web.Controllers
             return models;
         }
 
-        public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
+        private List<OMAttribute> GetOmAttributesForKo(long tourId, ObjectTypeExtended objectType, List<long> exceptedAttributes)
+        {
+            List<OMAttribute> koAttributes;
+            if (objectType == ObjectTypeExtended.Both)
+            {
+                koAttributes = TourFactorService.GetTourAttributes(tourId, ObjectType.Oks);
+                koAttributes.AddRange(TourFactorService.GetTourAttributes(tourId, ObjectType.ZU));
+            }
+            else
+            {
+                koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
+            }
+
+            if (exceptedAttributes != null && exceptedAttributes.Count > 0)
+            {
+                koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
+            }
+
+            return koAttributes;
+        }
+
+        private void ValidateExportAttributeItems(List<ExportAttributeItem> item)
 		{
 			var message = new StringBuilder("Один из параметров не выбран, строки №:");
 			var withErrors = false;

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Controllers;
 using ObjectModel.Core.Register;
@@ -15,12 +15,39 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
+    public enum ObjectTypeExtended
+    {
+        [Description("Объект капитального строительства")]
+        Oks,
+        [Description("Земельный участок")]
+        Zu,
+        [Description("ОКС/ЗУ")]
+        Both
+    }
+
     public class ExportAttributesModel : IValidatableObject
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
-        public long ObjType { get; set; }
-		public long RatingTour { get; set; }
+        [Display(Name = "Объект капитального строительства")]
+        public bool IsOks { get; set; }
+        [Display(Name = "Земельный участок")]
+        public bool IsZu { get; set; }
+
+        public ObjectTypeExtended ObjType
+        {
+            get
+            {
+                if (IsOks && IsZu)
+                    return ObjectTypeExtended.Both;
+
+                return IsOks 
+                    ? ObjectTypeExtended.Oks 
+                    : ObjectTypeExtended.Zu;
+            }
+        }
+
+        public long RatingTour { get; set; }
 
 		public bool CreateAttributes { get; set; }
 
@@ -96,12 +123,16 @@ namespace KadOzenka.Web.Models.Task
         public ExportAttributesModel()
         {
             TourFactorService = new TourFactorService();
+            IsOks = true;
         }
 
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var errors = new List<ValidationResult>();
+
+            if(RatingTour == 0)
+                errors.Add(new ValidationResult("Не выбран тур"));
 
             if (TaskFilter == null || TaskFilter.Count == 0)
                 errors.Add(new ValidationResult("Не выбрано задание на оценку"));
@@ -174,9 +205,8 @@ namespace KadOzenka.Web.Models.Task
 		private List<ExportAttributeItem> CreateAttributeItems()
 		{
 			var res = new List<ExportAttributeItem>();
-			ObjectType objectType = ObjType == 1 ? ObjectType.ZU : ObjectType.Oks;
 
-			foreach (var prop in GetType().GetProperties())
+            foreach (var prop in GetType().GetProperties())
 			{
 				Control attr = GetAttribute(prop);
                 if (attr != null && attr.Name == "GBU")
@@ -184,13 +214,7 @@ namespace KadOzenka.Web.Models.Task
                     if (!GetPropertyByNameAttribute("GBU", attr.NumberControl).GetValue(this, null).TryParseToDecimal(out var idGbu))
                         continue;
 
-                    var idKo = CreateKoAttribute((long) idGbu, RatingTour, objectType);
-
-                    res.Add(new ExportAttributeItem
-                    {
-                        IdAttributeKO = (long)idKo,
-                        IdAttributeGBU = (long)idGbu
-                    });
+                    FillAttributesInfo(idGbu, res);
                 }
             }
 
@@ -198,79 +222,100 @@ namespace KadOzenka.Web.Models.Task
 			{
 				foreach (var attribute in ExportAttribute)
 				{
-					if (!attribute.IdAttributeGbu.TryParseToDecimal(out var idGbu)) continue;									
+					if (!attribute.IdAttributeGbu.TryParseToDecimal(out var idGbu)) continue;
 
-					long idKo = CreateKoAttribute((long)idGbu, RatingTour, objectType);
-
-					res.Add(new ExportAttributeItem
-					{
-						IdAttributeGBU = (long)idGbu,
-						IdAttributeKO = (long)idKo
-                    });
-				}
+                    FillAttributesInfo(idGbu, res);
+                }
 			}
 
 			return res;
 		}
 
-		private long CreateKoAttribute(long idGbu, long tourId, ObjectType objectType)
-		{
-			bool isOks = objectType == ObjectType.Oks;			
+        private void FillAttributesInfo(decimal idGbu, List<ExportAttributeItem> res)
+        {
+            if (ObjType == ObjectTypeExtended.Both)
+            {
+                var idKoForOks = CreateKoAttribute((long)idGbu, RatingTour, true);
+                var idKoForZu = CreateKoAttribute((long)idGbu, RatingTour, false);
 
-			OMTransferAttributes transferAttribute = OMTransferAttributes
-				.Where(x => x.TourId == tourId && x.IsOks == isOks && x.GbuId == idGbu)
-				.Select(x => x.KoId)
-				.ExecuteFirstOrDefault();
+                res.Add(new ExportAttributeItem
+                {
+                    IdAttributeKO = idKoForOks,
+                    IdAttributeGBU = (long)idGbu
+                });
+                res.Add(new ExportAttributeItem
+                {
+                    IdAttributeKO = idKoForZu,
+                    IdAttributeGBU = (long)idGbu
+                });
+            }
+            else
+            {
+                var idKo = CreateKoAttribute((long)idGbu, RatingTour, ObjType == ObjectTypeExtended.Oks);
 
-			if (transferAttribute != null)
-			{
-				return transferAttribute.KoId;
-			}
+                res.Add(new ExportAttributeItem
+                {
+                    IdAttributeKO = idKo,
+                    IdAttributeGBU = (long)idGbu
+                });
+            }
+        }
 
-			OMTourFactorRegister existedTourFactorRegister = objectType == ObjectType.ZU
-				? OMTourFactorRegister
-					.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
-					.SelectAll().ExecuteFirstOrDefault()
-				: OMTourFactorRegister
-					.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
-					.SelectAll().ExecuteFirstOrDefault();
+        private long CreateKoAttribute(long idGbu, long tourId, bool isOks)
+        {
+            OMTransferAttributes transferAttribute = OMTransferAttributes
+                .Where(x => x.TourId == tourId && x.IsOks == isOks && x.GbuId == idGbu)
+                .Select(x => x.KoId)
+                .ExecuteFirstOrDefault();
 
-            var registerId = existedTourFactorRegister == null 
-                ? TourFactorService.CreateTourFactorRegister(tourId, objectType == ObjectType.ZU).RegisterId 
+            if (transferAttribute != null)
+            {
+                return transferAttribute.KoId;
+            }
+
+            var existedTourFactorRegister = !isOks
+                ? OMTourFactorRegister
+                    .Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+                    .SelectAll().ExecuteFirstOrDefault()
+                : OMTourFactorRegister
+                    .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+                    .SelectAll().ExecuteFirstOrDefault();
+
+            var registerId = existedTourFactorRegister == null
+                ? TourFactorService.CreateTourFactorRegister(tourId, !isOks).RegisterId
                 : existedTourFactorRegister.RegisterId.GetValueOrDefault();
 
             OMAttribute attributeGbu = OMAttribute.Where(x => x.Id == idGbu).SelectAll().ExecuteFirstOrDefault();
-			CharacteristicDto characteristicDto = new CharacteristicDto
-			{
-				Name = attributeGbu.Name,
-				RegisterId = registerId,
-				Type = (Core.Register.RegisterAttributeType)attributeGbu.Type,
-				ReferenceId = attributeGbu.ReferenceId
-			};
+            CharacteristicDto characteristicDto = new CharacteristicDto
+            {
+                Name = attributeGbu.Name,
+                RegisterId = registerId,
+                Type = (Core.Register.RegisterAttributeType)attributeGbu.Type,
+                ReferenceId = attributeGbu.ReferenceId
+            };
 
-			long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto, true);
+            long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto, true);
 
-			//запомнить соответствие
-			OMTransferAttributes newTransferAttribute = new OMTransferAttributes
-			{
-				TourId = tourId,
-				IsOks = isOks,
-				KoId = idKo,
-				GbuId = idGbu
-			};
-			newTransferAttribute.Save();		
+            //запомнить соответствие
+            OMTransferAttributes newTransferAttribute = new OMTransferAttributes
+            {
+                TourId = tourId,
+                IsOks = isOks,
+                KoId = idKo,
+                GbuId = idGbu
+            };
+            newTransferAttribute.Save();
 
-			return idKo;
-		}
+            return idKo;
+        }
 
-		private static Control GetAttribute(PropertyInfo prop)
+        private static Control GetAttribute(PropertyInfo prop)
 		{
 			object[] attrs = prop.GetCustomAttributes(true);
 			if (attrs.Length > 0)
 			{
 				return attrs[0] as Control;
 			}
-
 
 			return null;
 		}

@@ -1,5 +1,4 @@
 ﻿@using System.Collections
-@using KadOzenka.Dal.Oks
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
@@ -36,16 +35,12 @@
         <div class="form-group">
             <div class="col-sm-9 col-sm-offset-2">
                 <div class="radio-inline">
-                    @(Html.Kendo().RadioButtonFor(m => m.ObjType)
-                        .Checked(Model.ObjType == (long)ObjectType.ZU)
-                        .Label(ObjectType.ZU.GetEnumDescription())
-                        .Value((long)ObjectType.ZU))
+                    @(Html.Kendo().CheckBoxFor(x => x.IsZu)
+                        .Label(ObjectTypeExtended.Zu.GetEnumDescription()))
                 </div>
                 <div class="radio-inline">
-                    @(Html.Kendo().RadioButtonFor(m => m.ObjType)
-                        .Checked(Model.ObjType == (long)ObjectType.Oks)
-                        .Label(ObjectType.Oks.GetEnumDescription())
-                        .Value((long)ObjectType.Oks))
+                    @(Html.Kendo().CheckBoxFor(x => x.IsOks)
+                        .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
                 </div>
             </div>
         </div>
@@ -215,6 +210,9 @@
 	var rowNumber = 1;
 
     function addNewRow(localRowNumber, idAttributeKo, idAttributeGbu) {
+        var objectType = getObjectType();
+        if (objectType === -1)
+            return;
 		kendo.ui.progress($('body'), true);
         var data = [{ rowNumber: localRowNumber }];
         var templateContent = $("#templateRow").html();
@@ -223,7 +221,6 @@
         $("#attributesList").append(result);
         var classWrapper = ".wrapper-" + localRowNumber;
         var idTour = $('#RatingTour').data('kendoDropDownList').value();
-		var objectType = $('input[name="ObjType"]:checked').val();
         var url = "@Url.Action("GetRowExport", "Task")";
         $(classWrapper).load(url, { rowNumber: localRowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
             function(response) {
@@ -339,7 +336,8 @@
         $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
-        $('[name="ObjType"]').on('change', initKoAttributes);
+        $('#@nameof(Model.IsZu)').on('change', initKoAttributes);
+        $('#@nameof(Model.IsOks)').on('change', initKoAttributes);
 
         $('#execute').on('click', transferAttributes);
 
@@ -383,10 +381,27 @@
     }
 
 
-	function initKoAttributes() {
-		var tourId = $('#RatingTour').val();
-		var objectType = $('input[name="ObjType"]:checked').val();
-        var koAttributesSource = new kendo.data.DataSource({
+    function getObjectType() {
+        var isZu =  $('#@nameof(Model.IsZu)').prop("checked");
+        var isOks = $('#@nameof(Model.IsOks)').prop("checked");
+        if (!isZu && !isOks) {
+            Common.ShowError("Не выбран тип");
+            return -1;
+        }
+        if (isZu && isOks)
+            return '@ObjectTypeExtended.Both';
+        if (isOks)
+            return '@ObjectTypeExtended.Oks';
+
+        return '@ObjectTypeExtended.Zu';
+    }
+
+    function initKoAttributes() {
+        var objectType = getObjectType();
+        var tourId = $('#RatingTour').val();
+        var koAttributesSource = objectType === -1
+            ? null
+            : new kendo.data.DataSource({
 			transport: {
 				read: {
 					url: '@Url.Action("GetKoAttributes", "Task")',
@@ -394,16 +409,17 @@
 					dataType: 'json'
 				}
 			}
-		});
-		$('[name^="IdAttributeKO"]').each(function() {
+            });
+        $('[name^="IdAttributeKO"]').each(function() {
 			$(this).kendoDropDownList({
 				dataTextField: 'Text',
 				dataValueField: 'Value',
 				optionLabel: " ",
-				dataSource: koAttributesSource
+                filter: "contains",
+                dataSource: koAttributesSource
 			});
 		});
-	}
+    }
 
 
 	function addCustomLevelsToForm(formObject) {
@@ -425,11 +441,13 @@
 	}
 
 
-	function transferAttributes() {
+    function transferAttributes() {
+        var objectType = getObjectType();
+        if (objectType === -1)
+            return; 
 		var form = $('form');
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-		formObject['ObjType'] = $('input[name="ObjType"]:checked').val();
         formObject = addCustomLevelsToForm(formObject);
         kendo.ui.progress($('body'), true);
 		$.ajax({
@@ -472,9 +490,12 @@
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.ObjType))') {
-                var id = '#@(nameof(Model.ObjType))_' + val[Object.keys(val)[0]];
-                $(id).prop("checked", true);
+            if (Object.keys(val)[0] === '@(nameof(Model.IsOks))') {
+                $('#@(nameof(Model.IsOks))').prop("checked", val[Object.keys(val)[0]]);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsZu))') {
+                $('#@(nameof(Model.IsZu))').prop("checked", val[Object.keys(val)[0]]);
             }
 
             if (Object.keys(val)[0].startsWith('IdAttributeGBU')) {
