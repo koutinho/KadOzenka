@@ -34,9 +34,9 @@
 
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="MARKET.EXPORT_TO_EXCEL" />
 
-    <Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="70" WindowWidth="500"  SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>
+    <Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="70" WindowWidth="500" Icon="fas fa-object-group" SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>
 
-    <Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="70" WindowWidth="500" SRDFunctionTag="MARKET.ACTIVATE_COORDINATES" />
+    <Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="70" WindowWidth="500" Icon="fas fa-crosshairs" SRDFunctionTag="MARKET.ACTIVATE_COORDINATES" />
     
     <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="600" Icon="fas fa-chart-line" SRDFunctionTag="MARKET.CORRELATION" />
 
