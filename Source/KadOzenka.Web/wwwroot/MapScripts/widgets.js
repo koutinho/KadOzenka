@@ -55,11 +55,11 @@ function creatFilterWidget() {
                  <div id="filterControl" class="filterControl">
                     <div id="filterImage" class="filterImage inactive"></div>
                     <div id="allFiltersContainer" class="allFiltersContainer inactive">
-                        <div class="filterPanelContainer">
+                        <div class="filterPanelContainer inline">
                             <div class="filterPanel filterLabel">Тип сделки</div>
                             <div id="dealTypePanel" class="filterPanel"></div>
                         </div>
-                        <div class="filterPanelContainer">
+                        <div class="filterPanelContainer inline">
                             <div class="filterPanel filterLabel">Тип объекта недвижимости</div>
                             <div id="propertyTypePanel" class="filterPanel"></div>
                         </div>
@@ -68,7 +68,7 @@ function creatFilterWidget() {
                             <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
                             <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
                         </div>
-                        <div class="filterPanelContainer">
+                        <div class="filterPanelContainer inline specialMargin">
                             <div class="filterPanel filterLabel">Тип деления</div>
                             <div id="layersPanel" class="filterPanel">
                                  <div id="districtLayerFilterButton" class="layerButton filterButton inactive">Округа</div>
@@ -77,18 +77,21 @@ function creatFilterWidget() {
                                  <div id="quartalLayerFilterButton" class="layerButton filterButton inactive">Кварталы</div>
                             </div>
                         </div>
-                        <div class="filterPanelContainer">
+                        <div class="filterPanelContainer inline">
                             <div class="filterPanel filterLabel">Округ</div>
                             <div id="districtPanel" class="filterPanel"></div>
                         </div>
-                        <div class="filterPanelContainer">
+                        <div class="filterPanelContainer inline">
                             <div class="filterPanel filterLabel">Источник данных</div>
                             <div id="sourcePanel" class="filterPanel"></div>
                         </div>
                         <div class="filterPanelContainer">
-                            <div class="filterPanel filterLabel">Дата актуальности</div>
-                            <div id="dateFilter" class="filterPanel">
-                                <div id="MapDataPicker" class="datepicker-here"></div>
+                            <!--<div class="filterPanel filterLabel">Дата актуальности</div>-->
+                            <div class="filterPanel filterAdditional">
+                            <div id="CalendarControl" class="calendarButton inactive"></div>
+                                <div id="dateFilter" class="filterPanel inactive">
+                                    <div id="MapDataPicker" class="datepicker-here"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="filterPanelContainer">
@@ -147,6 +150,14 @@ function creatFilterWidget() {
             document.getElementById("PaletteControl").addEventListener("click", function (e) {
                 document.getElementById("PaletteControl").classList.toggle("inactive");
                 document.getElementById("allPaletteContainer").classList.toggle("inactive");
+                document.getElementById("dateFilter").classList.add("inactive");
+                document.getElementById("CalendarControl").classList.add("inactive");
+            });
+            document.getElementById("CalendarControl").addEventListener("click", function (e) {
+                document.getElementById("CalendarControl").classList.toggle("inactive");
+                document.getElementById("dateFilter").classList.toggle("inactive");
+                document.getElementById("allPaletteContainer").classList.add("inactive");
+                document.getElementById("PaletteControl").classList.add("inactive");
             });
 
             document.getElementById("districtLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.district, e.target); });

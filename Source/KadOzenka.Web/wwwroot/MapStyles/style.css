@@ -357,15 +357,39 @@ select.EditDataSelect:focus {
 }
 
 .filterControl .allFiltersContainer .filterPanelContainer {
+    margin-top: 6px;
+}
+
+.filterControl .allFiltersContainer .filterPanelContainer.inline {
+    display: inline-flex;
+    height: 0px;
+}
+
+.filterControl .allFiltersContainer .filterPanelContainer.inline.specialMargin {
     margin-top: 4px;
 }
 
 .filterControl .allFiltersContainer .filterPanel {
-    margin-top: 5px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
     max-width: 800px;
     white-space: nowrap;
+}
+
+.filterControl .allFiltersContainer .filterPanel.inactive {
+    display: none;
+}
+
+.filterControl .allFiltersContainer .filterPanelContainer.inline .filterPanel {
+    margin-left: 4px;
+    margin-top: 11.5px;
+}
+
+.filterControl .allFiltersContainer .filterPanelContainer.inline .filterPanel.filterLabel {
+    margin-left: 0px;
+    margin-top: 0px;
+    height: 21px;
 }
 
 .filterControl .allFiltersContainer .filterPanel.filterLabel {
@@ -385,6 +409,45 @@ select.EditDataSelect:focus {
     width: fit-content;
     display: block;
 }
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .calendarButton {
+    padding: 0px;
+    height: 36px;
+    width: 36px;
+    background: #4590ff;
+    border-radius: 22px;
+    border: solid 1px #5c9eff;
+    cursor: pointer;
+    background-image: url("/MapIcons/calendarWhite.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .calendarButton.inactive {
+    background: #fff;
+    background-image: url("/MapIcons/calendar.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .calendarButton.inactive:hover {
+    background: #edf5ff;
+    background-image: url("/MapIcons/calendar.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .calendarButton:hover {
+    background: #4590ff;
+    background-image: url("/MapIcons/calendarWhite.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
 
 .filterControl .allFiltersContainer .filterPanel.filterAdditional .extendButton.inactive {
     background: #fff;
