@@ -141,7 +141,7 @@ function creatFilterWidget() {
         },
         addEventListeners: function () {
 
-            $('#MapDataPicker').datepicker({ inline: true, onSelect: function onSelect(fd, date) { setActualDate(date); } });
+            $('#MapDataPicker').datepicker({ maxDate: new Date(), inline: true, onSelect: function onSelect(fd, date) { setActualDate(date); } });
 
             document.getElementById("filterImage").addEventListener("click", function (e) {
                 document.getElementById("filterImage").classList.toggle("inactive");
