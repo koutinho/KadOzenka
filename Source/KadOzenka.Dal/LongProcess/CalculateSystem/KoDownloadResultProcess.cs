@@ -5,7 +5,9 @@ using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.DataExport;
+using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 
@@ -16,25 +18,59 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 		public const string LongProcessName = "KoDownloadResult";
 
 
-		public static void AddImportToQueue(long tourId, KOUnloadSettings setting)
-        {
-            LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), tourId, setting.SerializeToXml());
-        }
+		public static void AddImportToQueue(KOUnloadSettings setting)
+		{
+			var koUnloadResults = KOUnloadResult.GetKoUnloadResultTypes(setting);
+			var unloadResultQueue = new OMUnloadResultQueue
+			{
+				UserId = SRDSession.GetCurrentUserId().Value,
+				DateCreated = DateTime.Now,
+				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+				UnloadTypesMapping = JsonConvert.SerializeObject(koUnloadResults),
+				UnloadCurrentCount = 0,
+				UnloadTotalCount = koUnloadResults.Count
+			};
+			unloadResultQueue.Save();
+
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), unloadResultQueue.Id, setting.SerializeToXml());
+		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			if (!processQueue.ObjectId.HasValue)
+			{
+				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				return;
+			}
+
+			OMUnloadResultQueue unloadResultQueue = OMUnloadResultQueue
+				.Where(x => x.Id == processQueue.ObjectId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+			if (unloadResultQueue == null)
+			{
+				WorkerCommon.SetMessage(processQueue, Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
+				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoUnloadResultQueue);
+				return;
+			}
+
 			try
 			{
-				var data = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
 				WorkerCommon.SetProgress(processQueue, 0);
-				var res = KOUnloadResult.Unload(data,processQueue);
+				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+				unloadResultQueue.DateStarted = DateTime.Now;
+				unloadResultQueue.Save();
+
+				var settings = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
+				var res = KOUnloadResult.Unload(processQueue, unloadResultQueue, settings);
 				WorkerCommon.SetProgress(processQueue, 90);
 
-                var correctRes = res.Where(x => !x.NoResult).ToList();
-
+				var correctRes = res.Where(x => !x.NoResult).ToList();
 				string msg = GetMessage("Результат операции:", correctRes, true);
 
-				if (data.SendResultToReon)
+				if (settings.SendResultToReon)
 				{
 					foreach (var item in correctRes.Where(x => x.FileId != 0).ToList())
 					{
@@ -49,21 +85,29 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					}
 				}
 
+				unloadResultQueue.DateFinished = DateTime.Now;
+				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+				unloadResultQueue.Save();
+
 				NotificationSender.SendNotification(processQueue, "Выгрузка результатов оценки", msg);
 				WorkerCommon.SetProgress(processQueue, 100);
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
 				int numberError = ErrorManager.LogError(e);
 				WorkerCommon.SetMessage(processQueue, $"В результате выполнения возникли ошибки. Подробнее в Журнале ошибок. {numberError}");
 				WorkerCommon.SetProgress(processQueue, 100);
 				string msg = GetMessage($"Выгрузка была завершена с ошибкой {e.Message}. Подробности в журнале ошибок {numberError}.");
 
 				NotificationSender.SendNotification(processQueue, "Выгрузка результатов оценки", msg);
+
+				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+				unloadResultQueue.DateFinished = DateTime.Now;
+				unloadResultQueue.ErrorMessage = $"{e.Message} (журнал № {numberError})";
+				unloadResultQueue.Save();
+
 				throw;
 			}
-
 		}
 
 		public string GetMessage(string message, List<ResultKoUnloadSettings> result = null, bool withLink = false)

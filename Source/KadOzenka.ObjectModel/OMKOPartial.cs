@@ -2188,54 +2188,67 @@ namespace ObjectModel.KO
         /// <summary>
         /// Выгрузка изменений
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadChange)]
         public bool UnloadChange;
         /// <summary>
         /// Выгрузка истории по объектам
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadHistory)]
         public bool UnloadHistory;
         /// <summary>
         /// Таблица 4. Группировка объектов недвижимости
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable04)]
         public bool UnloadTable04;
         /// <summary>
         /// Таблица 5. Результаты моделирования
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable05)]
         public bool UnloadTable05;
         /// <summary>
         /// Таблица 7. Обобщенные показатели по кадастровым районам
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable07)]
         public bool UnloadTable07;
         /// <summary>
         /// Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable08)]
         public bool UnloadTable08;
         /// <summary>
         /// Таблица 9. Результаты определения кадастровой стоимости
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable09)]
         public bool UnloadTable09;
         /// <summary>
         /// Таблица 10. Результаты государственной кадастровой оценки
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable10)]
         public bool UnloadTable10;
         /// <summary>
         /// Таблица 11. Сводные результаты по кадастровому району
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadTable11)]
         public bool UnloadTable11;
         /// <summary>
         /// Выгрузка XML 1: КНомер, УПКСЗ, КСтоимость
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadXML1)]
         public bool UnloadXML1;
         /// <summary>
         /// Выгрузка XML 2 результатов Кадастровой оценки по группам.
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadXML2)]
         public bool UnloadXML2;
         /// <summary>
         /// Выгрузка XML результатов Кадастровой оценки по исходящим документам.
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadDEKOResponseDocExportToXml)]
         public bool UnloadDEKOResponseDocExportToXml;
         /// <summary>
         /// Выгрузка XML результатов Кадастровой оценки для ВУОН.
         /// </summary>
+        [KoUnloadResultType(KoUnloadResultType.UnloadDEKOVuonExportToXml)]
         public bool UnloadDEKOVuonExportToXml;
 
         /// <summary>
@@ -2258,5 +2271,15 @@ namespace ObjectModel.KO
 	    public bool NoResult { get; set; }
 
 		public long TaskId { get; set; }
+    }
+
+    public class KoUnloadResultTypeAttribute : Attribute
+    {
+        public KoUnloadResultType UnloadType { get; }
+
+        public KoUnloadResultTypeAttribute(KoUnloadResultType unloadType)
+        {
+	        UnloadType = unloadType;
+        }
     }
 }

@@ -1214,7 +1214,8 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			KOUnloadSettings settingsUnload = UnloadSettingsDto.Map(settings);
-			KoDownloadResultProcess.AddImportToQueue(settingsUnload.IdTour, settingsUnload);
+			KoDownloadResultProcess.AddImportToQueue(settingsUnload);
+
 			return Ok();
 		}
 

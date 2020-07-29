@@ -2132,6 +2132,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 262 Реестр с данными о процессах выгрузки результатов оценки
+    /// </summary>
+    public partial class OMUnloadResultQueue
+    {
+
+        public OMUnloadResultQueue()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnloadResultQueue(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

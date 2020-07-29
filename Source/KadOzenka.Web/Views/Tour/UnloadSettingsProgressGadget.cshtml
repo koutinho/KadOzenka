@@ -1,0 +1,369 @@
+﻿<style>
+    .unloadsField {
+        padding: 7px;
+        border: solid 1px #ceced2;
+    }
+
+    #unloadsGadgetTitle {
+        font-size: medium;
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        color: rgb(142, 142, 142);
+    }
+
+    .noCurrentProcesses {
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        /*color: rgb(142, 142, 142);*/
+        padding-top: 10px;
+        background-color: white;
+    }
+
+    #unloadsList {
+        background-color: white;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        overflow: scroll;
+        max-height: 500px;
+    }
+
+    .unloadItemWrapper {
+        border: solid 1px #ceced270;
+        padding: 15px;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        border-radius: 3px;
+    }
+
+    .unloadItemSubtitle {
+        font-size: medium;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .unloadProgressBar {
+        width: 97%;
+        margin-bottom: 0;
+    }
+
+    .k-progressbar .k-state-selected {
+        background-color: rgb(137, 215, 215);
+        border-color: rgb(82, 163, 163);
+    }
+
+    .k-progressbar .k-complete {
+        background-color: rgb(137, 215, 215);
+        border-color: rgb(82, 163, 163);
+    }
+
+    .k-progressbar .k-progress-status-wrap {
+        text-align: center;
+    }
+
+    .my-custom-icon-class:before {
+        content: "\e13a";
+    }
+
+    .my-custom-icon-expand:before {
+        content: "\e015";
+    }
+
+    .my-custom-icon-expand,
+    .my-custom-icon-collapse {
+        font-size: 24px;
+    }
+
+    .my-custom-icon-collapse:before {
+        content: "\e013";
+    }
+
+    .additional-panel-wrap {
+        border: none;
+    }
+
+    .mainInfo > .form-group, .exportFiles > .form-group {
+        padding: 5px;
+    }
+</style>
+
+<div class="row">&nbsp;</div>
+<div class="form-horizontal col-sm-12" id="unloadsGadget">
+    <div class="form-group">
+        <div class="col-sm-12" id="unloadsGadgetTitle">Мониторинг процессов выгрузки результатов оценки</div>
+    </div>
+    <div class="form-group unloadsField">
+        <div class="col-sm-12 noCurrentProcesses" style="display: none">
+            <label>Нет текущих процессов</label>
+        </div>
+        <div class="col-sm-12" id="unloadsList" style="display: none"></div>
+    </div>
+</div>
+
+<script type="text/x-kendo-template" id="unloadItemTemplate">
+    <div class="unloadItemWrapper wrapper-#: id #" style="display: none">
+        <div class="progressTab">
+            <div>
+                <p class="unloadItemSubtitle">Статус: <label class="status-#: id #">#= status #</label></p>
+            </div>
+            <div>
+                <p>Выполняется: <label class="unloadCurrentCount-#: id #">#= unloadCurrentCount #</label> из <label class="unloadTotalCount-#: id #">#= unloadTotalCount #</label></p>
+                <div id="totalProgress-#: id #" class="unloadProgressBar totalProgress-#: id #"></div>
+            </div>
+            <div class="form-group"></div>
+            <div>
+                <p>Прогресс выполнения текущей выгрузки: <label class="currentUnloadType-#: id #">#= currentUnloadType ? currentUnloadType : '' #</label></p>
+                <div id="currentUnloadProgress-#: id #" class="unloadProgressBar currentUnloadProgress-#: id #"></div>
+            </div>
+            <div class="form-group"></div>
+            <div class="additional-panel-wrap">
+                <span class="k-icon my-custom-icon-expand"></span>
+                <div class="unloadItemContent">
+                    <div class="tabstrip">
+                        <ul>
+                            <li class="k-state-active">
+                                Основная информация
+                            </li>
+                            <li>
+                                Выгруженные файлы
+                            </li>
+                        </ul>
+                        <div>
+                            <div class="mainInfo">
+                                <div class="form-group">
+                                </div>
+                                <div class="form-group">
+                                    <p class="unloadItemSubtitle col-sm-4">Дата создания: <label class="dateCreated-#: id #">#= dateCreated ? kendo.toString(kendo.parseDate(dateCreated), "dd-MM-yyyy HH:mm:ss") : ''  #</label></p>
+                                    <p class="unloadItemSubtitle col-sm-4">Дата запуска: <label class="dateStarted-#: id #">#= dateStarted ? kendo.toString(kendo.parseDate(dateStarted), "dd-MM-yyyy HH:mm:ss") : '' #</label></p>
+                                    <p class="unloadItemSubtitle col-sm-4">Дата завершения: <label class="dateFinished-#: id #">#= dateFinished ? kendo.toString(kendo.parseDate(dateFinished), "dd-MM-yyyy HH:mm:ss") : '' #</label></p>
+                                </div>
+                                <div class="form-group">
+                                    <p class="unloadItemSubtitle col-sm-12">Список выгрузок</p>
+                                    <ul>
+                                        # for (var i = 0; i < data.unloadTypes.length; i++) { #
+                                        <li>#= data.unloadTypes[i] #</li>
+                                        # } #
+                                    </ul>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <a href="#: longProcessUrl #" target="_blank" style="float: right;">Перейти к фоновому процессу</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class='exportFiles exportFiles-#: id #'>
+                                <div class="form-group">
+                                </div>
+                                <div class="form-group">
+                                    <p class="unloadItemSubtitle col-sm-12">Список выгруженных файлов</p>
+                                    <ul>
+                                        # for (var i = 0; i < data.exportFiles.length; i++) { #
+                                        <li class="exportFile-#: data.exportFiles[i].fileId #"><a href="#: data.exportFiles[i].downloadUrl #">#= data.exportFiles[i].fileName #</a></li>
+                                        # } #
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script type="text/javascript">
+    var unloadsListDataSource = [];
+    var hub;
+    var updateTime;
+    var isCreated = false;
+
+    $(document).ready(function () {
+        if (!hub) {
+            hub = new signalR.HubConnectionBuilder()
+                .withUrl("/koUnloadResultsProgress", { transport: signalR.HttpTransportType.LongPolling })
+                .withAutomaticReconnect()
+                .build();
+
+            hub.on("DataWereUpdated",
+                function(response) {
+                    if (isCreated && updateTime != response.updateTime) {
+                        updateTime = response.updateTime;
+                        //console.log("DataWereUpdated" + " " + hub.connection.connectionId);
+                        updateUnloadsList(response.data);
+                    }
+                });
+
+            kendo.ui.progress($('#unloadsGadget'), true);
+            start();
+        } else {
+            initData();
+        }
+    });
+
+    //var connectionId; 
+    async function start() {
+        try {
+            kendo.ui.progress($('#unloadsGadget'), true);
+            await hub.start();
+            kendo.ui.progress($('#unloadsGadget'), false);
+            //console.log("connected");
+            //connectionId = hub.connection.connectionId;
+            initData();
+            
+        } catch (err) {
+            console.log(err);
+            setTimeout(() => start(), 3000);
+        }
+    };
+
+    function initData() {
+        kendo.ui.progress($('#unloadsGadget'), true);
+        hub.invoke("ReadData")
+            .then(function (data) {
+                createUnloadsList(data);
+                isCreated = true;
+                kendo.ui.progress($('#unloadsGadget'), false);
+                console.log("ReadData finished");
+            }).catch(err =>
+                console.log(err));
+    }
+
+    function createUnloadsList(data) {
+        unloadsListDataSource = data;
+        if (data.length > 0) {
+            $('.noCurrentProcesses').hide();
+            for (var i = 0; i < data.length; i++) {
+                createUnloadItem(data[i]);
+            }
+            $('#unloadsList').show();
+        }
+    }
+
+    function updateUnloadsList(data) {
+        for (var i = 0; i < data.length; i++) {
+            var existedElement = unloadsListDataSource.find(x => x.id === data[i].id);
+            if (existedElement === undefined) {
+                unloadsListDataSource.push(data[i]);
+                createUnloadItem(data[i]);
+            } else {
+                updateUnloadItem(data[i]);
+            }
+        }
+
+        for (var i = 0; i < unloadsListDataSource.length; i++) {
+            var elem = data.find(x => x.id === unloadsListDataSource[i].id);
+            if (elem === undefined) {
+                removeUnloadItem(unloadsListDataSource[i]);
+                unloadsListDataSource.splice(i, 1);
+            }
+        }
+
+        if (unloadsListDataSource.length > 0) {
+            $('#unloadsList').show();
+            $('.noCurrentProcesses').hide();
+        } else {
+            $('#unloadsList').hide();
+            $('.noCurrentProcesses').show();
+        }
+    }
+
+    function createUnloadItem(dataItem) {
+        var templateContent = $("#unloadItemTemplate").html();
+        var template = kendo.template(templateContent);
+        var html = kendo.render(template, [dataItem]);
+        $("#unloadsList").append(html);
+
+        var itemWrapper = $(`.wrapper-${dataItem.id}`);
+        var totalProgress = itemWrapper.find(`.totalProgress-${dataItem.id}`);
+        totalProgress.kendoProgressBar({
+            type: "value",
+            showStatus: true,
+            min: 0,
+            max: dataItem.unloadTotalCount,
+            change: function (e) {
+                var status = e.value + "/" + e.sender.options.max;
+                this.progressStatus.text(status);
+                this.progressWrapper.css({
+                    "text-align": "center"
+                });
+            }
+        });
+        totalProgress.data("kendoProgressBar").value(dataItem.unloadCurrentCount);
+
+        var currentUnloadProgress = itemWrapper.find(`.currentUnloadProgress-${dataItem.id}`);
+        currentUnloadProgress.kendoProgressBar({
+            type: "percent",
+            showStatus: true,
+            min: 0,
+            max: 100
+        });
+        currentUnloadProgress.data("kendoProgressBar").value(dataItem.currentUnloadProgress);
+
+        itemWrapper.find(".tabstrip").kendoTabStrip({
+            animation: {
+                open: { effects: "fadeIn" }
+            }
+        });
+        addItemExpandHandlers(itemWrapper);
+
+        itemWrapper.show();
+    }
+
+    function addItemExpandHandlers(element) {
+        element.find(".additional-panel-wrap").on("click", "span.my-custom-icon-expand", function (e) {
+            var contentElement = $(e.target).closest(".additional-panel-wrap").find('.unloadItemContent');
+            $(e.target)
+                .removeClass("my-custom-icon-expand")
+                .addClass("my-custom-icon-collapse");
+
+            kendo.fx(contentElement).expand("vertical").play();
+        });
+
+        element.find(".additional-panel-wrap").on("click", "span.my-custom-icon-collapse", function (e) {
+            var contentElement = $(e.target).closest(".additional-panel-wrap").find('.unloadItemContent');
+            $(e.target)
+                .removeClass("my-custom-icon-collapse")
+                .addClass("my-custom-icon-expand");
+
+            kendo.fx(contentElement).expand("vertical").stop().reverse();
+        });
+
+        kendo.fx(element.find(".unloadItemContent")).expand("vertical").stop().reverse();
+    }
+
+    function updateUnloadItem(dataItem) {
+        $(`.status-${dataItem.id}`).text(dataItem.status);
+        $(`.unloadCurrentCount-${dataItem.id}`).text(dataItem.unloadCurrentCount);
+        $(`.totalProgress-${dataItem.id}`).data("kendoProgressBar").value(dataItem.unloadCurrentCount);
+        $(`.currentUnloadProgress-${dataItem.id}`).data("kendoProgressBar").value(dataItem.currentUnloadProgress);
+        $(`.currentUnloadType-${dataItem.id}`).text(dataItem.currentUnloadType);
+
+        if (dataItem.dateStarted) {
+            $(`.dateStarted-${dataItem.id}`).text(kendo.toString(kendo.parseDate(dataItem.dateStarted), "dd-MM-yyyy HH:mm:ss"));
+        } else {
+            $(`.dateStarted-${dataItem.id}`).text("");
+        }
+
+        if (dataItem.dateFinished) {
+            $(`.dateFinished-${dataItem.id}`).text(kendo.toString(kendo.parseDate(dataItem.dateFinished), "dd-MM-yyyy HH:mm:ss"));
+        } else {
+            $(`.dateFinished-${dataItem.id}`).text("");
+        }
+
+        var dataSourceElement = unloadsListDataSource.find(x => x.id === dataItem.id);
+        if (dataSourceElement.exportFiles.length != dataItem.exportFiles.length) {
+            for (var i = 0; i < dataItem.exportFiles.length; i++) {
+                var existedFilesElement = dataSourceElement.exportFiles.find(x => x.fileId === dataItem.exportFiles[i].fileId);
+                if (existedFilesElement === undefined) {
+                    $(`.exportFiles-${dataItem.id} ul`).append(`<li class="exportFile-${dataItem.exportFiles[i].fileId}"><a href="${dataItem.exportFiles[i].downloadUrl}">${dataItem.exportFiles[i].fileName}</a></li>`);
+                    dataSourceElement.exportFiles.push(dataItem.exportFiles[i]);
+                }
+            }
+        }
+    }
+
+    function removeUnloadItem(dataItem) {
+        $(`.wrapper-${dataItem.id}`).remove();
+    }
+</script>

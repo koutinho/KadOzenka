@@ -90,8 +90,9 @@ namespace CIPJS
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
+	        services.AddTransient<KoUnloadResultsListenerService>();
 
-	        services.AddHttpContextAccessor();
+            services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
                 options.Cookie.Name = "CIPJS.Session";
@@ -113,7 +114,10 @@ namespace CIPJS
             //init AutoMapping
             Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
             services.AddAutoMapper();
-	        services.AddSignalR();
+	        services.AddSignalR(hubOptions =>
+	        {
+		        hubOptions.EnableDetailedErrors = true;
+	        });
 	        services.AddMemoryCache();
         }
 
@@ -190,9 +194,10 @@ namespace CIPJS
                 else await next();
             });
 
-	        app.UseSignalR(routes =>
+            app.UseSignalR(routes =>
 	        {
 		        routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
+		        routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
 	        });
 
 			HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();

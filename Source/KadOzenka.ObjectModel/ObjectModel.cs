@@ -12716,6 +12716,347 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 262 Реестр с данными о процессах выгрузки результатов оценки (KO_UNLOAD_RESULT_QUEUE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 262)]
+    [Serializable]
+    public partial class OMUnloadResultQueue : OMBaseClass<OMUnloadResultQueue>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 26200200 Идентификатор пользователя (USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 26200300 Статус ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200300)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ImportStatus _status_Code;
+        /// <summary>
+        /// 26200300 Статус (справочный код) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200300)]
+        public ObjectModel.Directory.Common.ImportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private DateTime _datecreated;
+        /// <summary>
+        /// 26200400 Дата создания (DATE_CREATED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200400)]
+        public DateTime DateCreated
+        {
+            get
+            {
+                CheckPropertyInited("DateCreated");
+                return _datecreated;
+            }
+            set
+            {
+                _datecreated = value;
+                NotifyPropertyChanged("DateCreated");
+            }
+        }
+
+
+        private DateTime? _datestarted;
+        /// <summary>
+        /// 26200500 Дата запуска (DATE_STARTED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200500)]
+        public DateTime? DateStarted
+        {
+            get
+            {
+                CheckPropertyInited("DateStarted");
+                return _datestarted;
+            }
+            set
+            {
+                _datestarted = value;
+                NotifyPropertyChanged("DateStarted");
+            }
+        }
+
+
+        private DateTime? _datefinished;
+        /// <summary>
+        /// 26200600 Дата завершения (DATE_FINISHED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200600)]
+        public DateTime? DateFinished
+        {
+            get
+            {
+                CheckPropertyInited("DateFinished");
+                return _datefinished;
+            }
+            set
+            {
+                _datefinished = value;
+                NotifyPropertyChanged("DateFinished");
+            }
+        }
+
+
+        private string _errormessage;
+        /// <summary>
+        /// 26200700 Сообщение об ошибке (ERROR_MESSAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200700)]
+        public string ErrorMessage
+        {
+            get
+            {
+                CheckPropertyInited("ErrorMessage");
+                return _errormessage;
+            }
+            set
+            {
+                _errormessage = value;
+                NotifyPropertyChanged("ErrorMessage");
+            }
+        }
+
+
+        private string _unloadtypesMapping;
+        /// <summary>
+        /// 26200800 Список выгрузок (UNLOAD_TYPES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200800)]
+        public string UnloadTypesMapping
+        {
+            get
+            {
+                CheckPropertyInited("UnloadTypesMapping");
+                return _unloadtypesMapping;
+            }
+            set
+            {
+                _unloadtypesMapping = value;
+                NotifyPropertyChanged("UnloadTypesMapping");
+            }
+        }
+
+
+        private long? _unloadtotalcount;
+        /// <summary>
+        /// 26200900 Общее количество выгрузок (UNLOAD_TOTAL_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26200900)]
+        public long? UnloadTotalCount
+        {
+            get
+            {
+                CheckPropertyInited("UnloadTotalCount");
+                return _unloadtotalcount;
+            }
+            set
+            {
+                _unloadtotalcount = value;
+                NotifyPropertyChanged("UnloadTotalCount");
+            }
+        }
+
+
+        private long? _unloadcurrentcount;
+        /// <summary>
+        /// 26201000 Текущее количество выгрузок (UNLOAD_CURRENT_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26201000)]
+        public long? UnloadCurrentCount
+        {
+            get
+            {
+                CheckPropertyInited("UnloadCurrentCount");
+                return _unloadcurrentcount;
+            }
+            set
+            {
+                _unloadcurrentcount = value;
+                NotifyPropertyChanged("UnloadCurrentCount");
+            }
+        }
+
+
+        private string _currentunloadtype;
+        /// <summary>
+        /// 26201100 Текущая выгрузка ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26201100)]
+        public string CurrentUnloadType
+        {
+            get
+            {
+                CheckPropertyInited("CurrentUnloadType");
+                return _currentunloadtype;
+            }
+            set
+            {
+                _currentunloadtype = value;
+                NotifyPropertyChanged("CurrentUnloadType");
+            }
+        }
+
+
+        private KoUnloadResultType _currentunloadtype_Code;
+        /// <summary>
+        /// 26201100 Текущая выгрузка (справочный код) (CURRENT_UNLOAD_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26201100)]
+        public KoUnloadResultType CurrentUnloadType_Code
+        {
+            get
+            {
+                CheckPropertyInited("CurrentUnloadType_Code");
+                return this._currentunloadtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_currentunloadtype))
+                    {
+                         _currentunloadtype = descr;
+                    }
+                }
+                else
+                {
+                     _currentunloadtype = descr;
+                }
+
+                this._currentunloadtype_Code = value;
+                NotifyPropertyChanged("CurrentUnloadType");
+                NotifyPropertyChanged("CurrentUnloadType_Code");
+            }
+        }
+
+
+        private long? _currentunloadprogress;
+        /// <summary>
+        /// 26201200 Прогресс выполнения текущей выгрузки (CURRENT_UNLOAD_PROGRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26201200)]
+        public long? CurrentUnloadProgress
+        {
+            get
+            {
+                CheckPropertyInited("CurrentUnloadProgress");
+                return _currentunloadprogress;
+            }
+            set
+            {
+                _currentunloadprogress = value;
+                NotifyPropertyChanged("CurrentUnloadProgress");
+            }
+        }
+
+
+        private string _exportFilesInfo;
+        /// <summary>
+        /// 26201300 Список выгруженных файлов (EXPORT_FILES_INFO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26201300)]
+        public string ExportFilesInfo
+        {
+	        get
+	        {
+		        CheckPropertyInited("ExportFilesInfo");
+		        return _exportFilesInfo;
+	        }
+	        set
+	        {
+                _exportFilesInfo = value;
+		        NotifyPropertyChanged("ExportFilesInfo");
+	        }
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
