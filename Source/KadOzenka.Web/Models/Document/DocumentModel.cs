@@ -11,15 +11,18 @@ namespace KadOzenka.Web.Models.Document
         public int RegisterId => OMInstance.GetRegisterId();
 
         [Display(Name = "Наименование")]
+        [Required(ErrorMessage = "Не заполнено Наименование")]
         public string Description { get; set; }
 
         [Display(Name = "Номер")]
+        [Required(ErrorMessage = "Не заполнен Номер")]
         public string RegNumber { get; set; }
 
         [Display(Name = "Дата")]
         public DateTime? CreateDate { get; set; }
 
         [Display(Name = "Дата выпуска документа")]
+        [Required(ErrorMessage = "Не заполнена Дата выпуска документа")]
         public DateTime? ApproveDate { get; set; }
 
 

@@ -14,6 +14,8 @@ namespace KadOzenka.Dal.Documents
 
         public int AddDocument(DocumentDto documentDto)
         {
+            ValidateDocument(documentDto);
+
             return new OMInstance
             {
                 Description = documentDto.Description,
@@ -25,6 +27,8 @@ namespace KadOzenka.Dal.Documents
 
         public void UpdateDocument(DocumentDto documentDto)
         {
+            ValidateDocument(documentDto);
+
             var document = GetDocumentByIdInternal(documentDto.Id);
 
             document.Description = documentDto.Description;
@@ -62,6 +66,18 @@ namespace KadOzenka.Dal.Documents
                 throw new Exception($"Не найден документ с Id='{documentId}'");
 
             return document;
+        }
+
+        private void ValidateDocument(DocumentDto documentDto)
+        {
+            if(string.IsNullOrWhiteSpace(documentDto.Description))
+                throw new Exception("Не заполнено Наименование");
+
+            if (string.IsNullOrWhiteSpace(documentDto.RegNumber))
+                throw new Exception("Не заполнен Номер");
+
+            if (documentDto.ApproveDate == null || documentDto.ApproveDate == DateTime.MinValue)
+                throw new Exception("Не заполнена Дата выпуска документа");
         }
 
         #endregion
