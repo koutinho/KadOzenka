@@ -22,6 +22,8 @@ namespace KadOzenka.Web.SignalR
 		private readonly TimeSpan _updatesSendingInterval = TimeSpan.FromMilliseconds(100);
 		private static object _syncRoot = new object();
 
+		public bool IsListening { get; private set; }
+
 		static string ConnectionString() => ConfigurationManager.ConnectionStrings["Main"]?.ConnectionString;
 
 		public KoUnloadResultsListenerService(IHubContext<KoUnloadResultsProgressHub> hubContext)
@@ -55,20 +57,29 @@ namespace KadOzenka.Web.SignalR
 
 		public void ListenForAlarmNotifications()
 		{
+			IsListening = true;
 			var cancelSource = new CancellationTokenSource();
 			Task.Run(() =>
 			{
-				NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
-				conn.Open();
-				var listenCommand = conn.CreateCommand();
-				listenCommand.CommandText = $"listen notify_ko_unload_result_proc_updating;";
-				listenCommand.ExecuteNonQuery();
-				conn.Notification += PostgresNotificationReceived;
-
-				while (true)
+				try
 				{
-					conn.Wait();
+					NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
+					conn.Open();
+					var listenCommand = conn.CreateCommand();
+					listenCommand.CommandText = $"listen notify_ko_unload_result_proc_updating;";
+					listenCommand.ExecuteNonQuery();
+					conn.Notification += PostgresNotificationReceived;
+					
+					while (true)
+					{
+						conn.Wait();
+					}
 				}
+				catch (Exception exception)
+				{
+					IsListening = false;
+				}
+				
 			}, cancelSource.Token);
 		}
 

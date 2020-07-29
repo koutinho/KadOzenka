@@ -90,7 +90,7 @@ namespace CIPJS
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
-	        services.AddTransient<KoUnloadResultsListenerService>();
+	        services.AddSingleton<KoUnloadResultsListenerService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>

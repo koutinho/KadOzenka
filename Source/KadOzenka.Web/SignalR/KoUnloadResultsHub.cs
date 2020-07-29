@@ -11,6 +11,10 @@ namespace KadOzenka.Web.SignalR
 		public KoUnloadResultsProgressHub(IHubContext<KoUnloadResultsProgressHub> hubContext, KoUnloadResultsListenerService koUnloadResultsListenerService)
 		{
 			_koUnloadResultsListenerService = koUnloadResultsListenerService;
+			if (!_koUnloadResultsListenerService.IsListening)
+			{
+				_koUnloadResultsListenerService.ListenForAlarmNotifications();
+			}
 		}
 
 		public IEnumerable<UnloadSettingsQueueModel> ReadData()
