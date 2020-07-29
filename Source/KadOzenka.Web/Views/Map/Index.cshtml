@@ -1,4 +1,5 @@
 ﻿@model KadOzenka.Web.Models.MarketObject.MapObjectDto
+@using System.Configuration;
 
 @{
     ViewData["Title"] = "Рыночная оценка объектов недвижимости города Москвы";
@@ -31,13 +32,18 @@
 
 @section scripts {
 
+    <script src="~/MapScripts/config.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        var srciptSrc = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
+    </script>
+
     <script src="~/YandexScripts/APIScripts.js" charset="utf-8"></script>
     <script src="~/MapScripts/commonFunctions.js" charset="utf-8"></script>
     <script src="~/MapScripts/colorsGraduator.js" charset="utf-8"></script>
     <script src="~/MapScripts/eventListeners.js" charset="utf-8"></script>
     <script src="~/MapScripts/HTMLEditor.js" charset="utf-8"></script>
     <script src="~/MapScripts/requests.js" charset="utf-8"></script>
-    <script src="~/MapScripts/config.js" charset="utf-8"></script>
     <script src="~/MapScripts/initializeMap.js" charset="utf-8"></script>
     <script src="~/MapScripts/widgets.js" charset="utf-8"></script>
     <script src="~/MapScripts/clustering.js" charset="utf-8"></script>

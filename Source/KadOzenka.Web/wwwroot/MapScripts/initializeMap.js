@@ -2,9 +2,10 @@ var map;
 var editMode;
 
 function init() {
-    /*
+    console.log(srciptSrc);
     var script = document.createElement('script');
-    script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+    script.src = srciptSrc;
+    //`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
     document.head.appendChild(script);
     script.onload = function () {
         //var wmsScript = document.createElement('script');
@@ -12,8 +13,7 @@ function init() {
         //document.head.appendChild(wmsScript);
         ymaps.ready(function() { initMap(); });
     }
-    */
-    ymaps.ready(function () { initMap(); });
+    //ymaps.ready(function () { initMap(); });
     SetAvaliableValues();
 };
 
