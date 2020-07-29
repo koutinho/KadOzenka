@@ -28593,6 +28593,42 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499342')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499342" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499344')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499344" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499350')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499350" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47499354')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47499354" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -29696,6 +29732,51 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499340')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499340" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499346')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499346" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499348')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499348" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499352')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499352" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499356')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499356" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_251_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_ZU_2018 add constraint reg_251_q_pk primary key (id)';
   end if;
@@ -29813,6 +29894,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'current_unload_progress')) then
         execute 'alter table KO_UNLOAD_RESULT_QUEUE add "current_unload_progress" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'export_files_info')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "export_files_info" VARCHAR(10485760)';
     end if;
 end $$;
 
