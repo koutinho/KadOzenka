@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Documents.Dto;
 using ObjectModel.Core.TD;
@@ -8,7 +7,7 @@ namespace KadOzenka.Web.Models.Document
 {
     public class DocumentModel
     {
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public int RegisterId => OMInstance.GetRegisterId();
 
         [Display(Name = "Наименование")]

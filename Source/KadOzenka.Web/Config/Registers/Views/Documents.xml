@@ -4,15 +4,10 @@
               OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Документы"
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" ShowRowMenu="true">
-<!--
 
-  <Buttons>
-    <Button Caption="Добавить" NavigateURL="/Document/AddDocument" WindowHeight="400" WindowWidth="800" Icon="fas fa-plus"/>
-  </Buttons>
-   <Buttons>
-    <Button Caption="Удалить" NavigateURL="/Document/DeleteDocument" WindowHeight="400" WindowWidth="800" Icon="far fa-trash-alt"/>
-  </Buttons>
-  -->
+	<Buttons>
+		<Button Caption="Добавить" NavigateURL="/Document/AddDocument" WindowHeight="500" WindowWidth="1000" Icon="fas fa-plus"/>
+	</Buttons>
 
 
 	<Tabs>

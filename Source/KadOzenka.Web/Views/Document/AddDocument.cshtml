@@ -1,0 +1,92 @@
+﻿@model KadOzenka.Web.Models.Document.DocumentModel
+
+@using (Html.BeginForm("EditDocument", "Document", FormMethod.Post, new {id = "addDocumentForm"}))
+{
+    <div class="form-horizontal col-sm-12" style="padding: 2% 2% 0 2%">
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Description)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.Description, 3, 0, new {@class = "k-textbox", style = "width: 100%; padding: 1%;"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.RegNumber)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoTextBoxFor(m => m.RegNumber, isReadonly: false)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.ApproveDate)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoDatePickerFor(m => m.ApproveDate, isReadonly: false)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-12" style="padding-top: 1%;">
+                @(Html.Kendo().Button()
+                    .Name("saveDocumentBtn")
+                    .Content("Сохранить")
+                    .Events(x => x.Click("saveDocument"))
+                    .HtmlAttributes(new {style = "float: right", type = "button"}))
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@section styles {
+}
+
+
+
+@section scripts {
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+
+        function saveDocument() {
+            var form = $('#addDocumentForm');
+            var formObject = Common.Functions.FormToObject(form);
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: formObject,
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    } else {
+                        Common.ShowMessage("Документ сохранен");
+                        ClosePopupWindow();
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+
+        function ClosePopupWindow() {
+            setTimeout(function () {
+                window.parent.parent.location.reload();
+            }, 1000);
+        }
+
+    </script>
+}

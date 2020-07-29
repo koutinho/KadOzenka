@@ -27,14 +27,30 @@ namespace KadOzenka.Web.Controllers
             return View(model);
 		}
 
+        [HttpGet]
+        public ActionResult AddDocument()
+        {
+            var model = new DocumentModel();
+
+            return View(model);
+        }
+
         [HttpPost]
-        public JsonResult DocumentCard(DocumentModel model)
+        public JsonResult EditDocument(DocumentModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
             var dto = model.ToEntity(model);
-            DocumentService.UpdateDocument(dto);
+
+            if (model.Id.HasValue)
+            {
+                DocumentService.UpdateDocument(dto);
+            }
+            else
+            {
+                DocumentService.AddDocument(dto);
+            }
 
             return new JsonResult(Ok());
         }

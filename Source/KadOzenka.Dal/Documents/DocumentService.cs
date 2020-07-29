@@ -11,14 +11,26 @@ namespace KadOzenka.Dal.Documents
             return GetDocumentByIdInternal(documentId);
         }
 
-        public int UpdateDocument(DocumentDto documentDto)
+        public int AddDocument(DocumentDto documentDto)
+        {
+            return new OMInstance
+            {
+                Description = documentDto.Description,
+                RegNumber = documentDto.RegNumber,
+                ApproveDate = documentDto.ApproveDate,
+                CreateDate = DateTime.Now
+            }.Save();
+        }
+
+        public void UpdateDocument(DocumentDto documentDto)
         {
             var document = GetDocumentByIdInternal(documentDto.Id);
 
             document.Description = documentDto.Description;
             document.RegNumber = documentDto.RegNumber;
             document.ApproveDate = documentDto.ApproveDate;
-            return document.Save();
+
+            document.Save();
         }
 
         public void DeleteDocument(long documentId)
@@ -31,7 +43,7 @@ namespace KadOzenka.Dal.Documents
 
         #region Support Methods
 
-        public OMInstance GetDocumentByIdInternal(long? documentId)
+        private OMInstance GetDocumentByIdInternal(long? documentId)
         {
             if (documentId.GetValueOrDefault() == 0)
                 throw new Exception("Не передан Id документа для поиска");
