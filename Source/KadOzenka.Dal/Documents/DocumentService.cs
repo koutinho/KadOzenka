@@ -1,6 +1,7 @@
 ﻿using System;
 using KadOzenka.Dal.Documents.Dto;
 using ObjectModel.Core.TD;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Documents
 {
@@ -36,6 +37,14 @@ namespace KadOzenka.Dal.Documents
         public void DeleteDocument(long documentId)
         {
             var document = GetDocumentByIdInternal(documentId);
+
+            var taskWithIncomingDocument = OMTask.Where(x => x.DocumentId == documentId).ExecuteFirstOrDefault();
+            if(taskWithIncomingDocument != null)
+                throw new Exception($"Нельзя удалить документ, т.к. он является входящим документом для задачи c Id='{taskWithIncomingDocument.Id}'");
+
+            var taskWithResponseDocument = OMTask.Where(x => x.ResponseDocId == documentId).ExecuteFirstOrDefault();
+            if (taskWithResponseDocument != null)
+                throw new Exception($"Нельзя удалить документ, т.к. он является исходящим документом для задачи c Id='{taskWithResponseDocument.Id}'");
 
             document.Destroy();
         }
