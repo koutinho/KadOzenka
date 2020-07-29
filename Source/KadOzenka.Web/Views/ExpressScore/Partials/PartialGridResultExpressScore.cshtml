@@ -8,10 +8,10 @@
 	{
 		<div class="form-group">
 			<div class="col-sm-12">
-				<text>Рыночная стоимость объекта оценки, руб: </text><text id="cost">@Model.SummaryCost</text>
+				<text>Рыночная стоимость объекта оценки, руб: </text><text id="cost">@(Model.SummaryCost.ToString("N"))</text>
 			</div>
 			<div class="col-sm-12">
-				<text>Удельный показатель рыночной стоимости объекта оценки, руб/кв.м: </text><text id="squareCost">@Model.SquareCost</text>
+				<text>Удельный показатель рыночной стоимости объекта оценки, руб/кв.м: </text><text id="squareCost">@(Model.SquareCost.ToString("N"))</text>
 			</div>
 		</div>
 	}
@@ -20,10 +20,10 @@
 	{
 		<div class="form-group">
 			<div class="col-sm-12">
-				<text>Арендная ставка объекта оценки, руб/год : </text><text id="cost">@(Model.SummaryCost * 12) </text>
+				<text>Арендная ставка объекта оценки, руб/год : </text><text id="cost">@((Model.SummaryCost * 12).ToString("N")) </text>
 			</div>
 			<div class="col-sm-12">
-				<text>Арендная ставка объекта оценки, руб/кв. м/год: </text><text id="squareCost">@(Model.SquareCost * 12)</text>
+				<text>Арендная ставка объекта оценки, руб/кв. м/год: </text><text id="squareCost">@((Model.SquareCost * 12).ToString("N"))</text>
 			</div>
 		</div>
 	}
