@@ -33,6 +33,9 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
+            var dto = model.ToEntity(model);
+            DocumentService.UpdateDocument(dto);
+
             return new JsonResult(Ok());
         }
 

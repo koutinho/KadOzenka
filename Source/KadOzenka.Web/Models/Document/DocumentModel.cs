@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.Documents.Dto;
 using ObjectModel.Core.TD;
 
 namespace KadOzenka.Web.Models.Document
 {
-    public class DocumentModel : IValidatableObject
+    public class DocumentModel
     {
         public long Id { get; set; }
         public int RegisterId => OMInstance.GetRegisterId();
@@ -17,22 +18,11 @@ namespace KadOzenka.Web.Models.Document
         public string RegNumber { get; set; }
 
         [Display(Name = "Дата")]
-        public DateTime CreateDate { get; private set; }
+        public DateTime? CreateDate { get; set; }
 
         [Display(Name = "Дата выпуска документа")]
         public DateTime? ApproveDate { get; set; }
 
-
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var errors = new List<ValidationResult>();
-
-            if(CreateDate == DateTime.MinValue)
-                errors.Add(new ValidationResult("Не установлена дата"));
-
-            return errors;
-        }
 
         public static DocumentModel ToModel(OMInstance entity)
         {
@@ -43,6 +33,17 @@ namespace KadOzenka.Web.Models.Document
                 RegNumber = entity.RegNumber,
                 CreateDate = entity.CreateDate,
                 ApproveDate = entity.ApproveDate
+            };
+        }
+
+        public DocumentDto ToEntity(DocumentModel model)
+        {
+            return new DocumentDto
+            {
+                Id = model.Id,
+                Description = model.Description,
+                RegNumber = model.RegNumber,
+                ApproveDate = model.ApproveDate
             };
         }
     }

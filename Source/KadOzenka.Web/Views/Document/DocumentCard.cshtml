@@ -7,7 +7,7 @@
         <li id="SectionMainData" data-expand style="padding: 2%">
             <span>Основные данные</span>
             @Html.HiddenFor(m => m.Id)
-            <div class="form-horizontal col-sm-12">
+            <div class="form-horizontal col-sm-12" style="padding: 2% 2% 0 2%">
                 <div class="form-group">
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(m => m.Description)
@@ -43,10 +43,20 @@
                         @Html.KendoDatePickerFor(m => m.ApproveDate, isReadonly: false)
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @(Html.Kendo().Button()
+                            .Name("saveDocumentBtn")
+                            .Content("Сохранить")
+                            .Events(x => x.Click("saveDocument"))
+                            .HtmlAttributes(new { style = "float: right;", type = "button" }))
+                    </div>
+                </div>
             </div>
         </li>
 
-        <li id="SectionAttachment" data-expand style="padding: 2%">
+        <li id="SectionAttachment" data-expand style="padding: 0 2% 2% 2%;">
             <span>Образы</span>
             <div class="form-group col-sm-12">
                 <div style="height: 5%">
@@ -63,6 +73,9 @@
 @section styles {
     <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
     <style>
+        #ls_panelbar {
+            width: 99% !important;
+        }
     </style>
 }
 
@@ -79,6 +92,33 @@
                 highlightSelector: "#navigation-menu a"
             });
         });
+
+
+        function saveDocument() {
+            var form = $('#updateDocumentForm');
+            var formObject = Common.Functions.FormToObject(form);
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: formObject,
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    } else {
+                        Common.ShowMessage("Документ обновлен");
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
 
     </script>
 }
