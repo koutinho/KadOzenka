@@ -1,1 +1,84 @@
-﻿
+﻿@using Platform.Web.Models.CoreAttachment
+@model KadOzenka.Web.Models.Document.DocumentModel
+
+@using (Html.BeginForm("DocumentCard", "Document", FormMethod.Post, new { id = "updateDocumentForm" }))
+{
+    <ul id="ls_panelbar" class="panelbar" style="width: 100%">
+        <li id="SectionMainData" data-expand style="padding: 2%">
+            <span>Основные данные</span>
+            @Html.HiddenFor(m => m.Id)
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Description)
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(m => m.Description, 3, 0, new { @class = "k-textbox", style = "width: 100%; padding: 1%;" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.RegNumber)
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.KendoTextBoxFor(m => m.RegNumber, isReadonly: false)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.CreateDate)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.Kendo().DatePickerFor(m => m.CreateDate).Enable(false)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.ApproveDate)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoDatePickerFor(m => m.ApproveDate, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li id="SectionAttachment" data-expand style="padding: 2%">
+            <span>Образы</span>
+            <div class="form-group col-sm-12">
+                <div style="height: 5%">
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+                </div>
+            </div>
+        </li>
+    </ul>
+}
+
+
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+    <style>
+    </style>
+}
+
+
+
+@section scripts {
+    <script src="~/js/jquery.fancybox.min.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+            panelbar.expand('li[data-expand]');
+            $("#navigation-menu a").mPageScroll2id({
+                highlightSelector: "#navigation-menu a"
+            });
+        });
+
+    </script>
+}
