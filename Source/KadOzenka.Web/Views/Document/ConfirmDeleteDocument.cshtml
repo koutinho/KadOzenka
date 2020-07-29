@@ -1,0 +1,52 @@
+﻿
+@section scripts {
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            showConfirm();
+        });
+
+
+        function showConfirm() {
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение удаления',
+                content: 'Вы уверены, что хотите удалить документ?',
+                onSuccess: deleteDocument,
+                onFail: CloseMainWindow
+            });
+        }
+
+
+        function deleteDocument() {
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'DELETE',
+                url: '@Url.Action("DeleteDocument", "Document")',
+                data: {documentId: '@ViewBag.DocumentId'},
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    } else {
+                        Common.ShowMessage("Документ удален");
+                        CloseMainWindow(1000);
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+
+        function CloseMainWindow(delay) {
+            setTimeout(function () {
+                Common.UI.CloseWindow('registerModalWindow', window.parent);
+            }, delay);
+        }
+
+    </script>
+}

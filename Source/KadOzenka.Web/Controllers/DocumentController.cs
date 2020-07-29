@@ -59,6 +59,15 @@ namespace KadOzenka.Web.Controllers
             return new JsonResult(Ok());
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS_DELETE)]
+        public ActionResult ConfirmDeleteDocument(long documentId)
+        {
+            ViewBag.DocumentId = documentId;
+
+            return View();
+        }
+
         [HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS_DELETE)]
         public JsonResult DeleteDocument(long documentId)

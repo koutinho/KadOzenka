@@ -7,6 +7,12 @@
 
 	<Buttons>
 		<Button Caption="Добавить" NavigateURL="/Document/AddDocument" WindowHeight="500" WindowWidth="1000" SRDFunctionTag="DOCUMENTS.EDIT" Icon="fas fa-plus"/>
+		
+		<Button Caption="Удалить" NavigateURL="/Document/ConfirmDeleteDocument" WindowHeight="250" WindowWidth="600" SRDFunctionTag="DOCUMENTS.DELETE" Icon="fas fa-trash-alt">
+			<Parameters>
+				<Parameter Key="documentId" Value="[ObjectId]" />
+			</Parameters>
+		</Button>
 	</Buttons>
 
 
