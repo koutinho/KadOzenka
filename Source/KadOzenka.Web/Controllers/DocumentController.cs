@@ -39,6 +39,14 @@ namespace KadOzenka.Web.Controllers
             return new JsonResult(Ok());
         }
 
+        [HttpDelete]
+        public JsonResult DeleteDocument(long documentId)
+        {
+            DocumentService.DeleteDocument(documentId);
+
+            return new JsonResult(Ok());
+        }
+
         #endregion
 
 

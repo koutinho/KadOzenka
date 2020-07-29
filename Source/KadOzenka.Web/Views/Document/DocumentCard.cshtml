@@ -47,10 +47,15 @@
                 <div class="form-group">
                     <div class="col-sm-12">
                         @(Html.Kendo().Button()
-                            .Name("saveDocumentBtn")
-                            .Content("Сохранить")
-                            .Events(x => x.Click("saveDocument"))
-                            .HtmlAttributes(new { style = "float: right;", type = "button" }))
+                                    .Name("deleteDocumentBtn")
+                                    .Content("Удалить")
+                                    .Events(x => x.Click("deleteDocument"))
+                                    .HtmlAttributes(new { style = "float: right; margin-left: 1%;", type = "button" }))
+                        @(Html.Kendo().Button()
+                                    .Name("saveDocumentBtn")
+                                    .Content("Сохранить")
+                                    .Events(x => x.Click("saveDocument"))
+                                    .HtmlAttributes(new { style = "float: right", type = "button" }))
                     </div>
                 </div>
             </div>
@@ -109,6 +114,32 @@
                         return;
                     } else {
                         Common.ShowMessage("Документ обновлен");
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+
+
+        function deleteDocument() {
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'DELETE',
+                url: '@Url.Action("DeleteDocument", "Document")',
+                data: {documentId: '@Model.Id'},
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    } else {
+                        Common.ShowMessage("Документ удален");
+                        window.parent.parent.location.reload();
                     }
                 },
                 error: function (response) {

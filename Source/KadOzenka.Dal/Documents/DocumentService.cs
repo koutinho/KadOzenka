@@ -21,6 +21,13 @@ namespace KadOzenka.Dal.Documents
             return document.Save();
         }
 
+        public void DeleteDocument(long documentId)
+        {
+            var document = GetDocumentByIdInternal(documentId);
+
+            document.Destroy();
+        }
+
 
         #region Support Methods
 
