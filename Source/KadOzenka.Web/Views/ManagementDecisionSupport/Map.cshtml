@@ -1,4 +1,6 @@
-﻿<head>
+﻿@using System.Configuration;
+
+<head>
     <meta charset="utf-8" />
 </head>
 <body>
@@ -34,10 +36,10 @@
             width: 100%;
         }
 
-        .colorPickerContainer section {
-            height: 150px;
-            width: 100%;
-        }
+            .colorPickerContainer section {
+                height: 150px;
+                width: 100%;
+            }
 
         .colorPicker .twod, .colorPicker .twod .bg {
             width: 150px;
@@ -48,9 +50,9 @@
             width: 20px;
         }
 
-        .colorPicker .oned, .colorPicker .oned .bg {
-            height: 150px;
-        }
+            .colorPicker .oned, .colorPicker .oned .bg {
+                height: 150px;
+            }
 
         .colorShowPanelLabel {
             font-weight: bold;
@@ -74,20 +76,20 @@
             display: flex;
         }
 
-        .legendContainer .coloredSegment {
-            width: 100%;
-            height: 40px;
-        }
+            .legendContainer .coloredSegment {
+                width: 100%;
+                height: 40px;
+            }
 
-        .legendContainer .coloredSegment:first-child {
-            border: solid 1px #1984c8;
-        }
+                .legendContainer .coloredSegment:first-child {
+                    border: solid 1px #1984c8;
+                }
 
-        .legendContainer .coloredSegment:not(:first-child) {
-            border-top: solid 1px #1984c8;
-            border-right: solid 1px #1984c8;
-            border-bottom: solid 1px #1984c8;
-        }
+                .legendContainer .coloredSegment:not(:first-child) {
+                    border-top: solid 1px #1984c8;
+                    border-right: solid 1px #1984c8;
+                    border-bottom: solid 1px #1984c8;
+                }
 
         .humidity {
             width: 100%
@@ -127,10 +129,10 @@
             width: 100%;
         }
 
-        .k-button-group > span {
-            width: 33.33%;
-            border-color: #c8c6cc;
-        }
+            .k-button-group > span {
+                width: 33.33%;
+                border-color: #c8c6cc;
+            }
     </style>
 }
 
@@ -163,8 +165,9 @@
 
         function initMap() {
             var script = document.createElement('script');
-            script.src =
-                `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+            //script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+            console.log(`@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&'));
+            script.src = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
             script.type = "text/javascript";
             document.head.appendChild(script);
             script.onload = function () {
