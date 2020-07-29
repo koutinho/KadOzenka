@@ -67,6 +67,13 @@
             <Parameters>
                 <Parameter Key="TaskId" Value="[ObjectId]" />
             </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Hide">
+                    <Conditions>
+                        <Condition Key="[20300400]" Operation="Equal" Value="Исходный перечень" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
         </Tab>
     </Tabs>
 </RegisterView>
