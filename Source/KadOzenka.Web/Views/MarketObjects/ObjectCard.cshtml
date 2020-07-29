@@ -1,6 +1,7 @@
 ﻿@using Core.Shared.Extensions
 @using ObjectModel.Market
 @using ObjectModel.Directory;
+@using System.Configuration;
 
 @model KadOzenka.Web.Models.MarketObject.CoreObjectDto
 
@@ -356,11 +357,13 @@
         <nav id="navigation-menu">
             <a href="#Section_Main">Основные данные</a>
             <a href="#Coordinates_Group">Координаты</a>
-            @if (@Model.PriceHistories?.Count > 0) { <a href="#Section_PriceHistoryChart">График истории изменения цены</a>  }
+            @if (@Model.PriceHistories?.Count > 0)
+            {<a href="#Section_PriceHistoryChart">График истории изменения цены</a>}
             <a href="#Section_Reestr">Данные Росреестра</a>
             <a href="#Section_OKS">Данные ОКС</a>
             <a href="#Section_Group">Группировка</a>
-            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess) { <a href="#Section_Map">На карте</a> }
+            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
+            {<a href="#Section_Map">На карте</a>}
             <div style="position:absolute; bottom:0px; width:100%; display:flex; justify-content: space-between;" id="toolbar" data-role="toolbar" class="k-toolbar k-widget k-toolbar-resizable" tabindex="0">
                 <div tabindex="0" class="k-overflow-anchor k-button" style="visibility: hidden; width: 1px;">
                     <span class="k-icon k-i-more-vertical"></span>
@@ -525,7 +528,7 @@
             success: function () { document.location.reload(); }
         });
     };
-    
+
 </script>
 
 @section styles {
@@ -680,8 +683,11 @@
 
 		function initMap() {
 			var script = document.createElement('script');
-			script.src =
-				`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+            //script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+            console.log(`@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&'));
+            script.src = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
+		    //`http://10.80.214.37:8888/?protocol=https&version=2.1&lang=ru_RU&key=5b7a0369-63be-4edd-ac27-716d52c64d46`;
+		    //`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
 			document.head.appendChild(script);
 			script.onload = function() {
 				ymaps.ready(function() {
