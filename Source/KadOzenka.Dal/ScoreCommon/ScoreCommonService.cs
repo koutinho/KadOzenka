@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.ScoreCommon
 			if (type == ReferenceItemCodeType.String)
 			{
                 var referenceItems = GetReferenceItems(referenceId);
-                return referenceItems.FirstOrDefault(x => x.Value == parameterData.StringValue)?.CalculationValue ?? 1;
+                return referenceItems.FirstOrDefault(x => x.Value.ToLower() == parameterData.StringValue?.ToLower())?.CalculationValue ?? 1;
 			}
 			return 0;
 		}
