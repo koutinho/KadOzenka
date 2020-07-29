@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203,250,251,252,253" UseSubMap="true"
-              OpenEmpty="false" JoinType="Left"
+              OpenEmpty="false" JoinType="Left" SearchPanel="KoObjects"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="true" ShowFilterMenu="false" SRDFunctionTag="KO.OBJECTS">
 
   <DefaultSearchControls>
