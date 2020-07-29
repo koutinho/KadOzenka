@@ -37,7 +37,7 @@ namespace ObjectModel.SRD
                 
               // Настройка подсистемы безопасности (39)
               public const string CORE_SRD_SETTINGS_EDIT = "CORE.SRD.SETTINGS.EDIT";
-                
+             
               // Рабочие столы (50)
               public const string DASHBOARD = "DASHBOARD";
                 
@@ -493,6 +493,15 @@ namespace ObjectModel.SRD
                 
               // Туры оценки (645)
               public const string KO_DICT_FACTORS_TOUR_ESTIMATES = "KO.DICT.FACTORS.TOUR_ESTIMATES";
+
+              // Документы (647)
+              public const string DOCUMENTS = "DOCUMENTS";
+                
+              // Редактирование документа (648)
+              public const string DOCUMENTS_EDIT = "DOCUMENTS.EDIT";
+                
+              // Удаление документа (649)
+              public const string DOCUMENTS_DELETE = "DOCUMENTS.DELETE";
                 
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";

@@ -1,12 +1,12 @@
 ﻿using KadOzenka.Dal.Documents;
 using KadOzenka.Web.Models.Document;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Core.TD;
+using KadOzenka.Web.Attributes;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
-    //TODO add SRD
-	public class DocumentController : KoBaseController
+    public class DocumentController : KoBaseController
 	{
         public DocumentService DocumentService { get; set; }
 
@@ -15,9 +15,11 @@ namespace KadOzenka.Web.Controllers
             DocumentService = documentService;
         }
 
+
         #region Document Card
 
 		[HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS)]
         public ActionResult DocumentCard(long documentId)
 		{
             var document = DocumentService.GetDocumentById(documentId);
@@ -28,6 +30,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS_EDIT)]
         public ActionResult AddDocument()
         {
             var model = new DocumentModel();
@@ -36,6 +39,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS_EDIT)]
         public JsonResult EditDocument(DocumentModel model)
         {
             if (!ModelState.IsValid)
@@ -56,18 +60,13 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.DOCUMENTS_DELETE)]
         public JsonResult DeleteDocument(long documentId)
         {
             DocumentService.DeleteDocument(documentId);
 
             return new JsonResult(Ok());
         }
-
-        #endregion
-
-
-        #region Support Methods
-
 
         #endregion
     }
