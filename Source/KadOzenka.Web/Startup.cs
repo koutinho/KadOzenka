@@ -37,6 +37,7 @@ using KadOzenka.Web.SignalR;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
 
 namespace CIPJS
@@ -88,6 +89,7 @@ namespace CIPJS
 	        services.AddTransient<UpdateCadastralDataService>();
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
+	        services.AddTransient<DocumentService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

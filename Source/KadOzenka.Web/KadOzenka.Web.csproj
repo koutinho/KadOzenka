@@ -143,6 +143,7 @@
     <None Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <None Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
+    <None Remove="Config\Registers\Views\Documents.xml" />
     <None Remove="Config\Registers\Views\EsConstructorCard.xml" />
     <None Remove="Config\Registers\Views\EsEstimateObjectCard.xml" />
     <None Remove="Config\Registers\Views\EsEstimates.xml" />
@@ -358,6 +359,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoTasks.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\Documents.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\ModelingModels.xml">
@@ -1588,6 +1592,7 @@
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSpdRegister.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\Documents.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsConstructorCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsReferenceItems.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />
