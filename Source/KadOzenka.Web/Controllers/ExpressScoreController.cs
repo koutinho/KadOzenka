@@ -6,6 +6,7 @@ using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
+using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
@@ -22,7 +23,7 @@ using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -341,11 +342,13 @@ namespace KadOzenka.Web.Controllers
 				SimpleCostFactors = new List<SimpleCostFactor>()
 			};
 			model.SegmentType = (MarketSegment) segmentId;
+			model.IsEdit =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT);
 			return PartialView("Partials/SettingsExpressScore", model);
 		}
 
 		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR)]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT)]
 		public JsonResult SettingsExpressScore(SettingsExpressScoreViewModel viewModel)
 		{
 			if (!ModelState.IsValid)

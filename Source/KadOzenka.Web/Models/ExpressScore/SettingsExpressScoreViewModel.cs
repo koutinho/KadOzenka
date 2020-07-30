@@ -31,6 +31,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 		[Required(ErrorMessage = "Не передан тип сегмента")]
 		public MarketSegment? SegmentType { get; set; }
 
+		public bool IsEdit { get; set; }
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{

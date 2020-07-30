@@ -284,6 +284,7 @@
 <script type="text/javascript">
 	var complexFactorsCount  = @Model.CostFactors.ComplexCostFactors.Count;
 	var simpleFactorsCount = @Model.CostFactors.SimpleCostFactors.Count;
+    var isEdit = "@(Model.IsEdit)" === "True";
 
 	$("#toolbar").kendoToolBar({
 		items: [{
@@ -294,7 +295,8 @@
 				handlerComplexFactor();
 			},
 			icon: 'add',
-			hidden: false
+			hidden: false,
+            enable: isEdit
 		},
 			{
 				type: 'button',
@@ -304,7 +306,8 @@
 					saveParams();
 				},
 				icon: 'save',
-				hidden: false
+				hidden: false,
+                enable: isEdit
 			}]
 	});
 	var panelBar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -342,9 +345,9 @@
 		} catch (e) {
 			Common.ShowError(e);
 			return;
-		} 
-	
-		
+		}
+
+
 
 
 		var data = {

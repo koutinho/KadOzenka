@@ -37,7 +37,10 @@ namespace ObjectModel.SRD
                 
               // Настройка подсистемы безопасности (39)
               public const string CORE_SRD_SETTINGS_EDIT = "CORE.SRD.SETTINGS.EDIT";
-             
+                
+              // Администрирование импорт (40)
+              public const string ADMIN_IMPORT = "ADMIN.IMPORT";
+                
               // Рабочие столы (50)
               public const string DASHBOARD = "DASHBOARD";
                 
@@ -275,6 +278,9 @@ namespace ObjectModel.SRD
               // Конструктор расчетов (563)
               public const string EXPRESSSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
                 
+              // Конструктор расчетов. Редактирование (564)
+              public const string EXPRESSSCORE_CONSTRUCTOR_EDIT = "EXPRESSSCORE.CONSTRUCTOR.EDIT";
+                
               // Карта (570)
               public const string MARKET_MAP = "MARKET.MAP";
                 
@@ -493,7 +499,10 @@ namespace ObjectModel.SRD
                 
               // Туры оценки (645)
               public const string KO_DICT_FACTORS_TOUR_ESTIMATES = "KO.DICT.FACTORS.TOUR_ESTIMATES";
-
+                
+              // Загрузка данных по списку (646)
+              public const string GBU_COD_DATA_IMPORT = "GBU.COD.DATA_IMPORT";
+                
               // Документы (647)
               public const string DOCUMENTS = "DOCUMENTS";
                 
