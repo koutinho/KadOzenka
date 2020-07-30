@@ -8,6 +8,8 @@ using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.Documents;
+using KadOzenka.Dal.Documents.Dto;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Task;
@@ -22,11 +24,13 @@ namespace KadOzenka.Web.Controllers
 	public class GknDataImportController : KoBaseController
 	{
 		public TaskService TaskService { get; set; }
+		public DocumentService DocumentService { get; set; }
 
 		public GknDataImportController(TaskService taskService)
 		{
 			TaskService = taskService;
-		}
+            DocumentService = new DocumentService();
+        }
 
 
 		[HttpGet]
@@ -41,11 +45,14 @@ namespace KadOzenka.Web.Controllers
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
 		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
-		{
-			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
-
-			var documentId = TaskService.CreateDocument(dto.IncomingDocumentRegNumber, dto.IncomingDocumentDescription,
-				dto.IncomingDocumentDate);
+        {
+            var documentDto = new DocumentDto
+            {
+                RegNumber = dto.IncomingDocumentRegNumber,
+                Description = dto.IncomingDocumentDescription,
+                CreateDate = dto.IncomingDocumentDate
+            };
+            var documentId = DocumentService.AddDocument(documentDto);
 
 			OMTask task = new OMTask
 			{

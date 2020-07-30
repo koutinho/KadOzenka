@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Documents
                 Description = documentDto.Description,
                 RegNumber = documentDto.RegNumber,
                 ApproveDate = documentDto.ApproveDate,
-                CreateDate = DateTime.Now
+                CreateDate = documentDto.CreateDate ?? DateTime.Now
             }.Save();
         }
 
@@ -71,13 +71,10 @@ namespace KadOzenka.Dal.Documents
         private void ValidateDocument(DocumentDto documentDto)
         {
             if(string.IsNullOrWhiteSpace(documentDto.Description))
-                throw new Exception("Не заполнено Наименование");
+                throw new Exception("Не заполнено Наименование документа");
 
             if (string.IsNullOrWhiteSpace(documentDto.RegNumber))
-                throw new Exception("Не заполнен Номер");
-
-            if (documentDto.ApproveDate == null || documentDto.ApproveDate == DateTime.MinValue)
-                throw new Exception("Не заполнена Дата выпуска документа");
+                throw new Exception("Не заполнен Номер документа");
         }
 
         #endregion

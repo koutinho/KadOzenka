@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using System.Transactions;
 using Core.Shared.Misc;
+using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Models.Task;
 using ObjectModel.Common;
 
@@ -18,6 +19,13 @@ namespace KadOzenka.Dal.Tasks
 {
     public class TaskService
     {
+        public DocumentService DocumentService { get; set; }
+
+        public TaskService()
+        {
+            DocumentService = new DocumentService();
+        }
+
         public TaskDto GetTaskById(long taskId)
         {
             var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
@@ -174,18 +182,6 @@ namespace KadOzenka.Dal.Tasks
             return $"{documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
         }
 
-        public long CreateDocument(string regNumber, string description, DateTime? createDate = null)
-        {
-            OMInstance instance = new OMInstance
-            {
-                RegNumber = regNumber,
-                Description = description,
-                CreateDate = createDate ?? DateTime.Now
-            };
-
-            return instance.Save();
-        }
-
         public void UpdateTaskData(TaskDto dto)
         {
             var task = OMTask.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
@@ -209,8 +205,13 @@ namespace KadOzenka.Dal.Tasks
                 var document = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
                 if (document == null)
                 {
-                    var documentId = CreateDocument(dto.IncomingDocument.RegNumber, dto.IncomingDocument.Description,
-                        dto.IncomingDocument.CreationDate);
+                    var documentDto = new Documents.Dto.DocumentDto
+                    {
+                        RegNumber = dto.IncomingDocument.RegNumber,
+                        Description = dto.IncomingDocument.Description,
+                        CreateDate = dto.IncomingDocument.CreationDate
+                    };
+                    var documentId = DocumentService.AddDocument(documentDto);
                     task.DocumentId = documentId;
                 }
                 else

@@ -14,6 +14,8 @@ using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Documents;
+using KadOzenka.Dal.Documents.Dto;
 using KadOzenka.Dal.GbuObject;
 
 namespace KadOzenka.Dal.LongProcess
@@ -21,12 +23,14 @@ namespace KadOzenka.Dal.LongProcess
     public class KoTaskFromReon : LongProcess
     {
         private TaskService TaskService { get; set; }
+        private DocumentService DocumentService { get; set; }
         private RosreestrDataApi ReonWebClientService { get; set; }
         private GbuReportService GbuReportService { get; set; }
 
         public KoTaskFromReon()
         {
             TaskService = new TaskService();
+            DocumentService = new DocumentService();
             ReonWebClientService = new RosreestrDataApi();
             GbuReportService = new GbuReportService();
         }
@@ -77,7 +81,13 @@ namespace KadOzenka.Dal.LongProcess
                 OMTask omTask = null;
                 try
                 {
-                    var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
+                    var documentDto = new DocumentDto
+                    {
+                        RegNumber = task.DocNumber,
+                        Description = task.DocName,
+                        CreateDate = task.DocDate
+                    };
+                    var documentId = DocumentService.AddDocument(documentDto);
 
                     omTask = CreateTask(task, documentId);
 

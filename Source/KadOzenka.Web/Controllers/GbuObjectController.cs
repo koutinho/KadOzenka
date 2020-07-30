@@ -5,11 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
-using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
@@ -21,10 +19,8 @@ using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
-using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -431,11 +427,7 @@ namespace KadOzenka.Web.Controllers
 				Value = x.Id,
 			}).ToList();
 
-			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
-			{
-				Text = $"{x.RegNumber} {x.Description}",
-				Value = x.Id,
-			}).ToList();
+			ViewData["Documents"] = GetDocumentsForPartialView();
 
 			return View(new HarmonizationCODViewModel());
 		}
@@ -460,17 +452,7 @@ namespace KadOzenka.Web.Controllers
 				viewModel.IdAttributeResult = idAttr;
 			}
 
-		    if (viewModel.Document.IsNewDocument)
-		    {
-		        var idDocument = _taskService.CreateDocument(viewModel.Document.NewDocumentRegNumber,
-		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
-		        if (idDocument == 0)
-		        {
-		            return SendErrorMessage("Не корректные данные для создания нового документа");
-		        }
-
-		        viewModel.Document.IdDocument = idDocument;
-		    }
+            viewModel.Document.ProcessDocument();
 
             long queueId;
             try
@@ -529,11 +511,7 @@ namespace KadOzenka.Web.Controllers
 					}).ToList()
 				}).AsEnumerable();
 
-			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
-			{
-				Value = x.Id,
-				Text = x.Description
-			}).AsEnumerable();
+			ViewData["Documents"] = GetDocumentsForPartialView();
 
 			return View(new UnloadingFromDicViewModel());
 		}
@@ -558,19 +536,9 @@ namespace KadOzenka.Web.Controllers
 				viewModel.IdAttributeResult = idAttr;
 			}
 
-		    if (viewModel.Document.IsNewDocument)
-		    {
-		        var idDocument = _taskService.CreateDocument(viewModel.Document.NewDocumentRegNumber,
-		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
-		        if (idDocument == 0)
-		        {
-		            return SendErrorMessage("Не корректные данные для создания нового документа");
-		        }
+            viewModel.Document.ProcessDocument();
 
-		        viewModel.Document.IdDocument = idDocument;
-		    }
-
-		    SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
+            SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
 
 		    return Json(new
 		    {

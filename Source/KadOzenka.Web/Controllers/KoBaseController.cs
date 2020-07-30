@@ -10,6 +10,7 @@ using Core.Register.Enums;
 using Microsoft.AspNetCore.Http;
 using Core.Shared.Extensions;
 using KadOzenka.Web.Models.KoBase;
+using ObjectModel.Core.TD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -110,6 +111,20 @@ namespace KadOzenka.Web.Controllers
                 default:
 	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
 	        }
+        }
+
+        protected List<PartialDocument> GetDocumentsForPartialView()
+        {
+            return OMInstance.Where(x => x)
+                .Select(x => x.RegNumber)
+                .Select(x => x.Description)
+                .OrderBy(x => x.RegNumber)
+                .Execute()
+                .Select(x => new PartialDocument
+                {
+                    Text = $"{x.RegNumber} {x.Description}",
+                    Value = x.Id
+                }).ToList();
         }
     }
 }

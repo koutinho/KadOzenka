@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.UI.Registers.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,12 +20,11 @@ using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
-using ObjectModel.Core.TD;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
 {
-    public class DataImportByTemplateController : BaseController
+    public class DataImportByTemplateController : KoBaseController
 	{
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
@@ -51,14 +49,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
 
-            ViewData["Documents"] = OMInstance.Where(x => x)
-                .Select(x => x.Description)
-                .Select(x => x.Id)
-                .Execute().Select(x => new
-                {
-                    Text = x.Description,
-                    Value = x.Id
-                }).ToList();
+            ViewData["Documents"] = GetDocumentsForPartialView();
 
             return View();
 		}
@@ -204,18 +195,7 @@ namespace KadOzenka.Web.Controllers
                 IsKey = x.IsKey
             }).ToList();
 
-			if (model.Document.IsNewDocument)
-			{
-				var idDocument = TaskService.CreateDocument(model.Document.NewDocumentRegNumber,
-					model.Document.NewDocumentName, model.Document.NewDocumentDate);
-				if (idDocument == 0)
-				{
-					throw new Exception("Не корректные данные для создания нового документа");
-				}
-
-				model.Document.IdDocument = idDocument;
-			}
-			var documentId =  model.Document.IdDocument;
+            model.Document.ProcessDocument();
 
             if (model.IsBackgroundDownload)
             {
@@ -223,7 +203,7 @@ namespace KadOzenka.Web.Controllers
                 using (var stream = model.File.OpenReadStream())
                 {
                     importDataLogId = DataImporterByTemplate.AddImportToQueue(model.MainRegisterId,
-                        model.RegisterViewId, model.File.FileName, stream, columns, documentId);
+                        model.RegisterViewId, model.File.FileName, stream, columns, model.Document.IdDocument);
                 }
 
                 return new JsonResult(new { Message = "Фоновая загрузка начата.", Success = true, ImportDataLogId = importDataLogId });
@@ -236,7 +216,8 @@ namespace KadOzenka.Web.Controllers
                     excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
                 }
 
-                var resultFile = (MemoryStream)DataImporterByTemplate.ImportDataFromExcel(model.MainRegisterId, excelFile, columns, documentId, out var success);
+                var resultFile = (MemoryStream) DataImporterByTemplate.ImportDataFromExcel(model.MainRegisterId,
+                    excelFile, columns, model.Document.IdDocument, out var success);
 
                 var resultFileName = $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
                 HttpContext.Session.Set(resultFileName, resultFile.ToArray());
