@@ -7,6 +7,8 @@ namespace KadOzenka.Dal.Documents
 {
     public class DocumentService
     {
+        private readonly DateTime _defaultCreateDate = DateTime.Today;
+
         public OMInstance GetDocumentById(long? documentId)
         {
             return GetDocumentByIdInternal(documentId);
@@ -21,7 +23,7 @@ namespace KadOzenka.Dal.Documents
                 Description = documentDto.Description,
                 RegNumber = documentDto.RegNumber,
                 ApproveDate = documentDto.ApproveDate,
-                CreateDate = documentDto.CreateDate ?? DateTime.Now
+                CreateDate = documentDto.CreateDate ?? _defaultCreateDate
             }.Save();
         }
 
@@ -70,11 +72,18 @@ namespace KadOzenka.Dal.Documents
 
         private void ValidateDocument(DocumentDto documentDto)
         {
-            if(string.IsNullOrWhiteSpace(documentDto.Description))
+            if (string.IsNullOrWhiteSpace(documentDto.Description))
                 throw new Exception("Не заполнено Наименование документа");
 
             if (string.IsNullOrWhiteSpace(documentDto.RegNumber))
                 throw new Exception("Не заполнен Номер документа");
+
+            var createDate = documentDto.CreateDate ?? _defaultCreateDate;
+            var isTheSameDocumentExists = OMInstance
+                .Where(x => x.RegNumber == documentDto.RegNumber && x.CreateDate == createDate).ExecuteExists();
+            if (isTheSameDocumentExists)
+                throw new Exception(
+                    $"Документ с номером '{documentDto.RegNumber}' и датой создания '{createDate.ToShortDateString()}' уже существует");
         }
 
         #endregion
