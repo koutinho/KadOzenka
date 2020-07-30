@@ -2,10 +2,6 @@
 using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
-using Core.Register.Enums;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.LongProcess.ExpressScore;
@@ -13,9 +9,8 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.ExpressScoreReference;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Common;
 using ObjectModel.ES;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -29,7 +24,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
         public ActionResult ReferenceCard(long id, bool showItems = false)
         {
             var entity = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -104,7 +99,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
         public ActionResult ReferenceItemCard(ReferenceItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -146,7 +141,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [ActionName("DeleteReferenceItem")]
-		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES)]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
         public IActionResult DeleteReferenceItemAction(long id)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using Core.SRD;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
@@ -34,6 +35,8 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         [Display(Name = "Значение для расчета")]
         public decimal? CalcValue { get; set; }
 
+        public bool IsEditItem { get; set; }
+
         public static ReferenceItemViewModel ToModel(OMEsReferenceItem entity, OMEsReference reference)
         {
             if (entity == null)
@@ -43,8 +46,9 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                     Id = -1,
                     ReferenceId = reference.Id,
                     ReferenceName = reference.Name,
-                    ReferenceValueType = reference.ValueType_Code
-                };
+                    ReferenceValueType = reference.ValueType_Code,
+                    IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
+            };
             }
 
             var value = reference.ValueType_Code == ReferenceItemCodeType.String && entity.Value != null
@@ -66,7 +70,8 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Value = value,
                 NumberValue = numberValue,
                 DateTimeValue = dateValue,
-                CalcValue = entity.CalculationValue
+                CalcValue = entity.CalculationValue,
+                IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
             };
         }
 

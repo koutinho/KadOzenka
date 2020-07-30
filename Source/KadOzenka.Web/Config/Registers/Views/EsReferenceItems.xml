@@ -3,7 +3,7 @@
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false" SearchPanel="EsReferenceItems"
               UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800">
+        <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
             <Parameters>
                 <Parameter Key="referenceId" Value="{Get:ReferenceId}" />
             </Parameters>
@@ -16,7 +16,7 @@
                 </ConditionGroup>
             </ConditionGroups>
         </Button>
-        <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800">
+        <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -30,7 +30,7 @@
             </Parameters>
         </Button>
 
-        <Button Caption="Удалить" NavigateURL="/ExpressScopeReference/DeleteReferenceItem" WindowHeight="180" WindowWidth="800">
+        <Button Caption="Удалить" NavigateURL="/ExpressScopeReference/DeleteReferenceItem" WindowHeight="180" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>

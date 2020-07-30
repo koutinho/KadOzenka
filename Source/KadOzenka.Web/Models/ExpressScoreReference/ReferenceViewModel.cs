@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.SRD;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 
@@ -26,6 +27,9 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
 
         public bool ShowItems { get; set; }
 
+
+        public bool IsEdit { get; set; }
+
         public static ReferenceViewModel FromEntity(OMEsReference entity, bool valueTypeCanBeChanged = false, bool showItems = false)
         {
             if (entity == null)
@@ -34,7 +38,8 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 {
                     Id = -1,
                     ShowItems = showItems,
-                    ValueTypeCanBeChanged = valueTypeCanBeChanged
+                    ValueTypeCanBeChanged = valueTypeCanBeChanged,
+                    IsEdit = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
                 };
             }
 
@@ -44,7 +49,8 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Name = entity.Name,
                 ValueType = entity.ValueType_Code,
                 ValueTypeCanBeChanged = valueTypeCanBeChanged,
-                ShowItems = showItems
+                ShowItems = showItems,
+                IsEdit = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
             };
         }
     }
