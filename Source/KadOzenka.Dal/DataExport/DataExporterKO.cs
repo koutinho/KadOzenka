@@ -3829,7 +3829,7 @@ namespace KadOzenka.Dal.DataExport
                 string value_attr = "";
 
                 #region Нашли и записали в список входящий документ
-                OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                //OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
                 KoNoteType doc_status = task.NoteType_Code;
                 #endregion
                 OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
@@ -4129,7 +4129,7 @@ namespace KadOzenka.Dal.DataExport
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
-                value_attr = "-";
+                value_attr = "";
                 //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
@@ -4149,7 +4149,7 @@ namespace KadOzenka.Dal.DataExport
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
-                value_attr = "-";
+                value_attr = "";
                 //DataExportCommon.GetObjectAttribute(_unit, 21, out value_attr); //Код 21 - Материал стен
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
@@ -4185,7 +4185,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.1",
                      "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
-                     DataExportCommon.SStr(" "),   //TODO -
+                     DataExportCommon.SStr("-"),   //TODO -
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4248,24 +4248,28 @@ namespace KadOzenka.Dal.DataExport
                                 RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
                                 factor.FillMarkCatalogs(model_calc);
 
-                                string attribute_name = attribute_factor.Name;
-                                long attribute_id = attribute_factor.Id;
+                                string  attribute_name = (attribute_factor != null)?attribute_factor.Name:"-";
+                                long      attribute_id = (attribute_factor != null)?attribute_factor.Id:0;
                                 string attribute_value = "-";
 
                                 int? factorReestrId = OMGroup.GetFactorReestrId(calc_group);
                                 List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                                DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                                DataTable data = (factorReestrId != null) ?
+                                                  RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value) :
+                                                  null;
                                 if (data != null)
                                 {
                                     foreach (DataRow row in data.Rows)
                                     {
                                         FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                                     }
-                                }
-                                CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                                if (factor_item != null)
-                                {
-                                    attribute_value = factor_item.Value;
+                                    CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
+                                                            FactorValuesGroup.Find(x => x.FactorId == factor.FactorId) :
+                                                            null;
+                                    if (factor_item != null)
+                                    {
+                                        attribute_value = factor_item.Value;
+                                    }
                                 }
 
                                 pp++;
@@ -4296,24 +4300,28 @@ namespace KadOzenka.Dal.DataExport
                         RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
                         factor.FillMarkCatalogs(model);
 
-                        string attribute_name = attribute_factor.Name;
-                        long attribute_id = attribute_factor.Id;
+                        string  attribute_name = (attribute_factor != null) ? attribute_factor.Name : "-";
+                        long      attribute_id = (attribute_factor != null) ? attribute_factor.Id : -1;
                         string attribute_value = "-";
 
                         int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
                         List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                        DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                        DataTable data = (factorReestrId != null) ?
+                                          RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value) :
+                                          null;
                         if (data != null)
                         {
                             foreach (DataRow row in data.Rows)
                             {
                                 FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                             }
-                        }
-                        CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                        if (factor_item != null)
-                        {
-                            attribute_value = factor_item.Value;
+                            CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
+                                                    FactorValuesGroup.Find(x => x.FactorId == factor.FactorId) :
+                                                    null;
+                            if (factor_item != null)
+                            {
+                                attribute_value = factor_item.Value;
+                            }
                         }
 
                         pp++;
@@ -4337,19 +4345,20 @@ namespace KadOzenka.Dal.DataExport
                 #region 2.4.   Кадастровая   стоимость   объекта   недвижимости   определена  в соответствии со следующей методологией:
                 string formula = string.Empty;
                 string pr_kn = string.Empty;
+                string parent_calc_number = (_unit.ParentCalcNumber == null) ? string.Empty : _unit.ParentCalcNumber;
                 bool dd = false;
                 bool jj = true;
 
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
                 {
-                    if ((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
+                    if ((calc_unit != null) && ((parent_calc_number == calc_unit.CadastralNumber) || parent_calc_number == string.Empty))
                     {
                         formula = OMGroup.GetFormulaKoeff(calc_group, true, "УПКС здания, в котором расположено помещение(" + calc_unit.CadastralNumber + ")");
                         dd = true;
                     }
                     else
                     {
-                        string[] kk = _unit.ParentCalcNumber.Split(':');
+                        string[] kk = parent_calc_number.Split(':');
                         string calc_group_num = group_unit.Number;
                         if (kk.Length == 1)
                         {
@@ -4371,7 +4380,7 @@ namespace KadOzenka.Dal.DataExport
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) //subgroup.Type_SubGroup == 10)
                 {
-                    string[] kk = _unit.ParentCalcNumber.Split(':');
+                    string[] kk = parent_calc_number.Split(':');
                     string calc_group_num = group_unit.Number;
                     if (kk.Length == 1)
                     {
@@ -4391,7 +4400,7 @@ namespace KadOzenka.Dal.DataExport
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited) //subgroup.Type_SubGroup == 11)
                 {
-                    string[] kk = _unit.ParentCalcNumber.Split(':');
+                    string[] kk = parent_calc_number.Split(':');
                     string calc_group_num = group_unit.Number;
                     if (kk.Length == 1)
                     {
@@ -4411,7 +4420,7 @@ namespace KadOzenka.Dal.DataExport
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Min) //subgroup.Type_SubGroup == 12)
                 {
-                    string[] kk1 = _unit.ParentCalcNumber.Split('(');
+                    string[] kk1 = parent_calc_number.Split('(');
                     if (kk1.Length > 1)
                     {
                         string ppkk = kk1[1].Replace(")", "").Replace(" ", "");
@@ -4449,9 +4458,9 @@ namespace KadOzenka.Dal.DataExport
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))
                 {
-                    if ((calc_unit != null) && ((_unit.ParentCalcNumber == calc_unit.CadastralNumber) || _unit.ParentCalcNumber == string.Empty))
+                    if ((calc_unit != null) && ((parent_calc_number == calc_unit.CadastralNumber) || parent_calc_number == string.Empty))
                     {
-                        string[] kk = _unit.ParentCalcNumber.Split(':');
+                        string[] kk = parent_calc_number.Split(':');
                         string calc_group_num = calc_group.Number;
                         if (kk.Length == 1)
                         {
@@ -4474,7 +4483,7 @@ namespace KadOzenka.Dal.DataExport
                         }
                     }
                 }
-                string dopmodel = "dop_model"; //subgroup.dop_model; //TODO добавить поля dop_... в OMGroup
+                string dopmodel =  "dop_model"; //subgroup.dop_model; //TODO добавить поля dop_... в OMGroup
                 if (dopmodel != string.Empty)
                     formula = formula + " " + dopmodel; //Environment.NewLine
 
@@ -4634,7 +4643,6 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-
         public static void GetCalcGroupFromUnit(OMUnit _unit, DateTime? _estimatedate, out OMUnit unit_out, out OMGroup group_out)
         {
             unit_out = null;
@@ -4651,11 +4659,14 @@ namespace KadOzenka.Dal.DataExport
             foreach (OMUnit unit_par in units_parent)
             {
                 OMTask task = OMTask.Where(x => x.Id == unit_par.TaskId).SelectAll().ExecuteFirstOrDefault();
-                if (_estimatedate - task.EstimationDate < date_near)
+                if (task != null)
                 {
-                    date_near = _estimatedate - task.EstimationDate;
-                    unit_out = unit_par;
-                    group_out = OMGroup.Where(x => x.Id == unit_par.GroupId).SelectAll().ExecuteFirstOrDefault(); ;
+                    if (_estimatedate - task.EstimationDate < date_near)
+                    {
+                        date_near = _estimatedate - task.EstimationDate;
+                        unit_out = unit_par;
+                        group_out = OMGroup.Where(x => x.Id == unit_par.GroupId).SelectAll().ExecuteFirstOrDefault();
+                    }
                 }
             }
 
