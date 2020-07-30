@@ -1,7 +1,9 @@
-﻿@using ObjectModel.Directory
+﻿@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Task.TaskModel
 
 <div id="toolbar"></div>
+
 <div class="form-group">
     <div class="col-sm-12">
         <a style="float: right" href="/Help/Help?CurrentLocation=ImportGkn" target="_blank">
@@ -9,6 +11,7 @@
         </a>
     </div>
 </div>
+
 <div>
     <ul id="ls_panelbar" class="panelbar">
         <li id="MainData" data-expand>
@@ -16,51 +19,32 @@
             <div>
                 <div class="form-horizontal col-sm-12" style="margin-top:10px;">
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.TourYear)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
                             <input id="Tour" name="Tour" editmode="true" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
-                            @Html.CustomLabelFor(x => x.IncomingDocumentRegNumber)
-                        </div>
-                        <div class="col-sm-9">
-                            @Html.KendoTextBoxFor(x => x.IncomingDocumentRegNumber, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
-                            @Html.CustomLabelFor(m => m.IncomingDocumentDate)
-                        </div>
-                        <div class="col-sm-9">
-                            @Html.KendoDatePickerFor(x => x.IncomingDocumentDate, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(m => m.NoteType)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
                             @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(m => m.EstimationDate)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
                             @Html.KendoDatePickerFor(m => m.EstimationDate, format: "dd.MM.yyyy", isReadonly: false)
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
-                            @Html.CustomLabelFor(m => m.IncomingDocumentDescription)
-                        </div>
-                        <div class="col-sm-9">
-                            @Html.TextBoxAreaFor(x => x.IncomingDocumentDescription, rowCount: 3, colCount: 3)
+                    <div id="partialDocument" class="form-group">
+                        <div class="col-sm-12">
+                            @(await Html.PartialAsync("~/Views/GbuObject/Partials/PartialDocument.cshtml", new PartialDocumentViewModel()))
                         </div>
                     </div>
                 </div>
@@ -79,9 +63,11 @@
     </ul> 
 </div>
 
+
+
+<script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
-
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');        
 
@@ -94,9 +80,9 @@
                     type: 'button',
                     id: 'check',
                     text: 'Сохранить',
+                    icon: 'save',
                     click: function () {
                         var message = [];
-
                         var upload = $("#files").data("kendoUpload");
                         var files = upload.getFiles();
                         $.each(files, (function (index, value) {
@@ -109,12 +95,6 @@
                             }
                         }));
 
-                        if ($('[name="IncomingDocumentRegNumber"]').val() == 0) {
-                            message += 'Необходимо заполнить номер документа<br>';
-                        }                        
-                        if ($('[name="IncomingDocumentDate"]').data().kendoDatePicker.value() == null) {
-                            message += 'Необходимо заполнить дату документа<br>';
-                        }
                         if ($('[name="EstimationDate"]').data().kendoDatePicker.value() == null) {
                             message += 'Необходимо заполнить дату изменения сведения (дату оценки)<br>';
                         }
@@ -127,17 +107,19 @@
                         }
 
                         var formData = new FormData($('#fileForm').get(0));
-
-                        formData.set('IncomingDocumentRegNumber', $('[name="IncomingDocumentRegNumber"]').val());
-                        var date = $('[name="IncomingDocumentDate"]').data().kendoDatePicker.value();                       
-                        formData.set('IncomingDocumentDate', date.toDateString());                       
                         formData.set('TourYear', $('[name="Tour"]').val());
                         formData.set('NoteType', $('[name="NoteType"]').val());                       
                         var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
                         if (estdate != null) {
                             formData.set('EstimationDate', estdate.toDateString());
                         }
-                        formData.set('IncomingDocumentDescription', $('[name="IncomingDocumentDescription"]').val());
+                        var documentObject = Common.Functions.FormToObject($('#partialDocument'));
+                        formData.append("Document.ModelPrefix", documentObject.ModelPrefix);
+                        formData.append("Document.IdDocument", documentObject.IdDocument);
+                        formData.append("Document.NewDocumentRegNumber", documentObject.NewDocumentRegNumber);
+                        formData.append("Document.NewDocumentName", documentObject.NewDocumentName);
+                        formData.append("Document.NewDocumentDate", documentObject.NewDocumentDate);
+                        formData.append("Document.IsNewDocument", documentObject.IsNewDocument);
 
                         kendo.ui.progress($('body'), true);
                         $.ajax({
@@ -146,21 +128,26 @@
                             processData: false,
                             contentType: false,
                             success: function (e) {
-                                kendo.ui.progress($('body'), false);
-                                Common.ShowMessage(e.Msg);
-                                setTimeout(function () {
-                                    Common.UI.CloseWindow('MainMenuWindow', window.parent);
-                                }, 1000);
+                                if (e.Errors) {
+                                    var errors = getErrors(e.Errors);
+                                    Common.ShowError(errors);
+                                    return;
+                                } else {
+                                    Common.ShowMessage(e.Msg);
+                                    setTimeout(function () {
+                                        Common.UI.CloseWindow('MainMenuWindow', window.parent);
+                                    }, 1000);
+                                }
                             },
                             error: function (e) {
-                                kendo.ui.progress($('body'), false);
                                 var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.'
                                 Common.ShowError(msg);
+                            },
+                            complete: function () {
+                                kendo.ui.progress($('body'), false);
                             }
                         });
-                    },
-                    icon: 'upload',
-                    hidden: false
+                    }
                 }
             ]
         });             

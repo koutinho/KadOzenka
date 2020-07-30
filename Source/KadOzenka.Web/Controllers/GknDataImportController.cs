@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
@@ -9,7 +8,6 @@ using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Documents;
-using KadOzenka.Dal.Documents.Dto;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Task;
@@ -38,7 +36,10 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ImportGkn()
 		{
 			TaskModel dto = new TaskModel();
-			return View(dto);
+
+            ViewData["Documents"] = GetDocumentsForPartialView();
+
+            return View(dto);
 		}
 
 		[HttpPost]
@@ -46,18 +47,15 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "")]
 		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
         {
-            var documentDto = new DocumentDto
-            {
-                RegNumber = dto.IncomingDocumentRegNumber,
-                Description = dto.IncomingDocumentDescription,
-                CreateDate = dto.IncomingDocumentDate
-            };
-            var documentId = DocumentService.AddDocument(documentDto);
+            dto.Document.ProcessDocument();
 
-			OMTask task = new OMTask
+            if (dto.Document.IdDocument.GetValueOrDefault() == 0)
+                throw new Exception("Не выбран документ");
+
+            OMTask task = new OMTask
 			{
 				TourId = dto.TourYear,
-				DocumentId = documentId,
+				DocumentId = dto.Document.IdDocument,
 				CreationDate = DateTime.Now,
 				EstimationDate = dto.EstimationDate,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
