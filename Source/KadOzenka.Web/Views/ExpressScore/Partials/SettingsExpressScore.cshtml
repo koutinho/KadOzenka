@@ -180,11 +180,11 @@
 								<div class="col-sm-3">
 									@Html.Kendo().NumericTextBox().Name($"Coefficient-simple-{i}").Spinners(false).Decimals(6).Format("n6").Value((double)Model.CostFactors.SimpleCostFactors[i].Coefficient.GetValueOrDefault())
 								</div>
-								<div class="col-sm-1">
-									<a class="k-button-icon k-button remove-simple">
-										<span class="k-i-close k-icon"></span>
-									</a>
-								</div>
+                                <div class="col-sm-1">
+                                    <button disabled="@(!Model.IsEdit)" type="button" class="k-button-icon k-button remove-simple">
+                                        <span class="k-i-close k-icon"></span>
+                                    </button>
+                                </div>
 							</div>
 						</div>
 						i++;
@@ -193,9 +193,9 @@
 				<div class="wrapper-simple"></div>
 				<div class="form-group">
 					<div class="col-sm-2">
-						<a class="k-button-icon k-button" id="addSimpleFactor">
-							<span class="k-icon k-i-plus"></span>
-						</a>
+                        <button disabled="@(!Model.IsEdit)" type="button" class="k-button-icon k-button" id="addSimpleFactor">
+                            <span class="k-icon k-i-plus"></span>
+                        </button>
 					</div>
 				</div>
 			</fieldset>
@@ -419,7 +419,7 @@
 	}
 
 	function removeSimpleFactors() {
-		$(this).closest('div.for-remove').remove();
+        $(this).closest('div.for-remove').remove();
 	}
 
 	$(document).ready(function () {
@@ -427,7 +427,7 @@
 		refreshSimpleHandlers();
 		$('#addSimpleFactor').on('click',
 			function () {
-				kendo.ui.progress($('body'), true);
+                kendo.ui.progress($('body'), true);
 				var div$ = $('<div id="simple-factor-' + simpleFactorsCount + '" class="for-remove" style="display: none"></div>');
 				var url = "@Url.Action("AddNewSimpleCard","ExpressScore")" + `?count=${simpleFactorsCount}`;
 				div$.load(url, null, function(data, status, jqXGR)
