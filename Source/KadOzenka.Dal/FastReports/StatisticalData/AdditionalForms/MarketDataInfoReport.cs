@@ -33,8 +33,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 					filterValues.FirstOrDefault(f => f.ParamName == "OksGroupAttribute"));
 				InitialiseGbuAttributesFilterValue(
 					filterValues.FirstOrDefault(f => f.ParamName == "TypeOfUseAttribute"));
-				InitialiseGbuAttributesFilterValue(
-					filterValues.FirstOrDefault(f => f.ParamName == "TypeOfRightAttribute"));
 			}
 		}
 
@@ -45,7 +43,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var typeOfUseCodeAttributeId = GetFilterParameterValue(query, "TypeOfUseCodeAttribute", "Код вида использования");
 			var oksGroupAttributeId = GetFilterParameterValue(query, "OksGroupAttribute", "Группа ОКС");
 			var typeOfUseAttributeId = GetFilterParameterValue(query, "TypeOfUseAttribute", "Вид использования (функциональное назначение)");
-			var typeOfRightAttributeId = GetFilterParameterValue(query, "TypeOfRightAttribute", "Вид права");
 
 			if (dateFrom.HasValue && dateTo.HasValue && dateTo < dateFrom)
 			{
@@ -82,7 +79,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("Upks");
 			dataTable.Columns.Add("AnnualRateOfRent");
 
-			var data = _service.GetMarketData(dateFrom, dateTo, typeOfUseCodeAttributeId, oksGroupAttributeId, typeOfUseAttributeId, typeOfRightAttributeId);
+			var data = _service.GetMarketData(dateFrom, dateTo, typeOfUseCodeAttributeId, oksGroupAttributeId, typeOfUseAttributeId);
 			var i = 1;
 			foreach (var dto in data)
 			{

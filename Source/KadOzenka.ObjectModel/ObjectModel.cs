@@ -373,7 +373,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource28 : OMBaseClass<OMSource28>
     {
     }
-}
+        }
 
 namespace ObjectModel.Gbu
 {
@@ -1979,6 +1979,26 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionbystage = value;
                 NotifyPropertyChanged("PriceAfterCorrectionByStage");
+            }
+        }
+
+
+        private string _ownershiptype;
+        /// <summary>
+        /// 10009002 Вид права (OWNERSHIP_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009002)]
+        public string OwnershipType
+        {
+            get
+            {
+                CheckPropertyInited("OwnershipType");
+                return _ownershiptype;
+            }
+            set
+            {
+                _ownershiptype = value;
+                NotifyPropertyChanged("OwnershipType");
             }
         }
 
@@ -12901,9 +12921,9 @@ namespace ObjectModel.KO
         }
 
 
-        private string _unloadtypesMapping;
+        private string _unloadtypesmapping;
         /// <summary>
-        /// 26200800 Список выгрузок (UNLOAD_TYPES)
+        /// 26200800 Список выгрузок (UNLOAD_TYPES_MAPPING)
         /// </summary>
         [RegisterAttribute(AttributeID = 26200800)]
         public string UnloadTypesMapping
@@ -12911,11 +12931,11 @@ namespace ObjectModel.KO
             get
             {
                 CheckPropertyInited("UnloadTypesMapping");
-                return _unloadtypesMapping;
+                return _unloadtypesmapping;
             }
             set
             {
-                _unloadtypesMapping = value;
+                _unloadtypesmapping = value;
                 NotifyPropertyChanged("UnloadTypesMapping");
             }
         }
@@ -13036,24 +13056,25 @@ namespace ObjectModel.KO
         }
 
 
-        private string _exportFilesInfo;
+        private string _exportfilesinfo;
         /// <summary>
         /// 26201300 Список выгруженных файлов (EXPORT_FILES_INFO)
         /// </summary>
         [RegisterAttribute(AttributeID = 26201300)]
         public string ExportFilesInfo
         {
-	        get
-	        {
-		        CheckPropertyInited("ExportFilesInfo");
-		        return _exportFilesInfo;
-	        }
-	        set
-	        {
-                _exportFilesInfo = value;
-		        NotifyPropertyChanged("ExportFilesInfo");
-	        }
+            get
+            {
+                CheckPropertyInited("ExportFilesInfo");
+                return _exportfilesinfo;
+            }
+            set
+            {
+                _exportfilesinfo = value;
+                NotifyPropertyChanged("ExportFilesInfo");
+            }
         }
+
     }
 }
 

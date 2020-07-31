@@ -163,13 +163,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			return result;
 		}
 
-		public List<MarketDataDto> GetMarketData(DateTime? dateFrom, DateTime? dateTo, long typeOfUseCodeAttributeId, long oksGroupAttributeId, long typeOfUseAttributeId, long typeOfRightAttributeId)
+		public List<MarketDataDto> GetMarketData(DateTime? dateFrom, DateTime? dateTo, long typeOfUseCodeAttributeId, long oksGroupAttributeId, long typeOfUseAttributeId)
 		{
 			var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
 			gbuAttributesDataDictionary.Add(nameof(MarketDataDto.TypeOfUseCode), RegisterCache.GetAttributeData(typeOfUseCodeAttributeId));
 			gbuAttributesDataDictionary.Add(nameof(MarketDataDto.OksGroup), RegisterCache.GetAttributeData(oksGroupAttributeId));
 			gbuAttributesDataDictionary.Add(nameof(MarketDataDto.TypeOfUse), RegisterCache.GetAttributeData(typeOfUseAttributeId));
-			gbuAttributesDataDictionary.Add(nameof(MarketDataDto.TypeOfRight), RegisterCache.GetAttributeData(typeOfRightAttributeId));
 
 			var conditions = new List<QSCondition>();
 			if (dateFrom.HasValue)
@@ -277,6 +276,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMCoreObject.GetColumn(x => x.Area, "Area"));
 			query.AddColumn(OMCoreObject.GetColumn(x => x.AreaLand, "AreaLand"));
 			query.AddColumn(OMCoreObject.GetColumn(x => x.Price, "Price"));
+			query.AddColumn(OMCoreObject.GetColumn(x => x.OwnershipType, "OwnershipType"));
 
 
 			var table = query.ExecuteQuery();
@@ -343,6 +343,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 							AnnualRateOfRent = dealType == DealType.RentDeal || dealType == DealType.RentSuggestion
 								? GetAnnualRateOfRent(price, square)
 								: null,
+							TypeOfRight = table.Rows[i]["OwnershipType"].ParseToStringNullable()
 						};
 
 						foreach (var attribute in gbuAttributes.Where(x =>
