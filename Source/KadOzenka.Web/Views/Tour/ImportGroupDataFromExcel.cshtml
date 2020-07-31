@@ -101,11 +101,8 @@
                     data: formData,
                     contentType: false,
                     processData: false,
-                    success: function (data) {
-                        if (data.FileName) {
-                            window.location = '@Url.Action("DownloadImportGroupResult", "Tour")' + '?fileName=' + data.FileName;;
-                        }
-                        Common.ShowMessage("Импорт группы из Excel успешно выполнен");
+                    success: function () {
+                        Common.ShowMessage('Задача поставлена в очередь');
                     },
                     error: function (response) {
                         try {

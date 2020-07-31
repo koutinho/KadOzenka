@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
@@ -791,7 +792,18 @@ namespace KadOzenka.Web.Controllers
             return Content(JsonConvert.SerializeObject(new { FileName = fileName }), "application/json");
         }
 
-        [HttpGet]
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
+        public FileResult DownloadResult(string dt, string fileName)
+        {
+            var fsName = "DataImporterFromTemplate";
+            var ct = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            var dateTime = DateTime.Parse(dt);
+            var st = FileStorageManager.GetFileStream(fsName, dateTime, fileName);
+            return File(st, ct, fileName);
+        }
+
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult DownloadImportGroupResult(string fileName)
         {
