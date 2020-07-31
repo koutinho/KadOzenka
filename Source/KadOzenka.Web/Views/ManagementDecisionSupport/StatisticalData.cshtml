@@ -300,15 +300,30 @@
             visible: false,
             resizable: false,
             modal: true,
-            //title: 'Характеристики',
             iframe: true,
-            //content  : {
-            //    template: '<iframe id="report_frame_id" frameborder="0" class="k-content-frame"></iframe>'
-            //},
-            close: function() {
-                this.content("");
-            },
+            content : {
+                 template: '<iframe id="report_frame_id" frameborder="0" class="k-content-frame"></iframe>'
+            }
         }).data('kendoWindow');
+
+        //при открытии вьювера не работала кнопка "Закрыть отчет", т.к. она формировалась во фреймах внутри окна window1
+        //этот костыль находит кнопку "Сформировать отчет" (#buttonView), ждет, когда загрузиться фрейм с отчетом
+        //потом находит в этом фрейме кнопку "Закрыть отчет" и вешает на нее событие закрытия окна
+        window1.bind('refresh',
+            function () {
+                var mainFrame = $("#report_frame_id").contents();
+                var createReportButton = $('#buttonView', mainFrame);
+                createReportButton.click(function() {
+                    var reportFrame = $('#fastReport', mainFrame);
+                    reportFrame.load(function () {
+                        var menuTree = $(":contains('Закрыть отчет')", reportFrame.contents());
+                        var closeReportButton = menuTree.closest('button');
+                        closeReportButton.click(function() {
+                            window1.close();
+                        });
+                    });
+                });
+            });
 
         $('input[type="radio"][name="ReportType"]').change(onReportTypeChanged);
         $(".pricingFactorsCompositionForPreviousTours").click(onCompositionForPreviousToursClick);
@@ -348,7 +363,6 @@
     function onShowViewerClicked() {
         var formObject = Common.Functions.FormToObject($('.form-horizontal'));
         formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
-
         kendo.ui.progress($('body'), true);
         $.post("/ManagementDecisionSupport/GetStatisticalDataReportUrl", formObject).done(function(response) {
             openReportViewer(response);
@@ -368,19 +382,6 @@
         window1.refresh({
             url: response.reportUrl
         });
-        ////TODO не доделано, т.к. появилась более приоритетная задача.
-        //window1.bind('refresh',
-        //    function () {
-        //        var formReportButton = $('#buttonView', $("#report_frame_id").contents());
-        //        formReportButton.click(function() {
-        //            console.log('click');
-        //            //TODO найти фрейм с id=fastReport
-        //        });
-        //    });
-        //kendo.ui.progress($('#reportViewerWindow'), true);
-        //kendoWindow.bind('refresh', function () {
-        //    kendo.ui.progress($('#reportViewerWindow'), false);
-        //});
         window1.center();
         window1.open();
         window1.maximize();
