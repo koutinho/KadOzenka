@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
-using Core.Main.FileStorages;
 using Core.Register;
-using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -17,7 +15,6 @@ using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ObjectModel.Common;
 using ObjectModel.Directory;
 using ObjectModel.Es;
 using ObjectModel.ES;
@@ -106,14 +103,12 @@ namespace KadOzenka.Web.Controllers
 					Lng = x.Lng.GetValueOrDefault(),
 				}).Distinct().ToList();
 
-
-			if (objects.Count == 0)
+            if (objects.Count == 0)
 			{
 				return SendErrorMessage("Объекты аналоги не найдены");
 			}
 
-
-			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
+            List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
 			//Проверяем дату актуальности
 			{
 				var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
@@ -153,9 +148,6 @@ namespace KadOzenka.Web.Controllers
 
 				}
 			}
-
-
-
 
 			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
 			{
