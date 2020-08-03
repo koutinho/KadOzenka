@@ -32,8 +32,8 @@ namespace KadOzenka.Dal.DataImport
         {
 			var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 			MemoryStream streamResult = new MemoryStream();
-
-	        try
+			var locked = new object();
+			try
 	        {
 		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 		        import.DateStarted = DateTime.Now;
@@ -99,12 +99,15 @@ namespace KadOzenka.Dal.DataImport
 					        {
 						        try
 						        {
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Новый объект");
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-								        .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-								        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-									        LineStyle.Thin);
+							        lock (locked)
+							        {
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Новый объект");
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+									        .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+										        LineStyle.Thin);
+							        }
 						        }
 						        catch
 						        {
@@ -116,12 +119,15 @@ namespace KadOzenka.Dal.DataImport
 					        {
 						        try
 						        {
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Обновлено");
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-								        .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-								        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-									        LineStyle.Thin);
+							        lock (locked)
+							        {
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Обновлено");
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+									        .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+										        LineStyle.Thin);
+							        }
 						        }
 						        catch
 						        {
@@ -134,12 +140,16 @@ namespace KadOzenka.Dal.DataImport
 			        catch (Exception ex)
 			        {
 				        long errorId = ErrorManager.LogError(ex);
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-					        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-					        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
-					        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				        lock (locked)
+				        {
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
+						        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+						        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
+						        MultipleBorders.All,
+						        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				        }
 			        }
 		        });
 		        
@@ -165,8 +175,8 @@ namespace KadOzenka.Dal.DataImport
         {
 	        var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 	        MemoryStream streamResult = new MemoryStream();
-
-	        try
+	        var locked = new object();
+			try
 	        {
 		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 		        import.DateStarted = DateTime.Now;
@@ -221,7 +231,7 @@ namespace KadOzenka.Dal.DataImport
 						        }
 						        else
 						        {
-							        ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.GroupName == numberGroup);
+							        ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.Number == numberGroup);
 							        if (group != null)
 							        {
 								        unit.GroupId = group.Id;
@@ -241,12 +251,15 @@ namespace KadOzenka.Dal.DataImport
 					        {
 						        try
 						        {
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-								        .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-								        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-									        LineStyle.Thin);
+							        lock (locked)
+							        {
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+									        .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+										        LineStyle.Thin);
+							        }
 						        }
 						        catch
 						        {
@@ -257,13 +270,16 @@ namespace KadOzenka.Dal.DataImport
 					        {
 						        try
 						        {
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(
-								        findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-								        .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
-							        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-								        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-									        LineStyle.Thin);
+							        lock (locked)
+							        {
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(
+									        findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+									        .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
+								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+										        LineStyle.Thin);
+							        }
 						        }
 						        catch
 						        {
@@ -276,12 +292,16 @@ namespace KadOzenka.Dal.DataImport
 			        catch (Exception ex)
 			        {
 				        long errorId = ErrorManager.LogError(ex);
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-					        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-					        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-				        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
-					        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				        lock (locked)
+				        {
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
+						        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+						        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
+						        MultipleBorders.All,
+						        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				        }
 			        }
 		        });
 
@@ -307,8 +327,8 @@ namespace KadOzenka.Dal.DataImport
         {
 	        var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 	        MemoryStream streamResult = new MemoryStream();
-
-	        try
+	        var locked = new object();
+			try
 	        {
 		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 		        import.DateStarted = DateTime.Now;
@@ -383,9 +403,15 @@ namespace KadOzenka.Dal.DataImport
 	                        {
 	                            try
 	                            {
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+		                            lock (locked)
+		                            {
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+				                            .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+				                            .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+					                            LineStyle.Thin);
+		                            }
 	                            }
 	                            catch
 	                            {
@@ -397,9 +423,17 @@ namespace KadOzenka.Dal.DataImport
 	                        {
 	                            try
 	                            {
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(findObj? "Указанный объект не найден" : "Указанная группа не найдена");
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
-	                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+		                            lock (locked)
+		                            {
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(findObj
+				                            ? "Указанный объект не найден"
+				                            : "Указанная группа не найдена");
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+				                            .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
+			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
+				                            .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
+					                            LineStyle.Thin);
+		                            }
 	                            }
 	                            catch
 	                            {
@@ -411,9 +445,15 @@ namespace KadOzenka.Dal.DataImport
 	                catch (Exception ex)
 	                {
 	                    long errorId = ErrorManager.LogError(ex);
-	                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-	                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-	                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+	                    lock (locked)
+	                    {
+		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns]
+			                    .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
+			                    .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
+			                    MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+	                    }
 	                }
 	            });
 
