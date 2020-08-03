@@ -579,7 +579,11 @@
 			$('.wrapper-success-dialog').html(data);
 			$('.ajax-data-loading').ajaxDataLoader();
 			$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
-		}).fail(function() { Common.ShowError("Расчет не произведен. Обратитесь к администратору"); }).always(function() { kendo.ui.progress($(topBody), false); });
+        })
+            .fail(function (response) {
+                Common.ShowError(response.responseText);
+            })
+            .always(function () { kendo.ui.progress($(topBody), false); });
 		return;
 	}
 
