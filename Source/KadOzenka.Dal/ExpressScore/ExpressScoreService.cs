@@ -964,7 +964,7 @@ namespace KadOzenka.Dal.ExpressScore
 			ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
 
 			ReportService.AddNameCharacteristicRequiredParam("Год постройки");
-			ReportService.AddValueRequiredParam(targetObjectYear.NumberValue.ToString(CultureInfo.InvariantCulture));
+			ReportService.AddValueRequiredParam(targetObjectYear?.NumberValue.ToString(CultureInfo.InvariantCulture));
 
 			ReportService.AddNameCharacteristicRequiredParam("Площадь, кв.м");
 			ReportService.AddValueRequiredParam(targetSquare.ToString(CultureInfo.InvariantCulture));
