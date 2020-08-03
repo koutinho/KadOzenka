@@ -10,26 +10,20 @@ namespace KadOzenka.Web.Models.GbuObject
         public string ModelPrefix { get; set; }
         private DocumentService DocumentService { get; set; }
 
-        /// <summary>
-        /// Идентификатор документа, куда будет записан результат 
-        /// </summary>
         [Display(Name = "Документ")]
         public long? IdDocument { get; set; }
 
-        /// <summary>
-        /// Имя нового документа
-        /// </summary>
         [Display(Name = "Номер")]
 	    public string NewDocumentRegNumber { get; set; }
 
-        /// <summary>
-        /// Имя нового документа
-        /// </summary>
         [Display(Name = "Имя документа")]
         public string NewDocumentName { get; set; }
 
-        [Display(Name = "Дата")]
+        [Display(Name = "Дата создания")]
         public DateTime? NewDocumentDate { get; set; }
+
+        [Display(Name = "Дата изменения")]
+        public DateTime? NewDocumentChangeDate { get; set; }
 
         /// <summary>
         /// Флаг указывающий используем старый или новый документ
@@ -52,7 +46,8 @@ namespace KadOzenka.Web.Models.GbuObject
             {
                 RegNumber = NewDocumentRegNumber,
                 Description = NewDocumentName,
-                CreateDate = NewDocumentDate
+                CreateDate = NewDocumentDate,
+                ChangeDate = NewDocumentChangeDate
             };
 
             var documentId = DocumentService.AddDocument(documentDto);

@@ -42,6 +42,12 @@
                     <div class="col-sm-4">
                         @Html.KendoDatePickerFor(m => m.ApproveDate, isReadonly: false)
                     </div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.ChangeDate)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoDatePickerFor(m => m.ChangeDate, isReadonly: false)
+                    </div>
                 </div>
 
                 <div class="form-group">

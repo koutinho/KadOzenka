@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Web.Models.GbuObject
+@using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
 @model KadOzenka.Web.Models.Task.TaskModel
 
@@ -55,13 +56,22 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <form id="fileForm">
-                        <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar"/>
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
                     </form>
                 </div>
             </div>
         </li>
-    </ul> 
+    </ul>
 </div>
+
+
+@section styles {
+    <style>
+        #ls_panelbar {
+            width: 95%;
+        }
+    </style>
+}
 
 
 
@@ -69,7 +79,7 @@
 <script>
     $(document).ready(function () {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
-        panelbar.expand('li[data-expand]');        
+        panelbar.expand('li[data-expand]');
 
         var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
         var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
@@ -108,19 +118,19 @@
 
                         var formData = new FormData($('#fileForm').get(0));
                         formData.set('TourYear', $('[name="Tour"]').val());
-                        formData.set('NoteType', $('[name="NoteType"]').val());                       
+                        formData.set('NoteType', $('[name="NoteType"]').val());
                         var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
                         if (estdate != null) {
                             formData.set('EstimationDate', estdate.toDateString());
                         }
                         var documentObject = Common.Functions.FormToObject($('#partialDocument'));
-                        formData.append("Document.ModelPrefix", documentObject.ModelPrefix);
-                        formData.append("Document.IdDocument", documentObject.IdDocument);
-                        formData.append("Document.NewDocumentRegNumber", documentObject.NewDocumentRegNumber);
-                        formData.append("Document.NewDocumentName", documentObject.NewDocumentName);
-                        formData.append("Document.NewDocumentDate", documentObject.NewDocumentDate);
-                        formData.append("Document.IsNewDocument", documentObject.IsNewDocument);
-
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
+                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
                         kendo.ui.progress($('body'), true);
                         $.ajax({
                             type: 'POST',
@@ -150,7 +160,7 @@
                     }
                 }
             ]
-        });             
+        });
 
         $('[name="Tour"]')
             .kendoDropDownList({

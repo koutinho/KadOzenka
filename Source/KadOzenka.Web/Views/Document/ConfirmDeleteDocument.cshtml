@@ -31,6 +31,7 @@
                     } else {
                         Common.ShowMessage("Документ удален");
                         CloseMainWindow(1000);
+                        window.parent.parent.location.reload();
                     }
                 },
                 error: function (response) {

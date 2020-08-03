@@ -18,13 +18,18 @@ namespace KadOzenka.Dal.Documents
         {
             ValidateDocument(documentDto);
 
-            return new OMInstance
+            var newDocument = new OMInstance
             {
                 Description = documentDto.Description,
                 RegNumber = documentDto.RegNumber,
                 ApproveDate = documentDto.ApproveDate,
                 CreateDate = documentDto.CreateDate ?? _defaultCreateDate
-            }.Save();
+            };
+
+            if (documentDto.ChangeDate != null)
+                newDocument.ChangeDate = documentDto.ChangeDate.Value;
+
+            return newDocument.Save();
         }
 
         public void UpdateDocument(DocumentDto documentDto)
@@ -36,6 +41,9 @@ namespace KadOzenka.Dal.Documents
             document.Description = documentDto.Description;
             document.RegNumber = documentDto.RegNumber;
             document.ApproveDate = documentDto.ApproveDate;
+
+            if(documentDto.ChangeDate != null)
+                document.ChangeDate = documentDto.ChangeDate.Value;
 
             document.Save();
         }
@@ -80,7 +88,7 @@ namespace KadOzenka.Dal.Documents
 
             var createDate = documentDto.CreateDate ?? _defaultCreateDate;
             var isTheSameDocumentExists = OMInstance
-                .Where(x => x.RegNumber == documentDto.RegNumber && x.CreateDate == createDate).ExecuteExists();
+                .Where(x => x.RegNumber == documentDto.RegNumber && x.CreateDate == createDate && x.Id != documentDto.Id).ExecuteExists();
             if (isTheSameDocumentExists)
                 throw new Exception(
                     $"Документ с номером '{documentDto.RegNumber}' и датой создания '{createDate.ToShortDateString()}' уже существует");

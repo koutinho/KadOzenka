@@ -1,5 +1,4 @@
 ﻿@using System.Collections
-@using Core.Register
 @using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.GbuObject.PartialDocumentViewModel
 
@@ -15,27 +14,41 @@
 </div>
 
 <div class="form-group new-document" style="@(Model.IsNewDocument ? "" : "display: none")">
-    <div class="col-sm-1">
+    <div class="col-sm-1" style="padding-right: 0">
         @Html.CustomLabelFor(m => m.NewDocumentName, true)
     </div>
     <div class="col-sm-11">
         <div class="row">
-            <div class="col-sm-4">
-                @Html.Kendo().TextBox().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentName) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentName)}")
+            <div class="col-sm-3" style="padding-right: 0">
+                @(Html.Kendo().TextBox()
+                .Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentName) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentName)}")
+                .HtmlAttributes(new {style="width: 100%;"}))
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1" style="padding-right: 0">
                 @Html.CustomLabelFor(m => m.NewDocumentRegNumber, htmlAttributes: new {@style = "float: right"}, NotSetRequired: true)
             </div>
-            <div class="col-sm-3">
-                @Html.Kendo().TextBox().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentRegNumber) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentRegNumber)}")
+            <div class="col-sm-3" style="padding-right: 0">
+                @(Html.Kendo().TextBox()
+                    .Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentRegNumber) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentRegNumber)}")
+                    .HtmlAttributes(new { style = "width: 100%;" }))
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1" style="padding-right: 0">
                 @Html.CustomLabelFor(m => m.NewDocumentDate, htmlAttributes: new {@style = "float: right"}, NotSetRequired: true)
             </div>
-            <div class="col-sm-2" style="padding-right: 0">
-                @(Html.Kendo().DatePicker().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentDate) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentDate)}"))
+            <div class="col-sm-1" style="padding-right: 0">
+                @(Html.Kendo().DatePicker()
+                    .Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentDate) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentDate)}")
+                    .HtmlAttributes(new {style="width: 100%;"}))
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-1" style="padding-right: 0">
+                @Html.CustomLabelFor(m => m.NewDocumentChangeDate, htmlAttributes: new {@style = "float: right"}, NotSetRequired: true)
+            </div>
+            <div class="col-sm-1" style="padding-right: 0">
+                @(Html.Kendo().DatePicker()
+                    .Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentChangeDate) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentChangeDate)}")
+                    .HtmlAttributes(new {style="width: 100%;"}))
+            </div>
+            <div class="col-sm-1" style="padding-left: 0">
                 <a id="exist-doc" class="k-button k-button-icon" style="float: right"><span class='fas fa-history'></span></a>
             </div>
         </div>
@@ -60,6 +73,7 @@
 	    $(`#${idPrefix}@(nameof(Model.NewDocumentName))`).val("");
 	    $(`#${idPrefix}@(nameof(Model.NewDocumentRegNumber))`).val("");
         $(`#${idPrefix}@(nameof(Model.NewDocumentDate))`).data('kendoDatePicker').value(null);
+        $(`#${idPrefix}@(nameof(Model.NewDocumentChangeDate))`).data('kendoDatePicker').value(null);
 	}
 
     $(document).ready(function () {

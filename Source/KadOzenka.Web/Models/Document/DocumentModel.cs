@@ -18,23 +18,32 @@ namespace KadOzenka.Web.Models.Document
         [Required(ErrorMessage = "Не заполнен Номер")]
         public string RegNumber { get; set; }
 
-        [Display(Name = "Дата")]
+        [Display(Name = "Дата создания")]
         public DateTime? CreateDate { get; set; }
 
         [Display(Name = "Дата выпуска документа")]
         [Required(ErrorMessage = "Не заполнена Дата выпуска документа")]
         public DateTime? ApproveDate { get; set; }
 
+        [Display(Name = "Дата последнего изменения")]
+        public DateTime? ChangeDate { get; set; }
+
 
         public static DocumentModel ToModel(OMInstance entity)
         {
+            //OMInstance.ChangeDate в ОРМ не null, но по факту у нас в БД можно сохранять null
+            var documentChangeDate = entity.ChangeDate == DateTime.MinValue
+                ? (DateTime?) null
+                : entity.ChangeDate;
+
             return new DocumentModel
             {
                 Id = entity.Id,
                 Description = entity.Description,
                 RegNumber = entity.RegNumber,
                 CreateDate = entity.CreateDate,
-                ApproveDate = entity.ApproveDate
+                ApproveDate = entity.ApproveDate,
+                ChangeDate = documentChangeDate
             };
         }
 
@@ -45,7 +54,8 @@ namespace KadOzenka.Web.Models.Document
                 Id = model.Id,
                 Description = model.Description,
                 RegNumber = model.RegNumber,
-                ApproveDate = model.ApproveDate
+                ApproveDate = model.ApproveDate,
+                ChangeDate = model.ChangeDate
             };
         }
     }

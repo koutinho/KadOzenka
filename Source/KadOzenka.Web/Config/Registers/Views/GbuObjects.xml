@@ -19,7 +19,7 @@
 		    </Parameters>
 	    </Button>
 
-	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="400" WindowWidth="1000" SRDFunctionTag="GBU.OBJECTS.UNLOADING_FROM_DICT" Icon="fas fa-book">
+	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="400" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.UNLOADING_FROM_DICT" Icon="fas fa-book">
 		    <Parameters>
 		    </Parameters>
 	    </Button>
@@ -32,7 +32,7 @@
 	    <Button Caption="Присвоить оценочную группу" NavigateURL="/GbuObject/SetEstimatedGroup" SRDFunctionTag="GBU.OBJECTS.SET_ESTIMATED_GROUP" Icon="fas fa-donate" WindowHeight="300" WindowWidth="1000">
 	    </Button>
 
-		<Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/DataImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="GBU.OBJECTS.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
+		<Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/DataImport" WindowHeight="800" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
             <Parameters>
                 <Parameter Key="registerViewId" Value="GbuObjects" />
                 <Parameter Key="mainRegisterId" Value="200" />
@@ -48,8 +48,8 @@
 
         <Button Caption="Выгрузить в Excel" SRDFunctionTag="GBU.OBJECTS.EXPORT_TO_EXCEL" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 
-        <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1000"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION" Icon="fas fa-wrench"/>
-        <Button Caption="Гармонизация по классификатору ЦОД" NavigateURL="/GbuObject/HarmonizationCOD" WindowHeight="800" WindowWidth="1000"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION_COD" Icon="fas fa-wrench"/>
+        <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1150"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION" Icon="fas fa-wrench"/>
+        <Button Caption="Гармонизация по классификатору ЦОД" NavigateURL="/GbuObject/HarmonizationCOD" WindowHeight="800" WindowWidth="1150"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION_COD" Icon="fas fa-wrench"/>
 
     </Buttons>
 
