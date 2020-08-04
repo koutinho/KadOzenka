@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using Core.ErrorManagment;
@@ -50,37 +51,40 @@ namespace KadOzenka.Dal.ExpressScore
 			return ScoreCommonService.GetParameters(new List<long> { id }, attributeId, registerId, qsGroup);
 		}
 
+        public TargetObjectDto GetTargetObject(OMSettingsParams setting, CostFactorsDto costFactor, List<long> unitIds)
+        {
+            var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
+                .FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 
-		public string GetSearchParamForNearestObject(OMSettingsParams setting, decimal costFactorYearBuildId, List<long> unitsIds, decimal square, out OMYearConstruction yearRange, out OMSquare squareRange, out int targetObjectId)
-		{
-			yearRange = null;
-			squareRange = null;
-			targetObjectId = 0;
+            var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)tourRegisterPrimaryKeyId.GetValueOrDefault(), unitIds);
 
-            var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
+            query.AddColumn((long)costFactor.YearBuildId.GetValueOrDefault(), ((int)costFactor.YearBuildId.GetValueOrDefault()).ToString());
+            foreach (var factor in costFactor.ComplexCostFactors)
+            {
+                query.AddColumn(factor.AttributeId.GetValueOrDefault(), factor.AttributeId.GetValueOrDefault().ToString());
+            }
 
-            var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(setting.SegmentType_Code));
-            query.AddColumn(new QSColumnSimple((int)costFactorYearBuildId, nameof(YearDto.Year)));
+            var table = query.ExecuteQuery();
+            var results = new List<TargetObjectDto>();
+            foreach (DataRow row in table.Rows)
+            {
+                var rowId = row["Id"].ParseToLong();
+                var rowAttributes = new List<AttributePure>();
+                foreach (var factor in costFactor.ComplexCostFactors)
+                {
+                    rowAttributes.Add(new AttributePure
+                    {
+                        AttributeId = factor.AttributeId,
+                        AttributeValue = row[factor.AttributeId.ToString()].ParseToStringNullable()
+                    });
+                }
+                results.Add(new TargetObjectDto(rowId, rowAttributes));
+            }
 
-            List<YearDto> years = query.ExecuteQuery<YearDto>().Where(x => x.Year.HasValue).OrderByDescending(x => x.Id).ToList();
-            if (years.Count == 0)
-			{
-				return "Не найдены данные для выбранного объекта";
-			}
+            return results.OrderByDescending(x => x.TargetObjectId).FirstOrDefault();
+        }
 
-			var year = years[0].Year;
-			targetObjectId = years[0].Id;
-
-			yearRange = OMYearConstruction.Where(x => x.YearFrom <= year.Value && year.Value <= x.YearTo)
-				.SelectAll().ExecuteFirstOrDefault();
-
-			squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll()
-				.ExecuteFirstOrDefault();
-
-			return "";
-		}
-
-		public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)
+        public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)
 		{
             var condition = new QSConditionSimple
 			{

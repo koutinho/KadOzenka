@@ -94,15 +94,24 @@ namespace KadOzenka.Web.Controllers
             if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
                 return SendErrorMessage("В настройках не задан атрибут для года постройки.");
 
-            var resMessage = _service.GetSearchParamForNearestObject(setting, costFactor.YearBuildId.GetValueOrDefault(), unitsIds, param.Square.GetValueOrDefault(),
-				out var yearRange, out var squareRange, out int targetObjectId);
+            var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds);
+            if(targetObject == null)
+                return SendErrorMessage("Не найдены дынные для выбранного объекта.");
+            //TODO remove after validation
+            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.AttributeValue)))
+                return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
-			if (!string.IsNullOrEmpty(resMessage))
-			{
-				return SendErrorMessage(resMessage);
-			}
+            //TODO validate Attributes
 
-			if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild)
+            var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.AttributeId == costFactor.YearBuildId)?.AttributeValue);
+            var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo)
+                .SelectAll().ExecuteFirstOrDefault();
+
+            var square = param.Square.GetValueOrDefault();
+            var squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll()
+                .ExecuteFirstOrDefault();
+
+            if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild)
 			{
 				return SendErrorMessage("Не найден диапазон даты постройки или площади.");
 			}
@@ -182,7 +191,7 @@ namespace KadOzenka.Web.Controllers
 
 			BuildObjectCards(coordinates);
 
-			return Json(new { response = new { coordinates, targetObjectId } });
+			return Json(new { response = new { coordinates, targetObjectId = targetObject.TargetObjectId } });
 		}
 
 		#region WallMaterial
