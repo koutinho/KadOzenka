@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Core.Register;
+﻿using Core.Register;
 using Core.Register.DAL;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -15,10 +11,14 @@ using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
 using ObjectModel.KO;
 using ObjectModel.Sud;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace KadOzenka.Dal.Gadgets
 {
-	public class GadgetService
+    public class GadgetService
 	{
         private static string _moveToPageSymbol = string.Empty;
 
@@ -320,7 +320,7 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            data.Rows.Add("/ObjectCard?ObjId=0&RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
+            data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
             data.Rows.Add("/ObjectCard?ObjId=0&RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
