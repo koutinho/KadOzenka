@@ -1,0 +1,23 @@
+﻿@model KadOzenka.Web.Models.ExpressScore.TargetObjectModel
+
+@using (Html.BeginForm("TargetObjectSubCard", "ExpressScore", FormMethod.Post, new { id = "updateTargetObjectForm" }))
+{
+    <div class="form-horizontal col-sm-12" style="padding: 2% 2% 0 2%">
+        @Html.HiddenFor(x => x.UnitId)
+
+        @for (var i = 0; i < Model.Attributes.Count; i++)
+        {
+            @Html.HiddenFor(x => x.Attributes[i].Id)
+            <div class="form-group">
+                <div class="col-sm-6">
+                    @Html.CustomLabel(Model.Attributes[i].Name)
+                </div>
+                <div class="col-sm-5">
+                    @(Html.Kendo().TextBox()
+                        .Name($"attributeName-{i}")
+                        .Value(Model.Attributes[i].Value))
+                </div>
+            </div>
+        }
+    </div>
+}

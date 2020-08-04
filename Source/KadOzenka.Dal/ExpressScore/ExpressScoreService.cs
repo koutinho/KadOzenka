@@ -74,14 +74,14 @@ namespace KadOzenka.Dal.ExpressScore
                 {
                     rowAttributes.Add(new AttributePure
                     {
-                        AttributeId = factor.AttributeId,
-                        AttributeValue = row[factor.AttributeId.ToString()].ParseToStringNullable()
+                        Id = factor.AttributeId.GetValueOrDefault(),
+                        Value = row[factor.AttributeId.ToString()].ParseToStringNullable()
                     });
                 }
                 results.Add(new TargetObjectDto(rowId, rowAttributes));
             }
 
-            return results.OrderByDescending(x => x.TargetObjectId).FirstOrDefault();
+            return results.OrderByDescending(x => x.UnitId).FirstOrDefault();
         }
 
         public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)

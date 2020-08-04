@@ -192,12 +192,14 @@
 </div>
 <div id="successDialog">
 </div>
+<div id="updateTargetObject">
+</div>
 
 
 <script src="~/MapScripts/config.js" charset="utf-8"></script>
 <script src="~/js/jquery.fias.min.js"></script>
 <script src="~/js/custom-validation.js"></script>
-
+<script src="~/js/common-modals.js"></script>
 
 <!-- Поиск точек, поиск адреса и кад номера. Настройки карты-->
 <script type="text/javascript">
@@ -398,13 +400,21 @@
 				Common.ShowError('Выберите или заполните целевой объект');
 				return;
 			}
-			kendo.ui.progress($('body'), true);
+            kendo.ui.progress($('body'), true);
+
 			var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
 														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
 															&DealTypeShort=${dealTypeShort}&ActualDate=${actualDate}&UseYearBuild=${useYearBuild}&UseSquare=${useSquare}`;
-			$.get(url).done(function (data) {
-				if (data.Errors) {
-					var errors = getErrors(data.Errors);
+            $.get(url).done(function (data) {
+                //TODO
+                //if (data.updateTargetObjectUrl) {
+                //    $("#updateTargetObject").load(data.updateTargetObjectUrl);
+                //    var modal = $("#updateTargetObject");
+                //    ShowModal(modal, '50%', '20%', "Внесение недостающих данных");
+                //    return;
+                //}
+                if (data.Errors) {
+                    var errors = getErrors(data.Errors);
 					Common.ShowError(errors);
 					return;
 				}

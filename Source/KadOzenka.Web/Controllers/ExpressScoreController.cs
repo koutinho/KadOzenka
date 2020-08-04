@@ -16,6 +16,7 @@ using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Es;
 using ObjectModel.ES;
@@ -72,8 +73,26 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { response = new { address = yandexAddress.FormalizedAddress } });
 		}
 
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
-		public JsonResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
+        public ActionResult TargetObjectSubCard(string targetObjectStr)
+        {
+            var targetObject = JsonConvert.DeserializeObject<TargetObjectDto>(targetObjectStr);
+
+            var model = TargetObjectModel.ToModel(targetObject);
+       
+            return PartialView("~/Views/ExpressScore/Partials/TargetObjectSubCard.cshtml", model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+        public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
+        {
+            return new JsonResult(Ok());
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+		public ActionResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -97,13 +116,16 @@ namespace KadOzenka.Web.Controllers
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds);
             if(targetObject == null)
                 return SendErrorMessage("Не найдены дынные для выбранного объекта.");
-            //TODO remove after validation
-            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.AttributeValue)))
+
+            //TODO
+            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
                 return SendErrorMessage("Не найдены данные для выбранного объекта.");
+                //return Json(new
+                //{
+                //    updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new {targetObjectStr = JsonConvert.SerializeObject(targetObject)})
+                //});
 
-            //TODO validate Attributes
-
-            var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.AttributeId == costFactor.YearBuildId)?.AttributeValue);
+            var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
             var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo)
                 .SelectAll().ExecuteFirstOrDefault();
 
@@ -191,7 +213,7 @@ namespace KadOzenka.Web.Controllers
 
 			BuildObjectCards(coordinates);
 
-			return Json(new { response = new { coordinates, targetObjectId = targetObject.TargetObjectId } });
+			return Json(new { response = new { coordinates, targetObjectId = targetObject.UnitId } });
 		}
 
 		#region WallMaterial
@@ -392,8 +414,6 @@ namespace KadOzenka.Web.Controllers
 				setting.Registerid = viewModel.FactorRegisterId.GetValueOrDefault();
 				setting.TourId = viewModel.TourId.GetValueOrDefault();
 			}
-
-			
 
 			setting.Save();
 
