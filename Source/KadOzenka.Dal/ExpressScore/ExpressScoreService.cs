@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Resources;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -59,15 +58,13 @@ namespace KadOzenka.Dal.ExpressScore
 			targetObjectId = 0;
 
 			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
-
-			if (yandexAddress == null)
+            if (yandexAddress == null)
 			{
 				return "Адрес для объекта не найден";
 			}
 
 			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
-
-			if (setting == null)
+            if (setting == null)
 			{
 				return "Не найдены настройки для выбранного сегмента";
 			}
@@ -81,28 +78,16 @@ namespace KadOzenka.Dal.ExpressScore
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 
 			var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-
-			if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
+            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
 			{
 				return "В настройках не задан атрибут для года постройки.";
 			}
 
-			QSQuery query;
-			try
-			{
-				query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(segmentType));
-			}
-			catch (Exception e)
-			{
-				ErrorManager.LogError(e);
-				Console.WriteLine(e);
-				throw;
-			}
-		
-			query.AddColumn(new QSColumnSimple((int)costFactor.YearBuildId.GetValueOrDefault(), nameof(YearDto.Year)));
-			List<YearDto> years = query.ExecuteQuery<YearDto>().Where(x => x.Year.HasValue).OrderByDescending(x => x.Id).ToList();
+			var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(segmentType));
+            query.AddColumn(new QSColumnSimple((int)costFactor.YearBuildId.GetValueOrDefault(), nameof(YearDto.Year)));
 
-			if (years.Count == 0)
+            List<YearDto> years = query.ExecuteQuery<YearDto>().Where(x => x.Year.HasValue).OrderByDescending(x => x.Id).ToList();
+            if (years.Count == 0)
 			{
 				return "Не найдены данные для выбранного объекта";
 			}
@@ -121,8 +106,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)
 		{
-
-			var condition = new QSConditionSimple
+            var condition = new QSConditionSimple
 			{
 				ConditionType = QSConditionType.NotEqual,
 				LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
@@ -277,7 +261,8 @@ namespace KadOzenka.Dal.ExpressScore
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
 		{
 			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn);
-			resultCalculate = new ResultCalculateDto();
+
+            resultCalculate = new ResultCalculateDto();
 			var squareCost = CalculateSquareCost(inputParam.Analogs, inputParam.TargetObjectId, inputParam.Floor, inputParam.Segment,
 				out string msg, out List<long> successAnalogIds, inputParam.DealType, inputParam.ScenarioType);
 
@@ -312,6 +297,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			resultCalculate.Analogs = resultAnalogs;
 			resultCalculate.DealType = inputParam.DealType;
+
 			return msg;
 		}
 
@@ -377,7 +363,6 @@ namespace KadOzenka.Dal.ExpressScore
             List<Tuple<string, string>> costFactorsDataForReport = new List<Tuple<string, string>>();
 			List<string> costTargetObjectDataForReport = new List<string>();
 
-			int curentIndexAnalog = 0;
 			foreach (var analog in analogs)
 			{
 				decimal yPrice = 0; // Удельный показатель стоимости
@@ -903,7 +888,6 @@ namespace KadOzenka.Dal.ExpressScore
 			return entity.Id;
 		}
 
-
 		#endregion
 
 
@@ -942,8 +926,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				return qsCGroup;
-
-			}
+            }
 
 			return new QSConditionGroup();
 		}
@@ -1043,8 +1026,6 @@ namespace KadOzenka.Dal.ExpressScore
 				ErrorManager.LogError(e);
 				throw;
 			}
-		
-		}
-
-	}
+        }
+    }
 }

@@ -145,8 +145,7 @@ namespace KadOzenka.Web.Controllers
 							searchedAnalogs.Add(obj);
 						}
 					}
-
-				}
+                }
 			}
 
 			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
