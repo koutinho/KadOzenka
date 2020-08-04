@@ -15,6 +15,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
@@ -742,45 +743,36 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
         {
-            var errors = viewModel.Validate();
-            if (errors.Count > 0)
+	        if (!ModelState.IsValid)
+	        {
+		        return GenerateMessageNonValidModel();
+	        }
+
+	        object returnedData;
+			try
             {
-                return Json(new
+	            using (var stream = viewModel.File.OpenReadStream())
                 {
-                    Errors = errors.Select(x => new
-                    {
-                        Control = x.MemberNames.FirstOrDefault(),
-                        Message = x.ErrorMessage
-                    })
-                });
-            }
+	                var settings = viewModel.ToDto();
+					if (DataImporterKO.UseLongProcessForImportDataGroup(stream))
+	                {
+		                ImportDataGroupNumberFromExcelLongProcess.AddProcessToQueue(stream, settings);
 
-            var fileName = string.Empty;
-            try
-            {
-                ExcelFile excelFile;
-                using (var stream = viewModel.File.OpenReadStream())
-                {
-                    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-                    excelFile.DocumentProperties.Custom["FileName"] = viewModel.File.FileName;
-                }
+		                returnedData = new
+		                {
+			                isLongProcess = true
+		                };
+					}
+	                else
+	                {
+		                var importId = DataImporterKO.ImportDataGroupNumberFromExcel(stream, settings);
 
-                MemoryStream resultStream;
-                if (viewModel.IsUnitStatusUsed)
-                {
-                    resultStream = (MemoryStream)DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-                        viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
-                }
-                else
-                {
-                    resultStream = (MemoryStream)DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-                        viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
-                }
-
-                if (resultStream != null)
-                {
-                    fileName = viewModel.File.FileName;
-                    HttpContext.Session.Set(fileName, resultStream.ToArray());
+		                returnedData = new
+		                {
+			                isLongProcess = false,
+			                importId
+						};
+					}
                 }
             }
             catch (Exception ex)
@@ -789,29 +781,7 @@ namespace KadOzenka.Web.Controllers
                 return BadRequest();
             }
 
-            return Content(JsonConvert.SerializeObject(new { FileName = fileName }), "application/json");
-        }
-
-		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
-        public FileResult DownloadResult(string dt, string fileName)
-        {
-            var fsName = "DataImporterFromTemplate";
-            var ct = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            var dateTime = DateTime.Parse(dt);
-            var st = FileStorageManager.GetFileStream(fsName, dateTime, fileName);
-            return File(st, ct, fileName);
-        }
-
-		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
-        public ActionResult DownloadImportGroupResult(string fileName)
-        {
-            var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
-            if (fileInfo == null)
-                return new EmptyResult();
-
-            return File(fileInfo.FileContent, fileInfo.ContentType, $"Результат импорта группы.{fileInfo.FileExtension}");
+            return Content(JsonConvert.SerializeObject(returnedData), "application/json");
         }
 
         #endregion

@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.DataImport.Dto;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Common;
@@ -18,7 +19,8 @@ namespace KadOzenka.Dal.DataImport
 {
     public static class DataImporterKO
     {
-        private static TourFactorService _tourFactorService { get; set; }
+	    private static readonly long _rowCountForBackgroundLoading = 1000;
+		private static TourFactorService _tourFactorService { get; set; }
 
         private static TourFactorService TourFactorService => _tourFactorService ?? (_tourFactorService = new TourFactorService());
 
@@ -168,21 +170,37 @@ namespace KadOzenka.Dal.DataImport
 
         /// <summary>
         /// Импорт группы из Excel
-        /// tourId - Идентификатор тура
-        /// unitStatus - статус единицы оценки
         /// </summary>
-        public static Stream ImportDataGroupNumberFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, long tourId, ObjectModel.Directory.KoUnitStatus unitStatus)
+		public static long ImportDataGroupNumberFromExcel(Stream stream, ImportDataGroupNumberFromExcelDto settings)
         {
-	        var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
+	        var import = CreateDataFileImport(stream, settings);
+	        stream.Seek(0, SeekOrigin.Begin);
+	        var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+			if (settings.IsUnitStatusUsed)
+			{
+				ImportDataGroupNumberFromExcelByUnitStatus(excelFile, settings, import);
+			}
+			else
+			{
+				ImportDataGroupNumberFromExcelByTaskFilter(excelFile, settings, import);
+			}
+
+			return import.Id;
+        }
+
+		public static Stream ImportDataGroupNumberFromExcelByUnitStatus(ExcelFile excelFile,
+	        ImportDataGroupNumberFromExcelDto settings, OMImportDataLog import)
+        {
+
 	        MemoryStream streamResult = new MemoryStream();
 	        var locked = new object();
-			try
+	        try
 	        {
 		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 		        import.DateStarted = DateTime.Now;
 		        import.Save();
 
-				var mainWorkSheet = excelFile.Worksheets[0];
+		        var mainWorkSheet = excelFile.Worksheets[0];
 
 		        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 		        ParallelOptions options = new ParallelOptions
@@ -197,11 +215,14 @@ namespace KadOzenka.Dal.DataImport
 		        mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 			        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 		        List<ObjectModel.KO.OMGroup> parcelGroup =
-			        ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
+			        ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(),
+				        ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
 		        List<ObjectModel.KO.OMGroup> oksGroup =
-			        ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
+			        ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(),
+				        ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
 		        var groupAttributeFromTourSettings =
-			        TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
+			        TourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(),
+				        KoAttributeUsingType.CodeGroupAttribute);
 
 		        Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 		        {
@@ -214,7 +235,8 @@ namespace KadOzenka.Dal.DataImport
 					        bool findGroup = false;
 					        bool findObj = false;
 					        ObjectModel.KO.OMUnit unit = ObjectModel.KO.OMUnit
-						        .Where(x => x.TourId == tourId && x.Status_Code == unitStatus &&
+						        .Where(x => x.TourId == settings.TourId.GetValueOrDefault() &&
+						                    x.Status_Code == settings.UnitStatus &&
 						                    x.CadastralNumber == cadastralNumber).SelectAll().ExecuteFirstOrDefault();
 					        if (unit != null)
 					        {
@@ -311,21 +333,15 @@ namespace KadOzenka.Dal.DataImport
 	        }
 	        catch (Exception ex)
 	        {
-				LogError(ex, import);
-				throw;
+		        LogError(ex, import);
+		        throw;
 	        }
 
 	        return streamResult;
         }
 
-        /// <summary>
-        /// Импорт группы из Excel
-        /// tourId - Идентификатор тура
-        /// taskFilter - Список заданий на оценку
-        /// </summary>
-        public static Stream ImportDataGroupNumberFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, long tourId, List<long> taskFilter)
+		public static Stream ImportDataGroupNumberFromExcelByTaskFilter(ExcelFile excelFile, ImportDataGroupNumberFromExcelDto settings, OMImportDataLog import)
         {
-	        var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 	        MemoryStream streamResult = new MemoryStream();
 	        var locked = new object();
 			try
@@ -347,12 +363,12 @@ namespace KadOzenka.Dal.DataImport
 
 	            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 	            mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-	            List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
-	            List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
-	            var groupAttributeFromTourSettings = TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
+	            List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
+	            List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
+	            var groupAttributeFromTourSettings = TourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(), KoAttributeUsingType.CodeGroupAttribute);
 
 	            List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
-	            foreach (long taskId in taskFilter)
+	            foreach (long taskId in settings.TaskFilter)
 	            {
 	                Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
 	            }
@@ -470,10 +486,25 @@ namespace KadOzenka.Dal.DataImport
 	        return streamResult;
         }
 
+		public static bool UseLongProcessForImportDataGroup(Stream fileStream)
+        {
+	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+	        var mainWorkSheet = excelFile.Worksheets[0];
+	        return mainWorkSheet.Rows.Count > _rowCountForBackgroundLoading;
+		}
 
-        #region Support Methods
+        public static OMImportDataLog CreateDataFileImport(Stream stream, ImportDataGroupNumberFromExcelDto settings)
+        {
+	        stream.Seek(0, SeekOrigin.Begin);
+	        var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+	        excelFile.DocumentProperties.Custom["FileName"] = settings.FileName;
 
-        private static void SaveGroupAsObjectAttribute(long? attributeId, long? objectId, long? taskId, string numberGroup)
+	        return CreateDataFileImport(excelFile, settings.RegisterViewId, settings.MainRegisterId);
+        }
+
+		#region Support Methods
+
+		private static void SaveGroupAsObjectAttribute(long? attributeId, long? objectId, long? taskId, string numberGroup)
         {
             if(attributeId == null || objectId == null)
                 return;
@@ -493,7 +524,7 @@ namespace KadOzenka.Dal.DataImport
             }.Save();
         }
 
-        private static OMImportDataLog CreateDataFileImport(ExcelFile excelFile, string registerViewId, int mainRegisterId)
+		private static OMImportDataLog CreateDataFileImport(ExcelFile excelFile, string registerViewId, int mainRegisterId)
         {
 	        var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
 	        MemoryStream str = new MemoryStream();
@@ -519,7 +550,7 @@ namespace KadOzenka.Dal.DataImport
 	        return import;
         }
 
-        private static void SaveResultFile(OMImportDataLog import, MemoryStream streamResult)
+		private static void SaveResultFile(OMImportDataLog import, MemoryStream streamResult)
         {
 	        import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
 	        import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
