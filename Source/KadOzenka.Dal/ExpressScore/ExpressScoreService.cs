@@ -51,20 +51,16 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 
-		public string GetSearchParamForNearestObject(OMSettingsParams setting, List<long> unitsIds, decimal square, out OMYearConstruction yearRange, out OMSquare squareRange, out int targetObjectId)
+		public string GetSearchParamForNearestObject(OMSettingsParams setting, decimal costFactorYearBuildId, List<long> unitsIds, decimal square, out OMYearConstruction yearRange, out OMSquare squareRange, out int targetObjectId)
 		{
 			yearRange = null;
 			squareRange = null;
 			targetObjectId = 0;
 
-            var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
-                return "В настройках не задан атрибут для года постройки.";
-
             var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 
             var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(setting.SegmentType_Code));
-            query.AddColumn(new QSColumnSimple((int)costFactor.YearBuildId.GetValueOrDefault(), nameof(YearDto.Year)));
+            query.AddColumn(new QSColumnSimple((int)costFactorYearBuildId, nameof(YearDto.Year)));
 
             List<YearDto> years = query.ExecuteQuery<YearDto>().Where(x => x.Year.HasValue).OrderByDescending(x => x.Id).ToList();
             if (years.Count == 0)

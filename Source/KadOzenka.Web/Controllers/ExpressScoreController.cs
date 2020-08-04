@@ -90,7 +90,11 @@ namespace KadOzenka.Web.Controllers
             if (unitsIds.Count == 0)
                 return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
 
-            var resMessage = _service.GetSearchParamForNearestObject(setting, unitsIds, param.Square.GetValueOrDefault(),
+            var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
+            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
+                return SendErrorMessage("В настройках не задан атрибут для года постройки.");
+
+            var resMessage = _service.GetSearchParamForNearestObject(setting, costFactor.YearBuildId.GetValueOrDefault(), unitsIds, param.Square.GetValueOrDefault(),
 				out var yearRange, out var squareRange, out int targetObjectId);
 
 			if (!string.IsNullOrEmpty(resMessage))
