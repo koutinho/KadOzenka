@@ -9,6 +9,7 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
@@ -29,13 +30,16 @@ namespace KadOzenka.Web.Controllers
 		#region Init
 
 		private ExpressScoreService _service;
+		private ScoreCommonService ScoreCommonService { get; set; }
 		private ViewRenderService _viewRenderService;
 
-		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService)
+		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService, ScoreCommonService scoreCommonService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;
-		}
+            ScoreCommonService = scoreCommonService;
+        }
+
 		#endregion
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
@@ -72,11 +76,21 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
             if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
+                return GenerateMessageNonValidModel();
 
-			string resMessage = _service.GetSearchParamForNearestObject(param.Address, param.Square.GetValueOrDefault(), param.Segment.GetValueOrDefault(),
+            var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(param.Address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
+            if (yandexAddress == null)
+                return SendErrorMessage("Адрес для объекта не найден");
+
+            var setting = OMSettingsParams.Where(x => x.SegmentType_Code == param.Segment.GetValueOrDefault()).SelectAll().ExecuteFirstOrDefault();
+            if (setting == null)
+                return SendErrorMessage("Не найдены настройки для выбранного сегмента");
+
+            var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
+            if (unitsIds.Count == 0)
+                return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
+
+            var resMessage = _service.GetSearchParamForNearestObject(setting, unitsIds, param.Square.GetValueOrDefault(),
 				out var yearRange, out var squareRange, out int targetObjectId);
 
 			if (!string.IsNullOrEmpty(resMessage))

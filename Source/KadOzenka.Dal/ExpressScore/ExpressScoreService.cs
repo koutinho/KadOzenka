@@ -51,39 +51,19 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 
-		public string GetSearchParamForNearestObject(string address, decimal square, MarketSegment segmentType, out OMYearConstruction yearRange, out OMSquare squareRange, out int targetObjectId)
+		public string GetSearchParamForNearestObject(OMSettingsParams setting, List<long> unitsIds, decimal square, out OMYearConstruction yearRange, out OMSquare squareRange, out int targetObjectId)
 		{
 			yearRange = null;
 			squareRange = null;
 			targetObjectId = 0;
 
-			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
-            if (yandexAddress == null)
-			{
-				return "Адрес для объекта не найден";
-			}
-
-			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
-            if (setting == null)
-			{
-				return "Не найдены настройки для выбранного сегмента";
-			}
-
-			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
-			if (unitsIds.Count == 0)
-			{
-				return "Выбранный объект не входит в тур или его параметры оценки не заполнены";
-			}
-
-			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
-
-			var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
+            var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
             if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
-			{
-				return "В настройках не задан атрибут для года постройки.";
-			}
+                return "В настройках не задан атрибут для года постройки.";
 
-			var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(segmentType));
+            var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
+
+            var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(setting.SegmentType_Code));
             query.AddColumn(new QSColumnSimple((int)costFactor.YearBuildId.GetValueOrDefault(), nameof(YearDto.Year)));
 
             List<YearDto> years = query.ExecuteQuery<YearDto>().Where(x => x.Year.HasValue).OrderByDescending(x => x.Id).ToList();
