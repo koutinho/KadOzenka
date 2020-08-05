@@ -1,0 +1,31 @@
+﻿<RootElement>
+    <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0" Expanded="true">
+        <children>
+
+            <ControlElement Caption="Наименование" ID="cbDepartment" OwnType="Text" AttributeNumber="94100300" QueryOperation="Like" />
+
+            <ControlElement Caption="Код" ID="txNumber" OwnType="Text" AttributeNumber="94100200" QueryOperation="Like" />
+
+            <ControlElement Caption="Удален" ID="deleted_panel" OwnType="Panel">
+                <children>
+                    <ControlElement Caption="Да" ID="deleted_yes" OwnType="CheckBox" AttributeNumber="94100600" QueryOperation="Equal" Value="1" DefaultValue="false">
+                        <ConditionGroups>
+                            <ConditionGroup HideOrDisable="Disable">
+                                <Condition Expression="[deleted_no]" />
+                            </ConditionGroup>
+                        </ConditionGroups>
+                    </ControlElement>
+                    <ControlElement Caption="Нет" ID="deleted_no" OwnType="CheckBox" AttributeNumber="94100600" QueryOperation="NotEqual" Value="1" DefaultValue="true">
+                        <ConditionGroups>
+                            <ConditionGroup HideOrDisable="Disable">
+                                <Condition Expression="[deleted_yes]" />
+                            </ConditionGroup>
+                        </ConditionGroups>
+                    </ControlElement>
+                </children>
+            </ControlElement>
+
+        </children>
+    </ControlElement>
+
+</RootElement>

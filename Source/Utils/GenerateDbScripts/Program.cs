@@ -13,7 +13,8 @@ namespace GenerateDbScripts
     class Program
     {
         static void Main(string[] args)
-        {
+        
+		{
 			if (ConfigurationManager.AppSettings["DbExporterEnabled"].ParseToBoolean())
 				ExportDb();
 

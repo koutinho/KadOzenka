@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="941" DefaultLayoutId="1000008" Description="Представление для списка подразделений" 
+              LinkedRegistersList="945,950,941,304" ShowActualDate="false" SearchPanel="CoreSRDDepartment"
+              SRDFunctionTag="CORE.SRD.DEPARTMENTS">
+    <Buttons>
+        <Button Caption="Создать подразделение" Icon="icon-plus" NavigateURL="/CoreUi/DepartmentEdit?DepartmentId=-1" NeedRefresh="true" 
+                SRDFunctionTag="CORE.SRD.DEPARTMENTS.CHANGE" WindowHeight="520" WindowWidth="750" />
+        <Button Caption="Удалить подразделение" Icon="far fa-trash-alt" NavigateURL="/CoreUi/DepartmentDelete" NeedRefresh="true" 
+                SRDFunctionTag="CORE.SRD.DEPARTMENTS.DELETE" WindowHeight="200" WindowWidth="750">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                        <Condition Key="[94100600]" Operation="NotEqual" Value="0" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="DepartmentID" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+        <Button Caption="Перейти к сотрудникам подразделения" Icon="fas fa-user-friends" NavigateURL="/RegistersView/CoreSRDUser?Transition=1" SRDFunctionTag="CORE.SRD.USERS" OpenInRadWindow="false">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="95000200" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+        <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
+    </Buttons>
+    <Tabs>
+        <Tab Caption="Данные подразделения" NavigateURL="/CoreUi/DepartmentEdit">
+            <Parameters>
+                <Parameter Key="DepartmentID" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+        <Tab Caption="Пользователи подразделения" NavigateURL="/RegistersView/CoreSRDRoleUsers" SRDFunctionTag="CORE.SRD.USERS">
+          <Parameters>
+            <Parameter Key="Transition" Value="1" />
+            <Parameter Key="95000200" Value="[ObjectID]" />
+          </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>

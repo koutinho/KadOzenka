@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RegisterView RegisterId="956" Description="Менеджер загрузки"  DefaultLayoutId="1009562" LinkedRegistersList="956"  IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+              ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
+
+</RegisterView>

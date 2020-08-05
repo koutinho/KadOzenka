@@ -28,11 +28,9 @@ namespace CIPJS
  
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .Enrich.WithProperty("ServiceName", "KadOzenka.Web")
+                //.Enrich.WithProperty("ServiceName", "KadOzenka.Web")  
                 //.Enrich.WithProperty("IP", "192.168.3.164")
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
-                .Enrich.WithUserName()
-                .Enrich.WithMemoryUsage()
                 .CreateLogger();
             try
             {

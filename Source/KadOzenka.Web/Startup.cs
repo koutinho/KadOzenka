@@ -36,6 +36,9 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using DevExpress.DataProcessing.InMemoryDataProcessor;
+using DevExpress.Data.Helpers;
+using Serilog.Context;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
@@ -125,6 +128,7 @@ namespace CIPJS
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             Log.Information("Configure called");
+            LogContext.PushProperty("ApplicationName", env.ApplicationName);
             loggerFactory.AddSerilog();
             //if (env.IsDevelopment())
             //{

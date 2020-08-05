@@ -1,0 +1,35 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Наименование" ID="cbName" OwnType="Text" AttributeNumber="98200200" QueryOperation="Like" />
+
+      <ControlElement Caption="Идентификатор" ID="number" OwnType="Text" AttributeNumber="98200100" QueryOperation="Equal" />
+
+      <ControlElement Caption="Редактирование открыто" ID="edit" OwnType="CheckBox" AttributeNumber="98200400" QueryOperation="Equal" Value="0" />
+
+      <ControlElement Caption="Простой справочник" ID="simpleReference" OwnType="CheckBox" AttributeNumber="98200400" QueryOperation="Equal" Value="0">
+        <CustomQSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionSimple">
+          <ConditionType>IsNull</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>ИД реестра</Alias>
+            <AttributeID>98201800</AttributeID>
+            <Type>Value</Type>
+          </LeftOperand>
+        </CustomQSCondition>
+      </ControlElement>
+
+      <ControlElement Caption="Сложный справочник" ID="registerReference" OwnType="CheckBox" AttributeNumber="98200400" QueryOperation="Equal" Value="0">
+        <CustomQSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionSimple">
+          <ConditionType>IsNotNull</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>ИД реестра</Alias>
+            <AttributeID>98201800</AttributeID>
+            <Type>Value</Type>
+          </LeftOperand>
+        </CustomQSCondition>
+      </ControlElement>
+
+    </children>
+  </ControlElement>
+</RootElement>

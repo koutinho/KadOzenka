@@ -143,7 +143,6 @@
     <None Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <None Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
-    <None Remove="Config\Registers\Views\Documents.xml" />
     <None Remove="Config\Registers\Views\EsConstructorCard.xml" />
     <None Remove="Config\Registers\Views\EsEstimateObjectCard.xml" />
     <None Remove="Config\Registers\Views\EsEstimates.xml" />
@@ -752,6 +751,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\Documents.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\Views\InsurMfcPackages.xml">
@@ -1592,7 +1594,6 @@
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSpdRegister.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
-    <ConfigPath Remove="Config\Registers\Views\Documents.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsConstructorCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsReferenceItems.xml" />
     <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />

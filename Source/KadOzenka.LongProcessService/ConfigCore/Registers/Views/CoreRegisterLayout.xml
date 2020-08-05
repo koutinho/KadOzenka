@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="933" Description="Раскладки" LinkedRegistersList="933,930" 
+              ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" 
+              SearchPanel="CoreRegisterLayout" DockNavigationPanel="true">
+    <Buttons>
+        <Button Caption="Операции" Icon="fas fa-wrench" Type="DropDown">
+            <DropDownButtons>
+                <Button Caption="Использовать раскладку постоянно" NavigateURL="~/Registers/UseLayout" WindowHeight="100" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Использовать раскладку один раз" NavigateURL="~/RegistersView" OpenInNewWindow="true" OpenInRadWindow="false" Target="_new">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Добавить" Icon="icon-plus" NavigateURL="/CoreUi/CreateLayout" WindowHeight="300" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="RegisterId" Value="{Get:LayoutRegisterId}" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="CurrentLayoutId" Value="{Get:CurrentLayoutId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Копировать" Icon="far fa-copy" NavigateURL="/CoreUi/CreateLayout" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
+                    <ConditionGroups>
+                        <ConditionGroup HideOrDisable="Disable">
+                            <Conditions>
+                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                            </Conditions>
+                        </ConditionGroup>
+                    </ConditionGroups>
+                    <Parameters>
+                        <Parameter Key="Clone" Value="true" />
+                        <Parameter Key="RegisterId" Value="{Get:LayoutRegisterId}" />
+                        <Parameter Key="CopyLayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="CurrentLayoutId" Value="{Get:CurrentLayoutId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreUI/DeleteLayout" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
+                    <ConditionGroups>
+                        <ConditionGroup HideOrDisable="Disable">
+                            <Conditions>
+                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                            </Conditions>
+                        </ConditionGroup>
+                    </ConditionGroups>
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                    </Parameters>
+                </Button>
+            </DropDownButtons>
+        </Button>
+        <Button Caption="Сформировать выгрузку" Type="DropDown" SRDFunctionTag="CORE.REGISTER.EXPORT">
+            <DropDownButtons>
+                <Button Caption="Xlsx (Excel 2007 и др)" Icon="fas fa-file-excel" NavigateURL="~/CoreRegisterLayout/ExportDataFromLayout" SRDFunctionTag="CORE.REGISTER.EXPORT" OpenInNewWindow="true">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="Type" Value="Xlsx" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Xls (Excel 97 - 2003)" Icon="far fa-file-excel" NavigateURL="~/CoreRegisterLayout/ExportDataFromLayout" SRDFunctionTag="CORE.REGISTER.EXPORT" OpenInNewWindow="true">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="Type" Value="Xls" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Csv" Icon="fas fa-file-csv" NavigateURL="~/CoreRegisterLayout/ExportDataFromLayout" SRDFunctionTag="CORE.REGISTER.EXPORT" OpenInNewWindow="true">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="Type" Value="Csv" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Dbf" NavigateURL="~/CoreRegisterLayout/ExportDataFromLayout" SRDFunctionTag="CORE.REGISTER.EXPORT" OpenInNewWindow="true">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                        <Parameter Key="Type" Value="Dbf" />
+                    </Parameters>
+                </Button>
+            </DropDownButtons>
+        </Button>
+        <Button Caption="Менеджер выгрузок" NavigateURL="~/RegistersView/CoreRegisterLayoutExport" WindowTitleTemplate="Список выгрузок для раскладки &quot;[93300200]&quot;" SRDFunctionTag="CORE.REGISTER.EXPORT">
+            <Parameters>
+                <Parameter Key="ExportLayoutId" Value="[ObjectID]" />
+                <Parameter Key="ExportRegisterViewId" Value="{Get:RegisterViewId}" />
+                <Parameter Key="NotSetTitle" Value="true" />
+            </Parameters>
+        </Button>
+        <Button Caption="Дополнительно" Type="DropDown" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED">
+            <DropDownButtons>
+                <Button Caption="Получить количество объектов" NavigateURL="/CoreUi/ViewItemCount" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED" WindowHeight="400" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Открыть SQL&amp;#8209;запрос" NavigateURL="/CoreUi/ViewQuery" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED" WindowHeight="400" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="Type" Value="SQL" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Открыть XML&amp;#8209;запрос" NavigateURL="/CoreUi/ViewQuery" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED" WindowHeight="400" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                        <Parameter Key="Type" Value="XML" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Выгрузить раскладку" NavigateURL="/CoreUi/MetadataDownload" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED" OpenInNewWindow="true" OpenInRadWindow="false" Target="_new">
+                    <Parameters>
+                        <Parameter Key="LayoutId" Value="[ObjectID]" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Загрузить раскладку" NavigateURL="/CoreUi/LayoutMetadataLoad" NeedRefresh="true" WindowHeight="300" WindowWidth="500" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED"/>
+            </DropDownButtons>
+        </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+    <Tabs>
+        <Tab Caption="Основные данные" Icon="fas fa-pencil-alt" NavigateURL="/CoreUi/EditorBasicData">
+          <Parameters>
+            <Parameter Key="LayoutId" Value="[ObjectID]" />
+          </Parameters>
+        </Tab>
+        <Tab Caption="Колонки" NavigateURL="/CoreRegisterLayout/Columns?">
+            <Parameters>
+                <Parameter Key="LayoutId" Value="[ObjectID]" />
+                <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                <Parameter Key="CurrentLayoutId" Value="{Get:RequestObjectId}" />
+            </Parameters>
+        </Tab>
+        <Tab Caption="Фильтр" Icon="fas fa-filter" NavigateURL="~/CoreUI/LayoutFilterQueryEditor?" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED">
+            <Parameters>
+                <Parameter Key="RegisterId" Value="[93300400]" />
+                <Parameter Key="LayoutId" Value="[ObjectID]" />
+                <Parameter Key="UserId" Value="[93301200]" />
+                <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+            </Parameters>
+        </Tab>
+        <Tab Caption="Параметры" NavigateURL="~/CoreRegisterLayout/Parameters?" SRDFunctionTag="CORE.REGISTER.LAYOUTADVANCED">
+            <Parameters>
+                <Parameter Key="LayoutId" Value="[ObjectID]" />
+                <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>

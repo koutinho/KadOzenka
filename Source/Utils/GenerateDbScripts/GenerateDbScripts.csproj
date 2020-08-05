@@ -16,4 +16,8 @@
     <PackageReference Include="Platform" Version="1.0.314" />
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="attrib /S &quot;../../../../../Database/GeneratedScripts/*.*&quot; -R&#xD;&#xA;&#xD;&#xA;attrib /S &quot;C:\TFSProjects\CIPJS\KadOzenka\Source\Database\GeneratedScripts\*.*&quot; -R" />
+  </Target>
+
 </Project>

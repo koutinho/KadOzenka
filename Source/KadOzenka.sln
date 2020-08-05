@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Test.ReonWebServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.WebServices", "KadOzenka.WebServices\KadOzenka.WebServices\KadOzenka.WebServices.csproj", "{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{B35699D8-1146-4F67-BAA1-000AF81FB776}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parser", "Parser\Parser.csproj", "{B35699D8-1146-4F67-BAA1-000AF81FB776}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.LongProcessService", "KadOzenka.LongProcessService\KadOzenka.LongProcessService.csproj", "{82CC723A-6CB8-41F8-8949-90BFF202F27A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -138,6 +140,14 @@ Global
 		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|x86.ActiveCfg = Release|Any CPU
 		{B35699D8-1146-4F67-BAA1-000AF81FB776}.Release|x86.Build.0 = Release|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|x86.Build.0 = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.ActiveCfg = Release|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,7 +165,7 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 13
+		SccNumberOfProjects = 14
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -202,5 +212,8 @@ Global
 		SccProjectTopLevelParentUniqueName12 = KadOzenka.sln
 		SccProjectName12 = Parser
 		SccLocalPath12 = Parser
+		SccProjectUniqueName13 = KadOzenka.LongProcessService\\KadOzenka.LongProcessService.csproj
+		SccProjectName13 = KadOzenka.LongProcessService
+		SccLocalPath13 = KadOzenka.LongProcessService
 	EndGlobalSection
 EndGlobal
