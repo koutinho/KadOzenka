@@ -38,6 +38,8 @@ using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
+using KadOzenka.Dal.Selenium.FillingAdditionalFields;
+using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
 
@@ -74,13 +76,23 @@ namespace KadOzenka.BlFrontEnd
 						 tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
 				for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
 			});
-            consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexChecker().FormMarketObjects(); });
+            consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexParser().FormMarketObjects(); });
 		    consoleHelper.AddCommand("194", "Запуск выгрузки объявлений объектов-аналогов с Avito", () => { new AvitoParsingService().ParseAllObjects(); });
 
             consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
-            consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
+            consoleHelper.AddCommand("11041", "Парсинг дополнительных данных для Циан", () =>
+            {
+	            new CianFilling().FillAdditionalData(false);
+            });
+
+            consoleHelper.AddCommand("11042", "Парсинг дополнительных данных для Яндекс недвижимость", () =>
+            {
+	            new YandexFilling().FillAdditionalData(false);
+			});
+
+			consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("1106", "Процедура обновления цен объектов-аналогов с Яндекс недвижимость", () => { new Yandex().RefreshAllData(testBoot: true); });
 		    consoleHelper.AddCommand("194-2", "Процедура обновления цен объектов-аналогов с Avito", () => { new Avito().RefreshAllData(testBoot: false); });
             consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });

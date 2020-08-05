@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -11,10 +10,9 @@ using ObjectModel.Directory;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-
-using KadOzenka.Dal.YandexParser;
 using System.Configuration;
 using KadOzenka.Dal.Logger;
+using KadOzenka.Dal.YandexParsing;
 
 namespace KadOzenka.Dal.Selenium.PriceChecker
 {
@@ -45,7 +43,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     try
                     {
                         driver.Navigate().GoToUrl(initialObject.Url);
-                        new YandexChecker().CheckCapcha(driver);
+                        YandexParserUtils.CheckCapcha(driver);
                         if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkYandexUnpublished"]).ToString()))
                         {
                             //Тут обрабатываются данные снятых с публикации объектов

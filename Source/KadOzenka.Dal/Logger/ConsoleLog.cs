@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.Logger
 
         public static void WriteData(string data, int length, int current, int correct, int error, 
                                      int? duplicate = null, int? nspErr = null, int? unpub = null, 
-                                     int? screen = null, int? auc = null)
+                                     int? screen = null, int? auc = null, int? updated = null)
         {
             Console.Write($"\r{data}: {current}/{length} {((double)current / length * 100).ToString("0.00")}% " +
                           $"(Корректно: {correct} {((double)correct / length * 100).ToString("0.00")}%; " +
@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.Logger
                           (nspErr != null ? $"Удалённых страниц: {nspErr} {((double)nspErr / length * 100).ToString("0.00")}%; " : string.Empty) +
                           (unpub != null ? $"Снятых с публикации страниц: {unpub} {((double)unpub / length * 100).ToString("0.00")}%; " : string.Empty) +
                           (auc != null ? $"Аукцион: {auc} {((double)auc / length * 100).ToString("0.00")}%; " : string.Empty) +
+                          (updated != null ? $"Обновлено: {updated} {((double)updated / length * 100).ToString("0.00")}%; " : string.Empty) +
                           $"С ошибкой: {error} {((double)error / length * 100).ToString("0.00")}%)");
         }
 

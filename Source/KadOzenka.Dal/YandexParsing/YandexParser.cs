@@ -1,32 +1,31 @@
 ﻿using System;
-using System.IO;
-using System.Web;
-using System.Linq;
-using System.Reflection;
-using System.Configuration;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-using ObjectModel.Market;
-using ObjectModel.Directory;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Web;
 using KadOzenka.Dal.Logger;
-
-using OpenQA.Selenium;
+using KadOzenka.Dal.YandexParser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Directory;
+using ObjectModel.Market;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 
-namespace KadOzenka.Dal.YandexParser
+namespace KadOzenka.Dal.YandexParsing
 {
 
-	public class YandexChecker
+	public class YandexParser
 	{
 
 		protected List<FormMarketObjectsRequest> FormMarketObjectsRequests { get; set; }
         protected List<OMCoreObject> initialList = OMCoreObject.Where(x => x.Market_Code == MarketTypes.YandexProterty).Select(x => new { x.Url, x.MarketId}).Execute();
 
-		public YandexChecker() => FormMarketObjectsRequests = new List<FormMarketObjectsRequest>();
+		public YandexParser() => FormMarketObjectsRequests = new List<FormMarketObjectsRequest>();
 
 		public void Test(FormMarketObjectsRequest testRequest)
 		{
@@ -134,7 +133,7 @@ namespace KadOzenka.Dal.YandexParser
 					try
 					{
 						driver.Navigate().GoToUrl(formMarketObjectsRequest.ObjectsListUrl);
-						CheckCapcha((ChromeDriver)driver);
+						YandexParserUtils.CheckCapcha((ChromeDriver)driver);
 						Console.WriteLine($"Начат парсинг для {formMarketObjectsRequest.ObjectsListUrl}...");
 						var objectsUrls = GetObjectsUrlList((IJavaScriptExecutor)driver);
 						var pagerButton = ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getYandexPagerNextButton"]) as IWebElement;
@@ -146,7 +145,7 @@ namespace KadOzenka.Dal.YandexParser
 							query["page"] = nextPage.ToString();
 							uriBuilder.Query = query.ToString();
 							driver.Navigate().GoToUrl(uriBuilder.ToString());
-							CheckCapcha((ChromeDriver)driver);
+							YandexParserUtils.CheckCapcha((ChromeDriver)driver);
                             objectsUrls.AddRange(GetObjectsUrlList((IJavaScriptExecutor)driver));
 							pagerButton = ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getYandexPagerNextButton"]) as IWebElement;
 							nextPage++;
@@ -159,7 +158,7 @@ namespace KadOzenka.Dal.YandexParser
                             try
                             {
                                 driver.Navigate().GoToUrl(objectUrl);
-                                CheckCapcha((ChromeDriver)driver);
+                                YandexParserUtils.CheckCapcha((ChromeDriver)driver);
                                 ((IJavaScriptExecutor)driver).ExecuteScript(File.ReadAllText(ConfigurationManager.AppSettings["YandexGetInitialStateJsPath"]), objectUrl);
                                 var val = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(_ => ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
                                 var obj = (JObject)JsonConvert.DeserializeObject(val.ToString());
@@ -180,17 +179,6 @@ namespace KadOzenka.Dal.YandexParser
 					}
 					catch (Exception e) { Console.WriteLine($"\nПроизошла ошибка во время парсинга категории {formMarketObjectsRequest.ObjectsListUrl}:{e.Message}"); }
 				}
-			}
-		}
-
-		public void CheckCapcha(ChromeDriver driver)
-		{
-			var isCapcha = driver.ExecuteScript(ConfigurationManager.AppSettings["isYandexCapchaScreen"]).ToString();
-			if (bool.Parse(isCapcha))
-			{
-				Console.WriteLine($"\nОбнаружена капча! Обработайте запрос со страницы браузера и нажмите любую клавишу для продолжения парсинга...");
-				Console.ReadKey();
-				Console.WriteLine($"Парсинг возобновлен...");
 			}
 		}
 
@@ -241,6 +229,8 @@ namespace KadOzenka.Dal.YandexParser
                 marketObject.BuildingYear = obj.SelectToken("cards.offers.building.builtYear")?.Value<long>();
                 var wallMaterial = DefineWallMaterial(obj);
                 if (wallMaterial.HasValue) marketObject.WallMaterial_Code = wallMaterial.Value;
+
+                YandexParserUtils.FillAdditionalData(obj, marketObject);
             }
             catch (Exception e) 
             { 

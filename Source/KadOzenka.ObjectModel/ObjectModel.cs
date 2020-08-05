@@ -2002,6 +2002,126 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _placementtype;
+        /// <summary>
+        /// 10009003 Тип помещения (PLACEMENT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009003)]
+        public string PlacementType
+        {
+            get
+            {
+                CheckPropertyInited("PlacementType");
+                return _placementtype;
+            }
+            set
+            {
+                _placementtype = value;
+                NotifyPropertyChanged("PlacementType");
+            }
+        }
+
+
+        private string _quality;
+        /// <summary>
+        /// 10009004 Состояние (QUALITY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009004)]
+        public string Quality
+        {
+            get
+            {
+                CheckPropertyInited("Quality");
+                return _quality;
+            }
+            set
+            {
+                _quality = value;
+                NotifyPropertyChanged("Quality");
+            }
+        }
+
+
+        private bool? _isoperatingcostsincluded;
+        /// <summary>
+        /// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009005)]
+        public bool? IsOperatingCostsIncluded
+        {
+            get
+            {
+                CheckPropertyInited("IsOperatingCostsIncluded");
+                return _isoperatingcostsincluded;
+            }
+            set
+            {
+                _isoperatingcostsincluded = value;
+                NotifyPropertyChanged("IsOperatingCostsIncluded");
+            }
+        }
+
+
+        private bool? _isutilitiesincluded;
+        /// <summary>
+        /// 10009006 Коммунальные платежи включены (IS_UTILITIES_INCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009006)]
+        public bool? IsUtilitiesIncluded
+        {
+            get
+            {
+                CheckPropertyInited("IsUtilitiesIncluded");
+                return _isutilitiesincluded;
+            }
+            set
+            {
+                _isutilitiesincluded = value;
+                NotifyPropertyChanged("IsUtilitiesIncluded");
+            }
+        }
+
+
+        private string _vat;
+        /// <summary>
+        /// 10009007 НДС (VAT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009007)]
+        public string Vat
+        {
+            get
+            {
+                CheckPropertyInited("Vat");
+                return _vat;
+            }
+            set
+            {
+                _vat = value;
+                NotifyPropertyChanged("Vat");
+            }
+        }
+
+
+        private string _entrancetype;
+        /// <summary>
+        /// 10009008 Тип входа (ENTRANCE_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009008)]
+        public string EntranceType
+        {
+            get
+            {
+                CheckPropertyInited("EntranceType");
+                return _entrancetype;
+            }
+            set
+            {
+                _entrancetype = value;
+                NotifyPropertyChanged("EntranceType");
+            }
+        }
+
     }
 }
 
@@ -6637,7 +6757,7 @@ namespace ObjectModel.KO
 
         private string _appliedapproachesincadastralcost;
         /// <summary>
-        /// 20500600 Настройки для разъяснений: Примененные подходы при определении КС объекта недвижимости (APPLIED_APPROACHES_IN_CADASTRAL_COST)
+        /// 20500600 Настройки для разъяснений: Примененные подходы при определении КС объекта недвижимости (dop_podhod)
         /// </summary>
         [RegisterAttribute(AttributeID = 20500600)]
         public string AppliedApproachesInCadastralCost
@@ -6657,7 +6777,7 @@ namespace ObjectModel.KO
 
         private string _appliedevaluationmethodsincadastralcost;
         /// <summary>
-        /// 20500700 Настройки для разъяснений: Примененные методы оценки при определении КС объекта недвижимости (APPLIED_EVALUATION_METHODS_IN_CADASTRAL_COST)
+        /// 20500700 Настройки для разъяснений: Примененные методы оценки при определении КС объекта недвижимости (dop_metod)
         /// </summary>
         [RegisterAttribute(AttributeID = 20500700)]
         public string AppliedEvaluationMethodsInCadastralCost
@@ -6677,7 +6797,7 @@ namespace ObjectModel.KO
 
         private string _cadastralcostdetermingmethod;
         /// <summary>
-        /// 20500800 Настройки для разъяснений: Способ определения КС объекта недвижимости (CADASTRAL_COST_DETERMING_METHOD)
+        /// 20500800 Настройки для разъяснений: Способ определения КС объекта недвижимости (dop_sposob)
         /// </summary>
         [RegisterAttribute(AttributeID = 20500800)]
         public string CadastralCostDetermingMethod
@@ -6697,7 +6817,7 @@ namespace ObjectModel.KO
 
         private string _modeljustification;
         /// <summary>
-        /// 20500900 Настройки для разъяснений: Обоснование модели (MODEL_JUSTIFICATION)
+        /// 20500900 Настройки для разъяснений: Обоснование модели (dop_model)
         /// </summary>
         [RegisterAttribute(AttributeID = 20500900)]
         public string ModelJustification
@@ -6717,7 +6837,7 @@ namespace ObjectModel.KO
 
         private string _objectssegment;
         /// <summary>
-        /// 20501000 Настройки для разъяснений: Сегмент объектов недвижимости (OBJECTS_SEGMENT)
+        /// 20501000 Настройки для разъяснений: Сегмент объектов недвижимости (dop_segment)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501000)]
         public string ObjectsSegment
@@ -6737,7 +6857,7 @@ namespace ObjectModel.KO
 
         private string _objectssubgroup;
         /// <summary>
-        /// 20501100 Настройки для разъяснений: Группа (подгруппа) объектов недвижимости (OBJECTS_SUBGROUP)
+        /// 20501100 Настройки для разъяснений: Группа (подгруппа) объектов недвижимости (dop_group)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501100)]
         public string ObjectsSubgroup
@@ -6757,7 +6877,7 @@ namespace ObjectModel.KO
 
         private string _cadastralcostcalculationorderdescription;
         /// <summary>
-        /// 20501200 Настройки для разъяснений: Краткое описание последовательности определения КС объекта недвижимости (CADASTRAL_COST_CALCULATION_ORDER_DESCRIPTION)
+        /// 20501200 Настройки для разъяснений: Краткое описание последовательности определения КС объекта недвижимости (dop_opisanie)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501200)]
         public string CadastralCostCalculationOrderDescription
@@ -6777,7 +6897,7 @@ namespace ObjectModel.KO
 
         private string _pricezonecharacteristic;
         /// <summary>
-        /// 20501300 Настройки для разъяснений: Характеристика ценовой зоны, в которой находится объект недвижимости (PRICE_ZONE_CHARACTERISTIC)
+        /// 20501300 Настройки для разъяснений: Характеристика ценовой зоны, в которой находится объект недвижимости (m_zone)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501300)]
         public string PriceZoneCharacteristic
@@ -6797,7 +6917,7 @@ namespace ObjectModel.KO
 
         private string _marketsegment;
         /// <summary>
-        /// 20501400 Настройки для разъяснений: Сегмент рынка недвижимости, к которому отнесен объект недвижимости (MARKET_SEGMENT)
+        /// 20501400 Настройки для разъяснений: Сегмент рынка недвижимости, к которому отнесен объект недвижимости (m_segment)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501400)]
         public string MarketSegment
@@ -6817,7 +6937,7 @@ namespace ObjectModel.KO
 
         private string _marketsegmentfunctioningfeatures;
         /// <summary>
-        /// 20501500 Настройки для разъяснений: Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости (MARKET_SEGMENT_FUNCTIONING_FEATURES)
+        /// 20501500 Настройки для разъяснений: Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости (m_har)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501500)]
         public string MarketSegmentFunctioningFeatures
@@ -6837,7 +6957,7 @@ namespace ObjectModel.KO
 
         private string _cadastralcostestimationmodelsreferences;
         /// <summary>
-        /// 20501600 Настройки для акта определения: Ссылки на модели оценки кадастровой стоимости (CADASTRAL_COST_ESTIMATION_MODELS_REFERENCES)
+        /// 20501600 Настройки для акта определения: Ссылки на модели оценки кадастровой стоимости (act_model)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501600)]
         public string CadastralCostEstimationModelsReferences
@@ -6857,7 +6977,7 @@ namespace ObjectModel.KO
 
         private string _assumptionsreference;
         /// <summary>
-        /// 20501700 Настройки для акта определения: Ссылка на допущения (ASSUMPTIONS_REFERENCE)
+        /// 20501700 Настройки для акта определения: Ссылка на допущения (act_dop)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501700)]
         public string AssumptionsReference
@@ -6877,7 +6997,7 @@ namespace ObjectModel.KO
 
         private string _othercostrelatedinfo;
         /// <summary>
-        /// 20501800 Настройки для акта определения: Иная отражающаяся на стоимости информация (OTHER_COST_RELATED_INFO)
+        /// 20501800 Настройки для акта определения: Иная отражающаяся на стоимости информация (act_other)
         /// </summary>
         [RegisterAttribute(AttributeID = 20501800)]
         public string OtherCostRelatedInfo

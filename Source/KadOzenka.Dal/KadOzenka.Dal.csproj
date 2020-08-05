@@ -38,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\CIANGetAdditionalData.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\AvitoGetObjectInfo.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
