@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.Tours;
+using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
 namespace KadOzenka.BlFrontEnd.ExportKO
@@ -16,6 +20,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 			ExcelFile excelFile = ExcelFile.Load(filePath, new XlsxLoadOptions());
 
 			var GbuObjectService = new GbuObjectService();
+			var TourFactorService = new TourFactorService();
 			var existedGbuAttributes = GbuObjectService.GetGbuAttributes();
 
 			for (int i = 0; i < 4; i++)
@@ -25,6 +30,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 				int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
 				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
 
+				var existedKoTourAttributes = GetTourAttributes(TourFactorService, i);
 				for (var j = 1; j < mainWorkSheet.Rows.Count; j++)
 				{
 					try
@@ -43,6 +49,11 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 							}
 
 							var koAttrId = mainWorkSheet.Rows[j].Cells[1].Value.ParseToLong();
+
+							if (existedKoTourAttributes.All(x => x.Id != koAttrId))
+							{
+								throw new Exception($"Не найден KO атрибут с ИД {koAttrId}");
+							}
 
 							var record = new OMTransferAttributes();
 							switch (i)
@@ -94,6 +105,23 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 				streamResult.Read(bytes);
 				file.Write(bytes);
 				streamResult.Close();
+			}
+		}
+
+		private static List<OMAttribute> GetTourAttributes(TourFactorService service, int worksheetNum)
+		{
+			switch (worksheetNum)
+			{
+				case 0:
+					return service.GetTourAttributes(2018, ObjectType.Oks);
+				case 1:
+					return service.GetTourAttributes(2018, ObjectType.ZU);
+				case 2:
+					return service.GetTourAttributes(2016, ObjectType.Oks);
+				case 3:
+					return service.GetTourAttributes(2016, ObjectType.ZU);
+				default:
+					throw new NotSupportedException();
 			}
 		}
 	}
