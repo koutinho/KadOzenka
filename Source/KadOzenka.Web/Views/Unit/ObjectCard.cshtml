@@ -269,7 +269,8 @@
                 {
                     type: 'button',
                     id: 'history',
-                    text: '', 
+                    attributes: { style: 'padding: 10px' },
+                    text: 'История расчета',
                     click: function () {
                         window.open('@Url.Action("UnitHistory", "Unit")' + '?unitId=@Model.Id');
                     },
