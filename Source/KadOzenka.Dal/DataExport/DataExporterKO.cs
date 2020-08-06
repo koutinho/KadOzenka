@@ -4348,7 +4348,7 @@ namespace KadOzenka.Dal.DataExport
                 string parent_calc_number = (_unit.ParentCalcNumber == null) ? string.Empty : _unit.ParentCalcNumber;
                 bool dd = false;
                 bool jj = true;
-
+                
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
                 {
                     if ((calc_unit != null) && ((parent_calc_number == calc_unit.CadastralNumber) || parent_calc_number == string.Empty))
@@ -4483,9 +4483,10 @@ namespace KadOzenka.Dal.DataExport
                         }
                     }
                 }
-                string dopmodel =  "dop_model"; //subgroup.dop_model; //TODO добавить поля dop_... в OMGroup
+
+                string dopmodel = group_unit.ModelJustification;
                 if (dopmodel != string.Empty)
-                    formula = formula + " " + dopmodel; //Environment.NewLine
+                    formula = formula + " " + dopmodel;
 
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4508,7 +4509,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.1",
                      "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     "dop_podxod", //SStr(subgroup.dop_podxod),
+                     SStr(group_unit.AppliedApproachesInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4516,7 +4517,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.2",
                      "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     "dop_metod", //SStr(subgroup.dop_metod),
+                     SStr(group_unit.AppliedEvaluationMethodsInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4524,7 +4525,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.3",
                      "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
-                     "dop_sposob", //SStr(subgroup.dop_sposob),
+                     SStr(group_unit.CadastralCostDetermingMethod),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4540,7 +4541,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.5",
                      "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
-                     "dop_segment", //SStr(subgroup.dop_segment),
+                     SStr(group_unit.ObjectsSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4548,7 +4549,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.6",
                      "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
-                     "dop_group", //SStr(subgroup.dop_group),
+                     SStr(group_unit.ObjectsSubgroup),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4556,7 +4557,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.7",
                      "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
-                     "dop_opicanie", //SStr(subgroup.dop_opicanie),
+                     SStr(group_unit.CadastralCostCalculationOrderDescription),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
