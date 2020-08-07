@@ -240,7 +240,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
 		{
-			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn);
+			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
 
             resultCalculate = new ResultCalculateDto();
 			var squareCost = CalculateSquareCost(inputParam.Analogs, inputParam.TargetObjectId, inputParam.Floor, inputParam.Segment,
@@ -288,7 +288,7 @@ namespace KadOzenka.Dal.ExpressScore
 			squareCost = 0;
 			reportId = 0;
 
-			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn);
+			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
 			squareCost = CalculateSquareCost(inputParam.Analogs.Where(x => analogIds.Contains((int)x.Id)).ToList(),
 				inputParam.TargetObjectId, inputParam.Floor,inputParam.Segment, out string msg, out var successAnalogIds, inputParam.DealType, inputParam.ScenarioType);
 			if (!string.IsNullOrEmpty(msg)) return msg;
@@ -911,7 +911,7 @@ namespace KadOzenka.Dal.ExpressScore
 			return new QSConditionGroup();
 		}
 
-		private void SetRequiredReportParameter(int targetObjectId, decimal targetSquare, List<AnalogDto> analogs, MarketSegment marketSegment, string address, string kn)
+		private void SetRequiredReportParameter(int targetObjectId, decimal targetSquare, List<AnalogDto> analogs, MarketSegment marketSegment, string address, string kn, DealTypeShort dealType)
 		{
 			ReportService.InitRequiredMatrix(7, analogs.Count + 1);
 
@@ -939,10 +939,10 @@ namespace KadOzenka.Dal.ExpressScore
 			ReportService.AddValueRequiredParam(kn);
 			ReportService.KnTargetObject = kn;
 
-			ReportService.AddNameCharacteristicRequiredParam("Стоимость объекта-аналога, руб/год");
+			ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/год" : "Стоимость объекта-аналога, руб");
 			ReportService.AddValueRequiredParam("-");
 
-			ReportService.AddNameCharacteristicRequiredParam("Стоимость объекта-аналога, руб/кв.м/год");
+			ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/кв.м/год" : "Стоимость объекта-аналога, руб/кв.м");
 			ReportService.AddValueRequiredParam("-");
 
 			foreach (AnalogDto analog in analogs)
@@ -953,8 +953,16 @@ namespace KadOzenka.Dal.ExpressScore
 				ReportService.AddValueRequiredParam(analog.Square.ToString(CultureInfo.InvariantCulture));
 				ReportService.AddValueRequiredParam(analog.Address.ToString(CultureInfo.InvariantCulture));
 				ReportService.AddValueRequiredParam(analog.Kn.ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam((analog.Price  * 12).ToString("N"));
-				ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
+				if (dealType == DealTypeShort.Rent)
+				{
+					ReportService.AddValueRequiredParam((analog.Price * 12).ToString("N"));
+					ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
+				}
+				else
+				{
+					ReportService.AddValueRequiredParam((analog.Price).ToString("N"));
+					ReportService.AddValueRequiredParam(Math.Round(analog.Price / analog.Square, 2).ToString("N"));
+				}
 			}
 		}
 
