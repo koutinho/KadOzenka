@@ -410,9 +410,11 @@
                     $("#updateTargetObject").html("");
                     $("#updateTargetObject").load(data.updateTargetObjectUrl);
                     var modal = $("#updateTargetObject");
-                    ShowModal(modal, '50%', '50%', "Внесение недостающих данных");
-                    //TODO
-                    //ShowModal(modal, '50%', '50%', "Внесение недостающих данных", () => { $('.analogs').trigger('click');});
+                    ShowModal(modal, '50%', '50%', "Внесение недостающих данных", () => {
+                        if (!!myMarker) removeMyMarker();
+                        if (!!myPlacemark) removeMyPlacemark();
+                        clearFields();
+                    });
                     return;
                 }
                 if (data.Errors) {
