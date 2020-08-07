@@ -42,7 +42,7 @@ using Serilog.Context;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
-
+ 
 namespace CIPJS
 {
     public class Startup
@@ -140,7 +140,7 @@ namespace CIPJS
             //{
             //    app.UseExceptionHandler("/Home/Error");
             //}
-
+            app.UseMiddleware<SerilogMiddleware>();
             app.UseFastReport();
             app.UseExceptionHandler(
               builder =>
