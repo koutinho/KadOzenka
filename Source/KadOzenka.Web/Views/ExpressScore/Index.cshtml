@@ -280,139 +280,141 @@
 
 	var getAddressByKadNumber = (kadNumber) => new Promise(function(resolve, reject) {
 		var url = "@Url.Action("GetAddressByKadNumber", "ExpressScore")" + `?kadNumber=${kadNumber}`;
-		kendo.ui.progress($('body'), true);
-		$.get(url).done(function (data) {
-			if (data.response) resolve(data.response);
-			if (data.Errors) reject(data.Errors);
-		}).fail(function(data) { reject(data); }).always(function() { kendo.ui.progress($('body'), false); });
-	});
+        kendo.ui.progress($('body'), true);
+        $.get(url).done(function (data) {
+            if (data.response) resolve(data.response);
+            if (data.Errors) reject(data.Errors);
+        }).fail(function(data) { reject(data); }).always(function() { kendo.ui.progress($('body'), false); });
+    });
 
-	//fias
-	$addresses.on('focus', function () { $addresses.on('kladr_close_before', closeBefore); });
-	$addresses.on('blur', function () { $addresses.off('kladr_close_before', closeBefore); });
+    //fias
+    $addresses.on('focus', function () { $addresses.on('kladr_close_before', closeBefore); });
+    $addresses.on('blur', function () { $addresses.off('kladr_close_before', closeBefore); });
 
-	function closeBefore() {
-		if (!!$('#address').val()) {
-			var myGeocoder = ymaps.geocode($('#address').val());
-			setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
-				removeFindPoints();
-				if (geoObject.getPremiseNumber()) {
-					setCurrentAddress(geoObject.getAddressLine());
-					setKadNumber(geoObject.getAddressLine());
-				}
-			});
-		}
-	}
+    function closeBefore() {
+        if (!!$('#address').val()) {
+            var myGeocoder = ymaps.geocode($('#address').val());
+            setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
+                removeFindPoints();
+                if (geoObject.getPremiseNumber()) {
+                    setCurrentAddress(geoObject.getAddressLine());
+                    setKadNumber(geoObject.getAddressLine());
+                }
+            });
+        }
+    }
 
-	$addresses.fias({
-		oneString: true,
-		parentType: $.fias.type.region,
-		parentId: '7700000000000',
-		labelFormat: function(obj, query) { return getCorrectRow(obj); },
-		valueFormat: function(obj, query) { return getCorrectRow(obj); },
-		sendBefore: function(query) {
-			if (query.name) typeShortList.forEach(function(str) { query.name = query.name.replace(str, ''); });
-			else query.name = '';
-		}
-	});
+    $addresses.fias({
+        oneString: true,
+        parentType: $.fias.type.region,
+        parentId: '7700000000000',
+        labelFormat: function(obj, query) { return getCorrectRow(obj); },
+        valueFormat: function(obj, query) { return getCorrectRow(obj); },
+        sendBefore: function(query) {
+            if (query.name) typeShortList.forEach(function(str) { query.name = query.name.replace(str, ''); });
+            else query.name = '';
+        }
+    });
 
-	function getCorrectRow(obj) {
-		var arrayNames = [];
-		obj.parents.forEach(function(item) {
-			switch (item.contentType) {
-			case 'street':
-				arrayNames.splice(3, 0, ' ' + item.typeShort + '. ' + item.name);
-				break;
-			case 'city':
-				arrayNames.splice(2, 0, ' ' + item.typeShort + '. ' + item.name);
-				break;
-			case 'region':
-				arrayNames.splice(0, 0, ' ' + item.typeShort + '. ' + item.name);
-				break;
-			case 'district':
-				arrayNames.splice(1, 0, ' ' + item.typeShort + '. ' + item.name);
-				break;
-			default:
-				break;
-			}
-		});
-		arrayNames.push(' ' + obj.typeShort + '. ' + obj.name);
-		return arrayNames.filter((v, i, a) => a.indexOf(v) === i).join(',');
-	}
+    function getCorrectRow(obj) {
+        var arrayNames = [];
+        obj.parents.forEach(function(item) {
+            switch (item.contentType) {
+            case 'street':
+                arrayNames.splice(3, 0, ' ' + item.typeShort + '. ' + item.name);
+                break;
+            case 'city':
+                arrayNames.splice(2, 0, ' ' + item.typeShort + '. ' + item.name);
+                break;
+            case 'region':
+                arrayNames.splice(0, 0, ' ' + item.typeShort + '. ' + item.name);
+                break;
+            case 'district':
+                arrayNames.splice(1, 0, ' ' + item.typeShort + '. ' + item.name);
+                break;
+            default:
+                break;
+            }
+        });
+        arrayNames.push(' ' + obj.typeShort + '. ' + obj.name);
+        return arrayNames.filter((v, i, a) => a.indexOf(v) === i).join(',');
+    }
 
-	//fias geopoint
-	function setMarkerByGeoCoder(geocoder) {
-		if (typeof geocoder === 'string') geocoder = ymaps.geocode(geocoder);
-		return new Promise(function (resolve) {
-			geocoder.then(function (res) {
-				if (!!myMarker) removeMyMarker();
-				if (!!myPlacemark) removeMyPlacemark();
-				var firstGeoObject = res.geoObjects.get(0), bounds = firstGeoObject.properties.get('boundedBy');
-				myMarker = firstGeoObject;
-				map.geoObjects.add(firstGeoObject);
-				map.setBounds(bounds, { checkZoomRange: true });
-				resolve(firstGeoObject);
-			});
-		});
-	}
+    //fias geopoint
+    function setMarkerByGeoCoder(geocoder) {
+        if (typeof geocoder === 'string') geocoder = ymaps.geocode(geocoder);
+        return new Promise(function (resolve) {
+            geocoder.then(function (res) {
+                if (!!myMarker) removeMyMarker();
+                if (!!myPlacemark) removeMyPlacemark();
+                var firstGeoObject = res.geoObjects.get(0), bounds = firstGeoObject.properties.get('boundedBy');
+                myMarker = firstGeoObject;
+                map.geoObjects.add(firstGeoObject);
+                map.setBounds(bounds, { checkZoomRange: true });
+                resolve(firstGeoObject);
+            });
+        });
+    }
 
-	$(document).ready(function() {
-		$('#Kn').on('blur', function () {
-			var val = $(this).val().replace(/_/gi, '');
-			$('#Kn').val(val);
-			if (!!val && !val.startsWith(':')) {
-				getAddressByKadNumber(val).then(function(data) {
-					if (data.address) {
-						$('#address').val(data.address.replace('Россия, ', ''));
-						setMarkerByGeoCoder(data.address).then(function () { });
-						setCurrentAddress(data.address);
-					}
-				}).catch(function (data) {
-					var errors = getErrors(data);
-					$('#address').val('');
-					Common.ShowError(errors);
-					console.error("Произошла ошибка при получении адреса", error);
-				});
-			}
-		});
+    $(document).ready(function() {
+        $('#Kn').on('blur', function () {
+            var val = $(this).val().replace(/_/gi, '');
+            $('#Kn').val(val);
+            if (!!val && !val.startsWith(':')) {
+                getAddressByKadNumber(val).then(function(data) {
+                    if (data.address) {
+                        $('#address').val(data.address.replace('Россия, ', ''));
+                        setMarkerByGeoCoder(data.address).then(function () { });
+                        setCurrentAddress(data.address);
+                    }
+                }).catch(function (data) {
+                    var errors = getErrors(data);
+                    $('#address').val('');
+                    Common.ShowError(errors);
+                    console.error("Произошла ошибка при получении адреса", error);
+                });
+            }
+        });
 
-		$('.analogs').on('click', function () {
-			removeFindPoints();
-			var point = myPlacemark || myMarker;
-			var coordinates = (point && point.geometry.getCoordinates()) || null;
-			var floor = $('#floor').val();
-			var square = $('#square').val();
-			var segment = $('#segment').val();
-			var quality = $("#slider").getKendoSlider() && $("#slider").getKendoSlider().value() || 0;
-			var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
-			var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
-			var useYearBuild = $("input[name='UseYearBuild']:checked").val();
-			var useSquare = $("input[name='UseSquare']:checked").val();
-			if (quality === 0) {
-				Common.ShowError('Выберите количество аналогов');
-				return;
-			}
-			if (!segment || segment === "0") {
-				Common.ShowError('Заполните сегмент');
-				return;
-			}
-			if (!coordinates) {
-				Common.ShowError('Выберите или заполните целевой объект');
-				return;
-			}
+        $('.analogs').on('click', function () {
+            removeFindPoints();
+            var point = myPlacemark || myMarker;
+            var coordinates = (point && point.geometry.getCoordinates()) || null;
+            var floor = $('#floor').val();
+            var square = $('#square').val();
+            var segment = $('#segment').val();
+            var quality = $("#slider").getKendoSlider() && $("#slider").getKendoSlider().value() || 0;
+            var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
+            var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
+            var useYearBuild = $("input[name='UseYearBuild']:checked").val();
+            var useSquare = $("input[name='UseSquare']:checked").val();
+            if (quality === 0) {
+                Common.ShowError('Выберите количество аналогов');
+                return;
+            }
+            if (!segment || segment === "0") {
+                Common.ShowError('Заполните сегмент');
+                return;
+            }
+            if (!coordinates) {
+            	Common.ShowError('Выберите или заполните целевой объект');
+            	return;
+            }
             kendo.ui.progress($('body'), true);
 
-			var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
+            var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
 														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
 															&DealTypeShort=${dealTypeShort}&ActualDate=${actualDate}&UseYearBuild=${useYearBuild}&UseSquare=${useSquare}`;
             $.get(url).done(function (data) {
-                //TODO
-                //if (data.updateTargetObjectUrl) {
-                //    $("#updateTargetObject").load(data.updateTargetObjectUrl);
-                //    var modal = $("#updateTargetObject");
-                //    ShowModal(modal, '50%', '20%', "Внесение недостающих данных");
-                //    return;
-                //}
+                if (data.updateTargetObjectUrl) {
+                    $("#updateTargetObject").html("");
+                    $("#updateTargetObject").load(data.updateTargetObjectUrl);
+                    var modal = $("#updateTargetObject");
+                    ShowModal(modal, '50%', '50%', "Внесение недостающих данных");
+                    //TODO
+                    //ShowModal(modal, '50%', '50%', "Внесение недостающих данных", () => { $('.analogs').trigger('click');});
+                    return;
+                }
                 if (data.Errors) {
                     var errors = getErrors(data.Errors);
 					Common.ShowError(errors);

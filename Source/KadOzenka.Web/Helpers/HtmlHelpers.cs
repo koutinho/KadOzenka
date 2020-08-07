@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.Encodings.Web;
+using Core.RefLib;
 using Core.Shared.Misc;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,6 +15,7 @@ using Kendo.Mvc.UI.Fluent;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
+using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Web.Helpers
 {
@@ -371,6 +373,36 @@ namespace KadOzenka.Web.Helpers
 			content.AppendLine(writer.ToString());
 
 			return new HtmlString(content.ToString());
+		}
+
+		public static IHtmlContent KendoKoReferenceDropDownListFor<TModel, TValue>(this IHtmlHelper<TModel> html,
+			Expression<Func<TModel, TValue>> expression,
+			long? referenceId, bool isReadonly = true, bool withOptionLabel = true, string filter = "contains")
+		{
+			ModelExplorer modelExplorer =
+				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+
+			List<OMReferenceItem> referenceItems = ReferencesCommon.GetItems(referenceId.GetValueOrDefault(-1), false);
+			List<SelectListItem> dataSource = referenceItems
+				.Select(s => new SelectListItem() {Value = s.ItemId.ToString(), Text = s.Value}).ToList();
+
+			DropDownListBuilder element = html.Kendo().DropDownListFor(expression)
+				.BindTo(dataSource)
+				.NoDataTemplate("Ничего не найдено!")
+				.Filter(filter)
+				.Value(modelExplorer.Model?.ToString())
+				.OptionLabel(new SelectListItem {Value = null, Text = "-"});
+
+			if (withOptionLabel)
+				element.OptionLabel(new SelectListItem {Value = null, Text = "-"});
+
+			RouteValueDictionary htmlAttributes = new RouteValueDictionary();
+			{
+				if (isReadonly) htmlAttributes.Add("readonly", "readonly");
+			}
+			element.HtmlAttributes(htmlAttributes);
+
+			return element;
 		}
 	}
 }

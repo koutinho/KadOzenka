@@ -1,4 +1,6 @@
-﻿@model KadOzenka.Web.Models.ExpressScore.TargetObjectModel
+﻿@using Core.Register
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.ExpressScore.TargetObjectModel
 
 @using (Html.BeginForm("TargetObjectSubCard", "ExpressScore", FormMethod.Post, new { id = "updateTargetObjectForm" }))
 {
@@ -10,14 +12,90 @@
             @Html.HiddenFor(x => x.Attributes[i].Id)
             <div class="form-group">
                 <div class="col-sm-6">
-                    @Html.CustomLabel(Model.Attributes[i].Name)
+                    @Html.CustomLabel(Model.Attributes[i].Name, false)
                 </div>
                 <div class="col-sm-5">
-                    @(Html.Kendo().TextBox()
-                        .Name($"attributeName-{i}")
-                        .Value(Model.Attributes[i].Value))
+                    @Html.HiddenFor(x => x.Attributes[i].Name)
+                    @if (Model.Attributes[i].Type == RegisterAttributeType.INTEGER)
+                    {
+                        @Html.Kendo().NumericTextBoxFor(x => x.Attributes[i].LongValue).Spinners(false).Format("N0")
+                    }
+                    @if (Model.Attributes[i].Type == RegisterAttributeType.DECIMAL)
+                    {
+                        @Html.Kendo().NumericTextBoxFor(x => x.Attributes[i].DecimalValue).Spinners(false).Format("N4")
+                    }
+                    @if (Model.Attributes[i].Type == RegisterAttributeType.BOOLEAN)
+                    {
+                        @(Html.Kendo().RadioButtonFor(m => m.Attributes[i].BoolValue)
+                            .Label("Да")
+                            .Value(true)
+                            .Checked(Model.Attributes[i].BoolValue == true))
+                        @(Html.Kendo().RadioButtonFor(m => m.Attributes[i].BoolValue)
+                            .Label("Нет")
+                            .Value(false)
+                            .Checked(Model.Attributes[i].BoolValue.HasValue && Model.Attributes[i].BoolValue == false)
+                            .HtmlAttributes(new { style = "margin-left: 15px;" }))
+                    }
+                    @if (Model.Attributes[i].Type == RegisterAttributeType.STRING)
+                    {
+                        if (Model.Attributes[i].ReferenceId.HasValue)
+                        {
+                            @Html.HiddenFor(x => x.Attributes[i].ReferenceId)
+                            @Html.KendoKoReferenceDropDownListFor(x => x.Attributes[i].ReferenceItemId, Model.Attributes[i].ReferenceId, false)
+                        }
+                        else
+                        {
+                            @Html.Kendo().TextBoxFor(x => x.Attributes[i].StringValue)
+                        }
+                    }
+                    @if (Model.Attributes[i].Type == RegisterAttributeType.DATE)
+                    {
+                        @Html.KendoDatePickerFor(m => m.Attributes[i].DateTimeValue, false)
+                    }
                 </div>
             </div>
         }
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button id="save" type="button" style="float: right;" class="k-button">Сохранить</button>
+            </div>
+        </div>
     </div>
 }
+
+<script src="~/js/custom-validation.js"></script>
+<script src="~/js/common-modals.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#save').on('click',
+            function () {
+                kendo.ui.progress($('#updateTargetObjectForm'), true);
+                var form = $('#updateTargetObjectForm');
+                var formObject = Common.Functions.FormToObject(form);
+                debugger;
+                $.post(form.attr('action'), formObject)
+                    .done(function (response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (response.success) {
+                            Common.ShowMessage(response.message);
+                            //TODO
+                            //setTimeout(() => {
+                            //    CloseModal($("#updateTargetObject"));
+                            //}, 1000);
+                        }
+                    })
+                    .fail(function (response) {
+                        Common.ShowError(response.responseText);
+                    })
+                    .always(function () {
+                        kendo.ui.progress($('#updateTargetObjectForm'), false);
+                    });
+            });
+    });
+</script>

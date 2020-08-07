@@ -10,6 +10,7 @@ using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.ScoreCommon;
+using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
@@ -33,13 +34,16 @@ namespace KadOzenka.Web.Controllers
 		private ExpressScoreService _service;
 		private ScoreCommonService ScoreCommonService { get; set; }
 		private ViewRenderService _viewRenderService;
+		private TourFactorService TourFactorService { get; set; }
 
-		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService, ScoreCommonService scoreCommonService)
+		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService, ScoreCommonService scoreCommonService, TourFactorService tourFactorService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;
             ScoreCommonService = scoreCommonService;
-        }
+            TourFactorService = tourFactorService;
+
+		}
 
 		#endregion
 
@@ -88,7 +92,12 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
         public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
         {
-            return new JsonResult(Ok());
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+			TourFactorService.SetTourFactorAttributesValue(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
+
+			return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
@@ -115,17 +124,15 @@ namespace KadOzenka.Web.Controllers
 
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds);
             if(targetObject == null)
-                return SendErrorMessage("Не найдены дынные для выбранного объекта.");
-
-            //TODO
-            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
                 return SendErrorMessage("Не найдены данные для выбранного объекта.");
-                //return Json(new
-                //{
-                //    updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new {targetObjectStr = JsonConvert.SerializeObject(targetObject)})
-                //});
 
-            var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
+            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
+	            return Json(new
+				{
+					updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new { targetObjectStr = JsonConvert.SerializeObject(targetObject) })
+				});
+
+			var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
             var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo)
                 .SelectAll().ExecuteFirstOrDefault();
 

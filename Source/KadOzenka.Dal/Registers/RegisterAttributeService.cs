@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
+using Core.RefLib;
 using Core.Register;
 using ObjectModel.Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Dal.Registers
 {
@@ -72,6 +76,48 @@ namespace KadOzenka.Dal.Registers
             }
             attribute.IsDeleted = true;
             attribute.Save();
+        }
+
+        public void SetAttributeValue(int objectId, long attributeId, object attributeValue, int referenceItemId = -1)
+        {
+	        var attributeData = RegisterCache.GetAttributeData(attributeId);
+	        var registerObject = new RegisterObject(attributeData.RegisterId, objectId);
+
+	        if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
+	        {
+		        var reference =
+			        OMReference.Where(x => x.ReferenceId == attributeData.ReferenceId).ExecuteFirstOrDefault();
+		        var valueStr = attributeValue != null ? attributeValue.ToString() : string.Empty;
+                var items = ReferencesCommon.GetItems(reference.ReferenceId, false);
+		        OMReferenceItem item = items.FirstOrDefault(x => (referenceItemId != -1 ? x.ItemId == referenceItemId : x.Value == valueStr));
+		        if (item != null)
+		        {
+			        referenceItemId = (int) item.ItemId;
+		        }
+	        }
+
+	        object value = null;
+	        switch (attributeData.Type)
+	        {
+		        case RegisterAttributeType.INTEGER:
+			        value = attributeValue.ParseToLongNullable();
+			        break;
+		        case RegisterAttributeType.DECIMAL:
+			        value = attributeValue.ParseToDecimalNullable();
+			        break;
+		        case RegisterAttributeType.BOOLEAN:
+			        value = attributeValue.ParseToBooleanNullable();
+			        break;
+		        case RegisterAttributeType.STRING:
+			        value = attributeValue.ParseToStringNullable();
+			        break;
+		        case RegisterAttributeType.DATE:
+			        value = attributeValue.ParseToDateTimeNullable();
+			        break;
+	        }
+
+	        registerObject.SetAttributeValue(attributeId, value, referenceItemId);
+	        RegisterStorage.Save(registerObject);
         }
     }
 }
