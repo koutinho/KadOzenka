@@ -231,7 +231,8 @@ namespace KadOzenka.Dal.Tours
 <a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
 <a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
 				IsUrgent = true,
-				IsEmail = true
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
 	}

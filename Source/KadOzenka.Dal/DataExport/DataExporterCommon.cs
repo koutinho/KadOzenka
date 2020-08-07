@@ -49,8 +49,9 @@ namespace KadOzenka.Dal.DataExport
 				Subject = $"Результаты Выгрузки данных по списку от: {export.DateCreated})",
 				Message = $@"Процесс Выгрузки данных по списку завершен. <a href=""/DataExport/DownloadExportResult?exportId={export.Id}"">Скачать результаты</a>",
 				IsUrgent = true,
-				IsEmail = true
-			});
+				IsEmail = true,
+				ExpireDate = DateTime.Now.AddHours(2)
+            });
 		}
 
 		public static string RepeatFormation(OMExportByTemplates export)

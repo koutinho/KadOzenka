@@ -102,7 +102,8 @@ namespace KadOzenka.Dal.LongProcess
                     Message =
                         $@"Процесс конвертации завершен. <a href=""/GknXmlToExcel/DownloadResult?dt={dt}&id={id}"">Скачать результаты</a>",
                     IsUrgent = true,
-                    IsEmail = false
+                    IsEmail = false,
+                    ExpireDate = DateTime.Now.AddHours(2)
                 });
             WorkerCommon.SetProgress(processQueue, 100);
         }

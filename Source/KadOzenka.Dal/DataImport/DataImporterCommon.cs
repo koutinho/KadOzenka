@@ -80,7 +80,8 @@ namespace KadOzenka.Dal.DataImport
 <a href=""/DataImport/DownloadImportDataFile?importId={import.Id}"">Скачать исходный файл</a>
 <a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
 				IsUrgent = true,
-				IsEmail = true
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
 

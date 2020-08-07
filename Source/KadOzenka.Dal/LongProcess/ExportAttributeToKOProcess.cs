@@ -91,8 +91,9 @@ namespace KadOzenka.Dal.LongProcess
 				Subject = $"Результат Операции переноса атрибутов из ГБУ в КО",
 				Message = $"Операция переноса атрибутов из ГБУ в КО успешно завершена",
 				IsUrgent = true,
-				IsEmail = true
-			});
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
+            });
 		}
 
 		private void SendFailureNotification(OMQueue processQueue, string message)
@@ -103,8 +104,9 @@ namespace KadOzenka.Dal.LongProcess
 				Subject = $"Результат Операции переноса атрибутов из ГБУ в КО",
 				Message = $"Операция переноса атрибутов из ГБУ в КО была прервана: {message}",
 				IsUrgent = true,
-				IsEmail = true
-			});
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
+            });
 		}
 
         protected void TestLongRunningProcess(GbuExportAttributeSettings setting)

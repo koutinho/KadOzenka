@@ -1,4 +1,5 @@
-﻿using Core.Messages;
+﻿using System;
+using Core.Messages;
 using Core.Shared.Extensions;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
@@ -25,8 +26,9 @@ namespace KadOzenka.Dal.LongProcess
 				Subject = subject,
 				Message = message,
 				IsUrgent = true,
-				IsEmail = true
-			});
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
+            });
 		}
 
         public static void SendNotification(OMQueue processQueue, string subject, string message, long roleId)
@@ -37,7 +39,8 @@ namespace KadOzenka.Dal.LongProcess
                 Subject = subject,
                 Message = message,
                 IsUrgent = true,
-                IsEmail = true
+                IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
             });
         }
 
@@ -50,8 +53,9 @@ namespace KadOzenka.Dal.LongProcess
 				Message = $@"Статус операции: {((ObjectModel.Directory.Common.ImportStatus)export.Status).GetEnumDescription()}
 					<a href=""/DataExport/DownloadExportResult?exportId={export.Id}"">Скачать результат</a>",
 				IsUrgent = true,
-				IsEmail = true
-			});
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
+            });
 		}
 	}
 }

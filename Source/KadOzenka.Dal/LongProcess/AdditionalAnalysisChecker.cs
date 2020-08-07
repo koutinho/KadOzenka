@@ -63,7 +63,8 @@ namespace KadOzenka.Dal.LongProcess
 				Subject = $"Результат проверки объектов от: {DateTime.Now.Date}",
 				Message = @"Процесс дополнительного анализа завершен успешно, объектов подходящих под критерии дополнительного анализа не обнаружено",
 				IsUrgent = true,
-				IsEmail = true
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
 
@@ -75,7 +76,8 @@ namespace KadOzenka.Dal.LongProcess
 				Subject = $"Результат проверки объектов от: {DateTime.Now.Date})",
 				Message = $@"Процесс дополнительного анализа завершен успешно. Объекты удовлетворяющие условию: <a href=""/Sud/GetReportAdditionalCheck?idProcess={queueId}"">{additionalCheckCount}</a>",
 				IsUrgent = true,
-				IsEmail = true
+				IsEmail = true,
+                ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
 
