@@ -51,4 +51,8 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="attrib /S &quot;ConfigCore/*.*&quot; -R&#xD;&#xA;attrib /S &quot;C:\TFSProjects\CIPJS\KadOzenka\Source\KadOzenka.LongProcessService\ConfigCore\*.*&quot; -R" />
+  </Target>
+
 </Project>
