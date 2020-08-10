@@ -85,9 +85,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			return result;
 		}
 
-		public List<CalculationStatisticsDto> GetCalculationStatisticsData(long[] taskIdList)
+		public List<CalculationStatisticsDto> GetCalculationStatisticsData(long[] taskIdList, bool isOks)
 		{
-			var subgroupsId = OMUnit.Where(x => taskIdList.Contains((long)x.TaskId))
+			var subgroupsId = OMUnit.Where(x =>
+					taskIdList.Contains((long) x.TaskId) &&
+					(isOks && x.PropertyType_Code != PropertyTypes.Stead ||
+					 !isOks && x.PropertyType_Code == PropertyTypes.Stead))
 				.Select(x => x.GroupId)
 				.Execute()
 				.Select(x => x.GroupId)
@@ -106,61 +109,116 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var result = new List<CalculationStatisticsDto>();
 			foreach (var subgroup in subgroups)
 			{
+				var subgroupNumber = decimal.TryParse(subgroup.Number, out _)
+					? decimal.Parse(subgroup.Number)
+					: (decimal?)null;
 				var parentGroup = OMGroup.Where(x => x.Id == subgroup.ParentId)
-					.Select(x => x.GroupName)
+					.Select(x => x.Number)
 					.ExecuteFirstOrDefault();
-				var subgroupName = $"{parentGroup?.GroupName} {subgroup.GroupName}";
+				var parentGroupNumber = decimal.TryParse(parentGroup?.Number, out _)
+					? decimal.Parse(parentGroup?.Number)
+					: (decimal?)null;
+				var subgroupName = subgroup.Number?.Replace(".", "_");
 				if (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
 				{
 					var model = OMModel.Where(x => x.GroupId == subgroup.Id).SelectAll().ExecuteFirstOrDefault();
 					if (model != null)
 					{
 						var modelFactors = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-						foreach (var modelFactor in modelFactors)
+						if (modelFactors.Count > 0)
 						{
-							var factorName =
-								RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == modelFactor.FactorId)?.Name;
+							foreach (var modelFactor in modelFactors)
+							{
+								var factor =
+									RegisterCache.RegisterAttributes.Values.FirstOrDefault(
+										x => x.Id == modelFactor.FactorId);
+								if (factor != null)
+								{
+									var dto = new CalculationStatisticsDto
+									{
+										SubgroupId = subgroup.Id,
+										SubgroupName = subgroupName,
+										SubgroupNumber = subgroupNumber,
+										ParentGroupNumber = parentGroupNumber,
+										CalculationMethod = subgroup.GroupAlgoritm_Code.GetEnumDescription(),
+										Formula = model.Formula,
+										FactorsSubgroups = factor.Name,
+										Coef = modelFactor.Weight,
+										SighMarket = modelFactor.SignMarket ? "Да" : null
+									};
+									result.Add(dto);
+								}
+							}
+						}
+						else
+						{
 							var dto = new CalculationStatisticsDto
 							{
 								SubgroupId = subgroup.Id,
 								SubgroupName = subgroupName,
+								SubgroupNumber = subgroupNumber,
+								ParentGroupNumber = parentGroupNumber,
 								CalculationMethod = subgroup.GroupAlgoritm_Code.GetEnumDescription(),
-								Formula = model.Formula,
-								FactorsSubgroups = factorName,
-								Coef = modelFactor.Weight,
-								SighMarket = modelFactor.SignMarket ? "Да" : null
+								Formula = model.Formula
 							};
 							result.Add(dto);
 						}
+					}
+					else
+					{
+						var dto = new CalculationStatisticsDto
+						{
+							SubgroupId = subgroup.Id,
+							SubgroupName = subgroupName,
+							SubgroupNumber = subgroupNumber,
+							ParentGroupNumber = parentGroupNumber,
+							CalculationMethod = subgroup.GroupAlgoritm_Code.GetEnumDescription()
+						};
+						result.Add(dto);
 					}
 				}
 				else
 				{
-					var parentsCalcGroups = ObjectModel.KO.OMCalcGroup.Where(x => x.GroupId == subgroup.Id).SelectAll().Execute();
-					foreach (var calcGroup in parentsCalcGroups)
+					var parentsCalcGroups = OMCalcGroup.Where(x => x.GroupId == subgroup.Id).SelectAll().Execute();
+					if (parentsCalcGroups.Count > 0)
 					{
-						var calcBaseGroup = OMGroup.Where(x => x.Id == calcGroup.ParentCalcGroupId)
-							.SelectAll()
-							.ExecuteFirstOrDefault();
-						var calcParentGroup = OMGroup.Where(x => x.Id == calcBaseGroup.ParentId)
-							.Select(x => x.GroupName)
-							.ExecuteFirstOrDefault();
-						if (calcBaseGroup != null)
+						foreach (var calcGroup in parentsCalcGroups)
 						{
+							var calcBaseGroup = OMGroup.Where(x => x.Id == calcGroup.ParentCalcGroupId)
+								.Select(x => x.ParentId)
+								.Select(x => x.Number)
+								.ExecuteFirstOrDefault();
 							var dto = new CalculationStatisticsDto
 							{
 								SubgroupId = subgroup.Id,
 								SubgroupName = subgroupName,
+								SubgroupNumber = subgroupNumber,
+								ParentGroupNumber = parentGroupNumber,
 								CalculationMethod = subgroup.GroupAlgoritm_Code.GetEnumDescription(),
-								FactorsSubgroups = $"{calcParentGroup?.GroupName} {calcBaseGroup.GroupName}"
+								FactorsSubgroups = calcBaseGroup?.Number.Replace(".", "_")
 							};
 							result.Add(dto);
 						}
 					}
+					else
+					{
+						var dto = new CalculationStatisticsDto
+						{
+							SubgroupId = subgroup.Id,
+							SubgroupName = subgroupName,
+							SubgroupNumber = subgroupNumber,
+							ParentGroupNumber = parentGroupNumber,
+							CalculationMethod = subgroup.GroupAlgoritm_Code.GetEnumDescription(),
+						};
+						result.Add(dto);
+					}
 				}
 			}
 
-			return result;
+			return result
+				.OrderBy(x => x.SubgroupNumber)
+				.ThenBy(x => x.ParentGroupNumber)
+				.ToList();
 		}
 
 		public List<MarketDataDto> GetMarketData(DateTime? dateFrom, DateTime? dateTo, long typeOfUseCodeAttributeId, long oksGroupAttributeId, long typeOfUseAttributeId)

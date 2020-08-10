@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/06/2020 08:54:48" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/10/2020 10:13:53" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -61,7 +61,7 @@ namespace FastReport
       newCol.Width = 300.0f;
       table.Columns.Insert(0, newCol);
       table[0, 0].SetStyle(table[1, 0]);
-      table[0, 0].Text = &quot;Наименование подгруппы&quot;;
+      table[0, 0].Text = &quot;Номер подгруппы&quot;;
       
       newCol = new TableColumn();
       newCol.AutoSize = true;
@@ -144,7 +144,7 @@ namespace FastReport
       <MatrixObject Name="MatrixData" Left="9.45" Width="831.6" Height="88.87" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns/>
         <MatrixRows>
-          <Header Expression="[Data.SubgroupId]" Totals="false"/>
+          <Header Expression="[Data.SubgroupId]" Sort="None" Totals="false"/>
           <Header Expression="[Data.FactorsSubgroups]" Totals="false"/>
         </MatrixRows>
         <MatrixCells>
@@ -170,6 +170,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="220.41" Width="1425.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="215.61" Width="1425.06" Height="47.25"/>
   </ReportPage>
 </Report>

@@ -33,7 +33,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("Coef", typeof(string));
 			dataTable.Columns.Add("SighMarket", typeof(string));
 
-			var data = _service.GetCalculationStatisticsData(taskIdList);
+			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
+			var data = _service.GetCalculationStatisticsData(taskIdList, zuOksObjectType == "ОКС");
 
 			foreach (var unitDto in data)
 			{

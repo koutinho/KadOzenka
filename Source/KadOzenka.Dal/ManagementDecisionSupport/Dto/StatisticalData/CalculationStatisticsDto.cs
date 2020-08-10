@@ -9,5 +9,7 @@
 		public string FactorsSubgroups { get; set; }
 		public decimal? Coef { get; set; }
 		public string SighMarket { get; set; }
+		public decimal? SubgroupNumber { get; set; }
+		public decimal? ParentGroupNumber { get; set; }
 	}
 }
