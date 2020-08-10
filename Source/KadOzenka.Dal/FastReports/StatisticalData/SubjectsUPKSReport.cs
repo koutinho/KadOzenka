@@ -94,7 +94,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("HasPurpose", typeof(bool));
 			dataTable.Columns.Add("ObjectsCount", typeof(decimal));
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
-			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
+			dataTable.Columns.Add("UpksCalcValue", typeof(string));
 			
 
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeAndPurposeData(taskIdList);
@@ -103,8 +103,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
 					unitDto.UpksCalcType.GetEnumDescription(),
 					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null));
+						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues).ParseToString()
+						: null));
 			}
 
 			var dataSet = new DataSet();

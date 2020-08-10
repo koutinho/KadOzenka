@@ -15,11 +15,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	{
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly GbuObjectService _gbuObjectService;
+		private readonly List<PropertyTypes> _propertyTypes;
+		private readonly List<UpksCalcType> _upksCalcTypes;
 
 		public SubjectsUPKSService(StatisticalDataService statisticalDataService, GbuObjectService gbuObjectService)
 		{
 			_statisticalDataService = statisticalDataService;
 			_gbuObjectService = gbuObjectService;
+			_propertyTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>().ToList();
+			_propertyTypes.Remove(PropertyTypes.None);
+			_upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
 		}
 
 		public List<SubjectsUPKSByTypeDto> GetSubjectsUPKSByTypeData(long[] taskIdList)
@@ -49,25 +54,41 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				}
 			}
 
-			var dataGrouped =
-				data.GroupBy(x => x.PropertyType);
-
+			var dataGrouped = data.GroupBy(x => x.PropertyType)
+				.ToDictionary(g => g.Key, g => g.ToList());
 			var result = new List<SubjectsUPKSByTypeDto>();
-			foreach (var @group in dataGrouped)
+			foreach (var propertyType in _propertyTypes.OrderBy(x => x).ToList())
 			{
-				var groupValues = @group.ToList();
-				var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>();
-				foreach (var upksCalcType in upksCalcTypes)
+				if (dataGrouped.ContainsKey(propertyType.GetEnumDescription()))
 				{
-					var dto = new SubjectsUPKSByTypeDto
+					var groupValues = dataGrouped[propertyType.GetEnumDescription()];
+					foreach (var upksCalcType in _upksCalcTypes)
 					{
-						ObjectsCount = groupValues.Count,
-						PropertyType = @group.Key,
-						UpksCalcType = upksCalcType,
-						UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
-					};
+						var dto = new SubjectsUPKSByTypeDto
+						{
+							ObjectsCount = groupValues.Count,
+							PropertyType = propertyType.GetEnumDescription(),
+							UpksCalcType = upksCalcType,
+							UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
+						};
 
-					result.Add(dto);
+						result.Add(dto);
+					}
+				}
+				else
+				{
+					foreach (var upksCalcType in _upksCalcTypes)
+					{
+						var dto = new SubjectsUPKSByTypeDto
+						{
+							ObjectsCount = 0,
+							PropertyType = propertyType.GetEnumDescription(),
+							UpksCalcType = upksCalcType,
+							UpksCalcValue = null
+						};
+
+						result.Add(dto);
+					}
 				}
 			}
 
@@ -138,13 +159,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			foreach (var @group in dataGrouped)
 			{
 				var groupValues = @group.ToList();
-				var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>();
-				foreach (var upksCalcType in upksCalcTypes)
+				foreach (var upksCalcType in _upksCalcTypes)
 				{
 					var dto = new SubjectsUPKSByTypeAndPurposeDto
 					{
 						ObjectsCount = groupValues.Count,
 						PropertyType = @group.Key.PropertyTypeCode.GetEnumDescription(),
+						PropertyTypeCode = @group.Key.PropertyTypeCode,
 						Purpose = @group.Key.Purpose,
 						HasPurpose = @group.Key.HasPurpose,
 						UpksCalcType = upksCalcType,
@@ -155,7 +176,27 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				}
 			}
 
-			return result;
+			foreach (var propertyType in _propertyTypes)
+			{
+				if (result.All(x => x.PropertyTypeCode != propertyType))
+				{
+					foreach (var upksCalcType in _upksCalcTypes)
+					{
+						var dto = new SubjectsUPKSByTypeAndPurposeDto
+						{
+							ObjectsCount = 0,
+							PropertyType = propertyType.GetEnumDescription(),
+							PropertyTypeCode = propertyType,
+							UpksCalcType = upksCalcType,
+							UpksCalcValue = null
+						};
+
+						result.Add(dto);
+					}
+				}
+			}
+
+			return result.OrderBy(x => x.PropertyTypeCode).ToList();
 		}
 
 		private void FillPurposeData(SubjectsUPKSByTypeAndPurposeObjectDto dto, List<GbuObjectAttribute> gbuAttributes, RegisterAttribute purposeAttr, List<SubjectsUPKSByTypeAndPurposeObjectDto> data)

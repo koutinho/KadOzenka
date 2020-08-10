@@ -1,4 +1,5 @@
 ﻿using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
@@ -10,5 +11,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 		public int ObjectsCount { get; set; }
 		public UpksCalcType UpksCalcType { get; set; }
 		public decimal? UpksCalcValue { get; set; }
+		public PropertyTypes PropertyTypeCode { get; set; }
 	}
 }
