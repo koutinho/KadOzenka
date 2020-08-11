@@ -1380,11 +1380,11 @@ namespace KadOzenka.Dal.DataExport
                 if (unit.GroupId > 0)
                 {
                     OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                    //act_opredel.act_dop   = group_unit.act_dop;    //aSubGroup.act_dop;  //TODO
+                    act_opredel.act_dop = group_unit.AssumptionsReference;
                     act_opredel.kc = unit.CadastralCost;
-                    //act_opredel.act_model = group_unit.act_model;// aSubGroup.act_model;  //TODO
+                    act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
                     act_opredel.osnovanie = unit.Status;
-                    //act_opredel.act_other = group_unit.act_other;  //TODO
+                    act_opredel.act_other = group_unit.OtherCostRelatedInfo;
                     act_opredel.subgroup = group_unit.GroupName;
                     _list_act.Add(act_opredel);
 
@@ -2012,11 +2012,11 @@ namespace KadOzenka.Dal.DataExport
                     act_opredel.code = str_attr;
 
                 OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                //act_opredel.act_dop   = group_unit.act_dop;    //aSubGroup.act_dop;  //TODO
+                act_opredel.act_dop = group_unit.AssumptionsReference;
                 act_opredel.kc = unit.CadastralCost;
-                //act_opredel.act_model = group_unit.act_model;// aSubGroup.act_model;  //TODO
+                act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
                 act_opredel.osnovanie = unit.Status;
-                //act_opredel.act_other = group_unit.act_other;  //TODO
+                act_opredel.act_other = group_unit.OtherCostRelatedInfo;
                 act_opredel.subgroup = group_unit.GroupName;
                 _list_act.Add(act_opredel);
 
@@ -4185,7 +4185,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.1",
                      "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
-                     DataExportCommon.SStr("-"),   //TODO -
+                     DataExportCommon.SStr(group_unit.MarketSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4193,7 +4193,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.2",
                      "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
-                     DataExportCommon.SStr("-"),   //TODO -
+                     DataExportCommon.SStr(group_unit.MarketSegmentFunctioningFeatures),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4201,7 +4201,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.3",
                      "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
-                     DataExportCommon.SStr("-"),   //TODO -
+                     DataExportCommon.SStr(group_unit.PriceZoneCharacteristic),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
