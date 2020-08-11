@@ -75,18 +75,6 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
-        public ActionResult Characteristics(long registerId)
-        {
-            var model = new SourceModel
-            {
-                RegisterId = registerId
-            };
-
-            return View(model);
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM)]
         public ActionResult AddCharacteristic(long registerId)
         {
             var model = new CharacteristicModel

@@ -1,0 +1,4 @@
+﻿<RootElement>
+    <ControlElement Caption="Наименование показателя" ID="attribute_name" OwnType="Text" AttributeNumber="93100200" QueryOperation="Like" />
+</RootElement>
+

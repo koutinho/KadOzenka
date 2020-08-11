@@ -1,5 +1,6 @@
 ﻿<RootElement>
     <ControlElement Caption="Значение" ID="value" OwnType="Text" AttributeNumber="21400300" QueryOperation="Like" />
+    <ControlElement Caption="Значение (по точному совпадению)" ID="value_exact" OwnType="Text" AttributeNumber="21400300" QueryOperation="Equal" />
     <ControlElement Caption="Код" ID="code" OwnType="Text" AttributeNumber="21400400" QueryOperation="Like" />
     <ControlElement Caption="Источник" ID="source" OwnType="Text" AttributeNumber="21400500" QueryOperation="Like" />
     <ControlElement Caption="ФИО эксперта" ID="expert" OwnType="Text" AttributeNumber="21400600" QueryOperation="Like" />

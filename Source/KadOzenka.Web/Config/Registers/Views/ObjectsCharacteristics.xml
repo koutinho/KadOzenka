@@ -19,10 +19,10 @@
   </Buttons>
 
   <Tabs>
-    <Tab Caption="Характеристики" NavigateURL="~/ObjectsCharacteristics/Characteristics">
-      <Parameters>
-        <Parameter Key="registerId" Value="[2400200]" />
-      </Parameters>
-    </Tab>
+      <Tab Caption="Характеристики" NavigateURL="/RegistersView/CharacteristicsList?Transition=1">
+          <Parameters>
+              <Parameter Key="93100300" Value="[2400200]" />
+          </Parameters>
+      </Tab>
   </Tabs>
 </RegisterView>
