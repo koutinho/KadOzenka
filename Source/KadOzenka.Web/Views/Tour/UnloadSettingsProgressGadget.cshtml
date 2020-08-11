@@ -232,11 +232,12 @@
     function createUnloadsList(data) {
         unloadsListDataSource = data;
         if (data.length > 0) {
-            $('.noCurrentProcesses').hide();
             for (var i = 0; i < data.length; i++) {
                 createUnloadItem(data[i]);
             }
             $('#unloadsList').show();
+        } else {
+            $('.noCurrentProcesses').show();
         }
     }
 
@@ -256,6 +257,7 @@
             if (elem === undefined) {
                 removeUnloadItem(unloadsListDataSource[i]);
                 unloadsListDataSource.splice(i, 1);
+                i--;
             }
         }
 
