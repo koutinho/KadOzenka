@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="203" DefaultLayoutId="1002031" LinkedRegistersList="203,201,202,963" AllowSearchPanelResize="false"
+<RegisterView RegisterId="203" DefaultLayoutId="1002031" LinkedRegistersList="203,201,202" AllowSearchPanelResize="false"
               Description="Задания на оценку" IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false"
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SRDFunctionTag="KO.TASKS" SplitterSize="40%">
