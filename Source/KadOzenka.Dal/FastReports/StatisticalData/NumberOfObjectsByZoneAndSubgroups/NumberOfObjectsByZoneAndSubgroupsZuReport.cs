@@ -2,18 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Linq;
-using Core.Shared.Extensions;
-using Core.Shared.Misc;
-using Core.UI.Registers.Reports.Model;
+using System.IO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using KadOzenka.Dal.Groups.Dto;
-using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
-using Microsoft.AspNetCore.Http;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubgroups
 {
@@ -31,46 +23,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			return "NumberOfObjectsByZoneAndSubgroupsZuOksReport";
 		}
 
-		public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
-		{
-			if (!initialisation)
-				return;
-
-			var reportType =
-				int.Parse((StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu).GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
-					nameof(StatisticalDataFmReportCodeAttribute.Code)));
-			var tourKey = $"Report{reportType}TourId";
-			var secondTourKey = $"Report{reportType}SecondTourId";
-			if (!HttpContextHelper.HttpContext.Session.Keys.Contains(tourKey))
-			{
-				throw new Exception("Не передан идентификатор Тура 1");
-			}
-			if (!HttpContextHelper.HttpContext.Session.Keys.Contains(secondTourKey))
-			{
-				throw new Exception("Не передан идентификатор Тура 2");
-			}
-
-			var tourId = long.Parse(HttpContextHelper.HttpContext.Session.GetString(tourKey));
-			var secondTourId = long.Parse(HttpContextHelper.HttpContext.Session.GetString(secondTourKey));
-
-			var groupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "TourGroup");
-			if (groupsFilterValue != null)
-			{
-				var groups = GetSubgroupsForTour(tourId);
-
-				groupsFilterValue.ReportParameters = new List<ReportParameter>();
-				groupsFilterValue.ReportParameters.AddRange(groups.Select(x => new ReportParameter { Value = $"{x.GroupName}", Key = $"key:{x.Id}" }));
-			}
-			var secondTourGroupsFilterValue = filterValues.FirstOrDefault(f => f.ParamName == "SecondTourGroup");
-			if (secondTourGroupsFilterValue != null)
-			{
-				var groups = GetSubgroupsForTour(secondTourId);
-
-				secondTourGroupsFilterValue.ReportParameters = new List<ReportParameter>();
-				secondTourGroupsFilterValue.ReportParameters.AddRange(groups.Select(x => new ReportParameter { Value = $"{x.GroupName}", Key = $"key:{x.Id}" }));
-			}
-		}
-
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var firstTourId = GetQueryParam<long?>("TourId", query);
@@ -83,21 +35,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			{
 				throw new Exception("Истекло время ожидания сессии. Обновите страницу.");
 			}
-			var firstGroupId = GetQueryParam<long?>("TourGroup", query);
-			if (!firstGroupId.HasValue)
-			{
-				throw new Exception("Не выбрана подгруппа Тура 1");
-			}
-			var secondGroupId = GetQueryParam<long?>("SecondTourGroup", query);
-			if (!secondGroupId.HasValue)
-			{
-				throw new Exception("Истекло время ожидания сессии. Обновите страницу.");
-			}
-
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
-			dataTitleTable.Rows.Add("Статистика по УПКС ЗУ, расположенных в зонах и районах, отнесенных к подгруппе");
+			dataTitleTable.Rows.Add("Статистика по зонам ЗУ");
 
 			var dataTable = new DataTable("Data");
 			dataTable.Columns.Add("Zone");
@@ -127,8 +68,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			dataTable.Columns.Add("AverageUpksVarianceBetweenToursWithoutGroupChanging");
 
 
-			var data = _service.GetNumberOfObjectsByZoneAndSubgroupsData(firstTourId.Value, firstGroupId.Value,
-				secondTourId.Value, secondGroupId.Value, false);
+			var data = _service.GetNumberOfObjectsByZoneAndSubgroupsData(firstTourId.Value, 
+				secondTourId.Value, GetReportDataType(query), false);
 
 
 			foreach (var dto in data)
@@ -192,15 +133,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			return dataSet;
 		}
 
-		private IEnumerable<GroupTreeDto> GetSubgroupsForTour(long tourId)
+		private NumberOfObjectsByZoneAndSubgroupsReportDataType GetReportDataType(NameValueCollection query)
 		{
-			var allGroups = GroupService.GetGroupsTreeForTour(tourId);
-
-			var mainGroupId = (long)KoGroupAlgoritm.MainParcel;
-			var mainGroups = allGroups.Where(x => x.Id == mainGroupId).SelectMany(x => x.Items);
-			var subgroups = mainGroups.SelectMany(x => x.Items.Select(y => new GroupTreeDto { Id = y.Id, GroupName = $"{y.GroupName} ({x.GroupName})" }));
-
-			return subgroups;
+			var reportType = GetQueryParam<string>("ReportType", query);
+			switch (reportType)
+			{
+				case "По итогам сравнения туров оценки":
+					return NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial;
+				case "По итогам сравнения с учетом данных по ВУОНам":
+					return NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon;
+				default:
+					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
+			}
 		}
 	}
 

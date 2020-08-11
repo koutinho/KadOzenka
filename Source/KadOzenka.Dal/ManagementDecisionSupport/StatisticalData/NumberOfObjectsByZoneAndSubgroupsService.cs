@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-		public List<NumberOfObjectsByZoneAndSubgroupsDto> GetNumberOfObjectsByZoneAndSubgroupsData(long firstTourId, long firstSubgroupId, long secondTourId, long secondSubgroupId, bool isOksReportType)
+		public List<NumberOfObjectsByZoneAndSubgroupsDto> GetNumberOfObjectsByZoneAndSubgroupsData(long firstTourId, long secondTourId, NumberOfObjectsByZoneAndSubgroupsReportDataType reportDataType, bool isOksReportType)
 		{
 			var firstTourCodeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(firstTourId);
 			if (firstTourCodeGroupAttr == null)
@@ -49,7 +49,20 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
 					QSConditionType.Equal, (long)PropertyTypes.Stead));
 			}
-			conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.GroupId), QSConditionType.In, new List<double> { firstSubgroupId, secondSubgroupId }));
+
+			long? firstTourTaskId, secondTourTaskId;
+			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial)
+			{
+				firstTourTaskId = GetTourTaskId(firstTourId, KoNoteType.Initial, isOksReportType);
+				secondTourTaskId = GetTourTaskId(secondTourId, KoNoteType.Initial, isOksReportType);
+			}
+			else
+			{
+				firstTourTaskId = GetTourTaskId(firstTourId, KoNoteType.Day, isOksReportType);
+				secondTourTaskId = GetTourTaskId(secondTourId, KoNoteType.Day, isOksReportType);
+			}
+
+			conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, new List<double> { firstTourTaskId.GetValueOrDefault(), secondTourTaskId.GetValueOrDefault() }));
 
 			var query = new QSQuery
 			{
@@ -75,7 +88,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				}
 			};
 
-			query.AddColumn(OMUnit.GetColumn(x => x.GroupId, "GroupId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.TourId, "TourId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
@@ -115,7 +127,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				{
 					var dto = new NumberOfObjectsByZoneAndSubgroupsObjectDto
 					{
-						GroupId = table.Rows[i]["GroupId"].ParseToLong(),
 						TourId = table.Rows[i]["TourId"].ParseToLong(),
 						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToString(),
 						ObjectId = table.Rows[i]["ObjectId"].ParseToLong(),
@@ -177,6 +188,41 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			return result;
+		}
+
+		private long? GetTourTaskId(long tourId, KoNoteType koNoteType, bool isOks)
+		{
+			long? taskId = null;
+			var tasks = OMTask.Where(x => x.TourId == tourId
+										  && x.NoteType_Code == koNoteType)
+				.Select(x => x.CreationDate)
+				.Execute().OrderByDescending(x => x.CreationDate).ToList();
+			foreach (var task in tasks)
+			{
+				if (isOks)
+				{
+					if (OMUnit.Where(x =>
+							x.TaskId == task.Id && x.PropertyType_Code != PropertyTypes.Stead &&
+							x.PropertyType_Code != PropertyTypes.None)
+						.ExecuteExists())
+					{
+						taskId = task.Id;
+						break;
+					}
+				}
+				else
+				{
+					if (OMUnit.Where(x =>
+							x.TaskId == task.Id && x.PropertyType_Code == PropertyTypes.Stead)
+						.ExecuteExists())
+					{
+						taskId = task.Id;
+						break;
+					}
+				}
+			}
+
+			return taskId;
 		}
 
 		private NumberOfObjectsByZoneAndSubgroupsDto NumberOfObjectsByZoneAndSubgroupsDto(long firstTourId, long secondTourId,

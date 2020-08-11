@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
+﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
 	public class NumberOfObjectsByZoneAndSubgroupsObjectDto
 	{
 		public long? TourId { get; set; }
-		public long? GroupId { get; set; }
 		public string CadastralNumber { get; set; }
 		public long? ObjectId { get; set; }
 		public long? Zone { get; set; }
