@@ -218,6 +218,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/Documents", "Реестр документов", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/ObjectsCharacteristics", "Характеристики объектов", _moveToPageSymbol);
 
             return data;
         }
