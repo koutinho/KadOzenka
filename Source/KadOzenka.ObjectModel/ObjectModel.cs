@@ -23733,6 +23733,26 @@ namespace ObjectModel.Es
             }
         }
 
+
+        private long? _buildcadnumber;
+        /// <summary>
+        /// 61100600 Идентификатор атрибута кадастрового номера строения (BUILD_CAD_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61100600)]
+        public long? BuildCadNumber
+        {
+            get
+            {
+                CheckPropertyInited("BuildCadNumber");
+                return _buildcadnumber;
+            }
+            set
+            {
+                _buildcadnumber = value;
+                NotifyPropertyChanged("BuildCadNumber");
+            }
+        }
+
     }
 }
 
