@@ -9,18 +9,21 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Es;
 using ObjectModel.ES;
+using ObjectModel.Gbu;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -54,9 +57,10 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
-		public JsonResult GetKadNumber(string address)
+		public JsonResult GetKadNumber(string address = "")
 		{
-			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
+			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress != null
+			                                               && x.FormalizedAddress.ToLower() == address.ToLower()).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
 
 			if (yandexAddress == null)
 			{
@@ -72,7 +76,35 @@ namespace KadOzenka.Web.Controllers
 
 			if (yandexAddress == null)
 			{
-				return SendErrorMessage("Адрес для объекта не найден");
+				var commonSetting = OMSettingsParams.Where(x => x.SegmentType_Code == MarketSegment.NoSegment)
+					.SelectAll().ExecuteFirstOrDefault();
+
+				if (commonSetting?.BuildCadNumber == null) 
+				{
+					return SendErrorMessage("Заполните атрибут для поиска кадастрового номера здания");
+				}
+
+				var obj = OMMainObject.Where(x => x.CadastralNumber == kadNumber).SelectAll().ExecuteFirstOrDefault();
+
+				if (obj == null)
+				{
+					return SendErrorMessage("В ГБУ не найден объект с указанным кадастровым номером");
+				}
+
+				var attribute = new GbuObjectService().GetAllAttributes(obj.Id, null, new List<long> {commonSetting.BuildCadNumber.GetValueOrDefault()}, DateTime.Now.Date)?.FirstOrDefault();
+
+				if (attribute == null || attribute.StringValue.IsNullOrEmpty())
+				{
+					return SendErrorMessage("Адрес для объекта не найден");
+				}
+
+				yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == attribute.StringValue).Select(x => x.FormalizedAddress).ExecuteFirstOrDefault();
+
+				if (yandexAddress == null)
+				{
+					return SendErrorMessage("Адрес для объекта не найден");
+				}
+
 			}
 			return Json(new { response = new { address = yandexAddress.FormalizedAddress } });
 		}
@@ -106,15 +138,11 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress.Contains(param.Address)).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
-            if (yandexAddress == null)
-                return SendErrorMessage("Адрес для объекта не найден");
-
             var setting = OMSettingsParams.Where(x => x.SegmentType_Code == param.Segment.GetValueOrDefault()).SelectAll().ExecuteFirstOrDefault();
             if (setting == null)
                 return SendErrorMessage("Не найдены настройки для выбранного сегмента");
 
-            var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
+            var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(param.Kn, (int)setting.TourId);
             if (unitsIds.Count == 0)
                 return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
 
@@ -482,7 +510,62 @@ namespace KadOzenka.Web.Controllers
 			return PartialView("Partials/PartialSimpleFactorCard", new ComplexCostFactor());
 		}
 
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT)]
+		public ActionResult SetCommonSetting()
+		{
+			ViewData["TreeAttributes"] = new GbuObjectService().GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
 
+			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == MarketSegment.NoSegment).SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return View(new SetCommonAttributeEsViewModel {CadastralNumbeGbuAttributeId = setting?.BuildCadNumber});
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT)]
+		public JsonResult SetCommonSetting(SetCommonAttributeEsViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == MarketSegment.NoSegment).SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (setting == null)
+			{
+				setting = new OMSettingsParams
+				{
+					SegmentType_Code = MarketSegment.NoSegment,
+					TourId = 0,
+					Registerid = 0,
+					BuildCadNumber = model.CadastralNumbeGbuAttributeId
+				};
+			}
+			else
+			{
+				setting.BuildCadNumber = model.CadastralNumbeGbuAttributeId;
+			}
+
+			setting.Save();
+
+			return Json(new
+			{
+				Success = "Сохранено успешно"
+			});
+		}
 
 
 		#endregion

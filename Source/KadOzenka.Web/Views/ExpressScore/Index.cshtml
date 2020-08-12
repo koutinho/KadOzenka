@@ -387,7 +387,8 @@
             var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
             var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
             var useYearBuild = $("input[name='UseYearBuild']:checked").val();
-            var useSquare = $("input[name='UseSquare']:checked").val();
+			var useSquare = $("input[name='UseSquare']:checked").val();
+			var kn =  $('#Kn').val();
             if (quality === 0) {
                 Common.ShowError('Выберите количество аналогов');
                 return;
@@ -403,7 +404,7 @@
             kendo.ui.progress($('body'), true);
 
             var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
-														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
+														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Kn=${kn}
 															&DealTypeShort=${dealTypeShort}&ActualDate=${actualDate}&UseYearBuild=${useYearBuild}&UseSquare=${useSquare}`;
             $.get(url).done(function (data) {
                 if (data.updateTargetObjectUrl) {

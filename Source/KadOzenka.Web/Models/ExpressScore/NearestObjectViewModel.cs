@@ -37,11 +37,13 @@ namespace CIPJS.Models.ExpressScore
 		[Required(ErrorMessage = "Не указана долгота. Обратитесь к администратору.")]
 		public decimal? SelectedLng { get; set; }
 
+
 		/// <summary>
-		/// Адрес объекта 
+		/// Кадастровый номер
 		/// </summary>
-		[Required(ErrorMessage = "Не указан адрес")]
-		public string Address { get; set; }
+		[Required(ErrorMessage = "Не указан кадастровый номер")]
+		public string Kn { get; set; }
+
 
 		/// <summary>
 		/// Тип сделки

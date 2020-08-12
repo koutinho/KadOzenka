@@ -4,6 +4,12 @@
               ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Экспресс оценка"
               ShowObjectCards="false">
 
+
+	<ObjectCardButtons>
+		<Button Caption="Настройка для выбора кадастрового номера" NavigateURL="/ExpressScore/SetCommonSetting" WindowHeight="300" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.CONSTRUCTOR.EDIT" Icon="fas fa-cog">
+		</Button>
+	</ObjectCardButtons>
+
 	<Tabs>
 		<Tab Caption="Экспресс оценка" NavigateURL="/ExpressScore">
 			<Parameters>
