@@ -643,7 +643,7 @@ namespace KadOzenka.Dal.GbuObject
 		        PriorityGrouping.CurrentCount++;
 	        }
 
-	        reportService.AddValue(obj.CadastralNumber, 0, currentRow);
+	        reportService.AddValue(obj.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
 
 			Code_Source_01 = string.Empty;
             Code_Source_02 = string.Empty;
@@ -752,8 +752,8 @@ namespace KadOzenka.Dal.GbuObject
 
                             AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-						    reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), 1, currentRow);
-						    reportService.AddValue(resGroup, 2, currentRow);
+						    reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
+						    reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
 
 						    {
 							    string[] arrsource = source.Split(';');
@@ -817,7 +817,7 @@ namespace KadOzenka.Dal.GbuObject
 							    }
 
 							    strsource = strsource.Trim().TrimEnd(';');
-							    reportService.AddValue(strsource, 3, currentRow);
+							    reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
 
 							    if (setting.IdAttributeSource != null)
 							    {
@@ -878,14 +878,14 @@ namespace KadOzenka.Dal.GbuObject
                                 strsource = strsource.Trim().TrimEnd(';');
                                 AddValueFactor(obj, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
-                            reportService.AddValue(errorCODStr, 4, currentRow);
+                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
 					    }
                     }
                     else
                     {
                         lock (PriorityGrouping.locked)
                         {
-                            reportService.AddValue(errorCODStr, 4, currentRow);
+                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                         }
                     }
                         #endregion
@@ -1147,12 +1147,8 @@ namespace KadOzenka.Dal.GbuObject
                     {
                         lock (PriorityGrouping.locked)
                         {
-                            reportService.AddValue(errorCODStr, 4, currentRow);
+                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                         }
-						//lock (PriorityGrouping.locked)
-	     //               {
-		    //                PriorityGrouping.ErrorMessages.Add(errorCODStr);
-	     //               }
                     }
 					#endregion
 				}
@@ -1297,7 +1293,7 @@ namespace KadOzenka.Dal.GbuObject
             {
                 Serilog.Log.Debug("Применение стилей SetStyle");
                 Serilog.Log.Debug("Применение стилей отключено");
-                //reportService.SetStyle();
+                reportService.SetStyle();
                 reportService.SetIndividualWidth(KnColumn, 4);
                 reportService.SetIndividualWidth(ResultColumn, 6);
                  reportService.SetIndividualWidth(ValueColumn, 3);

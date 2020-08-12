@@ -71,7 +71,6 @@ namespace KadOzenka.Dal.GbuObject
 				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
 				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.WrapText = true;
-				//mainWorkSheet.Columns[col].SetWidth(5, LengthUnit.Centimeter);
 				col++;
 			}
 
@@ -83,7 +82,6 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			try {
 				_mainWorkSheet.Rows[row].Cells[column].SetValue(value);
-				//mainWorkSheet.Columns[col].SetWidth(5, LengthUnit.Centimeter);
 
 				if (new Random().Next(0, 10000) > 9950)
 					Serilog.Log.Logger.Debug("Запись значения в Excel {row} {column} {value}", row, column, value);
