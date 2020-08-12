@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="302" LinkedRegistersList="302,311,300,312, 315" DefaultLayoutId="1003021" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
+    <Buttons>
+      <Button Caption="Добавить" NavigateURL="/Sud/EditConclusionLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
+	      <ConditionGroups>
+		      <ConditionGroup HideOrDisable="Hide">
+			      <Conditions>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="And"/>
+			      </Conditions>
+		      </ConditionGroup>
+	      </ConditionGroups>
+		  <Parameters>
+            <Parameter Key="sudObjectId" Value="{Get:SudObjectId}" />
+        </Parameters>
+      </Button>
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditConclusionLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
+	      <ConditionGroups>
+		      <ConditionGroup HideOrDisable="Hide">
+			      <Conditions>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="And"/>
+			      </Conditions>
+		      </ConditionGroup>
+	      </ConditionGroups>
+		  <Parameters>
+          <Parameter Key="conclusionLinkId" Value="[ObjectID]" />
+        </Parameters>
+      </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

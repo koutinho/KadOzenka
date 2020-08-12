@@ -12,6 +12,7 @@ namespace KadOzenka.LongProcessService
         {
             Log.Information("Configure called");
             LogContext.PushProperty("ApplicationName", env.ApplicationName);
+            app.UseMiddleware<SerilogMiddleware>();
             app.UseSerilogRequestLogging();
             LongProcessManagementServiceWeb.LongProcessServiceInit(app, env);
         }

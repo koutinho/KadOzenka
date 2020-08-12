@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="300" LinkedRegistersList="300,312" DefaultLayoutId="1003001" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              ShowSettingsPanel="false" UseMasterPage="false" SearchPanel="SudZakSelect" SRDFunctionTag="">
+    <Buttons>
+      <Button Caption="Выбрать" NavigateURL="/" SRDFunctionTAG="SUD.OBJECTS.EDIT"/>
+      
+      <Button Caption="Добавить" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.ZAK.EDIT">
+        <Parameters></Parameters>
+      </Button>
+      
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.ZAK.EDIT">
+        <Parameters>
+          <Parameter Key="conclusionId" Value="[ObjectID]" />
+        </Parameters>
+      </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

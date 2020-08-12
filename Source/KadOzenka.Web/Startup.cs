@@ -125,11 +125,11 @@ namespace CIPJS
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Log.Information("Configure called");
             LogContext.PushProperty("ApplicationName", env.ApplicationName);
-            loggerFactory.AddSerilog();
+            // loggerFactory.AddSerilog();
             //if (env.IsDevelopment())
             //{
             //    app.UseBrowserLink();

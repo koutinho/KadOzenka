@@ -23,6 +23,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult CurrentLongProcessesList()
 		{
 			var processesList = _service.GetCurrentLongProcessesList();
+			Serilog.Log.Debug("GbuCurrentLongProcessesList {processesList}", processesList);
 			return Content(JsonConvert.SerializeObject(processesList.Select(LongProcessViewModel.ToModel).ToList()), "application/json");
 		}
 	}

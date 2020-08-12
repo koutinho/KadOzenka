@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.GbuObject
 			if (registerData.AllpriPartitioning != Platform.Register.AllpriPartitioningType.AttributeId) return null;
 
 			var sql = $@"select A.change_date as ChangeDate, A.change_doc_id as ChangeDocId from {registerData.AllpriTable}_{attributeData.Id} A where A.object_Id = {objectId} and A.Ot = {CrossDBSQL.ToDate(otDate)}";
-
+			Serilog.Log.Debug("GbuObjectAttribute {sql}", sql);
 			return QSQuery.ExecuteSql<GbuObjectAttribute>(sql).FirstOrDefault();
 		}
 

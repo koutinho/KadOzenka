@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="963" DefaultLayoutId="1095008" LinkedRegistersList="963" 
+              AllowSearchPanelResize="false" Description="Документы" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" JoinType="Left"
+              ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Документы"
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" SRDFunctionTag="DOCUMENTS" ShowRowMenu="true">
+
+	<Buttons>
+		<Button Caption="Добавить" NavigateURL="/Document/AddDocument" WindowHeight="500" WindowWidth="1000" SRDFunctionTag="DOCUMENTS.EDIT" Icon="fas fa-plus"/>
+		
+		<Button Caption="Удалить" NavigateURL="/Document/ConfirmDeleteDocument" WindowHeight="250" WindowWidth="600" SRDFunctionTag="DOCUMENTS.DELETE" Icon="fas fa-trash-alt">
+			<Parameters>
+				<Parameter Key="documentId" Value="[ObjectId]" />
+			</Parameters>
+		</Button>
+	</Buttons>
+
+
+	<Tabs>
+		<Tab Caption="Карточка документа" NavigateURL="/Document/DocumentCard">
+			<Parameters>
+				<Parameter Key="documentId" Value="[ObjectId]" />
+			</Parameters>
+		</Tab>
+	</Tabs>
+
+</RegisterView>

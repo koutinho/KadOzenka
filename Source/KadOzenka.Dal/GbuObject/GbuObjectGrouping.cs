@@ -13,6 +13,7 @@ using Core.ErrorManagment;
 using System.Security.Principal;
 using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -527,7 +528,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value == ValueLevel.Value);
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -582,9 +583,11 @@ namespace KadOzenka.Dal.GbuObject
 	            ValueLevel = GetValueFactor(unit, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
+                    if (new Random().Next(0, 10000) > 9960)
+                        Serilog.Log.Debug("Значение атрибута уровня {ValueLevel} {dataLevelFactorId} {Dictionary}", ValueLevel.Value, dataLevel.FactorId, Dictionary);
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value == ValueLevel.Value);
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -704,185 +707,194 @@ namespace KadOzenka.Dal.GbuObject
                 Level10 = GetDataLevel(setting.Level10, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
                 Level11 = GetDataLevel(setting.Level11, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
-
-                var levelsData = new List<DataLevel>
-                {
-	                dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
-	                dataLevel9, dataLevel10, dataLevel11
-                };
-                lock (PriorityGrouping.locked)
-                {
-					PriorityGrouping.WriteDataAllLevels(levelsData, currentRow, dicColumns, reportService);
-				}
-              
-				string resGroup = GetGroupCode(out string source);
-
-                #region Результат
-                if (!errorCOD)
-                {
-                    if (setting.IdAttributeResult != null)
+                try { 
+                
+               
+                    var levelsData = new List<DataLevel>
                     {
-                        long? id_doc = null;
-                        if (source.Contains("09")) id_doc = Doc_Id_09;
-                        else
-                        if (source.Contains("07")) id_doc = Doc_Id_07;
-                        else
-                        if (source.Contains("08")) id_doc = Doc_Id_08;
-                        else
-                        if (source.Contains("01")) id_doc = Doc_Id_01;
-                        else
-                        if (source.Contains("04")) id_doc = Doc_Id_04;
-                        else
-                        if (source.Contains("03")) id_doc = Doc_Id_03;
-                        else
-                        if (source.Contains("05")) id_doc = Doc_Id_05;
-                        else
-                        if (source.Contains("06")) id_doc = Doc_Id_06;
-                        else
-                        if (source.Contains("02")) id_doc = Doc_Id_02;
-                        else
-                        if (source.Contains("10")) id_doc = Doc_Id_10;
-                        else
-                        if (source.Contains("11")) id_doc = Doc_Id_11;
+	                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
+	                    dataLevel9, dataLevel10, dataLevel11
+                    };
+                    lock (PriorityGrouping.locked)
+                    {
+                        PriorityGrouping.WriteDataAllLevels(levelsData, currentRow, dicColumns, reportService);
+                    }
+              
+				    string resGroup = GetGroupCode(out string source);
 
-                        AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
-
-						reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), 1, currentRow);
-						reportService.AddValue(resGroup, 2, currentRow);
-
-						{
-							string[] arrsource = source.Split(';');
-							string strsource = string.Empty;
-							foreach (string item in arrsource)
-							{
-								if (item == "01")
-								{
-									strsource += (Level1.AttributeName + "; ");
-								}
-
-								if (item == "02")
-								{
-									strsource += (Level2.AttributeName + "; ");
-								}
-
-								if (item == "03")
-								{
-									strsource += (Level3.AttributeName + "; ");
-								}
-
-								if (item == "04")
-								{
-									strsource += (Level4.AttributeName + "; ");
-								}
-
-								if (item == "05")
-								{
-									strsource += (Level5.AttributeName + "; ");
-								}
-
-								if (item == "06")
-								{
-									strsource += (Level6.AttributeName + "; ");
-								}
-
-								if (item == "07")
-								{
-									strsource += (Level7.AttributeName + "; ");
-								}
-
-								if (item == "08")
-								{
-									strsource += (Level8.AttributeName + "; ");
-								}
-
-								if (item == "09")
-								{
-									strsource += (Level9.AttributeName + "; ");
-								}
-
-								if (item == "10")
-								{
-									strsource += (Level10.AttributeName + "; ");
-								}
-
-								if (item == "11")
-								{
-									strsource += (Level11.AttributeName + "; ");
-								}
-							}
-
-							strsource = strsource.Trim().TrimEnd(';');
-							reportService.AddValue(strsource, 3, currentRow);
-
-							if (setting.IdAttributeSource != null)
-							{
-								AddValueFactor(obj, setting.IdAttributeSource, null, dateActual, strsource);
-							}
-						}
-						if (setting.IdAttributeDocument != null)
+                    #region Результат
+                    if (!errorCOD)
+                    {
+                        if (setting.IdAttributeResult != null)
                         {
-                            string[] arrsource = source.Split(';');
-                            string strsource = string.Empty;
-                            foreach (string item in arrsource)
-                            {
-                                if (item == "01")
-                                {
-                                    strsource += (Doc_Source_01 + "; ");
-                                }
-                                if (item == "02")
-                                {
-                                    strsource += (Doc_Source_02 + "; ");
-                                }
-                                if (item == "03")
-                                {
-                                    strsource += (Doc_Source_03 + "; ");
-                                }
-                                if (item == "04")
-                                {
-                                    strsource += (Doc_Source_04 + "; ");
-                                }
-                                if (item == "05")
-                                {
-                                    strsource += (Doc_Source_05 + "; ");
-                                }
-                                if (item == "06")
-                                {
-                                    strsource += (Doc_Source_06 + "; ");
-                                }
-                                if (item == "07")
-                                {
-                                    strsource += (Doc_Source_07 + "; ");
-                                }
-                                if (item == "08")
-                                {
-                                    strsource += (Doc_Source_08 + "; ");
-                                }
-                                if (item == "09")
-                                {
-                                    strsource += (Doc_Source_09 + "; ");
-                                }
-                                if (item == "10")
-                                {
-                                    strsource += (Doc_Source_10 + "; ");
-                                }
-                                if (item == "11")
-                                {
-                                    strsource += (Doc_Source_11 + "; ");
-                                }
-                            }
-                            strsource = strsource.Trim().TrimEnd(';');
-                            AddValueFactor(obj, setting.IdAttributeDocument, null, dateActual, strsource);
-                        }
-                        reportService.AddValue(errorCODStr, 4, currentRow);
-					}
-                }
-                else
-                {
-	                reportService.AddValue(errorCODStr, 4, currentRow);
-                }
-                #endregion
-            }
+                            long? id_doc = null;
+                            if (source.Contains("09")) id_doc = Doc_Id_09;
+                            else
+                            if (source.Contains("07")) id_doc = Doc_Id_07;
+                            else
+                            if (source.Contains("08")) id_doc = Doc_Id_08;
+                            else
+                            if (source.Contains("01")) id_doc = Doc_Id_01;
+                            else
+                            if (source.Contains("04")) id_doc = Doc_Id_04;
+                            else
+                            if (source.Contains("03")) id_doc = Doc_Id_03;
+                            else
+                            if (source.Contains("05")) id_doc = Doc_Id_05;
+                            else
+                            if (source.Contains("06")) id_doc = Doc_Id_06;
+                            else
+                            if (source.Contains("02")) id_doc = Doc_Id_02;
+                            else
+                            if (source.Contains("10")) id_doc = Doc_Id_10;
+                            else
+                            if (source.Contains("11")) id_doc = Doc_Id_11;
 
+                            AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+
+						    reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), 1, currentRow);
+						    reportService.AddValue(resGroup, 2, currentRow);
+
+						    {
+							    string[] arrsource = source.Split(';');
+							    string strsource = string.Empty;
+							    foreach (string item in arrsource)
+							    {
+								    if (item == "01")
+								    {
+									    strsource += (Level1.AttributeName + "; ");
+								    }
+
+								    if (item == "02")
+								    {
+									    strsource += (Level2.AttributeName + "; ");
+								    }
+
+								    if (item == "03")
+								    {
+									    strsource += (Level3.AttributeName + "; ");
+								    }
+
+								    if (item == "04")
+								    {
+									    strsource += (Level4.AttributeName + "; ");
+								    }
+
+								    if (item == "05")
+								    {
+									    strsource += (Level5.AttributeName + "; ");
+								    }
+
+								    if (item == "06")
+								    {
+									    strsource += (Level6.AttributeName + "; ");
+								    }
+
+								    if (item == "07")
+								    {
+									    strsource += (Level7.AttributeName + "; ");
+								    }
+
+								    if (item == "08")
+								    {
+									    strsource += (Level8.AttributeName + "; ");
+								    }
+
+								    if (item == "09")
+								    {
+									    strsource += (Level9.AttributeName + "; ");
+								    }
+
+								    if (item == "10")
+								    {
+									    strsource += (Level10.AttributeName + "; ");
+								    }
+
+								    if (item == "11")
+								    {
+									    strsource += (Level11.AttributeName + "; ");
+								    }
+							    }
+
+							    strsource = strsource.Trim().TrimEnd(';');
+							    reportService.AddValue(strsource, 3, currentRow);
+
+							    if (setting.IdAttributeSource != null)
+							    {
+								    AddValueFactor(obj, setting.IdAttributeSource, null, dateActual, strsource);
+							    }
+						    }
+						    if (setting.IdAttributeDocument != null)
+                            {
+                                string[] arrsource = source.Split(';');
+                                string strsource = string.Empty;
+                                foreach (string item in arrsource)
+                                {
+                                    if (item == "01")
+                                    {
+                                        strsource += (Doc_Source_01 + "; ");
+                                    }
+                                    if (item == "02")
+                                    {
+                                        strsource += (Doc_Source_02 + "; ");
+                                    }
+                                    if (item == "03")
+                                    {
+                                        strsource += (Doc_Source_03 + "; ");
+                                    }
+                                    if (item == "04")
+                                    {
+                                        strsource += (Doc_Source_04 + "; ");
+                                    }
+                                    if (item == "05")
+                                    {
+                                        strsource += (Doc_Source_05 + "; ");
+                                    }
+                                    if (item == "06")
+                                    {
+                                        strsource += (Doc_Source_06 + "; ");
+                                    }
+                                    if (item == "07")
+                                    {
+                                        strsource += (Doc_Source_07 + "; ");
+                                    }
+                                    if (item == "08")
+                                    {
+                                        strsource += (Doc_Source_08 + "; ");
+                                    }
+                                    if (item == "09")
+                                    {
+                                        strsource += (Doc_Source_09 + "; ");
+                                    }
+                                    if (item == "10")
+                                    {
+                                        strsource += (Doc_Source_10 + "; ");
+                                    }
+                                    if (item == "11")
+                                    {
+                                        strsource += (Doc_Source_11 + "; ");
+                                    }
+                                }
+                                strsource = strsource.Trim().TrimEnd(';');
+                                AddValueFactor(obj, setting.IdAttributeDocument, null, dateActual, strsource);
+                            }
+                            reportService.AddValue(errorCODStr, 4, currentRow);
+					    }
+                    }
+                    else
+                    {
+                        lock (PriorityGrouping.locked)
+                        {
+                            reportService.AddValue(errorCODStr, 4, currentRow);
+                        }
+                    }
+                        #endregion
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Logger.Error("SetPriorityGroup", ex);
+                }
+            }
         }
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual,
 	        GbuReportService reportService, Dictionary<long, long> dicColumns)
@@ -1120,7 +1132,10 @@ namespace KadOzenka.Dal.GbuObject
                                 strsource = strsource.Trim().TrimEnd(';');
                                 AddValueFactor(unit, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
-                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
+                            lock (PriorityGrouping.locked)
+                            {
+                                reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
+                            }
 
 							lock (PriorityGrouping.locked)
                             {
@@ -1130,7 +1145,10 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     else
                     {
-	                    reportService.AddValue(errorCODStr, 4, currentRow);
+                        lock (PriorityGrouping.locked)
+                        {
+                            reportService.AddValue(errorCODStr, 4, currentRow);
+                        }
 						//lock (PriorityGrouping.locked)
 	     //               {
 		    //                PriorityGrouping.ErrorMessages.Add(errorCODStr);
@@ -1205,7 +1223,10 @@ namespace KadOzenka.Dal.GbuObject
         {
 			var reportService =  new GbuReportService();
 			var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
-			reportService.AddHeaders(0, dataHeaderAndColumnNumber.Headers);
+
+            Serilog.Log.Logger.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
+ 
+            reportService.AddHeaders(0, dataHeaderAndColumnNumber.Headers);
 			long reportId = 0;
 
 	        ErrorMessages = new List<string>();
@@ -1236,7 +1257,8 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
 				CurrentCount = 0;
-				Parallel.ForEach(Objs, options, item => 
+                Serilog.Log.Debug("Выполнение операции группировки {Count} объектов {useTask}", MaxCount, useTask);
+                Parallel.ForEach(Objs, options, item => 
                 {
                     SetThreadCurrentPrincipal(userId);
 
@@ -1255,6 +1277,7 @@ namespace KadOzenka.Dal.GbuObject
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
+                Serilog.Log.Debug("Выполнение операции группировки {Count} объектов {useTask}", MaxCount, false);
                 Parallel.ForEach(Objs, options, item => 
                 {
                     SetThreadCurrentPrincipal(userId);
@@ -1268,24 +1291,33 @@ namespace KadOzenka.Dal.GbuObject
                         ErrorManager.LogError(ex);
                     }
                 });
-
             }
 
-			reportService.SetStyle();
-			reportService.SetIndividualWidth(KnColumn, 4);
-			reportService.SetIndividualWidth(ResultColumn, 6);
-			reportService.SetIndividualWidth(ValueColumn, 3);
-			reportService.SetIndividualWidth(SourceColumn, 6);
-			reportService.SetIndividualWidth(ErrorColumn, 5);
+            try
+            {
+                Serilog.Log.Debug("Применение стилей SetStyle");
+                Serilog.Log.Debug("Применение стилей отключено");
+                //reportService.SetStyle();
+                reportService.SetIndividualWidth(KnColumn, 4);
+                reportService.SetIndividualWidth(ResultColumn, 6);
+                 reportService.SetIndividualWidth(ValueColumn, 3);
+                reportService.SetIndividualWidth(SourceColumn, 6);
+                reportService.SetIndividualWidth(ErrorColumn, 5);
 
-			foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
-			{
-				reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
-				reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
-			}
-			reportId = reportService.SaveReport("Отчет нормолизации");
-
-            return reportId;
+                foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
+                {
+                    reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
+                    reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
+                }
+                reportId = reportService.SaveReport("Отчет нормолизации");
+                return reportId;
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "Форматирование и сохранение отчета завершилось с ошибкой");
+                throw;
+            }
+		          
         }
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
@@ -1307,7 +1339,11 @@ namespace KadOzenka.Dal.GbuObject
 				        lastColumn++;
 						var lItem = (LevelItem)propertyInfo.GetValue(setting);
 				        resHeaderList.AddRange(new List<string>{ GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()), $"(Уровень - {levelTitle}) Источник информации" });
-				        dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
+                        
+                       /// Serilog.Context.LogContext.PushProperty("lItem.IdFactor", lItem.IdFactor);
+                        Serilog.Log.ForContext("FactorID", lItem.IdFactor).Debug("Ид атрибута ОН");
+                        
+                        dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
 				        lastColumn++;
 				        levelTitle++;
 			        }
@@ -1321,12 +1357,12 @@ namespace KadOzenka.Dal.GbuObject
 
         public static void WriteDataAllLevels(List<DataLevel> dataLevels, int rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
-	        foreach (var dataLevel in dataLevels)
+            foreach (var dataLevel in dataLevels)
 	        {
 		        if (!dataLevel.Code.IsNullOrEmpty())
 		        {
-			        string registerName = GbuObjectService.GetRegisterNameByAttributeId(dataLevel.FactorId);
-			        long column = dictionaryColumns.FirstOrDefault(x => x.Key == dataLevel.FactorId).Value;
+                    string registerName = GbuObjectService.GetRegisterNameByAttributeId(dataLevel.FactorId);
+                    long column = dictionaryColumns.FirstOrDefault(x => x.Key == dataLevel.FactorId).Value;
 			        reportService.AddValue(dataLevel.Code, (int)column, rowNumber);
 			        reportService.AddValue(registerName, (int)column +1, rowNumber);
 		        }

@@ -46,24 +46,24 @@ namespace CIPJS
                 Log.CloseAndFlush();
             }
 
-            var services = new ServiceCollection();
+            //var services = new ServiceCollection();
 
-            services.AddSingleton(providers);
-            services.AddSingleton<ILoggerFactory>(sc =>
-            {
-                var providerCollection = sc.GetService<LoggerProviderCollection>();
-                var factory = new SerilogLoggerFactory(null, true, providerCollection);
+            //services.AddSingleton(providers);
+            //services.AddSingleton<ILoggerFactory>(sc =>
+            //{
+            //    var providerCollection = sc.GetService<LoggerProviderCollection>();
+            //    var factory = new SerilogLoggerFactory(null, true, providerCollection);
 
-                foreach (var provider in sc.GetServices<ILoggerProvider>())
-                    factory.AddProvider(provider);
+            //    foreach (var provider in sc.GetServices<ILoggerProvider>())
+            //        factory.AddProvider(provider);
 
-                return factory;
-            });
+            //    return factory;
+            //});
 
-            var serviceProvider = services.BuildServiceProvider();
-            var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+            //var serviceProvider = services.BuildServiceProvider();
+            //var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
-            serviceProvider.Dispose();
+            //serviceProvider.Dispose();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

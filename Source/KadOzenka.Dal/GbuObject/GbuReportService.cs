@@ -4,6 +4,8 @@ using System.IO;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
+using DevExpress.CodeParser.Diagnostics;
+using DevExpress.DataAccess.DataFederation;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
@@ -17,7 +19,7 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		private ExcelFile _excelTemplate;
 		private ExcelWorksheet _mainWorkSheet;
-
+	
 		private int _currentRow { get; set; }
 
 		public GbuReportService()
@@ -79,8 +81,17 @@ namespace KadOzenka.Dal.GbuObject
 
 		public void AddValue(string value, int column, int row)
 		{
+			try {
 				_mainWorkSheet.Rows[row].Cells[column].SetValue(value);
 				//mainWorkSheet.Columns[col].SetWidth(5, LengthUnit.Centimeter);
+
+				if (new Random().Next(0, 10000) > 9950)
+					Serilog.Log.Logger.Debug("Запись значения в Excel {row} {column} {value}", row, column, value);
+			}
+			catch (Exception ex) {
+				if (new Random().Next(0, 100) > 80)
+					Serilog.Log.Logger.Error(ex, "Ошибка записи значения в Excel {row} {column} {value}", row, column, value);
+            }
 		}
 
         public void AddRow(List<string> values)
@@ -97,24 +108,41 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			int countRows = _mainWorkSheet.Rows.Count;
 			int countColumns = _mainWorkSheet.CalculateMaxUsedColumns();
-
+			int errCount = 0;
+			int successCount = 0;
+			Serilog.Log.Logger.Debug("Установка стилей в Excel таблице {countRows} x {countColumns}", countRows, countColumns);
 			for (int i = 0; i < countRows; i++)
-			{
-				for (int j = 0; j < countColumns; j++)
-				{
-					if (_mainWorkSheet.Rows[i] != null && _mainWorkSheet.Rows[i].Cells[j] != null)
-					{
-						_mainWorkSheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-						_mainWorkSheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-						_mainWorkSheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-						_mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
-					}
-				}
-			}
+            {
+                for (int j = 0; j < countColumns; j++)
+                {
+                    if (_mainWorkSheet.Rows[i] != null && _mainWorkSheet.Rows[i].Cells[j] != null)
+                    {
+                        try
+                        {
+                            _mainWorkSheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+                            _mainWorkSheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+                            _mainWorkSheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                            _mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
+							
+							if (successCount < 5)
+								Serilog.Log.Logger.Debug("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+							successCount++;
+						}
+                        catch (Exception ex)
+                        {
+							if (errCount < 5)
+								Serilog.Log.Logger.Error(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+							errCount++;
+						}
+                    }
+                }
+            }
+            Serilog.Log.Debug("Применение стилей в Excel завершено {successCount} {errCount}", successCount, errCount);
 		}
 
 		public void SetIndividualWidth(int column, int width)
 		{
+			Serilog.Log.Debug("Установка ширины {width} для столбца {column}", width, column);
 			_mainWorkSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
@@ -122,6 +150,7 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			try
 			{
+				Serilog.Log.Debug("Сохранение отчета {fileName}", fileName);
 				MemoryStream stream = new MemoryStream();
 				_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
@@ -150,7 +179,8 @@ namespace KadOzenka.Dal.GbuObject
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				Serilog.Log.Error(e, "Сохранение отчета завершилось исключением");
+				//Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				throw;
 			}
