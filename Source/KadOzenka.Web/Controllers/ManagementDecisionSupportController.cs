@@ -97,7 +97,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetUnitPropertyTypes()
 		{
-			var types = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypes));
+			var exceptions = new List<long> { (long)PropertyTypes.None };
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypes), exceptions: exceptions);
+
 			return Json(types);
 		}
 
