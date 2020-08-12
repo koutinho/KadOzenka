@@ -1292,7 +1292,6 @@ namespace KadOzenka.Dal.GbuObject
             try
             {
                 Serilog.Log.Debug("Применение стилей SetStyle");
-                Serilog.Log.Debug("Применение стилей отключено");
                 reportService.SetStyle();
                 reportService.SetIndividualWidth(KnColumn, 4);
                 reportService.SetIndividualWidth(ResultColumn, 6);
