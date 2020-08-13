@@ -86,6 +86,9 @@ namespace KadOzenka.Dal.Documents
             if (string.IsNullOrWhiteSpace(documentDto.RegNumber))
                 throw new Exception("Не заполнен Номер документа");
 
+            if (documentDto.ApproveDate != null && documentDto.ApproveDate > DateTime.Today)
+                throw new Exception("Дата выпуска документа не должна быть в будущем.");
+
             var createDate = documentDto.CreateDate ?? _defaultCreateDate;
             var isTheSameDocumentExists = OMInstance
                 .Where(x => x.RegNumber == documentDto.RegNumber && x.CreateDate == createDate && x.Id != documentDto.Id).ExecuteExists();

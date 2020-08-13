@@ -40,7 +40,7 @@
                         @Html.CustomLabelFor(m => m.ApproveDate)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoDatePickerFor(m => m.ApproveDate, isReadonly: false)
+                        @Html.KendoDatePickerFor(m => m.ApproveDate, maxDate: DateTime.Today, isReadonly: false)
                     </div>
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(m => m.ChangeDate)
