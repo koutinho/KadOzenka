@@ -38,6 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.LongProcessServic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{D70D30D5-2A3F-49C7-AB77-97982F483540}"
 	ProjectSection(SolutionItems) = preProject
+		generate_scriptsDB.ps1 = generate_scriptsDB.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_PPR_4042.ps1 = Utils\PublishScripts\publish_CIPJS_KO_PPR_4042.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_PPR_8084.ps1 = Utils\PublishScripts\publish_CIPJS_KO_PPR_8084.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_TEST_4041.ps1 = Utils\PublishScripts\publish_CIPJS_KO_TEST_4041.ps1

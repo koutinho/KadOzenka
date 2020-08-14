@@ -16,7 +16,7 @@ namespace CIPJS
     public class Program
     {
 
-        public static void Main(string[] args, IHostingEnvironment env)
+        public static void Main(string[] args)
         {
 
             //// Creating a `LoggerProviderCollection` lets Serilog optionally write
@@ -25,7 +25,6 @@ namespace CIPJS
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
  
