@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
-using KadOzenka.Dal.LongProcess;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.InheritanceAttribute;
-
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -113,34 +110,35 @@ namespace KadOzenka.Dal.GbuObject
                         };
                         attributeValue.Save();
 
-                        if (rowsReport != null && rowsReport.Count >= counter)
+                        lock (locked)
                         {
-	                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, attribs[0].StringValue,
-		                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
-	                        counter++;
-						}
+                            if (rowsReport != null && rowsReport.Count >= counter)
+                            {
+                                AddRowToReport(rowsReport[counter], unit.CadastralNumber, attribs[0].StringValue,
+                                    pattrib.AttributeId, pattrib.StringValue, "", reportService);
+                                counter++;
+                            }
+                        }
                     }
                 }
                 else
                 {
-					int rowReport;
-					lock (locked)
+                    lock (locked)
 					{
-						rowReport = reportService.GetCurrentRow();
-					}
-					reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-					reportService.AddValue($"Не найден объект по кадастровому номеру {attribs[0].StringValue}", 4, rowReport);
-				}
+						var rowReport = reportService.GetCurrentRow();
+                        reportService.AddValue(unit.CadastralNumber, 0, rowReport);
+                        reportService.AddValue($"Не найден объект по кадастровому номеру {attribs[0].StringValue}", 4, rowReport);
+                    }
+                }
             }
             else
             {
-	            int rowReport;
-	            lock (locked)
+                lock (locked)
 	            {
-		            rowReport = reportService.GetCurrentRow();
-	            }
-				reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-				reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
+		            var rowReport = reportService.GetCurrentRow();
+                    reportService.AddValue(unit.CadastralNumber, 0, rowReport);
+                    reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
+                }
             }
         }
         public static void RunOneUnit(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting, GbuReportService reportService)
@@ -201,7 +199,5 @@ namespace KadOzenka.Dal.GbuObject
 			reportService.AddValue(value, 3, rowNumber);
 			reportService.AddValue(errorMessage, 4, rowNumber);
         }
-
-	}
-
+    }
 }

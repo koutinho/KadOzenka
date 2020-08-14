@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
@@ -19,8 +21,9 @@ using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
-using ObjectModel.Core.TD;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -619,15 +622,22 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				InheritanceLongProcess.AddProcessToQueue(viewModel.ToAttributeSettings());
+                ////TODO код для отладки
+                //new InheritanceLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                //{
+                //    Status_Code = Status.Added,
+                //    UserId = SRDSession.GetCurrentUserId(),
+                //    Parameters = viewModel.ToAttributeSettings().SerializeToXml()
+                //}, new CancellationToken());
+
+                InheritanceLongProcess.AddProcessToQueue(viewModel.ToAttributeSettings());
 			}
 			catch (Exception e)
 			{
 				return SendErrorMessage(e.Message);
 			}
-			
 
-			return Json(new { Success = "Операция успешно добавлена в очередь долгих процессов."});
+            return Json(new { Success = "Операция успешно добавлена в очередь долгих процессов."});
 		}
 
         #endregion
