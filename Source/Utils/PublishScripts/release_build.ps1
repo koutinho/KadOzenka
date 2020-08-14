@@ -33,7 +33,7 @@ function RunConsole($scriptBlock)
     AllocConsole
 
     $encoding = [Console]::OutputEncoding 
-    [Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("cp866")
+   [Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("cp866")
     $prevErrAction = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try
