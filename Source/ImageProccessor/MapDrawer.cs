@@ -44,6 +44,34 @@ namespace ImageProccessor
             result.Save(name, _format);
         }
 
+        public void DrawMap(int xExt, int yExt, List<dynamic> coords, string name, bool bolt, Dictionary<string, string> colors)
+        {
+	        Bitmap result = new Bitmap(xExt, yExt);
+	        Graphics drawing = Graphics.FromImage(result);
+	        drawing.SmoothingMode = _smoothing;
+	        coords.ForEach(x =>
+	        {
+		        var coordinates = x.Coordinates;
+		        foreach (var points in coordinates)
+		        {
+			        List<Point> pointsLst = new List<Point>();
+			        foreach (var point in points)
+			        {
+				        int X = point[0], Y = point[1];
+				        pointsLst.Add(new Point(X, Y));
+			        }
+
+			        if (colors.ContainsKey(x.Number.ToString()))
+			        {
+                        var color = ColorTranslator.FromHtml(colors[x.Number.ToString()]);
+                        drawing.FillPolygon(new SolidBrush(Color.FromArgb(102, color)), pointsLst.ToArray());
+                    }
+			        drawing.DrawPolygon(bolt ? _penBolt : _penOrdinar, pointsLst.ToArray());
+		        }
+	        });
+	        result.Save(name, _format);
+        }
+
         public void ChopData(string fileName, int hStartTile, int yStartTile, int zStart, int z, int tileSize, string reqFolder)
         {
             Image image = Image.FromFile(fileName);

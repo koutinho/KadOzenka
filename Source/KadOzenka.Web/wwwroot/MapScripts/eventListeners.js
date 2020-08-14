@@ -135,7 +135,14 @@ function changeLayer(type) {
 };
 
 function setQuartalTiles() {
-    imgLayer = new ymaps.Layer(imgTileSettings.imgUrlTemplate, { tileTransparent: imgTileSettings.tileTransparent });
+    if (heatMapData) {
+        imgLayer =
+            new ymaps.Layer(imgTileSettings.imgUrlHeatMapTemplate, { tileTransparent: imgTileSettings.tileTransparent });
+        
+    } else {
+        imgLayer =
+            new ymaps.Layer(imgTileSettings.imgUrlTransparentTemplate, { tileTransparent: imgTileSettings.tileTransparent });
+    }
     map.layers.add(imgLayer);
 };
 

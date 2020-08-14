@@ -186,7 +186,8 @@ var targetWidgetPosition = {
 }
 
 var imgTileSettings = {
-    imgUrlTemplate: 'Map/cadastralTiles?x=%x&y=%y&z=%z',
+    imgUrlHeatMapTemplate: 'Map/CadastralHeatMapTiles?x=%x&y=%y&z=%z',
+    imgUrlTransparentTemplate: 'Map/CadastralTransparentTiles?x=%x&y=%y&z=%z',
     tileTransparent: true
 }
 

@@ -101,6 +101,7 @@ function getMinMaxDataForHeatMap() {
             case MapZoneType.district: return heatMapData.districtsSteps;
             case MapZoneType.region: return heatMapData.regionsSteps;
             case MapZoneType.zone: return heatMapData.zonesSteps;
+            case MapZoneType.quartal: return heatMapData.quartalsSteps;
         }
     else return undefined;
 };

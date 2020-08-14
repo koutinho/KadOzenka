@@ -89,16 +89,18 @@ namespace KadOzenka.Web.Controllers
             List<OMReferenceItem> allDistricts = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.District).ReferenceId).Select(x => x.Value).Execute().ToList();
             List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Neighborhood).ReferenceId).Select(x => x.Value).Execute().ToList();
             List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ZoneRegion).ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
             PrepareQueryByUserFilter(query);
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion }).Execute().ToList();
+            List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
 
             List<IGrouping<string, OMCoreObject>> districtList = DistrictsData.GroupBy(x => x.District).ToList();
             List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
             List<IGrouping<string, OMCoreObject>> zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
+            List<IGrouping<string, OMCoreObject>> quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
                 new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray);
@@ -106,6 +108,10 @@ namespace KadOzenka.Web.Controllers
                 new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray);
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) zonesData =
                 new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray);
+            (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) quartalsData =
+	            new HeatMap().SetColors(new HeatMap().GroupList(allQuartals, quartalList), colorsArray);
+
+            new HeatMap().GenerateHeatMapQuartalTiles(quartalsData.ColoredData);
 
             return Json(new
             {
@@ -114,7 +120,8 @@ namespace KadOzenka.Web.Controllers
                 regions = regionsData.ColoredData.Select(x => new { name = x.name, color = x.color, counter = x.counter }),
                 regionsSteps = regionsData.MinMaxData.Select(x => new { min = x.min, max = x.max }),
                 zones = zonesData.ColoredData.Select(x => new { name = x.name, color = x.color, counter = x.counter }),
-                zonesSteps = zonesData.MinMaxData.Select(x => new { min = x.min, max = x.max })
+                zonesSteps = zonesData.MinMaxData.Select(x => new { min = x.min, max = x.max }),
+                quartalsSteps = quartalsData.MinMaxData.Select(x => new { min = x.min, max = x.max })
             });
         }
 
@@ -338,10 +345,20 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
-        public ActionResult cadastralTiles(int x, int y, int z)
+        public ActionResult CadastralHeatMapTiles(int x, int y, int z)
         {
-            try { return base.File($@"~/imgLayer/{z}/{x}_{y}.png", "image/png"); }
-            catch (Exception) { return null; }
+	        var file = new HeatMap().GetHeatMapTile(x, y, z);
+	        if (file == null)
+		        return null;
+
+	        return File(file, "image/png");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
+        public ActionResult CadastralTransparentTiles(int x, int y, int z)
+        {
+	        try { return base.File($@"~/MapImageLayer/QuartalLayer/{z}/{x}_{y}.png", "image/png"); }
+	        catch (Exception) { return null; }
         }
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
