@@ -9,13 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Serilog.Configuration;
 using Serilog.Events;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace CIPJS
 {
     public class Program
     {
 
-        public static void Main(string[] args)
+        public static void Main(string[] args, IHostingEnvironment env)
         {
 
             //// Creating a `LoggerProviderCollection` lets Serilog optionally write
@@ -24,12 +25,12 @@ namespace CIPJS
 
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables()
                 .Build();
  
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                //.Enrich.WithProperty("ServiceName", "KadOzenka.Web")  
-                //.Enrich.WithProperty("IP", "192.168.3.164")
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
                 .CreateLogger();
             try

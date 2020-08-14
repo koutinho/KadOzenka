@@ -101,9 +101,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs" />
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs" />
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageReport.cs" />
   </ItemGroup>

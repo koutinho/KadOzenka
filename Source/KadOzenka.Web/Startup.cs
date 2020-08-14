@@ -42,7 +42,7 @@ using Serilog.Context;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
- 
+
 namespace CIPJS
 {
     public class Startup
@@ -127,8 +127,11 @@ namespace CIPJS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            Log.Information("Configure called");
-            LogContext.PushProperty("ApplicationName", env.ApplicationName);
+            Log
+                .ForContext("EnvironmentName", env.EnvironmentName)
+                .ForContext("WebRootPath", env.WebRootPath)
+                .Information("Configure called");
+
             // loggerFactory.AddSerilog();
             //if (env.IsDevelopment())
             //{
@@ -141,6 +144,7 @@ namespace CIPJS
             //    app.UseExceptionHandler("/Home/Error");
             //}
             app.UseMiddleware<SerilogMiddleware>();
+     
             app.UseFastReport();
             app.UseExceptionHandler(
               builder =>
@@ -151,7 +155,6 @@ namespace CIPJS
                         IExceptionHandlerFeature error = context.Features.Get<IExceptionHandlerFeature>();
                         if (error != null)
                         {
-                            Log.Error("Ошибка ExceptionHandlerFeature {error}", error.Error);
                             await Task.Factory.StartNew(() => ErrorManager.LogServerError(error.Error));
                         }
                     });

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
 using ILogger = Serilog.ILogger;
+using Serilog.Context;
 
 namespace CIPJS
 {
@@ -63,7 +64,9 @@ namespace CIPJS
                 .ToDictionary(h => h.Key, h => h.Value.ToString());
 
             var result = Log
+                .ForContext("RequestUsername", Core.SRD.SRDSession.GetCurrentUsername())
                 .ForContext("RequestIP", request.HttpContext.Connection.RemoteIpAddress)
+                .ForContext("RequestBody", request.Body)
                 .ForContext("RequestHost", request.Host);
 
             return result;
@@ -78,10 +81,13 @@ namespace CIPJS
                 .ToDictionary(h => h.Key, h => h.Value.ToString());
 
             var result = Log
+                .ForContext("RequestUsername", Core.SRD.SRDSession.GetCurrentUsername())
+                .ForContext("RequestUserID", Core.SRD.SRDSession.GetCurrentUserId())
                 .ForContext("RequestIP", request.HttpContext.Connection.RemoteIpAddress)
                 .ForContext("RequestHeaders", loggedHeaders, destructureObjects: true)
                 .ForContext("RequestCookies", request.Cookies)
                 .ForContext("RequestHost", request.Host)
+                .ForContext("RequestBody", request.Body)
                 .ForContext("RequestProtocol", request.Protocol);
 
             return result;
@@ -95,6 +101,25 @@ namespace CIPJS
         static string GetPath(HttpContext httpContext)
         {
             return httpContext.Features.Get<IHttpRequestFeature>()?.RawTarget ?? httpContext.Request.Path.ToString();
+        }
+    }
+
+    public class SerilogAddUserInfo
+    {
+        private readonly RequestDelegate _next;
+
+        public SerilogAddUserInfo(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            using (LogContext.PushProperty("Address", context.Connection.RemoteIpAddress))
+            using (LogContext.PushProperty("Session", context.Session.GetString("SessionGUID") ?? "Unknown"))
+            {
+                await _next.Invoke(context);
+            }
         }
     }
 }
