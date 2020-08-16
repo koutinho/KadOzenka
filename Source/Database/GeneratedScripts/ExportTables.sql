@@ -1091,6 +1091,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'first_formation_date')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "first_formation_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_979_q_pk')) then
     execute 'alter table CORE_BACKGROUND_EXPORTS add constraint reg_979_q_pk primary key (id)';
   end if;
@@ -9569,6 +9578,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'segment_type')) then
         execute 'alter table ES_SETTINGS_PARAMS add "segment_type" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'build_cad_number')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "build_cad_number" BIGINT';
     end if;
 end $$;
 
@@ -25610,8 +25628,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'applied_approaches_in_cadastral_cost')) then
-        execute 'alter table KO_GROUP add "applied_approaches_in_cadastral_cost" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_podhod')) then
+        execute 'alter table KO_GROUP add "dop_podhod" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25619,8 +25637,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'applied_evaluation_methods_in_cadastral_cost')) then
-        execute 'alter table KO_GROUP add "applied_evaluation_methods_in_cadastral_cost" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_metod')) then
+        execute 'alter table KO_GROUP add "dop_metod" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25628,8 +25646,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_determing_method')) then
-        execute 'alter table KO_GROUP add "cadastral_cost_determing_method" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_sposob')) then
+        execute 'alter table KO_GROUP add "dop_sposob" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25637,8 +25655,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'model_justification')) then
-        execute 'alter table KO_GROUP add "model_justification" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_model')) then
+        execute 'alter table KO_GROUP add "dop_model" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25646,8 +25664,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'objects_segment')) then
-        execute 'alter table KO_GROUP add "objects_segment" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_segment')) then
+        execute 'alter table KO_GROUP add "dop_segment" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25655,8 +25673,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'objects_subgroup')) then
-        execute 'alter table KO_GROUP add "objects_subgroup" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_group')) then
+        execute 'alter table KO_GROUP add "dop_group" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25664,8 +25682,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_calculation_order_description')) then
-        execute 'alter table KO_GROUP add "cadastral_cost_calculation_order_description" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'dop_opisanie')) then
+        execute 'alter table KO_GROUP add "dop_opisanie" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25673,8 +25691,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'price_zone_characteristic')) then
-        execute 'alter table KO_GROUP add "price_zone_characteristic" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'm_zone')) then
+        execute 'alter table KO_GROUP add "m_zone" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25682,8 +25700,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'market_segment')) then
-        execute 'alter table KO_GROUP add "market_segment" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'm_segment')) then
+        execute 'alter table KO_GROUP add "m_segment" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25691,8 +25709,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'market_segment_functioning_features')) then
-        execute 'alter table KO_GROUP add "market_segment_functioning_features" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'm_har')) then
+        execute 'alter table KO_GROUP add "m_har" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25700,8 +25718,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'cadastral_cost_estimation_models_references')) then
-        execute 'alter table KO_GROUP add "cadastral_cost_estimation_models_references" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'act_model')) then
+        execute 'alter table KO_GROUP add "act_model" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25709,8 +25727,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'assumptions_reference')) then
-        execute 'alter table KO_GROUP add "assumptions_reference" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'act_dop')) then
+        execute 'alter table KO_GROUP add "act_dop" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -25718,8 +25736,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP', 'other_cost_related_info')) then
-        execute 'alter table KO_GROUP add "other_cost_related_info" VARCHAR(4000)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP', 'act_other')) then
+        execute 'alter table KO_GROUP add "act_other" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -27947,6 +27965,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2016', 'field47505037')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2016 add "field47505037" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2016', 'field47526288')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2016 add "field47526288" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2016', 'field47526327')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2016 add "field47526327" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_252_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2016 add constraint reg_252_q_pk primary key (id)';
   end if;
@@ -28629,6 +28674,96 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47505081')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47505081" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508347')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508347" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508349')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508349" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508351')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508351" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508353')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508353" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508354')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508354" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508359')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508359" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508359_code')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508359_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508361')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508361" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47508361_code')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47508361_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -29016,6 +29151,33 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47498757')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47498757" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47505039')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47505039" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47526290')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47526290" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47526329')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47526329" VARCHAR(255)';
     end if;
 end $$;
 
@@ -29770,6 +29932,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47499356')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47499356" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47505079')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47505079" VARCHAR(255)';
     end if;
 end $$;
 
@@ -31619,6 +31790,69 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'ownership_type')) then
+        execute 'alter table market_core_object add "ownership_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'placement_type')) then
+        execute 'alter table market_core_object add "placement_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'quality')) then
+        execute 'alter table market_core_object add "quality" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'is_operating_costs_included')) then
+        execute 'alter table market_core_object add "is_operating_costs_included" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'is_utilities_included')) then
+        execute 'alter table market_core_object add "is_utilities_included" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'vat')) then
+        execute 'alter table market_core_object add "vat" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'entrance_type')) then
+        execute 'alter table market_core_object add "entrance_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -32245,6 +32479,69 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'phone_number')) then
         execute 'alter table MARKET_CORE_OBJECT add "phone_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'ownership_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "ownership_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'placement_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "placement_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'quality')) then
+        execute 'alter table MARKET_CORE_OBJECT add "quality" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'is_operating_costs_included')) then
+        execute 'alter table MARKET_CORE_OBJECT add "is_operating_costs_included" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'is_utilities_included')) then
+        execute 'alter table MARKET_CORE_OBJECT add "is_utilities_included" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'vat')) then
+        execute 'alter table MARKET_CORE_OBJECT add "vat" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'entrance_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "entrance_type" VARCHAR(256)';
     end if;
 end $$;
 
