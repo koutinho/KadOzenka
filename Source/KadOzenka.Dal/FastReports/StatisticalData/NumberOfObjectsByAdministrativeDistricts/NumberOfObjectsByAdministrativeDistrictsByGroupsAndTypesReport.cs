@@ -45,7 +45,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			}
 
 			return dataset;
-
 		}
 
 		private DataSet GetDataForRegionNumbers(long[] taskList)
