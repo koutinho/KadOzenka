@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -12,90 +14,45 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	{
 		private readonly StatisticalDataService _statisticalDataService;
 
-		public NumberOfObjectsByGroupsService(StatisticalDataService statisticalDataService)
-		{
-			_statisticalDataService = statisticalDataService;
-		}
+		public NumberOfObjectsByGroupsService(StatisticalDataService statisticalDataService) => _statisticalDataService = statisticalDataService;
+
+        public class InitialData
+        {
+            public string PropertyType { get; set; }
+            public string Group { get; set; }
+            public string ParentGroup { get; set; }
+            public long objectsCount { get; set; }
+        }
 
         public List<NumberOfObjectsByGroupsDto> GetNumberOfObjectsByGroups(long[] taskList, bool isOksReportType)
         {
-	        var conditions = new List<QSCondition>();
-	        if (isOksReportType)
-            {
-	            conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-			            QSConditionType.NotEqual, (long) PropertyTypes.Stead));
-	            conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-			            QSConditionType.NotEqual, (long) PropertyTypes.None));
-            }
-	        else
-	        {
-		        conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-				        QSConditionType.Equal, (long)PropertyTypes.Stead));
-            }
+            string contents = string.Empty, fileName = string.Empty;
 
-	        var groupJoin = new QSJoin
-	        {
-		        RegisterId = OMGroup.GetRegisterId(),
-		        JoinCondition = new QSConditionSimple
-		        {
-			        ConditionType = QSConditionType.Equal,
-			        LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-			        RightOperand = OMGroup.GetColumn(x => x.Id)
-		        },
-		        JoinType = QSJoinType.Left
-	        };
+            if (isOksReportType) fileName = "NumberOfObjectsByGroupsDto_isOksReportType";
+            else fileName = "NumberOfObjectsByGroupsDto_isNotOksReportType";
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
 
-            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList, conditions,
-		        new List<QSJoin>() {groupJoin});
-
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "Group"));
-
-            var subQuery = new QSQuery(OMGroup.GetRegisterId())
-            {
-                Columns = new List<QSColumn>
-                {
-                    OMGroup.GetColumn(x => x.GroupName)
-                },
-                Condition = new QSConditionGroup(QSConditionGroupType.And)
-                {
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(
-                            OMGroup.GetColumn(x => x.Id),
-                            QSConditionType.Equal,
-                            OMGroup.GetColumn(x => x.ParentId)){
-                            RightOperandLevel = 1
-                        }
-                    }
-                }
-            };
-            query.AddColumn(subQuery, "ParentGroup");
-
-            var table = query.ExecuteQuery();
+            var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
 
             var result = new List<NumberOfObjectsByGroupsDto>();
-            if (table.Rows.Count != 0)
+            if (table.Count != 0)
             {
-                for (var i = 0; i < table.Rows.Count; i++)
+                foreach (InitialData initial in table)
                 {
-	                var group = table.Rows[i]["Group"].ParseToStringNullable();
-	                var parentGroup = table.Rows[i]["ParentGroup"].ParseToStringNullable();
-
+                    var group = initial.Group;
+                    var parentGroup = initial.ParentGroup;
                     var dto = new NumberOfObjectsByGroupsDto
                     {
-                        PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
+                        PropertyType = initial.PropertyType,
                         Group = string.IsNullOrEmpty(group) ? "Без группы" : group,
                         HasGroup = !string.IsNullOrEmpty(group),
                         ParentGroup = string.IsNullOrEmpty(parentGroup) ? "Без группы" : parentGroup,
-                        HasParentGroup = !string.IsNullOrEmpty(parentGroup)
+                        HasParentGroup = !string.IsNullOrEmpty(parentGroup),
+                        Count = initial.objectsCount
                     };
                     result.Add(dto);
                 }
-            }
-
-            result =
-                result.GroupBy(x => new { x.PropertyType, x.Group, x.HasGroup, x.ParentGroup, x.HasParentGroup }).Select(
+                result = result.GroupBy(x => new { x.PropertyType, x.Group, x.HasGroup, x.ParentGroup, x.HasParentGroup }).Select(
                 group => new NumberOfObjectsByGroupsDto
                 {
                     PropertyType = group.Key.PropertyType,
@@ -103,8 +60,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                     HasGroup = group.Key.HasGroup,
                     ParentGroup = group.Key.ParentGroup,
                     HasParentGroup = group.Key.HasParentGroup,
-                    Count = group.ToList().Count
-                }).OrderBy(x =>  x.HasParentGroup).ThenBy(x => x.HasGroup).ToList();
+                    Count = group.ToList().FirstOrDefault().Count
+                }).OrderBy(x => x.HasParentGroup).ThenBy(x => x.HasGroup).ToList();
+            }
 
             return result;
         }

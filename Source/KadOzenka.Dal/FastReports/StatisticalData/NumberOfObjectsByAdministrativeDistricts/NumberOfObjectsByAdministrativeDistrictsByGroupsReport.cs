@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
@@ -65,27 +66,35 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		private DataSet GetDataForCadastralRegions(long[] taskList)
 		{
-			var dataTitleTable = new DataTable("Common");
-			dataTitleTable.Columns.Add("Title");
-			dataTitleTable.Columns.Add("DataNameColumnText");
-			var title = "Количество объектов недвижимости по кадастровым районам города Москвы";
-			var dataTypeHeader = "Номер кадастрового района";
-			dataTitleTable.Rows.Add(title, dataTypeHeader);
+			var dataSet = new DataSet();
 
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("Name", typeof(string));
-			dataTable.Columns.Add("Group", typeof(string));
-			dataTable.Columns.Add("ObjectsCount", typeof(long));
+			using (var dataTitleTable = new DataTable("Common"))
+            {
+				dataTitleTable.Columns.Add("Title");
+				dataTitleTable.Columns.Add("DataNameColumnText");
+				var title = "Количество объектов недвижимости по кадастровым районам города Москвы";
+				var dataTypeHeader = "Номер кадастрового района";
+				dataTitleTable.Rows.Add(title, dataTypeHeader);
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.RegionNumbers);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
+				using (var dataTable = new DataTable("Data"))
+				{
+					dataTable.Columns.Add("Name", typeof(string));
+					dataTable.Columns.Add("Group", typeof(string));
+					dataTable.Columns.Add("ObjectsCount", typeof(long));
+
+					var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.RegionNumbers);
+					foreach (var unitDto in data)
+					{
+						dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
+					}
+
+					dataSet.Tables.Add(dataTable);
+					dataSet.Tables.Add(dataTitleTable);
+
+				}
 			}
 
-			var dataSet = new DataSet();
-			dataSet.Tables.Add(dataTable);
-			dataSet.Tables.Add(dataTitleTable);
+			GC.Collect();
 
 			return dataSet;
 		}

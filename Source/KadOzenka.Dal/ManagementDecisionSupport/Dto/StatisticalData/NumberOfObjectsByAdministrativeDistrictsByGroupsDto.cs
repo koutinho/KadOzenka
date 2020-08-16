@@ -8,6 +8,6 @@
 		public string ThirdParentName { get; set; }
 		public string Group { get; set; }
 		public bool HasGroup { get; set; }
-		public int ObjectsCount { get; set; }
+		public long ObjectsCount { get; set; }
 	}
 }

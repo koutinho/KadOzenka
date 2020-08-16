@@ -38,6 +38,13 @@
 
   <ItemGroup>
     <None Remove="Config\Common\MainMenu.xml" />
+    <None Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
+    <None Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <None Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
+    <None Remove="Config\ExcelTemplates\Table7_oks.xlsx" />
+    <None Remove="Config\ExcelTemplates\Table7_zu.xlsx" />
+    <None Remove="Config\ExcelTemplates\Table8_oks.xlsx" />
+    <None Remove="Config\ExcelTemplates\Table8_zu.xlsx" />
     <None Remove="Config\Param\Core.DataBase.Connections.Dev.xml" />
     <None Remove="Config\Param\Core.DataBase.Connections.Prod.xml" />
     <None Remove="Config\Param\Core.Diagnostics.xml" />
@@ -194,11 +201,42 @@
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Quarters.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_RegionNumbers.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Regions.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsBySubject.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isOksReportType.sql" />
     <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Config\Common\MainMenu.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\GknXmlToExcel.xls">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\Table7_oks.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\Table7_zu.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\Table8_oks.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\ExcelTemplates\Table8_zu.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
       <Content Include="Config\Param\ModelingProcessConfig.Dev.xml">
@@ -442,6 +480,36 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Quarters.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_RegionNumbers.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Regions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsBySubject.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByGroupsDto_isOksReportType.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="___Create_Plugins_Folder_for_WinService.bat">
@@ -1641,6 +1709,8 @@
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
 	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
   </ItemGroup>
 
   <ItemGroup>
