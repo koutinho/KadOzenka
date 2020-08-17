@@ -62,17 +62,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			{
 				foreach (InitialData initial in table)
 				{
-					//var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
-					//{
-					//	PropertyTypeCode = (PropertyTypes)initial.propertyTypeCode,
-					//	PropertyType = 
-					//};
-					var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto();
-					var group = initial.ParentGroup;
-					dto.Group = string.IsNullOrEmpty(group) ? "Без группы" : group;
-					dto.HasGroup = !string.IsNullOrEmpty(group);
-					dto.PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription();
-					dto.Count = initial.objectsCount;
+
+					var dto = new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
+                    {
+                        Group = string.IsNullOrEmpty(initial.ParentGroup) ? "Без группы" : initial.ParentGroup,
+						HasGroup = !string.IsNullOrEmpty(initial.ParentGroup),
+						PropertyTypeCode = (PropertyTypes)initial.propertyTypeCode,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						Count = initial.objectsCount
+					};
+
 					switch (divisionType)
 					{
 						case StatisticDataAreaDivisionType.RegionNumbers:
@@ -96,9 +95,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var result = data.GroupBy(x => new { x.ParentName, x.Name, x.PropertyType, x.Purpose, x.HasPurpose, x.Group, x.HasGroup }).Select(
 			group => new NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto
 			{
-				Name = group.Key.Name,
 				ParentName = group.ToList().FirstOrDefault()?.ParentName,
+				Name = group.Key.Name,
 				PropertyType = group.ToList().FirstOrDefault()?.PropertyType,
+				Purpose = group.Key.Purpose,
+				HasPurpose = group.Key.HasPurpose,
 				Group = group.Key.Group,
 				HasGroup = group.Key.HasGroup,
 				Count = group.ToList().FirstOrDefault().Count,
@@ -117,12 +118,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			{
 				foreach (InitialData initial in table)
 				{
-					var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto();
-					var group = initial.ParentGroup;
-					dto.Group = string.IsNullOrEmpty(group) ? "Без группы" : group;
-					dto.HasGroup = !string.IsNullOrEmpty(group);
-					dto.PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription();
-					dto.Count = initial.objectsCount;
+					var dto = new NumberOfObjectsByAdministrativeDistrictsBySubjectDto 
+					{
+						Group = string.IsNullOrEmpty(initial.ParentGroup) ? "Без группы" : initial.ParentGroup,
+						HasGroup = !string.IsNullOrEmpty(initial.ParentGroup),
+						PropertyTypeCode = (PropertyTypes)initial.propertyTypeCode,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						Count = initial.objectsCount
+					};
 					//FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
 					if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null) data.Add(dto);
 				}
