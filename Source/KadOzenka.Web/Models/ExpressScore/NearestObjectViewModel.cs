@@ -8,10 +8,12 @@ namespace CIPJS.Models.ExpressScore
 {
 	public class NearestObjectViewModel: IValidatableObject
 	{
-		/// <summary>
-		/// Площадь
-		/// </summary>
-		public decimal? Square { get; set; }
+        public int? Floor { get; set; }
+
+        /// <summary>
+        /// Площадь
+        /// </summary>
+        public decimal? Square { get; set; }
 
 		/// <summary>
 		/// Сегмент рынка
@@ -36,7 +38,6 @@ namespace CIPJS.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Не указана долгота. Обратитесь к администратору.")]
 		public decimal? SelectedLng { get; set; }
-
 
 		/// <summary>
 		/// Кадастровый номер
