@@ -76,11 +76,11 @@ namespace KadOzenka.Dal.YandexParsing
 				switch (obj.SelectToken("cards.offers.taxationForm")?.Value<string>())
 				{
 					case "NDS":
-						marketObject.Quality = "НДС включен";
+						marketObject.Vat = "НДС включен";
 						isObjectUpdated = true;
 						break;
 					case "USN":
-						marketObject.Quality = "УСН";
+						marketObject.Vat = "УСН";
 						isObjectUpdated = true;
 						break;
 				}
