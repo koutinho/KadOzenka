@@ -366,7 +366,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			var mrSq = mainWorkSheet.Cells.GetSubrangeAbsolute(numberRow, 1, numberRow, ColumnNameIndex);
 			mrSq.Merged = true;
-			mrSq.Value = squareCost.ToString("N");
+			mrSq.Value = squareCost.ToString("N").Replace(",", ".");
 			mrSq.Style.Font.Size = 250;
 			mrSq.Style.Font.Weight = 600;
 			mrSq.Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
@@ -383,7 +383,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			var mrSum = mainWorkSheet.Cells.GetSubrangeAbsolute(numberRow + 1, 1, numberRow + 1, ColumnNameIndex);
 			mrSum.Merged = true;
-			mrSum.Value = summaryCost.ToString("N");
+			mrSum.Value = summaryCost.ToString("N").Replace(",", ".");
 			mrSum.Style.Font.Size = 250;
 			mrSum.Style.Font.Weight = 600;
 			mrSum.Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
