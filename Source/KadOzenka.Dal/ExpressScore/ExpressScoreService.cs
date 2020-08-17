@@ -514,23 +514,29 @@ namespace KadOzenka.Dal.ExpressScore
 
 				foreach (var simple in exCostFactors.SimpleCostFactors)
                 {
-                    text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
-                        simple.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
+                    var coefficient =
+                        simple.Name == "Корректировка на торг" &&
+                        (analog.DealType == DealType.RentDeal || analog.DealType == DealType.SaleDeal)
+                            ? 1
+                            : simple.Coefficient.GetValueOrDefault();
 
-					if (simple.Coefficient != null)
-					{
+                    text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
+                        coefficient.ToString(DecimalFormatForCoefficientsFromConstructor));
+
+                    if (simple.Coefficient != null)
+                    {
                         try
                         {
-                            cost = cost * simple.Coefficient.GetValueOrDefault();
+                            cost = cost * coefficient;
                         }
                         catch (OverflowException e)
                         {
-                            GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", simple.Coefficient);
+                            GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", coefficient);
                         }
                     }
-					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
-					costTargetObjectDataForReport.Add("");
-				}
+                    costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
+                    costTargetObjectDataForReport.Add("");
+                }
 
 
 				bool isBreak = false;
