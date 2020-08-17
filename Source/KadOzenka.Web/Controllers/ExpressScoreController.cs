@@ -173,10 +173,8 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage("Не найден диапазон даты постройки или площади.");
 			}
 
-            var condition = _service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare,
-                param.Segment.GetValueOrDefault(), param.DealType, param.Floor);
-
-            var objects = OMCoreObject.Where(condition)
+			var condition = _service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType );
+			var objects = OMCoreObject.Where(condition)
 				.Select(x => new
 				{
 					x.Id,
