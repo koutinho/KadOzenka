@@ -23,8 +23,9 @@ namespace KadOzenka.Dal.ExpressScore
 	public class ExpressScoreService
 	{
 		public ScoreCommonService ScoreCommonService { get; set; }
+        private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
-		private ExpressScoreReportService ReportService { get; }
+        private ExpressScoreReportService ReportService { get; }
 		public ExpressScoreService(ScoreCommonService scoreCommonService)
 		{
 			ReportService = new ExpressScoreReportService();
@@ -512,8 +513,10 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				foreach (var simple in exCostFactors.SimpleCostFactors)
-				{
-                    text = new KeyValuePair<string, string>("Корректировка " + @"""" +simple.Name + @"""", simple.Coefficient?.ToString("N"));
+                {
+                    text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
+                        simple.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
+
 					if (simple.Coefficient != null)
 					{
                         try
@@ -533,8 +536,10 @@ namespace KadOzenka.Dal.ExpressScore
 				bool isBreak = false;
 				int kCount = 2;
 				foreach (var complex in exCostFactors.ComplexCostFactors)
-				{
-					var targetObjectFactor = GetEstimateParametersById(targetObjectId,
+                {
+                    var complexCoefficientStr = complex.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor);
+
+                    var targetObjectFactor = GetEstimateParametersById(targetObjectId,
 						complex.AttributeId.GetValueOrDefault(), marketSegment, (int) exSettingsCostFactors.Registerid);
 
 					if (targetObjectFactor == null)
@@ -572,17 +577,17 @@ namespace KadOzenka.Dal.ExpressScore
 								{
 									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name+ @"""", analogC != 0 ? analogC.ToString("N") : ""));
 									costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
-									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-									costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+									costTargetObjectDataForReport.Add(complexCoefficientStr);
 										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
 									costTargetObjectDataForReport.Add("");
 									break;
 								}
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name + @"""", analogC.ToString("N")));
+                                AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name + @"""", analogC.ToString("N")));
 								costTargetObjectDataForReport.Add(targetObjectC.ToString("N"));
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-								costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 									var coeff = Math.Exp((double) (targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 								            Math.Exp((double) (analogC * complex.Coefficient.GetValueOrDefault()));
@@ -616,8 +621,8 @@ namespace KadOzenka.Dal.ExpressScore
 								{
 									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name + @"""", analogC != 0 ? analogC.ToString("N"):  ""));
 									costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
-									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient.ToString()));
-									costTargetObjectDataForReport.Add(complex.Coefficient.ToString());
+									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+									costTargetObjectDataForReport.Add(complexCoefficientStr);
 										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name+@"""" + $" K({kCount})", "1"));
 									costTargetObjectDataForReport.Add("");
 									break;
@@ -625,8 +630,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name+@"""", analogC.ToString("N")));
 								costTargetObjectDataForReport.Add(targetObjectC.ToString("N"));
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-								costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 									var coeff = Math.Exp((double)(targetObjectC * complex.Coefficient.GetValueOrDefault())) / Math.Exp((double)(analogC * complex.Coefficient.GetValueOrDefault()));
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", coeff.ToString("N")));
@@ -659,8 +664,8 @@ namespace KadOzenka.Dal.ExpressScore
 									costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
 								}
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-								costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
 								costTargetObjectDataForReport.Add("");
@@ -673,8 +678,8 @@ namespace KadOzenka.Dal.ExpressScore
 								costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
 							}
 
-							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-							costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+							costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 								var coeff = Math.Exp((double) (targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 							            Math.Exp((double) (analogC * complex.Coefficient.GetValueOrDefault()));
@@ -699,8 +704,8 @@ namespace KadOzenka.Dal.ExpressScore
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @""""+complex.Name + @"""", ""));
 								costTargetObjectDataForReport.Add("");
 							}
-							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complex.Coefficient?.ToString("N")));
-							costTargetObjectDataForReport.Add(complex.Coefficient?.ToString("N"));
+							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+							costTargetObjectDataForReport.Add(complexCoefficientStr);
 							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
 							costTargetObjectDataForReport.Add("");
 							break;
