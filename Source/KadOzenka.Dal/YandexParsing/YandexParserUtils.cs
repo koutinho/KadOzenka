@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Extentions;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Market;
@@ -27,12 +28,12 @@ namespace KadOzenka.Dal.YandexParsing
 			{
 				switch (obj.SelectToken("cards.offers.house.entranceType")?.Value<string>())
 				{
-					case "SEPARATE":
-						marketObject.EntranceType = "Отдельный";
+					case nameof(YandexEntranceType.SEPARATE):
+						marketObject.EntranceType = YandexEntranceType.SEPARATE.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "COMMON":
-						marketObject.EntranceType = "Общий";
+					case nameof(YandexEntranceType.COMMON):
+						marketObject.EntranceType = YandexEntranceType.COMMON.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
 				}
@@ -42,24 +43,24 @@ namespace KadOzenka.Dal.YandexParsing
 			{
 				switch (obj.SelectToken("cards.offers.apartment.quality")?.Value<string>())
 				{
-					case "EXCELLENT":
-						marketObject.Quality = "Отличное";
+					case nameof(YandexQualityType.EXCELLENT):
+						marketObject.Quality = YandexQualityType.EXCELLENT.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "GOOD":
-						marketObject.Quality = "Хорошее";
+					case nameof(YandexQualityType.GOOD):
+						marketObject.Quality = YandexQualityType.GOOD.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "NORMAL":
-						marketObject.Quality = "Нормальное";
+					case nameof(YandexQualityType.NORMAL):
+						marketObject.Quality = YandexQualityType.NORMAL.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "POOR":
-						marketObject.Quality = "Плохое";
+					case nameof(YandexQualityType.POOR):
+						marketObject.Quality = YandexQualityType.POOR.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "AWFUL":
-						marketObject.Quality = "Ужасное";
+					case nameof(YandexQualityType.AWFUL):
+						marketObject.Quality = YandexQualityType.AWFUL.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
 				}
@@ -75,12 +76,12 @@ namespace KadOzenka.Dal.YandexParsing
 			{
 				switch (obj.SelectToken("cards.offers.taxationForm")?.Value<string>())
 				{
-					case "NDS":
-						marketObject.Vat = "НДС включен";
+					case nameof(YandexVatType.NDS):
+						marketObject.Vat = YandexVatType.NDS.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
-					case "USN":
-						marketObject.Vat = "УСН";
+					case nameof(YandexVatType.USN):
+						marketObject.Vat = YandexVatType.USN.GetEnumDescription();
 						isObjectUpdated = true;
 						break;
 				}
