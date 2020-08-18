@@ -27,13 +27,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Этаж помещения
 		/// </summary>
 		public long Floor { get; set; }
-
-		/// <summary>
-		/// Количество этажей
-		/// </summary>
-		public long FloorsCount { get; set; }
-
-		/// <summary>
+        /// <summary>
 		/// Год постройки
 		/// </summary>
 		public long YearBuild { get; set; }

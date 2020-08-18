@@ -9,6 +9,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
 using ObjectModel.Directory;
@@ -23,13 +24,15 @@ namespace KadOzenka.Dal.ExpressScore
 	public class ExpressScoreService
 	{
 		public ScoreCommonService ScoreCommonService { get; set; }
+		public RegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
         private ExpressScoreReportService ReportService { get; }
-		public ExpressScoreService(ScoreCommonService scoreCommonService)
+		public ExpressScoreService(ScoreCommonService scoreCommonService, RegisterAttributeService registerAttributeService)
 		{
 			ReportService = new ExpressScoreReportService();
 			ScoreCommonService = scoreCommonService;
+            RegisterAttributeService = registerAttributeService;
 		}
 
 
@@ -219,8 +222,7 @@ namespace KadOzenka.Dal.ExpressScore
 					x.Area,
 					x.ParserTime,
 					x.LastDateUpdate,
-					x.FloorsCount,
-					x.FloorNumber,
+                    x.FloorNumber,
 					x.BuildingYear,
 					x.Address,
 					x.DealType_Code
@@ -231,8 +233,7 @@ namespace KadOzenka.Dal.ExpressScore
 					Price = x.Price.GetValueOrDefault(),
 					Square = x.Area.GetValueOrDefault(),
 					Date = x.LastDateUpdate ?? x.ParserTime ?? DateTime.MinValue,
-					FloorsCount = x.FloorsCount.GetValueOrDefault(),
-					Floor = x.FloorNumber.GetValueOrDefault(),
+                    Floor = x.FloorNumber.GetValueOrDefault(),
 					YearBuild = x.BuildingYear.GetValueOrDefault(),
 					Address = x.Address,
 					DealType = x.DealType_Code
@@ -414,8 +415,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 				#region Корректировка на долю ЗУ
 
-                var analogFloorsCount = analog.FloorsCount;
-                text = new KeyValuePair<string, string>("Этажность", value: analogFloorsCount.ToString());
+                var analogFloorsCount = GetAnalogFloorsCount(analog.Kn, marketSegment, exSettingsCostFactors);
+                text = new KeyValuePair<string, string>("Этажность", analogFloorsCount == 0 ? string.Empty : analogFloorsCount.ToString());
 				dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: "1");
 				double fixedCoefflandShareZero = 0.8; // По требованию заказчика если этажность 0 то коэф 0,8
 
@@ -765,6 +766,24 @@ namespace KadOzenka.Dal.ExpressScore
 
 			return res.Sum(x => x) / res.Count;
 		}
+
+        private int GetAnalogFloorsCount(string kn, MarketSegment marketSegment, OMSettingsParams settings)
+        {
+            var floorsCountAttribute = RegisterAttributeService.GetActiveRegisterAttributes(settings.Registerid)
+                .FirstOrDefault(x => x.Name.ToLower().Contains("этажность"));
+            if (floorsCountAttribute == null)
+                return 0;
+
+            var analogFactor = GetEstimateParametersByKn(kn, (int)settings.TourId,
+                (int)floorsCountAttribute.Id, marketSegment, (int)settings.Registerid);
+            if (analogFactor == null)
+                return 0;
+
+            if (int.TryParse(analogFactor.Value?.ToString(), out int floorsCount))
+                return floorsCount;
+
+            return 0;
+        }
 
         //генерируем новое исключение, чтобы не потерять стек
         private void GenerateOverflowException(Exception e, string cadastralNumber, string multipliedName, object multipliedValue)
