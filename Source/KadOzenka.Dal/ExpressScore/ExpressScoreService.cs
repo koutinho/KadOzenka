@@ -414,7 +414,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 				#region Корректировка на долю ЗУ
 
-				text = new KeyValuePair<string, string>("Этажность", value: analog.FloorsCount.ToString());
+                var analogFloorsCount = analog.FloorsCount;
+                text = new KeyValuePair<string, string>("Этажность", value: analogFloorsCount.ToString());
 				dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: "1");
 				double fixedCoefflandShareZero = 0.8; // По требованию заказчика если этажность 0 то коэф 0,8
 
@@ -423,10 +424,10 @@ namespace KadOzenka.Dal.ExpressScore
 					var dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute()
 						.Select(ScoreCommonService.ReferenceToNumber).ToList();
 
-					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analog.FloorsCount)?.Value ??
+					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analogFloorsCount)?.Value ??
 					                  dateNumb.Last()?.Value ?? null;
 
-					if (analog.FloorsCount == 0 && coefficient == null)
+					if (analogFloorsCount == 0 && coefficient == null)
 					{
 						coefficient = (decimal)fixedCoefflandShareZero;
 					}
@@ -444,8 +445,7 @@ namespace KadOzenka.Dal.ExpressScore
                             GenerateOverflowException(e, analog.Kn, "Корректировку на долю ЗУ", coefficient);
                         }
                     }
-
-				}
+                }
 				costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
 				costFactorsDataForReport.Add(new Tuple<string, string>(dicText.Key, dicText.Value));
 				costTargetObjectDataForReport.Add("");

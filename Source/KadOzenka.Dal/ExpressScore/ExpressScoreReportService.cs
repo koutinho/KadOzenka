@@ -95,8 +95,7 @@ namespace KadOzenka.Dal.ExpressScore
 				Console.WriteLine(e);
 				throw;
 			}
-
-		}
+        }
 
 		#endregion
 
@@ -162,8 +161,7 @@ namespace KadOzenka.Dal.ExpressScore
 				Console.WriteLine(e);
 				throw;
 			}
-
-		}
+        }
 
 		public void SetNextColumnComplexMatrix()
 		{
@@ -300,9 +298,8 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				AddBoldValue(mainWorkSheet, numberRow + 1, k + 1, $"Объект-аналог {k}");
 			}
+        }
 
-
-		}
 		private void AddRow(ExcelWorksheet sheet, int row, List<string> values)
 		{
 			bool isGreen = false;
@@ -347,12 +344,10 @@ namespace KadOzenka.Dal.ExpressScore
 					sheet.Rows[row].Cells[col].Style.FillPattern.SetPattern(FillPatternStyle.ThinHorizontalCrosshatch,
 						SpreadsheetColor.FromArgb(225, 232, 225), SpreadsheetColor.FromArgb(225, 232, 225));
 				}
-				
-
+                
 				col++;
 			}
-
-		}
+        }
 
 		private void AddSummaryRows(ExcelWorksheet mainWorkSheet, int numberRow, decimal squareCost, decimal summaryCost, string textSquare, string textSummary)
 		{
@@ -393,20 +388,15 @@ namespace KadOzenka.Dal.ExpressScore
 
 		private void AddAdditionalRows(ExcelWorksheet mainWorkSheet, int numberRow, DealTypeShort dealType, ScenarioType scenario)
 		{
-
-			// Вариант расчета
+            // Вариант расчета
 			AddMergeElement(mainWorkSheet, numberRow, numberRow + 1, 0, 0, "Вариант расчета объекта оценки (ЕОН/ без доли ЗУ)", true);
 
-
 			AddMergeElement(mainWorkSheet, numberRow, numberRow, 1, ColumnNameIndex - 1, "Расчет единого объекта недвижимости", true);
-
 
 			AddMergeElement(mainWorkSheet, numberRow + 1, numberRow + 1, 1, ColumnNameIndex - 1, "Расчет объекта капитального строительства без доли ЗУ", true);
 
 			mainWorkSheet.Rows[numberRow].SetHeight(1.5, LengthUnit.Centimeter);
 			mainWorkSheet.Rows[numberRow + 1].SetHeight(1.5, LengthUnit.Centimeter);
-
-
 
 			mainWorkSheet.Rows[numberRow].Cells[ColumnNameIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 			mainWorkSheet.Rows[numberRow].Cells[ColumnNameIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
@@ -427,16 +417,12 @@ namespace KadOzenka.Dal.ExpressScore
 				mainWorkSheet.Rows[numberRow + 1].Cells[ColumnNameIndex].SetValue("V");
 			}
 
-
 			// Тип сделки
-
-
-			AddMergeElement(mainWorkSheet, numberRow + 2, numberRow + 3, 0, 0, "Тип сделки", true);
+            AddMergeElement(mainWorkSheet, numberRow + 2, numberRow + 3, 0, 0, "Тип сделки", true);
 
 			AddMergeElement(mainWorkSheet, numberRow + 2, numberRow + 2, 1, ColumnNameIndex - 1, "Аренда", true);
 
-
-			AddMergeElement(mainWorkSheet, numberRow + 3, numberRow + 3, 1, ColumnNameIndex - 1, "Продажа", true);
+            AddMergeElement(mainWorkSheet, numberRow + 3, numberRow + 3, 1, ColumnNameIndex - 1, "Продажа", true);
 
 			mainWorkSheet.Rows[numberRow + 2].SetHeight(1.5, LengthUnit.Centimeter);
 			mainWorkSheet.Rows[numberRow + 3].SetHeight(1.5, LengthUnit.Centimeter);
@@ -456,13 +442,11 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				mainWorkSheet.Rows[numberRow + 3].Cells[ColumnNameIndex].SetValue("V");
 			}
-
-		}
+        }
 
 		private void AddMergeElement(ExcelWorksheet mainWorkSheet, int startRow, int endRow, int startColumn, int endColumn, string text, bool isBorder = false)
 		{
-
-			var mergeRow = mainWorkSheet.Cells.GetSubrangeAbsolute(startRow, startColumn, endRow, endColumn);
+            var mergeRow = mainWorkSheet.Cells.GetSubrangeAbsolute(startRow, startColumn, endRow, endColumn);
 			mergeRow.Merged = true;
 			mergeRow.Style.Font.Size = 250;
 			mergeRow.Style.Font.Weight = 600;
@@ -471,8 +455,7 @@ namespace KadOzenka.Dal.ExpressScore
 			mergeRow.Style.VerticalAlignment = VerticalAlignmentStyle.Center;
 			mergeRow.Style.WrapText = true;
 			mergeRow.Value = text;
-
-		}
+        }
 		private long SaveReportToExportTable(MemoryStream stream, string fileName)
 		{
 			var currentDate = DateTime.Now;
@@ -507,5 +490,4 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 		}
 	}
-
 }
