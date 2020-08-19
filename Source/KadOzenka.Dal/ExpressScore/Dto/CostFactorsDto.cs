@@ -37,7 +37,17 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// </summary>
 		public decimal? FloorDicId { get; set; }
 
-		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
+        /// <summary>
+        /// Флаг для учета НДС
+        /// </summary>
+        public bool? IsVatIncluded { get; set; }
+
+        /// <summary>
+        /// Ид словаря для НДС
+        /// </summary>
+        public decimal? VatDictionaryId { get; set; }
+
+        public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}
 }

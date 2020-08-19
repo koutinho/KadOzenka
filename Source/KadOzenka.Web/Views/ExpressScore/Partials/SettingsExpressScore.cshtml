@@ -1,5 +1,5 @@
-﻿@model KadOzenka.Web.Models.ExpressScore.SettingsExpressScoreViewModel
-
+﻿@using KadOzenka.Dal.ExpressScore.Dto
+@model KadOzenka.Web.Models.ExpressScore.SettingsExpressScoreViewModel
 
 <style>
 	.form-horizontal {
@@ -80,84 +80,116 @@
 			</div>
 		</li>
 		<li id="RequiredParam" data-expand>
-			<fieldset class="required-param">
-				<legend>Обязательные параметры</legend>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor("Атрибут года постройки", true)
-					</div>
-					<div class="col-sm-9">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
-							}).HtmlAttributes(new
-							{
-								name = "YearBuildId"
-							}))
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor(@"Корректировка на дату ""Справочник""", true)
-					</div>
-					<div class="col-sm-9">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.IndexDateDicId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-							}
-							).HtmlAttributes(new
-							{
-								name = "IndexDateDicId"
-							}))
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor(@"Корректировка на долю земельного участка ""Справочник""", true)
-					</div>
-					<div class="col-sm-9">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.LandShareDicId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-							}
-							).HtmlAttributes(new
-							{
-								name = "LandShareDicId"
-							}))
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor(@"Корректировка на этаж ""Справочник""", true)
-					</div>
-					<div class="col-sm-9">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.FloorDicId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-							}
-							).HtmlAttributes(new
-							{
-								name = "FloorDicId"
-							}))
-					</div>
-				</div>
-			</fieldset>
+            <fieldset class="required-param">
+                <legend>Обязательные параметры</legend>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor("Атрибут года постройки", true)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+                                    }).HtmlAttributes(new
+                                    {
+                                        name = "YearBuildId"
+                                    }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor(@"Корректировка на дату ""Справочник""", true)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.IndexDateDicId)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+                                    }
+                                    ).HtmlAttributes(new
+                                    {
+                                        name = "IndexDateDicId"
+                                    }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor(@"Корректировка на долю земельного участка ""Справочник""", true)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.LandShareDicId)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+                                    }
+                                    ).HtmlAttributes(new
+                                    {
+                                        name = "LandShareDicId"
+                                    }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor(@"Корректировка на этаж ""Справочник""", true)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.FloorDicId)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+                                    }
+                                    ).HtmlAttributes(new
+                                    {
+                                        name = "FloorDicId"
+                                    }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor("НДС включен")
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().CheckBoxFor(m => m.CostFactors.IsVatIncluded)
+                                    .HtmlAttributes(new
+                                    {
+                                        name = nameof(CostFactorsDto.IsVatIncluded),
+                                        onchange = "setVatDictionaryVisibility();"
+                                    }))
+                    </div>
+                </div>
+                <div class="form-group" id="dictionaryForVat" style="display: none;">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor(@"Корректировка на НДС ""Справочник""", true)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.VatDictionaryId)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .DataSource(source =>
+                            {
+                                source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+                            }
+                            ).HtmlAttributes(new
+                            {
+                                name = nameof(CostFactorsDto.VatDictionaryId)
+                            }))
+                    </div>
+                </div>
+            </fieldset>
 		</li>
 		<li id="StaticFactor" data-expand>
 			<fieldset class="static-param">
@@ -347,10 +379,7 @@
 			return;
 		}
 
-
-
-
-		var data = {
+        var data = {
 			TourId: formObject['TourId'],
 			FactorRegisterId: formObject['FactorRegisterId'],
 			CostFactors: {
@@ -359,12 +388,14 @@
 				simpleCostFactors,
 				LandShareDicId: formObject["LandShareDicId"],
 				IndexDateDicId: formObject["IndexDateDicId"],
-				FloorDicId: formObject["FloorDicId"]
+				FloorDicId: formObject["FloorDicId"],
+                IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
+                VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"]
 			},
 			SegmentType: "@Model.SegmentType"
-		}
+        }
 
-		kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('body'), true);
 		$.post(form.attr('action'), data).done(function(data) {
 			if (data.Errors) {
 				var errors = getErrors(data.Errors);
@@ -390,8 +421,7 @@
 	function handlerComplexFactor() {
 		kendo.ui.progress($('body'), true);
 		var url = "@Url.Action("AddNewComplexCard","ExpressScore")" + `?count=${complexFactorsCount}`;
-
-		var fieldset$ = $('<fieldset id="factor-' + complexFactorsCount +'" style= "display: none"></fieldset>');
+        var fieldset$ = $('<fieldset id="factor-' + complexFactorsCount +'" style= "display: none"></fieldset>');
 		$(fieldset$).load(url, null, function (data, status, jqXGR) {
 			if (status === 'success') {
 				$('fieldset.complex-factor').append(fieldset$);
@@ -420,11 +450,26 @@
 
 	function removeSimpleFactors() {
         $(this).closest('div.for-remove').remove();
-	}
+    }
+
+
+    function setVatDictionaryVisibility() {
+        var isVatIncluded = $("input[name='@nameof(CostFactorsDto.IsVatIncluded)']").is(':checked');
+        if (isVatIncluded) {
+            $("#dictionaryForVat").show();
+        } else {
+            $("#dictionaryForVat").hide();
+        }
+    }
+
+
+
+
 
 	$(document).ready(function () {
 		refreshComplexHandlers();
-		refreshSimpleHandlers();
+        refreshSimpleHandlers();
+        setVatDictionaryVisibility();
 		$('#addSimpleFactor').on('click',
 			function () {
                 kendo.ui.progress($('body'), true);

@@ -52,8 +52,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 				{
 					errors.Add(new ValidationResult(errorMessage: "Заполните обязательные параметры"));
 				}
-
-			}
+            }
 
 			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
@@ -61,8 +60,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 				{
 					errors.Add(new ValidationResult(errorMessage: "Заполните обязательные параметры."));
 				}
-
-			}
+            }
 
 			if (CostFactors != null && CostFactors.YearBuildId == 0 || CostFactors.YearBuildId == null)
 			{
@@ -86,8 +84,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 				if (dicType != ReferenceItemCodeType.Date)
 				{
 					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки даты должен быть типа ""дата""."));
-
-				}
+                }
 			}
 
 			if (CostFactors != null && CostFactors.LandShareDicId != 0 && CostFactors.LandShareDicId != null)
@@ -97,11 +94,12 @@ namespace KadOzenka.Web.Models.ExpressScore
 				if (dicType != ReferenceItemCodeType.Number)
 				{
 					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки земельного участка должен быть типа ""число""."));
-
-				}
+                }
 			}
 
-			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
+            ValidateVat(errors);
+
+            if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
 				foreach (var complexFactor in CostFactors.ComplexCostFactors)
 				{
@@ -165,10 +163,29 @@ namespace KadOzenka.Web.Models.ExpressScore
 						}
 					}
 				}
-
-			}
+            }
 
 			return errors;
 		}
-	}
+
+        private void ValidateVat(List<ValidationResult> errors)
+        {
+            if (CostFactors == null || !CostFactors.IsVatIncluded.GetValueOrDefault())
+                return;
+
+            var varDictionaryId = CostFactors.VatDictionaryId.GetValueOrDefault();
+            if (varDictionaryId == 0)
+            {
+                errors.Add(new ValidationResult("Для учета НДС нужно выбрать справочник."));
+            }
+            else
+            {
+                var dicType = OMEsReference.Where(x => x.Id == varDictionaryId).Select(x => x.ValueType_Code).ExecuteFirstOrDefault()?.ValueType_Code;
+                if (dicType != ReferenceItemCodeType.String)
+                {
+                    errors.Add(new ValidationResult(@"Справочник для корректировки НДС должен быть типа ""строка""."));
+                }
+            }
+        }
+    }
 }
