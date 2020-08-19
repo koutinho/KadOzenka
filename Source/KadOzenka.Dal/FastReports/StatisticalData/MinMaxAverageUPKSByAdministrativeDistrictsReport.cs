@@ -25,12 +25,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			switch (reportType)
 			{
 				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts:
-				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions:
-					return "MinMaxAverageUPKSByAdministrativeDistrictsReport";
-				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
-					return "MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport";
-				default:
-					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions: return "MinMaxAverageUPKSByAdministrativeDistrictsReport";
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions: return "MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport";
+				default: throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
 			}
 		}
 
@@ -38,35 +35,39 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetReportType(GetQueryParam<string>("ReportType", query));
+			var dataSet = new DataSet();
 
-			var dataTitleTable = new DataTable("Common");
-			dataTitleTable.Columns.Add("Title");
-			dataTitleTable.Columns.Add("DataNameColumnText");
-			var title = GetCommonTitle(reportType);
-			var dataTypeHeader = GetCommonDataNameColumnText(reportType);
-			dataTitleTable.Rows.Add(title, dataTypeHeader);
+			using (DataTable dataTitleTable = new DataTable("Common"))
+            {
+				dataTitleTable.Columns.Add("Title");
+				dataTitleTable.Columns.Add("DataNameColumnText");
+				var title = GetCommonTitle(reportType);
+				var dataTypeHeader = GetCommonDataNameColumnText(reportType);
+				dataTitleTable.Rows.Add(title, dataTypeHeader);
 
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("AdditionalName", typeof(string));
-			dataTable.Columns.Add("Name", typeof(string));
-			dataTable.Columns.Add("ObjectsCount", typeof(long));
-			dataTable.Columns.Add("UpksCalcType", typeof(string));
-			dataTable.Columns.Add("PropertyType", typeof(string));
-			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
+				using (DataTable dataTable = new DataTable("Data"))
+                {
+					dataTable.Columns.Add("AdditionalName", typeof(string));
+					dataTable.Columns.Add("Name", typeof(string));
+					dataTable.Columns.Add("ObjectsCount", typeof(long));
+					dataTable.Columns.Add("UpksCalcType", typeof(string));
+					dataTable.Columns.Add("PropertyType", typeof(string));
+					dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
-			var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.AdditionalName, unitDto.Name, unitDto.ObjectsCount,
-					unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
-					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?) null));
+					var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
+					foreach (var unitDto in data)
+					{
+						dataTable.Rows.Add(unitDto.AdditionalName, unitDto.Name, unitDto.ObjectsCount, unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
+							(unitDto.UpksCalcValue.HasValue ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues) : (decimal?)null)
+						);
+					}
+
+					dataSet.Tables.Add(dataTable);
+					dataSet.Tables.Add(dataTitleTable);
+				}
 			}
 
-			var dataSet = new DataSet();
-			dataSet.Tables.Add(dataTable);
-			dataSet.Tables.Add(dataTitleTable);
+			GC.Collect();
 
 			return dataSet;
 		}
@@ -81,8 +82,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 					return "Минимальные, максимальные, средние удельные показатели кадастровой стоимости объектов недвижимости по кадастровым районам города Москвы";
 				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
 					return "Минимальные, максимальные, средние удельные показатели кадастровой стоимости объектов недвижимости по муниципальным районам города Москвы";
-				default:
-					throw new InvalidDataException($"Неизвестный тип отчета: {reportType}");
+				default: throw new InvalidDataException($"Неизвестный тип отчета: {reportType}");
 			}
 		}
 
@@ -90,14 +90,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			switch (reportType)
 			{
-				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts:
-					return "Наименование административного округа";
-				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions:
-					return "Номер кадастрового района";
-				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
-					return "Наименование муниципального района / поселения";
-				default:
-					throw new InvalidDataException($"Неизвестный тип отчета: {reportType}");
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts: return "Наименование административного округа";
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions: return "Номер кадастрового района";
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions: return "Наименование муниципального района / поселения";
+				default: throw new InvalidDataException($"Неизвестный тип отчета: {reportType}");
 			}
 		}
 
@@ -105,14 +101,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			switch (reportTypeParam)
 			{
-				case "По административным округам":
-					return MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts;
-				case "По кадастровым районам":
-					return MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions;
-				case "По муниципальным районам":
-					return MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions;
-				default:
-					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportTypeParam}");
+				case "По административным округам": return MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts;
+				case "По кадастровым районам": return MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions;
+				case "По муниципальным районам": return MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions;
+				default: throw new InvalidDataException($"Неизвестный тип формирования данных: {reportTypeParam}");
 			}
 		}
 	}

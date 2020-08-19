@@ -16,20 +16,21 @@ using ObjectModel.Market;
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 
-	public class InitialData
-    {
-		public long id { get; set; }
-		public string cadastralQuartal { get; set; }
-		public long regionCode { get; set; }
-		public long districtCode { get; set; }
-		public string ParentGroup { get; set; }
-		public long objectsCount { get; set; }
-		public string cadastralDistrict { get; set; }
-		public long propertyTypeCode { get; set; }
-	}
-
 	public class NumberOfObjectsByAdministrativeDistrictsService : StatisticalDataService
 	{
+
+		private class InitialData
+		{
+			public long id { get; set; }
+			public string cadastralQuartal { get; set; }
+			public long regionCode { get; set; }
+			public long districtCode { get; set; }
+			public string ParentGroup { get; set; }
+			public long objectsCount { get; set; }
+			public string cadastralDistrict { get; set; }
+			public long propertyTypeCode { get; set; }
+		}
+
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly GbuObjectService _gbuObjectService;
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -10,8 +12,24 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
+
 	public class MinMaxAverageUPKSByAdministrativeDistrictsService
 	{
+
+		private class InitialData
+		{
+			public long id { get; set; }
+			public long districtCode { get; set; }
+			public long regionCode { get; set; }
+			public string cadastralDistrict { get; set; }
+			public long propertyTypeCode { get; set; }
+			public long objectsCount { get; set; }
+			public decimal min { get; set; }
+			public decimal average { get; set; }
+			public decimal averageWeight { get; set; }
+			public decimal max { get; set; }
+		}
+
 		private readonly StatisticalDataService _statisticalDataService;
 
 		public MinMaxAverageUPKSByAdministrativeDistrictsService(StatisticalDataService statisticalDataService)
@@ -21,87 +39,90 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<MinMaxAverageUPKSByAdministrativeDistrictsDto> GetMinMaxAverageUPKSByAdministrativeDistricts(long[] taskList, MinMaxAverageUPKSByAdministrativeDistrictsType reportType)
 		{
-			var quartalDictionaryJoin = new QSJoin
+			string contents, fileName = string.Empty;
+			switch (reportType)
 			{
-				RegisterId = OMQuartalDictionary.GetRegisterId(),
-				JoinCondition = new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-					RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-				},
-				JoinType = QSJoinType.Inner
-			};
-
-			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList,
-				additionalJoins: new List<QSJoin> { quartalDictionaryJoin });
-
-			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
-			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region_Code, "Region_Code"));
-			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District_Code, "District_Code"));
-			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
-			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "ObjectUpks"));
-            query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "ObjectCost"));
-            query.AddColumn(OMUnit.GetColumn(x => x.Square, "ObjectSquare"));
-
-			var table = query.ExecuteQuery();
-
-			var data = new List<MinMaxAverageUPKSByAdministrativeDistrictsObjectDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new MinMaxAverageUPKSByAdministrativeDistrictsObjectDto
-					{
-						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-						ObjectValue = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
-                        ObjectCost = table.Rows[i]["ObjectCost"].ParseToDecimalNullable(),
-                        ObjectSquare = table.Rows[i]["ObjectSquare"].ParseToDecimalNullable(),
-				};
-
-					switch (reportType)
-					{
-						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts:
-							dto.Name = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
-							break;
-						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions:
-							dto.Name = _statisticalDataService.GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString());
-							break;
-						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
-							dto.Name = ((Districts)table.Rows[i]["Region_Code"].ParseToLong()).GetEnumDescription();
-							dto.AdditionalName = ((Hunteds)table.Rows[i]["District_Code"].ParseToLong()).GetShortTitle();
-							break;
-					}
-
-					data.Add(dto);
-				}
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts:
+					fileName = "GetMinMaxAverageUPKSByAdministrativeDistricts_Districts";
+					break;
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions:
+					fileName = "GetMinMaxAverageUPKSByAdministrativeDistricts_CadastralRegions";
+					break;
+				case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
+					fileName = "GetMinMaxAverageUPKSByAdministrativeDistricts_Regions";
+					break;
 			}
 
-			var dataGrouped =
-				data.GroupBy(x => new { x.Name, x.PropertyType });
+			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
+			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+			var data = new List<MinMaxAverageUPKSByAdministrativeDistrictsDto>();
 
-			var result = new List<MinMaxAverageUPKSByAdministrativeDistrictsDto>();
-			foreach (var @group in dataGrouped)
+			if (table.Count != 0)
 			{
-				var groupValues = @group.ToList();
-				var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>();
-				foreach (var upksCalcType in upksCalcTypes)
+				foreach (InitialData initial in table)
 				{
-					var dto = new MinMaxAverageUPKSByAdministrativeDistrictsDto
+					var dtoMin = new MinMaxAverageUPKSByAdministrativeDistrictsDto
 					{
-						AdditionalName = groupValues.First().AdditionalName,
-						Name = @group.Key.Name,
-						ObjectsCount = groupValues.Count,
-						PropertyType = @group.Key.PropertyType,
-						UpksCalcType = upksCalcType,
-						UpksCalcValue = _statisticalDataService.GetCalcValue(upksCalcType, groupValues)
+						ObjectsCount = initial.objectsCount,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						UpksCalcType = UpksCalcType.Min,
+						UpksCalcValue = initial.min
+					};
+					var dtoAvg = new MinMaxAverageUPKSByAdministrativeDistrictsDto
+					{
+						ObjectsCount = initial.objectsCount,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						UpksCalcType = UpksCalcType.Average,
+						UpksCalcValue = initial.average
+					};
+					var dtoAvgWeight = new MinMaxAverageUPKSByAdministrativeDistrictsDto
+					{
+						ObjectsCount = initial.objectsCount,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						UpksCalcType = UpksCalcType.AverageWeight,
+						UpksCalcValue = initial.averageWeight
+					};
+					var dtoMax = new MinMaxAverageUPKSByAdministrativeDistrictsDto
+					{
+						ObjectsCount = initial.objectsCount,
+						PropertyType = ((PropertyTypes)initial.propertyTypeCode).GetEnumDescription(),
+						UpksCalcType = UpksCalcType.Max,
+						UpksCalcValue = initial.max
 					};
 
-					result.Add(dto);
+                    switch (reportType)
+                    {
+						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByDistricts:
+							dtoMin.Name = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoAvg.Name = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoAvgWeight.Name = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoMax.Name = ((Hunteds)initial.districtCode).GetShortTitle();
+							break;
+						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByCarastralRegions:
+							dtoMin.Name = initial.cadastralDistrict;
+							dtoAvg.Name = initial.cadastralDistrict;
+							dtoAvgWeight.Name = initial.cadastralDistrict;
+							dtoMax.Name = initial.cadastralDistrict;
+							break;
+						case MinMaxAverageUPKSByAdministrativeDistrictsType.ByRegions:
+							dtoMin.Name = ((Districts)initial.regionCode).GetEnumDescription();
+							dtoMin.AdditionalName = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoAvg.Name = ((Districts)initial.regionCode).GetEnumDescription();
+							dtoAvg.AdditionalName = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoAvgWeight.Name = ((Districts)initial.regionCode).GetEnumDescription();
+							dtoAvgWeight.AdditionalName = ((Hunteds)initial.districtCode).GetShortTitle();
+							dtoMax.Name = ((Districts)initial.regionCode).GetEnumDescription();
+							dtoMax.AdditionalName = ((Hunteds)initial.districtCode).GetShortTitle();
+							break;
+					}
+					data.Add(dtoMin);
+					data.Add(dtoAvg);
+					data.Add(dtoAvgWeight);
+					data.Add(dtoMax);
 				}
 			}
-
-			return result;
+			return data;
 		}
+
 	}
 }

@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 	{
 		public string AdditionalName { get; set; }
 		public string Name { get; set; }
-		public int ObjectsCount { get; set; }
+		public long ObjectsCount { get; set; }
 		public UpksCalcType UpksCalcType { get; set; }
 		public string PropertyType { get; set; }
 		public decimal? UpksCalcValue { get; set; }
