@@ -41,5 +41,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Тип сделки
 		/// </summary>
 		public DealType DealType { get; set; }
-	}
+
+        /// <summary>
+        /// НДС
+        /// </summary>
+        public string Vat { get; set; }
+    }
 }

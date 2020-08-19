@@ -225,7 +225,8 @@ namespace KadOzenka.Dal.ExpressScore
                     x.FloorNumber,
 					x.BuildingYear,
 					x.Address,
-					x.DealType_Code
+					x.DealType_Code,
+                    x.Vat
 				}).Execute().Select(x => new AnalogDto
 				{
 					Id = x.Id,
@@ -236,7 +237,8 @@ namespace KadOzenka.Dal.ExpressScore
                     Floor = x.FloorNumber.GetValueOrDefault(),
 					YearBuild = x.BuildingYear.GetValueOrDefault(),
 					Address = x.Address,
-					DealType = x.DealType_Code
+					DealType = x.DealType_Code,
+                    Vat = x.Vat
 				}).ToList();
 		}
 
@@ -454,9 +456,40 @@ namespace KadOzenka.Dal.ExpressScore
 
                 #endregion
 
-				#region Корректировка на этаж
+                #region Vat
+                //TODO
+                //if (dealTypeShort == DealTypeShort.Rent)
+                //{
+                //    //TODO словарь
+                //    var isValIncludedForAnalog = analog.Vat == YandexVatType.NDS.GetEnumDescription();
+                //    var analogLabel = isValIncludedForAnalog ? "С НДС" : "Без НДС";
+                //    var analogCorrection = isValIncludedForAnalog ? 1 : 1.2m;
 
-				{
+                //    var isValIncludedForTarget = analog.Vat == YandexVatType.NDS.GetEnumDescription();
+                //    var targetLabel = isValIncludedForTarget ? "С НДС" : "Без НДС";
+
+                //    try
+                //    {
+                //        cost = cost * analogCorrection;
+                //    }
+                //    catch (OverflowException e)
+                //    {
+                //        GenerateOverflowException(e, analog.Kn, "Корректировку на НДС", analogCorrection);
+                //    }
+
+                //    AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Наличие НДС", analog.Vat));
+                //    costTargetObjectDataForReport.Add("Таргет (Наличие НДС)");
+                //    AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка (С НДС/Без НДС)", analogLabel));
+                //    costTargetObjectDataForReport.Add("Таргет (Метка)");
+                //    AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка на НДС", analogCorrection.ToString()));
+                //    costTargetObjectDataForReport.Add(string.Empty);
+                //}
+
+                #endregion
+
+                #region Корректировка на этаж
+
+                {
 					var floor = (int)analog.Floor != 0 ? (int)analog.Floor : 1; // по условию из примера расчета
 					text = new KeyValuePair<string, string>("Этаж расположения", floor.ToString());
 
