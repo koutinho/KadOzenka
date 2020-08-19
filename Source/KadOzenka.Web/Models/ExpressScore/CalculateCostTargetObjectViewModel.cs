@@ -32,10 +32,15 @@ namespace KadOzenka.Web.Models.ExpressScore
 		[Required(ErrorMessage = "Не найден целевой объект")]
 		public int? TargetObjectId { get; set; }
 
-		/// <summary>
-		/// Сценарий расчета
-		/// </summary>
-		public ScenarioType ScenarioType { get; set; }
+        /// <summary>
+        /// Ид целевого объекта из market_core_object
+        /// </summary>
+        public long? TargetMarketObjectId { get; set; }
+
+        /// <summary>
+        /// Сценарий расчета
+        /// </summary>
+        public ScenarioType ScenarioType { get; set; }
 
 		/// <summary>
 		/// Сегмент рынка

@@ -373,7 +373,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource28 : OMBaseClass<OMSource28>
     {
     }
-        }
+}
 
 namespace ObjectModel.Gbu
 {
@@ -23056,6 +23056,26 @@ namespace ObjectModel.ES
             {
                 _address = value;
                 NotifyPropertyChanged("Address");
+            }
+        }
+
+
+        private long? _targetmarketobjectid;
+        /// <summary>
+        /// 60001300 ИД целевого объекта из market_core_object (TARGET_MARKET_OBJECT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001300)]
+        public long? TargetMarketObjectId
+        {
+            get
+            {
+                CheckPropertyInited("TargetMarketObjectId");
+                return _targetmarketobjectid;
+            }
+            set
+            {
+                _targetmarketobjectid = value;
+                NotifyPropertyChanged("TargetMarketObjectId");
             }
         }
 

@@ -249,7 +249,7 @@ namespace KadOzenka.Dal.ExpressScore
 
             resultCalculate = new ResultCalculateDto();
 			var squareCost = CalculateSquareCost(inputParam.Analogs, inputParam.TargetObjectId, inputParam.Floor, inputParam.Segment,
-				out string msg, out List<long> successAnalogIds, inputParam.DealType, inputParam.ScenarioType);
+				out string msg, out List<long> successAnalogIds, inputParam.DealType, inputParam.TargetMarketObjectId, inputParam.ScenarioType);
 
 			var summaryCost = Math.Round(squareCost * inputParam.Square, 2);
 			if (squareCost == 0)
@@ -258,7 +258,7 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 
 			DealType dealType = inputParam.DealType == DealTypeShort.Rent ? DealType.RentDeal : DealType.SaleDeal;
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, summaryCost, squareCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
+			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, summaryCost, squareCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
 				segmentType: inputParam.Segment, dealType: dealType, address: inputParam.Address);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
@@ -294,15 +294,19 @@ namespace KadOzenka.Dal.ExpressScore
 			reportId = 0;
 
 			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
-			squareCost = CalculateSquareCost(inputParam.Analogs.Where(x => analogIds.Contains((int)x.Id)).ToList(),
-				inputParam.TargetObjectId, inputParam.Floor,inputParam.Segment, out string msg, out var successAnalogIds, inputParam.DealType, inputParam.ScenarioType);
+
+            squareCost = CalculateSquareCost(inputParam.Analogs.Where(x => analogIds.Contains((int)x.Id)).ToList(),
+                inputParam.TargetObjectId, inputParam.Floor, inputParam.Segment, out string msg,
+                out var successAnalogIds, inputParam.DealType, inputParam.TargetMarketObjectId,
+                inputParam.ScenarioType);
+
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			cost = Math.Round(squareCost * inputParam.Square, 2);
 			squareCost = Math.Round(squareCost, 2);
 
 			reportId = ReportService.GenerateReport(cost, squareCost, inputParam.DealType, inputParam.ScenarioType);
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, cost, squareCost, out int id, expressScoreId);
+			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, cost, squareCost, out int id, expressScoreId);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			return msg;
@@ -310,7 +314,7 @@ namespace KadOzenka.Dal.ExpressScore
 
         private decimal CalculateSquareCost(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor,
 			MarketSegment marketSegment, out string msg, out List<long> successAnalogIds, DealTypeShort dealTypeShort,
-			ScenarioType? scenarioType = null)
+            long? targetMarketObjectId, ScenarioType? scenarioType = null)
 		{
 			msg = "";
 			List<decimal> res = new List<decimal>();
@@ -459,7 +463,7 @@ namespace KadOzenka.Dal.ExpressScore
 
                 if (dealTypeShort == DealTypeShort.Rent && exCostFactors.IsVatIncluded.GetValueOrDefault())
                 {
-                    cost = AddVat(exCostFactors.VatDictionaryId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
+                    cost = AddVat(exCostFactors.VatDictionaryId, targetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
                 }
 
                 #region Корректировка на этаж
@@ -775,15 +779,15 @@ namespace KadOzenka.Dal.ExpressScore
 			return res.Sum(x => x) / res.Count;
 		}
 
-        private decimal AddVat(decimal? vatDictionaryId, AnalogDto analog, decimal cost, List<string> costTargetObjectDataForReport,
-            ref List<Tuple<string, string>> costFactorsDataForReport)
+        #region Support For Cost Calculation
+
+        private decimal AddVat(decimal? vatDictionaryId, long? targetMarketObjectId, AnalogDto analog, decimal cost,
+            List<string> costTargetObjectDataForReport, ref List<Tuple<string, string>> costFactorsDataForReport)
         {
             var vatDictionaryValues = OMEsReferenceItem.Where(x => x.ReferenceId == vatDictionaryId).SelectAll()
                 .Execute();
 
-            //TODO после доработки парсера добавить энам
-            var isValIncludedForAnalog = analog.Vat == YandexVatType.NDS.GetEnumDescription();
-            var analogLabel = isValIncludedForAnalog ? "С НДС" : "Без НДС";
+            var analogLabel = GetVatLabel(analog.Vat);
             var analogCorrection = vatDictionaryValues.FirstOrDefault(x => x.Value.ToLower() == analogLabel.ToLower())
                 ?.CalculationValue;
 
@@ -800,13 +804,30 @@ namespace KadOzenka.Dal.ExpressScore
             }
 
             AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Наличие НДС", analog.Vat));
-            costTargetObjectDataForReport.Add(string.Empty);
             AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка (С НДС/Без НДС)", analogLabel));
-            costTargetObjectDataForReport.Add(string.Empty);
             AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка на НДС", analogCorrection?.ToString()));
+
+            var targetMarketObjectVat = string.Empty;
+            var targetLabel = string.Empty;
+            if (targetMarketObjectId != null)
+            {
+                targetMarketObjectVat = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.Vat)
+                    .ExecuteFirstOrDefault()?.Vat;
+
+                targetLabel = GetVatLabel(targetMarketObjectVat);
+            }
+            costTargetObjectDataForReport.Add(targetMarketObjectVat);
+            costTargetObjectDataForReport.Add(targetLabel);
             costTargetObjectDataForReport.Add(string.Empty);
 
             return cost;
+        }
+
+        //TODO после доработки парсера добавить энам
+        private string GetVatLabel(string vat)
+        {
+            var isVatIncluded = vat == YandexVatType.NDS.GetEnumDescription();
+            return isVatIncluded ? "С НДС" : "Без НДС";
         }
 
         private int GetAnalogFloorsCount(string kn, MarketSegment marketSegment, OMSettingsParams settings)
@@ -835,7 +856,9 @@ namespace KadOzenka.Dal.ExpressScore
             throw (Exception)Activator.CreateInstance(e.GetType(), message, e);
         }
 
-        public string SaveSuccessExpressScore(int targetObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
+        #endregion
+
+        public string SaveSuccessExpressScore(int targetObjectId, long? targetMarketObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
 			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null, MarketSegment? segmentType = null, DealType? dealType = null, string address = null)
 		{
 			id = 0;
@@ -850,7 +873,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				id = expressScoreId == null
-					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault(), dealType.GetValueOrDefault(), address)
+					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, targetMarketObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault(), dealType.GetValueOrDefault(), address)
 					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
 			}
 			catch (Exception e)
@@ -863,25 +886,28 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType, MarketSegment segmentType, DealType dealType, string address)
-		{
-			return new OMExpressScore
-			{
-				KadastralNumber = kn,
-				CostSquareMeter = costSquareMeter,
-				DateCost = DateTime.Now.Date,
-				SummaryCost = cost,
-				Objectid = targetObjectId,
-				Floor = floor,
-				Square = square,
-				ScenarioType_Code = scenarioType,
-				SegmentType_Code = segmentType,
-				DealType_Code = dealType,
-				Address = address
-			}.Save();
-		}
+        private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor,
+            int targetObjectId, long? targetMarketObjectId, ScenarioType scenarioType, MarketSegment segmentType,
+            DealType dealType, string address)
+        {
+            return new OMExpressScore
+            {
+                KadastralNumber = kn,
+                CostSquareMeter = costSquareMeter,
+                DateCost = DateTime.Now.Date,
+                SummaryCost = cost,
+                Objectid = targetObjectId,
+                TargetMarketObjectId = targetMarketObjectId,
+                Floor = floor,
+                Square = square,
+                ScenarioType_Code = scenarioType,
+                SegmentType_Code = segmentType,
+                DealType_Code = dealType,
+                Address = address
+            }.Save();
+        }
 
-		private int UpdateCostsExpressScore(int expressScoreId, decimal summaryCost, decimal costSquareMeter)
+        private int UpdateCostsExpressScore(int expressScoreId, decimal summaryCost, decimal costSquareMeter)
 		{
 			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
 			if (obj == null)

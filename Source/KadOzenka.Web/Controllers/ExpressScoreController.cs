@@ -60,19 +60,29 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetKadNumber(string address = "")
 		{
 			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress != null
-			                                               && x.FormalizedAddress.ToLower() == address.ToLower()).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
+			                                               && x.FormalizedAddress.ToLower() == address.ToLower())
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.InitialId)
+                .ExecuteFirstOrDefault();
 
 			if (yandexAddress == null)
 			{
 				return SendErrorMessage("Кадастровый номер для объекта не найден");
 			}
-			return Json(new { response = new {kadNumber = yandexAddress.CadastralNumber} });
+			return Json(new { response = new
+            {
+                kadNumber = yandexAddress.CadastralNumber,
+                marketObjectId = yandexAddress.InitialId
+            } });
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetAddressByKadNumber(string kadNumber)
 		{
-			var yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == kadNumber).Select(x => x.FormalizedAddress).ExecuteFirstOrDefault();
+			var yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == kadNumber)
+                .Select(x => x.FormalizedAddress)
+                .Select(x => x.InitialId)
+                .ExecuteFirstOrDefault();
 
 			if (yandexAddress == null)
 			{
@@ -98,7 +108,10 @@ namespace KadOzenka.Web.Controllers
 					return SendErrorMessage("Адрес для объекта не найден");
 				}
 
-				yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == attribute.StringValue).Select(x => x.FormalizedAddress).ExecuteFirstOrDefault();
+				yandexAddress = OMYandexAddress.Where(x => x.CadastralNumber == attribute.StringValue)
+                    .Select(x => x.FormalizedAddress)
+                    .Select(x => x.InitialId)
+                    .ExecuteFirstOrDefault();
 
 				if (yandexAddress == null)
 				{
@@ -106,7 +119,11 @@ namespace KadOzenka.Web.Controllers
 				}
 
 			}
-			return Json(new { response = new { address = yandexAddress.FormalizedAddress } });
+			return Json(new { response = new
+            {
+                address = yandexAddress.FormalizedAddress,
+                marketObjectId = yandexAddress.InitialId
+            } });
 		}
 
         [HttpGet]
@@ -306,8 +323,9 @@ namespace KadOzenka.Web.Controllers
 				ScenarioType = viewModel.ScenarioType,
 				Square = viewModel.Square.GetValueOrDefault(),
 				Segment = viewModel.Segment,
-				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault()
-			};
+				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),
+                TargetMarketObjectId = viewModel.TargetMarketObjectId
+            };
 
 			string resMsg = _service.CalculateExpressScore(inputParam, out ResultCalculateDto resultCalculate);
 
@@ -356,8 +374,7 @@ namespace KadOzenka.Web.Controllers
 			if (obj == null)
 			{
 				return SendErrorMessage("Не найдена оценка");
-
-			}
+            }
 
 			var inputParam = new InputCalculateDto
 			{
@@ -369,7 +386,8 @@ namespace KadOzenka.Web.Controllers
 				ScenarioType = obj.ScenarioType_Code,
 				Square = obj.Square,
 				Segment = obj.SegmentType_Code,
-				TargetObjectId = (int) obj.Objectid
+				TargetObjectId = (int) obj.Objectid,
+                TargetMarketObjectId = obj.TargetMarketObjectId
 			};
 
 			string resMsg = _service.RecalculateExpressScore(inputParam, analogIds, expressScoreId, out decimal cost, out decimal squareCost, out long reportId);

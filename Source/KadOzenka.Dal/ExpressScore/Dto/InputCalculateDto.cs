@@ -11,6 +11,8 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 
 		public int TargetObjectId { get; set; }
 
+		public long? TargetMarketObjectId { get; set; }
+
 		public int Floor { get; set; }
 
 		public decimal Square { get; set; }
