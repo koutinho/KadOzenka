@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.Logger;
 using Newtonsoft.Json;
@@ -169,7 +170,24 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 
 			if (!deserializedObject.SelectToken("vat").IsNullOrEmpty())
 			{
-				initialObject.Vat = deserializedObject.SelectToken("vat").Value<string>();
+				var vatValueString = deserializedObject.SelectToken("vat").Value<string>();
+				if (vatValueString == VatType.NDS.GetEnumDescription())
+				{
+					initialObject.Vat_Code = VatType.NDS;
+				}
+				else if (vatValueString == VatType.USN.GetEnumDescription())
+				{
+					initialObject.Vat_Code = VatType.USN;
+				}
+				else
+				{
+					initialObject.Vat_Code = VatType.None;
+				}
+				isObjectUpdated = true;
+			}
+			else
+			{
+				initialObject.Vat_Code = VatType.None;
 				isObjectUpdated = true;
 			}
 

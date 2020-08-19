@@ -3,6 +3,7 @@ using System.Configuration;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Extentions;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Directory;
 using ObjectModel.Market;
 using OpenQA.Selenium.Chrome;
 
@@ -76,15 +77,22 @@ namespace KadOzenka.Dal.YandexParsing
 			{
 				switch (obj.SelectToken("cards.offers.taxationForm")?.Value<string>())
 				{
-					case nameof(YandexVatType.NDS):
-						marketObject.Vat = YandexVatType.NDS.GetEnumDescription();
-						isObjectUpdated = true;
+					case nameof(VatType.NDS):
+						marketObject.Vat_Code = VatType.NDS;
 						break;
-					case nameof(YandexVatType.USN):
-						marketObject.Vat = YandexVatType.USN.GetEnumDescription();
-						isObjectUpdated = true;
+					case nameof(VatType.USN):
+						marketObject.Vat_Code = VatType.USN;
+						break;
+					default:
+						marketObject.Vat_Code = VatType.None;
 						break;
 				}
+				isObjectUpdated = true;
+			}
+			else
+			{
+				marketObject.Vat_Code = VatType.None;
+				isObjectUpdated = true;
 			}
 
 			return isObjectUpdated;

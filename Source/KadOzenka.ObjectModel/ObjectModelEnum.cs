@@ -9556,6 +9556,38 @@ namespace ObjectModel.Directory.MarketObjects
 namespace ObjectModel.Directory
 {
     /// <summary>
+    /// Налог (122)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 122)]
+    public enum VatType : long
+    {
+		/// <summary>
+		/// Нет данных (0)
+		/// </summary>
+		[Description("Нет данных")]
+        [EnumCode("0")]
+        [ShortTitle("Нет данных")]
+        None = 0,
+		/// <summary>
+		/// НДС включен (1)
+		/// </summary>
+		[Description("НДС включен")]
+        [EnumCode("1")]
+        [ShortTitle("НДС включен")]
+        NDS = 1,
+		/// <summary>
+		/// УСН (2)
+		/// </summary>
+		[Description("УСН")]
+        [EnumCode("2")]
+        [ShortTitle("УСН")]
+        USN = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
     /// Статусы единицы оценки (200)
     ///</summary>
     [ReferenceInfo(ReferenceId = 200)]

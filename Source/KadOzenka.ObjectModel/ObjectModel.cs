@@ -2103,6 +2103,41 @@ namespace ObjectModel.Market
         }
 
 
+        private VatType _vat_Code;
+        /// <summary>
+        /// 10009007 НДС (справочный код) (VAT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009007)]
+        public VatType Vat_Code
+        {
+            get
+            {
+                CheckPropertyInited("Vat_Code");
+                return this._vat_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_vat))
+                    {
+                         _vat = descr;
+                    }
+                }
+                else
+                {
+                     _vat = descr;
+                }
+
+                this._vat_Code = value;
+                NotifyPropertyChanged("Vat");
+                NotifyPropertyChanged("Vat_Code");
+            }
+        }
+
+
         private string _entrancetype;
         /// <summary>
         /// 10009008 Тип входа (ENTRANCE_TYPE)
