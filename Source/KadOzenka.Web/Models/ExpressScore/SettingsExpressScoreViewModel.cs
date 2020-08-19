@@ -78,10 +78,9 @@ namespace KadOzenka.Web.Models.ExpressScore
 			}
 
 			if(CostFactors != null && CostFactors.IndexDateDicId != 0 && CostFactors.IndexDateDicId != null)
-			{
-				var dicType = OMEsReference.Where(x => x.Id == CostFactors.IndexDateDicId).SelectAll()
-					.ExecuteFirstOrDefault()?.ValueType_Code;
-				if (dicType != ReferenceItemCodeType.Date)
+            {
+                var dicType = GetDictionaryType(CostFactors.IndexDateDicId);
+                if (dicType != ReferenceItemCodeType.Date)
 				{
 					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки даты должен быть типа ""дата""."));
                 }
@@ -89,9 +88,8 @@ namespace KadOzenka.Web.Models.ExpressScore
 
 			if (CostFactors != null && CostFactors.LandShareDicId != 0 && CostFactors.LandShareDicId != null)
 			{
-				var dicType = OMEsReference.Where(x => x.Id == CostFactors.LandShareDicId).SelectAll()
-					.ExecuteFirstOrDefault()?.ValueType_Code;
-				if (dicType != ReferenceItemCodeType.Number)
+                var dicType = GetDictionaryType(CostFactors.LandShareDicId);
+                if (dicType != ReferenceItemCodeType.Number)
 				{
 					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки земельного участка должен быть типа ""число""."));
                 }
@@ -123,8 +121,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 					{
 						var attributeType = RegisterCache.RegisterAttributes.Values
 							.FirstOrDefault(y => y.Id == complexFactor.AttributeId)?.Type;
-						var dictionaryType = OMEsReference.Where(x => x.Id == complexFactor.DictionaryId).SelectAll().ExecuteFirstOrDefault()
-							.ValueType_Code;
+                        var dictionaryType = GetDictionaryType(complexFactor.DictionaryId);
 
 						switch (attributeType)
 						{
@@ -168,6 +165,8 @@ namespace KadOzenka.Web.Models.ExpressScore
 			return errors;
 		}
 
+        #region Support Methods
+
         private void ValidateVat(List<ValidationResult> errors)
         {
             if (CostFactors == null || !CostFactors.IsVatIncluded.GetValueOrDefault())
@@ -180,12 +179,22 @@ namespace KadOzenka.Web.Models.ExpressScore
             }
             else
             {
-                var dicType = OMEsReference.Where(x => x.Id == varDictionaryId).Select(x => x.ValueType_Code).ExecuteFirstOrDefault()?.ValueType_Code;
+                var dicType = GetDictionaryType(varDictionaryId);
                 if (dicType != ReferenceItemCodeType.String)
                 {
                     errors.Add(new ValidationResult(@"Справочник для корректировки НДС должен быть типа ""строка""."));
                 }
             }
         }
+
+        private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)
+        {
+            return OMEsReference.Where(x => x.Id == dictionaryId)
+                .Select(x => x.ValueType_Code)
+                .ExecuteFirstOrDefault()
+                ?.ValueType_Code;
+        }
+
+        #endregion
     }
 }
