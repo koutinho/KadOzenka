@@ -45,6 +45,6 @@ namespace KadOzenka.Dal.ExpressScore.Dto
         /// <summary>
         /// НДС
         /// </summary>
-        public string Vat { get; set; }
+        public VatType? Vat { get; set; }
     }
 }

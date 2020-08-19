@@ -227,7 +227,7 @@ namespace KadOzenka.Dal.ExpressScore
 					x.BuildingYear,
 					x.Address,
 					x.DealType_Code,
-                    x.Vat
+                    x.Vat_Code
 				}).Execute().Select(x => new AnalogDto
 				{
 					Id = x.Id,
@@ -239,8 +239,8 @@ namespace KadOzenka.Dal.ExpressScore
 					YearBuild = x.BuildingYear.GetValueOrDefault(),
 					Address = x.Address,
 					DealType = x.DealType_Code,
-                    Vat = x.Vat
-				}).ToList();
+                    Vat = x.Vat_Code
+                }).ToList();
 		}
 
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
@@ -803,30 +803,29 @@ namespace KadOzenka.Dal.ExpressScore
                 }
             }
 
-            AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Наличие НДС", analog.Vat));
+            AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Наличие НДС", analog.Vat?.GetEnumDescription()));
             AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка (С НДС/Без НДС)", analogLabel));
             AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка на НДС", analogCorrection?.ToString()));
 
-            var targetMarketObjectVat = string.Empty;
+            VatType? targetMarketObjectVat = null;
             var targetLabel = string.Empty;
             if (targetMarketObjectId != null)
             {
-                targetMarketObjectVat = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.Vat)
-                    .ExecuteFirstOrDefault()?.Vat;
+                targetMarketObjectVat = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.Vat_Code)
+                    .ExecuteFirstOrDefault()?.Vat_Code;
 
                 targetLabel = GetVatLabel(targetMarketObjectVat);
             }
-            costTargetObjectDataForReport.Add(targetMarketObjectVat);
+            costTargetObjectDataForReport.Add(targetMarketObjectVat?.GetEnumDescription());
             costTargetObjectDataForReport.Add(targetLabel);
             costTargetObjectDataForReport.Add(string.Empty);
 
             return cost;
         }
 
-        //TODO после доработки парсера добавить энам
-        private string GetVatLabel(string vat)
+        private string GetVatLabel(VatType? vat)
         {
-            var isVatIncluded = vat == YandexVatType.NDS.GetEnumDescription();
+            var isVatIncluded = vat == VatType.NDS;
             return isVatIncluded ? "С НДС" : "Без НДС";
         }
 
