@@ -30,13 +30,15 @@ namespace KadOzenka.Web.Controllers
 
         public MapController(CoreUiService coreUiService, RegistersService registersService)
         {
-            _coreUiService = coreUiService;
+	        _coreUiService = coreUiService;
             _registersService = registersService;
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult Index(long? objectId)
         {
+	        MapTilesConfig.ClearMarketHeatMapInitialImages();
+
             if (objectId.HasValue)
             {
                 var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
@@ -78,7 +80,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult HeatMapData(string colors, string actualDate)
         {
-            DateTime acD;
+	        DateTime acD;
             string[] colorsArray = colors.Split(",");
             var query = OMCoreObject
                 .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
@@ -111,7 +113,7 @@ namespace KadOzenka.Web.Controllers
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) quartalsData =
 	            new HeatMap().SetColors(new HeatMap().GroupList(allQuartals, quartalList), colorsArray);
 
-            new HeatMap().GenerateHeatMapQuartalTiles(quartalsData.ColoredData);
+            new HeatMap().GenerateHeatMapQuartalInitialImages(quartalsData.ColoredData);
 
             return Json(new
             {
@@ -349,7 +351,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var file = new HeatMap().GetHeatMapTile(x, y, z);
 	        if (file == null)
-		        return null;
+		        return EmptyResponse();
 
 	        return File(file, "image/png");
         }
@@ -358,7 +360,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult CadastralTransparentTiles(int x, int y, int z)
         {
 	        try { return base.File($@"~/MapImageLayer/QuartalLayer/{z}/{x}_{y}.png", "image/png"); }
-	        catch (Exception) { return null; }
+	        catch (Exception) { return EmptyResponse(); }
         }
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)

@@ -174,6 +174,7 @@ function creatFilterWidget() {
 
             document.getElementById("refreshHeatMapButton").addEventListener('click', function (e) {
                 if (document.getElementById("refreshHeatMapButton").classList.contains("inactive")) {
+                    heatMapData = null;
                     setHeatMapButtonState(true);
                     GetHeatMapData();
                 }

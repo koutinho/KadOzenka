@@ -138,18 +138,16 @@ function setQuartalTiles() {
     if (heatMapData) {
         imgLayer =
             new ymaps.Layer(imgTileSettings.imgUrlHeatMapTemplate, { tileTransparent: imgTileSettings.tileTransparent });
-        map.layers.add(imgLayer);
         if (getMinMaxDataForHeatMap()) {
             var i = 0;
             Array.from(document.getElementById('legendPaleteContainer').getElementsByClassName('coloredSegment'))
                 .forEach(x => { x.setAttribute('title', `${getMinMaxDataForHeatMap()[i].min} - ${getMinMaxDataForHeatMap()[i].max}`); i++; });
         }
-        map.layers.add(imgLayer);
     } else {
         imgLayer =
             new ymaps.Layer(imgTileSettings.imgUrlTransparentTemplate, { tileTransparent: imgTileSettings.tileTransparent });
-        map.layers.add(imgLayer);
     }
+    map.layers.add(imgLayer);
 };
 
 function setCurrentLayer(url) {

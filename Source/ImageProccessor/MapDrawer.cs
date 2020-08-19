@@ -44,7 +44,7 @@ namespace ImageProccessor
             result.Save(name, _format);
         }
 
-        public void DrawMap(int xExt, int yExt, List<dynamic> coords, string name, bool bolt, Dictionary<string, string> colors)
+        public Image DrawMap(int xExt, int yExt, List<dynamic> coords, string name, bool bolt, Dictionary<string, string> colors)
         {
 	        Bitmap result = new Bitmap(xExt, yExt);
 	        Graphics drawing = Graphics.FromImage(result);
@@ -70,6 +70,8 @@ namespace ImageProccessor
 		        }
 	        });
 	        result.Save(name, _format);
+
+            return result;
         }
 
         public void ChopData(string fileName, int hStartTile, int yStartTile, int zStart, int z, int tileSize, string reqFolder)
@@ -92,6 +94,37 @@ namespace ImageProccessor
                     new Bitmap(imgarray[i, j], new Size(tileSize, tileSize)).Save(reqFolder + $@"\{currentStartX + j}_{currentStartY + i}.png", _format);
                 }
             }
+        }
+
+        public Stream ChopTileFromImage(Image initialImage, int x, int y, int xStartTile, int yStartTile, int minZoom, int currentZoom, int tileSize)
+        {
+	        Stream result = null;
+
+	        int width = initialImage.Width, height = initialImage.Height;
+	        int startX = (int)(xStartTile * Math.Pow(2, currentZoom - minZoom)),
+		        startY = (int)(yStartTile * Math.Pow(2, currentZoom - minZoom));
+
+	        if ((x - startX) >= 0 && (x - startX) < width / tileSize
+                   && (y - startY) >= 0 && (y - startY) < height / tileSize)
+	        {
+		        var img = new Bitmap(tileSize, tileSize);
+		        Graphics graphics = Graphics.FromImage(img);
+		        graphics.DrawImage(initialImage,
+			        new Rectangle(0, 0, tileSize, tileSize),
+			        new Rectangle((x - startX) * tileSize,
+				        (y - startY) * tileSize, tileSize,
+				        tileSize),
+			        GraphicsUnit.Pixel);
+		        graphics.Save();
+		        graphics.Dispose();
+		        System.IO.Stream stream = new MemoryStream();
+		        new Bitmap(img, new Size(tileSize, tileSize))
+			        .Save(stream, ImageFormat.Png);
+		        stream.Position = 0;
+		        result = stream;
+	        }
+
+	        return result;
         }
 
     }
