@@ -541,7 +541,7 @@ namespace KadOzenka.Dal.DataExport
 
         public static string SStr(string value)
         {
-            if (value == string.Empty) return "-"; else return value;
+            return string.IsNullOrWhiteSpace(value) ? "-" : value;
         }
 
         /// <summary>
@@ -551,7 +551,7 @@ namespace KadOzenka.Dal.DataExport
                                     string _col1, double _size,
                                     HorizontalAlignment _align1, bool _border, bool _bold)
         {
-            string[] paragraphs = _col1.Split('$');
+            string[] paragraphs = _col1?.Split('$');
             foreach (string partext in paragraphs)
             {
                 Paragraph paragraph = new Paragraph(_document);

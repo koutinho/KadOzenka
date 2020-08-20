@@ -3763,11 +3763,6 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKODocOtvet
     {
-        public static string SStr(string value)
-        {
-            if (value == string.Empty) return "-"; else return value;
-        }
-
         /// <summary>
         /// Экспорт в Word - ответные документы по объектам.
         /// </summary>
@@ -4509,7 +4504,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.1",
                      "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     SStr(group_unit.AppliedApproachesInCadastralCost),
+                     DataExportCommon.SStr(group_unit.AppliedApproachesInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4517,7 +4512,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.2",
                      "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     SStr(group_unit.AppliedEvaluationMethodsInCadastralCost),
+                     DataExportCommon.SStr(group_unit.AppliedEvaluationMethodsInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4525,7 +4520,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.3",
                      "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
-                     SStr(group_unit.CadastralCostDetermingMethod),
+                     DataExportCommon.SStr(group_unit.CadastralCostDetermingMethod),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4533,7 +4528,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.4",
                      "Модель определения кадастровой стоимости объекта недвижимости с обоснованием ее выбора",
-                     SStr(formula),
+                     DataExportCommon.SStr(formula),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4541,7 +4536,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.5",
                      "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
-                     SStr(group_unit.ObjectsSegment),
+                     DataExportCommon.SStr(group_unit.ObjectsSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4549,7 +4544,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.6",
                      "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
-                     SStr(group_unit.ObjectsSubgroup),
+                     DataExportCommon.SStr(group_unit.ObjectsSubgroup),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4557,7 +4552,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.7",
                      "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
-                     SStr(group_unit.CadastralCostCalculationOrderDescription),
+                     DataExportCommon.SStr(group_unit.CadastralCostCalculationOrderDescription),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
