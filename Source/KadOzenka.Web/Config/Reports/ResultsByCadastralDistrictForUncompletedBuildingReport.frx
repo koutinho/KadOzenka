@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/05/2020 09:18:58" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/20/2020 12:28:45" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -74,86 +74,86 @@
       <Column Name="ObjectsCount" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
-    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="66.15">
-      <TextObject Name="Text1" Left="9.45" Top="9.45" Width="1030.05" Height="56.7" Text="Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета" Font="Times New Roman, 14pt, style=Bold"/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="897" PaperHeight="210" RawPaperSize="9" Guides="9.45,3203.55,79.38,234.36,323.19,519.75,618.03,763.5601,918.54,1073.52,1219.05,1364.58,1481.76,1598.94,1744.47,1899.45,2044.98,2190.51,421.47,2336.04,2481.57,3044.79,3199.77,2627.1,2772.63,2889.81" UnlimitedWidth="true">
+    <ReportTitleBand Name="ReportTitle1" Width="3315.06" Height="66.15" Guides="9.45,66.15">
+      <TextObject Name="Text1" Left="9.45" Top="9.45" Width="3194.1" Height="56.7" Text="Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета" Font="Times New Roman, 14pt, style=Bold"/>
     </ReportTitleBand>
-    <DataBand Name="BandItem" Top="367.1" Width="1047.06" Height="103.95" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
-      <TextObject Name="Text60" Left="9.45" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text61" Left="51.03" Width="69.93" Height="103.95" Border.Lines="All" Text="[Item.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text82" Left="994.14" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text57" Left="120.96" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.BuildYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text58" Left="162.54" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.FormationDate]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text59" Left="204.12" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.UndergroundFloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text62" Left="245.7" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.FloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text63" Left="287.28" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.WallMaterial]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text64" Left="328.86" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Location]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text65" Left="370.44" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text66" Left="412.02" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.BuildingPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text67" Left="453.6" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.ObjectName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text68" Left="495.18" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text69" Left="536.76" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.ReadinessPercentage]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text70" Left="578.34" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text71" Left="619.92" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.CadastralQuartal]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text72" Left="661.5" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Segment]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text73" Left="703.08" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text74" Left="744.66" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text75" Left="786.24" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCodeSource]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text76" Left="827.82" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.SubGroupUsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text77" Left="869.4" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.FunctionalSubGroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text78" Left="910.98" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text79" Left="952.56" Width="41.58" Height="103.95" Border.Lines="All" Text="[Item.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader1" Top="70.15" Width="1047.06" Height="292.95">
-        <TextObject Name="Text2" Left="9.45" Width="41.58" Height="274.05" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text3" Left="51.03" Width="69.93" Height="274.05" Border.Lines="All" Text="КН" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text18" Left="120.96" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text19" Left="162.54" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text20" Left="204.12" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text16" Left="9.45" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text17" Left="51.03" Top="274.05" Width="69.93" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text24" Left="245.7" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text26" Left="287.28" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text27" Left="328.86" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="8" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text30" Left="370.44" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="9" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text32" Left="412.02" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="10" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text34" Left="453.6" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="11" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text36" Left="495.18" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="12" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text38" Left="536.76" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="13" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text40" Left="578.34" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="14" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text41" Left="619.92" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="15" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text44" Left="661.5" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="16" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text45" Left="703.08" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="17" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text47" Left="744.66" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="18" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text49" Left="786.24" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="19" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text51" Left="827.82" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="20" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text53" Left="869.4" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="21" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text56" Left="910.98" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="22" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text80" Left="952.56" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="23" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text84" Left="994.14" Width="41.58" Height="274.05" Border.Lines="All" Text="Кадастровая стоимость объекта недвижимости, руб." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text83" Left="994.14" Top="274.05" Width="41.58" Height="18.9" Border.Lines="All" Text="24" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text42" Left="619.92" Width="41.58" Height="274.05" Border.Lines="All" Text="Кадастровый квартал" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text4" Left="120.96" Width="41.58" Height="274.05" Border.Lines="All" Text="Год постройки" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text5" Left="162.54" Width="41.58" Height="274.05" Border.Lines="All" Text="Дата образования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text6" Left="204.12" Width="41.58" Height="274.05" Border.Lines="All" Text="Количество подземных этажей" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text23" Left="245.7" Width="41.58" Height="274.05" Border.Lines="All" Text="Количество этажей" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text25" Left="287.28" Width="41.58" Height="274.05" Border.Lines="All" Text="Материал стен" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text28" Left="328.86" Width="41.58" Height="274.05" Border.Lines="All" Text="Местоположение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text29" Left="370.44" Width="41.58" Height="274.05" Border.Lines="All" Text="Адрес" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text31" Left="412.02" Width="41.58" Height="274.05" Border.Lines="All" Text="Назначение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text33" Left="453.6" Width="41.58" Height="274.05" Border.Lines="All" Text="Наименование объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text35" Left="495.18" Width="41.58" Height="274.05" Border.Lines="All" Text="Площадь" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text37" Left="536.76" Width="41.58" Height="274.05" Border.Lines="All" Text="Процент готовности" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text39" Left="578.34" Width="41.58" Height="274.05" Border.Lines="All" Text="Тип объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text43" Left="661.5" Width="41.58" Height="274.05" Border.Lines="All" Text="Сегмент" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text46" Left="703.08" Width="41.58" Height="274.05" Border.Lines="All" Text="Наименование вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text48" Left="744.66" Width="41.58" Height="274.05" Border.Lines="All" Text="Код вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text50" Left="786.24" Width="41.58" Height="274.05" Border.Lines="All" Text="Источник информации кода вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text52" Left="827.82" Width="41.58" Height="274.05" Border.Lines="All" Text="Код подгруппы вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text54" Left="869.4" Width="41.58" Height="274.05" Border.Lines="All" Text="Наименование функциональной подгруппы" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text55" Left="910.98" Width="41.58" Height="274.05" Border.Lines="All" Text="Номер подгруппы" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text81" Left="952.56" Width="41.58" Height="274.05" Border.Lines="All" Text="УПКС объекта недвижимости, руб./кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+    <DataBand Name="BandItem" Top="367.1" Width="3315.06" Height="103.95" Guides="0,103.95" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text60" Left="9.45" Width="69.93" Height="103.95" Border.Lines="All" Text="[Item.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text61" Left="79.38" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text57" Left="234.36" Width="88.83" Height="103.95" Border.Lines="All" Text="[Item.BuildYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text62" Left="519.75" Width="98.28" Height="103.95" Border.Lines="All" Text="[Item.FloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text63" Left="618.03" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.WallMaterial]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text64" Left="763.56" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.Location]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text65" Left="918.54" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text66" Left="1073.52" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.BuildingPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text67" Left="1219.05" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.ObjectName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text68" Left="1364.58" Width="117.18" Height="103.95" Border.Lines="All" Text="[Item.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text69" Left="1481.76" Width="117.18" Height="103.95" Border.Lines="All" Text="[Item.ReadinessPercentage]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text70" Left="1598.94" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text72" Left="1899.45" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.Segment]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text73" Left="2044.98" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text58" Left="323.19" Width="98.28" Height="103.95" Border.Lines="All" Text="[Item.FormationDate]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text59" Left="421.47" Width="98.28" Height="103.95" Border.Lines="All" Text="[Item.UndergroundFloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text71" Left="1744.47" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.CadastralQuartal]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text74" Left="2190.51" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text75" Left="2336.04" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCodeSource]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text82" Left="3044.79" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text76" Left="2481.57" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.SubGroupUsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text77" Left="2627.1" Width="145.53" Height="103.95" Border.Lines="All" Text="[Item.FunctionalSubGroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text78" Left="2772.63" Width="117.18" Height="103.95" Border.Lines="All" Text="[Item.Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text79" Left="2889.81" Width="154.98" Height="103.95" Border.Lines="All" Text="[Item.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="70.15" Width="3315.06" Height="292.95" Guides="0,274.05,292.95">
+        <TextObject Name="Text2" Left="9.45" Width="69.93" Height="274.05" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text3" Left="79.38" Width="154.98" Height="274.05" Border.Lines="All" Text="КН" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text18" Left="234.36" Top="274.05" Width="88.83" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text19" Left="323.19" Top="274.05" Width="98.28" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text20" Left="421.47" Top="274.05" Width="98.28" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text16" Left="9.45" Top="274.05" Width="69.93" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text17" Left="79.38" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text24" Left="519.75" Top="274.05" Width="98.28" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text26" Left="618.03" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text27" Left="763.56" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="8" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text30" Left="918.54" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="9" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text32" Left="1073.52" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="10" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text34" Left="1219.05" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="11" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text36" Left="1364.58" Top="274.05" Width="117.18" Height="18.9" Border.Lines="All" Text="12" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text38" Left="1481.76" Top="274.05" Width="117.18" Height="18.9" Border.Lines="All" Text="13" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text40" Left="1598.94" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="14" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text41" Left="1744.47" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="15" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text44" Left="1899.45" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="16" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text45" Left="2044.98" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="17" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text47" Left="2190.51" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="18" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text49" Left="2336.04" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="19" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text51" Left="2481.57" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="20" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text53" Left="2627.1" Top="274.05" Width="145.53" Height="18.9" Border.Lines="All" Text="21" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text56" Left="2772.63" Top="274.05" Width="117.18" Height="18.9" Border.Lines="All" Text="22" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text80" Left="2889.81" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="23" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text83" Left="3044.79" Top="274.05" Width="154.98" Height="18.9" Border.Lines="All" Text="24" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text4" Left="234.36" Width="88.83" Height="274.05" Border.Lines="All" Text="Год постройки" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text23" Left="519.75" Width="98.28" Height="274.05" Border.Lines="All" Text="Количество этажей" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text25" Left="618.03" Width="145.53" Height="274.05" Border.Lines="All" Text="Материал стен" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text28" Left="763.56" Width="154.98" Height="274.05" Border.Lines="All" Text="Местоположение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text29" Left="918.54" Width="154.98" Height="274.05" Border.Lines="All" Text="Адрес" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text31" Left="1073.52" Width="145.53" Height="274.05" Border.Lines="All" Text="Назначение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text33" Left="1219.05" Width="145.53" Height="274.05" Border.Lines="All" Text="Наименование объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text35" Left="1364.58" Width="117.18" Height="274.05" Border.Lines="All" Text="Площадь" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text37" Left="1481.76" Width="117.18" Height="274.05" Border.Lines="All" Text="Процент готовности" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text39" Left="1598.94" Width="145.53" Height="274.05" Border.Lines="All" Text="Тип объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text43" Left="1899.45" Width="145.53" Height="274.05" Border.Lines="All" Text="Сегмент" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text46" Left="2044.98" Width="145.53" Height="274.05" Border.Lines="All" Text="Наименование вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text5" Left="323.19" Width="98.28" Height="274.05" Border.Lines="All" Text="Дата образования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text6" Left="421.47" Width="98.28" Height="274.05" Border.Lines="All" Text="Количество подземных этажей" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text42" Left="1744.47" Width="154.98" Height="274.05" Border.Lines="All" Text="Кадастровый квартал" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text48" Left="2190.51" Width="145.53" Height="274.05" Border.Lines="All" Text="Код вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text50" Left="2336.04" Width="145.53" Height="274.05" Border.Lines="All" Text="Источник информации кода вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text52" Left="2481.57" Width="145.53" Height="274.05" Border.Lines="All" Text="Код подгруппы вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text84" Left="3044.79" Width="154.98" Height="274.05" Border.Lines="All" Text="Кадастровая стоимость объекта недвижимости, руб." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text54" Left="2627.1" Width="145.53" Height="274.05" Border.Lines="All" Text="Наименование функциональной подгруппы" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text55" Left="2772.63" Width="117.18" Height="274.05" Border.Lines="All" Text="Номер подгруппы" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text81" Left="2889.81" Width="154.98" Height="274.05" Border.Lines="All" Text="УПКС объекта недвижимости, руб./кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="475.05" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="475.05" Width="3315.06" Height="47.25"/>
   </ReportPage>
 </Report>
