@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.GbuObject
 		}
 
 		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, 
-            DateTime? dateS = null, DateTime? dateOt = null)
+            DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
 		{
             if(objectIds == null || objectIds.Count == 0)
                 return new List<GbuObjectAttribute>();
@@ -165,33 +165,7 @@ where a.object_id in ({String.Join(",", objectIds)})";
 								break;
 						}
 
-
-						var sql = $@"
-select 
-	a.id,
-	a.object_id as ObjectId,
-	{attributeData.Id} as AttributeId,
-	a.Ot,
-	a.S,
-	{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : String.Empty)}
-	a.value as {propName},
-
-	a.change_user_id as ChangeUserId,
-	a.change_doc_id as ChangeDocId,
-	a.change_date as ChangeDate,
-
-	null as ChangeId,
-
-	u.fullname as UserFullname,
-
-	td.regnumber as DocNumber,
-	td.description as DocType,
-	td.create_date as DocDate
-
-from {registerData.AllpriTable}_{attributeData.Id} a
-left join core_srd_user u on u.id = a.change_user_id
-left join core_td_instance td on td.id = a.change_doc_id
-where a.object_id in ({String.Join(",", objectIds)})";
+                        var sql = GetSqlForRegisterWithAttributePartitioning(objectIds, propName, attributeData, registerData, isLight);
 
 						if (dateS != null || dateOt != null)
 						{
@@ -209,7 +183,66 @@ where a.object_id in ({String.Join(",", objectIds)})";
 			return result;
 		}
 
-		public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
+        private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
+            RegisterAttribute attributeData, RegisterData registerData, bool isLight = false)
+        {
+            if (isLight)
+                return $@"
+                    select 
+	                --a.id,
+	                a.object_id as ObjectId,
+	                {attributeData.Id} as AttributeId,
+	                --a.Ot,
+	                --a.S,
+	                {(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : string.Empty)}
+	                a.value as {propName}--,
+
+	                --a.change_user_id as ChangeUserId,
+	                --a.change_doc_id as ChangeDocId,
+	                --a.change_date as ChangeDate,
+
+	                --null as ChangeId,
+
+	                --u.fullname as UserFullname,
+
+	                --td.regnumber as DocNumber,
+	                --td.description as DocType,
+	                --td.create_date as DocDate
+
+                from {registerData.AllpriTable}_{attributeData.Id} a
+                --left join core_srd_user u on u.id = a.change_user_id
+                --left join core_td_instance td on td.id = a.change_doc_id
+                where a.object_id in ({string.Join(",", objectIds)})";
+
+            return $@"
+                select 
+	                a.id,
+	                a.object_id as ObjectId,
+	                {attributeData.Id} as AttributeId,
+	                a.Ot,
+	                a.S,
+	                {(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : String.Empty)}
+	                a.value as {propName},
+
+	                a.change_user_id as ChangeUserId,
+	                a.change_doc_id as ChangeDocId,
+	                a.change_date as ChangeDate,
+
+	                null as ChangeId,
+
+	                u.fullname as UserFullname,
+
+	                td.regnumber as DocNumber,
+	                td.description as DocType,
+	                td.create_date as DocDate
+
+                from {registerData.AllpriTable}_{attributeData.Id} a
+                left join core_srd_user u on u.id = a.change_user_id
+                left join core_td_instance td on td.id = a.change_doc_id
+                where a.object_id in ({string.Join(",", objectIds)})";
+        }
+
+        public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
 		{
 			List<AllDataTreeDto> result = new List<AllDataTreeDto>();
 

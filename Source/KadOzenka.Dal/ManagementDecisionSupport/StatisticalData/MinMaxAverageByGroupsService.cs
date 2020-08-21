@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
 					new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
 					new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
-					DateTime.Now.GetEndOfTheDay());
+					DateTime.Now.GetEndOfTheDay(), isLight: true);
 
 				for (var i = 0; i < table.Rows.Count; i++)
 				{
