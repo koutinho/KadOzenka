@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Data.Common;
 using System.Collections.Generic;
 using Microsoft.Practices.EnterpriseLibrary.Data;
-
 using Core.Register;
 using Core.Numerator;
 using Core.Shared.Misc;
@@ -15,11 +14,9 @@ using Core.SRD;
 
 namespace KadOzenka.Dal.GbuObject
 {
-
     public class GbuObjectAttribute
     {
-
-		public long Id { get; set; }
+        public long Id { get; set; }
 		public long ObjectId { get; set; }
 		public long AttributeId { get; set; }
 		public DateTime Ot { get; set; }
@@ -175,7 +172,5 @@ namespace KadOzenka.Dal.GbuObject
 
 			return Id;
 		}
-
-	}
-
+    }
 }

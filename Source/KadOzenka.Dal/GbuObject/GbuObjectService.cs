@@ -49,14 +49,14 @@ namespace KadOzenka.Dal.GbuObject
 			return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt);
 		}
 
-		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null)
+		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, 
+            DateTime? dateS = null, DateTime? dateOt = null)
 		{
             if(objectIds == null || objectIds.Count == 0)
                 return new List<GbuObjectAttribute>();
 
-			var getSources = sources;
-
-			if (getSources == null)
+            var attributes = inputAttributes?.Distinct().ToList();
+            if (sources == null)
 			{
 				List<int> registerIds = attributes != null && attributes.Count > 0 ?
 					RegisterCache.RegisterAttributes.Values.Where(x => attributes.Contains(x.Id)).Select(x => x.RegisterId).ToList() :
@@ -64,17 +64,16 @@ namespace KadOzenka.Dal.GbuObject
 
 				var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
-				getSources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
+                sources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
 					x.Id != mainRegister.Id &&
 					(registerIds == null || registerIds.Contains(x.Id))).Select(x => (long)x.Id).ToList();
 			}
 
-			var result = new List<GbuObjectAttribute>();
-
-			foreach (var registerId in getSources)
+            var uniqueSources = sources.Distinct().ToList();
+            var result = new List<GbuObjectAttribute>();
+            foreach (var registerId in uniqueSources)
 			{
 				var registerData = RegisterCache.GetRegisterData((int)registerId);
-
 
 				if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 				{
@@ -151,8 +150,7 @@ where a.object_id in ({String.Join(",", objectIds)})";
 						}
 
 						var propName = "StringValue";
-
-						switch (attributeData.Type)
+                        switch (attributeData.Type)
 						{
 							case RegisterAttributeType.INTEGER:
 							case RegisterAttributeType.DECIMAL:
