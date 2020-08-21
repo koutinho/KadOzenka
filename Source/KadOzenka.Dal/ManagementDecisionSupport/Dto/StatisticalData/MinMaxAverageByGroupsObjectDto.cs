@@ -10,8 +10,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 		public string Purpose { get; set; }
 		public bool HasPurpose { get; set; }
 		public long? GbuObjectId { get; set; }
-		public CalcDto UpksCalcDto { get; set; }
-		public CalcDto UprsCalcDto { get; set; }
-		public string CadastralNumber { get; set; }
+
+        public decimal? UpksObjectValue { get; set; }
+        public decimal? UpksObjectCost { get; set; }
+        public decimal? UpksObjectSquare { get; set; }
+
+        public decimal? UprsObjectValue { get; set; }
+        public decimal? UprsObjectCost { get; set; }
+        public decimal? UprsObjectSquare { get; set; }
+
+        public string CadastralNumber { get; set; }
 	}
 }

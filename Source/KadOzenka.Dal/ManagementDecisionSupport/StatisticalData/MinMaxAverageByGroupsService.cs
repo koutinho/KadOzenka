@@ -63,9 +63,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						GroupName = string.IsNullOrEmpty(group) ? "Без группы" : group,
 						HasGroup = !string.IsNullOrEmpty(group),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
-						UpksCalcDto = new CalcDto(),
-						UprsCalcDto = new CalcDto(),
-						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
+                        CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
 					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
@@ -124,9 +122,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						SubgroupName = string.IsNullOrEmpty(subgroup) ? "Без группы" : subgroup,
 						HasSubgroup = !string.IsNullOrEmpty(subgroup),
 						GbuObjectId = table.Rows[i]["ObjectId"].ParseToLongNullable(),
-						UpksCalcDto = new CalcDto(),
-						UprsCalcDto = new CalcDto(),
-						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
+                        CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
 					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
@@ -154,7 +150,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			return result;
 		}
 
-		private DataTable GetData(long[] taskIdList, bool isOks)
+        #region Support Methods
+
+        private DataTable GetData(long[] taskIdList, bool isOks)
 		{
 			var conditions = new List<QSCondition>();
 			if (isOks)
@@ -224,36 +222,36 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		{
 			if (calcType == MinMaxAverageByGroupsCalcType.Upks)
 			{
-				dto.UpksCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
-				dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+				dto.UpksObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
+				dto.UpksObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+				dto.UpksObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
             }
 			else if (calcType == MinMaxAverageByGroupsCalcType.Uprs)
 			{
 				OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
 				if (marketObject != null)
                 {
-	                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
-					dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0
-		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare
+	                dto.UprsObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+					dto.UprsObjectValue = dto.UprsObjectSquare.GetValueOrDefault() != 0
+		                ? marketObject.Price / dto.UprsObjectSquare
 		                : null;
-					dto.UprsCalcDto.ObjectCost = marketObject.Price;
+					dto.UprsObjectCost = marketObject.Price;
                 }
 			}
 			else
 			{
-				dto.UpksCalcDto.ObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-                dto.UpksCalcDto.ObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
-                dto.UpksCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+				dto.UpksObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
+                dto.UpksObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+                dto.UpksObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
 
                 OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
                 if (marketObject != null)
                 {
-	                dto.UprsCalcDto.ObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
-					dto.UprsCalcDto.ObjectValue = dto.UprsCalcDto.ObjectSquare.GetValueOrDefault() != 0 
-		                ? marketObject.Price / dto.UprsCalcDto.ObjectSquare 
+	                dto.UprsObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+					dto.UprsObjectValue = dto.UprsObjectSquare.GetValueOrDefault() != 0 
+		                ? marketObject.Price / dto.UprsObjectSquare 
 		                : null;
-	                dto.UprsCalcDto.ObjectCost = marketObject.Price;
+	                dto.UprsObjectCost = marketObject.Price;
                 }
 			}
 		}
@@ -288,7 +286,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		private void FillPurposeData(MinMaxAverageByGroupsObjectDto dto, List<GbuObjectAttribute> gbuAttributes,
 			RegisterAttribute buildingPurposeAttr, RegisterAttribute placementPurposeAttr)
 		{
-			if (dto.PropertyTypeCode == PropertyTypes.Building)
+            if (dto.PropertyTypeCode == PropertyTypes.Building)
 			{
 				dto.HasPurpose = true;
 				var purpose = gbuAttributes
@@ -327,11 +325,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 							Purpose = x.Key.Purpose,
 							HasPurpose = x.Key.HasPurpose,
 							CalcType = upksCalcType,
-							UpksCalcValue = calcType == MinMaxAverageByGroupsCalcType.Upks || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs 
-								? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => y.UpksCalcDto).ToList()) 
+							UpksCalcValue = calcType == MinMaxAverageByGroupsCalcType.Upks || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs
+                                ? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => new CalcDto
+                                {
+                                    ObjectValue = y.UpksObjectValue,
+                                    ObjectCost = y.UpksObjectCost,
+                                    ObjectSquare = y.UpksObjectSquare
+                                }).ToList()) 
 								: null,
-							UprsCalcValue = calcType == MinMaxAverageByGroupsCalcType.Uprs || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs 
-								? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => y.UprsCalcDto).ToList()) 
+							UprsCalcValue = calcType == MinMaxAverageByGroupsCalcType.Uprs || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs
+                                ? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => new CalcDto
+                                {
+                                    ObjectValue = y.UprsObjectValue,
+                                    ObjectCost = y.UprsObjectCost,
+                                    ObjectSquare = y.UprsObjectSquare
+                                }).ToList()) 
 								: null,
 						};
 						result.Add(dto);
@@ -358,15 +366,27 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 							HasPurpose = x.Key.HasPurpose,
 							CalcType = upksCalcType,
 							UpksCalcValue = calcType == MinMaxAverageByGroupsCalcType.Upks || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs 
-								? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => y.UpksCalcDto).ToList()) 
+								? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => new CalcDto
+                                {
+                                    ObjectValue = y.UpksObjectValue,
+                                    ObjectCost = y.UpksObjectCost,
+                                    ObjectSquare = y.UpksObjectSquare
+                                }).ToList()) 
 								: null,
-							UprsCalcValue = calcType == MinMaxAverageByGroupsCalcType.Uprs || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs 
-								? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => y.UprsCalcDto).ToList()) 
+							UprsCalcValue = calcType == MinMaxAverageByGroupsCalcType.Uprs || calcType == MinMaxAverageByGroupsCalcType.UpksAndUprs
+                                ? _statisticalDataService.GetCalcValue(upksCalcType, x.ToList().Select(y => new CalcDto
+                                {
+                                    ObjectValue = y.UprsObjectValue,
+                                    ObjectCost = y.UprsObjectCost,
+                                    ObjectSquare = y.UprsObjectSquare
+                                }).ToList()) 
 								: null,
 						};
 						result.Add(dto);
 					}
 				});
 		}
-	}
+
+        #endregion
+    }
 }
