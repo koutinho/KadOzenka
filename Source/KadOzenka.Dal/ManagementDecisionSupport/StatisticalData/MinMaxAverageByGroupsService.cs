@@ -221,45 +221,43 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			DataTable table, int tableCurrentRowIndex)
 		{
 			if (calcType == MinMaxAverageByGroupsCalcType.Upks)
-			{
-				dto.UpksObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-				dto.UpksObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
-				dto.UpksObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+            {
+                FillUpks(dto, table, tableCurrentRowIndex);
             }
 			else if (calcType == MinMaxAverageByGroupsCalcType.Uprs)
-			{
-				OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
-				if (marketObject != null)
-                {
-	                dto.UprsObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
-					dto.UprsObjectValue = dto.UprsObjectSquare.GetValueOrDefault() != 0
-		                ? marketObject.Price / dto.UprsObjectSquare
-		                : null;
-					dto.UprsObjectCost = marketObject.Price;
-                }
-			}
+            {
+                FillUprs(dto, table, tableCurrentRowIndex);
+            }
 			else
 			{
-				dto.UpksObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
-                dto.UpksObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
-                dto.UpksObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
-
-                OMCoreObject marketObject = GetMarketObject(dto.CadastralNumber);
-                if (marketObject != null)
-                {
-	                dto.UprsObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
-					dto.UprsObjectValue = dto.UprsObjectSquare.GetValueOrDefault() != 0 
-		                ? marketObject.Price / dto.UprsObjectSquare 
-		                : null;
-	                dto.UprsObjectCost = marketObject.Price;
-                }
-			}
+                FillUpks(dto, table, tableCurrentRowIndex);
+                FillUprs(dto, table, tableCurrentRowIndex);
+            }
 		}
 
-		private OMCoreObject GetMarketObject(string cadastralNumber)
+        private static void FillUpks(MinMaxAverageByGroupsObjectDto dto, DataTable table, int tableCurrentRowIndex)
+        {
+            dto.UpksObjectValue = table.Rows[tableCurrentRowIndex]["ObjectUpks"].ParseToDecimalNullable();
+            dto.UpksObjectCost = table.Rows[tableCurrentRowIndex]["ObjectCost"].ParseToDecimalNullable();
+            dto.UpksObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+        }
+
+        private void FillUprs(MinMaxAverageByGroupsObjectDto dto, DataTable table, int tableCurrentRowIndex)
+        {
+            var marketObject = GetMarketObject(dto.CadastralNumber);
+            if (marketObject == null)
+                return;
+
+            dto.UprsObjectSquare = table.Rows[tableCurrentRowIndex]["ObjectSquare"].ParseToDecimalNullable();
+            dto.UprsObjectValue = dto.UprsObjectSquare.GetValueOrDefault() != 0
+                ? marketObject.Price / dto.UprsObjectSquare
+                : null;
+            dto.UprsObjectCost = marketObject.Price;
+        }
+
+        private OMCoreObject GetMarketObject(string cadastralNumber)
 		{
-			OMCoreObject marketObject = null;
-			var marketObjects = OMCoreObject.Where(x =>
+            var marketObjects = OMCoreObject.Where(x =>
 					x.CadastralNumber == cadastralNumber && 
 					x.ProcessType_Code == ProcessStep.Dealed 
 					&& (x.DealType_Code == DealType.SaleDeal || x.DealType_Code == DealType.SaleSuggestion))
@@ -269,7 +267,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				.Select(x => x.Price)
 				.Execute();
 
-			if (marketObjects.Count > 1)
+            OMCoreObject marketObject;
+            if (marketObjects.Count > 1)
 			{
 				marketObject = marketObjects.Any(x => x.Market_Code == MarketTypes.Rosreestr)
 					? marketObjects.Where(x => x.Market_Code == MarketTypes.Rosreestr).OrderByDescending(x => x.LastDateUpdate ?? x.ParserTime).First()
