@@ -1478,6 +1478,9 @@
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image051.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image052.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image052.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -1577,6 +1580,9 @@
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image084.jpg">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image085.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image085.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -1588,6 +1594,9 @@
 	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image088.jpg">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image088.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image089.jpg">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1609,6 +1618,9 @@
 	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image095.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image096.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image096.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1649,8 +1661,20 @@
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image108.jpg">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image109.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image109.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image110.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image111.jpg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\image112.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\item0001.xml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>

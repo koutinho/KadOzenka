@@ -37,9 +37,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult Index(long? objectId)
         {
-	        MapTilesConfig.ClearMarketHeatMapInitialImages();
-
-            if (objectId.HasValue)
+	        if (objectId.HasValue)
             {
                 var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
                 return View(MapObjectDto.OMMap(marketObject));

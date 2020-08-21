@@ -63,25 +63,24 @@ namespace KadOzenka.Dal.MapModeling
 		public void GenerateHeatMapQuartalInitialImages(List<(string name, string color, string counter)> coloredData)
 		{
 			var colorDictionary = coloredData?.ToDictionary(x => x.name, x => x.color);
-			MapTilesConfig.ClearMarketHeatMapInitialImages();
+			InitialImagesCache.ClearMarketHeatMapInitialImages();
 			for (int i = MapTilesConfig.Current.MCMinZoom, mult = 1; i <= MapTilesConfig.Current.MCMaxZoom; i++, mult *= 2)
 			{
 				List<dynamic> coords = MapTilesConfig.GetPixelCoordinatesFromJsonConfigFile(i);
-				var image = new ImageProccessor.MapDrawer().DrawMap(MapTilesConfig.Current.MCImgWidth * mult,
+				new ImageProccessor.MapDrawer().DrawMap(MapTilesConfig.Current.MCImgWidth * mult,
 					MapTilesConfig.Current.MCImgHeight * mult,
 					coords,
 					MapTilesConfig.GetMarketHeatMapInitialImageFileName(i),
 					i > 12,
 					colorDictionary);
 
-				MapTilesConfig.AddMarketHeatMapInitialImages(i, image);
 			}
 		}
 
 		public Stream GetHeatMapTile(int x, int y, int z)
 		{
 			Stream result = null;
-			var initialImage = MapTilesConfig.GetMarketHeatMapInitialImage(z);
+			var initialImage = InitialImagesCache.GetMarketHeatMapInitialImage(z);
 
 			if (initialImage == null)
 				return null;

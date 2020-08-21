@@ -44,7 +44,7 @@ namespace ImageProccessor
             result.Save(name, _format);
         }
 
-        public Image DrawMap(int xExt, int yExt, List<dynamic> coords, string name, bool bolt, Dictionary<string, string> colors)
+        public void DrawMap(int xExt, int yExt, List<dynamic> coords, string name, bool bolt, Dictionary<string, string> colors)
         {
 	        Bitmap result = new Bitmap(xExt, yExt);
 	        Graphics drawing = Graphics.FromImage(result);
@@ -71,7 +71,8 @@ namespace ImageProccessor
 	        });
 	        result.Save(name, _format);
 
-            return result;
+	        drawing.Dispose();
+	        result.Dispose();
         }
 
         public void ChopData(string fileName, int hStartTile, int yStartTile, int zStart, int z, int tileSize, string reqFolder)
@@ -118,8 +119,9 @@ namespace ImageProccessor
 		        graphics.Save();
 		        graphics.Dispose();
 		        System.IO.Stream stream = new MemoryStream();
-		        new Bitmap(img, new Size(tileSize, tileSize))
-			        .Save(stream, ImageFormat.Png);
+		        var bitmap = new Bitmap(img, new Size(tileSize, tileSize));
+		        bitmap.Save(stream, ImageFormat.Png);
+                bitmap.Dispose();
 		        stream.Position = 0;
 		        result = stream;
 	        }
