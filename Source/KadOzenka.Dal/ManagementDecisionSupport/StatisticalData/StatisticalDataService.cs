@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -38,6 +39,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public StatisticalDataService()
         {
             TourFactorService = new TourFactorService();
+        }
+
+        public string SqlQueriesFolder => "SqlQueries";
+
+        public FileStream GetSqlQueryFileStream(string fileName)
+        {
+	        return Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", SqlQueriesFolder);
         }
 
         public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, List<QSCondition> additionalConditions = null, List<QSJoin> additionalJoins = null)

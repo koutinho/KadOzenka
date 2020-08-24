@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.CadastralRegionNumber, unitDto.CadastralQuater, unitDto.ObjectsCount,
-					unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
+					unitDto.UpksCalcTypeEnum.GetEnumDescription(), unitDto.PropertyType,
 					(unitDto.UpksCalcValue.HasValue
 						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
 						: (decimal?) null));

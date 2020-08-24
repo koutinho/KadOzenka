@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+﻿using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
@@ -11,7 +8,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 		public string CadastralQuater { get; set; }
 		public int ObjectsCount { get; set; }
 		public string PropertyType { get; set; }
-		public UpksCalcType UpksCalcType { get; set; }
+		public int UpksCalcType { get; set; }
+
+		public UpksCalcType UpksCalcTypeEnum => (UpksCalcType) UpksCalcType;
+
 		public decimal? UpksCalcValue { get; set; }
 	}
 }
