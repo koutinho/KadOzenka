@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Directory;
@@ -33,7 +35,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-		public List<MinMaxAverageByGroupsDataDto> GetDataByGroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
+        public List<MinMaxAverageByGroupsZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsZu", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+
+            var summary = new MinMaxAverageByGroupsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                NumberOfObjects = result.Sum(x => x.NumberOfObjects),
+                ObjectUpksMin = result.Min(x => x.ObjectUpksMin),
+                ObjectUpksMax = result.Max(x => x.ObjectUpksMax),
+                ObjectUpksAvg = result.Average(x => x.ObjectUpksAvg),
+                ObjectUpksAvgWeight = result.Average(x => x.ObjectUpksAvgWeight)
+            };
+            result.Add(summary);
+
+            return result;
+        }
+
+        public List<MinMaxAverageByGroupsDataDto> GetDataByGroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
 		{
 			var table = GetData(taskIdList, isOks);
 
@@ -213,7 +239,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			};
 			query.AddColumn(subQuery, "ParentGroup");
 
-			var table = query.ExecuteQuery();
+            var table = query.ExecuteQuery();
 			return table;
 		}
 

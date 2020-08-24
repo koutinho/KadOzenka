@@ -41,61 +41,63 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
 		protected override DataTable GetDataByGroups(long[] taskIdList, bool isOks)
 		{
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("GroupName", typeof(string));
-			dataTable.Columns.Add("PropertyType", typeof(string));
-			dataTable.Columns.Add("Purpose", typeof(string));
-			dataTable.Columns.Add("HasPurpose", typeof(bool));
-			dataTable.Columns.Add("ObjectsCount", typeof(decimal));
-			dataTable.Columns.Add("CalcType", typeof(string));
-			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
-			dataTable.Columns.Add("UprsCalcValue", typeof(decimal));
+            using (var dataTable = new DataTable("Data"))
+            {
+                dataTable.Columns.Add("GroupName", typeof(string));
+                dataTable.Columns.Add("PropertyType", typeof(string));
+                dataTable.Columns.Add("Purpose", typeof(string));
+                dataTable.Columns.Add("HasPurpose", typeof(bool));
+                dataTable.Columns.Add("ObjectsCount", typeof(decimal));
+                dataTable.Columns.Add("CalcType", typeof(string));
+                dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
+                dataTable.Columns.Add("UprsCalcValue", typeof(decimal));
 
+                var data = _service.GetDataByGroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.UpksAndUprs);
+                foreach (var unitDto in data)
+                {
+                    dataTable.Rows.Add(unitDto.GroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
+                        unitDto.CalcType.GetEnumDescription(),
+                        (unitDto.UpksCalcValue.HasValue
+                            ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
+                            : (decimal?)null),
+                        (unitDto.UprsCalcValue.HasValue
+                            ? Math.Round(unitDto.UprsCalcValue.Value, PrecisionForDecimalValues)
+                            : (decimal?)null));
+                }
 
-			var data = _service.GetDataByGroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.UpksAndUprs);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.GroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-					unitDto.CalcType.GetEnumDescription(),
-					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null),
-					(unitDto.UprsCalcValue.HasValue
-						? Math.Round(unitDto.UprsCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null));
-			}
-
-			return dataTable;
-
-		}
+                return dataTable;
+            }
+        }
 
 		protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
 		{
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("GroupName", typeof(string));
-			dataTable.Columns.Add("SubgroupName", typeof(string));
-			dataTable.Columns.Add("PropertyType", typeof(string));
-			dataTable.Columns.Add("Purpose", typeof(string));
-			dataTable.Columns.Add("HasPurpose", typeof(bool));
-			dataTable.Columns.Add("ObjectsCount", typeof(decimal));
-			dataTable.Columns.Add("CalcType", typeof(string));
-			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
-			dataTable.Columns.Add("UprsCalcValue", typeof(decimal));
+            using (var dataTable = new DataTable("Data"))
+            {
+                dataTable.Columns.Add("GroupName", typeof(string));
+                dataTable.Columns.Add("SubgroupName", typeof(string));
+                dataTable.Columns.Add("PropertyType", typeof(string));
+                dataTable.Columns.Add("Purpose", typeof(string));
+                dataTable.Columns.Add("HasPurpose", typeof(bool));
+                dataTable.Columns.Add("ObjectsCount", typeof(decimal));
+                dataTable.Columns.Add("CalcType", typeof(string));
+                dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
+                dataTable.Columns.Add("UprsCalcValue", typeof(decimal));
 
-			var data = _service.GetDataByGroupsAndSubgroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.UpksAndUprs);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.GroupName, unitDto.SubgroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-					unitDto.CalcType.GetEnumDescription(),
-					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null),
-					(unitDto.UprsCalcValue.HasValue
-						? Math.Round(unitDto.UprsCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null));
-			}
+                var data = _service.GetDataByGroupsAndSubgroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.UpksAndUprs);
+                foreach (var unitDto in data)
+                {
+                    dataTable.Rows.Add(unitDto.GroupName, unitDto.SubgroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
+                        unitDto.CalcType.GetEnumDescription(),
+                        (unitDto.UpksCalcValue.HasValue
+                            ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
+                            : (decimal?)null),
+                        (unitDto.UprsCalcValue.HasValue
+                            ? Math.Round(unitDto.UprsCalcValue.Value, PrecisionForDecimalValues)
+                            : (decimal?)null));
+                }
 
-			return dataTable;
-		}
+                return dataTable;
+            }
+        }
 	}
 }

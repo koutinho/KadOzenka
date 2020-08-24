@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
@@ -19,54 +22,101 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
 		protected override DataTable GetDataByGroups(long[] taskIdList, bool isOks)
 		{
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("GroupName", typeof(string));
-			dataTable.Columns.Add("PropertyType", typeof(string));
-			dataTable.Columns.Add("Purpose", typeof(string));
-			dataTable.Columns.Add("HasPurpose", typeof(bool));
-			dataTable.Columns.Add("ObjectsCount", typeof(decimal));
-			dataTable.Columns.Add("CalcType", typeof(string));
-			dataTable.Columns.Add("CalcValue", typeof(decimal));
+            using (var dataTable = new DataTable("Data"))
+            {
+                dataTable.Columns.Add("GroupName", typeof(string));
+                dataTable.Columns.Add("PropertyType", typeof(string));
+                dataTable.Columns.Add("Purpose", typeof(string));
+                dataTable.Columns.Add("HasPurpose", typeof(bool));
+                dataTable.Columns.Add("ObjectsCount", typeof(decimal));
+                dataTable.Columns.Add("CalcType", typeof(string));
+                dataTable.Columns.Add("CalcValue", typeof(decimal));
 
+                if (isOks)
+                {
+                    var data = _service.GetDataByGroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.Upks);
+                    foreach (var unitDto in data)
+                    {
+                        dataTable.Rows.Add(unitDto.GroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
+                            unitDto.CalcType.GetEnumDescription(),
+                            (unitDto.UpksCalcValue.HasValue
+                                ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
+                                : (decimal?)null));
+                    }
+                }
+                else
+                {
+                    var data = _service.GetDataByGroupsUpksZu(taskIdList);
+                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>();
+                    foreach (var unitDto in data)
+                    {
+                        foreach (var upksCalcType in upksCalcTypes)
+                        {
+                            decimal? value = null;
+                            switch (upksCalcType)
+                            {
+                                case UpksCalcType.Min:
+                                    value = unitDto.ObjectUpksMin;
+                                    break;
+                                case UpksCalcType.Average:
+                                    value = unitDto.ObjectUpksAvg;
+                                    break;
+                                case UpksCalcType.AverageWeight:
+                                    value = unitDto.ObjectUpksAvgWeight;
+                                    break;
+                                case UpksCalcType.Max:
+                                    value = unitDto.ObjectUpksMax;
+                                    break;
+                            }
 
-			var data = _service.GetDataByGroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.Upks);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.GroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-					unitDto.CalcType.GetEnumDescription(),
-					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null));
-			}
+                            var roundedValue = value.HasValue
+                                ? Math.Round(value.Value, PrecisionForDecimalValues)
+                                : (decimal?) null;
 
-			return dataTable;
+                            var parentGroupName = string.IsNullOrWhiteSpace(unitDto.ParentGroup)
+                                ? "Без группы"
+                                : unitDto.ParentGroup;
 
-		}
+                            dataTable.Rows.Add(parentGroupName,
+                                PropertyTypes.Stead.GetEnumDescription(),
+                                string.Empty,
+                                false,
+                                unitDto.NumberOfObjects,
+                                upksCalcType.GetEnumDescription(),
+                                roundedValue);
+                        }
+                    }
+                }
+
+                return dataTable;
+            }
+        }
 
 		protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
 		{
-			var dataTable = new DataTable("Data");
-			dataTable.Columns.Add("GroupName", typeof(string));
-			dataTable.Columns.Add("SubgroupName", typeof(string));
-			dataTable.Columns.Add("PropertyType", typeof(string));
-			dataTable.Columns.Add("Purpose", typeof(string));
-			dataTable.Columns.Add("HasPurpose", typeof(bool));
-			dataTable.Columns.Add("ObjectsCount", typeof(decimal));
-			dataTable.Columns.Add("CalcType", typeof(string));
-			dataTable.Columns.Add("CalcValue", typeof(decimal));
+            using (var dataTable = new DataTable("Data"))
+            {
+                dataTable.Columns.Add("GroupName", typeof(string));
+                dataTable.Columns.Add("SubgroupName", typeof(string));
+                dataTable.Columns.Add("PropertyType", typeof(string));
+                dataTable.Columns.Add("Purpose", typeof(string));
+                dataTable.Columns.Add("HasPurpose", typeof(bool));
+                dataTable.Columns.Add("ObjectsCount", typeof(decimal));
+                dataTable.Columns.Add("CalcType", typeof(string));
+                dataTable.Columns.Add("CalcValue", typeof(decimal));
 
+                var data = _service.GetDataByGroupsAndSubgroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.Upks);
+                foreach (var unitDto in data)
+                {
+                    dataTable.Rows.Add(unitDto.GroupName, unitDto.SubgroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
+                        unitDto.CalcType.GetEnumDescription(),
+                        (unitDto.UpksCalcValue.HasValue
+                            ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
+                            : (decimal?)null));
+                }
 
-			var data = _service.GetDataByGroupsAndSubgroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.Upks);
-			foreach (var unitDto in data)
-			{
-				dataTable.Rows.Add(unitDto.GroupName, unitDto.SubgroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-					unitDto.CalcType.GetEnumDescription(),
-					(unitDto.UpksCalcValue.HasValue
-						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-						: (decimal?)null));
-			}
-
-			return dataTable;
-		}
+                return dataTable;
+            }
+        }
 	}
 }

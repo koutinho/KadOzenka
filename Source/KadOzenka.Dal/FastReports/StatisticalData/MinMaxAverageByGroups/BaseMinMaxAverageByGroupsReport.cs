@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
@@ -43,29 +44,34 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 		{
 			var taskIdList = GetTaskIdList(query);
 
-			var dataTitleTable = new DataTable("Common");
-			dataTitleTable.Columns.Add("Title");
-			dataTitleTable.Columns.Add("DataNameColumnText");
-			dataTitleTable.Rows.Add(GetReportTitle(), GetDataNameColumnText());
+            var dataSet = new DataSet();
 
-			DataTable dataTable;
-			var reportType = GetQueryParam<string>("ReportType", query);
-			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
-			switch (reportType)
-			{
-				case "По группам":
-					dataTable = GetDataByGroups(taskIdList, zuOksObjectType == "ОКС");
-					break;
-				case "По группам и подгруппам":
-					dataTable = GetDataByGroupsAndSubgroups(taskIdList, zuOksObjectType == "ОКС");
-					break;
-				default:
-					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
-			}
+            using (var dataTitleTable = new DataTable("Common"))
+            {
+                dataTitleTable.Columns.Add("Title");
+                dataTitleTable.Columns.Add("DataNameColumnText");
+                dataTitleTable.Rows.Add(GetReportTitle(), GetDataNameColumnText());
 
-			var dataSet = new DataSet();
-			dataSet.Tables.Add(dataTable);
-			dataSet.Tables.Add(dataTitleTable);
+                DataTable dataTable;
+                var reportType = GetQueryParam<string>("ReportType", query);
+                var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
+                switch (reportType)
+                {
+                    case "По группам":
+                        dataTable = GetDataByGroups(taskIdList, zuOksObjectType == "ОКС");
+                        break;
+                    case "По группам и подгруппам":
+                        dataTable = GetDataByGroupsAndSubgroups(taskIdList, zuOksObjectType == "ОКС");
+                        break;
+                    default:
+                        throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
+                }
+
+                dataSet.Tables.Add(dataTable);
+                dataSet.Tables.Add(dataTitleTable);
+            }
+
+            GC.Collect();
 
 			return dataSet;
 		}
