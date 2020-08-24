@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/11/2020 14:19:24" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/24/2020 13:14:42" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -89,7 +89,7 @@ namespace FastReport
      
       //fix groupName column view
       String colGroupName = &quot;&quot;;
-      for (int i = 4; i &lt; table.RowCount; i++)
+      for (int i = 3; i &lt; table.RowCount; i++)
       {
         if(table[1, i].RowSpan &gt; 1){
            table[0, i].RowSpan = 4;
