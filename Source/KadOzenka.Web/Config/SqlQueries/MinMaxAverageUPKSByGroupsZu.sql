@@ -1,6 +1,6 @@
 SELECT 
 	(SELECT L2_R205.GROUP_NAME AS "GROUP_NAME" FROM KO_GROUP L2_R205 WHERE L2_R205.ID = L1_R205.PARENT_ID) ParentGroup,
-    count(*) as "NumberOfObjects",
+    count(*) as "ObjectsCount",
 	min(L1_R201.UPKS) AS "ObjectUpksMin",
     avg(L1_R201.UPKS) AS "ObjectUpksAvg",
     sum(L1_R201.CADASTRAL_COST) / NULLIF(sum(L1_R201.SQUARE), 0)  AS "ObjectUpksAvgWeight",

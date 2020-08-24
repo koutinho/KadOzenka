@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var summary = new MinMaxAverageByGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
-                NumberOfObjects = result.Sum(x => x.NumberOfObjects),
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
                 ObjectUpksMin = result.Min(x => x.ObjectUpksMin),
                 ObjectUpksMax = result.Max(x => x.ObjectUpksMax),
                 ObjectUpksAvg = result.Average(x => x.ObjectUpksAvg),
@@ -115,7 +115,32 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			return result;
 		}
 
-		public List<MinMaxAverageByGroupsAndSubgroupsDataDto> GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
+        public List<MinMaxAverageByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsAndSubGroupsZu", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+
+            var summary = new MinMaxAverageByGroupsAndSubGroupsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                ObjectUpksMin = result.Min(x => x.ObjectUpksMin),
+                ObjectUpksMax = result.Max(x => x.ObjectUpksMax),
+                ObjectUpksAvg = result.Average(x => x.ObjectUpksAvg),
+                ObjectUpksAvgWeight = result.Average(x => x.ObjectUpksAvgWeight)
+            };
+            result.Add(summary);
+
+            return result;
+        }
+
+        public List<MinMaxAverageByGroupsAndSubgroupsDataDto> GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
 		{
 			var table = GetData(taskIdList, isOks);
 
