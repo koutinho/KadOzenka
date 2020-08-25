@@ -166,6 +166,67 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         #endregion
 
 
+        #region UPKS And UPRS
+
+        public List<MinMaxAverageByGroupsUpksAndUprsZuDto> GetDataByGroupsUpksAndUprsZu(long[] taskIdList)
+        {
+            var upksSql = GetSqlForUpks(taskIdList, false);
+            var upksResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(upksSql);
+
+            var uprsSql = GetSqlForUprs(taskIdList, false);
+            var uprsResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(uprsSql);
+
+            var result = new List<MinMaxAverageByGroupsUpksAndUprsZuDto>();
+            foreach (var upks in upksResults)
+            {
+                var uprs = uprsResults.FirstOrDefault(x => x.ParentGroup == upks.ParentGroup);
+                result.Add(new MinMaxAverageByGroupsUpksAndUprsZuDto
+                {
+                    ParentGroup = uprs?.ParentGroup,
+                    ObjectsCount = uprs?.ObjectsCount ?? 0,
+                    Upks = new MinMaxAverageCalculationInfoDto
+                    {
+                        Min = upks.Min,
+                        Avg = upks.Avg,
+                        AvgWeight = upks.AvgWeight,
+                        Max = upks.Max
+                    },
+                    Uprs = new MinMaxAverageCalculationInfoDto
+                    {
+                        Min = uprs?.Min,
+                        Avg = uprs?.Avg,
+                        AvgWeight = uprs?.AvgWeight,
+                        Max = uprs?.Max
+                    }
+                });
+            }
+
+            result.Add(new MinMaxAverageByGroupsUpksAndUprsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                Upks = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = result.Min(x => x.Upks.Min),
+                    Avg = result.Average(x => x.Upks.Avg),
+                    AvgWeight = result.Average(x => x.Upks.AvgWeight),
+                    Max = result.Max(x => x.Upks.Max)
+                },
+                Uprs = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = result.Min(x => x.Uprs.Min),
+                    Avg = result.Average(x => x.Uprs.Avg),
+                    AvgWeight = result.Average(x => x.Uprs.AvgWeight),
+                    Max = result.Max(x => x.Uprs.Max)
+                }
+            });
+
+            return result;
+        }
+
+        #endregion
+
+
         public List<MinMaxAverageByGroupsDataDto> GetDataByGroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
 		{
 			var table = GetData(taskIdList, isOks);
