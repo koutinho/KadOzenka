@@ -171,22 +171,22 @@ namespace KadOzenka.Dal.GbuObject
             //Тип наследования: Кадастровый квартал -> Объект незавершенного строительства
             if (setting.CadastralBlockToUncomplited && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other, reportService);
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralBlock, reportService);
             }
             //Тип наследования: Кадастровый квартал -> Сооружение
             if (setting.CadastralBlockToConstruction && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other, reportService);
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralBlock, reportService);
             }
             //Тип наследования: Кадастровый квартал -> Здание
             if (setting.CadastralBlockToBuilding && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other, reportService);
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralBlock, reportService);
             }
             //Тип наследования: Кадастровый квартал -> Земельный участок
             if (setting.CadastralBlockToParcel && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other, reportService);
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralBlock, reportService);
             }
         }
 
