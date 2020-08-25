@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		public SubjectsUPKSReport()
 		{
-			_subjectsUPKSService = new SubjectsUPKSService(StatisticalDataService, GbuObjectService);
+			_subjectsUPKSService = new SubjectsUPKSService(StatisticalDataService);
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -69,7 +69,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.ObjectsCount,
-					unitDto.UpksCalcType.GetEnumDescription(),
+					unitDto.UpksCalcTypeEnum.GetEnumDescription(),
 					(unitDto.UpksCalcValue.HasValue
 						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
 						: (decimal?)null));
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-					unitDto.UpksCalcType.GetEnumDescription(),
+					unitDto.UpksCalcTypeEnum.GetEnumDescription(),
 					(unitDto.UpksCalcValue.HasValue
 						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues).ParseToString()
 						: null));
