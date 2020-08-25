@@ -59,6 +59,30 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
+        public List<MinMaxAverageByGroupsUprsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPRSByGroupsZu", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+
+            var summary = new MinMaxAverageByGroupsUprsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                UprsMin = result.Min(x => x.UprsMin),
+                UprsMax = result.Max(x => x.UprsMax),
+                UprsAvg = result.Average(x => x.UprsAvg),
+                UprsAvgWeight = result.Average(x => x.UprsAvgWeight)
+            };
+            result.Add(summary);
+
+            return result;
+        }
+
         public List<MinMaxAverageByGroupsDataDto> GetDataByGroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
 		{
 			var table = GetData(taskIdList, isOks);
@@ -68,18 +92,18 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var data = new List<MinMaxAverageByGroupsObjectDto>();
 			if (table.Rows.Count != 0)
 			{
-				var objectIds = new List<long>();
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
-				}
+                var objectIds = new List<long>();
+                for (var i = 0; i < table.Rows.Count; i++)
+                {
+                    objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
+                }
 
-				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
-					new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
-					new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
-					DateTime.Now.GetEndOfTheDay(), isLight: true);
+                var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+                    new List<long> { buildingPurposeAttr.RegisterId, placementPurposeAttr.RegisterId },
+                    new List<long> { buildingPurposeAttr.Id, placementPurposeAttr.Id },
+                    DateTime.Now.GetEndOfTheDay(), isLight: true);
 
-				for (var i = 0; i < table.Rows.Count; i++)
+                for (var i = 0; i < table.Rows.Count; i++)
 				{
 					var group = table.Rows[i]["ParentGroup"].ParseToStringNullable();
 
@@ -92,9 +116,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                         CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToStringNullable()
 					};
 
-					FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
+                    FillPurposeData(dto, gbuAttributes, buildingPurposeAttr, placementPurposeAttr);
 
-					if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
+                    if (!dto.HasPurpose || dto.HasPurpose && dto.Purpose != null)
 					{
 						FillingCalcData(calcType, dto, table, i);
 						data.Add(dto);
@@ -316,7 +340,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				.Select(x => x.LastDateUpdate)
 				.Select(x => x.ParserTime)
 				.Select(x => x.Price)
-				.Execute();
+                .Execute();
 
             OMCoreObject marketObject;
             if (marketObjects.Count > 1)
