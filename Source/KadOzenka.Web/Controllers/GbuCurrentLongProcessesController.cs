@@ -22,8 +22,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = "")]
 		public ActionResult CurrentLongProcessesList()
 		{
+			Serilog.Log.Debug("Получение списка GbuCurrentLongProcessesList");
 			var processesList = _service.GetCurrentLongProcessesList();
-			Serilog.Log.Debug("GbuCurrentLongProcessesList {processesList}", processesList);
+			Serilog.Log.Debug("GbuCurrentLongProcessesList {processesList}", JsonConvert.SerializeObject(processesList.Select(LongProcessViewModel.ToModel).ToList()));
 			return Content(JsonConvert.SerializeObject(processesList.Select(LongProcessViewModel.ToModel).ToList()), "application/json");
 		}
 	}

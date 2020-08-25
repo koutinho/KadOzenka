@@ -8,28 +8,33 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.ExportAttribute;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
 	public class ExportAttributeToKoProcess : ILongProcess
 	{
 		public const string LongProcessName = "ExportAttributeToKoProcess";
+        private static readonly ILogger _log = Log.ForContext<ExportAttributeToKoProcess>();
 
-		public static void AddProcessToQueue(GbuExportAttributeSettings settings)
+        public static void AddProcessToQueue(GbuExportAttributeSettings settings)
 		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
+            _log.Information(new Exception(settings.SerializeToXml()), "Добавление в очередь фонового процесса {LongProcessName}", LongProcessName);
+            LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+            _log.Information("Старт фонового процесса {LongProcessName} {cancellationToken} {processQueueId} {processType}", LongProcessName, cancellationToken, processQueue.Id, processType.Parameters);
             var cancelProgressCounterSource = new CancellationTokenSource();
             var cancelProgressCounterToken = cancelProgressCounterSource.Token;
             try
 			{
                 WorkerCommon.SetProgress(processQueue, 0);
                 WorkerCommon.LogState(processQueue, "Начата обработка процесса переноса атрибутов из ГБУ в КО.");
+                _log.Information("Начата обработка процесса переноса атрибутов из ГБУ в КО.");
 
-                var progressCounterTask = Task.Run(() => {
+               var progressCounterTask = Task.Run(() => {
                     while (true)
                     {
                         if (cancelProgressCounterToken.IsCancellationRequested)
@@ -50,6 +55,8 @@ namespace KadOzenka.Dal.LongProcess
                 cancelProgressCounterSource.Dispose();
 
                 WorkerCommon.LogState(processQueue, "Отправка уведомления о завершении операции.");
+                _log.Information("Отправка уведомления о завершении операции.");
+
                 SendSuccessNotification(processQueue);
                 WorkerCommon.SetProgress(processQueue, 100);
             }
@@ -57,7 +64,8 @@ namespace KadOzenka.Dal.LongProcess
 			{
 				var errorId = ErrorManager.LogError(ex);
 				var message = $"{ex.Message} (Подробнее в журнале: {errorId})";
-				SendFailureNotification(processQueue, message);
+                _log.Fatal(ex, "Ошибка запуска фонового процесса {LongProcessName}", LongProcessName);
+                SendFailureNotification(processQueue, message);
 				throw;
 			}
 		}
@@ -94,7 +102,8 @@ namespace KadOzenka.Dal.LongProcess
 				IsEmail = true,
                 ExpireDate = DateTime.Now.AddHours(2)
             });
-		}
+            _log.Information("Операция переноса атрибутов из ГБУ в КО успешно завершена {QueueId}", processQueue.Id);
+        }
 
 		private void SendFailureNotification(OMQueue processQueue, string message)
 		{

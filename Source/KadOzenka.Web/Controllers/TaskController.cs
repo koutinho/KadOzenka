@@ -40,11 +40,13 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
+using Serilog;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class TaskController : KoBaseController
 	{
+		private readonly ILogger _log = Log.ForContext<TaskController>();
 		public TaskService TaskService { get; set; }
 		public ModelService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
@@ -173,7 +175,7 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetTasksByTour(long tourId)
 		{
 			var tasks = TaskService.GetTasksByTour(tourId);
-
+			_log.Debug("Задания на оценку по туру {TourId} {Tasks}", tourId, JsonConvert.SerializeObject(tasks));
             var models = MapToSelectListItems(tasks);
 
             return Json(models);
@@ -221,8 +223,11 @@ namespace KadOzenka.Web.Controllers
 				ValidateExportAttributeItems(settings.Attributes);
 			}
 
-            if (settings.Attributes == null || settings.Attributes.Count == 0)
-                throw new Exception("Не выбраны атрибуты для переноса.");
+			if (settings.Attributes == null || settings.Attributes.Count == 0)
+			{
+				_log.Warning("Перенос атрибутов невозможен. Не выбраны атрибуты для переноса.");
+				throw new Exception("Не выбраны атрибуты для переноса.");
+			}
 
             ////TODO код для отладки
             //new ExportAttributeToKoProcess().StartProcess(new OMProcessType(), new OMQueue
@@ -232,9 +237,12 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = settings.SerializeToXml()
             //}, new CancellationToken());
 
-            ExportAttributeToKoProcess.AddProcessToQueue(settings);
 
-            return new JsonResult(Ok());
+			ExportAttributeToKoProcess.AddProcessToQueue(settings);
+			_log.ForContext("TaskFilter", settings.TaskFilter)
+				.Debug("Добавлена задача фонового процесса: перенос атрибутов {TransferAttributes}", JsonConvert.SerializeObject(settings.Attributes));
+
+			return new JsonResult(Ok());
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
@@ -299,8 +307,17 @@ namespace KadOzenka.Web.Controllers
                 return new JsonResult(Ok());
 
             var storage = OMDataFormStorage.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            if (storage == null)
-                throw new Exception($"Не найдено хранилище шаблонов с Id='{id}'");
+			if (storage == null)
+			{
+				_log.Warning("Не найдено хранилище шаблонов с id={TemplateId}", id);
+				throw new Exception($"Не найдено хранилище шаблонов с Id='{id}'");
+			}
+			else
+			{
+				_log.ForContext("FormType", storage.FormType)
+					.ForContext("FormType_Code", storage.FormType_Code)
+					.Debug(new Exception(storage.Data),"Получение шаблона переноса атрибутов");
+			}
 
             var viewModel = storage.Data.DeserializeFromXml<ExportAttributesModel>();
 
