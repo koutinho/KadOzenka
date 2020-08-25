@@ -180,25 +180,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             foreach (var upks in upksResults)
             {
                 var uprs = uprsResults.FirstOrDefault(x => x.ParentGroup == upks.ParentGroup);
-                result.Add(new MinMaxAverageByGroupsUpksAndUprsZuDto
-                {
-                    ParentGroup = uprs?.ParentGroup,
-                    ObjectsCount = uprs?.ObjectsCount ?? 0,
-                    Upks = new MinMaxAverageCalculationInfoDto
-                    {
-                        Min = upks.Min,
-                        Avg = upks.Avg,
-                        AvgWeight = upks.AvgWeight,
-                        Max = upks.Max
-                    },
-                    Uprs = new MinMaxAverageCalculationInfoDto
-                    {
-                        Min = uprs?.Min,
-                        Avg = uprs?.Avg,
-                        AvgWeight = uprs?.AvgWeight,
-                        Max = uprs?.Max
-                    }
-                });
+                var map = Map(uprs, upks);
+                result.Add(map);
             }
 
             result.Add(new MinMaxAverageByGroupsUpksAndUprsZuDto
@@ -222,6 +205,30 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             });
 
             return result;
+        }
+
+        private MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto Map(MinMaxAverageByGroupsUprsZuDto uprs,
+            MinMaxAverageByGroupsUpksZuDto upks)
+        {
+            return new MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto
+            {
+                ParentGroup = uprs?.ParentGroup,
+                ObjectsCount = uprs?.ObjectsCount ?? 0,
+                Upks = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = upks.Min,
+                    Avg = upks.Avg,
+                    AvgWeight = upks.AvgWeight,
+                    Max = upks.Max
+                },
+                Uprs = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = uprs?.Min,
+                    Avg = uprs?.Avg,
+                    AvgWeight = uprs?.AvgWeight,
+                    Max = uprs?.Max
+                }
+            };
         }
 
         #endregion
