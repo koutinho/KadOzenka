@@ -9420,6 +9420,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'target_market_object_id')) then
+        execute 'alter table ES_EXPRESS_SCORE add "target_market_object_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('es_exspress_score_pkey')) then
     execute 'alter table ES_EXPRESS_SCORE add constraint es_exspress_score_pkey primary key (id)';
   end if;
@@ -27104,6 +27113,14 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_unit_property_type_code_idx')) then
+	execute 'CREATE  INDEX ko_unit_property_type_code_idx on KO_UNIT (property_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_UNIT_CHANGE')) then
 		execute 'create table KO_UNIT_CHANGE ("id" BIGINT NOT NULL)';
 	end if;
@@ -31853,6 +31870,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'vat_code')) then
+        execute 'alter table market_core_object add "vat_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -32542,6 +32568,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'entrance_type')) then
         execute 'alter table MARKET_CORE_OBJECT add "entrance_type" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'vat_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "vat_code" BIGINT';
     end if;
 end $$;
 
