@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Core.ConfigParam;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
@@ -35,17 +36,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-        public List<MinMaxAverageByGroupsUpksZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
+
+        #region UPRS
+        //TODO возможно, вынести в отдельный сервис
+
+        public List<MinMaxAverageByGroupsUprsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
         {
-            string contents;
-            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsZu", "sql", "SqlQueries")))
-            {
-                contents = sr.ReadToEnd();
-            }
+            var sql = GetSqlForUprs(taskIdList, false);
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(sql);
 
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
-
-            var summary = new MinMaxAverageByGroupsUpksZuDto
+            var summary = new MinMaxAverageByGroupsUprsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
@@ -59,17 +59,60 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        public List<MinMaxAverageByGroupsUprsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
+        public List<MinMaxAverageByGroupsAndSubGroupsUprsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
+        {
+            var sql = GetSqlForUprs(taskIdList, true);
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(sql);
+
+            var summary = new MinMaxAverageByGroupsAndSubGroupsUprsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                Min = result.Min(x => x.Min),
+                Max = result.Max(x => x.Max),
+                Avg = result.Average(x => x.Avg),
+                AvgWeight = result.Average(x => x.AvgWeight)
+            };
+            result.Add(summary);
+
+            return result;
+        }
+
+        private string GetSqlForUprs(long[] taskIdList, bool withSubGroups)
         {
             string contents;
-            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPRSByGroupsZu", "sql", "SqlQueries")))
+            using (var sr = new StreamReader(Configuration.GetFileStream("MinMaxAverageUPRSZu", "sql", "SqlQueries")))
             {
                 contents = sr.ReadToEnd();
             }
 
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+            if (withSubGroups)
+            {
+                var subGroupSelectionFromGrouping = @"temp.""SubGroup"",";
+                var subGroupSelectionFromQuery = @"L1_R205.GROUP_NAME as ""SubGroup"",";
+                var subGroupForGrouping = @", temp.""SubGroup""";
+                return string.Format(contents, subGroupSelectionFromGrouping, subGroupSelectionFromQuery, string.Join(",", taskIdList), subGroupForGrouping);
+            }
 
-            var summary = new MinMaxAverageByGroupsUprsZuDto
+            return string.Format(contents, string.Empty, string.Empty, string.Join(", ", taskIdList), string.Empty);
+        }
+
+        #endregion
+
+
+        public List<MinMaxAverageByGroupsUpksZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsZu", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+
+            var summary = new MinMaxAverageByGroupsUpksZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
@@ -150,31 +193,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUpksZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
 
             var summary = new MinMaxAverageByGroupsAndSubGroupsUpksZuDto
-            {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
-                ObjectsCount = result.Sum(x => x.ObjectsCount),
-                Min = result.Min(x => x.Min),
-                Max = result.Max(x => x.Max),
-                Avg = result.Average(x => x.Avg),
-                AvgWeight = result.Average(x => x.AvgWeight)
-            };
-            result.Add(summary);
-
-            return result;
-        }
-
-        public List<MinMaxAverageByGroupsAndSubGroupsUprsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
-        {
-            string contents;
-            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPRSByGroupsAndSubGroupsZu", "sql", "SqlQueries")))
-            {
-                contents = sr.ReadToEnd();
-            }
-
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
-
-            var summary = new MinMaxAverageByGroupsAndSubGroupsUprsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 SubGroup = "Итого по субъекту РФ г Москва",
