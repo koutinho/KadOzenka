@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -59,21 +60,14 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetKadNumber(string address = "")
 		{
-			var yandexAddress = OMYandexAddress.Where(x => x.FormalizedAddress != null
-			                                               && x.FormalizedAddress.ToLower() == address.ToLower())
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.InitialId)
-                .ExecuteFirstOrDefault();
+			QSQuery<OMYandexAddress> qSQuery = OMYandexAddress.Where(x => x.FormalizedAddress != null && x.FormalizedAddress.ToLower() == address.ToLower())
+				.Select(x => x.CadastralNumber).Select(x => x.InitialId);
 
-			if (yandexAddress == null)
-			{
-				return SendErrorMessage("Кадастровый номер для объекта не найден");
-			}
-			return Json(new { response = new
-            {
-                kadNumber = yandexAddress.CadastralNumber,
-                marketObjectId = yandexAddress.InitialId
-            } });
+			var yandexAddress = qSQuery.ExecuteFirstOrDefault();
+
+			if (yandexAddress == null) return SendErrorMessage("Кадастровый номер для объекта не найден");
+
+			return Json(new { response = new { kadNumber = yandexAddress.CadastralNumber,  marketObjectId = yandexAddress.InitialId } });
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
@@ -152,65 +146,45 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
+            if (!ModelState.IsValid)  return GenerateMessageNonValidModel();
 
             var setting = OMSettingsParams.Where(x => x.SegmentType_Code == param.Segment.GetValueOrDefault()).SelectAll().ExecuteFirstOrDefault();
-            if (setting == null)
-                return SendErrorMessage("Не найдены настройки для выбранного сегмента");
+            if (setting == null) return SendErrorMessage("Не найдены настройки для выбранного сегмента");
 
             var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(param.Kn, (int)setting.TourId);
-            if (unitsIds.Count == 0)
-                return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
+            if (unitsIds.Count == 0) return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
 
             var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0)
-                return SendErrorMessage("В настройках не задан атрибут для года постройки.");
+            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0) return SendErrorMessage("В настройках не задан атрибут для года постройки.");
 
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds);
-            if(targetObject == null)
-                return SendErrorMessage("Не найдены данные для выбранного объекта.");
+            if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
             if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
-	            return Json(new
-				{
-					updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new { targetObjectStr = JsonConvert.SerializeObject(targetObject) })
-				});
+	            return Json(new { updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new { targetObjectStr = JsonConvert.SerializeObject(targetObject) }) });
 
 			var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
-            var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo)
-                .SelectAll().ExecuteFirstOrDefault();
+            var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo).SelectAll().ExecuteFirstOrDefault();
 
             var square = param.Square.GetValueOrDefault();
-            var squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll()
-                .ExecuteFirstOrDefault();
+            var squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll().ExecuteFirstOrDefault();
 
-            if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild)
-			{
-				return SendErrorMessage("Не найден диапазон даты постройки или площади.");
-			}
+            if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild) return SendErrorMessage("Не найден диапазон даты постройки или площади.");
 
-			var condition = _service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType );
-			var objects = OMCoreObject.Where(condition)
-				.Select(x => new
-				{
-					x.Id,
-					x.Lat,
-					x.Lng
-				}).Execute().Select(x => new CoordinatesDto
-				{
-					Id = x.Id,
-					Lat = x.Lat.GetValueOrDefault(),
-					Lng = x.Lng.GetValueOrDefault(),
-				}).Distinct().ToList();
+			var condition = 
+				_service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
 
-            if (objects.Count == 0)
-			{
-				return SendErrorMessage("Объекты аналоги не найдены");
-			}
+			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(condition).Select(x => new { x.Id, x.Lat, x.Lng });
 
-            List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
+			var objects = qSQuery
+				.Execute()
+				.Select(x => new CoordinatesDto { Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault() })
+				.ToList();
+
+			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
+
 			//Проверяем дату актуальности
+			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
 			{
 				var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
 				var idsObjects = objects.Select(y => y.Id).ToList();
@@ -219,9 +193,7 @@ namespace KadOzenka.Web.Controllers
 				var successIdsObjects = new List<long>();
 				foreach (var obj in objects)
 				{
-					var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate)
-						.ToList();
-
+					var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate).ToList();
 					if (historyPrices.Count > 0)
 					{
 						searchedAnalogs.Add(obj);
@@ -229,8 +201,7 @@ namespace KadOzenka.Web.Controllers
 					}
 				}
 
-				List<CoordinatesDto> leftoversObjects =
-					objects.Where(x => !successIdsObjects.Contains(x.Id.GetValueOrDefault())).ToList();
+				List<CoordinatesDto> leftoversObjects = objects.Where(x => !successIdsObjects.Contains(x.Id.GetValueOrDefault())).ToList();
 
 				if (leftoversObjects.Count > 0)
 				{
@@ -238,30 +209,17 @@ namespace KadOzenka.Web.Controllers
 					var cacheAnalogs = OMCoreObject.Where(x => idsLeftOversObjects.Contains(x.Id)).SelectAll().Execute();
 					foreach (var obj in leftoversObjects)
 					{
-						var analogs = cacheAnalogs.Where(x =>
-							x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate));
-
-						if (analogs.Any())
-						{
-							searchedAnalogs.Add(obj);
-						}
+						var analogs = cacheAnalogs.Where(x => x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate));
+						if (analogs.Any()) searchedAnalogs.Add(obj);
 					}
                 }
 			}
 
-			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
-			{
-				Id = y.Id,
-				Lat = y.Lat,
-				Lng = y.Lng
-			});
+			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });
 
 			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(coordinatesInput, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
 
-			if (coordinates.Count == 0)
-			{
-				return SendErrorMessage("Объекты аналоги не найдены");
-			}
+			if (coordinates.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
 
 			BuildObjectCards(coordinates);
 

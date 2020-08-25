@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.ScoreCommon.Dto;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
@@ -124,8 +125,8 @@ namespace KadOzenka.Dal.ScoreCommon
 
 			if (type == ReferenceItemCodeType.Number)
 			{
-                var referenceItems = GetReferenceItems(referenceId);
-                return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1;
+                var referenceItems = GetReferenceItems(referenceId, parameterData.NumberValue.ToString(), true);
+                return referenceItems.Select(ReferenceToNumber).Count() != 0 ? referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1 : 1;
 			}
 			return 0;
 		}
@@ -199,10 +200,20 @@ namespace KadOzenka.Dal.ScoreCommon
 
         #region Support Methods
 
-		private List<OMEsReferenceItem> GetReferenceItems(long referenceId)
+		private List<OMEsReferenceItem> GetReferenceItems(long referenceId, string addVar = "", bool specialData = false)
 		{
-			return OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute().ToList();
-		}
+            QSQuery<OMEsReferenceItem> query = addVar.IsEmpty() ?
+                OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll() :
+                OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == addVar).SelectAll();
+            List<OMEsReferenceItem> result = new List<OMEsReferenceItem>();
+            return query.Execute().ToList();
+            /*
+            result = new List<OMEsReferenceItem>();
+            if(specialData) result.Add(query.ExecuteFirstOrDefault());
+            else result = query.Execute().ToList();
+            return result;
+            */
+        }
 
 		private ReferenceItemCodeType GetReferenceValueType(long referenceId)
 		{

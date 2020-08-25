@@ -28,15 +28,17 @@ namespace KadOzenka.Dal.ExpressScore
 		public RegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
-        private ExpressScoreReportService ReportService { get; }
+		private List<DateReference> dateDict;
+		private List<NumberReference> dateNumb;
+		private List<NumberReference> floorDict;
+
+		private ExpressScoreReportService ReportService { get; }
 		public ExpressScoreService(ScoreCommonService scoreCommonService, RegisterAttributeService registerAttributeService)
 		{
 			ReportService = new ExpressScoreReportService();
 			ScoreCommonService = scoreCommonService;
             RegisterAttributeService = registerAttributeService;
 		}
-
-
 
 		public OMSettingsParams GetSetting(MarketSegment segmentType)
 		{
@@ -89,7 +91,7 @@ namespace KadOzenka.Dal.ExpressScore
             return results.OrderByDescending(x => x.UnitId).FirstOrDefault();
         }
 
-        public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)
+        public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType, decimal? lng, decimal? lat)
 		{
             var condition = new QSConditionSimple
 			{
@@ -110,6 +112,26 @@ namespace KadOzenka.Dal.ExpressScore
 				ConditionType = QSConditionType.In,
 				LeftOperand = OMCoreObject.GetColumn(x => x.DealType_Code),
 				RightOperand = new QSColumnConstant(dealType)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.Less,
+				LeftOperand = OMCoreObject.GetColumn(x => x.Lng),
+				RightOperand = new QSColumnConstant(lng + (decimal)0.015791)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.Less,
+				LeftOperand = new QSColumnConstant(lng - (decimal)0.015791),
+				RightOperand = OMCoreObject.GetColumn(x => x.Lng)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.Less,
+				LeftOperand = OMCoreObject.GetColumn(x => x.Lat),
+				RightOperand = new QSColumnConstant(lat + (decimal)0.009057)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.Less,
+				LeftOperand = new QSColumnConstant(lat - (decimal)0.009057),
+				RightOperand = OMCoreObject.GetColumn(x => x.Lat)
 			});
 
 			if (useYearBuild)
@@ -189,25 +211,14 @@ namespace KadOzenka.Dal.ExpressScore
 				var d1 = 2 *r * Math.Asin(Math.Sqrt(delLat + Math.Cos(lat)* Math.Cos(sLat)* delLng)); // км - расстояние от исходной точки до одного из найденных объектов
 
 				distances.Add(item.Key, d1);
-				if (d1 <= searchRad)
-				{
-					selectedCoordinates.Add(item.Key, item.Value);
-				}
-			}
-			if (selectedCoordinates.Count > 0 && selectedCoordinates.Count <= quantity)
-			{
-				return selectedCoordinates.Values.ToList();
+				if (d1 <= searchRad) selectedCoordinates.Add(item.Key, item.Value);
 			}
 
-			if (selectedCoordinates.Count == 0)
-			{
-				return  GetNearestCoordinates(coordinates, distances, reservedCount);
-			}
+			if (selectedCoordinates.Count > 0 && selectedCoordinates.Count <= quantity) return selectedCoordinates.Values.ToList();
 
-			if (selectedCoordinates.Count > quantity)
-			{
-				return GetNearestCoordinates(coordinates, distances, quantity);
-			}
+			if (selectedCoordinates.Count == 0) return  GetNearestCoordinates(coordinates, distances, reservedCount);
+
+			if (selectedCoordinates.Count > quantity) return GetNearestCoordinates(coordinates, distances, quantity);
 
 			return new List<CoordinatesDto>();
 		}
@@ -286,6 +297,13 @@ namespace KadOzenka.Dal.ExpressScore
 			return msg;
 		}
 
+		public void GenerateLists(CostFactorsDto exCostFactors, ScenarioType? scenarioType = null)
+        {
+			dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.IndexDateDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToDate).ToList();
+			if (scenarioType != null && scenarioType == ScenarioType.Oks) dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToNumber).ToList();
+			floorDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.FloorDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Key).ToList().ToList();
+		}
+
 		public string RecalculateExpressScore(InputCalculateDto inputParam,  List<int> analogIds,
 			  int expressScoreId,  out decimal cost, out decimal squareCost, out long reportId)
 		{
@@ -352,27 +370,22 @@ namespace KadOzenka.Dal.ExpressScore
             List<Tuple<string, string>> costFactorsDataForReport = new List<Tuple<string, string>>();
 			List<string> costTargetObjectDataForReport = new List<string>();
 
+			GenerateLists(exCostFactors, scenarioType);
+
 			foreach (var analog in analogs)
 			{
 				decimal yPrice = 0; // Удельный показатель стоимости
 
-				if (analog.Price != 0 && analog.Square != 0)
-				{
-					yPrice = analog.Price / analog.Square;
-				}
+				if (analog.Price != 0 && analog.Square != 0) yPrice = analog.Price / analog.Square;
 
 				// Обязательные факторы
 
 				#region Корректировка на дату
 
-				var dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.IndexDateDicId).SelectAll().Execute()
-					.Select(ScoreCommonService.ReferenceToDate).ToList();
-
 				var dateEstimate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 				costTargetObjectDataForReport.Add(DateTime.Now.ToShortDateString());
 
-				var indexDateEstimate = dateDict.FirstOrDefault(x => x.Key == dateEstimate) ??
-				                        dateDict.OrderByDescending(x => x.Key).First();
+				var indexDateEstimate = dateDict.FirstOrDefault(x => x.Key == dateEstimate) ?? dateDict.OrderByDescending(x => x.Key).First();
 				costTargetObjectDataForReport.Add(indexDateEstimate.Value.ToString(CultureInfo.InvariantCulture));
 
 				DateReference indexAnalogDate = null;
@@ -382,11 +395,8 @@ namespace KadOzenka.Dal.ExpressScore
 				
 				if (analog.Date != DateTime.MinValue)
 				{
-					var analogDate = new DateTime(analog.Date.Year, analog.Date.Month,
-						1);
-
+					var analogDate = new DateTime(analog.Date.Year, analog.Date.Month, 1);
 					text = new KeyValuePair<string, string>("Дата предложения", analog.Date.ToShortDateString());
-
 					indexAnalogDate = dateDict.FirstOrDefault(x => x.Key == analogDate);
 					dicText = new KeyValuePair<string, string>(@" Индекс ""Дата предложения""", indexAnalogDate?.Value.ToString() ?? "");
 				}
@@ -429,21 +439,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 				if (scenarioType != null && scenarioType == ScenarioType.Oks)
 				{
-					var dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute()
-						.Select(ScoreCommonService.ReferenceToNumber).ToList();
+					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analogFloorsCount)?.Value ?? dateNumb.Last()?.Value ?? null;
 
-					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analogFloorsCount)?.Value ??
-					                  dateNumb.Last()?.Value ?? null;
-
-					if (analogFloorsCount == 0 && coefficient == null)
-					{
-						coefficient = (decimal)fixedCoefflandShareZero;
-					}
+					if (analogFloorsCount == 0 && coefficient == null) coefficient = (decimal)fixedCoefflandShareZero;
 
 					if (coefficient != null)
 					{
 						dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: Math.Round(coefficient.GetValueOrDefault(), 2).ToString("N"));
-
                         try
                         {
                             cost = cost * coefficient.GetValueOrDefault();
@@ -471,9 +473,6 @@ namespace KadOzenka.Dal.ExpressScore
                 {
 					var floor = (int)analog.Floor != 0 ? (int)analog.Floor : 1; // по условию из примера расчета
 					text = new KeyValuePair<string, string>("Этаж расположения", floor.ToString());
-
-					var floorDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.FloorDicId).SelectAll().Execute()
-						.Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Key).ToList().ToList();
 
 					var floorFactor = floor != 0 && floorDict.Count > 0
 						? floor > floorDict.FirstOrDefault()?.Key ? floorDict.FirstOrDefault()?.Value :
@@ -670,10 +669,8 @@ namespace KadOzenka.Dal.ExpressScore
 						}
 						case ParameterType.Number:
 						{
-							decimal analogC = ScoreCommonService.GetCoefficientFromNumberFactor(analogFactor,
-								complex.DictionaryId.GetValueOrDefault());
-							decimal targetObjectC = ScoreCommonService.GetCoefficientFromNumberFactor(targetObjectFactor,
-								complex.DictionaryId.GetValueOrDefault());
+							decimal analogC = ScoreCommonService.GetCoefficientFromNumberFactor(analogFactor, complex.DictionaryId.GetValueOrDefault());
+							decimal targetObjectC = ScoreCommonService.GetCoefficientFromNumberFactor(targetObjectFactor, complex.DictionaryId.GetValueOrDefault());
 
 							if (analogC == 0 || targetObjectC == 0)
 							{
@@ -863,8 +860,7 @@ namespace KadOzenka.Dal.ExpressScore
 			id = 0;
 			try
 			{
-				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()
-					?.CadastralNumber;
+				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()?.CadastralNumber;
 
 				if (expressScoreId == null && (square == null || floor == null))
 				{
