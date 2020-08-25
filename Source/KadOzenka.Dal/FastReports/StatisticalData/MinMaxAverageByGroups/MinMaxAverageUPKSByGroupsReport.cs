@@ -97,7 +97,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 else
                 {
                     var data = _service.GetDataByGroupsAndSubgroupsUpksZu(taskIdList);
-                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>();
+                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
                         foreach (var upksCalcType in upksCalcTypes)

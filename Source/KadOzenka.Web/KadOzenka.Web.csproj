@@ -1762,6 +1762,7 @@
 	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByGroupsAndSubGroupsZu.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSByGroupsAndSubGroupsZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSByGroupsZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />

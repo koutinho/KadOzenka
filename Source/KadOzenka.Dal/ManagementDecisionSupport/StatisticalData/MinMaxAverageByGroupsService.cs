@@ -164,6 +164,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
+        public List<MinMaxAverageByGroupsAndSubGroupsUprsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPRSByGroupsAndSubGroupsZu", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+
+            var summary = new MinMaxAverageByGroupsAndSubGroupsUprsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                Min = result.Min(x => x.Min),
+                Max = result.Max(x => x.Max),
+                Avg = result.Average(x => x.Avg),
+                AvgWeight = result.Average(x => x.AvgWeight)
+            };
+            result.Add(summary);
+
+            return result;
+        }
+
         public List<MinMaxAverageByGroupsAndSubgroupsDataDto> GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks, MinMaxAverageByGroupsCalcType calcType)
 		{
 			var table = GetData(taskIdList, isOks);
