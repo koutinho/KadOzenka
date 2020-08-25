@@ -9,7 +9,7 @@ select
           THEN NULL 
           ELSE temp."UprsObjectValue"
      	END 
-    ) as "UprsMin",
+    ) as "Min",
     
     avg(
     	CASE 
@@ -17,7 +17,7 @@ select
           THEN NULL 
           ELSE temp."UprsObjectValue"
      	END
-    ) as "UprsAvg",
+    ) as "Avg",
     
     sum(NULLIF(temp."UprsObjectCost", -1)) 
     / NULLIF(
@@ -27,7 +27,7 @@ select
           ELSE temp."UprsObjectSquare"
      	END),
      0)  
-    AS "UprsAvgWeight",
+    AS "AvgWeight",
     
     max(
     	CASE 
@@ -35,7 +35,7 @@ select
           THEN NULL 
           ELSE temp."UprsObjectValue"
      	END
-    ) as "UprsMax"
+    ) as "Max"
     
 from
 (

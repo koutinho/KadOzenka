@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                         foreach (var upksCalcType in upksCalcTypes)
                         {
                             dataTable.Rows.Add(
-                                GetGroupName(unitDto.ParentGroup),
+                                PreprocessGroupName(unitDto.ParentGroup),
                                 PropertyTypes.Stead.GetEnumDescription(),
                                 string.Empty,
                                 false,
@@ -102,8 +102,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     {
                         foreach (var upksCalcType in upksCalcTypes)
                         {
-                            dataTable.Rows.Add(GetGroupName(unitDto.ParentGroup),
-                                GetGroupName(unitDto.SubGroup), 
+                            dataTable.Rows.Add(PreprocessGroupName(unitDto.ParentGroup),
+                                PreprocessGroupName(unitDto.SubGroup), 
                                 PropertyTypes.Stead.GetEnumDescription(), 
                                 string.Empty, 
                                 false, 
@@ -117,39 +117,5 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 return dataTable;
             }
         }
-
-
-        #region SupportMethods
-
-        private static decimal? GetCalcValue(UpksCalcType upksCalcType, MinMaxAverageByGroupsZuDto unitDto)
-        {
-            decimal? value = null;
-            switch (upksCalcType)
-            {
-                case UpksCalcType.Min:
-                    value = unitDto.ObjectUpksMin;
-                    break;
-                case UpksCalcType.Average:
-                    value = unitDto.ObjectUpksAvg;
-                    break;
-                case UpksCalcType.AverageWeight:
-                    value = unitDto.ObjectUpksAvgWeight;
-                    break;
-                case UpksCalcType.Max:
-                    value = unitDto.ObjectUpksMax;
-                    break;
-            }
-
-            return value.HasValue
-                ? Math.Round(value.Value, PrecisionForDecimalValues)
-                : (decimal?)null;
-        }
-
-        private string GetGroupName(string name)
-        {
-            return string.IsNullOrWhiteSpace(name) ? "Без группы" : name;
-        }
-
-        #endregion
     }
 }

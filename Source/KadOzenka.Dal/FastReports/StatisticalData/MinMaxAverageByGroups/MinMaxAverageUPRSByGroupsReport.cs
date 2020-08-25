@@ -2,7 +2,6 @@
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
@@ -55,7 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                         foreach (var upksCalcType in upksCalcTypes)
                         {
                             dataTable.Rows.Add(
-                                GetGroupName(unitDto.ParentGroup),
+                                PreprocessGroupName(unitDto.ParentGroup),
                                 PropertyTypes.Stead.GetEnumDescription(),
                                 string.Empty,
                                 false,
@@ -96,39 +95,5 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 return dataTable;
             }
         }
-
-        //TODO move to base class
-        #region SupportMethods
-
-        private static decimal? GetCalcValue(UpksCalcType upksCalcType, MinMaxAverageByGroupsUprsZuDto unitDto)
-        {
-            decimal? value = null;
-            switch (upksCalcType)
-            {
-                case UpksCalcType.Min:
-                    value = unitDto.UprsMin;
-                    break;
-                case UpksCalcType.Average:
-                    value = unitDto.UprsAvg;
-                    break;
-                case UpksCalcType.AverageWeight:
-                    value = unitDto.UprsAvgWeight;
-                    break;
-                case UpksCalcType.Max:
-                    value = unitDto.UprsMax;
-                    break;
-            }
-
-            return value.HasValue
-                ? Math.Round(value.Value, PrecisionForDecimalValues)
-                : (decimal?)null;
-        }
-
-        private string GetGroupName(string name)
-        {
-            return string.IsNullOrWhiteSpace(name) ? "Без группы" : name;
-        }
-
-        #endregion
     }
 }

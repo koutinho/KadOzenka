@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-        public List<MinMaxAverageByGroupsZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
+        public List<MinMaxAverageByGroupsUpksZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
         {
             string contents;
             using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsZu", "sql", "SqlQueries")))
@@ -43,16 +43,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 contents = sr.ReadToEnd();
             }
 
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
 
-            var summary = new MinMaxAverageByGroupsZuDto
+            var summary = new MinMaxAverageByGroupsUpksZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
-                ObjectUpksMin = result.Min(x => x.ObjectUpksMin),
-                ObjectUpksMax = result.Max(x => x.ObjectUpksMax),
-                ObjectUpksAvg = result.Average(x => x.ObjectUpksAvg),
-                ObjectUpksAvgWeight = result.Average(x => x.ObjectUpksAvgWeight)
+                Min = result.Min(x => x.Min),
+                Max = result.Max(x => x.Max),
+                Avg = result.Average(x => x.Avg),
+                AvgWeight = result.Average(x => x.AvgWeight)
             };
             result.Add(summary);
 
@@ -73,10 +73,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
-                UprsMin = result.Min(x => x.UprsMin),
-                UprsMax = result.Max(x => x.UprsMax),
-                UprsAvg = result.Average(x => x.UprsAvg),
-                UprsAvgWeight = result.Average(x => x.UprsAvgWeight)
+                Min = result.Min(x => x.Min),
+                Max = result.Max(x => x.Max),
+                Avg = result.Average(x => x.Avg),
+                AvgWeight = result.Average(x => x.AvgWeight)
             };
             result.Add(summary);
 
@@ -139,7 +139,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			return result;
 		}
 
-        public List<MinMaxAverageByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
+        public List<MinMaxAverageByGroupsAndSubGroupsUpksZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
         {
             string contents;
             using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("MinMaxAverageUPKSByGroupsAndSubGroupsZu", "sql", "SqlQueries")))
@@ -147,17 +147,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 contents = sr.ReadToEnd();
             }
 
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUpksZuDto>(string.Format(contents, string.Join(", ", taskIdList)));
 
-            var summary = new MinMaxAverageByGroupsAndSubGroupsZuDto
+            var summary = new MinMaxAverageByGroupsAndSubGroupsUpksZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 SubGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
-                ObjectUpksMin = result.Min(x => x.ObjectUpksMin),
-                ObjectUpksMax = result.Max(x => x.ObjectUpksMax),
-                ObjectUpksAvg = result.Average(x => x.ObjectUpksAvg),
-                ObjectUpksAvgWeight = result.Average(x => x.ObjectUpksAvgWeight)
+                Min = result.Min(x => x.Min),
+                Max = result.Max(x => x.Max),
+                Avg = result.Average(x => x.Avg),
+                AvgWeight = result.Average(x => x.AvgWeight)
             };
             result.Add(summary);
 

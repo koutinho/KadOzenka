@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
@@ -76,7 +78,36 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 			return dataSet;
 		}
 
-		protected abstract DataTable GetDataByGroups(long[] taskIdList, bool isOks);
+        protected string PreprocessGroupName(string name)
+        {
+            return string.IsNullOrWhiteSpace(name) ? "Без группы" : name;
+        }
+
+        protected static decimal? GetCalcValue(UpksCalcType upksCalcType, MinMaxAverageCalculationInfoDto unitDto)
+        {
+            decimal? value = null;
+            switch (upksCalcType)
+            {
+                case UpksCalcType.Min:
+                    value = unitDto.Min;
+                    break;
+                case UpksCalcType.Average:
+                    value = unitDto.Avg;
+                    break;
+                case UpksCalcType.AverageWeight:
+                    value = unitDto.AvgWeight;
+                    break;
+                case UpksCalcType.Max:
+                    value = unitDto.Max;
+                    break;
+            }
+
+            return value.HasValue
+                ? Math.Round(value.Value, PrecisionForDecimalValues)
+                : (decimal?)null;
+        }
+
+        protected abstract DataTable GetDataByGroups(long[] taskIdList, bool isOks);
 
 		protected abstract DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks);
 
