@@ -116,7 +116,8 @@ namespace KadOzenka.Dal.LongProcess
 				IsEmail = true,
                 ExpireDate = DateTime.Now.AddHours(2)
             });
-		}
+            _log.Error(new Exception(message), "Операция переноса атрибутов из ГБУ в КО была прервана {QueueId}", processQueue.Id);
+        }
 
         protected void TestLongRunningProcess(GbuExportAttributeSettings setting)
         {
