@@ -306,7 +306,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
         {
-            var attribute = RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
+            var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.Name == name);
             if (attribute == null)
                 throw new Exception($"Не найден аттрибут Росреестра с именем '{name}'");
 
