@@ -207,6 +207,47 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
+        public List<MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto> GetDataByGroupsAndSubGroupsUpksAndUprsZu(long[] taskIdList)
+        {
+            var upksSql = GetSqlForUpks(taskIdList, true);
+            var upksResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUpksZuDto>(upksSql);
+
+            var uprsSql = GetSqlForUprs(taskIdList, true);
+            var uprsResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(uprsSql);
+
+            var result = new List<MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto>();
+            foreach (var upks in upksResults)
+            {
+                var uprs = uprsResults.FirstOrDefault(x => x.ParentGroup == upks.ParentGroup && x.SubGroup == upks.SubGroup);
+                var map = Map(uprs, upks);
+                map.SubGroup = uprs?.SubGroup;
+                result.Add(map);
+            }
+
+            result.Add(new MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                ObjectsCount = result.Sum(x => x.ObjectsCount),
+                Upks = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = result.Min(x => x.Upks.Min),
+                    Avg = result.Average(x => x.Upks.Avg),
+                    AvgWeight = result.Average(x => x.Upks.AvgWeight),
+                    Max = result.Max(x => x.Upks.Max)
+                },
+                Uprs = new MinMaxAverageCalculationInfoDto
+                {
+                    Min = result.Min(x => x.Uprs.Min),
+                    Avg = result.Average(x => x.Uprs.Avg),
+                    AvgWeight = result.Average(x => x.Uprs.AvgWeight),
+                    Max = result.Max(x => x.Uprs.Max)
+                }
+            });
+
+            return result;
+        }
+
         private MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto Map(MinMaxAverageByGroupsUprsZuDto uprs,
             MinMaxAverageByGroupsUpksZuDto upks)
         {
