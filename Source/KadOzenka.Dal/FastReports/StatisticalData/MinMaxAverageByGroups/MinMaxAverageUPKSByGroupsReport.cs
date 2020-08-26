@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
@@ -35,11 +36,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
-                    var data = _service.GetDataByGroups(taskIdList, isOks, MinMaxAverageByGroupsCalcType.Upks);
+                    var data = _service.GetDataByGroupsUpksOks(taskIdList);
+                    var objectCountInGroup = GetObjectCountInGroup(data);
+
                     foreach (var unitDto in data)
                     {
-                        dataTable.Rows.Add(unitDto.GroupName, unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
-                            unitDto.CalcType.GetEnumDescription(),
+                        var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
+                        var objectsCountInGroup = objectCountInGroup[parentGroup];
+
+                        dataTable.Rows.Add(
+                            parentGroup, 
+                            unitDto.PropertyType, 
+                            unitDto.Purpose, 
+                            unitDto.HasPurpose,
+                            objectsCountInGroup,
+                            unitDto.UpksCalcTypeEnum.GetEnumDescription(),
                             (unitDto.UpksCalcValue.HasValue
                                 ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
                                 : (decimal?)null));
@@ -69,7 +80,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
             }
         }
 
-		protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
+        protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
 		{
             using (var dataTable = new DataTable("Data"))
             {
@@ -117,5 +128,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 return dataTable;
             }
         }
+
+        #region Support Methods
+
+        private Dictionary<string, int> GetObjectCountInGroup(List<MinMaxAverageByGroupsUpksOksDto> data)
+        {
+            var objectCountInGroup = new Dictionary<string, int>();
+
+            data.GroupBy(x => new { x.ParentGroup, x.PropertyType, x.Purpose }).ToList().ForEach(x =>
+            {
+                var parentGroup = PreprocessGroupName(x.Key.ParentGroup);
+                var currentObjectCount = x.FirstOrDefault()?.ObjectsCount ?? 0;
+
+                if (objectCountInGroup.TryGetValue(parentGroup, out var n))
+                {
+                    objectCountInGroup[parentGroup] = n + currentObjectCount;
+                }
+                else
+                {
+                    objectCountInGroup[parentGroup] = currentObjectCount;
+                }
+            });
+
+            return objectCountInGroup;
+        }
+
+        #endregion
     }
 }

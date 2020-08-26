@@ -105,6 +105,19 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         #region UPKS
 
+        private class GroupingOks
+        {
+            public string PropertyType { get; set; }
+            public bool HasPurpose { get; set; }
+            public string Purpose { get; set; }
+        }
+
+        private class GroupingOksDictionary
+        {
+            public GroupingOks Key { get; set; }
+            public List<MinMaxAverageByGroupsUpksOksDto> Values { get; set; }
+        }
+
         public List<MinMaxAverageByGroupsUpksZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
         {
             var sql = GetSqlForUpks(taskIdList, false);
@@ -161,6 +174,83 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             }
 
             return string.Format(contents, subGroupSelectionFromQuery, string.Join(",", taskIdList), subGroupForGrouping);
+        }
+
+        public List<MinMaxAverageByGroupsUpksOksDto> GetDataByGroupsUpksOks(long[] taskIdList)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream("MinMaxAverageUPKSOks", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
+            var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+
+            var sql = string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
+            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksOksDto>(sql);
+
+            var group = result.GroupBy(x => new
+            {
+                x.Purpose,
+                x.HasPurpose,
+                x.PropertyType
+            }, (k, g) => new GroupingOksDictionary
+            {
+                Key = new GroupingOks
+                {
+                    HasPurpose = k.HasPurpose,
+                    Purpose = k.Purpose,
+                    PropertyType = k.PropertyType,
+                },
+                Values = g.ToList()
+            }).ToList();
+
+            group.ForEach(x =>
+            {
+                var summaryMin = GetSummaryUpksOks(x, UpksCalcType.Min);
+                var summaryAvg = GetSummaryUpksOks(x, UpksCalcType.Average);
+                var summaryAvgWeight = GetSummaryUpksOks(x, UpksCalcType.AverageWeight);
+                var summaryMax = GetSummaryUpksOks(x, UpksCalcType.Max);
+
+                result.Add(summaryMin);
+                result.Add(summaryAvg);
+                result.Add(summaryAvgWeight);
+                result.Add(summaryMax);
+            });
+
+            return result;
+        }
+
+        private static MinMaxAverageByGroupsUpksOksDto GetSummaryUpksOks(GroupingOksDictionary group, UpksCalcType calcType)
+        {
+            var objectCount = group.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
+            var upksValues = group.Values.Where(z => z.UpksCalcTypeEnum == calcType).ToList();
+            decimal? upksCalcValue = 0;
+            switch (calcType)
+            {
+                case UpksCalcType.Min:
+                    upksCalcValue = upksValues.Min(x => x.UpksCalcValue);
+                    break;
+                case UpksCalcType.Average:
+                case UpksCalcType.AverageWeight:
+                    upksCalcValue = upksValues.Average(x => x.UpksCalcValue);
+                    break;
+                case UpksCalcType.Max:
+                    upksCalcValue = upksValues.Max(x => x.UpksCalcValue);
+                    break;
+            }
+
+            return new MinMaxAverageByGroupsUpksOksDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                PropertyType = group.Key.PropertyType,
+                Purpose = group.Key.Purpose,
+                HasPurpose = group.Key.HasPurpose,
+                ObjectsCount = objectCount,
+                UpksCalcType = (int)calcType,
+                UpksCalcValue = upksCalcValue ?? 0
+            };
         }
 
         #endregion
