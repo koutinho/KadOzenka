@@ -43,10 +43,7 @@ result_data as (
 		c.OBJECTS_COUNT,
 		dg.MIN_UPKS,
 		dg.AVG_UPKS,
-		case 
-			when dg.SUM_SQUARE <> 0 then dg.SUM_CADASTRAL_COST / dg.SUM_SQUARE
-			else null
-		end as AVG_WEIGHT_UPKS,
+		dg.SUM_CADASTRAL_COST / nullif(dg.SUM_SQUARE, 0) as AVG_WEIGHT_UPKS,
 		dg.MAX_UPKS
 	from dataGroupedByQuartalAndPropertyType dg
 	join obj_count c on dg.CADASTRAL_QUARTAL=c.CADASTRAL_QUARTAL
