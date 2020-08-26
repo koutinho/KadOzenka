@@ -35,13 +35,10 @@ result_data as (
 	select
 		td.PropertyTypeCode as PROPERTY_TYPE_CODE,
 		td.PropertyType as PROPERTY_TYPE,
-		case when dg.OBJECTS_COUNT is not null then dg.OBJECTS_COUNT else 0 end as OBJECTS_COUNT,
+		COALESCE(OBJECTS_COUNT, 0) as OBJECTS_COUNT,
 		dg.MIN_UPKS,
 		dg.AVG_UPKS,
-		case 
-			when dg.SUM_SQUARE <> 0 then dg.SUM_CADASTRAL_COST / dg.SUM_SQUARE
-			else null
-		end as AVG_WEIGHT_UPKS,
+		dg.SUM_CADASTRAL_COST / nullif(dg.SUM_SQUARE, 0) as AVG_WEIGHT_UPKS,
 		dg.MAX_UPKS
 	from dataGroupedByPropertyType dg
 	right join propertyTypeDictionary td on td.PropertyTypeCode=dg.PROPERTY_TYPE_CODE
