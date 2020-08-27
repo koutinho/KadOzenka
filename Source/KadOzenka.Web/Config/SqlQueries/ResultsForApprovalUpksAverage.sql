@@ -50,5 +50,5 @@ union all
 		group by GroupName, HasGroup
 	 ) dg)
 ) res
-	order by HasGroup desc, IsTotal, Name, GroupName
+	order by IsTotal, HasGroup desc, Name, GroupName
 	
