@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/09/2020 17:07:11" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ConvertNulls="false" ReportInfo.Modified="08/27/2020 10:59:03" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -137,9 +137,9 @@ namespace FastReport
       <Column Name="UpksCalcValue" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="28.35,604.8,192.15,393.75" UnlimitedWidth="true">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="28.35,643.74,231.09,432.69" UnlimitedHeight="true" UnlimitedWidth="true">
     <DataBand Name="BandData1" Width="1047.06" Height="212.41" Guides="0,60.52,22.72,41.62" DataSource="Data">
-      <MatrixObject Name="MatrixData" Left="28.35" Width="576.45" Height="60.52" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
+      <MatrixObject Name="MatrixData" Left="28.35" Width="615.39" Height="60.52" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns>
           <Header Expression="[Data.GroupName]" Sort="None" Totals="false"/>
         </MatrixColumns>
@@ -166,7 +166,7 @@ namespace FastReport
         <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell16" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell16" Border.Lines="All" Text="[UpksCalcValue]" NullValue=" " HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
       </MatrixObject>
     </DataBand>
