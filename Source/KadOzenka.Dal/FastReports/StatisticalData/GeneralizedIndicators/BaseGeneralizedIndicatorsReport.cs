@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			{
 				dataTable.Rows.Add(
 					unitDto.AdditionalName, unitDto.Name,unitDto.ObjectsCount,
-					unitDto.GroupName, unitDto.UpksCalcType.GetEnumDescription(),
+					unitDto.GroupName, unitDto.UpksCalcTypeEnum.GetEnumDescription(),
 					(unitDto.UpksCalcValue.HasValue ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues) : (decimal?)null)
 				);
 			}
