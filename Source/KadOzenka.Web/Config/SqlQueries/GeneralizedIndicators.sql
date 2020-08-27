@@ -9,7 +9,7 @@ initialData as(
 	SELECT 
 		case 
 			when '{0}'='Districts' then districtsDict.ShortTitle
-			when '{0}'='Regions' then left(marketDict.REGION, 5)
+			when '{0}'='Regions' then marketDict.REGION
 			when '{0}'='RegionNumbers' then left(marketDict.CADASTRAL_QUARTAL, 5)
 			when '{0}'='Quarters' then marketDict.CADASTRAL_QUARTAL
 		end as Name,
