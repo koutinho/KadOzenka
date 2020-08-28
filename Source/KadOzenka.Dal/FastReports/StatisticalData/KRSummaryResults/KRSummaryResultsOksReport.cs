@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 
 		public KRSummaryResultsOksReport()
 		{
-			_summaryResultsService = new KRSummaryResultsService(GbuObjectService, StatisticalDataService);
+			_summaryResultsService = new KRSummaryResultsService(StatisticalDataService);
 		}
 
 		protected override string TemplateName(NameValueCollection query)

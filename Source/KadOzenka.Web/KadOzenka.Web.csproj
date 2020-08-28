@@ -206,6 +206,8 @@
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
     <None Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
+    <None Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
+    <None Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql" />
@@ -503,10 +505,16 @@
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\SqlQueries\KRSummaryResultsZU.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\SqlQueries\ResultsForApprovalUpksAverage.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\GeneralizedIndicators.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\KRSummaryResultsOKS.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1777,6 +1785,8 @@
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
 	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
 	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
