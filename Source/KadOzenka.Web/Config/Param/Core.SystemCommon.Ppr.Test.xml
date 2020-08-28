@@ -19,7 +19,7 @@
 
     <MessageSettings>
       <!--Частота проверки наличия новых личных сообщений (в секундах). 0 - проверка отключена.-->
-      <Delay>5</Delay>
+      <Delay>30</Delay>
     </MessageSettings>
   
     <MailServer>

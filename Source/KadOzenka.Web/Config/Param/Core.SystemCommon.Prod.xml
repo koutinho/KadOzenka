@@ -12,6 +12,11 @@
 
     <DefaultDomainName>CIPGS</DefaultDomainName>
 
+  <MessageSettings>
+    <!--Частота проверки наличия новых личных сообщений (в секундах). 0 - проверка отключена.-->
+    <Delay>30</Delay>
+  </MessageSettings>
+
   <SrdSettings>
         <UseRoleSubsystem>false</UseRoleSubsystem>
     </SrdSettings>
