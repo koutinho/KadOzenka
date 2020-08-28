@@ -6,6 +6,13 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
+	public enum PropertyObjectType
+	{
+		Oks,
+		Zu,
+		OksAndZu
+	}
+
 	public class GeneralizedIndicatorsService
 	{
 		private readonly StatisticalDataService _statisticalDataService;
@@ -16,17 +23,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_statisticalDataService = statisticalDataService;
 		}
 
-		public List<GeneralizedIndicatorsDto> GetData(long[] taskIdList, StatisticDataAreaDivisionType areaDivisionType)
+		public List<GeneralizedIndicatorsDto> GetData(long[] taskIdList, StatisticDataAreaDivisionType areaDivisionType, PropertyObjectType propertyObjectType)
 		{
-			//taskIdList = new long[]{ 38676792 };
-
 			string contents;
 			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportSqlFileName)))
 			{
 				contents = sr.ReadToEnd();
 			}
 
-			var sql = string.Format(contents, areaDivisionType, string.Join(", ", taskIdList));
+			var sql = string.Format(contents, areaDivisionType, string.Join(", ", taskIdList), propertyObjectType);
 			var result = QSQuery.ExecuteSql<GeneralizedIndicatorsDto>(sql);
 
 			return result;

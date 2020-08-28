@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.IO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -40,7 +41,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
-			var data = _service.GetData(taskIdList, GetStatisticDataAreaDivisionTypeReport(query));
+			var data = _service.GetData(taskIdList, GetStatisticDataAreaDivisionTypeReport(query), GetPropertyObjectTypeReport(query));
 
 			foreach (var unitDto in data)
 			{
@@ -56,6 +57,22 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			dataSet.Tables.Add(dataTitleTable);
 
 			return dataSet;
+		}
+
+		private PropertyObjectType GetPropertyObjectTypeReport(NameValueCollection query)
+		{
+			var propertyObjectType = GetQueryParam<string>("ZuOksObjectType", query);
+			switch (propertyObjectType)
+			{
+				case "ОКС":
+					return PropertyObjectType.Oks;
+				case "ЗУ":
+					return PropertyObjectType.Zu;
+				case "ОКС и ЗУ":
+					return PropertyObjectType.OksAndZu;
+				default:
+					throw new InvalidDataException($"Неизвестный тип объекта недвижимости: {propertyObjectType}");
+			}
 		}
 	}
 }

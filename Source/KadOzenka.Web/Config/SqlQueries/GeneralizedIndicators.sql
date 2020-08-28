@@ -28,6 +28,10 @@ initialData as(
 		JOIN districtsDictionary districtsDict on districtsDict.DistrictCode=marketDict.DISTRICT_CODE
 		LEFT JOIN KO_GROUP subgroup ON (u.GROUP_ID = subgroup.ID)
 	WHERE u.TASK_ID IN ({1})
+		and case 
+			when '{2}'='Oks' then u.property_type_code<>4
+			when '{2}'='Zu' then u.property_type_code=4
+			when '{2}'='OksAndZu' then true end
 ),
 
 obj_count as (
