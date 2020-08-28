@@ -220,6 +220,8 @@
     <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isOksReportType.sql" />
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
+    <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
+    <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
     <None Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
@@ -504,6 +506,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql">
@@ -1798,6 +1806,8 @@
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
