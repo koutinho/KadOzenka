@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly GbuObjectService _gbuObjectService;
 		private readonly string _reportCalculationStatisticsFileName = "AdditionalForms_CalculationStatistics";
+		private readonly string _reportResultsAnalysisFileName = "AdditionalForms_ResultsAnalysis";
 
 		public string MoscowOktmo => "45000000";
 
@@ -307,121 +308,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<ResultsAnalysisDto> GetResultsAnalysisData(long[] taskIdList)
 		{
-			var conditions = new List<QSCondition>
+			string contents;
+			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportResultsAnalysisFileName)))
 			{
-				new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, taskIdList.Select(x => (double) x).ToList()),
-			};
-			var data = GetResultsAnalysisObjects(conditions);
-
-			var objectsWithTheSameKn = new List<ResultsAnalysisObjectDto>();
-			var cadastralNumbers = data.Select(x => x.CadastralNumber).ToList();
-			if (cadastralNumbers.Count > 0)
-			{
-				var taskTourId = data.FirstOrDefault()?.TaskTourId;
-				var conditionsForPreviousObjects = new List<QSCondition>
-				{
-					new QSConditionSimple(OMUnit.GetColumn(x => x.CadastralNumber), QSConditionType.In, cadastralNumbers),
-					new QSConditionSimple(OMTask.GetColumn(x => x.TourId), QSConditionType.NotEqual, taskTourId.GetValueOrDefault()),
-					new QSConditionSimple(OMTask.GetColumn(x => x.NoteType_Code), QSConditionType.Equal,
-						(long) KoNoteType.Initial),
-				};
-				objectsWithTheSameKn = GetResultsAnalysisObjects(conditionsForPreviousObjects);
+				contents = sr.ReadToEnd();
 			}
 
-			var objectsWithTheSameKnByCadastralNumber = objectsWithTheSameKn.GroupBy(x => x.CadastralNumber)
-				.ToDictionary(g => g.Key, g => g.ToList());
-
-			var result = new List<ResultsAnalysisDto>();
-			foreach (var dto in data)
-			{
-				var resultDto = new ResultsAnalysisDto
-				{
-					CadastralNumber = dto.CadastralNumber,
-					PropertyType = dto.PropertyType,
-					Square = dto.Square,
-					Upks = dto.Upks,
-					CadastralCost = dto.CadastralCost,
-					Status = dto.Status
-				};
-
-				if (objectsWithTheSameKnByCadastralNumber.ContainsKey(dto.CadastralNumber))
-				{
-					var prevObject = objectsWithTheSameKnByCadastralNumber[dto.CadastralNumber]
-						.Where(x => x.TaskTourId != dto.TaskTourId && x.TaskId != dto.TaskId && x.TaskCreationDate <= dto.TaskCreationDate )
-						.OrderByDescending(x => x.TaskCreationDate).FirstOrDefault();
-					if (prevObject != null)
-					{
-						resultDto.PreviousUpks = prevObject.Upks;
-						resultDto.PreviousCadastralCost = prevObject.CadastralCost;
-					}
-				}
-				
-				result.Add(resultDto);
-			}
+			var sql = string.Format(contents, string.Join(", ", taskIdList));
+			var result = QSQuery.ExecuteSql<ResultsAnalysisDto>(sql);
 
 			return result;
-		}
-
-		private List<ResultsAnalysisObjectDto> GetResultsAnalysisObjects(List<QSCondition> qsConditions)
-		{
-			var query = new QSQuery
-			{
-				MainRegisterID = OMUnit.GetRegisterId(),
-				Condition = new QSConditionGroup
-				{
-					Type = QSConditionGroupType.And,
-					Conditions = qsConditions
-				},
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMUnitChange.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-							RightOperand = OMTask.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					}
-				}
-			};
-
-			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
-			query.AddColumn(OMTask.GetColumn(x => x.TourId, "TaskTourId"));
-			query.AddColumn(OMUnit.GetColumn(x => x.TaskId, "TaskId"));
-			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, "TaskCreationDate"));
-			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
-			query.AddColumn(OMUnit.GetColumn(x => x.Square, "Square"));
-			query.AddColumn(OMUnit.GetColumn(x => x.StatusRepeatCalc, "StatusRepeatCalc"));
-			query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "CadastralCost"));
-			query.AddColumn(OMUnit.GetColumn(x => x.Upks, "Upks"));
-
-			var table = query.ExecuteQuery();
-			var data = new List<ResultsAnalysisObjectDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new ResultsAnalysisObjectDto
-					{
-						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToString(),
-						TaskTourId = table.Rows[i]["TaskTourId"].ParseToLongNullable(),
-						TaskId = table.Rows[i]["TaskId"].ParseToLongNullable(),
-						TaskCreationDate = table.Rows[i]["TaskCreationDate"].ParseToDateTimeNullable(),
-						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-						Square = table.Rows[i]["Square"].ParseToDecimalNullable(),
-						Status = table.Rows[i]["StatusRepeatCalc"].ParseToString(),
-						CadastralCost = table.Rows[i]["CadastralCost"].ParseToDecimalNullable(),
-						Upks = table.Rows[i]["Upks"].ParseToDecimalNullable(),
-					};
-
-					data.Add(dto);
-				}
-			}
-
-			return data;
 		}
 
 		private decimal? GetAnnualRateOfRent(decimal? price, decimal? square)

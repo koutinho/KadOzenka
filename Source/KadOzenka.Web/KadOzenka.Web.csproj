@@ -206,6 +206,7 @@
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
     <None Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
+    <None Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
     <None Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
@@ -507,6 +508,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql">
@@ -1801,6 +1805,7 @@
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
 	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
