@@ -205,6 +205,7 @@
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
+    <None Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
     <None Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
@@ -527,6 +528,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\KRSummaryResultsOKS.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1796,6 +1800,7 @@
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
     <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
 	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
+	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />

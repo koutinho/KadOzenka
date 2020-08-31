@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			{
 				dataTable.Rows.Add(unitDto.SubgroupId,
 					unitDto.SubgroupName,
-					unitDto.CalculationMethod,
+					unitDto.CalculationMethodName,
 					unitDto.Formula,
 					unitDto.FactorsSubgroups,
 					unitDto.Coef,
