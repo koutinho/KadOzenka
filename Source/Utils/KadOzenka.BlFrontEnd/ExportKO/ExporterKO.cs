@@ -49,7 +49,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 
                 try
                 {
-	                DEKOResponseDoc.ExportToXml(unloadResultQueue, setting, ReportProgress);
+                    DEKOResponseDoc.ExportToXml(unloadResultQueue, setting, ReportProgress);
 
 	                unloadResultQueue.DateFinished = DateTime.Now;
 	                unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
@@ -99,7 +99,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 
 	            try
 	            {
-		            DEKOResponseDoc.ExportToXml(unloadResultQueue, setting, ReportProgress);
+                    DEKOVuon.ExportToXml(unloadResultQueue, setting, ReportProgress);
 
 		            unloadResultQueue.DateFinished = DateTime.Now;
 		            unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;

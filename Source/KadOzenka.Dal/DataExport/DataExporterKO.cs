@@ -1933,7 +1933,6 @@ namespace KadOzenka.Dal.DataExport
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
                 return result;
             }
-
             using (ZipFile zipFile = new ZipFile())
             {
 	            zipFile.AlternateEncoding = Encoding.UTF8;
@@ -1953,7 +1952,7 @@ namespace KadOzenka.Dal.DataExport
                 list_act.AddRange(list_act_out);
                 setProgress(60, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 60);
-                DEKOResponseDoc.ObjectNotChange(list_bads, list_act, list_doc_in, setting.DirectoryName, zipFile);
+                ObjectNotChange(list_bads, list_act, list_doc_in, setting.DirectoryName, zipFile);
                 setProgress(80, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 80);
                 MemoryStream stream = new MemoryStream();
@@ -1977,7 +1976,10 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _dir_path, ZipFile zipFile)
+        private static string[] CalcXMLFromVuon(int _num_pp,
+                                                List<OMUnit> _units, OMInstance _doc_out,
+                                                out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in,
+                                                string _dir_path, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -2069,7 +2071,10 @@ namespace KadOzenka.Dal.DataExport
             return bads.ToArray();
         }
 
-        public static void ObjectNotChange(List<string> list_bads, List<ActOpredel> _list_act, List<OMInstance> _list_doc, string _dir_name, ZipFile zipFile)
+        public static void ObjectNotChange(List<string> list_bads,
+                                           List<ActOpredel> _list_act,
+                                           List<OMInstance> _list_doc,
+                                           string _dir_name, ZipFile zipFile)
         {
             List<string> baditems = new List<string>();
             List<string> gooditems = new List<string>();
