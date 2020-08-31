@@ -1977,7 +1977,7 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path, ZipFile zipFile)
+        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _dir_path, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -2020,94 +2020,239 @@ namespace KadOzenka.Dal.DataExport
                 act_opredel.subgroup = group_unit.GroupName;
                 _list_act.Add(act_opredel);
 
-                if (unit.GroupId <= 0)                         return bads.ToArray();
-                if (_doc_out.Status != doc_in.Status)          return bads.ToArray();
+                if (unit.GroupId <= 0) return bads.ToArray();
+                if (_doc_out.Status != doc_in.Status) return bads.ToArray();
                 if (unit.Upks <= 0 && unit.CadastralCost <= 0) return bads.ToArray();
 
+                DateTime estimation_date = (task != null) ? ((task.EstimationDate != null) ? task.EstimationDate.Value : DateTime.Now) : DateTime.Now;
                 if (DataExportCommon.GetObjectLastByKN(unit))
                 {
                     _num_pp++;
                     XmlDocument xmlFile = new XmlDocument();
                     XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
                     xmlFile.AppendChild(xnLandValuation);
-                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, (task!=null)?((task.EstimationDate!=null)?task.EstimationDate.Value:DateTime.Now):DateTime.Now,
+
+                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, estimation_date,
                                    ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                     DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                    //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                    //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
-
-                    //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                    //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                    //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                    //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
-                    //                          "_" + ((int)unit.PropertyType_Code).ToString() +
-                    //                          "_" + unit.Id.ToString() + ".xml");
-
                     string fileName = unit.CadastralNumber.Replace(":", "_") +
-                                                                "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                                                "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                                                "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                                                "_" + ((int)unit.PropertyType_Code).ToString() +
-                                                                "_" + unit.Id.ToString() + ".xml";
+                                      "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                      "_" + estimation_date.ToString("ddMMyyyy") +
+                                      "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                      "_" + ((int)unit.PropertyType_Code).ToString() +
+                                      "_" + unit.Id.ToString() + ".xml";
                     MemoryStream stream = new MemoryStream();
                     xmlFile.Save(stream);
                     stream.Seek(0, SeekOrigin.Begin);
                     zipFile.AddEntry(fileName, stream);
 
-                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                    DEKOResponseDoc.XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
-                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
-                    bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
+                    _dir_path += ("\\" + estimation_date.ToString("dd_MM_yyyy"));
+                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _dir_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                    DEKOResponseDoc.XmlWebExport(group_unit, unit, _dir_path, doc_in, _doc_out, zipFile);
+                    DEKOResponseDoc.GetOtvetDocX(unit, _dir_path, _doc_out, _num_pp, zipFile);
+                    bads.Add("g|" + unit.CadastralNumber +
+                        "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00") +
+                        "|" + estimation_date.ToString("dd.MM.yyyy") +
+                        "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
                 }
                 else
                 {
                     _num_pp++;
-                    XmlDocument xmlFile = new XmlDocument();
-                    XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
-                    xmlFile.AppendChild(xnLandValuation);
-                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
-                                   ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
-                    DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                    //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                    //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
-
-                    //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                    //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                    //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                    //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
-                    //                          "_" + ((int)unit.PropertyType_Code).ToString() +
-                    //                          "_" + unit.Id.ToString() + ".xml");
-
-                    string fileName = unit.CadastralNumber.Replace(":", "_") +
-                                              "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                              "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                              "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                              "_" + ((int)unit.PropertyType_Code).ToString() +
-                                              "_" + unit.Id.ToString() + ".xml";
-                    MemoryStream stream = new MemoryStream();
-                    xmlFile.Save(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    zipFile.AddEntry(fileName, stream);
-
-                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                    DEKOResponseDoc.GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
-                    bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
-
-                    string dateapp = "01.01.2018";
-                    OMTask task_old = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-                    if (task_old != null)
-                    {
-                        OMInstance doc_old = OMInstance.Where(x => x.Id == task_old.DocumentId).SelectAll().ExecuteFirstOrDefault();
-                        if (doc_old != null) dateapp = doc_old.CreateDate.ToString("dd.MM.yyyy");
-                    }
-                    bads.Add("b|" + unit.CadastralNumber + "|" + dateapp);
+                    bads.Add("b|" + unit.CadastralNumber +
+                        "|" + estimation_date.ToString("dd.MM.yyyy") +
+                        "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
                 }
             }
 
             return bads.ToArray();
         }
+
+        public static void ObjectNotChange(List<string> list_bads, List<ActOpredel> _list_act, List<OMInstance> _list_doc, string _dir_name, ZipFile zipFile)
+        {
+            List<string> baditems = new List<string>();
+            List<string> gooditems = new List<string>();
+            foreach (string item in list_bads)
+            {
+                if (item.IndexOf("b|") == 0) baditems.Add(item);
+                if (item.IndexOf("g|") == 0) gooditems.Add(item);
+            }
+
+            #region Акт_об_определении_КС - без изменений
+            {
+                ExcelFile excelTemplate = new ExcelFile();
+                var mainWorkSheet = excelTemplate.Worksheets.Add("КС");
+                int curcount = 2;
+                int curcounti = 2;
+
+                List<object> objcaps = new List<object>();
+                objcaps.Add("КН");
+                objcaps.Add("Дата определения КС");
+                int fieldcount = objcaps.Count;
+                DataExportCommon.AddRow(mainWorkSheet, 1, objcaps.ToArray());
+
+
+                int lenobjs = baditems.Count;
+
+                object[,] objvals = new object[100, fieldcount];
+                int curindval = 0;
+                for (int i = 0; i < lenobjs; i++)
+                {
+                    List<object> objarrs = new List<object>();
+                    string[] arrrec = baditems[i].Split('|');
+
+                    objarrs.Add(arrrec[1]);
+                    objarrs.Add(arrrec[2]);
+
+                    #region array
+                    for (int f = 0; f < fieldcount; f++)
+                    {
+                        objvals[curindval, f] = objarrs[f];
+                    }
+
+                    if (curindval >= 99)
+                    {
+                        DataExportCommon.AddRow(mainWorkSheet, curcount - 99, objvals);
+                        curindval = -1;
+                        objvals = new object[100, fieldcount];
+                    }
+                    #endregion
+
+                    curindval++;
+                    curcount++;
+                    curcounti++;
+
+                }
+                if (curindval != 0)
+                {
+                    DataExportCommon.AddRow(mainWorkSheet, curcount - curindval, objvals, curindval);
+                }
+
+                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + "_без_изменений.xlsx";
+                MemoryStream stream = new MemoryStream();
+                excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
+            }
+            #endregion
+
+            #region Акт_об_определении_КС - с изменениями
+            {
+                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCost", ".xlsx", "ExcelTemplates");
+                ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+                var sheet_edit = excel_edit.Worksheets[0];
+
+                int curcount = 3;
+                int curcounti = 3;
+                int fieldcount = 3;
+                int lenobjs = gooditems.Count;
+
+                object[,] objvals = new object[100, fieldcount];
+                int curindval = 0;
+                for (int i = 0; i < lenobjs; i++)
+                {
+                    List<object> objarrs = new List<object>();
+                    string[] arrrec = gooditems[i].Split('|');
+                    objarrs.Add(i + 1);
+                    objarrs.Add(arrrec[1]);
+                    objarrs.Add(Convert.ToDouble(arrrec[2]));
+
+                    #region array
+                    for (int f = 0; f < fieldcount; f++)
+                    {
+                        objvals[curindval, f] = objarrs[f];
+                    }
+
+                    if (curindval >= 99)
+                    {
+                        DataExportCommon.AddRow(sheet_edit, curcount - 99, objvals);
+                        curindval = -1;
+                        objvals = new object[100, fieldcount];
+                    }
+                    #endregion
+
+                    curindval++;
+                    curcount++;
+                    curcounti++;
+                }
+                if (curindval != 0)
+                {
+                    DataExportCommon.AddRow(sheet_edit, curcount - curindval, objvals, curindval);
+                }
+
+                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                MemoryStream stream = new MemoryStream();
+                excel_edit.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
+            }
+            #endregion
+
+            #region Акт_определения_КС_по_МУ_пункт_12_2
+            {
+                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCostMUitem122", ".xlsx", "ExcelTemplates");
+                ExcelFile aexcell = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+                var asheet = aexcell.Worksheets[0];
+
+                int acurcount = 10;
+                int acurcounti = 10;
+                int afieldcount = 9;
+                int alenobjs = _list_act.Count;
+
+                string docin = string.Empty;
+                _list_doc.ForEach(x => docin += (DataExportCommon.GetFullNameDoc(x) + "; "));
+                DataExportCommon.SetCellValueNoBorder(asheet, 1, 7, "Документ-основание для пересчета кадастровой стоимости: " + docin);
+
+                object[,] aobjvals = new object[100, afieldcount];
+                int acurindval = 0;
+                for (int i = 0; i < alenobjs; i++)
+                {
+                    List<object> aobjarrs = new List<object>();
+                    aobjarrs.Add(i + 1);
+                    aobjarrs.Add(_list_act[i].kn);
+                    aobjarrs.Add(_list_act[i].osnovanie);
+                    aobjarrs.Add(_list_act[i].code);
+                    aobjarrs.Add(_list_act[i].subgroup);
+                    aobjarrs.Add(_list_act[i].act_model);
+                    aobjarrs.Add(_list_act[i].kc);
+                    aobjarrs.Add(_list_act[i].act_dop);
+                    aobjarrs.Add(_list_act[i].act_other);
+
+                    #region array
+                    for (int f = 0; f < afieldcount; f++)
+                    {
+                        aobjvals[acurindval, f] = aobjarrs[f];
+                    }
+
+                    if (acurindval >= 99)
+                    {
+                        DataExportCommon.AddRow(asheet, acurcount - 99, aobjvals);
+                        acurindval = -1;
+                        aobjvals = new object[100, afieldcount];
+                    }
+
+                    #endregion
+
+                    acurindval++;
+                    acurcount++;
+                    acurcounti++;
+                }
+                if (acurindval != 0)
+                {
+                    DataExportCommon.AddRow(asheet, acurcount - acurindval, aobjvals, acurindval);
+                }
+
+                string fileName = "DOC" + "\\Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                MemoryStream stream = new MemoryStream();
+                aexcell.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
+                zipFile.AddEntry(fileName, stream);
+            }
+            #endregion
+
+        }
+
     }
 
     /// <summary>
