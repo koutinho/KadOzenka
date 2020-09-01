@@ -5774,26 +5774,6 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _modelid;
-        /// <summary>
-        /// 20100500 Идентификатор модели (MODEL_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20100500)]
-        public long? ModelId
-        {
-            get
-            {
-                CheckPropertyInited("ModelId");
-                return _modelid;
-            }
-            set
-            {
-                _modelid = value;
-                NotifyPropertyChanged("ModelId");
-            }
-        }
-
-
         private long? _groupid;
         /// <summary>
         /// 20100600 Идентификатор группы (GROUP_ID)

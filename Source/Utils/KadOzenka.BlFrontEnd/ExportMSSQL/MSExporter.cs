@@ -1716,7 +1716,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
                     {
                         Id = -1,
-                        ModelId = -1,
                         CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         Upks = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
@@ -1865,7 +1864,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
                     {
                         Id = -1,
-                        ModelId = -1,
                         CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         Upks = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
@@ -2016,7 +2014,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         koGroup = new ObjectModel.KO.OMUnit
                         {
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
@@ -2115,7 +2112,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
                     {
                         Id = -1,
-                        ModelId = -1,
                         CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                         CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -2290,7 +2286,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
                     {
                         Id = -1,
-                        ModelId = -1,
                         CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                         CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                         Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -2730,7 +2725,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
                         {
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -2953,7 +2947,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         {
 
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -3177,7 +3170,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         {
 
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -3400,7 +3392,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         {
 
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
@@ -3623,7 +3614,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         {
 
                             Id = -1,
-                            ModelId = -1,
                             CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
                             CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
                             Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),

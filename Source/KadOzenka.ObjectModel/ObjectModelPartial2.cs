@@ -534,13 +534,6 @@ namespace ObjectModel.KO
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
 
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
-
     }
 }
 
@@ -560,7 +553,7 @@ namespace ObjectModel.KO
         public ObjectModel.KO.OMTour ParentTour { get; set; }
 
         /// <summary>
-        /// Ссылка на (963 Экземпляры технологическох документов)
+        /// Ссылка на (963 Документы)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]

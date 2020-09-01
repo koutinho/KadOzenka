@@ -1474,12 +1474,6 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (201 Единица оценки)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMUnit> Unit { get; set; }
-
-        /// <summary>
         /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
@@ -1491,8 +1485,6 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
-
-            Unit = new List<ObjectModel.KO.OMUnit>();
 
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 

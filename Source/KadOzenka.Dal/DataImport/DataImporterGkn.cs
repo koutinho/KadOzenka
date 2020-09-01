@@ -702,7 +702,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,
@@ -968,7 +967,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,
@@ -1313,7 +1311,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,
@@ -1547,7 +1544,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,
@@ -1838,7 +1834,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,
@@ -2127,7 +2122,6 @@ namespace KadOzenka.Dal.DataImport
                 koUnit = new ObjectModel.KO.OMUnit
                 {
                     Id = -1,
-                    ModelId = -1,
                     TourId = idTour,
                     TaskId = idTask,
                     GroupId = -1,

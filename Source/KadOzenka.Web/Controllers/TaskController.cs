@@ -717,7 +717,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (unit != null)
 			{
-				OMModel model = OMModel.Where(x => x.Id == unit.ModelId)
+				OMModel model = OMModel.Where(x => x.GroupId == unit.GroupId)
 					.SelectAll()
 					.ExecuteFirstOrDefault();
 
@@ -759,7 +759,8 @@ namespace KadOzenka.Web.Controllers
 
 			if (unit != null)
 			{
-				var result = GetModelFactorName(unit.ModelId);
+				var model = OMModel.Where(x => x.GroupId == unit.GroupId).Select(x => x.Id).ExecuteFirstOrDefault();
+				var result = GetModelFactorName(model?.Id);
 				return result;
 			}
 
