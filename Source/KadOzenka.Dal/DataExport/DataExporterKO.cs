@@ -244,14 +244,17 @@ namespace KadOzenka.Dal.DataExport
 
                     foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        List<ObjectModel.KO.OMUnitChange> changes = ObjectModel.KO.OMUnitChange.Where(x => x.UnitId == unit.Id).SelectAll().Execute();
-
-                        foreach (ObjectModel.KO.OMUnitChange change in changes)
+                        // Проверка КС, игнорируем = 0
+                        if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                         {
-                            DataExportCommon.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
-                            row++;
-                        }
+                            List<ObjectModel.KO.OMUnitChange> changes = ObjectModel.KO.OMUnitChange.Where(x => x.UnitId == unit.Id).SelectAll().Execute();
 
+                            foreach (ObjectModel.KO.OMUnitChange change in changes)
+                            {
+                                DataExportCommon.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
+                                row++;
+                            }
+                        }
                         unitsCounter++;
                         progress = (unitsCounter * 100 / units.Count + taskCounter * 100) / settings.TaskFilter.Count;
                         setProgress(progress, progressMessage:progressMessage);
@@ -310,49 +313,39 @@ namespace KadOzenka.Dal.DataExport
                 var unitCounter = 0;
                 foreach (OMUnit unit in units_all)
                 {
-                    units_curr.Add(unit);
-                    count_curr++;
-                    if (count_curr == count_write)
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                     {
-                        //path_name = setting.DirectoryName + "\\XMLCost\\Task_" + taskId.ToString();
-                        //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-
-                        file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
-                        Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
-                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
-                        var resFile = new ResultKoUnloadSettings
+                        units_curr.Add(unit);
+                        count_curr++;
+                        if (count_curr == count_write)
                         {
-	                        FileName = file_name,
-	                        FileId = id,
-	                        TaskId = taskId
-                        };
-                        res.Add(resFile);
-                        KOUnloadResult.AddResultFile(unloadResultQueue, resFile);
-                        //using (FileStream output = new FileStream(file_name, FileMode.Create))
-                        //{
-                        //    resultFile.CopyTo(output);
-                        //}
-                        units_curr.Clear();
-                        count_curr = 0;
-                        count_file++;
+                            file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
+                            Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+                            long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
+                            var resFile = new ResultKoUnloadSettings
+                            {
+                                FileName = file_name,
+                                FileId = id,
+                                TaskId = taskId
+                            };
+                            res.Add(resFile);
+                            KOUnloadResult.AddResultFile(unloadResultQueue, resFile);
+
+                            units_curr.Clear();
+                            count_curr = 0;
+                            count_file++;
+                        }
                     }
-                    count_curr++;
                     unitCounter++;
-                    Console.WriteLine("Выгружено " + count_curr.ToString() + " из " + count_all.ToString());
                     progress = (unitCounter * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
                     setProgress(progress, progressMessage: progressMessage);
                     KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
 
-                //path_name = setting.DirectoryName + "\\XMLCost\\Task_" + taskId.ToString();
-                //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-
                 file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
                 Stream resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
-				//using (FileStream output = new FileStream(file_name, FileMode.Create))
-				//{
-				//    resultFile1.CopyTo(output);
-				//}
+
 				long id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
 				var koResultFile = new ResultKoUnloadSettings
 				{
@@ -573,20 +566,10 @@ namespace KadOzenka.Dal.DataExport
                                                 ((subgroup.Number == null ? subgroup.Id.ToString() : subgroup.Number));
                         full_group_num = full_group_num.Replace("\n", "");
 
-
-                        //string path_name = setting.DirectoryName
-                        //                   + "\\XMLGroups\\Task_" + taskId.ToString()
-                        //                   + "\\" + full_group_num;
-                        //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-
                         string file_name = "Task_" + taskId  +"_" + full_group_num
 										   + "_FD_State_Cadastral_Valuation_"
                                            + subgroup.Id.ToString().PadLeft(5, '0')
                                            + countCurr.ToString().PadLeft(5, '0');
-                        //using (FileStream output = new FileStream(file_name, FileMode.Create))
-                        //{
-                        //    resultFile.CopyTo(output);
-                        //}
 
                         long id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
                         var fileResult = new ResultKoUnloadSettings
@@ -895,200 +878,197 @@ namespace KadOzenka.Dal.DataExport
                 #region Real_Estates
                 XmlNode xnReal_Estates = _xmlFile.CreateElement("Real_Estates");
 
-                int countCurr = 0;
-                int countAll = _subgroup.Unit.Count();
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
-                    XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
-                    DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
-
-                    XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
-                    xnCadastralNumber.InnerText = unit.CadastralNumber;
-                    xnReal_Estate.AppendChild(xnCadastralNumber);
-
-                    XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
-                    xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralType);
-
-                    XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
-                    xnCadastralArea.InnerText = unit.Square.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralArea);
-
-                    if (unit.PropertyType_Code == PropertyTypes.Stead)
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                     {
-                        string value_attr_3_4 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3_4)) //Код категории земель из ГКН
-                        {
-                            XmlNode xnAssignation = _xmlFile.CreateElement("Category");
-                            DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3_4);
-                            xnReal_Estate.AppendChild(xnAssignation);
-                        }
+                        XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
+                        DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
 
-                        value_attr_3_4 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3_4)) //Код вида использования по документам
+                        XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
+                        xnCadastralNumber.InnerText = unit.CadastralNumber;
+                        xnReal_Estate.AppendChild(xnCadastralNumber);
+
+                        XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
+                        xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralType);
+
+                        XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
+                        xnCadastralArea.InnerText = unit.Square.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralArea);
+
+                        if (unit.PropertyType_Code == PropertyTypes.Stead)
                         {
-                            XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
-                            DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3_4);
-                            xnReal_Estate.AppendChild(xnUtilization);
-                        }
-                    }
-                    else
-                    {
-                        #region Assignation
-                        XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
-                        string value_attr_5 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
-                        {
-                            if (unit.PropertyType_Code == PropertyTypes.Building)
+                            string value_attr_3_4 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3_4)) //Код категории земель из ГКН
                             {
-                                XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
-                                XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
-                                xnAss_Building.InnerText = value_attr_5;
-                                xnAssignation_Building.AppendChild(xnAss_Building);
-                                xnAssignation.AppendChild(xnAssignation_Building);
-                            }
-                            if (unit.PropertyType_Code == PropertyTypes.Pllacement)
-                            {
-                                XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
-                                XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
-                                xnAss_Flat.InnerText = value_attr_5;
-                                xnAssignation_Flat.AppendChild(xnAss_Flat);
-                                xnAssignation.AppendChild(xnAssignation_Flat);
-                            }
-                            if ((unit.PropertyType_Code == PropertyTypes.Construction) ||
-                                (unit.PropertyType_Code == PropertyTypes.UncompletedBuilding))
-                            {
-                                XmlNode xnFormalized_Constr_Uncompleted = _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
-                                xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
-                                xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
-                            }
-                            if (value_attr_5 != "005002002999")
+                                XmlNode xnAssignation = _xmlFile.CreateElement("Category");
+                                DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3_4);
                                 xnReal_Estate.AppendChild(xnAssignation);
+                            }
+
+                            value_attr_3_4 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3_4)) //Код вида использования по документам
+                            {
+                                XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
+                                DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3_4);
+                                xnReal_Estate.AppendChild(xnUtilization);
+                            }
+                        }
+                        else
+                        {
+                            #region Assignation
+                            XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
+                            string value_attr_5 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
+                            {
+                                if (unit.PropertyType_Code == PropertyTypes.Building)
+                                {
+                                    XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
+                                    XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
+                                    xnAss_Building.InnerText = value_attr_5;
+                                    xnAssignation_Building.AppendChild(xnAss_Building);
+                                    xnAssignation.AppendChild(xnAssignation_Building);
+                                }
+                                if (unit.PropertyType_Code == PropertyTypes.Pllacement)
+                                {
+                                    XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
+                                    XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
+                                    xnAss_Flat.InnerText = value_attr_5;
+                                    xnAssignation_Flat.AppendChild(xnAss_Flat);
+                                    xnAssignation.AppendChild(xnAssignation_Flat);
+                                }
+                                if ((unit.PropertyType_Code == PropertyTypes.Construction) ||
+                                    (unit.PropertyType_Code == PropertyTypes.UncompletedBuilding))
+                                {
+                                    XmlNode xnFormalized_Constr_Uncompleted = _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
+                                    xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
+                                    xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
+                                }
+                                if (value_attr_5 != "005002002999")
+                                    xnReal_Estate.AppendChild(xnAssignation);
+                            }
+                            #endregion
+                        }
+
+                        XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
+                        XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
+                        xnCadastralRegion.InnerText = region_rf;
+                        xnCadastralLocation.AppendChild(xnCadastralRegion);
+
+                        string value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr)) //Код 600 - Адрес 
+                        {
+                            XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
+                            xnCadastralNote.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralNote);
+                        }
+                        value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr)) //Код 8 - Местоположение
+                        {
+                            XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
+                            xnCadastralOther.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralOther);
+                        }
+                        xnReal_Estate.AppendChild(xnCadastralLocation);
+
+                        XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
+                        xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
+                        xnReal_Estate.AppendChild(xnDate_valuation);
+
+                        XmlNode xnCEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
+
+                        #region Получили реестр Id группы, реестр, где лежат ее факторы
+                        int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
+                        //Получаем список факторов группы
+                        List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                        DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
+                        if (data != null)
+                        {
+                            foreach (DataRow row in data.Rows)
+                            {
+                                FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                            }
                         }
                         #endregion
-                    }
 
-                    XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
-                    XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
-                    xnCadastralRegion.InnerText = region_rf;
-                    xnCadastralLocation.AppendChild(xnCadastralRegion);
-
-                    string value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr)) //Код 600 - Адрес 
-                    {
-                        XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
-                        xnCadastralNote.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralNote);
-                    }
-                    value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr)) //Код 8 - Местоположение
-                    {
-                        XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
-                        xnCadastralOther.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralOther);
-                    }
-                    xnReal_Estate.AppendChild(xnCadastralLocation);
-
-                    XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
-                    xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
-                    xnReal_Estate.AppendChild(xnDate_valuation);
-
-                    XmlNode xnCEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
-
-                    #region Получили реестр Id группы, реестр, где лежат ее факторы
-                    int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
-                    //Получаем список факторов группы
-                    List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                    DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
-                    if (data != null)
-                    {
-                        foreach (DataRow row in data.Rows)
+                        if (model != null)
                         {
-                            FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
-                        }
-                    }
-                    #endregion
-
-                    if (model != null)
-                    {
-                        if (model.ModelFactor.Count == 0)
-                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-                        foreach (OMModelFactor factor_model in model.ModelFactor)
-                        {
-                            bool findf = false;
-                            string value_item = string.Empty;//TODO: значение фактора для данного объекта
-                            CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor_model.FactorId);
-                            if (factor_item != null)
+                            if (model.ModelFactor.Count == 0)
+                                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                            foreach (OMModelFactor factor_model in model.ModelFactor)
                             {
-                                findf = true;
-                                value_item = factor_item.Value;
-                            }
-
-                            if (findf) // если фактор найден
-                            {
-                                XmlNode xnCEvaluative_Factor = _xmlFile.CreateElement("Evaluative_Factor");
-                                DataExportCommon.AddAttribute(_xmlFile, xnCEvaluative_Factor, "ID_Factor", factor_model.FactorId.ToString() + "_" + _subgroup.Id.ToString());
-
-                                RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor_model.FactorId));
-                                factor_model.FillMarkCatalogs(model);
-
-                                bool addf = false;
-                                if (attribute_factor.Type == RegisterAttributeType.STRING)
+                                bool findf = false;
+                                string value_item = string.Empty;//TODO: значение фактора для данного объекта
+                                CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor_model.FactorId);
+                                if (factor_item != null)
                                 {
-                                    if (factor_model.SignMarket)
+                                    findf = true;
+                                    value_item = factor_item.Value;
+                                }
+
+                                if (findf) // если фактор найден
+                                {
+                                    XmlNode xnCEvaluative_Factor = _xmlFile.CreateElement("Evaluative_Factor");
+                                    DataExportCommon.AddAttribute(_xmlFile, xnCEvaluative_Factor, "ID_Factor", factor_model.FactorId.ToString() + "_" + _subgroup.Id.ToString());
+
+                                    RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor_model.FactorId));
+                                    factor_model.FillMarkCatalogs(model);
+
+                                    bool addf = false;
+                                    if (attribute_factor.Type == RegisterAttributeType.STRING)
                                     {
-                                        OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
-                                        if (mark != null)
+                                        if (factor_model.SignMarket)
                                         {
-                                            XmlNode xnQualitative_Id = _xmlFile.CreateElement("Qualitative_Id");
-                                            xnQualitative_Id.InnerText = mark.Id.ToString();
-                                            xnCEvaluative_Factor.AppendChild(xnQualitative_Id);
+                                            OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
+                                            if (mark != null)
+                                            {
+                                                XmlNode xnQualitative_Id = _xmlFile.CreateElement("Qualitative_Id");
+                                                xnQualitative_Id.InnerText = mark.Id.ToString();
+                                                xnCEvaluative_Factor.AppendChild(xnQualitative_Id);
+                                                addf = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            XmlNode xnQuantitative_Value = _xmlFile.CreateElement("Quantitative_Value");
+                                            xnQuantitative_Value.InnerText = value_item.ToUpper();
+                                            xnCEvaluative_Factor.AppendChild(xnQuantitative_Value);
                                             addf = true;
                                         }
                                     }
                                     else
                                     {
-                                        XmlNode xnQuantitative_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                        xnQuantitative_Value.InnerText = value_item.ToUpper();
-                                        xnCEvaluative_Factor.AppendChild(xnQuantitative_Value);
-                                        addf = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if (factor_model.SignMarket)
-                                    {
-                                        OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
-                                        if (mark != null)
+                                        if (factor_model.SignMarket)
                                         {
-                                            XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                            xnQuantitative_Formula_Value.InnerText = mark.Id.ToString();
-                                            xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
-                                            addf = true;
-                                        }
-                                        else
-                                        {
-                                            XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                            xnQuantitative_Formula_Value.InnerText = value_item.ToUpper();
-                                            xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
-                                            addf = true;
+                                            OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
+                                            if (mark != null)
+                                            {
+                                                XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
+                                                xnQuantitative_Formula_Value.InnerText = mark.Id.ToString();
+                                                xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
+                                                addf = true;
+                                            }
+                                            else
+                                            {
+                                                XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
+                                                xnQuantitative_Formula_Value.InnerText = value_item.ToUpper();
+                                                xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
+                                                addf = true;
+                                            }
                                         }
                                     }
+                                    if (addf)
+                                        xnCEvaluative_Factors.AppendChild(xnCEvaluative_Factor);
                                 }
-                                if (addf)
-                                    xnCEvaluative_Factors.AppendChild(xnCEvaluative_Factor);
                             }
                         }
+
+                        xnReal_Estate.AppendChild(xnCEvaluative_Factors);
+                        xnReal_Estates.AppendChild(xnReal_Estate);
                     }
-
-                    xnReal_Estate.AppendChild(xnCEvaluative_Factors);
-                    xnReal_Estates.AppendChild(xnReal_Estate);
-
-                    countCurr++;
-                    string str_message = _message + " -- " + "Real_Estates " + countCurr.ToString() + " units  из " + countAll.ToString();
-                    Console.WriteLine(str_message);
                 }
-
                 xnGroup_Real_Estate_Modelling.AppendChild(xnReal_Estates);
                 #endregion
 
@@ -1097,8 +1077,6 @@ namespace KadOzenka.Dal.DataExport
 
                 if (model != null)
                 {
-                    int fmCurr = 0;
-                    int fmAll = model.ModelFactor.Count();
                     foreach (OMModelFactor factor_model in model.ModelFactor)
                     {
                         RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor_model.FactorId));
@@ -1129,10 +1107,6 @@ namespace KadOzenka.Dal.DataExport
                             }
                         }
                         xnEvaluative_Factors_Modelling.AppendChild(xnEvaluative_Factor_Modelling);
-
-                        fmCurr++;
-                        string str_message = _message + " -- " + "Evaluative_Factors_Modelling " + fmCurr.ToString() + " из " + fmAll.ToString();
-                        Console.WriteLine(str_message);
                     }
                 }
                 xnGroup_Real_Estate_Modelling.AppendChild(xnEvaluative_Factors_Modelling);
@@ -1154,116 +1128,114 @@ namespace KadOzenka.Dal.DataExport
 
                 XmlNode xnReal_Estates = _xmlFile.CreateElement("Real_Estates");
 
-                int otherCurr = 0;
-                int otherAll = _subgroup.Unit.Count();
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
-                    XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
-                    DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
-
-                    XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
-                    xnCadastralNumber.InnerText = unit.CadastralNumber;
-                    xnReal_Estate.AppendChild(xnCadastralNumber);
-
-                    XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
-                    xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralType);
-
-                    XmlNode xnSpecific_CadastralCost = _xmlFile.CreateElement("Specific_CadastralCost");
-                    DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Value", unit.Upks.ToString());
-                    DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Unit", "1002");
-                    xnReal_Estate.AppendChild(xnSpecific_CadastralCost);
-
-                    XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
-                    xnCadastralArea.InnerText = unit.Square.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralArea);
-
-                    if (unit.PropertyType_Code == PropertyTypes.Stead)
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                     {
-                        string value_attr_3 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3)) //Код категории земель из ГКН
-                        {
-                            XmlNode xnAssignation = _xmlFile.CreateElement("Category");
-                            DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3);
-                            xnReal_Estate.AppendChild(xnAssignation);
-                        }
+                        XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
+                        DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
 
-                        value_attr_3 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3)) //Код Вид использования по документам
-                        {
-                            XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
-                            DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3);
-                            xnReal_Estate.AppendChild(xnUtilization);
-                        }
-                    }
-                    else
-                    {
-                        #region Assignation
-                        XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
-                        string value_attr_5 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
-                        {
-                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
-                            {
-                                XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
-                                XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
-                                xnAss_Building.InnerText = value_attr_5;
-                                xnAssignation_Building.AppendChild(xnAss_Building);
-                                xnAssignation.AppendChild(xnAssignation_Building);
-                            }
-                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Pllacement)
-                            {
-                                XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
-                                XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
-                                xnAss_Flat.InnerText = value_attr_5;
-                                xnAssignation_Flat.AppendChild(xnAss_Flat);
-                                xnAssignation.AppendChild(xnAssignation_Flat);
-                            }
-                            if ((unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction) ||
-                                (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding))
-                            {
-                                XmlNode xnFormalized_Constr_Uncompleted = _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
-                                xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
-                                xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
-                            }
-                            if (value_attr_5 != "005002002999")
+                        XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
+                        xnCadastralNumber.InnerText = unit.CadastralNumber;
+                        xnReal_Estate.AppendChild(xnCadastralNumber);
 
+                        XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
+                        xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralType);
+
+                        XmlNode xnSpecific_CadastralCost = _xmlFile.CreateElement("Specific_CadastralCost");
+                        DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Value", unit.Upks.ToString());
+                        DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Unit", "1002");
+                        xnReal_Estate.AppendChild(xnSpecific_CadastralCost);
+
+                        XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
+                        xnCadastralArea.InnerText = unit.Square.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralArea);
+
+                        if (unit.PropertyType_Code == PropertyTypes.Stead)
+                        {
+                            string value_attr_3 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3)) //Код категории земель из ГКН
+                            {
+                                XmlNode xnAssignation = _xmlFile.CreateElement("Category");
+                                DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3);
                                 xnReal_Estate.AppendChild(xnAssignation);
+                            }
+
+                            value_attr_3 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3)) //Код Вид использования по документам
+                            {
+                                XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
+                                DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3);
+                                xnReal_Estate.AppendChild(xnUtilization);
+                            }
                         }
-                        #endregion
+                        else
+                        {
+                            #region Assignation
+                            XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
+                            string value_attr_5 = "";
+                            if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
+                            {
+                                if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+                                {
+                                    XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
+                                    XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
+                                    xnAss_Building.InnerText = value_attr_5;
+                                    xnAssignation_Building.AppendChild(xnAss_Building);
+                                    xnAssignation.AppendChild(xnAssignation_Building);
+                                }
+                                if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Pllacement)
+                                {
+                                    XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
+                                    XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
+                                    xnAss_Flat.InnerText = value_attr_5;
+                                    xnAssignation_Flat.AppendChild(xnAss_Flat);
+                                    xnAssignation.AppendChild(xnAssignation_Flat);
+                                }
+                                if ((unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction) ||
+                                    (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding))
+                                {
+                                    XmlNode xnFormalized_Constr_Uncompleted = _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
+                                    xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
+                                    xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
+                                }
+                                if (value_attr_5 != "005002002999")
+
+                                    xnReal_Estate.AppendChild(xnAssignation);
+                            }
+                            #endregion
+                        }
+
+                        XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
+
+                        XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
+                        xnCadastralRegion.InnerText = region_rf;
+                        xnCadastralLocation.AppendChild(xnCadastralRegion);
+
+                        string value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr))  //Код Адрес
+                        {
+                            XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
+                            xnCadastralNote.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralNote);
+                        }
+                        value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr))  //Код Местоположение
+                        {
+                            XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
+                            xnCadastralOther.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralOther);
+                        }
+
+                        xnReal_Estate.AppendChild(xnCadastralLocation);
+                        XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
+                        xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
+                        xnReal_Estate.AppendChild(xnDate_valuation);
+
+                        xnReal_Estates.AppendChild(xnReal_Estate);
                     }
-
-                    XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
-
-                    XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
-                    xnCadastralRegion.InnerText = region_rf;
-                    xnCadastralLocation.AppendChild(xnCadastralRegion);
-
-                    string value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr))  //Код Адрес
-                    {
-                        XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
-                        xnCadastralNote.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralNote);
-                    }
-                    value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr))  //Код Местоположение
-                    {
-                        XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
-                        xnCadastralOther.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralOther);
-                    }
-
-                    xnReal_Estate.AppendChild(xnCadastralLocation);
-                    XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
-                    xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
-                    xnReal_Estate.AppendChild(xnDate_valuation);
-
-                    xnReal_Estates.AppendChild(xnReal_Estate);
-
-                    otherCurr++;
-                    string str_message = _message + " -- " + "Appraise - Other " + otherCurr.ToString() + " из " + otherAll.ToString();
-                    Console.WriteLine(str_message);
                 }
 
                 xnEvaluation_Group.AppendChild(xnReal_Estates);
@@ -1351,121 +1323,100 @@ namespace KadOzenka.Dal.DataExport
             _list_doc_in = new List<OMInstance>();
             Dictionary<Int64, XmlNode> dictNodes = new Dictionary<long, XmlNode>();
 
-            int count_curr = 0;
-            int count_all = _units.Count();
             foreach (OMUnit unit in _units)
             {
-                count_curr++;
-                string str_message = "Doc - " + _doc_out.Id.ToString() +  " - (" + count_curr.ToString() + " из " + count_all.ToString() + " unit)";
-                Console.WriteLine(str_message);
-
-                #region Нашли и записали в список входящий документ
-                OMInstance doc_in = new OMInstance();
-                OMTask task = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-                if (task != null)
+                // Проверка КС, игнорируем = 0
+                if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                 {
-                    doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
-                    if (_list_doc_in.Find(x => x.Id == doc_in.Id) == null)
-                        _list_doc_in.Add(doc_in);
-                }
-                #endregion
-
-                ActOpredel act_opredel = new ActOpredel();
-                act_opredel.kn = unit.CadastralNumber;
-                act_opredel.code = "-";
-                string str_attr = "";
-                if (DataExportCommon.GetObjectAttribute(unit, 15, out str_attr)) //TODO уточнить номер атрибута
-                    act_opredel.code = str_attr;
-
-                if (unit.GroupId > 0)
-                {
-                    OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                    act_opredel.act_dop = group_unit.AssumptionsReference;
-                    act_opredel.kc = unit.CadastralCost;
-                    act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
-                    act_opredel.osnovanie = unit.Status;
-                    act_opredel.act_other = group_unit.OtherCostRelatedInfo;
-                    act_opredel.subgroup = group_unit.GroupName;
-                    _list_act.Add(act_opredel);
-
-                    if (DataExportCommon.GetObjectLastByKN(unit))
+                   #region Нашли и записали в список входящий документ
+                    OMInstance doc_in = new OMInstance();
+                    OMTask task = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+                    if (task != null)
                     {
-                        _num_pp++;
-                        XmlDocument xmlFile = new XmlDocument();
-                        XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
-                        xmlFile.AppendChild(xnLandValuation);
-                        DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
-                                       ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
-                        DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
-
-                        //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                        //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
-                        //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                        //             "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                        //             "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                        //             "_" + DateTime.Now.ToString("ddMMyyyy") +
-                        //             "_" + ((int)unit.PropertyType_Code).ToString() +
-                        //             "_" + unit.Id.ToString() + ".xml");
-
-                        string fileName = unit.CadastralNumber.Replace(":", "_") +
-                                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                          "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                          "_" + ((int) unit.PropertyType_Code).ToString() +
-                                          "_" + unit.Id.ToString() + ".xml";
-                        MemoryStream stream = new MemoryStream();
-                        xmlFile.Save(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        zipFile.AddEntry(fileName, stream);
-
-                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                        XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
-                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
-                        bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
+                        doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                        if (_list_doc_in.Find(x => x.Id == doc_in.Id) == null)
+                            _list_doc_in.Add(doc_in);
                     }
-                    else
+                    #endregion
+
+                    ActOpredel act_opredel = new ActOpredel();
+                    act_opredel.kn = unit.CadastralNumber;
+                    act_opredel.code = "-";
+                    string str_attr = "";
+                    if (DataExportCommon.GetObjectAttribute(unit, 15, out str_attr)) //TODO уточнить номер атрибута
+                        act_opredel.code = str_attr;
+
+                    if (unit.GroupId > 0)
                     {
-                        _num_pp++;
-                        XmlDocument xmlFile = new XmlDocument();
-                        XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
-                        xmlFile.AppendChild(xnLandValuation);
-                        DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
-                                       ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
-                        DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
+                        OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                        act_opredel.act_dop = group_unit.AssumptionsReference;
+                        act_opredel.kc = unit.CadastralCost;
+                        act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
+                        act_opredel.osnovanie = unit.Status;
+                        act_opredel.act_other = group_unit.OtherCostRelatedInfo;
+                        act_opredel.subgroup = group_unit.GroupName;
+                        _list_act.Add(act_opredel);
 
-                        //if (!Directory.Exists(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_")))
-                        //    Directory.CreateDirectory(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_"));
-
-                        //xmlFile.Save(_file_path + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                        //                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                        //                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                        //                          "_" + DateTime.Now.ToString("ddMMyyyy") +
-                        //                          "_" + ((int)unit.PropertyType_Code).ToString() +
-                        //                          "_" + unit.Id.ToString() + ".xml");
-
-                        string fileName = unit.CadastralNumber.Replace(":", "_") +
-                                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                          "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
-                                          "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                          "_" + ((int)unit.PropertyType_Code).ToString() +
-                                          "_" + unit.Id.ToString() + ".xml";
-                        MemoryStream stream = new MemoryStream();
-                        xmlFile.Save(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        zipFile.AddEntry(fileName, stream);
-
-                        XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                        GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
-                        bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
-
-                        string dateapp = "01.01.2018";
-                        OMTask task_old = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-                        if (task_old != null)
+                        if (DataExportCommon.GetObjectLastByKN(unit))
                         {
-                            OMInstance doc_old = OMInstance.Where(x => x.Id == task_old.DocumentId).SelectAll().ExecuteFirstOrDefault();
-                            if (doc_old != null) dateapp = doc_old.CreateDate.ToString("dd.MM.yyyy");
+                            _num_pp++;
+                            XmlDocument xmlFile = new XmlDocument();
+                            XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
+                            xmlFile.AppendChild(xnLandValuation);
+                            DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
+                                           ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
+                            DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
+
+                            string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                              "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                              "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                                              "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                              "_" + ((int)unit.PropertyType_Code).ToString() +
+                                              "_" + unit.Id.ToString() + ".xml";
+                            MemoryStream stream = new MemoryStream();
+                            xmlFile.Save(stream);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            zipFile.AddEntry(fileName, stream);
+
+                            XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                            XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
+                            GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
+                            bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
                         }
-                        bads.Add("b|" + unit.CadastralNumber + "|" + dateapp);
+                        else
+                        {
+                            _num_pp++;
+                            XmlDocument xmlFile = new XmlDocument();
+                            XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
+                            xmlFile.AppendChild(xnLandValuation);
+                            DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
+                                           ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
+                            DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
+
+                            string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                              "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                              "_" + doc_in.CreateDate.ToString("ddMMyyyy") +
+                                              "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                              "_" + ((int)unit.PropertyType_Code).ToString() +
+                                              "_" + unit.Id.ToString() + ".xml";
+                            MemoryStream stream = new MemoryStream();
+                            xmlFile.Save(stream);
+                            stream.Seek(0, SeekOrigin.Begin);
+                            zipFile.AddEntry(fileName, stream);
+
+                            XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                            GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
+                            bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
+
+                            string dateapp = "01.01.2018";
+                            OMTask task_old = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+                            if (task_old != null)
+                            {
+                                OMInstance doc_old = OMInstance.Where(x => x.Id == task_old.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                                if (doc_old != null) dateapp = doc_old.CreateDate.ToString("dd.MM.yyyy");
+                            }
+                            bads.Add("b|" + unit.CadastralNumber + "|" + dateapp);
+                        }
                     }
                 }
             }
@@ -1844,13 +1795,10 @@ namespace KadOzenka.Dal.DataExport
 
         public static void GetOtvetDocX(OMUnit _unit, string _dir_name, OMInstance _doc_out, int numpp, ZipFile zipFile)
         {
-            //string file_name = _dir_name + "\\Акты по объектам";
-	        //if (!Directory.Exists(file_name)) Directory.CreateDirectory(file_name);
             string num = _doc_out.RegNumber;
             num = num.Replace("/", "");
             string kn = _unit.CadastralNumber;
             kn = kn.Replace(":", "_");
-            //file_name = file_name + "\\" + num + "_" + kn + ".docx"
             string fileName = "Акты по объектам" + "\\" + num + "_" + kn + ".docx";
 
 
@@ -1901,8 +1849,6 @@ namespace KadOzenka.Dal.DataExport
             ps.PageMargins = pm;
             section.PageSetup = ps;
             document.Sections.Add(section);
-
-            //document.Save(file_name);
 
             MemoryStream stream = new MemoryStream();
             document.Save(stream, SaveOptions.DocxDefault);
@@ -1987,84 +1933,83 @@ namespace KadOzenka.Dal.DataExport
             Dictionary<Int64, XmlNode> dictNodes = new Dictionary<long, XmlNode>();
 
             List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc_out.Id).SelectAll().Execute();
-            int count_curr = 0;
-            int count_all = _units.Count();
             foreach (OMUnit unit in _units)
             {
-                count_curr++;
-                string str_message = "Doc - " + _doc_out.Id.ToString() + " - (" + count_curr.ToString() + " из " + count_all.ToString() + " unit)";
-                Console.WriteLine(str_message);
-
-                #region Нашли и записали в список входящий документ
-                OMInstance doc_in = new OMInstance();
-                OMTask task = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-                if (task != null)
+                // Проверка КС, игнорируем = 0
+                if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                 {
-                    doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
-                    if (_list_doc_in.Find(x => x.Id == doc_in.Id) == null)
-                        _list_doc_in.Add(doc_in);
-                }
-                #endregion
 
-                ActOpredel act_opredel = new ActOpredel();
-                act_opredel.kn = unit.CadastralNumber;
-                act_opredel.code = "-";
-                string str_attr = "";
-                if (DataExportCommon.GetObjectAttribute(unit, 15, out str_attr)) //TODO уточнить номер атрибута
-                    act_opredel.code = str_attr;
+                    #region Нашли и записали в список входящий документ
+                    OMInstance doc_in = new OMInstance();
+                    OMTask task = OMTask.Where(x => x.Id == unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+                    if (task != null)
+                    {
+                        doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                        if (_list_doc_in.Find(x => x.Id == doc_in.Id) == null)
+                            _list_doc_in.Add(doc_in);
+                    }
+                    #endregion
 
-                OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                act_opredel.act_dop = group_unit.AssumptionsReference;
-                act_opredel.kc = unit.CadastralCost;
-                act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
-                act_opredel.osnovanie = unit.Status;
-                act_opredel.act_other = group_unit.OtherCostRelatedInfo;
-                act_opredel.subgroup = group_unit.GroupName;
-                _list_act.Add(act_opredel);
+                    ActOpredel act_opredel = new ActOpredel();
+                    act_opredel.kn = unit.CadastralNumber;
+                    act_opredel.code = "-";
+                    string str_attr = "";
+                    if (DataExportCommon.GetObjectAttribute(unit, 15, out str_attr)) //TODO уточнить номер атрибута
+                        act_opredel.code = str_attr;
 
-                if (unit.GroupId <= 0) return bads.ToArray();
-                if (_doc_out.Status != doc_in.Status) return bads.ToArray();
-                if (unit.Upks <= 0 && unit.CadastralCost <= 0) return bads.ToArray();
+                    OMGroup group_unit = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                    act_opredel.act_dop = group_unit.AssumptionsReference;
+                    act_opredel.kc = unit.CadastralCost;
+                    act_opredel.act_model = group_unit.CadastralCostEstimationModelsReferences;
+                    act_opredel.osnovanie = unit.Status;
+                    act_opredel.act_other = group_unit.OtherCostRelatedInfo;
+                    act_opredel.subgroup = group_unit.GroupName;
+                    _list_act.Add(act_opredel);
 
-                DateTime estimation_date = (task != null) ? ((task.EstimationDate != null) ? task.EstimationDate.Value : DateTime.Now) : DateTime.Now;
-                if (DataExportCommon.GetObjectLastByKN(unit))
-                {
-                    _num_pp++;
-                    XmlDocument xmlFile = new XmlDocument();
-                    XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
-                    xmlFile.AppendChild(xnLandValuation);
+                    if (unit.GroupId <= 0) return bads.ToArray();
+                    if (_doc_out.Status != doc_in.Status) return bads.ToArray();
+                    if (unit.Upks <= 0 && unit.CadastralCost <= 0) return bads.ToArray();
 
-                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, estimation_date,
-                                   ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
-                    DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
+                    DateTime estimation_date = (task != null) ? ((task.EstimationDate != null) ? task.EstimationDate.Value : DateTime.Now) : DateTime.Now;
+                    if (DataExportCommon.GetObjectLastByKN(unit))
+                    {
+                        _num_pp++;
+                        XmlDocument xmlFile = new XmlDocument();
+                        XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
+                        xmlFile.AppendChild(xnLandValuation);
 
-                    string fileName = unit.CadastralNumber.Replace(":", "_") +
-                                      "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
-                                      "_" + estimation_date.ToString("ddMMyyyy") +
-                                      "_" + DateTime.Now.ToString("ddMMyyyy") +
-                                      "_" + ((int)unit.PropertyType_Code).ToString() +
-                                      "_" + unit.Id.ToString() + ".xml";
-                    MemoryStream stream = new MemoryStream();
-                    xmlFile.Save(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    zipFile.AddEntry(fileName, stream);
+                        DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, estimation_date,
+                                       ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
+                        DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                    _dir_path += ("\\" + estimation_date.ToString("dd_MM_yyyy"));
-                    DEKOResponseDoc.XmlVuonExport(group_unit, unit, _dir_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                    DEKOResponseDoc.XmlWebExport(group_unit, unit, _dir_path, doc_in, _doc_out, zipFile);
-                    DEKOResponseDoc.GetOtvetDocX(unit, _dir_path, _doc_out, _num_pp, zipFile);
-                    bads.Add("g|" + unit.CadastralNumber +
-                        "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00") +
-                        "|" + estimation_date.ToString("dd.MM.yyyy") +
-                        "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
-                }
-                else
-                {
-                    _num_pp++;
+                        string fileName = unit.CadastralNumber.Replace(":", "_") +
+                                          "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                                          "_" + estimation_date.ToString("ddMMyyyy") +
+                                          "_" + DateTime.Now.ToString("ddMMyyyy") +
+                                          "_" + ((int)unit.PropertyType_Code).ToString() +
+                                          "_" + unit.Id.ToString() + ".xml";
+                        MemoryStream stream = new MemoryStream();
+                        xmlFile.Save(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        zipFile.AddEntry(fileName, stream);
 
-                    bads.Add("b|" + unit.CadastralNumber +
-                        "|" + estimation_date.ToString("dd.MM.yyyy") +
-                        "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
+                        _dir_path += ("\\" + estimation_date.ToString("dd_MM_yyyy"));
+                        DEKOResponseDoc.XmlVuonExport(group_unit, unit, _dir_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
+                        DEKOResponseDoc.XmlWebExport(group_unit, unit, _dir_path, doc_in, _doc_out, zipFile);
+                        DEKOResponseDoc.GetOtvetDocX(unit, _dir_path, _doc_out, _num_pp, zipFile);
+                        bads.Add("g|" + unit.CadastralNumber +
+                            "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00") +
+                            "|" + estimation_date.ToString("dd.MM.yyyy") +
+                            "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
+                    }
+                    else
+                    {
+                        _num_pp++;
+
+                        bads.Add("b|" + unit.CadastralNumber +
+                            "|" + estimation_date.ToString("dd.MM.yyyy") +
+                            "|" + _doc_out.CreateDate.ToString("dd.MM.yyyy"));
+                    }
                 }
             }
 
@@ -2293,31 +2238,32 @@ namespace KadOzenka.Dal.DataExport
 
                 foreach (OMUnit unit in units_all)
                 {
-                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                    if (cad_num_curr != cad_num)
-                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
+                    {
+                        cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                        if (cad_num_curr != cad_num)
+                        {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
-                        count_file++;
-                        var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
-	                        taskId, message);
-                        res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                            count_file++;
+                            var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                                taskId, message);
+                            res.Add(fileResult);
+                            if (!fileResult.NoResult)
+                            {
+                                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                            }
+                            units_curr.Clear();
+                            cad_num = cad_num_curr;
                         }
-                        units_curr.Clear();
-                        cad_num = cad_num_curr;
+                        units_curr.Add(unit);
+
+                        progress = (count_curr * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
+                        setProgress(progress, progressMessage: progressMessage);
+                        KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                     }
-                    units_curr.Add(unit);
-
-                    count_curr++;
-                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                    Console.WriteLine(message);
-
-                    progress = (count_curr * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
-                    setProgress(progress, progressMessage: progressMessage);
-                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
+
                 if (units_curr.Count > 0)
                 {
                     count_file++;
@@ -2350,9 +2296,6 @@ namespace KadOzenka.Dal.DataExport
             int curindval = 0;
             for (int i = 0; i < _units_curr.Count; i++)
             {
-                string message = _mess + " -- сохраняется " + (i + 1).ToString() + " из " + _units_curr.Count.ToString();
-                Console.WriteLine(message);
-
                 if (_units_curr[i].GroupId != -1)
                 {
                     OMGroup group = OMGroup.Where(x => x.Id == _units_curr[i].GroupId).SelectAll().ExecuteFirstOrDefault();
@@ -2385,9 +2328,6 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-			 //string path_name = _dir_name + "\\Table4\\Task_" + _taskid.ToString();
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-
             string file_name = "Task_" + _taskid +"Таблица 4.Группировка объектов недвижимости"
                                          + " " + _cad_num.Replace(":", "_")
                                          + "." + _count_file.ToString().PadLeft(5, '0');
@@ -2400,7 +2340,6 @@ namespace KadOzenka.Dal.DataExport
 			  FileName = file_name,
 			  TaskId = _taskid
 		  };
-            //excel_edit.Save(file_name);
         }
 
         /// <summary>
@@ -2468,7 +2407,6 @@ namespace KadOzenka.Dal.DataExport
                     num_subgroup++;
                     message = "Группа (" + num_group.ToString() + "-" + groups.Count().ToString() + ")"
                               + " - подгруппа (" + num_subgroup.ToString() + "-" + subgroups.Count().ToString() + ")";
-                    Console.WriteLine(message);
 
                     var taskCounter = 0;
                     foreach (long taskId in setting.TaskFilter)
@@ -2530,82 +2468,79 @@ namespace KadOzenka.Dal.DataExport
             int start_rows = 4;
             int count_cells = 0;
             int num_pp = 0;
-            string message = "";
             HeaderExcel5Model(sheet_edit, _subgroup, model, ref count_cells);
 
             object[,] objvals = new object[100, count_cells];
             int curindval = 0;
             foreach (OMUnit unit in _units)
             {
-                List<object> objarrs = new List<object>();
-                objarrs.Add(++num_pp);
-                objarrs.Add(unit.CadastralBlock.Substring(0, 5));
-                objarrs.Add(unit.PropertyType);
-                objarrs.Add(unit.CadastralNumber);
-                string value_attr = "";
-                DataExportCommon.GetObjectAttribute(unit, 600, out value_attr); 
-                objarrs.Add(value_attr);
-
-                #region Получили реестр Id группы, реестр, где лежат ее факторы
-                int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
-                //Получаем список факторов группы и их значения
-                List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
-                if (data != null)
+                // Проверка КС, игнорируем = 0
+                if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                 {
-                    foreach (DataRow row in data.Rows)
+                    List<object> objarrs = new List<object>();
+                    objarrs.Add(++num_pp);
+                    objarrs.Add(unit.CadastralBlock.Substring(0, 5));
+                    objarrs.Add(unit.PropertyType);
+                    objarrs.Add(unit.CadastralNumber);
+                    string value_attr = "";
+                    DataExportCommon.GetObjectAttribute(unit, 600, out value_attr);
+                    objarrs.Add(value_attr);
+
+                    #region Получили реестр Id группы, реестр, где лежат ее факторы
+                    int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
+                    //Получаем список факторов группы и их значения
+                    List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                    DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
+                    if (data != null)
                     {
-                        FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                        foreach (DataRow row in data.Rows)
+                        {
+                            FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                        }
                     }
-                }
-                #endregion
+                    #endregion
 
-                foreach (OMModelFactor factor in model.ModelFactor)
-                {
-                    bool findf = false;
-                    string value_item = string.Empty;//TODO: значение фактора для данного объекта
-                    CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                    if (factor_item != null)
+                    foreach (OMModelFactor factor in model.ModelFactor)
                     {
-                        findf = true;
-                        value_item = factor_item.Value;
+                        bool findf = false;
+                        string value_item = string.Empty;//TODO: значение фактора для данного объекта
+                        CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                        if (factor_item != null)
+                        {
+                            findf = true;
+                            value_item = factor_item.Value;
+                        }
+                        objarrs.Add((findf) ? value_item : "");
                     }
-                    objarrs.Add((findf) ? value_item : "");
+
+                    objarrs.Add(unit.Square.ToString());
+                    objarrs.Add(unit.Upks.ToString());
+                    objarrs.Add(unit.CadastralCost.ToString());
+
+                    for (int f = 0; f < count_cells; f++)
+                    {
+                        objvals[curindval, f] = objarrs[f];
+                    }
+
+                    if (curindval >= 99)
+                    {
+                        DataExportCommon.AddRow(sheet_edit, start_rows - 99, objvals);
+                        curindval = -1;
+                        objvals = new object[100, count_cells];
+                    }
+
+                    curindval++;
+                    start_rows++;
                 }
-
-                objarrs.Add(unit.Square.ToString());
-                objarrs.Add(unit.Upks.ToString());
-                objarrs.Add(unit.CadastralCost.ToString());
-
-                for (int f = 0; f < count_cells; f++)
-                {
-                    objvals[curindval, f] = objarrs[f];
-                }
-
-                if (curindval >= 99)
-                {
-                    DataExportCommon.AddRow(sheet_edit, start_rows - 99, objvals);
-                    curindval = -1;
-                    objvals = new object[100, count_cells];
-                }
-
-                curindval++;
-                start_rows++;
-
-                message = _message + " - сохраняется " + num_pp.ToString() + " из " + _units.Count.ToString();
-                Console.WriteLine(message);
             }
+
             if (curindval != 0)
             {
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            //string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = "Task_" + _taskid + "\\Таблица 5. Модельная стоимость"
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
-            //excel_edit.Save(file_name);
-
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
             return new ResultKoUnloadSettings
@@ -2628,53 +2563,50 @@ namespace KadOzenka.Dal.DataExport
             int start_rows = 3;
             int count_cells = 0;
             int num_pp = 0;
-            string message = "";
             HeaderExcel5Upksz(sheet_edit, _subgroup, ref count_cells);
-
 
             object[,] objvals = new object[100, count_cells];
             int curindval = 0;
             foreach(OMUnit unit in _units)
             {
-                List<object> objarrs = new List<object>();
-                objarrs.Add(++num_pp);
-                objarrs.Add(unit.PropertyType);
-                objarrs.Add(unit.CadastralNumber);
-                objarrs.Add(unit.CadastralBlock);
-                objarrs.Add(unit.CadastralBlock.Substring(0, 5));
-                objarrs.Add(unit.Square.ToString());
-                objarrs.Add(unit.Upks.ToString());
-                objarrs.Add(unit.CadastralCost.ToString());
-
-                for (int f = 0; f < count_cells; f++)
+                // Проверка КС, игнорируем = 0
+                if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                 {
-                    objvals[curindval, f] = objarrs[f];
+                    List<object> objarrs = new List<object>();
+                    objarrs.Add(++num_pp);
+                    objarrs.Add(unit.PropertyType);
+                    objarrs.Add(unit.CadastralNumber);
+                    objarrs.Add(unit.CadastralBlock);
+                    objarrs.Add(unit.CadastralBlock.Substring(0, 5));
+                    objarrs.Add(unit.Square.ToString());
+                    objarrs.Add(unit.Upks.ToString());
+                    objarrs.Add(unit.CadastralCost.ToString());
+
+                    for (int f = 0; f < count_cells; f++)
+                    {
+                        objvals[curindval, f] = objarrs[f];
+                    }
+
+                    if (curindval >= 99)
+                    {
+                        DataExportCommon.AddRow(sheet_edit, start_rows - 99, objvals);
+                        curindval = -1;
+                        objvals = new object[100, count_cells];
+                    }
+
+                    curindval++;
+                    start_rows++;
                 }
-
-                if (curindval >= 99)
-                {
-                    DataExportCommon.AddRow(sheet_edit, start_rows - 99, objvals);
-                    curindval = -1;
-                    objvals = new object[100, count_cells];
-                }
-
-                curindval++;
-                start_rows++;
-
-                message = _message + " - сохраняется " + num_pp.ToString() + " из " + _units.Count.ToString();
-                Console.WriteLine(message);
             }
+
             if (curindval != 0)
             {
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            //string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name =  "Task_" + _taskid + "\\Таблица 5. Метод УПКС"
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
-            //excel_edit.Save(file_name);
 
 			return new ResultKoUnloadSettings
 			{
@@ -2795,7 +2727,6 @@ namespace KadOzenka.Dal.DataExport
 	        var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
-            int num_unit = 0;
             int num_save = 0;
             int count_group = (setting.UnloadParcel) ?13:16;
             List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
@@ -2810,17 +2741,17 @@ namespace KadOzenka.Dal.DataExport
                     List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                     foreach (OMUnit unit in units_zu)
                     {
-                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                        if (!group.Number.IsNullOrEmpty())
+                        // Проверка КС, игнорируем = 0
+                        if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                         {
-                            int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                            CalculationStat7(ref list_statistics, unit, num_group, count_group);
-                            num_save++;
+                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                            if (!group.Number.IsNullOrEmpty())
+                            {
+                                int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                CalculationStat7(ref list_statistics, unit, num_group, count_group);
+                                num_save++;
+                            }
                         }
-                        num_unit++;
-                        string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                        Console.WriteLine(message);
-                        
                         unitCounter++;
                         progress = (unitCounter * 70 / units_zu.Count + taskCounter * 70) / setting.TaskFilter.Count;
                         setProgress(progress, progressMessage: progressMessage);
@@ -2851,20 +2782,20 @@ namespace KadOzenka.Dal.DataExport
                         List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                         foreach (OMUnit unit in units_oks)
                         {
-                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                            if (group != null)
+                            // Проверка КС, игнорируем = 0
+                            if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                             {
-                                if (!group.Number.IsNullOrEmpty())
+                                OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                                if (group != null)
                                 {
-                                    int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                                    CalculationStat7(ref list_statistics, unit, num_group, count_group);
-                                    num_save++;
+                                    if (!group.Number.IsNullOrEmpty())
+                                    {
+                                        int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                        CalculationStat7(ref list_statistics, unit, num_group, count_group);
+                                        num_save++;
+                                    }
                                 }
                             }
-                            num_unit++;
-                            string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")" +
-                                " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                            Console.WriteLine(message);
                             unitCounter++;
                             progress = (unitCounter*70/units_oks.Count+taskCounter * 70 / setting.TaskFilter.Count + (num_prop - 1) * 70) / prop_types.Count;
                             setProgress(progress, progressMessage: progressMessage);
@@ -3020,7 +2951,6 @@ namespace KadOzenka.Dal.DataExport
 	        var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
-            int num_unit = 0;
             int num_save = 0;
             int count_group = (setting.UnloadParcel) ? 13 : 16;
             List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
@@ -3032,20 +2962,23 @@ namespace KadOzenka.Dal.DataExport
                 var taskCounter = 0;
                 foreach (long taskId in setting.TaskFilter)
                 {
+                    var unitCounter = 0;
                     List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                     foreach (OMUnit unit in units_zu)
                     {
-                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                        if (!group.Number.IsNullOrEmpty())
+                        // Проверка КС, игнорируем = 0
+                        if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                         {
-                            int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                            CalculationStat8(ref list_statistics, unit, num_group, count_group);
-                            num_save++;
+                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                            if (!group.Number.IsNullOrEmpty())
+                            {
+                                int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                                num_save++;
+                            }
                         }
-                        num_unit++;
-                        string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                        Console.WriteLine(message);
-                        progress = (num_unit * 70 / units_zu.Count + taskCounter * 70) / setting.TaskFilter.Count;
+                        unitCounter++;
+                        progress = (unitCounter * 70 / units_zu.Count + taskCounter * 70) / setting.TaskFilter.Count;
                         setProgress(progress, progressMessage: progressMessage);
                         KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                     }
@@ -3074,21 +3007,20 @@ namespace KadOzenka.Dal.DataExport
                         List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                         foreach (OMUnit unit in units_oks)
                         {
-                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                            if (group != null)
+                            // Проверка КС, игнорируем = 0
+                            if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
                             {
-                                if (!group.Number.IsNullOrEmpty())
+                                OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                                if (group != null)
                                 {
-                                    int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                                    CalculationStat8(ref list_statistics, unit, num_group, count_group);
-                                    num_save++;
+                                    if (!group.Number.IsNullOrEmpty())
+                                    {
+                                        int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                        CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                                        num_save++;
+                                    }
                                 }
                             }
-                            num_unit++;
-                            string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")"
-                                             + " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString()
-                                             + ")  --  обработан  " + num_save.ToString();
-                            Console.WriteLine(message);
                             unitCounter++;
                             progress = (unitCounter * 70 / units_oks.Count + taskCounter * 70 / setting.TaskFilter.Count + (num_prop - 1) * 70) / prop_types.Count;
                             setProgress(progress, progressMessage: progressMessage);
@@ -3247,25 +3179,26 @@ namespace KadOzenka.Dal.DataExport
 
                 foreach (OMUnit unit in units_all)
                 {
-                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                    if (cad_num_curr != cad_num)
-                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
-                        count_file++;
-                        var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
-	                        taskId, message);
-                        res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-	                        KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
+                    {
+                        cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                        if (cad_num_curr != cad_num)
+                        {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                            count_file++;
+                            var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                                taskId, message);
+                            res.Add(fileResult);
+                            if (!fileResult.NoResult)
+                            {
+                                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                            }
+                            units_curr.Clear();
+                            cad_num = cad_num_curr;
                         }
-	                    units_curr.Clear();
-                        cad_num = cad_num_curr;
+                        units_curr.Add(unit);
                     }
-                    units_curr.Add(unit);
-
                     count_curr++;
-                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                    Console.WriteLine(message);
                     progress = (count_curr * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
                     setProgress(progress, progressMessage: progressMessage);
                     KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
@@ -3404,26 +3337,27 @@ namespace KadOzenka.Dal.DataExport
 
                 foreach (OMUnit unit in units_all)
                 {
-                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                    if (cad_num_curr != cad_num)
-                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                    // Проверка КС, игнорируем = 0
+                    if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
+                    {
+                        cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                        if (cad_num_curr != cad_num)
+                        {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
-                        count_file++;
-                        var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
-	                        taskId, message);
-                        res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-	                        KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                            count_file++;
+                            var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                                taskId, message);
+                            res.Add(fileResult);
+                            if (!fileResult.NoResult)
+                            {
+                                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                            }
+                            units_curr.Clear();
+                            cad_num = cad_num_curr;
                         }
-                        units_curr.Clear();
-                        cad_num = cad_num_curr;
+                        units_curr.Add(unit);
                     }
-                    units_curr.Add(unit);
-
                     count_curr++;
-                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                    Console.WriteLine(message);
                     progress = (count_curr * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
                     setProgress(progress, progressMessage: progressMessage);
                     KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
@@ -3604,26 +3538,27 @@ namespace KadOzenka.Dal.DataExport
 
                     foreach (OMUnit unit in units_types)
                     {
-                        cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                        if (cad_num_curr != cad_num)
-                        {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                        // Проверка КС, игнорируем = 0
+                        if (CheckNullEmpty.CheckDecimal(unit.CadastralCost) > 0)
+                        {
+                            cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                            if (cad_num_curr != cad_num)
+                            {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
-                            count_file++;
-                            var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num,
-	                            setting.DirectoryName, taskId, message1);
-                            res.Add(fileResult);
-                            if (!fileResult.NoResult)
-                            {
-	                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                                count_file++;
+                                var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num,
+                                    setting.DirectoryName, taskId, message1);
+                                res.Add(fileResult);
+                                if (!fileResult.NoResult)
+                                {
+                                    KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
+                                }
+                                units_curr.Clear();
+                                cad_num = cad_num_curr;
                             }
-                            units_curr.Clear();
-                            cad_num = cad_num_curr;
+                            units_curr.Add(unit);
                         }
-                        units_curr.Add(unit);
-
                         count_curr++;
-                        message1 = message + "-" + count_curr.ToString() + " из " + count_all.ToString();
-                        Console.WriteLine(message);
                         progress = ((count_curr*100/count_all+(ind_type-1) * 100) / prop_types.Count + taskCounter * 100) / setting.TaskFilter.Count;
                         setProgress(progress, progressMessage: progressMessage);
                         KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
@@ -3922,6 +3857,13 @@ namespace KadOzenka.Dal.DataExport
             {
                 throw new Exception($"Не найдена единица оценки.");
             }
+
+            // Проверка КС, игнорируем = 0
+            if (CheckNullEmpty.CheckDecimal(_unit.CadastralCost) == 0)
+            {
+                throw new Exception($"У единицы оценки не определена кадастровая стоимость.");
+            }
+
             OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
             if (task == null)
             {
@@ -4179,7 +4121,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.1",
                      "Кадастровый номер объекта недвижимости",
-                     DataExportCommon.SStr(_unit.CadastralNumber),
+                     CheckNullEmpty.CheckString(_unit.CadastralNumber),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4187,7 +4129,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.2",
                      "Вид объекта недвижимости (земельный участок, здание, сооружение, помещение, машино-место, объект незавершенного строительства, единый недвижимый комплекс, предприятие как имущественный комплекс или иной вид)",
-                     DataExportCommon.SStr(_unit.PropertyType),
+                     CheckNullEmpty.CheckString(_unit.PropertyType),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4197,7 +4139,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.3",
                      "Адрес объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4207,7 +4149,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.4",
                      "Описание местоположения объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4215,7 +4157,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.5",
                      "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
-                     DataExportCommon.SStr(_unit.Square.ToString()),
+                     CheckNullEmpty.CheckString(_unit.Square.ToString()),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4225,7 +4167,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.6",
                      "Категория земель, к которой относится земельный участок, если объектом недвижимости является земельный участок",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4235,7 +4177,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.7",
                      "Вид разрешенного использования объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4250,7 +4192,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.8",
                      "Назначение (для зданий, сооружений, помещения, единого недвижимого комплекса, предприятия как имущественного комплекса), проектируемое назначение (для объектов незавершенного строительства) объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4260,7 +4202,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.9",
                      "Этажность объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4270,7 +4212,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.10",
                      "Материал наружных стен объекта недвижимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4280,7 +4222,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.11",
                      "Обременения (ограничения) объекта недвижимости, использованные при определении кадастровой стоимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4290,7 +4232,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.12",
                      "Степень готовности объекта незавершенного строительства в процентах",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4300,7 +4242,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.13",
                      "Иные сведения об объекте недвижимости, использованные при определении кадастровой стоимости",
-                     DataExportCommon.SStr(value_attr),
+                     CheckNullEmpty.CheckString(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4330,7 +4272,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.1",
                      "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
-                     DataExportCommon.SStr(group_unit.MarketSegment),
+                     CheckNullEmpty.CheckString(group_unit.MarketSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4338,7 +4280,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.2",
                      "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
-                     DataExportCommon.SStr(group_unit.MarketSegmentFunctioningFeatures),
+                     CheckNullEmpty.CheckString(group_unit.MarketSegmentFunctioningFeatures),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4346,7 +4288,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.3",
                      "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
-                     DataExportCommon.SStr(group_unit.PriceZoneCharacteristic),
+                     CheckNullEmpty.CheckString(group_unit.PriceZoneCharacteristic),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4654,7 +4596,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.1",
                      "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     DataExportCommon.SStr(group_unit.AppliedApproachesInCadastralCost),
+                     CheckNullEmpty.CheckString(group_unit.AppliedApproachesInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4662,7 +4604,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.2",
                      "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     DataExportCommon.SStr(group_unit.AppliedEvaluationMethodsInCadastralCost),
+                     CheckNullEmpty.CheckString(group_unit.AppliedEvaluationMethodsInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4670,7 +4612,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.3",
                      "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
-                     DataExportCommon.SStr(group_unit.CadastralCostDetermingMethod),
+                     CheckNullEmpty.CheckString(group_unit.CadastralCostDetermingMethod),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4678,7 +4620,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.4",
                      "Модель определения кадастровой стоимости объекта недвижимости с обоснованием ее выбора",
-                     DataExportCommon.SStr(formula),
+                     CheckNullEmpty.CheckString(formula),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4686,7 +4628,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.5",
                      "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
-                     DataExportCommon.SStr(group_unit.ObjectsSegment),
+                     CheckNullEmpty.CheckString(group_unit.ObjectsSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4694,7 +4636,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.6",
                      "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
-                     DataExportCommon.SStr(group_unit.ObjectsSubgroup),
+                     CheckNullEmpty.CheckString(group_unit.ObjectsSubgroup),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4702,7 +4644,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.7",
                      "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
-                     DataExportCommon.SStr(group_unit.CadastralCostCalculationOrderDescription),
+                     CheckNullEmpty.CheckString(group_unit.CadastralCostCalculationOrderDescription),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);

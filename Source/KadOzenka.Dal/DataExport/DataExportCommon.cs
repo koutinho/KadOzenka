@@ -539,11 +539,6 @@ namespace KadOzenka.Dal.DataExport
             return idx;
         }
 
-        public static string SStr(string value)
-        {
-            return string.IsNullOrWhiteSpace(value) ? "-" : value;
-        }
-
         /// <summary>
         /// Вставить текст в ячейку таблицы документа doc
         /// </summary>
@@ -602,6 +597,19 @@ namespace KadOzenka.Dal.DataExport
             SetTextToCellDoc(document, row.Cells[1], col2, size, align2, border, bold);
             SetTextToCellDoc(document, row.Cells[2], col3, size, align3, border, bold);
             SetTextToCellDoc(document, row.Cells[3], col4, size, align4, border, bold);
+        }
+    }
+
+    public class CheckNullEmpty
+    {
+        public static string CheckString(string value)
+        {
+            return string.IsNullOrWhiteSpace(value) ? "-" : value;
+        }
+
+        public static decimal? CheckDecimal(decimal? value)
+        {
+            return (value == null) ? 0 : value;
         }
     }
 
