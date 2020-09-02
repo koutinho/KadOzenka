@@ -255,6 +255,12 @@
     </div>
 </div>
 
+<script type="text/x-kendo-template" id="factorsGridToolbarTemplate">
+    <div class="factorsGridToolbarContainer">
+        <label class="factors-switch-label" for="factors-switch">Отображать факторы, используемые в рамках текущей модели</label>
+        <input id="factors-switch" checked="checked" />
+    </div>
+</script>
 <script>
     $(document).ready(function () {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -388,9 +394,26 @@
                     field: 'FactorValue', title: 'Значение'
                 }
             ],
-
+            toolbar: kendo.template($("#factorsGridToolbarTemplate").html()),
+            pageable: {
+                pageSize: 10
+            },
         });
-        
+
+        $("#factors-switch").kendoSwitch({
+            change: function (e) {
+                if ($('#factorsGrid .k-pager-first')) {
+                    $('#factorsGrid .k-pager-first').click();
+                }
+                var grid = $('#factorsGrid').data("kendoGrid");
+                grid.dataSource.transport.options.read.data["showOnlyModelFactors"] = e.checked;
+                grid.dataSource.read();
+            },
+            messages: {
+                checked: "",
+                unchecked: ""
+            }
+        });
     });
 </script>
 
@@ -408,5 +431,11 @@
         position: absolute;
         bottom: 20px;
         width: 95%;
+    }
+
+    .factors-switch-label {
+        margin-right: 5px; 
+        font-weight: 300; 
+        color:#0a1124;
     }
 </style>

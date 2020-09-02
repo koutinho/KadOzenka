@@ -709,43 +709,59 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetUnitFactors(long id)
+		public JsonResult GetUnitFactors(long id, bool showOnlyModelFactors = true)
 		{
+			List<UnitFactorsDto> factors = new List<UnitFactorsDto>();
 			OMUnit unit = OMUnit.Where(x => x.Id == id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
 			if (unit != null)
 			{
-				OMModel model = OMModel.Where(x => x.GroupId == unit.GroupId)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-
-				if (model != null)
+				if (showOnlyModelFactors)
 				{
-					if (model.ModelFactor.Count == 0)
-						model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+					OMModel model = OMModel.Where(x => x.GroupId == unit.GroupId)
+						.SelectAll()
+						.ExecuteFirstOrDefault();
 
-					List<UnitFactorsDto> factors = model.ModelFactor.Select(x => new UnitFactorsDto
+					if (model != null)
 					{
-						Id = x.Id,
-						FactorId = x.FactorId
-					}).ToList();
+						if (model.ModelFactor.Count == 0)
+							model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
 
-					var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
-					foreach (var factorDto in factors)
-					{
-						var factorValue = factorsValues
-							.FirstOrDefault(x => x.AttributeId == factorDto.FactorId);
-						factorDto.FactorName = factorValue?.GetFactorName();
-						factorDto.FactorValue = factorValue?.GetValueInString();
+						var modelFactorIds = model.ModelFactor.Where(x => x.FactorId.HasValue)
+							.Select(x => x.FactorId.Value).ToList();
+
+						var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
+						foreach (var factorValue in factorsValues)
+						{
+							if (modelFactorIds.Any(x => x == factorValue.AttributeId))
+							{
+								factors.Add(new UnitFactorsDto{
+									FactorId = factorValue.AttributeId,
+									FactorName = factorValue.GetFactorName(),
+									FactorValue = factorValue.GetValueInString()
+								});
+							}
+						}
 					}
-
-					return Json(factors);
+				}
+				else
+				{
+					var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
+					foreach (var factorValue in factorsValues)
+					{
+						factors.Add(new UnitFactorsDto
+						{
+							FactorId = factorValue.AttributeId,
+							FactorName = factorValue.GetFactorName(),
+							FactorValue = factorValue.GetValueInString()
+						});
+					}
 				}
 			}
 
-			return Json(new List<UnitFactorsDto>());
+			return Json(factors);
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
