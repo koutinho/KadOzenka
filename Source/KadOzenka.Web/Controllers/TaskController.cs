@@ -729,18 +729,16 @@ namespace KadOzenka.Web.Controllers
 					List<UnitFactorsDto> factors = model.ModelFactor.Select(x => new UnitFactorsDto
 					{
 						Id = x.Id,
-						FactorId = x.FactorId,
-						Weight = x.Weight
+						FactorId = x.FactorId
 					}).ToList();
 
-					List<long?> factorIds = factors.Select(x => x.FactorId).ToList();
-					if (factorIds.Any())
+					var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
+					foreach (var factorDto in factors)
 					{
-						var sqlResult = GetModelFactorNameSql(factorIds);
-						foreach (var factorDto in factors)
-						{
-							factorDto.Factor = sqlResult[factorDto.FactorId];
-						}
+						var factorValue = factorsValues
+							.FirstOrDefault(x => x.AttributeId == factorDto.FactorId);
+						factorDto.FactorName = factorValue?.GetFactorName();
+						factorDto.FactorValue = factorValue?.GetValueInString();
 					}
 
 					return Json(factors);

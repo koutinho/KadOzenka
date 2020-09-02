@@ -183,6 +183,58 @@ namespace KadOzenka.Dal.Tours
             }
         }
 
+        public List<UnitFactor> GetUnitFactorValues(long unitId)
+        {
+	        var results = new List<UnitFactor>();
+
+            OMUnit unit = OMUnit.Where(x => x.Id == unitId)
+		        .SelectAll()
+		        .ExecuteFirstOrDefault();
+	        if (unit == null)
+	        {
+		        throw new Exception($"Не найдена единица оценки с ИД {unitId}");
+	        }
+
+	        var tourRegister = GetTourRegister(unit.TourId.GetValueOrDefault(),
+		        unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks);
+	        if (tourRegister == null)
+	        {
+		        throw new Exception($"Не найден реестр факторов для тура с ИД {unit.TourId} для типа объекта {unit.PropertyType_Code.GetEnumDescription()}");
+            }
+
+	        var tourAttributes = GetTourAttributes(unit.TourId.GetValueOrDefault(), unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks);
+	        if (tourAttributes.IsEmpty())
+	        {
+		        return results;
+	        }
+
+	        var query = GetUnitFactorsQuery(unitId, tourRegister);
+	        foreach (var factor in tourAttributes)
+	        {
+		        if (factor.IsPrimaryKey != null && factor.IsPrimaryKey.Value)
+			        continue;
+
+		        query.AddColumn(factor.Id, factor.Id.ToString());
+	        }
+
+            var table = query.ExecuteQuery();
+
+	        foreach (var factor in tourAttributes)
+	        {
+		        if (factor.IsPrimaryKey != null && factor.IsPrimaryKey.Value)
+			        continue;
+
+		        var attr = new UnitFactor(factor.Id);
+		        if (table.Rows.Count > 0)
+		        {
+			        attr.SetFactorValue(table.Rows[0][factor.Id.ToString()].ParseToStringNullable());
+                }
+
+		        results.Add(attr);
+	        }
+
+	        return results;
+        }
 
         #region Tour Settings
 
@@ -269,6 +321,26 @@ namespace KadOzenka.Dal.Tours
             omTourFactorRegister.RegisterId = registerId;
             omTourFactorRegister.ObjectType_Code = propertyType;
             omTourFactorRegister.Save();
+        }
+
+        private QSQuery GetUnitFactorsQuery(long unitId, OMRegister tourRegister)
+        {
+	        var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
+		        .FirstOrDefault(x => x.RegisterId == tourRegister.RegisterId && x.IsPrimaryKey)?.Id;
+	        var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
+	        qsConditionGroup.Add(new QSConditionSimple
+	        {
+		        ConditionType = QSConditionType.Equal,
+		        LeftOperand = new QSColumnSimple(tourRegisterPrimaryKeyId.GetValueOrDefault()),
+		        RightOperand = new QSColumnConstant(unitId)
+	        });
+	        var query = new QSQuery
+	        {
+		        MainRegisterID = (int)tourRegister.RegisterId,
+		        Condition = qsConditionGroup
+	        };
+
+	        return query;
         }
 
         #endregion

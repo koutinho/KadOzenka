@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Models.Task
 		public long Id { get; set; }
 
 		public long? FactorId { get; set; }
-		public string Factor { get; set; }
-		public decimal? Weight { get; set; }
+		public string FactorName { get; set; }
+		public string FactorValue { get; set; }
 	}
 }
