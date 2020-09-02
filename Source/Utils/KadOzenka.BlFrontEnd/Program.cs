@@ -38,6 +38,7 @@ using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
+using System.Text;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory.Core.LongProcess;
@@ -53,6 +54,10 @@ namespace KadOzenka.BlFrontEnd
 		{
 			BuildQsXml.BuildSudApproveStatus();
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+
+			//Добавляет поддержку кодировок 1251, 866
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
 			var consoleHelper = new BlFrontEndConsoleHelper();
 			InitCommands(consoleHelper);
 			consoleHelper.Run();
@@ -83,11 +88,11 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
             consoleHelper.AddCommand("11041", "Парсинг дополнительных данных для Циан", () =>
-            {
-	            new CianFilling().FillAdditionalData(false);
+	            {
+		            new CianFilling().FillAdditionalData(false);
             });
 
-            consoleHelper.AddCommand("11042", "Парсинг дополнительных данных для Яндекс недвижимость", () =>
+			consoleHelper.AddCommand("11042", "Парсинг дополнительных данных для Яндекс недвижимость", () =>
             {
 	            new YandexFilling().FillAdditionalData(false);
 			});
