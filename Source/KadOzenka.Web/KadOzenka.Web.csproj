@@ -209,9 +209,18 @@
     <None Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
     <None Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
     <None Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
+    <None Remove="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_CadastralRegions.sql" />
+    <None Remove="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Districts.sql" />
+    <None Remove="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Regions.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
     <None Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPKSByGroupsAndSubGroupsZu.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPKSByGroupsZu.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPKSOks.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
+    <None Remove="Config\SqlQueries\MinMaxAverageUPRSZu.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql" />
@@ -515,6 +524,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_CadastralRegions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Districts.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Regions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\MinMaxAverageUPKSOks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\MinMaxAverageUPKSZu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql">
@@ -1153,6 +1177,7 @@
 	  <Folder Include="Views\GknDataImport\" />
 	  <Folder Include="Views\DataImportByTemplate\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
+    <Folder Include="wwwroot\images\Cursors\" />
     <Folder Include="wwwroot\MapImageLayer\QuartalLayer\" />
     <Folder Include="wwwroot\Map\" />
   </ItemGroup>
@@ -1737,6 +1762,9 @@
 	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\themedata.thmx">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\images\Cursors\cursor_col_resize.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -1817,7 +1845,6 @@
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
