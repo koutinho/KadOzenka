@@ -77,8 +77,8 @@ namespace KadOzenka.BlFrontEnd
 
             /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
             consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => {
-				string[] logins = ConfigurationManager.AppSettings["restAppLogin001"].Split(','),
-						 tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
+				string[] logins = ConfigurationManager.AppSettings["restAppLogins"].Split(','),
+						 tokens = ConfigurationManager.AppSettings["restAppTokens"].Split(',');
 				for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
 			});
             consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexParser().FormMarketObjects(); });

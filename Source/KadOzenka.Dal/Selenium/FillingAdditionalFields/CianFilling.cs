@@ -130,7 +130,7 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 			}
 		}
 
-		private bool UpdateObject(JObject deserializedObject, OMCoreObject initialObject)
+		public bool UpdateObject(JObject deserializedObject, OMCoreObject initialObject)
 		{
 			var isObjectUpdated = false;
 			if (!deserializedObject.SelectToken("placementType").IsNullOrEmpty())

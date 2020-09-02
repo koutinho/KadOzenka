@@ -13,6 +13,9 @@ using ObjectModel.Directory;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Selenium.ScreenShots;
 using Core.Main.FileStorages;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 
 namespace KadOzenka.Dal.Selenium.PriceChecker
 {
@@ -121,6 +124,14 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     {
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueFrom = lowPrice, PriceValueTo = highPrice }.Save();
                                         SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
+
+                                        /*Парсинг дополнительных параметров*/
+                                        ((IJavaScriptExecutor)driver).ExecuteScript(File.ReadAllText(ConfigurationManager.AppSettings["CIANGetAdditionalDataJsPath"]));
+                                        var jsObjectData = new WebDriverWait(driver, TimeSpan.FromSeconds(30)).Until(_ => ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
+                                        var deserializedObject = (JObject)JsonConvert.DeserializeObject(jsObjectData.ToString());
+
+                                        new CianFilling().UpdateObject(deserializedObject, initialObject);
+
                                         initialObject.Price = highPrice;
                                         initialObject.LastDateUpdate = currentTime;
                                         initialObject.ExclusionStatus_Code = ExclusionStatus.IncorrectPrice;
@@ -144,6 +155,14 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                         ProcessNoSegmentObjectType(initialObject, executor.ExecuteScript("return document.querySelector('h1[data-name=\"OfferTitle\"]').innerText.split(',')[0];").ToString().ToLower());
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
                                         SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
+
+                                        /*Парсинг дополнительных параметров*/
+                                        ((IJavaScriptExecutor)driver).ExecuteScript(File.ReadAllText(ConfigurationManager.AppSettings["CIANGetAdditionalDataJsPath"]));
+                                        var jsObjectData = new WebDriverWait(driver, TimeSpan.FromSeconds(30)).Until(_ => ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
+                                        var deserializedObject = (JObject)JsonConvert.DeserializeObject(jsObjectData.ToString());
+
+                                        new CianFilling().UpdateObject(deserializedObject, initialObject);
+
                                         initialObject.Price = price;
                                         initialObject.LastDateUpdate = currentTime;
                                         CScr++;

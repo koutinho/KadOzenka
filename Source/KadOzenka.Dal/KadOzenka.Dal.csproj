@@ -16,6 +16,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AvitoGetObjectInfo.js" />
+    <None Remove="Resources\CIANGetAdditionalData.js" />
+    <None Remove="Resources\YandexGetInitialState.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\AvitoGetObjectInfo.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\CIANGetAdditionalData.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\YandexGetInitialState.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FastReport.Web" Version="2020.3.4" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
@@ -37,18 +55,6 @@
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
     <ProjectReference Include="..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />
     <ProjectReference Include="..\Utils\EP.SdkCore\EP.Sdk.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\CIANGetAdditionalData.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\AvitoGetObjectInfo.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\YandexGetInitialState.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

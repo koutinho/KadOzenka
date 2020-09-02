@@ -17,8 +17,8 @@ namespace Parser
             if(args[0] == "1")
             {
                 Console.WriteLine("1. Получение данных с RestApp");
-                string[] logins = ConfigurationManager.AppSettings["restAppLogin001"].Split(','),
-                tokens = ConfigurationManager.AppSettings["restAppToken001"].Split(',');
+                string[] logins = ConfigurationManager.AppSettings["restAppLogins"].Split(','),
+                tokens = ConfigurationManager.AppSettings["restAppTokens"].Split(',');
                 for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
             }
             else if(args[0] == "2")
