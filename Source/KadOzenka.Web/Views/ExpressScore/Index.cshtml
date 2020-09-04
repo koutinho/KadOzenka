@@ -123,7 +123,7 @@
                         @Html.Kendo().TextBox().Name("square").HtmlAttributes(new { style = "width: 100%", type = "number" })
                     </div>
                     <div class="col-sm-3 col-md-2">
-                        @Html.CustomLabelFor("Этаж", true)
+                        @Html.CustomLabelFor("Этаж", false)
                     </div>
                     <div class="col-sm-12 col-md-3">
                         @Html.Kendo().TextBox().Name("floor").HtmlAttributes(new { style = "width: 100%" })
@@ -429,96 +429,137 @@
 					return;
 				}
 				if (data.response && data.response.targetObjectId) targetObjectId = data.response.targetObjectId;
-				if (data.response && data.response.coordinates) {
-					Common.ShowMessage(`Было найдено ${data.response.coordinates.length} объектов.`);
-					$(slider.wrapper).find('.k-draghandle').prop('title', data.response.coordinates.length);
-					slider.value(data.response.coordinates.length);
-					$('.calculate').prop('disabled', false);
+                if (data.response && data.response.coordinates) {
+                    Common.ShowMessage(`Было найдено ${data.response.coordinates.length} объектов.`);
+                    $(slider.wrapper).find('.k-draghandle').prop('title', data.response.coordinates.length);
+                    slider.value(data.response.coordinates.length);
+                    $('.calculate').prop('disabled', false);
+                    console.log(data.response.coordinates);
+                    var coords_array = [];
                     data.response.coordinates.forEach(function (data) {
+                        var rindex = coords_array.findIndex(coord => (coord.lng == data.Lng && coord.lat == data.Lat));
+                        if (rindex != -1) {
+                            coords_array[rindex].ids.push(data.Id);
+                            coords_array[rindex].miniCards.push(data.ObjectMiniCard);
+                        }
+                        else coords_array.push({ lng: data.Lng, lat: data.Lat, ids: [data.Id], miniCards: [data.ObjectMiniCard] });
+                    });
 
-                        findPointsIds.push(data.Id);
-                        // Создание макета содержимого балуна.
+                    coords_array.forEach(function (data) {
+                        data.ids.forEach(id => findPointsIds.push(id));
                         var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
-                            data.ObjectMiniCard,
+                            data.miniCards[0],
                             {
-                                // Переопределяем функцию build, чтобы при создании макета начинать
-                                // слушать событие click на кнопке.
                                 build: function () {
                                     balloonContentLayout.superclass.build.call(this);
-                                    $("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
+                                    $("#excludeFromCalculation_" + data.ids[0]).kendoButton({ click: excludeFromCalculation });
                                 },
-                                // Переопределяем функцию clear, чтобы снять
-                                // прослушивание клика при удалении макета с карты.
                                 clear: function () {
-                                    $("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
+                                    $("#excludeFromCalculation_" + data.ids[0]).unbind('click', excludeFromCalculation);
                                     balloonContentLayout.superclass.clear.call(this);
                                 }
                             });
-                        var newPoint = new ymaps.Placemark([data.Lat, data.Lng],
-                            { pointId: data.Id },
+                        var newPoint = new ymaps.Placemark(
+                            [data.lat, data.lng],
+                            { pointId: data.ids[0] },
                             {
                                 balloonContentLayout: balloonContentLayout,
-                                // Запретим замену обычного балуна на балун-панель.
-                                // Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
                                 balloonPanelMaxMapArea: 0,
                                 preset: 'islands#orangeDotIconWithCaption'
                             });
-                        newPoint.properties.set({
-                            // Формируем строку с данными об объекте.
-                            //iconCaption: "тест" //[firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
-                        });
+                        newPoint.properties.set({ iconCaption: data.ids.length + " объектов" });
                         newPoint.options.set('balloonMinWidth', 500);
                         newPoint.options.set('balloonMaxWidth', 800);
                         newPoint.options.set('balloonMinHeight', 420);
                         findPoints.push(newPoint);
                         map.geoObjects.add(newPoint);
+                    });
 
-                        /*
-                        findPointsIds.push(data.Id);
-                        var coord = [data.Lat, data.Lng];
-                        ymaps.geocode(coord).then(function (res) {
-                            var firstGeoObject = res.geoObjects.get(0);
-                            if (firstGeoObject) {
-                                // Создание макета содержимого балуна.
-                                var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
-                                    data.ObjectMiniCard,
-                                    {
-										// Переопределяем функцию build, чтобы при создании макета начинать
-										// слушать событие click на кнопке.
-										build: function() {
-											balloonContentLayout.superclass.build.call(this);
-											$("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
-										},
-										// Переопределяем функцию clear, чтобы снять
-										// прослушивание клика при удалении макета с карты.
-										clear: function() {
-											$("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
-											balloonContentLayout.superclass.clear.call(this);
-										}
-									});
-							    var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
-								    { pointId: data.Id },
-								    {
-									    balloonContentLayout: balloonContentLayout,
-									    // Запретим замену обычного балуна на балун-панель.
-										// Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
-										balloonPanelMaxMapArea: 0,
-										preset: 'islands#orangeDotIconWithCaption'
-									});
-									newPoint.properties.set({
-										// Формируем строку с данными об объекте.
-										iconCaption: [firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
-									});
-									newPoint.options.set('balloonMinWidth', 500);
-									newPoint.options.set('balloonMaxWidth', 800);
-									newPoint.options.set('balloonMinHeight', 420);
-									findPoints.push(newPoint);
-									map.geoObjects.add(newPoint);
-							}
-                        });
-                        */
+     //               data.response.coordinates.forEach(function (data) {
 
-					});
+     //                   findPointsIds.push(data.Id);
+     //                   // Создание макета содержимого балуна.
+     //                   var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
+     //                       data.ObjectMiniCard,
+     //                       {
+     //                           // Переопределяем функцию build, чтобы при создании макета начинать
+     //                           // слушать событие click на кнопке.
+     //                           build: function () {
+     //                               balloonContentLayout.superclass.build.call(this);
+     //                               $("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
+     //                           },
+     //                           // Переопределяем функцию clear, чтобы снять
+     //                           // прослушивание клика при удалении макета с карты.
+     //                           clear: function () {
+     //                               $("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
+     //                               balloonContentLayout.superclass.clear.call(this);
+     //                           }
+     //                       });
+     //                   var newPoint = new ymaps.Placemark([data.Lat, data.Lng],
+     //                       { pointId: data.Id },
+     //                       {
+     //                           balloonContentLayout: balloonContentLayout,
+     //                           // Запретим замену обычного балуна на балун-панель.
+     //                           // Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
+     //                           balloonPanelMaxMapArea: 0,
+     //                           preset: 'islands#orangeDotIconWithCaption'
+     //                       });
+     //                   newPoint.properties.set({
+     //                       // Формируем строку с данными об объекте.
+     //                       //iconCaption: "тест" //[firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
+     //                   });
+     //                   newPoint.options.set('balloonMinWidth', 500);
+     //                   newPoint.options.set('balloonMaxWidth', 800);
+     //                   newPoint.options.set('balloonMinHeight', 420);
+     //                   findPoints.push(newPoint);
+     //                   map.geoObjects.add(newPoint);
+
+     //                   /*
+     //                   findPointsIds.push(data.Id);
+     //                   var coord = [data.Lat, data.Lng];
+     //                   ymaps.geocode(coord).then(function (res) {
+     //                       var firstGeoObject = res.geoObjects.get(0);
+     //                       if (firstGeoObject) {
+     //                           // Создание макета содержимого балуна.
+     //                           var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
+     //                               data.ObjectMiniCard,
+     //                               {
+					//					// Переопределяем функцию build, чтобы при создании макета начинать
+					//					// слушать событие click на кнопке.
+					//					build: function() {
+					//						balloonContentLayout.superclass.build.call(this);
+					//						$("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
+					//					},
+					//					// Переопределяем функцию clear, чтобы снять
+					//					// прослушивание клика при удалении макета с карты.
+					//					clear: function() {
+					//						$("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
+					//						balloonContentLayout.superclass.clear.call(this);
+					//					}
+					//				});
+					//		    var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
+					//			    { pointId: data.Id },
+					//			    {
+					//				    balloonContentLayout: balloonContentLayout,
+					//				    // Запретим замену обычного балуна на балун-панель.
+					//					// Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
+					//					balloonPanelMaxMapArea: 0,
+					//					preset: 'islands#orangeDotIconWithCaption'
+					//				});
+					//				newPoint.properties.set({
+					//					// Формируем строку с данными об объекте.
+					//					iconCaption: [firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
+					//				});
+					//				newPoint.options.set('balloonMinWidth', 500);
+					//				newPoint.options.set('balloonMaxWidth', 800);
+					//				newPoint.options.set('balloonMinHeight', 420);
+					//				findPoints.push(newPoint);
+					//				map.geoObjects.add(newPoint);
+					//		}
+     //                   });
+     //                   */
+
+					//});
 					map.setZoom(13);
 				}
 			}).always(function() { kendo.ui.progress($('body'), false); });
