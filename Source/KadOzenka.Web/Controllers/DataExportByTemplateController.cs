@@ -11,6 +11,8 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Web.Attributes;
+using ObjectModel.Gbu;
+using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -82,7 +84,9 @@ namespace KadOzenka.Web.Controllers
 			long exportByTemplateId;
 			using (var stream = file.OpenReadStream())
 			{
-				exportByTemplateId = DataExporterByTemplate.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+                var exporter = GetExporter(mainRegisterId);
+
+                exportByTemplateId = exporter.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
 					columns.Select(x => new DataExportColumn
 					{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 			}
@@ -101,7 +105,10 @@ namespace KadOzenka.Web.Controllers
 			{
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
-			var resultStream = (MemoryStream)DataExporterByTemplate.ExportDataToExcel(mainRegisterId, excelFile,
+
+            var exporter = GetExporter(mainRegisterId);
+
+            var resultStream = (MemoryStream)exporter.ExportDataToExcel(mainRegisterId, excelFile,
 				columns.Select(x => new DataExportColumn
 				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 
@@ -128,17 +135,27 @@ namespace KadOzenka.Web.Controllers
 
 		#region Support Methods
 
-		private void ValidateColumns(List<DataColumnDto> columns)
+        private DataExporterByTemplate GetExporter(int mainRegisterId)
+        {
+            if(mainRegisterId == OMCoreObject.GetRegisterId() || mainRegisterId == OMMainObject.GetRegisterId())
+                return new DataExporterByTemplate();
+
+            //TODO
+            return new DataExporterByTemplate();
+        }
+
+
+        private void ValidateColumns(List<DataColumnDto> columns)
 		{
 			if (columns.All(x => x.IsKey == false))
 			{
 				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
 			}
 
-			if (columns.Count(x => x.IsKey) > 1)
+            if (columns.Count(x => x.IsKey) > 1)
 			{
-				throw new Exception("Должен быть выбран только один ключевой параметр");
-			}
+                throw new Exception("Должен быть выбран только один ключевой параметр");
+            }
 		}
 
 		#endregion

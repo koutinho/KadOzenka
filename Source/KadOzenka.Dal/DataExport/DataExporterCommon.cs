@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.DataExport
 
 			var fileStream = GetExportTemplateFileStream(export.Id);
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
-			DataExporterByTemplate.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.FileTemplateTitle, fileStream, columns);
+            new DataExporterByTemplate().AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.FileTemplateTitle, fileStream, columns);
 			return $"Выполнено повторное формирование файла по шаблону {export.FileTemplateTitle}";
 		}
 	}

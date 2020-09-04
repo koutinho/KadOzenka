@@ -23,22 +23,18 @@ namespace KadOzenka.Dal.DataExport
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			if (!processQueue.ObjectId.HasValue)
-			{
-				return;
-			}
+                return;
 
-			OMExportByTemplates export = OMExportByTemplates
+            OMExportByTemplates export = OMExportByTemplates
 				.Where(x => x.Id == processQueue.ObjectId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
 
 			if (export == null)
-			{
-				return;
-			}
+                return;
 
-			WorkerCommon.SetProgress(processQueue, 0);
+            WorkerCommon.SetProgress(processQueue, 0);
 
 			export.Status = 1;
 			export.DateStarted = DateTime.Now;
@@ -91,7 +87,7 @@ namespace KadOzenka.Dal.DataExport
 			return true;
 		}
 
-		public static long AddExportToQueue(long mainRegisterId, string registerViewId, string fileName, Stream templateFile, List<DataExportColumn> columns)
+		public long AddExportToQueue(long mainRegisterId, string registerViewId, string fileName, Stream templateFile, List<DataExportColumn> columns)
 		{
 			string jsonstring = JsonConvert.SerializeObject(columns);
 
@@ -118,18 +114,7 @@ namespace KadOzenka.Dal.DataExport
 			return export.Id;
 		}
 
-		private static string GetFileTemplateTitle(string fileName)
-		{
-			return Path.GetFileNameWithoutExtension(fileName);
-		}
-
-		private static string GetFileResultTitleFromTemplateTitle(string fileTemplateTitle)
-		{
-			return $"{fileTemplateTitle}_Result";
-		}
-
-
-		public static Stream ExportDataToExcel(int mainRegisterId, ExcelFile excelTemplate, List<DataExportColumn> columns)
+        public virtual Stream ExportDataToExcel(int mainRegisterId, ExcelFile excelTemplate, List<DataExportColumn> columns)
 		{
 			// Получить значение из ключевой колонки пакетами по 1000
 			int packageNum = 0;
@@ -235,7 +220,7 @@ namespace KadOzenka.Dal.DataExport
 
 		#region Support Methods
 
-		private static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
+		protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
 			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
@@ -247,11 +232,21 @@ namespace KadOzenka.Dal.DataExport
 			return columnNames;
 		}
 
-		private static string GetCellValue(ExcelWorksheet sheet, int row, int cell)
+        protected static string GetCellValue(ExcelWorksheet sheet, int row, int cell)
 		{
 			return sheet.Rows[row].Cells[cell].Value?.ToString();
 		}
 
-		#endregion
-	}
+        protected static string GetFileTemplateTitle(string fileName)
+        {
+            return Path.GetFileNameWithoutExtension(fileName);
+        }
+
+        protected static string GetFileResultTitleFromTemplateTitle(string fileTemplateTitle)
+        {
+            return $"{fileTemplateTitle}_Result";
+        }
+
+        #endregion
+    }
 }
