@@ -185,11 +185,11 @@ namespace KadOzenka.Dal.LongProcess
                 
 
                     var attribute = GetAttribute(attributeName);
+                    _log.ForContext("HasInDataBase", attribute != null).Debug("Обработка атрибута с именем {AttributeName}.", attributeName);
                     if (attribute == null)
                     {
                         attribute = CreateAttribute(attributeName, attributeType);
                     }
-                    _log.ForContext("HasInDataBase", attribute == null).Debug("Обработка атрибута с именем {AttributeName}.", attributeName);
 
                     if (selectedAttributeIds.Contains(attribute.Id))
                         SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
