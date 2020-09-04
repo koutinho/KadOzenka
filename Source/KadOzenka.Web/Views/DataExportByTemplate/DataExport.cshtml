@@ -279,6 +279,8 @@
                 }
             });
 
+
+
             $("#loadButton").kendoButton({
                 enable: true,
                 click: function (e) {
@@ -437,16 +439,18 @@
                 .data('kendoPanelBar')
                 .expand('li[data-expand]');
 
+
+            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
             $.ajax({
                 type: 'GET',
-                @if ((long)ViewBag.MainRegisterId == 100)
+                @if ((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())
                 {
                     <text>
                          url: '/CoreUi/GetAttributes',
                          data: { registerViewId: registerViewId },
                      </text>
                 }
-                else
+                @if ((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
                 {
                     <text>
                         url: '/DataImportByTemplate/GetTreeAttributes',
@@ -456,7 +460,7 @@
                     if (data) {
                         var filtered = data;
                         // При вызове для объектов аналогов
-                        if (registerViewId==='MarketObjects') {
+                        if (isForMarketObjects) {
                             filtered = data.filter(function (x) {
                                 // Оставляем только атрибуты объектов аналогов (Реестр №100)
                                 return (x.ItemId == 100) || (x.AttributeId < '10100000' && x.AttributeId != '0');
@@ -470,7 +474,7 @@
                 }
             });
 
-            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+
             $('#files').kendoUpload({
                 multiple: false,
                 localization: {
