@@ -861,7 +861,9 @@ namespace KadOzenka.Web.Controllers
                 TaskId = taskId
             };
 
-            return View(model);
+			_log.Debug("Загрузка графических факторов из РЕОН {TaskId}", taskId);
+
+			return View(model);
         }
 
         [HttpGet]
@@ -914,7 +916,13 @@ namespace KadOzenka.Web.Controllers
                     };
                 }).ToList();
 
-            return new JsonResult(numericRegisterAttributes);
+			if (numericRegisterAttributes[0] != null)
+			{
+				_log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes[0]))
+					.Debug("Получение списка атрибутов ({AttributesCount}) из РЕОН", numericRegisterAttributes.Count);
+			}
+
+			return new JsonResult(numericRegisterAttributes);
         }
 
         [HttpPost]
@@ -938,8 +946,11 @@ namespace KadOzenka.Web.Controllers
             //}, new CancellationToken());
 
             KoFactorsFromReon.AddProcessToQueue(inputParameters);
+			_log.ForContext("TaskId", inputParameters.TaskId)
+				.ForContext("AttributeIds", inputParameters.AttributeIds)
+				.Information("Процесс {SRDCoreFunctions} поставлен в очередь", "KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON");
 
-            return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
+			return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
         }
 
 		#endregion

@@ -20,6 +20,9 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Diagnostics;
+using Serilog;
+using Serilog.Context;
 
 namespace IO.Swagger.Client
 {
@@ -32,7 +35,8 @@ namespace IO.Swagger.Client
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
         };
-
+        private readonly ILogger _log = Serilog.Log.ForContext<KadOzenka.WebClients.ReonClient.Api.RosreestrDataApi>();
+        private readonly string _logTemplate = "HTTP-запрос к веб-сервису РЕОН responded {StatusCode} in {Elapsed: 0.0000} ms";
         /// <summary>
         /// Allows for extending request processing for <see cref="ApiClient"/> generated code.
         /// </summary>
@@ -164,12 +168,12 @@ namespace IO.Swagger.Client
             Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
             String contentType)
         {
+            var start = Stopwatch.GetTimestamp();
             var request = PrepareRequest(
                 path, method, queryParams, postBody, headerParams, formParams, fileParams,
                 pathParams, contentType);
 
-            // set timeout
-            
+            // set timeout     
             RestClient.Timeout = Configuration.Timeout;
             // set user agent
             RestClient.UserAgent = Configuration.UserAgent;
@@ -177,7 +181,11 @@ namespace IO.Swagger.Client
             InterceptRequest(request);
             var response = RestClient.Execute(request);
             InterceptResponse(request, response);
-
+            
+            var elapsedMs = (Stopwatch.GetTimestamp() - start) * 1000 / (double)Stopwatch.Frequency;
+            //LogContext.PushProperty("Uri", response.ResponseUri.AbsoluteUri);
+            Log((int)response.StatusCode, (double)elapsedMs, response);
+            
             return (Object) response;
         }
         /// <summary>
@@ -199,12 +207,18 @@ namespace IO.Swagger.Client
             Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
             String contentType)
         {
+            var start = Stopwatch.GetTimestamp();
             var request = PrepareRequest(
                 path, method, queryParams, postBody, headerParams, formParams, fileParams,
                 pathParams, contentType);
             InterceptRequest(request);
             var response = await RestClient.ExecuteTaskAsync(request);
             InterceptResponse(request, response);
+
+            var elapsedMs = (Stopwatch.GetTimestamp() - start) * 1000 / (double)Stopwatch.Frequency;
+            //LogContext.PushProperty("Uri", response.ResponseUri.AbsoluteUri);
+            Log((int)response.StatusCode, (double)elapsedMs, response);
+
             return (Object)response;
         }
 
@@ -217,6 +231,7 @@ namespace IO.Swagger.Client
         {
             return UrlEncode(str);
         }
+        
 
         /// <summary>
         /// Create FileParameter based on Stream.
@@ -525,6 +540,32 @@ namespace IO.Swagger.Client
         private static bool IsCollection(object value)
         {
             return value is IList || value is ICollection;
+        }
+
+        private void Log(int StatusCode, double ElapsedMs, IRestResponse response)
+        {
+            LogContext.PushProperty("Uri", response.ResponseUri.AbsoluteUri);
+            try
+            {
+                if (StatusCode == 200)
+                {
+                    _log.ForContext("Response", Deserialize(response, typeof(object))).Verbose(_logTemplate, StatusCode, ElapsedMs);
+                }
+                else
+                {
+                    if (StatusCode > 300)
+                    {
+                        _log.Warning(_logTemplate, StatusCode, ElapsedMs);
+                    }
+                    else
+                    {
+                        _log.Debug(_logTemplate, StatusCode, ElapsedMs);
+                    }
+                }
+            }
+            catch (Exception ex) {
+                _log.Error(ex, _logTemplate, StatusCode, ElapsedMs);
+            }
         }
     }
 }

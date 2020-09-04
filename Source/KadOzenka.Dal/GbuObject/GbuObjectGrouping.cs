@@ -892,7 +892,8 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 catch (Exception ex)
                 {
-                    Serilog.Log.Logger.Error("SetPriorityGroup", ex);
+                    if(PriorityGrouping.CurrentCount < 10)
+                        Serilog.Log.Logger.Warning("SetPriorityGroup", ex);
                 }
             }
         }

@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CalendarHolidaysConfig>
+  <Url>http://xmlcalendar.ru/data/ru/{0}/calendar.xml</Url>
+</CalendarHolidaysConfig>

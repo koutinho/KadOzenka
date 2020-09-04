@@ -7,6 +7,8 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.ExportAttribute;
 using ObjectModel.Core.Shared;
+using Serilog;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -15,6 +17,7 @@ namespace KadOzenka.Dal.GbuObject
     /// </summary>
     public class ExportAttributeToKO
     {
+        private static readonly ILogger _log = Log.ForContext<ExportAttributeToKO>();
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
@@ -77,8 +80,16 @@ namespace KadOzenka.Dal.GbuObject
             foreach (GbuObjectAttribute attrib in attribs)
             {
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
-                //if (current != null)
+
+                try
                 {
+                    _log.ForContext("IdAttributeGBU", current.IdAttributeGBU)
+                        .ForContext("AttributeId", current.IdAttributeKO)
+                        .Verbose("ExportAttributeToKO.RunOneUnit");
+               
+
+                //if (current != null)
+                //{
 	                var attributeData = RegisterCache.GetAttributeData((int)current.IdAttributeKO);
 					long id_factor = current.IdAttributeKO;
                     long RegId = attributeData.RegisterId;
@@ -113,6 +124,13 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     registerObject.SetAttributeValue((int)id_factor, value, referenceItemId);
                     RegisterStorage.Save(registerObject);
+                //}
+                }
+                catch (System.Exception ex)
+                {
+                    _log.ForContext("IdAttributeGBU", current.IdAttributeGBU)
+                        .ForContext("AttributeId", current.IdAttributeKO)
+                        .ForContext("attrib", JsonConvert.SerializeObject(attrib)).Error(ex, "ExportAttributeToKO.RunOneUnit");
                 }
             }
         }

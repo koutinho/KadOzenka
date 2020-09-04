@@ -4797,12 +4797,12 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         None = 0,
 		/// <summary>
-		/// Кадастровый квартал (1)
+		/// Кадастровый квартал (2190)
 		/// </summary>
 		[Description("Кадастровый квартал")]
-		[EnumCode("1")]
-		[ShortTitle("Кадастровый квартал")]
-		CadastralBlock = 1,
+		[EnumCode("002001010002")]
+		[ShortTitle("")]
+		CadastralQuartal = 2190,
 		/// <summary>
 		/// Земельный участок (4)
 		/// </summary>

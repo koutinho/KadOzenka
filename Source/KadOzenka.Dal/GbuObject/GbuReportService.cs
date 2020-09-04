@@ -19,7 +19,8 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		private ExcelFile _excelTemplate;
 		private ExcelWorksheet _mainWorkSheet;
-	
+		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
+
 		private int _currentRow { get; set; }
 
 		public GbuReportService()
@@ -84,11 +85,11 @@ namespace KadOzenka.Dal.GbuObject
 				_mainWorkSheet.Rows[row].Cells[column].SetValue(value);
 
 				if (new Random().Next(0, 10000) > 9950)
-					Serilog.Log.Logger.Debug("Запись значения в Excel {row} {column} {value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Debug("Запись значения в Excel {row} {column} {value}", row, column, value);
 			}
 			catch (Exception ex) {
 				if (new Random().Next(0, 100) > 80)
-					Serilog.Log.Logger.Error(ex, "Ошибка записи значения в Excel {row} {column} {value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Error(ex, "Ошибка записи значения в Excel {row} {column} {value}", row, column, value);
             }
 		}
 
@@ -108,7 +109,7 @@ namespace KadOzenka.Dal.GbuObject
 			int countColumns = _mainWorkSheet.CalculateMaxUsedColumns();
 			int errCount = 0;
 			int successCount = 0;
-			Serilog.Log.Logger.Debug("Установка стилей в Excel таблице {countRows} x {countColumns}", countRows, countColumns);
+			_log.Debug("Установка стилей в Excel таблице {countRows} x {countColumns}", countRows, countColumns);
 			for (int i = 0; i < countRows; i++)
             {
                 for (int j = 0; j < countColumns; j++)
@@ -123,24 +124,24 @@ namespace KadOzenka.Dal.GbuObject
                             _mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
 							
 							if (successCount < 5)
-								Serilog.Log.Logger.Debug("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								_log.Debug("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
 							successCount++;
 						}
                         catch (Exception ex)
                         {
 							if (errCount < 5)
-								Serilog.Log.Logger.Error(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								_log.Error(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
 							errCount++;
 						}
                     }
                 }
             }
-            Serilog.Log.Debug("Применение стилей в Excel завершено {successCount} {errCount}", successCount, errCount);
+			_log.Debug("Применение стилей в Excel завершено {successCount} {errCount}", successCount, errCount);
 		}
 
 		public void SetIndividualWidth(int column, int width)
 		{
-			Serilog.Log.Debug("Установка ширины {width} для столбца {column}", width, column);
+			_log.Debug("Установка ширины {width} для столбца {column}", width, column);
 			_mainWorkSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
@@ -148,7 +149,7 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			try
 			{
-				Serilog.Log.Debug("Сохранение отчета {fileName}", fileName);
+				_log.Debug("Сохранение отчета {fileName}", fileName);
 				MemoryStream stream = new MemoryStream();
 				_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
@@ -177,7 +178,7 @@ namespace KadOzenka.Dal.GbuObject
 			}
 			catch (Exception e)
 			{
-				Serilog.Log.Error(e, "Сохранение отчета завершилось исключением");
+				_log.Error(e, "Сохранение отчета завершилось исключением");
 				//Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				throw;

@@ -16,29 +16,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\AvitoGetObjectInfo.js" />
-    <None Remove="Resources\CIANGetAdditionalData.js" />
-    <None Remove="Resources\YandexGetInitialState.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\AvitoGetObjectInfo.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\CIANGetAdditionalData.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\YandexGetInitialState.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FastReport.Web" Version="2020.3.4" />
+    <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />
+    <PackageReference Include="Platform" Version="1.0.338" />
     <PackageReference Include="Platform.Reports" Version="1.0.43" />
+    <PackageReference Include="Platform.Web" Version="1.0.569" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.Support" Version="3.141.0" />
@@ -55,6 +40,18 @@
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
     <ProjectReference Include="..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />
     <ProjectReference Include="..\Utils\EP.SdkCore\EP.Sdk.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\CIANGetAdditionalData.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\AvitoGetObjectInfo.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\YandexGetInitialState.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

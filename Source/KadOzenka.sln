@@ -158,22 +158,6 @@ Global
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.ActiveCfg = Release|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.Build.0 = Release|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Debug|x86.Build.0 = Debug|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Release|x86.ActiveCfg = Release|Any CPU
-		{D4D9946A-F72B-450F-8337-90C7DD43ED6E}.Release|x86.Build.0 = Release|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Debug|x86.Build.0 = Debug|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Release|x86.ActiveCfg = Release|Any CPU
-		{E81E5192-92F8-46AB-A40D-8A32C37A0773}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,7 +176,7 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 16
+		SccNumberOfProjects = 14
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -242,11 +226,5 @@ Global
 		SccProjectUniqueName13 = KadOzenka.LongProcessService\\KadOzenka.LongProcessService.csproj
 		SccProjectName13 = KadOzenka.LongProcessService
 		SccLocalPath13 = KadOzenka.LongProcessService
-		SccProjectUniqueName14 = ..\\..\\..\\PlatformNetCore\\Core\\Source\\Platform.Web\\Platform.Web.csproj
-		SccProjectName14 = ../../../PlatformNetCore/Core/Source/Platform.Web
-		SccLocalPath14 = ..\\..\\..\\PlatformNetCore\\Core\\Source\\Platform.Web
-		SccProjectUniqueName15 = ..\\..\\..\\PlatformNetCore\\Core\\Source\\Platform.Reports\\Platform.Reports.csproj
-		SccProjectName15 = ../../../PlatformNetCore/Core/Source/Platform.Reports
-		SccLocalPath15 = ..\\..\\..\\PlatformNetCore\\Core\\Source\\Platform.Reports
 	EndGlobalSection
 EndGlobal

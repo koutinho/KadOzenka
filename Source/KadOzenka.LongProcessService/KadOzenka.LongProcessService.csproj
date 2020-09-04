@@ -21,7 +21,6 @@
     <None Remove="Log\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -29,7 +28,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.553" />
+    <PackageReference Include="Platform.Web" Version="1.0.569" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspnetcoreHttpcontext" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
@@ -46,7 +45,7 @@
 
   <ItemGroup>
     <Reference Include="Kendo.Mvc">
-      <HintPath>..\..\..\..\PlatformNetCore\Core\Source\Kendo.Mvc.dll</HintPath>
+      <HintPath>..\_DLL\Kendo.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
 

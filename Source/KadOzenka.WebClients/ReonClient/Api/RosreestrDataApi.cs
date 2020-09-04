@@ -16,6 +16,8 @@ using CadAppraisalDataApi.Models;
 using RestSharp;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
+using Serilog;
+using Serilog.Context;
 
 namespace KadOzenka.WebClients.ReonClient.Api
 {
@@ -220,6 +222,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
     public partial class RosreestrDataApi : IRosreestrDataApi
     {
         private ExceptionFactory _exceptionFactory = (name, response) => null;
+        private readonly ILogger _log = Log.ForContext<RosreestrDataApi>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RosreestrDataApi"/> class.
@@ -510,6 +513,12 @@ namespace KadOzenka.WebClients.ReonClient.Api
 
             int localVarStatusCode = (int)localVarResponse.StatusCode;
 
+            LogContext.PushProperty("AbsoluteUri", localVarResponse.ResponseUri.AbsoluteUri);
+            LogContext.PushProperty("Code", localVarStatusCode);
+            LogContext.PushProperty("DocId", id);
+            LogContext.PushProperty("Fname", fname);
+            _log.Verbose("Запрос документа из файлового хранилища");
+
             if (ExceptionFactory != null)
             {
                 Exception exception = ExceptionFactory("RosreestrDataGetFileByIdZD", localVarResponse);
@@ -586,6 +595,12 @@ namespace KadOzenka.WebClients.ReonClient.Api
 
             int localVarStatusCode = (int)localVarResponse.StatusCode;
 
+            _log.ForContext("AbsoluteUri", localVarResponse.ResponseUri.AbsoluteUri)
+               .ForContext("Code", localVarStatusCode)
+               .ForContext("DocId", id)
+               .ForContext("Fname", fname)
+               .Information("Запрос документа из файлового хранилища");
+
             if (ExceptionFactory != null)
             {
                 Exception exception = ExceptionFactory("RosreestrDataGetFileByIdZD", localVarResponse);
@@ -653,13 +668,22 @@ namespace KadOzenka.WebClients.ReonClient.Api
             if (cadNum != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
             if (dateAppraisal != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
 
-
+            LogContext.PushProperty("DateAppraisal", dateAppraisal);
+            LogContext.PushProperty("CadNum", cadNum);
+           
             // make the HTTP request
             IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
             int localVarStatusCode = (int)localVarResponse.StatusCode;
+
+            //LogContext.PushProperty("Url", localVarResponse.ResponseUri.AbsoluteUri);
+            //_log.Debug("RosreestrDataGetGraphFactorsByCadNumWithHttpInfo");
+            //_log.ForContext("DateAppraisal", dateAppraisal)
+            //    .ForContext("Url", localVarResponse.ResponseUri.AbsoluteUri)
+            //    .ForContext("StatusCode", localVarResponse.StatusCode)
+            //    .Information("Получение графических факторов по кадастровому номеру {CadNum}", cadNum);
 
             if (ExceptionFactory != null)
             {
@@ -729,6 +753,8 @@ namespace KadOzenka.WebClients.ReonClient.Api
             if (cadNum != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
             if (dateAppraisal != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
 
+            LogContext.PushProperty("DateAppraisal", dateAppraisal);
+            LogContext.PushProperty("CadNum", cadNum);
 
             // make the HTTP request
             IRestResponse localVarResponse = (IRestResponse)await Configuration.ApiClient.CallApiAsync(localVarPath,
@@ -736,6 +762,8 @@ namespace KadOzenka.WebClients.ReonClient.Api
                 localVarPathParams, localVarHttpContentType);
 
             int localVarStatusCode = (int)localVarResponse.StatusCode;
+            
+            //LogContext.PushProperty("Url", localVarResponse.ResponseUri.AbsoluteUri);
 
             if (ExceptionFactory != null)
             {
@@ -803,7 +831,6 @@ namespace KadOzenka.WebClients.ReonClient.Api
 
             if (dateFrom != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateFrom", dateFrom)); // query parameter
             if (dateTo != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateTo", dateTo)); // query parameter
-
 
             // make the HTTP request
             IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,

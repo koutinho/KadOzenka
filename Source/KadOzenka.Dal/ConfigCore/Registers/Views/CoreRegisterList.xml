@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="920" Description="Списки" LinkedRegistersList="920,930,950" 
+              ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" 
+              SearchPanel="CoreRegisterList" DockNavigationPanel="true">
+    <Buttons>
+        <Button Caption="Операции" Icon="fas fa-wrench" Type="DropDown">
+            <DropDownButtons>
+                <!--<Button Caption="Добавить" Icon="icon-plus" NavigateURL="~/Registers/ListIndex" WindowHeight="300" WindowWidth="500">
+                    <Parameters>
+                        <Parameter Key="PageMode" Value="Create" />
+                        <Parameter Key="RegisterId" Value="{Get:ListRegisterId}" />
+                        <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>-->
+                <Button Caption="Копировать" Icon="far fa-copy" NavigateURL="~/Registers/ListIndex" NeedRefresh="true" WindowHeight="300" WindowWidth="500">
+                    <ConditionGroups>
+                        <ConditionGroup HideOrDisable="Disable">
+                            <Conditions>
+                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                            </Conditions>
+                        </ConditionGroup>
+                    </ConditionGroups>
+                    <Parameters>
+                        <Parameter Key="Clone" Value="true" />
+                        <Parameter Key="Id" Value="[ObjectId]" />
+                        <Parameter Key="ListRegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/Registers/DeleteList" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
+                    <ConditionGroups>
+                        <ConditionGroup HideOrDisable="Disable">
+                            <Conditions>
+                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                            </Conditions>
+                        </ConditionGroup>
+                    </ConditionGroups>
+                    <Parameters>
+                        <Parameter Key="id" Value="[ObjectId]" />
+                    </Parameters>
+                </Button>
+                <!--<Button Caption="Загрузка объектов в список" NavigateURL="~/Registers/ListEditor" NeedRefresh="true"  WindowTitleTemplate="Загрузка объектов в список: [92000200]">-->
+                <Button Caption="Загрузка объектов в список" NavigateURL="~/Registers/ListEditor" NeedRefresh="true" >
+                    <ConditionGroups>
+                        <ConditionGroup HideOrDisable="Disable">
+                            <Conditions>
+                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                            </Conditions>
+                        </ConditionGroup>
+                    </ConditionGroups>
+                    <Parameters>
+                        <Parameter Key="Id" Value="[ObjectId]" />
+                        <Parameter Key="ListRegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Объединить" NavigateURL="~/CoreUI/Registers/ListEditor/MergeLists.aspx?" WindowHeight="300" WindowWidth="500" WindowTitleTemplate="Объединение списков"
+                        NeedRefreshWithoutSavingSelection="true">
+                    <Parameters>
+                        <Parameter Key="IsMerge" Value="1" />
+                        <Parameter Key="Id" Value="[ObjectId]" />
+                        <Parameter Key="RegisterId" Value="{Get:ListRegisterId}" />
+                        <Parameter Key="ListRegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+                <Button Caption="Вычесть" NavigateURL="~/CoreUI/Registers/ListEditor/MergeLists.aspx?" WindowHeight="300" WindowWidth="500" WindowTitleTemplate="Вычитание списков"
+                        NeedRefreshWithoutSavingSelection="true">
+                    <Parameters>
+                        <Parameter Key="IsMerge" Value="0" />
+                        <Parameter Key="ListID" Value="[ObjectId]" />
+                        <Parameter Key="RegisterId" Value="{Get:ListRegisterId}" />
+                        <Parameter Key="ListRegisterViewId" Value="{Get:RegisterViewId}" />
+                    </Parameters>
+                </Button>
+            </DropDownButtons>
+        </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+    <Tabs>
+        <Tab Caption="Основные данные" Icon="fas fa-pencil-alt" NavigateURL="~/Registers/ListIndex">
+            <Parameters>
+                <Parameter Key="PageMode" Value="Edit" />
+                <Parameter Key="Id" Value="[ObjectId]" />
+                <Parameter Key="RegisterId" Value="{Get:ListRegisterId}" />
+                <Parameter Key="ListRegisterViewId" Value="{Get:RegisterViewId}" />
+            </Parameters>
+        </Tab>
+        <Tab Caption="Список объектов" NavigateURL="~/RegistersView/CoreRegisterListObject">
+            <Parameters>
+                <Parameter Key="Transition" Value="1" />
+                <Parameter Key="UseDefultLayout" Value="1" />
+                <Parameter Key="qs" Value="[ObjectKindId:92000400]InList[ObjectID]" />
+                <Parameter Key="ListRegisterId" Value="[92000400]" />
+                <Parameter Key="Id" Value="[ObjectId]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>

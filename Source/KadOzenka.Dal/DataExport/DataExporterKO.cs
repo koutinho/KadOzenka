@@ -29,6 +29,7 @@ using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using SaveOptions = GemBox.Document.SaveOptions;
 using KadOzenka.Dal.GbuObject;
+using Serilog;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -4811,7 +4812,8 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class KOUnloadResult
     {
-	    public static List<KoUnloadResultType> GetKoUnloadResultTypes(KOUnloadSettings setting)
+        private static readonly ILogger _log = Log.ForContext<KOUnloadResult>();
+        public static List<KoUnloadResultType> GetKoUnloadResultTypes(KOUnloadSettings setting)
 	    {
 		    List<KoUnloadResultType> koUnloadResults = new List<KoUnloadResultType>();
 
@@ -4839,24 +4841,35 @@ namespace KadOzenka.Dal.DataExport
             var koUnloadResultTypes = JsonConvert.DeserializeObject<List<KoUnloadResultType>>(unloadResultQueue.UnloadTypesMapping);
             var unloadResultMethodInfoDictionary = GetUnloadResultMethodInfoDictionary();
 
+            _log.Debug(new Exception(unloadResultQueue.UnloadTypesMapping), "Выгрузка результатов {koUnloadResultTypesCount} ", koUnloadResultTypes.Count);
+
             var unloadCurrentCount = 1;
             foreach (var koUnloadResultType in koUnloadResultTypes)
             {
-	            unloadResultQueue.UnloadCurrentCount = unloadCurrentCount;
+              
+                unloadResultQueue.UnloadCurrentCount = unloadCurrentCount;
 	            unloadResultQueue.CurrentUnloadType_Code = koUnloadResultType;
 	            unloadResultQueue.Save();
 
 	            //TODO: сейчас не реализована Выгрузка истории по объектам
                 if (koUnloadResultType != KoUnloadResultType.UnloadHistory)
                 {
-	                var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
+                   
+                    var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
 		                .Invoke(null, new object[] { unloadResultQueue, setting, setProgress });
-	                result.AddRange(unloadResult);
+                    
+                    if (unloadCurrentCount == 1)
+                    {
+                        _log.Verbose("Выгрузка результатов {unloadResultCount} {unloadResult0}", unloadResult.Count, unloadResult[0]);
+                    }
+
+                    result.AddRange(unloadResult);
                 }
                 
                 unloadCurrentCount++;
+                _log.Verbose("Выгрузка результатов {unloadCurrentCount}", unloadCurrentCount);
             }
-
+            _log.Debug("Выгрузка результатов {resultCount} {result0}", result.Count, result[0]);
             return result;
         }
 

@@ -10,13 +10,14 @@ using KadOzenka.Dal.DataExport;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.CalculateSystem
 {
 	public class KoDownloadResultProcess: LongProcess
 	{
 		public const string LongProcessName = "KoDownloadResult";
-
+		private readonly ILogger _log = Log.ForContext<KoDownloadResultProcess>();
 
 		public static void AddImportToQueue(KOUnloadSettings setting)
 		{
@@ -43,12 +44,13 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				return;
 			}
-
+			_log.Debug("StartProcess {processType} {QueueId}", processType.Description, processQueue.Id);
 			OMUnloadResultQueue unloadResultQueue = OMUnloadResultQueue
 				.Where(x => x.Id == processQueue.ObjectId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
+			_log.Debug("StartProcess {processType} {QueueId} {ResultQueueId}", processType.Description, processQueue.Id, unloadResultQueue.Id);
 			if (unloadResultQueue == null)
 			{
 				WorkerCommon.SetMessage(processQueue, Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
@@ -62,14 +64,22 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 				unloadResultQueue.DateStarted = DateTime.Now;
 				unloadResultQueue.Save();
-
+				WorkerCommon.SetProgress(processQueue, 5);
+				_log.Debug("StartProcess {processType} {QueueId} {ResultQueueId}", processType.Description, processQueue.Id, unloadResultQueue.Id);
 				var settings = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
+			
+				WorkerCommon.SetProgress(processQueue, 10);
+				_log.Debug("StartProcess {processType} {QueueId} {UnloadXML1} {UnloadXML2}", processType.Description, processQueue.Id, settings.UnloadXML1, settings.UnloadXML2);
 				var res = KOUnloadResult.Unload(processQueue, unloadResultQueue, settings);
-				WorkerCommon.SetProgress(processQueue, 90);
+				_log.Debug("StartProcess {processType} {QueueId} {ResCount} {FileName}", processType.Description, processQueue.Id, res.Count, res[0].FileName);
+				WorkerCommon.SetProgress(processQueue, 50);
 
 				var correctRes = res.Where(x => !x.NoResult).ToList();
 				string msg = GetMessage("Результат операции:", correctRes, true);
+				WorkerCommon.SetProgress(processQueue, 60);
+				_log.Debug("StartProcess {processType} {QueueId} {CorrectRes.Count} {FileName} {SendResultToReon}", processType.Description, processQueue.Id, correctRes.Count, correctRes[0].TaskId, settings.SendResultToReon);
 
+			 
 				if (settings.SendResultToReon)
 				{
 					foreach (var item in correctRes.Where(x => x.FileId != 0).ToList())
@@ -84,6 +94,8 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 						}.Save();
 					}
 				}
+				_log.Debug("StartProcess {processType} {QueueId} {CorrectRes.Count} {FileName}", processType.Description, processQueue.Id, correctRes.Count, correctRes[0].TaskId);
+				WorkerCommon.SetProgress(processQueue, 90);
 
 				unloadResultQueue.DateFinished = DateTime.Now;
 				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;

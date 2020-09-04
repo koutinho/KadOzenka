@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-            _log.Information("Старт фонового процесса {LongProcessName} {cancellationToken} {processQueueId} {processType}", LongProcessName, cancellationToken, processQueue.Id, processType.Parameters);
+            _log.Information("Старт фонового процесса {LongProcessName} {cancellationToken} {QueueId} {processType}", LongProcessName, cancellationToken, processQueue.Id, processType.Parameters);
             var cancelProgressCounterSource = new CancellationTokenSource();
             var cancelProgressCounterToken = cancelProgressCounterSource.Token;
             try

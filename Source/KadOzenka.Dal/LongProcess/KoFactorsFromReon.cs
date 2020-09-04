@@ -20,13 +20,14 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Configurator;
 using Serilog;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class KoFactorsFromReon : LongProcess
     {
         public const string LongProcessName = nameof(KoFactorsFromReon);
-        private static readonly ILogger Log = Serilog.Log.ForContext<KoFactorsFromReon>();
+        private static readonly ILogger _log = Log.ForContext<KoFactorsFromReon>();
 
         public static readonly long ReonSourceRegisterId = 44355304;
         public static readonly string AttributeNameSeparator = " - ";
@@ -50,8 +51,6 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
-            Log.Information($"Старт фонового процесса '{LongProcessName}', ID очереди - {processQueue.Id}, входные параметры: {processType.Parameters}");
-
             WorkerCommon.SetProgress(processQueue, 0);
             
             var messageSubject = "Получение графических факторов из ИС РЕОН";
@@ -90,6 +89,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     var request = GetRequest(task, unit);
                     var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
+                   
                     var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, inputParameters.AttributeIds, response);
                     if (currentErrorIds?.Count > 0)
                     {
@@ -108,8 +108,16 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     errors++;
                     isError = true;
-                    var errorId = ErrorManager.LogError(ex);
-                    AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (журнал: {errorId})");
+                    // Нет смысла логировать однотипные ошибки в БД
+                    if (errors < 10)
+                    {
+                        var errorId = ErrorManager.LogError(ex);
+                        AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (журнал: {errorId})");
+                    }
+                    else {
+                        AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (без записи в журнал)");
+                    }
+                    
                 }
             });
 
@@ -174,19 +182,16 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     var attributeType = RegisterAttributeType.DECIMAL;
                     var attributeName = CreateAttributeName(factor);
+                
 
                     var attribute = GetAttribute(attributeName);
                     if (attribute == null)
                     {
-                        Log.Information($"Атрибут с именем '{attributeName}' не найден, поэтому создаем его.");
                         attribute = CreateAttribute(attributeName, attributeType);
                     }
-                    else
-                    {
-                        Log.Information($"Атрибут с именем '{attributeName}' найден.");
-                    }
+                    _log.ForContext("HasInDataBase", attribute == null).Debug("Обработка атрибута с именем {AttributeName}.", attributeName);
 
-                    if(selectedAttributeIds.Contains(attribute.Id))
+                    if (selectedAttributeIds.Contains(attribute.Id))
                         SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
                 }
                 catch (Exception ex)
@@ -240,7 +245,7 @@ namespace KadOzenka.Dal.LongProcess
             }
 
             RegisterCache.UpdateCache(0, null);
-            Log.Information("Кеш обновлен.");
+            _log.Debug("Создан атрибут {attributeName} с Id {AttributeId}.", attributeName, omAttribute.Id);
 
             return omAttribute;
         }
@@ -248,15 +253,8 @@ namespace KadOzenka.Dal.LongProcess
         private void SaveFactor(long objectId, long attributeId, RegisterAttributeType attributeType,
             GraphFactor factor, OMInstance taskDocument)
         {
-            Log.Information($"Сохранение атрибута с Id '{attributeId}'.");
-            if (!RegisterCache.RegisterAttributes.TryGetValue(attributeId, out var a))
-            {
-                Log.Information("Атрибут НЕ найден в кеше.");
-            }
-            else
-            {
-                Log.Information("Атрибут найден в кеше.");
-            }
+            _log.ForContext("HasInCache", RegisterCache.RegisterAttributes.TryGetValue(attributeId, out var _))
+                .Debug("Обработка атрибута с Id {AttributeId}.", attributeId);
 
             var gbuObjectAttribute = new GbuObjectAttribute
             {
