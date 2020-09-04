@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
             return string.IsNullOrWhiteSpace(name) ? "Без группы" : name;
         }
 
-        protected static decimal? GetCalcValue(UpksCalcType upksCalcType, MinMaxAverageCalculationInfoDto unitDto)
+        protected static decimal? GetCalcValue(UpksCalcType upksCalcType, CalculationInfoDto unitDto)
         {
             decimal? value = null;
             switch (upksCalcType)

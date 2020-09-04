@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage
 {
-	public class MinMaxAverageByGroupsUpksOksDto : MinMaxAverageCalculationInfoDto
+	public class UpksByGroupsOksDto : CalculationInfoDto
     {
 		public string ParentGroup { get; set; }
 		public string PropertyType { get; set; }

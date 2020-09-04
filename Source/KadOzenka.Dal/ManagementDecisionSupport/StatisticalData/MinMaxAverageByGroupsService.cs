@@ -40,12 +40,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         #region UPRS
         //TODO возможно, вынести в отдельный сервис
 
-        public List<MinMaxAverageByGroupsUprsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
+        public List<UprsByGroupsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
         {
             var sql = GetSqlForUprs(taskIdList, false);
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(sql);
+            var result = QSQuery.ExecuteSql<UprsByGroupsZuDto>(sql);
 
-            var summary = new MinMaxAverageByGroupsUprsZuDto
+            var summary = new UprsByGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
@@ -59,13 +59,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        public List<MinMaxAverageByGroupsAndSubGroupsUprsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
+        public List<UprsByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
         {
             var sql = GetSqlForUprs(taskIdList, true);
 
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(sql);
+            var result = QSQuery.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(sql);
 
-            var summary = new MinMaxAverageByGroupsAndSubGroupsUprsZuDto
+            var summary = new UprsByGroupsAndSubGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 SubGroup = "Итого по субъекту РФ г Москва",
@@ -115,15 +115,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         private class GroupingOksDictionary
         {
             public GroupingOks Key { get; set; }
-            public List<MinMaxAverageByGroupsUpksOksDto> Values { get; set; }
+            public List<UpksByGroupsOksDto> Values { get; set; }
         }
 
-        public List<MinMaxAverageByGroupsUpksZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
+        public List<UpksByGroupsZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
         {
             var sql = GetSqlForUpks(taskIdList, false);
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(sql);
+            var result = QSQuery.ExecuteSql<UpksByGroupsZuDto>(sql);
 
-            var summary = new MinMaxAverageByGroupsUpksZuDto
+            var summary = new UpksByGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
@@ -137,12 +137,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        public List<MinMaxAverageByGroupsAndSubGroupsUpksZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
+        public List<UpksByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
         {
             var sql = GetSqlForUpks(taskIdList, true);
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUpksZuDto>(sql);
+            var result = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(sql);
 
-            var summary = new MinMaxAverageByGroupsAndSubGroupsUpksZuDto
+            var summary = new UpksByGroupsAndSubGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 SubGroup = "Итого по субъекту РФ г Москва",
@@ -176,7 +176,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return string.Format(contents, subGroupSelectionFromQuery, string.Join(",", taskIdList), subGroupForGrouping);
         }
 
-        public List<MinMaxAverageByGroupsUpksOksDto> GetDataByGroupsUpksOks(long[] taskIdList)
+        public List<UpksByGroupsOksDto> GetDataByGroupsUpksOks(long[] taskIdList)
         {
             string contents;
             using (var sr = new StreamReader(Configuration.GetFileStream("MinMaxAverageUPKSOks", "sql", "SqlQueries")))
@@ -188,7 +188,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
 
             var sql = string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
-            var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksOksDto>(sql);
+            var result = QSQuery.ExecuteSql<UpksByGroupsOksDto>(sql);
 
             var groupingOksDictionaries = result.GroupBy(x => new
             {
@@ -216,13 +216,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        private static MinMaxAverageByGroupsUpksOksDto GetSummaryUpksOks(GroupingOksDictionary groupingOksDictionary)
+        private static UpksByGroupsOksDto GetSummaryUpksOks(GroupingOksDictionary groupingOksDictionary)
         {
             var objectCount = groupingOksDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
 
             var upksValues = groupingOksDictionary.Values.ToList();
 
-            return new MinMaxAverageByGroupsUpksOksDto
+            return new UpksByGroupsOksDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 PropertyType = groupingOksDictionary.Key.PropertyType,
@@ -241,15 +241,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         #region UPKS And UPRS
 
-        public List<MinMaxAverageByGroupsUpksAndUprsZuDto> GetDataByGroupsUpksAndUprsZu(long[] taskIdList)
+        public List<UpksAndUprsByGroupsZuDto> GetDataByGroupsUpksAndUprsZu(long[] taskIdList)
         {
             var upksSql = GetSqlForUpks(taskIdList, false);
-            var upksResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksZuDto>(upksSql);
+            var upksResults = QSQuery.ExecuteSql<UpksByGroupsZuDto>(upksSql);
 
             var uprsSql = GetSqlForUprs(taskIdList, false);
-            var uprsResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsUprsZuDto>(uprsSql);
+            var uprsResults = QSQuery.ExecuteSql<UprsByGroupsZuDto>(uprsSql);
 
-            var result = new List<MinMaxAverageByGroupsUpksAndUprsZuDto>();
+            var result = new List<UpksAndUprsByGroupsZuDto>();
             foreach (var upks in upksResults)
             {
                 var uprs = uprsResults.FirstOrDefault(x => x.ParentGroup == upks.ParentGroup);
@@ -257,18 +257,18 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 result.Add(map);
             }
 
-            result.Add(new MinMaxAverageByGroupsUpksAndUprsZuDto
+            result.Add(new UpksAndUprsByGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
-                Upks = new MinMaxAverageCalculationInfoDto
+                Upks = new CalculationInfoDto
                 {
                     Min = result.Min(x => x.Upks.Min),
                     Avg = result.Average(x => x.Upks.Avg),
                     AvgWeight = result.Average(x => x.Upks.AvgWeight),
                     Max = result.Max(x => x.Upks.Max)
                 },
-                Uprs = new MinMaxAverageCalculationInfoDto
+                Uprs = new CalculationInfoDto
                 {
                     Min = result.Min(x => x.Uprs.Min),
                     Avg = result.Average(x => x.Uprs.Avg),
@@ -280,15 +280,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        public List<MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto> GetDataByGroupsAndSubGroupsUpksAndUprsZu(long[] taskIdList)
+        public List<ByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubGroupsUpksAndUprsZu(long[] taskIdList)
         {
             var upksSql = GetSqlForUpks(taskIdList, true);
-            var upksResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUpksZuDto>(upksSql);
+            var upksResults = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
 
             var uprsSql = GetSqlForUprs(taskIdList, true);
-            var uprsResults = QSQuery.ExecuteSql<MinMaxAverageByGroupsAndSubGroupsUprsZuDto>(uprsSql);
+            var uprsResults = QSQuery.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(uprsSql);
 
-            var result = new List<MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto>();
+            var result = new List<ByGroupsAndSubGroupsZuDto>();
             foreach (var upks in upksResults)
             {
                 var uprs = uprsResults.FirstOrDefault(x => x.ParentGroup == upks.ParentGroup && x.SubGroup == upks.SubGroup);
@@ -297,19 +297,19 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 result.Add(map);
             }
 
-            result.Add(new MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto
+            result.Add(new ByGroupsAndSubGroupsZuDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 SubGroup = "Итого по субъекту РФ г Москва",
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
-                Upks = new MinMaxAverageCalculationInfoDto
+                Upks = new CalculationInfoDto
                 {
                     Min = result.Min(x => x.Upks.Min),
                     Avg = result.Average(x => x.Upks.Avg),
                     AvgWeight = result.Average(x => x.Upks.AvgWeight),
                     Max = result.Max(x => x.Upks.Max)
                 },
-                Uprs = new MinMaxAverageCalculationInfoDto
+                Uprs = new CalculationInfoDto
                 {
                     Min = result.Min(x => x.Uprs.Min),
                     Avg = result.Average(x => x.Uprs.Avg),
@@ -321,21 +321,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        private MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto Map(MinMaxAverageByGroupsUprsZuDto uprs,
-            MinMaxAverageByGroupsUpksZuDto upks)
+        private ByGroupsAndSubGroupsZuDto Map(UprsByGroupsZuDto uprs,
+            UpksByGroupsZuDto upks)
         {
-            return new MinMaxAverageByGroupsAndSubGroupsUpksAndUprsZuDto
+            return new ByGroupsAndSubGroupsZuDto
             {
                 ParentGroup = uprs?.ParentGroup,
                 ObjectsCount = uprs?.ObjectsCount ?? 0,
-                Upks = new MinMaxAverageCalculationInfoDto
+                Upks = new CalculationInfoDto
                 {
                     Min = upks.Min,
                     Avg = upks.Avg,
                     AvgWeight = upks.AvgWeight,
                     Max = upks.Max
                 },
-                Uprs = new MinMaxAverageCalculationInfoDto
+                Uprs = new CalculationInfoDto
                 {
                     Min = uprs?.Min,
                     Avg = uprs?.Avg,

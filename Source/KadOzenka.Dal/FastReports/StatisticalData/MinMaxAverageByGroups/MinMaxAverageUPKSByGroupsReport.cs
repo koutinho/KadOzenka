@@ -133,7 +133,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
         #region Support Methods
 
-        private Dictionary<string, int> GetObjectCountInGroup(List<MinMaxAverageByGroupsUpksOksDto> data)
+        private Dictionary<string, int> GetObjectCountInGroup(List<UpksByGroupsOksDto> data)
         {
             var objectCountInGroup = new Dictionary<string, int>();
 

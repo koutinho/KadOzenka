@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage
 {
-	public class MinMaxAverageByGroupsAndSubGroupsUprsZuDto : MinMaxAverageByGroupsUprsZuDto
+	public class ByGroupsAndSubGroupsZuDto : UpksAndUprsByGroupsZuDto
     {
 		public string SubGroup { get; set; }
     }
