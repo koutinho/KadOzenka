@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.Groups
 {
     public class GroupService
     {
-        public GroupDto GetGroupById(long? groupId)
+	    public GroupDto GetGroupById(long? groupId)
         {
             var group = GetGroupByIdInternal(groupId);
 
@@ -215,8 +215,14 @@ namespace KadOzenka.Dal.Groups
             var group = new OMGroup();
 			var tourGroup = new OMTourGroup();
 
-			return SetGroupFields(groupDto, group, tourGroup);
-		}
+			var groupId =  SetGroupFields(groupDto, group, tourGroup);
+			if (GetGroupType(groupDto.ParentGroupId) == GroupType.SubGroup)
+			{
+				new GroupCalculationSettingsService().CreateCalculationSettingsForGroup(groupId);
+			}
+
+			return groupId;
+        }
 
         public int UpdateGroup(GroupDto groupDto)
         {
@@ -230,79 +236,6 @@ namespace KadOzenka.Dal.Groups
 
 			return SetGroupFields(groupDto, group, tourGroup);
 		}
-
-
-        #region Calculation Settings To Calculate Cadastral Price
-
-        public List<GroupCalculationSettingsDto> GetCalculationSettings(long tourId, bool isParcel)
-        {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMAutoCalculationSettings.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMAutoCalculationSettings.GetColumn(x => x.IdTour), QSConditionType.Equal, tourId),
-                        new QSConditionSimple
-                        {
-                            LeftOperand = OMAutoCalculationSettings.GetColumn(x => x.CalcParcel.Coalesce(false)),
-                            ConditionType = QSConditionType.Equal,
-                            RightOperand = new QSColumnConstant(isParcel)
-                        }
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMGroup.GetColumn(x => x.Id),
-                            RightOperand = OMAutoCalculationSettings.GetColumn(x => x.IdGroup)
-                        },
-                        JoinType = QSJoinType.Inner
-                    }
-                }
-            };
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupCalculationSettingsDto.GroupName)));
-            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.NumberPriority, nameof(GroupCalculationSettingsDto.Priority)));
-            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage1, nameof(GroupCalculationSettingsDto.Stage1)));
-            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage2, nameof(GroupCalculationSettingsDto.Stage2)));
-            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage3, nameof(GroupCalculationSettingsDto.Stage3)));
-            query.OrderBy.Add(new QSOrder
-            {
-                Column = OMAutoCalculationSettings.GetColumn(x => x.NumberPriority),
-                Order = QSOrderType.ASC
-            });
-
-            return query.ExecuteQuery<GroupCalculationSettingsDto>();
-        }
-
-        public void SaveCalculationSettings(List<GroupCalculationSettingsDto> settings)
-        {
-            if (settings.Count == 0)
-                return;
-
-            var ids = settings.Select(x => x.Id);
-            var omSettings = OMAutoCalculationSettings.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
-            omSettings.ForEach(currentSetting =>
-            {
-                var dto = settings.First(x => x.Id == currentSetting.Id);
-
-                currentSetting.CalcStage1 = dto.Stage1;
-                currentSetting.CalcStage2 = dto.Stage2;
-                currentSetting.CalcStage3 = dto.Stage3;
-                currentSetting.NumberPriority = dto.Priority;
-                currentSetting.Save();
-            });
-        }
-
-        #endregion
-
 
         #region Group To Market Segment Relation
 

@@ -53,7 +53,8 @@ namespace KadOzenka.Web.Controllers
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
         public GroupService GroupService { get; set; }
-        public RegisterAttributeService RegisterAttributeService { get; set; }
+		public GroupCalculationSettingsService GroupCalculationSettingsService { get; set; }
+		public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
 
@@ -65,7 +66,8 @@ namespace KadOzenka.Web.Controllers
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
             GroupService = new GroupService();
-            RegisterAttributeService = new RegisterAttributeService();
+            GroupCalculationSettingsService = new GroupCalculationSettingsService();
+			RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
         }
@@ -820,7 +822,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
 		public JsonResult GetCalculationOrderSettings(long tourId, bool isParcel)
         {
-            var settings = GroupService.GetCalculationSettings(tourId, isParcel);
+            var settings = GroupCalculationSettingsService.GetCalculationSettings(tourId, isParcel);
             var models = settings.Select(CadastralPriceCalculationSettingsModel.ToModel).ToList();
 
             return Json(models);
@@ -842,7 +844,7 @@ namespace KadOzenka.Web.Controllers
                 dtos[i].Priority = i;
             }
 
-            GroupService.SaveCalculationSettings(dtos);
+            GroupCalculationSettingsService.SaveCalculationSettings(dtos);
 
             return Json(new { Message = "Изменения сохранены" });
         }

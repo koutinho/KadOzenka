@@ -39,6 +39,7 @@
 
 
     function fillGrid() {
+        kendo.ui.progress($('#calculationSettingsModal'), true);
         var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -95,6 +96,7 @@
                 var numberOfRecords = $("#grid").data('kendoGrid').dataSource.total();
                 if (numberOfRecords === 0)
                     $("#saveBtn").addClass("k-state-disabled");
+                kendo.ui.progress($('#calculationSettingsModal'), false);
             }
         });
         makeGridDraggable();

@@ -606,11 +606,16 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().ExecuteFirstOrDefault();
 			OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == id)
 				.SelectAll().ExecuteFirstOrDefault();
+			OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == id)
+				.SelectAll().ExecuteFirstOrDefault();
 
 			using (var ts = new TransactionScope())
 			{
 				group.Destroy();
 				tourGroup.Destroy();
+				if(calculationSettings != null)
+					calculationSettings.Destroy();
+
 				ts.Complete();
 			}
 

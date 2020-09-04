@@ -16,7 +16,7 @@ namespace KadOzenka.Web.Models.Task
             return new CadastralPriceCalculationSettingsModel
             {
                 Id = dto.Id,
-                GroupName = dto.GroupName,
+                GroupName = $"{dto.GroupNumber}. {dto.GroupName}",
                 Priority = dto.Priority,
                 Stage1 = dto.Stage1,
                 Stage2 = dto.Stage2,
@@ -29,7 +29,6 @@ namespace KadOzenka.Web.Models.Task
             return new GroupCalculationSettingsDto
             {
                 Id = model.Id,
-                GroupName = model.GroupName,
                 Priority = model.Priority,
                 Stage1 = model.Stage1,
                 Stage2 = model.Stage2,
