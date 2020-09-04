@@ -82,56 +82,19 @@ result_data as (
 		dg.MAX_UPKS
 	from dataGroupedByPropertyType dg
 	inner join propertyTypeDictionary td on td.PropertyTypeCode=dg.PROPERTY_TYPE_CODE
-),
-
-upksCalcTypes (minCalcType, avgCalcType, avgWeightCalcType, maxCalcType) as (
-   values (0, 1, 2, 3)
 )
 
-select * from (
-	select
+select
     	rd.ParentGroup, 
     	CAST(rd.OBJECTS_COUNT as int) as ObjectsCount,
 		rd.PROPERTY_TYPE as PropertyType,
 		rd.PROPERTY_TYPE_CODE as PropertyTypeCode,
 		rd.HAS_PURPOSE as HasPurpose,
 		rd.PURPOSE as Purpose,
-		calcTypes.minCalcType as UpksCalcType,
-		rd.MIN_UPKS as UpksCalcValue
-	from result_data rd, upksCalcTypes calcTypes
-	union all
-	select 
-    	rd.ParentGroup, 
-    	CAST(rd.OBJECTS_COUNT as int) as ObjectsCount,
-		rd.PROPERTY_TYPE as PropertyType,
-		rd.PROPERTY_TYPE_CODE as PropertyTypeCode,
-		rd.HAS_PURPOSE as HasPurpose,
-		rd.PURPOSE as Purpose,
-		calcTypes.avgCalcType as UpksCalcType,
-		rd.AVG_UPKS as UpksCalcValue
-	from result_data rd, upksCalcTypes calcTypes
-	union all
-	select 
-    	rd.ParentGroup, 
-    	CAST(rd.OBJECTS_COUNT as int) as ObjectsCount,
-		rd.PROPERTY_TYPE as PropertyType,
-		rd.PROPERTY_TYPE_CODE as PropertyTypeCode,
-		rd.HAS_PURPOSE as HasPurpose,
-		rd.PURPOSE as Purpose,
-		calcTypes.avgWeightCalcType as UpksCalcType,
-		rd.AVG_WEIGHT_UPKS as UpksCalcValue
-	from result_data rd, upksCalcTypes calcTypes
-	union all
-	select
-    	rd.ParentGroup,  
-    	CAST(rd.OBJECTS_COUNT as int) as ObjectsCount,
-		rd.PROPERTY_TYPE as PropertyType,
-		rd.PROPERTY_TYPE_CODE as PropertyTypeCode,
-		rd.HAS_PURPOSE as HasPurpose,
-		rd.PURPOSE as Purpose,
-		calcTypes.maxCalcType as UpksCalcType,
-		rd.MAX_UPKS as UpksCalcValue
-	from result_data rd, upksCalcTypes calcTypes ) res
-order by ParentGroup, PropertyTypeCode, Purpose, UpksCalcType
+		rd.MIN_UPKS as Min,
+        rd.AVG_UPKS as Avg,
+        rd.AVG_WEIGHT_UPKS as AvgWeight,
+        rd.MAX_UPKS as Max
+	from result_data rd
 
-
+order by ParentGroup, PropertyTypeCode, Purpose

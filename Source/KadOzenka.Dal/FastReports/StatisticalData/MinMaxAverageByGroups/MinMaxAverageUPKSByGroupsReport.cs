@@ -39,21 +39,23 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     var data = _service.GetDataByGroupsUpksOks(taskIdList);
                     var objectCountInGroup = GetObjectCountInGroup(data);
 
+                    var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
                         var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
                         var objectsCountInGroup = objectCountInGroup[parentGroup];
 
-                        dataTable.Rows.Add(
-                            parentGroup, 
-                            unitDto.PropertyType, 
-                            unitDto.Purpose, 
-                            unitDto.HasPurpose,
-                            objectsCountInGroup,
-                            unitDto.UpksCalcTypeEnum.GetEnumDescription(),
-                            (unitDto.UpksCalcValue.HasValue
-                                ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
-                                : (decimal?)null));
+                        foreach (var calcType in calcTypes)
+                        {
+                            dataTable.Rows.Add(
+                                parentGroup,
+                                unitDto.PropertyType,
+                                unitDto.Purpose,
+                                unitDto.HasPurpose,
+                                objectsCountInGroup,
+                                calcType.GetEnumDescription(),
+                                GetCalcValue(calcType, unitDto));
+                        }
                     }
                 }
                 else

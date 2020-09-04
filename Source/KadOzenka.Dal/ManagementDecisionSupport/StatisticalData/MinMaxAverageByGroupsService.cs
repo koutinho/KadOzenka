@@ -190,7 +190,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var sql = string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
             var result = QSQuery.ExecuteSql<MinMaxAverageByGroupsUpksOksDto>(sql);
 
-            var group = result.GroupBy(x => new
+            var groupingOksDictionaries = result.GroupBy(x => new
             {
                 x.Purpose,
                 x.HasPurpose,
@@ -206,50 +206,33 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 Values = g.ToList()
             }).ToList();
 
-            group.ForEach(x =>
+            groupingOksDictionaries.ForEach(x =>
             {
-                var summaryMin = GetSummaryUpksOks(x, UpksCalcType.Min);
-                var summaryAvg = GetSummaryUpksOks(x, UpksCalcType.Average);
-                var summaryAvgWeight = GetSummaryUpksOks(x, UpksCalcType.AverageWeight);
-                var summaryMax = GetSummaryUpksOks(x, UpksCalcType.Max);
+                var summary = GetSummaryUpksOks(x);
 
-                result.Add(summaryMin);
-                result.Add(summaryAvg);
-                result.Add(summaryAvgWeight);
-                result.Add(summaryMax);
+                result.Add(summary);
             });
 
             return result;
         }
 
-        private static MinMaxAverageByGroupsUpksOksDto GetSummaryUpksOks(GroupingOksDictionary group, UpksCalcType calcType)
+        private static MinMaxAverageByGroupsUpksOksDto GetSummaryUpksOks(GroupingOksDictionary groupingOksDictionary)
         {
-            var objectCount = group.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
-            var upksValues = group.Values.Where(z => z.UpksCalcTypeEnum == calcType).ToList();
-            decimal? upksCalcValue = 0;
-            switch (calcType)
-            {
-                case UpksCalcType.Min:
-                    upksCalcValue = upksValues.Min(x => x.UpksCalcValue);
-                    break;
-                case UpksCalcType.Average:
-                case UpksCalcType.AverageWeight:
-                    upksCalcValue = upksValues.Average(x => x.UpksCalcValue);
-                    break;
-                case UpksCalcType.Max:
-                    upksCalcValue = upksValues.Max(x => x.UpksCalcValue);
-                    break;
-            }
+            var objectCount = groupingOksDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
+
+            var upksValues = groupingOksDictionary.Values.ToList();
 
             return new MinMaxAverageByGroupsUpksOksDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
-                PropertyType = group.Key.PropertyType,
-                Purpose = group.Key.Purpose,
-                HasPurpose = group.Key.HasPurpose,
+                PropertyType = groupingOksDictionary.Key.PropertyType,
+                Purpose = groupingOksDictionary.Key.Purpose,
+                HasPurpose = groupingOksDictionary.Key.HasPurpose,
                 ObjectsCount = objectCount,
-                UpksCalcType = (int)calcType,
-                UpksCalcValue = upksCalcValue ?? 0
+                Min = upksValues.Min(x => x.Min),
+                Avg = upksValues.Average(x => x.Avg),
+                AvgWeight = upksValues.Average(x => x.AvgWeight),
+                Max = upksValues.Max(x => x.Max)
             };
         }
 
