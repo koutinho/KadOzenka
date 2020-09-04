@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 		public ResultsAnalysisReport()
 		{
-			_service = new AdditionalFormsService(StatisticalDataService, GbuObjectService);
+			_service = new AdditionalFormsService(StatisticalDataService);
 		}
 
 		protected override string TemplateName(NameValueCollection query)
