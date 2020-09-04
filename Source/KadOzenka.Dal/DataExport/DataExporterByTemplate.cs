@@ -10,8 +10,10 @@ using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace KadOzenka.Dal.DataExport
@@ -141,85 +143,103 @@ namespace KadOzenka.Dal.DataExport
 				throw new Exception("Не указана ни одна ключевая колонка");
 
 			var columnNames = GetAllColumnNames(mainWorkSheet);
-
-			//считаем, что ключевая колонка только одна
-			var keyColumn = columns.First(x => x.IsKey);
-			var keyColumnCellPosition = columnNames.IndexOf(keyColumn.ColumnName);
+            var keyColumns = columns.Where(x => x.IsKey).ToList();
 
 			while (!isFinish)
 			{
-				var keyValues = new List<string>();
-				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
-				{
-					if (i == mainWorkSheet.Rows.Count - 1) //одна строка - заголовок
-					{
-						isFinish = true;
-						break;
-					}
+                var conditions = new List<QSCondition>();
+                keyColumns.ForEach(keyColumn =>
+                {
+                    var keyValues = new List<string>();
+                    for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
+                    {
+                        if (i == mainWorkSheet.Rows.Count - 1) //одна строка - заголовок
+                        {
+                            isFinish = true;
+                            break;
+                        }
 
-					keyValues.Add(GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition));
-				}
+                        var keyColumnCellPosition = columnNames.IndexOf(keyColumn.ColumnName);
+                        var keyColumnValue = GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition);
+                        keyValues.Add(keyColumnValue);
+                    }
 
-				// Получение данных для 1000 строк
-				var query = new QSQuery
+                    conditions.Add(new QSConditionSimple
+                    {
+                        ConditionType = QSConditionType.In,
+                        LeftOperand = new QSColumnSimple(keyColumn.AttributrId),
+                        RightOperand = new QSColumnConstant(keyValues)
+                    });
+                });
+
+                // Получение данных для 1000 строк
+                var query = new QSQuery
 				{
 					MainRegisterID = mainRegisterId,
 					Columns = columns.Select(x => (QSColumn)new QSColumnSimple((int)x.AttributrId)).ToList(),
-					Condition = new QSConditionSimple
-					{
-						ConditionType = QSConditionType.In,
-						LeftOperand = new QSColumnSimple(keyColumn.AttributrId),
-						RightOperand = new QSColumnConstant(keyValues)
-					}
-				};
+                    Condition = new QSConditionGroup
+                    {
+                        Type = QSConditionGroupType.And,
+                        Conditions = conditions
+                    }
+                };
 
-				var dt = query.ExecuteQuery();
+                var dt = query.ExecuteQuery();
 
-				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
-				{
-					if (i == mainWorkSheet.Rows.Count - 1)
-						break;
+                for (int rowInFileIndex = packageNum * packageSize;
+                    rowInFileIndex < (packageNum + 1) * packageSize;
+                    rowInFileIndex++)
+                {
+                    if (rowInFileIndex == mainWorkSheet.Rows.Count - 1)
+                        break;
 
-					var keyValue = GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition);
-					var filteredTable = dt.FilteringAndSortingTable($"[{keyColumn.AttributrId}] = '{keyValue}'");
-					if (filteredTable.Rows.Count == 0)
-						continue;
+                    var filteredTable = GetDataForCurrentRowInFile(keyColumns, columnNames, mainWorkSheet, rowInFileIndex, dt);
+                    if (filteredTable.Rows.Count == 0)
+                        continue;
 
-					var row = filteredTable.Rows[0];
+                    var row = filteredTable.Rows[0];
+                    foreach (var column in columns)
+                    {
+                        if (column.IsKey)
+                            continue;
 
-					foreach (var column in columns)
-					{
-						if (column.IsKey)
-							continue;
+                        int cell = columnNames.IndexOf(column.ColumnName);
+                        string dtColumnName = column.AttributrId.ToString();
+                        var attributeType = RegisterCache.GetAttributeData(column.AttributrId.ParseToInt()).Type;
+                        switch (attributeType)
+                        {
+                            case RegisterAttributeType.INTEGER:
+                                mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(row[dtColumnName].ParseToLong());
+                                break;
+                            case RegisterAttributeType.DECIMAL:
+                                mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(row[dtColumnName].ParseToDouble());
+                                break;
+                            case RegisterAttributeType.BOOLEAN:
+                                string value = row[dtColumnName].ParseToBoolean() == true ? "Да" : "Нет";
+                                mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(value);
+                                break;
+                            case RegisterAttributeType.STRING:
+                                mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(row[dtColumnName].ToString());
+                                break;
+                            case RegisterAttributeType.DATE:
+                                var date = row[dtColumnName].ParseToDateTimeNullable();
+                                if (date == null)
+                                {
+                                    mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(string.Empty);
+                                }
+                                else
+                                {
+                                    mainWorkSheet.Rows[rowInFileIndex + 1].Cells[cell].SetValue(date.Value);
+                                }
+                                break;
+                            default:
+                                throw new Exception($"Неподдерживаемый тип: {attributeType}");
+                        }
 
-						int cell = columnNames.IndexOf(column.ColumnName);
-						string dtColumnName = column.AttributrId.ToString();
-						var attributeType = RegisterCache.GetAttributeData(column.AttributrId.ParseToInt()).Type;
-						switch (attributeType)
-						{
-							case RegisterAttributeType.INTEGER:
-								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToLong());
-								break;
-							case RegisterAttributeType.DECIMAL:
-								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToDouble());
-								break;
-							case RegisterAttributeType.BOOLEAN:
-								string value = row[dtColumnName].ParseToBoolean() == true ? "Да" : "Нет";
-								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(value);
-								break;
-							case RegisterAttributeType.STRING:
-								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ToString());
-								break;
-							case RegisterAttributeType.DATE:
-								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToDateTime());
-								break;
-							default:
-								throw new Exception($"Неподдерживаемый тип: {attributeType}");
-						}
-					}
-				}
+                    }
+                }
 
-				packageNum++;
+                packageNum++;
 			}
 
 			MemoryStream stream = new MemoryStream();
@@ -229,9 +249,26 @@ namespace KadOzenka.Dal.DataExport
 			return stream;
 		}
 
+        private static DataTable GetDataForCurrentRowInFile(List<DataExportColumn> keyColumns, List<string> columnNames, ExcelWorksheet mainWorkSheet,
+            int rowInFileIndex, DataTable dt)
+        {
+            var searchExpression = new StringBuilder();
+            foreach (var keyColumn in keyColumns)
+            {
+                var keyCellPosition = columnNames.IndexOf(keyColumn.ColumnName);
+                var keyValue = GetCellValue(mainWorkSheet, rowInFileIndex + 1, keyCellPosition);
+
+                if (searchExpression.Length != 0)
+                    searchExpression.Append(" and ");
+
+                searchExpression.Append($"[{keyColumn.AttributrId}] = '{keyValue}'");
+            }
+
+            return dt.FilteringAndSortingTable(expression: searchExpression.ToString());
+        }
 
 
-		#region Support Methods
+        #region Support Methods
 
 		protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
@@ -239,15 +276,22 @@ namespace KadOzenka.Dal.DataExport
 			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
 			for (var i = 0; i < maxColumns; i++)
 			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
-			}
+                var value = GetCellValue(mainWorkSheet, 0, i);
+                columnNames.Add(value);
+            }
 
 			return columnNames;
 		}
 
         protected static string GetCellValue(ExcelWorksheet sheet, int row, int cell)
-		{
-			return sheet.Rows[row].Cells[cell].Value?.ToString();
+        {
+            var value = sheet.Rows[row].Cells[cell].Value?.ToString();
+            if (!string.IsNullOrWhiteSpace(value) && decimal.TryParse(value, out _))
+            {
+                value = value.Replace(",", ".");
+            }
+
+            return value;
 		}
 
         protected static string GetFileTemplateTitle(string fileName)
