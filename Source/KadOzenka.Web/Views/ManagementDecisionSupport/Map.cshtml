@@ -148,6 +148,10 @@
         var isPanelShown = true;
         var SOM = null;
         var heatMapData = null;
+        var sliderMinValue = 4;
+        var sliderMaxValue = 30;
+        var initialColorPicker;
+        var resultColorPicker;
 
         const DivisionType = {
             DISTRINCS: 0,
@@ -181,34 +185,6 @@
 
                     createSettingsFormWidget();
                     map.controls.get("zoomControl").options.set({ position: { bottom: 45, right: 10 } });
-
-                    //button = new ymaps.control.Button({
-                    //        data: {
-                    //            content: "Скрыть настройки",
-                    //    },
-                    //        options: {
-                    //            maxWidth: 300
-                    //        }
-                    //    }
-                    //);
-                    //button.events
-                    //    .add(
-                    //        'press',
-                    //        function() {
-                    //            if (isPanelShown) {
-                    //                isPanelShown = false;
-                    //                button.data.set({ content: 'Показать настройки' });
-                    //                $("#wrap-form").hide();
-                    //            } else {
-                    //                isPanelShown = true;
-                    //                button.data.set({ content: 'Скрыть настройки' });
-                    //                $("#wrap-form").show();
-                    //            }
-                    //        });
-
-                    //map.controls.add(button, {
-                    //    float: "right"
-                    //});
                 });
             };
         }
@@ -292,14 +268,17 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <input id="splicedDeltaController" class="humidity" value="4" />
+                                        <input id="splicedDeltaController" class="humidity" />
                                     </div>
                                     <div class="col-sm-12 legendContainer" id="legendPaleteContainer">
                                     </div>
                                 </div>
                                 <div class="form-group"></div>
                                 <div class="form-group">
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-6">
+                                        <button id="clearFilters" class="k-button" type="button" style="float: left;">Сбросить фильтры</button>
+                                    </div>
+                                    <div class="col-sm-6">
                                         <button id="loadData" class="k-button" type="button" style="float: right;">Загрузить данные</button>
                                     </div>
                                 </div>
@@ -341,15 +320,15 @@
                     $("#splicedDeltaController").kendoSlider({
                         orientation: "horizontal",
                         tickPlacement: "none",
-                        min: 4,
-                        max: 30,
+                        min: sliderMinValue,
+                        max: sliderMaxValue,
                         smallStep: 1,
                         largeStep: 26,
                         change: sliderChange,
                         slide: sliderChange
                     });
-                    createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel', 'rgbInitialShowPanelColor');
-                    createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel', 'rgbResultShowPanelColor');
+                    initialColorPicker = createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel', 'rgbInitialShowPanelColor');
+                    resultColorPicker = createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel', 'rgbResultShowPanelColor');
                     var sliderValue = $("#splicedDeltaController").val();
                     $("#splicedDeltaContent").text(sliderValue);
                     $('#loadData').on('click', loadData);
@@ -363,6 +342,25 @@
                             isPanelShown = true;
                             $('#showSettings').text('Скрыть настройки');
                             $("#wrap-form").show();
+                        }
+                    });
+
+                    $("#clearFilters").kendoButton({
+                        icon: "close",
+                        click: function(e) {
+                            $('#tourDropdownList').data('kendoDropDownList').value('');
+                            $('#segmentDropdownList').data('kendoDropDownList').value('');
+                            $("#divisionLoadTypeGroupButton").data('kendoButtonGroup').select(10);
+                            $("#divisionLoadTypeGroupButton").data('kendoButtonGroup').selectedIndices = [];
+
+                            $("#splicedDeltaController").data('kendoSlider').value(sliderMinValue);
+                            $("#splicedDeltaController").data('kendoSlider').trigger('change', { value: sliderMinValue });
+                            if (initialColorPicker)
+                                initialColorPicker.set('#000000');
+                            if (resultColorPicker)
+                                resultColorPicker.set('#000000');
+
+                            resetHeatmap();
                         }
                     });
                 }
@@ -400,7 +398,7 @@
                 parent.appendChild(elem);
             }
 
-            colorjoe.rgb(rgbPicker).on('change',
+            return colorjoe.rgb(rgbPicker).on('change',
                 function (c) {
                     document.getElementById(rgbShowPanel).style.background = c.hex();
                     $(`#${rgbShowPanelLabel}`).text(c.hex());
@@ -414,14 +412,27 @@
         function loadData() {
             kendo.ui.progress($('body'), true);
 
+            var tourId = $('#tourDropdownList').data('kendoDropDownList').value();
+            if (!tourId) {
+                kendo.ui.progress($('body'), false);
+                Common.ShowError("Выберите тур");
+                return;
+            }
+
+            var objectType = $('#segmentDropdownList').data('kendoDropDownList').value();
+            if (!objectType) {
+                kendo.ui.progress($('body'), false);
+                Common.ShowError("Выберите вид объекта недвижимости");
+                return;
+            }
+
             var divisionGroup = $('#divisionLoadTypeGroupButton').data("kendoButtonGroup").selectedIndices;
             if (divisionGroup.length === 0) {
                 kendo.ui.progress($('body'), false);
                 Common.ShowError("Выберите тип деления");
                 return;
             }
-            var tourId = $('#tourDropdownList').data('kendoDropDownList').value();
-            var objectType = $('#segmentDropdownList').data('kendoDropDownList').value();
+
             $.ajax({
                 type: "GET",
                 url: "HeatMapData",
@@ -491,6 +502,11 @@
             if (heatMapData)
                 return heatMapData.find(x => x.name == name) ? heatMapData.find(x => x.name == name).color : undefined;
             else return undefined;
+        }
+
+        function resetHeatmap() {
+            heatMapData = null;
+            map.geoObjects.remove(SOM);
         }
     </script>
 }
