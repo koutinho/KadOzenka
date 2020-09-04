@@ -78,27 +78,29 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[SRDFunction(Tag = "")]
 		public JsonResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
-		{
-			ValidateColumns(columns);
+        {
+            var exporter = GetExporter(mainRegisterId);
 
-			long exportByTemplateId;
+            var mappedColumns = MapColumns(columns);
+            exporter.ValidateColumns(mappedColumns);
+
+            long exportByTemplateId;
 			using (var stream = file.OpenReadStream())
 			{
-                var exporter = GetExporter(mainRegisterId);
-
-                exportByTemplateId = exporter.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
-					columns.Select(x => new DataExportColumn
-					{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
+                exportByTemplateId = exporter.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream, mappedColumns);
 			}
 
 			return new JsonResult(new { ExportByTemplateId = exportByTemplateId });
 		}
 
-		[HttpPost]
+        [HttpPost]
 		[SRDFunction(Tag = "")]
 		public ActionResult ExportDataToExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
-		{
-			ValidateColumns(columns);
+        {
+            var exporter = GetExporter(mainRegisterId);
+
+            var mappedColumns = MapColumns(columns);
+            exporter.ValidateColumns(mappedColumns);
 
 			ExcelFile excelFile;
 			using (var stream = file.OpenReadStream())
@@ -106,11 +108,7 @@ namespace KadOzenka.Web.Controllers
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-            var exporter = GetExporter(mainRegisterId);
-
-            var resultStream = (MemoryStream)exporter.ExportDataToExcel(mainRegisterId, excelFile,
-				columns.Select(x => new DataExportColumn
-				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
+            var resultStream = (MemoryStream)exporter.ExportDataToExcel(mainRegisterId, excelFile, mappedColumns);
 
 			HttpContext.Session.Set(file.FileName, resultStream.ToArray());
 			return Content(JsonConvert.SerializeObject(new { success = true, fileName = file.FileName }), "application/json");
@@ -144,20 +142,12 @@ namespace KadOzenka.Web.Controllers
             return new DataExporterByTemplate();
         }
 
+        private static List<DataExportColumn> MapColumns(List<DataColumnDto> columns)
+        {
+            return columns.Select(x => new DataExportColumn
+                { AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList();
+        }
 
-        private void ValidateColumns(List<DataColumnDto> columns)
-		{
-			if (columns.All(x => x.IsKey == false))
-			{
-				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-			}
-
-            if (columns.Count(x => x.IsKey) > 1)
-			{
-                throw new Exception("Должен быть выбран только один ключевой параметр");
-            }
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

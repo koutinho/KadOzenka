@@ -63,7 +63,20 @@ namespace KadOzenka.Dal.DataExport
 			WorkerCommon.SetProgress(processQueue, 100);
 		}
 
-		public void LogError(long? objectId, Exception ex, long? errorId = null)
+        public virtual void ValidateColumns(List<DataExportColumn> columns)
+        {
+            if (columns.All(x => x.IsKey == false))
+            {
+                throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
+            }
+
+            if (columns.Count(x => x.IsKey) > 1)
+            {
+                throw new Exception("Должен быть выбран только один ключевой параметр");
+            }
+        }
+
+        public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
 			OMExportByTemplates export = OMExportByTemplates
 				.Where(x => x.Id == objectId)
