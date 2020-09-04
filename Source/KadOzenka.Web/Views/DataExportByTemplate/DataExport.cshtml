@@ -441,6 +441,7 @@
 
 
             var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+            var isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
             $.ajax({
                 type: 'GET',
                 @if ((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())
@@ -522,7 +523,7 @@
                             $("#backgroundDownloadCheckbox").prop('checked', false);
                         }
                         resetData();
-                        if (!isForMarketObjects && excelColumnsListBox.items() != null) {
+                        if (isForGbuObjects && excelColumnsListBox.items() != null) {
                             var numberColumn = excelColumnsListBox.items()[0];
                             var cadastralNumberColumn = excelColumnsListBox.items()[1];
                             excelColumnsListBox.enable(numberColumn, false);
