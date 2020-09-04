@@ -182,7 +182,7 @@ namespace KadOzenka.Dal.DataExport
 					Columns = columns.Select(x => (QSColumn)new QSColumnSimple((int)x.AttributrId)).ToList(),
                     Condition = new QSConditionGroup
                     {
-                        Type = QSConditionGroupType.Or,
+                        Type = QSConditionGroupType.And,
                         Conditions = conditions
                     }
                 };
@@ -250,6 +250,9 @@ namespace KadOzenka.Dal.DataExport
 			return stream;
 		}
 
+
+        #region Support Methods
+
         private static DataTable GetDataForCurrentRowInFile(List<DataExportColumn> keyColumns, List<string> columnNames, ExcelWorksheet mainWorkSheet,
             int rowInFileIndex, DataTable dt)
         {
@@ -267,9 +270,6 @@ namespace KadOzenka.Dal.DataExport
 
             return dt.FilteringAndSortingTable(expression: searchExpression.ToString());
         }
-
-
-        #region Support Methods
 
         protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
