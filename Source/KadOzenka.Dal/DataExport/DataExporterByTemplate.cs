@@ -161,6 +161,9 @@ namespace KadOzenka.Dal.DataExport
 
                         var keyColumnCellPosition = columnNames.IndexOf(keyColumn.ColumnName);
                         var keyColumnValue = GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition);
+                        if (string.IsNullOrWhiteSpace(keyColumnValue))
+                            throw new Exception($"В строке №{i + 2} в колонке '{keyColumn.ColumnName}' не введено значение");
+
                         keyValues.Add(keyColumnValue);
                     }
 
@@ -179,16 +182,14 @@ namespace KadOzenka.Dal.DataExport
 					Columns = columns.Select(x => (QSColumn)new QSColumnSimple((int)x.AttributrId)).ToList(),
                     Condition = new QSConditionGroup
                     {
-                        Type = QSConditionGroupType.And,
+                        Type = QSConditionGroupType.Or,
                         Conditions = conditions
                     }
                 };
 
                 var dt = query.ExecuteQuery();
 
-                for (int rowInFileIndex = packageNum * packageSize;
-                    rowInFileIndex < (packageNum + 1) * packageSize;
-                    rowInFileIndex++)
+                for (int rowInFileIndex = packageNum * packageSize; rowInFileIndex < (packageNum + 1) * packageSize; rowInFileIndex++)
                 {
                     if (rowInFileIndex == mainWorkSheet.Rows.Count - 1)
                         break;
@@ -270,7 +271,7 @@ namespace KadOzenka.Dal.DataExport
 
         #region Support Methods
 
-		protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
+        protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
 			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();

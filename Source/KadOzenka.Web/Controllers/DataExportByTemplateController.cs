@@ -12,6 +12,7 @@ using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Web.Attributes;
 using ObjectModel.Gbu;
+using ObjectModel.KO;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -135,11 +136,13 @@ namespace KadOzenka.Web.Controllers
 
         private DataExporterByTemplate GetExporter(int mainRegisterId)
         {
-            if(mainRegisterId == OMCoreObject.GetRegisterId() || mainRegisterId == OMMainObject.GetRegisterId())
+            if (mainRegisterId == OMCoreObject.GetRegisterId() || mainRegisterId == OMMainObject.GetRegisterId())
                 return new DataExporterByTemplate();
 
-            //TODO
-            return new DataExporterByTemplate();
+            if (mainRegisterId == OMUnit.GetRegisterId())
+                return new UnitExporterByTemplate();
+
+            throw new Exception($"Не известный тип экспорта: {mainRegisterId}");
         }
 
         private static List<DataExportColumn> MapColumns(List<DataColumnDto> columns)

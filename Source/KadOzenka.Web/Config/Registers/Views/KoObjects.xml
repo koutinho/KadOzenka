@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203" UseSubMap="true"
+<RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203,963" UseSubMap="true"
               OpenEmpty="false" JoinType="Left" SearchPanel="KoObjects"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="true" ShowFilterMenu="false" SRDFunctionTag="KO.OBJECTS"
               UseDataReaderMode="true"
@@ -30,6 +30,14 @@
         <Parameter Key="NotSetTitle" Value="true" />
       </Parameters>
     </Button>
+
+	  <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExportByTemplate/DataExport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="MARKET.DATA_EXPORT" Icon="fas fa-arrow-circle-up">
+          <Parameters>
+              <Parameter Key="registerViewId" Value="KoObjects" />
+              <Parameter Key="mainRegisterId" Value="201" />
+          </Parameters>
+      </Button>
+
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" SRDFunctionTag="KO.OBJECTS.EXPORT_TO_EXCEL" OpenInRadWindow="false" />
   </Buttons>
 
