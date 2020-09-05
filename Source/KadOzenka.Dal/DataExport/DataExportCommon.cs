@@ -111,6 +111,8 @@ namespace KadOzenka.Dal.DataExport
 
             for (int inx_col=0; inx_col < count_columns; inx_col++)
             {
+                if (_values[0, inx_col] == null) continue;
+
                 // Считываем r-ую строку
                 object[] values = new object[count_rows];
                 for (int r = 0; r < count_rows; r++)
@@ -181,7 +183,6 @@ namespace KadOzenka.Dal.DataExport
                             sheet.Rows[Row + inx_row].Cells[inx_col].Style.NumberFormat = "mm/dd/yyyy";
                         }
                     }
-
                     sheet.Rows[Row + inx_row].Cells[inx_col].Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
                     inx_row++;
                 }
@@ -375,6 +376,17 @@ namespace KadOzenka.Dal.DataExport
         }
 
         /// <summary>
+        /// Записать значение в ячейку без границ
+        /// </summary>
+        public static void SetCellValueNoBorder(ExcelWorksheet _sheet, int _x, int _y, string _val,
+            HorizontalAlignmentStyle hor, VerticalAlignmentStyle vert)
+        {
+            _sheet.Rows[_y].Cells[_x].SetValue(_val);
+            _sheet.Cells.GetSubrangeAbsolute(_y, _x, _y, _x).Style.HorizontalAlignment = hor;
+            _sheet.Cells.GetSubrangeAbsolute(_y, _x, _y, _x).Style.VerticalAlignment = vert;
+        }
+
+        /// <summary>
         /// Объединение ячеек в одной строке и установка данных в Excel
         /// </summary>
         public static void MergeCell(ExcelWorksheet sheet, int Row, int ColFirst, int ColLast, string value)
@@ -385,14 +397,14 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Объединение ячеек и установка данных в Excel
         /// </summary>
-        public static void MergeCell(ExcelWorksheet sheet, int FirstRow, int LastRow, int ColFirst, int ColLast, string value, bool wrap = false)
+        public static void MergeCell(ExcelWorksheet sheet, int FirstRow, int LastRow, int FirstCol, int LastCol, string value, bool wrap = false)
         {
-            sheet.Rows[FirstRow].Cells[ColFirst].SetValue(value);
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Merged = true;
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.WrapText = wrap;
+            sheet.Rows[FirstRow].Cells[FirstCol].SetValue(value);
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, FirstCol, LastRow, LastCol).Merged = true;
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, FirstCol, LastRow, LastCol).Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, FirstCol, LastRow, LastCol).Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, FirstCol, LastRow, LastCol).Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, FirstCol, LastRow, LastCol).Style.WrapText = wrap;
         }
         
         /// <summary>
@@ -602,9 +614,14 @@ namespace KadOzenka.Dal.DataExport
 
     public class CheckNullEmpty
     {
+        public static string CheckStringOut(string value)
+        {
+            return string.IsNullOrEmpty(value) ? "-" : value;
+        }
+
         public static string CheckString(string value)
         {
-            return string.IsNullOrWhiteSpace(value) ? "-" : value;
+            return string.IsNullOrEmpty(value) ? "" : value;
         }
 
         public static decimal? CheckDecimal(decimal? value)

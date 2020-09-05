@@ -1317,7 +1317,10 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-        private static string[] CalcXMLResponseDoc(ref int _num_pp, List<OMUnit> _units, OMInstance _doc_out, out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in, string _file_path, ZipFile zipFile)
+        private static string[] CalcXMLResponseDoc(ref int _num_pp, List<OMUnit> _units, OMInstance _doc_out,
+                                                   out List<ActOpredel> _list_act,
+                                                   out List<OMInstance> _list_doc_in,
+                                                   string _dir_name, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -1379,9 +1382,9 @@ namespace KadOzenka.Dal.DataExport
                             stream.Seek(0, SeekOrigin.Begin);
                             zipFile.AddEntry(fileName, stream);
 
-                            XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                            XmlWebExport(group_unit, unit, _file_path, doc_in, _doc_out, zipFile);
-                            GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
+                            XmlVuonExport(group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
+                            XmlWebExport(group_unit, unit, "", doc_in, _doc_out, zipFile);
+                            GetOtvetDocX(unit, "", _doc_out, _num_pp, zipFile);
                             bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
                         }
                         else
@@ -1405,8 +1408,8 @@ namespace KadOzenka.Dal.DataExport
                             stream.Seek(0, SeekOrigin.Begin);
                             zipFile.AddEntry(fileName, stream);
 
-                            XmlVuonExport(group_unit, unit, _file_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                            GetOtvetDocX(unit, _file_path, _doc_out, _num_pp, zipFile);
+                            XmlVuonExport(group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
+                            GetOtvetDocX(unit, "", _doc_out, _num_pp, zipFile);
                             bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
 
                             string dateapp = "01.01.2018";
@@ -1621,7 +1624,9 @@ namespace KadOzenka.Dal.DataExport
 
         }
 
-        public static bool XmlVuonExport(OMGroup _group_unit, OMUnit _unit, string _dir_name, OMInstance _doc_in, OMInstance _doc_out, Dictionary<Int64, XmlNode> dictNodes, ZipFile zipFile)
+        public static bool XmlVuonExport(OMGroup _group_unit, OMUnit _unit, string _dir_name,
+                                         OMInstance _doc_in, OMInstance _doc_out,
+                                         Dictionary<Int64, XmlNode> dictNodes, ZipFile zipFile)
         {
             List<OMUnit> units = new List<OMUnit> { _unit };
             _group_unit.Unit = units;
@@ -1644,10 +1649,13 @@ namespace KadOzenka.Dal.DataExport
                 //    "_" + ((int)_unit.PropertyType_Code).ToString() +
                 //    "_" + _unit.Id.ToString() + ".xml");
 
-                string fileName = _unit.CadastralNumber.Replace(":", "_") + "\\FD_State_Cadastral_Valuation_" + _group_unit.Id.ToString().PadLeft(5, '0') +
-                        "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
-                        "_" + ((int)_unit.PropertyType_Code).ToString() +
-                        "_" + _unit.Id.ToString() + ".xml";
+                string file_name_prev = (CheckNullEmpty.CheckString(_dir_name) == "") ? "" : _dir_name + "\\";
+                string fileName = file_name_prev + _unit.CadastralNumber.Replace(":", "_") +
+                                  "\\FD_State_Cadastral_Valuation_" +
+                                  _group_unit.Id.ToString().PadLeft(5, '0') +
+                                  "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
+                                  "_" + ((int)_unit.PropertyType_Code).ToString() +
+                                  "_" + _unit.Id.ToString() + ".xml";
                 MemoryStream stream = new MemoryStream();
                 xmlFile.Save(stream);
                 stream.Seek(0, SeekOrigin.Begin);
@@ -1784,8 +1792,8 @@ namespace KadOzenka.Dal.DataExport
             //    Directory.CreateDirectory(_dir_name + "\\" + "_web_obmen_");
             //xmlFile.Save(_dir_name + "\\" + "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml");
 
-
-            string fileName = "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml";
+            string file_name_prev = (CheckNullEmpty.CheckString(_dir_name) == "") ? "" : _dir_name + "\\";
+            string fileName = file_name_prev + "_web_obmen_" + "\\" + _unit.CadastralNumber.Replace(":", "_") + ".xml";
             MemoryStream stream = new MemoryStream();
             xmlFile.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
@@ -1800,7 +1808,8 @@ namespace KadOzenka.Dal.DataExport
             num = num.Replace("/", "");
             string kn = _unit.CadastralNumber;
             kn = kn.Replace(":", "_");
-            string fileName = "Акты по объектам" + "\\" + num + "_" + kn + ".docx";
+            string file_name_prev = (CheckNullEmpty.CheckString(_dir_name) == "") ? "" : _dir_name + "\\";
+            string fileName = file_name_prev + "Акты по объектам" + "\\" + num + "_" + kn + ".docx";
 
 
             ComponentInfo.SetLicense("DN-2020Feb27-7KwYZ43Y+lJR5YBeTLWW8F+pXE9Aj3uU2ru+Jk1lHxILYWKJhT8TZQLCztE1qx6MQx/MnAR8BGGPC6QpAmIgm2EZh0w==A");
@@ -1923,10 +1932,10 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-        private static string[] CalcXMLFromVuon(int _num_pp,
-                                                List<OMUnit> _units, OMInstance _doc_out,
-                                                out List<ActOpredel> _list_act, out List<OMInstance> _list_doc_in,
-                                                string _dir_path, ZipFile zipFile)
+        private static string[] CalcXMLFromVuon(int _num_pp, List<OMUnit> _units, OMInstance _doc_out,
+                                                out List<ActOpredel> _list_act, 
+                                                out List<OMInstance> _list_doc_in,
+                                                string _dir_name, ZipFile zipFile)
         {
             List<string> bads = new List<string>();
             _list_act = new List<ActOpredel>();
@@ -1983,7 +1992,8 @@ namespace KadOzenka.Dal.DataExport
                                        ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                         DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
-                        string fileName = unit.CadastralNumber.Replace(":", "_") +
+                        string file_name_common = estimation_date.ToString("dd_MM_yyyy");
+                        string fileName = file_name_common + "\\" + unit.CadastralNumber.Replace(":", "_") +
                                           "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
                                           "_" + estimation_date.ToString("ddMMyyyy") +
                                           "_" + DateTime.Now.ToString("ddMMyyyy") +
@@ -1994,10 +2004,9 @@ namespace KadOzenka.Dal.DataExport
                         stream.Seek(0, SeekOrigin.Begin);
                         zipFile.AddEntry(fileName, stream);
 
-                        _dir_path += ("\\" + estimation_date.ToString("dd_MM_yyyy"));
-                        DEKOResponseDoc.XmlVuonExport(group_unit, unit, _dir_path + "\\" + unit.CadastralNumber.Replace(":", "_"), doc_in, _doc_out, dictNodes, zipFile);
-                        DEKOResponseDoc.XmlWebExport(group_unit, unit, _dir_path, doc_in, _doc_out, zipFile);
-                        DEKOResponseDoc.GetOtvetDocX(unit, _dir_path, _doc_out, _num_pp, zipFile);
+                        DEKOResponseDoc.XmlVuonExport(group_unit, unit, file_name_common, doc_in, _doc_out, dictNodes, zipFile);
+                        DEKOResponseDoc.XmlWebExport(group_unit, unit, file_name_common, doc_in, _doc_out, zipFile);
+                        DEKOResponseDoc.GetOtvetDocX(unit, file_name_common, _doc_out, _num_pp, zipFile);
                         bads.Add("g|" + unit.CadastralNumber +
                             "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00") +
                             "|" + estimation_date.ToString("dd.MM.yyyy") +
@@ -2030,113 +2039,114 @@ namespace KadOzenka.Dal.DataExport
                 if (item.IndexOf("g|") == 0) gooditems.Add(item);
             }
 
-            #region Акт_об_определении_КС - без изменений
+            #region Акт_об_определении_КС
             {
-                ExcelFile excelTemplate = new ExcelFile();
-                var mainWorkSheet = excelTemplate.Worksheets.Add("КС");
-                int curcount = 2;
-                int curcounti = 2;
+                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCostVUON", ".xlsx", "ExcelTemplates");
+                ExcelFile excelAct = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+                var sheetAct = excelAct.Worksheets[0];
 
-                List<object> objcaps = new List<object>();
-                objcaps.Add("КН");
-                objcaps.Add("Дата определения КС");
-                int fieldcount = objcaps.Count;
-                DataExportCommon.AddRow(mainWorkSheet, 1, objcaps.ToArray());
+                //Записываем количество bad, good
+                DataExportCommon.SetCellValueNoBorder(sheetAct, 5, 9 , gooditems.Count.ToString(), HorizontalAlignmentStyle.Center, VerticalAlignmentStyle.Center);
+                DataExportCommon.SetCellValueNoBorder(sheetAct, 5, 10, baditems .Count.ToString(), HorizontalAlignmentStyle.Center, VerticalAlignmentStyle.Center);
 
-
-                int lenobjs = baditems.Count;
-
-                object[,] objvals = new object[100, fieldcount];
-                int curindval = 0;
-                for (int i = 0; i < lenobjs; i++)
+                #region Хорошие - с изменениями, good
                 {
-                    List<object> objarrs = new List<object>();
-                    string[] arrrec = baditems[i].Split('|');
+                    int fieldcount = 6;
+                    int number_row_curr = 13;
 
-                    objarrs.Add(arrrec[1]);
-                    objarrs.Add(arrrec[2]);
+                    int lenobjs = gooditems.Count;
+                    sheetAct.Rows.InsertCopy(number_row_curr, lenobjs-1, sheetAct.Rows[number_row_curr]);
 
-                    #region array
-                    for (int f = 0; f < fieldcount; f++)
+                    object[,] objvals = new object[100, fieldcount];
+                    int curindval = 0;
+                    for (int i = 0; i < lenobjs; i++)
                     {
-                        objvals[curindval, f] = objarrs[f];
-                    }
+                        List<object> objarrs = new List<object>();
+                        string[] arrrec = gooditems[i].Split('|');
+                        objarrs.Add(i + 1);
+                        objarrs.Add(arrrec[1]);
+                        objarrs.Add(Convert.ToDouble(arrrec[2]));
+                        objarrs.Add(null);
+                        objarrs.Add(Convert.ToDateTime(arrrec[3]).ToString("dd.MM.yyyy"));
+                        objarrs.Add(Convert.ToDateTime(arrrec[4]).ToString("dd.MM.yyyy"));
 
-                    if (curindval >= 99)
+                        #region array
+                        for (int f = 0; f < fieldcount; f++)
+                        {
+                            objvals[curindval, f] = objarrs[f];
+                        }
+
+                        if (curindval >= 99)
+                        {
+                            DataExportCommon.AddRow(sheetAct, number_row_curr - 99, objvals);
+                            curindval = -1;
+                            objvals = new object[100, fieldcount];
+                        }
+                        #endregion
+
+                        curindval++;
+                        number_row_curr++;
+                    }
+                    if (curindval != 0)
                     {
-                        DataExportCommon.AddRow(mainWorkSheet, curcount - 99, objvals);
-                        curindval = -1;
-                        objvals = new object[100, fieldcount];
+                        DataExportCommon.AddRow(sheetAct, number_row_curr - curindval, objvals, curindval);
                     }
-                    #endregion
-
-                    curindval++;
-                    curcount++;
-                    curcounti++;
-
                 }
-                if (curindval != 0)
+                #endregion
+
+                #region Плохие - без изменений, bad
                 {
-                    DataExportCommon.AddRow(mainWorkSheet, curcount - curindval, objvals, curindval);
-                }
+                    int fieldcount = 6;
+                    int number_row_curr = gooditems.Count + 13 + 4 - 1;
 
-                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + "_без_изменений.xlsx";
-                MemoryStream stream = new MemoryStream();
-                excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-                stream.Seek(0, SeekOrigin.Begin);
-                zipFile.AddEntry(fileName, stream);
-            }
-            #endregion
+                    int lenobjs = baditems.Count;
+                    sheetAct.Rows.InsertCopy(number_row_curr, lenobjs - 1, sheetAct.Rows[number_row_curr]);
 
-            #region Акт_об_определении_КС - с изменениями
-            {
-                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCost", ".xlsx", "ExcelTemplates");
-                ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
-                var sheet_edit = excel_edit.Worksheets[0];
-
-                int curcount = 3;
-                int curcounti = 3;
-                int fieldcount = 3;
-                int lenobjs = gooditems.Count;
-
-                object[,] objvals = new object[100, fieldcount];
-                int curindval = 0;
-                for (int i = 0; i < lenobjs; i++)
-                {
-                    List<object> objarrs = new List<object>();
-                    string[] arrrec = gooditems[i].Split('|');
-                    objarrs.Add(i + 1);
-                    objarrs.Add(arrrec[1]);
-                    objarrs.Add(Convert.ToDouble(arrrec[2]));
-
-                    #region array
-                    for (int f = 0; f < fieldcount; f++)
+                    object[,] objvals = new object[100, fieldcount];
+                    int curindval = 0;
+                    for (int i = 0; i < lenobjs; i++)
                     {
-                        objvals[curindval, f] = objarrs[f];
-                    }
+                        List<object> objarrs = new List<object>();
+                        string[] arrrec = baditems[i].Split('|');
+                        objarrs.Add(i + 1);
+                        objarrs.Add(arrrec[1]);
+                        objarrs.Add(Convert.ToDateTime(arrrec[2]).ToString("dd.MM.yyyy"));
+                        objarrs.Add(null);
+                        objarrs.Add(Convert.ToDateTime(arrrec[3]).ToString("dd.MM.yyyy"));
+                        objarrs.Add(null);
 
-                    if (curindval >= 99)
+                        #region array
+                        for (int f = 0; f < fieldcount; f++)
+                        {
+                            objvals[curindval, f] = objarrs[f];
+                        }
+
+                        if (curindval >= 99)
+                        {
+                            DataExportCommon.AddRow(sheetAct, number_row_curr - 99, objvals);
+                            curindval = -1;
+                            objvals = new object[100, fieldcount];
+                        }
+                        #endregion
+
+                        curindval++;
+                        number_row_curr++;
+                    }
+                    if (curindval != 0)
                     {
-                        DataExportCommon.AddRow(sheet_edit, curcount - 99, objvals);
-                        curindval = -1;
-                        objvals = new object[100, fieldcount];
+                        DataExportCommon.AddRow(sheetAct, number_row_curr - curindval, objvals, curindval);
                     }
-                    #endregion
-
-                    curindval++;
-                    curcount++;
-                    curcounti++;
                 }
-                if (curindval != 0)
-                {
-                    DataExportCommon.AddRow(sheet_edit, curcount - curindval, objvals, curindval);
-                }
+                #endregion
 
                 string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
                 MemoryStream stream = new MemoryStream();
-                excel_edit.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                excelAct.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
                 stream.Seek(0, SeekOrigin.Begin);
                 zipFile.AddEntry(fileName, stream);
+
+                //excelAct.Save("C:\\Temp\\KO_Vuon\\ActDeterminingCadastralCostVUON.xlsx");
+
             }
             #endregion
 
@@ -4122,7 +4132,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.1",
                      "Кадастровый номер объекта недвижимости",
-                     CheckNullEmpty.CheckString(_unit.CadastralNumber),
+                     CheckNullEmpty.CheckStringOut(_unit.CadastralNumber),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4130,7 +4140,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.2",
                      "Вид объекта недвижимости (земельный участок, здание, сооружение, помещение, машино-место, объект незавершенного строительства, единый недвижимый комплекс, предприятие как имущественный комплекс или иной вид)",
-                     CheckNullEmpty.CheckString(_unit.PropertyType),
+                     CheckNullEmpty.CheckStringOut(_unit.PropertyType),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4140,7 +4150,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.3",
                      "Адрес объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4150,7 +4160,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.4",
                      "Описание местоположения объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4158,7 +4168,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.5",
                      "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
-                     CheckNullEmpty.CheckString(_unit.Square.ToString()),
+                     CheckNullEmpty.CheckStringOut(_unit.Square.ToString()),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4168,7 +4178,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.6",
                      "Категория земель, к которой относится земельный участок, если объектом недвижимости является земельный участок",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4178,7 +4188,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.7",
                      "Вид разрешенного использования объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4193,7 +4203,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.8",
                      "Назначение (для зданий, сооружений, помещения, единого недвижимого комплекса, предприятия как имущественного комплекса), проектируемое назначение (для объектов незавершенного строительства) объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4203,7 +4213,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.9",
                      "Этажность объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4213,7 +4223,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.10",
                      "Материал наружных стен объекта недвижимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4223,7 +4233,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.11",
                      "Обременения (ограничения) объекта недвижимости, использованные при определении кадастровой стоимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4233,7 +4243,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.12",
                      "Степень готовности объекта незавершенного строительства в процентах",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4243,7 +4253,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.13",
                      "Иные сведения об объекте недвижимости, использованные при определении кадастровой стоимости",
-                     CheckNullEmpty.CheckString(value_attr),
+                     CheckNullEmpty.CheckStringOut(value_attr),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4273,7 +4283,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.1",
                      "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
-                     CheckNullEmpty.CheckString(group_unit.MarketSegment),
+                     CheckNullEmpty.CheckStringOut(group_unit.MarketSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4281,7 +4291,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.2",
                      "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
-                     CheckNullEmpty.CheckString(group_unit.MarketSegmentFunctioningFeatures),
+                     CheckNullEmpty.CheckStringOut(group_unit.MarketSegmentFunctioningFeatures),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4289,7 +4299,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.2.3",
                      "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
-                     CheckNullEmpty.CheckString(group_unit.PriceZoneCharacteristic),
+                     CheckNullEmpty.CheckStringOut(group_unit.PriceZoneCharacteristic),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4597,7 +4607,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.1",
                      "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     CheckNullEmpty.CheckString(group_unit.AppliedApproachesInCadastralCost),
+                     CheckNullEmpty.CheckStringOut(group_unit.AppliedApproachesInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4605,7 +4615,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.2",
                      "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
-                     CheckNullEmpty.CheckString(group_unit.AppliedEvaluationMethodsInCadastralCost),
+                     CheckNullEmpty.CheckStringOut(group_unit.AppliedEvaluationMethodsInCadastralCost),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4613,7 +4623,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.3",
                      "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
-                     CheckNullEmpty.CheckString(group_unit.CadastralCostDetermingMethod),
+                     CheckNullEmpty.CheckStringOut(group_unit.CadastralCostDetermingMethod),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4621,7 +4631,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.4",
                      "Модель определения кадастровой стоимости объекта недвижимости с обоснованием ее выбора",
-                     CheckNullEmpty.CheckString(formula),
+                     CheckNullEmpty.CheckStringOut(formula),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4629,7 +4639,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.5",
                      "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
-                     CheckNullEmpty.CheckString(group_unit.ObjectsSegment),
+                     CheckNullEmpty.CheckStringOut(group_unit.ObjectsSegment),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4637,7 +4647,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.6",
                      "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
-                     CheckNullEmpty.CheckString(group_unit.ObjectsSubgroup),
+                     CheckNullEmpty.CheckStringOut(group_unit.ObjectsSubgroup),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4645,7 +4655,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.4.7",
                      "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
-                     CheckNullEmpty.CheckString(group_unit.CadastralCostCalculationOrderDescription),
+                     CheckNullEmpty.CheckStringOut(group_unit.CadastralCostCalculationOrderDescription),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
