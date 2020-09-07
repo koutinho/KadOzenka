@@ -236,6 +236,7 @@
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
     <None Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
     <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
@@ -536,10 +537,10 @@
     <Content Include="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Regions.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\SqlQueries\MinMaxAverageUPKSOks.sql">
+    <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\SqlQueries\MinMaxAverageUPKSZu.sql">
+    <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForZu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql">
@@ -1856,6 +1857,8 @@
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForZu.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
   </ItemGroup>

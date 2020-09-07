@@ -4,20 +4,28 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
 	public abstract class BaseMinMaxAverageByGroupsReport : StatisticalDataReport
 	{
 		protected readonly MinMaxAverageByGroupsService _service;
+		protected readonly UpksService UpksService;
+		protected readonly UprsService UprsService;
+		protected readonly UpksAndUprsService UpksAndUprsService;
 
 		public BaseMinMaxAverageByGroupsReport()
 		{
 			_service = new MinMaxAverageByGroupsService(StatisticalDataService, GbuObjectService);
-		}
+            UpksService = new UpksService(StatisticalDataService);
+            UprsService = new UprsService(StatisticalDataService);
+            UpksAndUprsService = new UpksAndUprsService(UpksService, UprsService);
+        }
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{

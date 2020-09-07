@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData.Dto.MinMaxAverage;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
 	public class MinMaxAverageUPKSByGroupsReport : BaseMinMaxAverageByGroupsReport
-	{
-		protected override string GetReportTitle()
+    {
+        protected override string GetReportTitle()
 		{
 			return "Статистика по минимальным, максимальным и средним УПКС в разрезе групп";
 		}
@@ -36,7 +32,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
-                    var data = _service.GetDataByGroupsUpksOks(taskIdList);
+                    var data = UpksService.GetDataByGroupsForOks(taskIdList);
                     var objectCountInGroup = data
                         .GroupBy(x => x.ParentGroup)
                         .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
@@ -62,7 +58,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsUpksZu(taskIdList);
+                    var data = UpksService.GetDataByGroupsForZu(taskIdList);
                     var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
@@ -99,7 +95,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
-                    var data = _service.GetDataByGroupsAndSubGroupsUpksOks(taskIdList);
+                    var data = UpksService.GetDataByGroupsAndSubGroupsForOks(taskIdList);
                     var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
 
                     var objectCountInGroupAndSubGroup = data
@@ -129,7 +125,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsAndSubgroupsUpksZu(taskIdList);
+                    var data = UpksService.GetDataByGroupsAndSubgroupsForZu(taskIdList);
                     var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
 
                     foreach (var unitDto in data)

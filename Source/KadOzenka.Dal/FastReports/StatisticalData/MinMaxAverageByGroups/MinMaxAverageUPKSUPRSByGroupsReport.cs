@@ -5,14 +5,14 @@ using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
+using MinMaxAverageByGroupsCalcType = KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageByGroupsCalcType;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
 	public class MinMaxAverageUPKSUPRSByGroupsReport : BaseMinMaxAverageByGroupsReport
 	{
-		protected override string TemplateName(NameValueCollection query)
+        protected override string TemplateName(NameValueCollection query)
 		{
 			var reportType = GetQueryParam<string>("ReportType", query);
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsUpksAndUprsZu(taskIdList);
+                    var data = UpksAndUprsService.GetDataByGroupsForZu(taskIdList);
                     var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
@@ -127,8 +127,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsAndSubGroupsUpksAndUprsZu(taskIdList);
+                    var data = UpksAndUprsService.GetDataByGroupsAndSubGroupsForZu(taskIdList);
                     var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
+
                     foreach (var unitDto in data)
                     {
                         foreach (var calcType in calcTypes)

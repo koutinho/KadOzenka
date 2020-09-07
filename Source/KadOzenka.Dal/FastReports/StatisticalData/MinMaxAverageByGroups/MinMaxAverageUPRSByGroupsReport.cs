@@ -3,14 +3,14 @@ using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
+using MinMaxAverageByGroupsCalcType = KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageByGroupsCalcType;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
 	public class MinMaxAverageUPRSByGroupsReport : BaseMinMaxAverageByGroupsReport
 	{
-		protected override string GetReportTitle()
+        protected override string GetReportTitle()
 		{
 			return "Статистика по минимальным, максимальным и средним УПРС в разрезе групп";
 		}
@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsUprsZu(taskIdList);
+                    var data = UprsService.GetDataByGroupsUprsZu(taskIdList);
                     var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
@@ -96,7 +96,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
-                    var data = _service.GetDataByGroupsAndSubgroupsUprsZu(taskIdList);
+                    var data = UprsService.GetDataByGroupsAndSubgroupsUprsZu(taskIdList);
                     var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
