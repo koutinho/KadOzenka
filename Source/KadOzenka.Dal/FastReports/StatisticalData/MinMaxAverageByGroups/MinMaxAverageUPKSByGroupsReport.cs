@@ -37,7 +37,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 if (isOks)
                 {
                     var data = _service.GetDataByGroupsUpksOks(taskIdList);
-                    var objectCountInGroup = GetObjectCountInGroup(data);
+                    var objectCountInGroup = data
+                        .GroupBy(x => x.ParentGroup)
+                        .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
 
                     var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
@@ -130,31 +132,5 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 return dataTable;
             }
         }
-
-        #region Support Methods
-
-        private Dictionary<string, int> GetObjectCountInGroup(List<UpksByGroupsOksDto> data)
-        {
-            var objectCountInGroup = new Dictionary<string, int>();
-
-            data.GroupBy(x => new { x.ParentGroup, x.PropertyType, x.Purpose }).ToList().ForEach(x =>
-            {
-                var parentGroup = PreprocessGroupName(x.Key.ParentGroup);
-                var currentObjectCount = x.FirstOrDefault()?.ObjectsCount ?? 0;
-
-                if (objectCountInGroup.TryGetValue(parentGroup, out var n))
-                {
-                    objectCountInGroup[parentGroup] = n + currentObjectCount;
-                }
-                else
-                {
-                    objectCountInGroup[parentGroup] = currentObjectCount;
-                }
-            });
-
-            return objectCountInGroup;
-        }
-
-        #endregion
     }
 }
