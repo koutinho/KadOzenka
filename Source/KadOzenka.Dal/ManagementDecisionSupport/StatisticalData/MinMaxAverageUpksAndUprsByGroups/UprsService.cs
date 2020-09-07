@@ -15,7 +15,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         }
 
 
-        public List<UprsByGroupsZuDto> GetDataByGroupsUprsZu(long[] taskIdList)
+        #region ZU
+
+        public List<UprsByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
             var sql = GetSqlForZu(taskIdList, false);
             var result = QSQuery.ExecuteSql<UprsByGroupsZuDto>(sql);
@@ -34,7 +36,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return result;
         }
 
-        public List<UprsByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUprsZu(long[] taskIdList)
+        public List<UprsByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsForZu(long[] taskIdList)
         {
             var sql = GetSqlForZu(taskIdList, true);
 
@@ -72,5 +74,33 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return string.Format(contents, subGroupSelectionFromGrouping, subGroupSelectionFromQuery,
                 string.Join(",", taskIdList), subGroupForGrouping);
         }
+
+        #endregion
+
+
+        #region Oks
+
+        public List<OksByGroupsDto> GetDataByGroupsForOks(long[] taskIdList)
+        {
+            var sql = GetSqlForOks(taskIdList, false);
+            var result = QSQuery.ExecuteSql<OksByGroupsDto>(sql);
+
+            AddSummaryByGroupsOks(result);
+
+            return result;
+        }
+
+        public string GetSqlForOks(long[] taskIdList, bool withSubGroups)
+        {
+            var contents = GetSqlFileContent("UprsForOks");
+
+            var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
+            var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+
+            return string.Format(contents,string.Join(",", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
+        }
+
+        #endregion
+
     }
 }
