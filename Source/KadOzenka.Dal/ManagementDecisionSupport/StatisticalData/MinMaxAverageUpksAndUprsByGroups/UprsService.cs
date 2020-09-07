@@ -90,6 +90,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return result;
         }
 
+        public List<ByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
+        {
+            var sql = GetSqlForOks(taskIdList, true);
+            var result = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
+
+            AddSummaryByGroupsAndSubGroupsOks(result);
+
+            return result;
+        }
+
         public string GetSqlForOks(long[] taskIdList, bool withSubGroups)
         {
             var contents = GetSqlFileContent("UprsForOks");
@@ -97,7 +107,23 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
             var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
 
-            return string.Format(contents,string.Join(",", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
+            string subGroupSelectionFromQuery = string.Empty,
+                subGroupForGrouping = string.Empty,
+                subGroupForResultData = string.Empty,
+                subGroupForResult = string.Empty,
+                subGroupForSorting = string.Empty;
+            if (withSubGroups)
+            {
+                subGroupSelectionFromQuery = @"L1_R205.GROUP_NAME SubGroup, ";
+                subGroupForGrouping = @"d.SubGroup, ";
+                subGroupForResultData = @"dg.SubGroup, ";
+                subGroupForResult = @"rd.SubGroup, ";
+                subGroupForSorting = @"SubGroup, ";
+            }
+
+            return string.Format(contents, string.Join(",", taskIdList), buildingPurposeAttr.Id,
+                placementPurposeAttr.Id, subGroupSelectionFromQuery, subGroupForGrouping, subGroupForResultData,
+                subGroupForResult, subGroupForSorting);
         }
 
         #endregion

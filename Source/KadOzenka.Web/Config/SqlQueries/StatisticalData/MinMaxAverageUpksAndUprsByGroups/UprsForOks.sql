@@ -27,6 +27,7 @@ initialData as (
 	select * from (
 		SELECT 
         	(SELECT L2_R205.GROUP_NAME AS "20500300" FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) ParentGroup,
+			{3}
 			L1_R201.ID,
 			L1_R201.PROPERTY_TYPE,
 			L1_R201.PROPERTY_TYPE_CODE,         
@@ -56,6 +57,7 @@ initialData as (
 dataGroupedByPropertyType as (
 	select 
     	d.ParentGroup,
+		{4}
 		d.PROPERTY_TYPE,
 		d.PROPERTY_TYPE_CODE,
 		d.HAS_PURPOSE,
@@ -91,12 +93,13 @@ dataGroupedByPropertyType as (
             END
         ) as MAX
 	from initialData d
-	group by d.ParentGroup, d.PROPERTY_TYPE, d.PROPERTY_TYPE_CODE, d.HAS_PURPOSE, d.PURPOSE
+	group by d.ParentGroup, {4} d.PROPERTY_TYPE, d.PROPERTY_TYPE_CODE, d.HAS_PURPOSE, d.PURPOSE
 ),
 
 result_data as (
 	select
     	dg.ParentGroup,
+		{5}
         CAST(COALESCE(OBJECTS_COUNT, 0) as int) AS ObjectsCount,
         td.PropertyType as PropertyType,
 		td.PropertyTypeCode as PropertyTypeCode,
@@ -111,4 +114,4 @@ result_data as (
 )
 
 
-select * FROM result_data rd order by ParentGroup, PropertyTypeCode, Purpose
+select * FROM result_data rd order by ParentGroup, {6} PropertyTypeCode, Purpose

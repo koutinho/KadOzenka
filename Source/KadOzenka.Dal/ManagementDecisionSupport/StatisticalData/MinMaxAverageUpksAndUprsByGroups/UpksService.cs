@@ -74,6 +74,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         #endregion
 
+
         #region Oks
 
         public List<OksByGroupsDto> GetDataByGroupsForOks(long[] taskIdList)
@@ -87,33 +88,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return result;
         }
 
-        public List<UpksOksByGroupsAndSubGroupsDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
+        public List<ByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
         {
             var sql = GetSqlForOks(taskIdList, true);
-            var result = QSQuery.ExecuteSql<UpksOksByGroupsAndSubGroupsDto>(sql);
+            var result = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
 
-            var groupingOksDictionaries = result.GroupBy(x => new
-            {
-                x.Purpose,
-                x.HasPurpose,
-                x.PropertyType
-            }, (k, g) => new GroupingOksByGroupsAndSubGroupsDictionary
-            {
-                Key = new GroupingOks
-                {
-                    HasPurpose = k.HasPurpose,
-                    Purpose = k.Purpose,
-                    PropertyType = k.PropertyType
-                },
-                Values = g.ToList()
-            }).ToList();
-
-            groupingOksDictionaries.ForEach(x =>
-            {
-                var summary = GetSummaryByGroupsAndSubGroupsForOks(x);
-
-                result.Add(summary);
-            });
+            AddSummaryByGroupsAndSubGroupsOks(result);
 
             return result;
         }
@@ -142,32 +122,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id,
                 placementPurposeAttr.Id, subGroupSelectionFromQuery, subGroupForGrouping, subGroupForResultData,
                 subGroupForResult, subGroupForSorting);
-        }
-
-        #endregion
-
-
-        #region Support Methods
-
-        private static UpksOksByGroupsAndSubGroupsDto GetSummaryByGroupsAndSubGroupsForOks(GroupingOksByGroupsAndSubGroupsDictionary groupingOksByGroupsDictionary)
-        {
-            var objectCount = groupingOksByGroupsDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.Sum(y => y.ObjectsCount));
-
-            var upksValues = groupingOksByGroupsDictionary.Values.ToList();
-
-            return new UpksOksByGroupsAndSubGroupsDto
-            {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
-                PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,
-                Purpose = groupingOksByGroupsDictionary.Key.Purpose,
-                HasPurpose = groupingOksByGroupsDictionary.Key.HasPurpose,
-                ObjectsCount = objectCount,
-                Min = upksValues.Min(x => x.Min),
-                Avg = upksValues.Average(x => x.Avg),
-                AvgWeight = upksValues.Average(x => x.AvgWeight),
-                Max = upksValues.Max(x => x.Max)
-            };
         }
 
         #endregion
