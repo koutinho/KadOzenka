@@ -10,13 +10,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
     {
         #region Entities
 
-        protected class GroupingOks
-        {
-            public string PropertyType { get; set; }
-            public bool HasPurpose { get; set; }
-            public string Purpose { get; set; }
-        }
-
         protected class GroupingOksByGroupsDictionary
         {
             public GroupingOks Key { get; set; }
