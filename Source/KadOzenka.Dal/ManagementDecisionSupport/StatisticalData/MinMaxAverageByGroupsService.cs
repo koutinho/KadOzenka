@@ -112,15 +112,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             public string Purpose { get; set; }
         }
 
-        private class GroupingOksDictionary
+        private class GroupingOksByGroupsDictionary
         {
             public GroupingOks Key { get; set; }
             public List<UpksByGroupsOksDto> Values { get; set; }
         }
 
+        private class GroupingOksByGroupsAndSubGroupsDictionary
+        {
+            public GroupingOks Key { get; set; }
+            public List<UpksByGroupsAndSubGroupsOksDto> Values { get; set; }
+        }
+
+
         public List<UpksByGroupsZuDto> GetDataByGroupsUpksZu(long[] taskIdList)
         {
-            var sql = GetSqlForUpks(taskIdList, false);
+            var sql = GetUpksZuSql(taskIdList, false);
             var result = QSQuery.ExecuteSql<UpksByGroupsZuDto>(sql);
 
             var summary = new UpksByGroupsZuDto
@@ -139,7 +146,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<UpksByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsUpksZu(long[] taskIdList)
         {
-            var sql = GetSqlForUpks(taskIdList, true);
+            var sql = GetUpksZuSql(taskIdList, true);
             var result = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(sql);
 
             var summary = new UpksByGroupsAndSubGroupsZuDto
@@ -157,7 +164,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        private string GetSqlForUpks(long[] taskIdList, bool withSubGroups)
+        private string GetUpksZuSql(long[] taskIdList, bool withSubGroups)
         {
             string contents;
             using (var sr = new StreamReader(Configuration.GetFileStream("MinMaxAverageUPKSZu", "sql", "SqlQueries")))
@@ -178,16 +185,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<UpksByGroupsOksDto> GetDataByGroupsUpksOks(long[] taskIdList)
         {
-            string contents;
-            using (var sr = new StreamReader(Configuration.GetFileStream("MinMaxAverageUPKSOks", "sql", "SqlQueries")))
-            {
-                contents = sr.ReadToEnd();
-            }
-
-            var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
-            var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
-
-            var sql = string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id);
+            var sql = GetUpksOksSql(taskIdList, false);
             var result = QSQuery.ExecuteSql<UpksByGroupsOksDto>(sql);
 
             var groupingOksDictionaries = result.GroupBy(x => new
@@ -195,7 +193,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 x.Purpose,
                 x.HasPurpose,
                 x.PropertyType
-            }, (k, g) => new GroupingOksDictionary
+            }, (k, g) => new GroupingOksByGroupsDictionary
             {
                 Key = new GroupingOks
                 {
@@ -208,7 +206,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
             groupingOksDictionaries.ForEach(x =>
             {
-                var summary = GetSummaryUpksOks(x);
+                var summary = GetSummaryUpksByGroupsOks(x);
 
                 result.Add(summary);
             });
@@ -216,18 +214,101 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        private static UpksByGroupsOksDto GetSummaryUpksOks(GroupingOksDictionary groupingOksDictionary)
+        public List<UpksByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsUpksOks(long[] taskIdList)
         {
-            var objectCount = groupingOksDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
+            var sql = GetUpksOksSql(taskIdList, true);
+            var result = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsOksDto>(sql);
 
-            var upksValues = groupingOksDictionary.Values.ToList();
+            var groupingOksDictionaries = result.GroupBy(x => new
+            {
+                x.Purpose,
+                x.HasPurpose,
+                x.PropertyType
+            }, (k, g) => new GroupingOksByGroupsAndSubGroupsDictionary
+            {
+                Key = new GroupingOks
+                {
+                    HasPurpose = k.HasPurpose,
+                    Purpose = k.Purpose,
+                    PropertyType = k.PropertyType,
+                },
+                Values = g.ToList()
+            }).ToList();
+
+            groupingOksDictionaries.ForEach(x =>
+            {
+                var summary = GetSummaryUpksByGroupsAndSubGroupsOks(x);
+
+                result.Add(summary);
+            });
+
+            return result;
+        }
+
+        private string GetUpksOksSql(long[] taskIdList, bool withSubGroups)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream(
+                "\\StatisticalData\\MinMaxAverageUpksAndUprsByGroups\\UpksForOks", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
+            var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+
+            string subGroupSelectionFromQuery = string.Empty,
+                subGroupForGrouping = string.Empty,
+                subGroupForResultData = string.Empty,
+                subGroupForResult = string.Empty,
+                subGroupForSorting = string.Empty;
+            if (withSubGroups)
+            {
+                subGroupSelectionFromQuery = @"L1_R205.GROUP_NAME SubGroup, ";
+                subGroupForGrouping = @"d.SubGroup, ";
+                subGroupForResultData = @"dg.SubGroup, ";
+                subGroupForResult = @"rd.SubGroup, ";
+                subGroupForSorting = @"SubGroup, ";
+            }
+
+            return string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id,
+                placementPurposeAttr.Id, subGroupSelectionFromQuery, subGroupForGrouping, subGroupForResultData,
+                subGroupForResult, subGroupForSorting);
+        }
+
+        private static UpksByGroupsOksDto GetSummaryUpksByGroupsOks(GroupingOksByGroupsDictionary groupingOksByGroupsDictionary)
+        {
+            var objectCount = groupingOksByGroupsDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
+
+            var upksValues = groupingOksByGroupsDictionary.Values.ToList();
 
             return new UpksByGroupsOksDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
-                PropertyType = groupingOksDictionary.Key.PropertyType,
-                Purpose = groupingOksDictionary.Key.Purpose,
-                HasPurpose = groupingOksDictionary.Key.HasPurpose,
+                PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,
+                Purpose = groupingOksByGroupsDictionary.Key.Purpose,
+                HasPurpose = groupingOksByGroupsDictionary.Key.HasPurpose,
+                ObjectsCount = objectCount,
+                Min = upksValues.Min(x => x.Min),
+                Avg = upksValues.Average(x => x.Avg),
+                AvgWeight = upksValues.Average(x => x.AvgWeight),
+                Max = upksValues.Max(x => x.Max)
+            };
+        }
+
+        private static UpksByGroupsAndSubGroupsOksDto GetSummaryUpksByGroupsAndSubGroupsOks(GroupingOksByGroupsAndSubGroupsDictionary groupingOksByGroupsDictionary)
+        {
+            var objectCount = groupingOksByGroupsDictionary.Values.GroupBy(x => x.ParentGroup).Sum(x => x.Sum(y => y.ObjectsCount));
+
+            var upksValues = groupingOksByGroupsDictionary.Values.ToList();
+
+            return new UpksByGroupsAndSubGroupsOksDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,
+                Purpose = groupingOksByGroupsDictionary.Key.Purpose,
+                HasPurpose = groupingOksByGroupsDictionary.Key.HasPurpose,
                 ObjectsCount = objectCount,
                 Min = upksValues.Min(x => x.Min),
                 Avg = upksValues.Average(x => x.Avg),
@@ -243,7 +324,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<UpksAndUprsByGroupsZuDto> GetDataByGroupsUpksAndUprsZu(long[] taskIdList)
         {
-            var upksSql = GetSqlForUpks(taskIdList, false);
+            var upksSql = GetUpksZuSql(taskIdList, false);
             var upksResults = QSQuery.ExecuteSql<UpksByGroupsZuDto>(upksSql);
 
             var uprsSql = GetSqlForUprs(taskIdList, false);
@@ -282,7 +363,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<ByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubGroupsUpksAndUprsZu(long[] taskIdList)
         {
-            var upksSql = GetSqlForUpks(taskIdList, true);
+            var upksSql = GetUpksZuSql(taskIdList, true);
             var upksResults = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
 
             var uprsSql = GetSqlForUprs(taskIdList, true);

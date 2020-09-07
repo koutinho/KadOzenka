@@ -235,6 +235,7 @@
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
     <None Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
     <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
@@ -563,6 +564,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1851,6 +1855,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
   </ItemGroup>
