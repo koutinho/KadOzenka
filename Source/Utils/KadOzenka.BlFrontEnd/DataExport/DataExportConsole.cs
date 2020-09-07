@@ -47,7 +47,7 @@ namespace KadOzenka.BlFrontEnd.DataExport
 
 			FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			
-			DataExporterByTemplate.AddExportToQueue(100, "1", filePath, fs, settings);
+			new DataExporterByTemplate().AddExportToQueue(100, "1", filePath, fs, settings);
 
 			// Сохранение результата в result xlsx
 			//stream.Save("D:\\Genix\\result.xlsx");
