@@ -10,6 +10,13 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using Core.Register.QuerySubsystem;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -62,6 +69,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         private InputParameters GetInputParameters(NameValueCollection query)
         {
+            //return new InputParameters();
+
             var infoAboutExistenceOfOtherObjectsAttributeId = GetFilterParameterValue(query, _infoAboutExistenceOfOtherObjects, "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости");
             var infoSourceAttributeId = GetFilterParameterValue(query, _infoSource, "Источник информации");
             var segmentAttributeId = GetFilterParameterValue(query, _segment, "Сегмент");
@@ -80,8 +89,30 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
+        protected string GetSqlFileContent(string fileName)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream(
+                    $"\\StatisticalData\\ResultsByCadastralDistrict\\{fileName}", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            return contents;
+        }
+
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
+            //var gbuAttributes = GbuObjectService.GetAllAttributes(
+            //        new List<long> { 11891558 },
+            //        new List<long>{ 14 },
+            //        new List<long> { 548 },
+            //        DateTime.Now.GetEndOfTheDay());
+
+            //var sql = GetSqlFileContent("Parcels");
+            //var result = QSQuery.ExecuteSql<ReportItem>(sql);
+            //return result;
+
             var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
             var units = GetUnits(taskIds, PropertyTypes.Stead);
@@ -108,15 +139,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
                 SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
                 item.CadastralDistrict = GetCadastralDistrict(item.CadastralQuartal);
-                
+
                 result.Add(item);
             });
 
-            return result;
+            return result.OrderBy(x => x.CadastralNumber).ToList();
         }
 
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
         {
+            //return new Dictionary<string, RegisterAttribute>();
+
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
             attributesDictionary.Add(nameof(ReportItem.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
             attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
