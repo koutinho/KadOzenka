@@ -1,4 +1,4 @@
-﻿using ObjectModel.Gbu.Harmonization;
+﻿using KadOzenka.Dal.GbuObject.Dto;
 
 namespace KadOzenka.Dal.GbuObject
 {

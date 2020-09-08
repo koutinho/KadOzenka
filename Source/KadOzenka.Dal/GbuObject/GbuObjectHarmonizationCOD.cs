@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ObjectModel.Gbu.Harmonization;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.GbuObject

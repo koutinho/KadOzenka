@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Directory;
-using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Models.GbuObject
 {

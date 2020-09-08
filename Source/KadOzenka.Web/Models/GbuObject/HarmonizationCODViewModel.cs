@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Directory;
-using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Models.GbuObject
 {

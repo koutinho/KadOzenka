@@ -357,11 +357,9 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult Harmonization(HarmonizationViewModel viewModel)
 		{
 			if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
+                return GenerateMessageNonValidModel();
 
-			if (viewModel.IsNewAttribute)
+            if (viewModel.IsNewAttribute)
 			{
 				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
@@ -376,7 +374,7 @@ namespace KadOzenka.Web.Controllers
 			try
 			{
                 //TODO для тестирования (без процесса)
-                //new Harmonization(viewModel.ToHarmonizationSettings()).Run();
+                new Harmonization(viewModel.ToHarmonizationSettings()).Run();
                 ////TODO для тестирования (с процессом)
                 //new HarmonizationProcess().StartProcess(new OMProcessType(), new OMQueue
                 //{
@@ -384,8 +382,8 @@ namespace KadOzenka.Web.Controllers
                 //    UserId = SRDSession.GetCurrentUserId(),
                 //    Parameters = viewModel.ToHarmonizationSettings().SerializeToXml()
                 //}, new CancellationToken());
-                //queueId = 0;
-                queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
+                queueId = 0;
+                //queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
             }
 			catch (Exception e)
 			{

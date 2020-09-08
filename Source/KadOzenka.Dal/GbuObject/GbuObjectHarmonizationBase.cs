@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ObjectModel.Gbu.Harmonization;
 using Core.Shared.Extensions;
 using ObjectModel.Gbu;
 using System.Threading;
@@ -10,6 +9,7 @@ using ObjectModel.KO;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.SRD;
+using KadOzenka.Dal.GbuObject.Dto;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -178,7 +178,7 @@ namespace KadOzenka.Dal.GbuObject
                 throw new Exception("Выбрана только дата актуальности, но не выбрана характеристика");
         }
 
-        private static List<Item> GetObjects()
+        private List<Item> GetObjects()
         {
             var byTasks = false;
             if (BaseSetting.TaskFilter != null)
@@ -189,7 +189,7 @@ namespace KadOzenka.Dal.GbuObject
                 : GetObjectsWithoutTasks();
         }
 
-        private static List<Item> GetObjectsByTasks()
+        private List<Item> GetObjectsByTasks()
         {
             if (BaseSetting.TaskFilter == null || BaseSetting.TaskFilter.Count == 0)
                 throw new Exception("Была выбрана фильтрация по Заданиям на оценку, но не были выбраны задания.");
@@ -215,7 +215,7 @@ namespace KadOzenka.Dal.GbuObject
             return FilterObjects(objects);
         }
 
-        private static List<Item> GetObjectsWithoutTasks()
+        private List<Item> GetObjectsWithoutTasks()
         {
             var allObjects = OMMainObject.Where(x => x.ObjectType_Code == BaseSetting.PropertyType && x.IsActive == true)
                 .Select(x => x.Id)
@@ -234,7 +234,7 @@ namespace KadOzenka.Dal.GbuObject
             return FilterObjects(allObjects);
         }
 
-        private static List<Item> FilterObjects(List<Item> allObjects)
+        private List<Item> FilterObjects(List<Item> allObjects)
         {
             if (BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0 || allObjects.Count == 0)
                 return allObjects;
