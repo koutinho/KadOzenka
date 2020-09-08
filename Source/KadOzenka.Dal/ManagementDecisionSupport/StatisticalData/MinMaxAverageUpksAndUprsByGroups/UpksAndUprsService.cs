@@ -15,6 +15,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             public List<UpksAndUprsByGroupsOksDto> Values { get; set; }
         }
 
+        protected class GroupingOksByGroupsAndSubGroupsDictionary
+        {
+            public GroupingOks Key { get; set; }
+            public List<UpksAndUprsByGroupsAndSubGroupsOksDto> Values { get; set; }
+        }
+
         #endregion
 
         private readonly UpksService _upksService;
@@ -26,6 +32,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             _uprsService = uprsService;
 		}
 
+
+        #region Zu
 
         public List<UpksAndUprsByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
@@ -107,13 +115,18 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return result;
         }
 
+        #endregion
+
+
+        #region Oks
+
         public List<UpksAndUprsByGroupsOksDto> GetDataByGroupsForOks(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForOks(taskIdList, false);
-            var upksResults = QSQuery.ExecuteSql<OksByGroupsDto>(upksSql);
+            var upksResults = QSQuery.ExecuteSql<ByGroupsOksDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForOks(taskIdList, false);
-            var uprsResults = QSQuery.ExecuteSql<OksByGroupsDto>(uprsSql);
+            var uprsResults = QSQuery.ExecuteSql<ByGroupsOksDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsOksDto>();
             foreach (var upks in upksResults)
@@ -143,41 +156,80 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
                 Values = g.ToList()
             }).ToList();
 
-            groupingOksDictionaries.ForEach(x =>
+            groupingOksDictionaries.ForEach(group =>
             {
-                var objectsCount = x.Values.GroupBy(y => y.ParentGroup)
+                var objectsCount = group.Values.GroupBy(y => y.ParentGroup)
                     .Sum(y => y.FirstOrDefault()?.ObjectsCount ?? 0);
 
-                var calculationInfo = x.Values.ToList();
+                var calculationInfo = group.Values.ToList();
+                var upksCalculationInfo = calculationInfo.Select(x => x.Upks).ToList();
+                var uprsCalculationInfo = calculationInfo.Select(x => x.Uprs).ToList();
 
-                var summary = new UpksAndUprsByGroupsOksDto
-                {
-                    ParentGroup = "Итого по субъекту РФ г Москва",
-                    PropertyType = x.Key.PropertyType,
-                    Purpose = x.Key.Purpose,
-                    HasPurpose = x.Key.HasPurpose,
-                    ObjectsCount = objectsCount,
-                    Upks = new CalculationInfoDto
-                    {
-                        Min = calculationInfo.Min(y => y.Upks.Min),
-                        Avg = calculationInfo.Average(y => y.Upks.Avg),
-                        AvgWeight = calculationInfo.Average(y => y.Upks.AvgWeight),
-                        Max = calculationInfo.Max(y => y.Upks.Max)
-                    },
-                    Uprs = new CalculationInfoDto
-                    {
-                        Min = calculationInfo.Min(y => y.Uprs.Min),
-                        Avg = calculationInfo.Average(y => y.Uprs.Avg),
-                        AvgWeight = calculationInfo.Average(y => y.Uprs.AvgWeight),
-                        Max = calculationInfo.Max(y => y.Uprs.Max)
-                    }
-                };
+                var summary = GetSummary(group.Key, objectsCount, upksCalculationInfo, uprsCalculationInfo);
 
                 result.Add(summary);
             });
 
             return result;
         }
+
+        public List<UpksAndUprsByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
+        {
+            var upksSql = _upksService.GetSqlForOks(taskIdList, true);
+            var upksResults = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(upksSql);
+
+            var uprsSql = _uprsService.GetSqlForOks(taskIdList, true);
+            var uprsResults = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(uprsSql);
+
+            var result = new List<UpksAndUprsByGroupsAndSubGroupsOksDto>();
+            foreach (var upks in upksResults)
+            {
+                var uprs = uprsResults.FirstOrDefault(x =>
+                    x.ParentGroup == upks.ParentGroup && 
+                    x.SubGroup == upks.SubGroup && 
+                    x.Purpose == upks.Purpose && x.HasPurpose == upks.HasPurpose &&
+                    x.PropertyType == upks.PropertyType);
+
+                var map = MapOks(uprs, upks);
+                map.SubGroup = upks?.SubGroup;
+
+                result.Add(map);
+            }
+
+            var groupingOksDictionaries = result.GroupBy(x => new
+            {
+                x.Purpose,
+                x.HasPurpose,
+                x.PropertyType
+            }, (k, g) => new GroupingOksByGroupsAndSubGroupsDictionary
+            {
+                Key = new GroupingOks
+                {
+                    HasPurpose = k.HasPurpose,
+                    Purpose = k.Purpose,
+                    PropertyType = k.PropertyType
+                },
+                Values = g.ToList()
+            }).ToList();
+
+            groupingOksDictionaries.ForEach(group =>
+            {
+                var objectsCount = group.Values.GroupBy(y => y.ParentGroup)
+                    .Sum(x => x.Sum(y => y.ObjectsCount));
+
+                var calculationInfo = group.Values.ToList();
+                var upksCalculationInfo = calculationInfo.Select(x => x.Upks).ToList();
+                var uprsCalculationInfo = calculationInfo.Select(x => x.Uprs).ToList();
+
+                var summary = GetSummary(group.Key, objectsCount, upksCalculationInfo, uprsCalculationInfo);
+
+                result.Add(summary);
+            });
+
+            return result;
+        }
+
+        #endregion
 
 
         #region Support Methods
@@ -205,9 +257,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             };
         }
 
-        private UpksAndUprsByGroupsOksDto MapOks(OksByGroupsDto uprs, OksByGroupsDto upks)
+        private UpksAndUprsByGroupsAndSubGroupsOksDto MapOks(ByGroupsOksDto uprs, ByGroupsOksDto upks)
         {
-            return new UpksAndUprsByGroupsOksDto
+            return new UpksAndUprsByGroupsAndSubGroupsOksDto
             {
                 ParentGroup = uprs?.ParentGroup,
                 PropertyType = uprs?.PropertyType,
@@ -227,6 +279,34 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
                     Avg = uprs?.Avg,
                     AvgWeight = uprs?.AvgWeight,
                     Max = uprs?.Max
+                }
+            };
+        }
+
+        private static UpksAndUprsByGroupsAndSubGroupsOksDto GetSummary(GroupingOks groupKey, int objectsCount,
+            List<CalculationInfoDto> upksCalculationInfo, List<CalculationInfoDto> uprsCalculationInfo)
+        {
+            return new UpksAndUprsByGroupsAndSubGroupsOksDto
+            {
+                ParentGroup = "Итого по субъекту РФ г Москва",
+                SubGroup = "Итого по субъекту РФ г Москва",
+                PropertyType = groupKey.PropertyType,
+                Purpose = groupKey.Purpose,
+                HasPurpose = groupKey.HasPurpose,
+                ObjectsCount = objectsCount,
+                Upks = new CalculationInfoDto
+                {
+                    Min = upksCalculationInfo.Min(y => y.Min),
+                    Avg = upksCalculationInfo.Average(y => y.Avg),
+                    AvgWeight = upksCalculationInfo.Average(y => y.AvgWeight),
+                    Max = upksCalculationInfo.Max(y => y.Max)
+                },
+                Uprs = new CalculationInfoDto
+                {
+                    Min = uprsCalculationInfo.Min(y => y.Min),
+                    Avg = uprsCalculationInfo.Average(y => y.Avg),
+                    AvgWeight = uprsCalculationInfo.Average(y => y.AvgWeight),
+                    Max = uprsCalculationInfo.Max(y => y.Max)
                 }
             };
         }

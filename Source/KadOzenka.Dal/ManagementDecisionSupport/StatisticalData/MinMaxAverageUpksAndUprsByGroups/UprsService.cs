@@ -80,10 +80,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         #region Oks
 
-        public List<OksByGroupsDto> GetDataByGroupsForOks(long[] taskIdList)
+        public List<ByGroupsOksDto> GetDataByGroupsForOks(long[] taskIdList)
         {
             var sql = GetSqlForOks(taskIdList, false);
-            var result = QSQuery.ExecuteSql<OksByGroupsDto>(sql);
+            var result = QSQuery.ExecuteSql<ByGroupsOksDto>(sql);
 
             AddSummaryByGroupsOks(result);
 

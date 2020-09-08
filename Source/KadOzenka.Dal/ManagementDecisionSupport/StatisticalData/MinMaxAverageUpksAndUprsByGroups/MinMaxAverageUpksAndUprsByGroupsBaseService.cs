@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         protected class GroupingOksByGroupsDictionary
         {
             public GroupingOks Key { get; set; }
-            public List<OksByGroupsDto> Values { get; set; }
+            public List<ByGroupsOksDto> Values { get; set; }
         }
 
         protected class GroupingOksByGroupsAndSubGroupsDictionary
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             return contents;
         }
 
-        protected void AddSummaryByGroupsOks(List<OksByGroupsDto> result)
+        protected void AddSummaryByGroupsOks(List<ByGroupsOksDto> result)
         {
             var groupingOksDictionaries = result.GroupBy(x => new
             {
@@ -92,14 +92,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         #region Support Methods
 
-        private OksByGroupsDto GetSummaryByGroupsForOks(GroupingOksByGroupsDictionary groupingOksByGroupsDictionary)
+        private ByGroupsOksDto GetSummaryByGroupsForOks(GroupingOksByGroupsDictionary groupingOksByGroupsDictionary)
         {
             var objectsCount = groupingOksByGroupsDictionary.Values.GroupBy(x => x.ParentGroup)
                 .Sum(x => x.FirstOrDefault()?.ObjectsCount ?? 0);
 
             var calculationInfo = groupingOksByGroupsDictionary.Values.ToList();
 
-            return new OksByGroupsDto
+            return new ByGroupsOksDto
             {
                 ParentGroup = "Итого по субъекту РФ г Москва",
                 PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,

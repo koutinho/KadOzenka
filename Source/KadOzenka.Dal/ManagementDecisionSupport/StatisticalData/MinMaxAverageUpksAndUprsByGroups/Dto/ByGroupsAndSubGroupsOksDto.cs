@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto
 {
-	public class ByGroupsAndSubGroupsOksDto : OksByGroupsDto
+	public class ByGroupsAndSubGroupsOksDto : ByGroupsOksDto
     {
 		public string SubGroup { get; set; }
     }
