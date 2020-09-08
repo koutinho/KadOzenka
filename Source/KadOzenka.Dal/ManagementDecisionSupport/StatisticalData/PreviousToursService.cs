@@ -7,6 +7,7 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using KadOzenka.Dal.Registers;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -14,6 +15,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
     {
         protected readonly GbuObjectService GbuObjectService;
         protected readonly StatisticalDataService StatisticalDataService;
+        protected readonly RosreestrRegisterService RosreestrRegisterService;
         protected readonly FactorsService FactorsService;
 
         private const string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
@@ -46,6 +48,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         {
             GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
+            RosreestrRegisterService = new RosreestrRegisterService();
             FactorsService = new FactorsService();
         }
 
@@ -294,20 +297,20 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
 
-            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), StatisticalDataService.GetRosreestrObjectNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), StatisticalDataService.GetRosreestrParcelNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), StatisticalDataService.GetRosreestrPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), StatisticalDataService.GetRosreestrConstructionPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), StatisticalDataService.GetRosreestrParcelAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), RosreestrRegisterService.GetRosreestrObjectNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), RosreestrRegisterService.GetRosreestrParcelNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), RosreestrRegisterService.GetRosreestrConstructionPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), RosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), RosreestrRegisterService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), RosreestrRegisterService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), RosreestrRegisterService.GetRosreestrParcelAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), RosreestrRegisterService.GetRosreestrBuildYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), RosreestrRegisterService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), RosreestrRegisterService.GetRosreestrFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), RosreestrRegisterService.GetRosreestrWallMaterialAttribute());
 
             return attributesDictionary;
         }

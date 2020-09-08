@@ -68,10 +68,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 return new List<Attribute>();
 
             var gbuAttributesExceptRosreestr = objectAttributes
-                .Where(x => x.RegisterData.Id != StatisticalDataService.RosreestrRegisterId).ToList();
+                .Where(x => x.RegisterData.Id != RosreestrRegisterService.RosreestrRegisterId).ToList();
 
             var rosreestrAttributes = objectAttributes
-                .Where(x => x.RegisterData.Id == StatisticalDataService.RosreestrRegisterId).ToList();
+                .Where(x => x.RegisterData.Id == RosreestrRegisterService.RosreestrRegisterId).ToList();
 
             var notUniqueAttribute = new List<Attribute>();
             rosreestrAttributes.ForEach(rr =>

@@ -38,10 +38,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             switch (obj.ObjectType_Code)
             {
                 case PropertyTypes.Building:
-                    purposeAttribute = StatisticalDataService.GetRosreestrBuildingPurposeAttribute();
+                    purposeAttribute = RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
                     break;
                 case PropertyTypes.Construction:
-                    purposeAttribute = StatisticalDataService.GetRosreestrConstructionPurposeAttribute();
+                    purposeAttribute = RosreestrRegisterService.GetRosreestrConstructionPurposeAttribute();
                     break;
             }
             if (purposeAttribute != null)

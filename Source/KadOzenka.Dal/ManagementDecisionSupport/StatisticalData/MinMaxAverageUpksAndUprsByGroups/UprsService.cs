@@ -2,16 +2,19 @@
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
+using KadOzenka.Dal.Registers;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
 {
 	public class UprsService : MinMaxAverageUpksAndUprsByGroupsBaseService
     {
 		private readonly StatisticalDataService _statisticalDataService;
+		private readonly RosreestrRegisterService _rosreestrRegisterService;
 
         public UprsService(StatisticalDataService statisticalDataService)
 		{
 			_statisticalDataService = statisticalDataService;
+            _rosreestrRegisterService = new RosreestrRegisterService();
         }
 
 
@@ -104,8 +107,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         {
             var contents = GetSqlFileContent("UprsForOks");
 
-            var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
-            var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+            var buildingPurposeAttr = _rosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
+            var placementPurposeAttr = _rosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
 
             string subGroupSelectionFromQuery = string.Empty,
                 subGroupForGrouping = string.Empty,

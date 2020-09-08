@@ -151,13 +151,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             //return new Dictionary<string, RegisterAttribute>();
 
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), StatisticalDataService.GetRosreestrParcelCategoryAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), StatisticalDataService.GetRosreestrTypeOfUseByClassifierAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ParcelName), RosreestrRegisterService.GetRosreestrParcelNameAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetRosreestrFormationDateAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), RosreestrRegisterService.GetRosreestrParcelCategoryAttribute());
+            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), RosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), RosreestrRegisterService.GetRosreestrTypeOfUseByClassifierAttribute());
 
             attributesDictionary.Add(nameof(ReportItem.InfoAboutExistenceOfOtherObjects), RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId));
             attributesDictionary.Add(nameof(ReportItem.InfoSource), RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId));

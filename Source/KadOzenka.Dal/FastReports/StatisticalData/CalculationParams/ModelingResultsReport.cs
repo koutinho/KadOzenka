@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         private List<GbuObjectAttribute> GetAddresses(List<long> objectIds)
         {
-            var addressAttribute = StatisticalDataService.GetRosreestrAddressAttribute();
+            var addressAttribute = RosreestrRegisterService.GetRosreestrAddressAttribute();
 
             return GbuObjectService.GetAllAttributes(
                 objectIds,

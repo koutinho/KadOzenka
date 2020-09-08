@@ -2,19 +2,23 @@
 using System.IO;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
+using KadOzenka.Dal.Registers;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class SubjectsUPKSService
 	{
 		private readonly StatisticalDataService _statisticalDataService;
+		private readonly RosreestrRegisterService RosreestrRegisterService;
 		private readonly string _reportByTypeSqlFileName = "SubjectsUPKS_ByType";
 		private readonly string _reportByTypeAndPurposeSqlFileName = "SubjectsUPKS_ByTypeAndPurpose";
 
 		public SubjectsUPKSService(StatisticalDataService statisticalDataService)
 		{
 			_statisticalDataService = statisticalDataService;
-		}
+            RosreestrRegisterService = new RosreestrRegisterService();
+
+        }
 
 		public List<SubjectsUPKSByTypeDto> GetSubjectsUPKSByTypeData(long[] taskIdList)
 		{
@@ -31,8 +35,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<SubjectsUPKSByTypeAndPurposeDto> GetSubjectsUPKSByTypeAndPurposeData(long[] taskIdList)
 		{
-			var buildingPurposeAttr = _statisticalDataService.GetRosreestrBuildingPurposeAttribute();
-			var placementPurposeAttr = _statisticalDataService.GetRosreestrPlacementPurposeAttribute();
+			var buildingPurposeAttr = RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
+			var placementPurposeAttr = RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
 
 			string contents;
 			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportByTypeAndPurposeSqlFileName)))

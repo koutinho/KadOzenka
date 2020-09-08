@@ -120,17 +120,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParentCadastralNumber), StatisticalDataService.GetRosreestrParentCadastralNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.PlacementPurpose), StatisticalDataService.GetRosreestrPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Floor), StatisticalDataService.GetRosreestrFloorAttribute());
+            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), RosreestrRegisterService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildYear), RosreestrRegisterService.GetRosreestrBuildYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), RosreestrRegisterService.GetRosreestrFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.WallMaterial), RosreestrRegisterService.GetRosreestrWallMaterialAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ParentCadastralNumber), RosreestrRegisterService.GetRosreestrParentCadastralNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.PlacementPurpose), RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ObjectName), RosreestrRegisterService.GetRosreestrObjectNameAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Floor), RosreestrRegisterService.GetRosreestrFloorAttribute());
 
             attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
             attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));

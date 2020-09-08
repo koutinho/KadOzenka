@@ -5,6 +5,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
+using KadOzenka.Dal.Registers;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -12,6 +13,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	public class QualityPricingFactorsEncodingResultsService
 	{
 		private readonly StatisticalDataService _statisticalDataService;
+		private readonly RosreestrRegisterService _rosreestrRegisterService;
 		private readonly string _reportGroupingSqlFileName = "QualityPricingFactorsEncodingResultsGrouping";
 		private readonly string _reportOksSqlFileName = "QualityPricingFactorsEncodingResultsOks";
 		private readonly string _reportZuSqlFileName = "QualityPricingFactorsEncodingResultsZu";
@@ -19,7 +21,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		public QualityPricingFactorsEncodingResultsService(StatisticalDataService statisticalDataService)
 		{
 			_statisticalDataService = statisticalDataService;
-		}
+            _rosreestrRegisterService = new RosreestrRegisterService();
+
+        }
 
 		public List<QualityPricingFactorsEncodingResultsOksDto> GetDataForOksObjects(long[] taskIdList, long parentKnAttributeId, long typeOfUsingNameAttributeId, long typeOfUsingCodeAttributeId,
 			long typeOfUsingCodeSourceAttributeId, long typeOfUsingGroupCodeAttributeId, long functionalGroupNameAttributeId, long segmentAttributeId)
@@ -38,17 +42,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				RegisterCache.GetAttributeData(typeOfUsingGroupCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(segmentAttributeId).Id,
 				RegisterCache.GetAttributeData(functionalGroupNameAttributeId).Id,
-				_statisticalDataService.GetRosreestrObjectNameAttribute().Id,
-				_statisticalDataService.GetRosreestrConstructionPurposeAttribute().Id,
-				_statisticalDataService.GetRosreestrAddressAttribute().Id,
-				_statisticalDataService.GetRosreestrLocationAttribute().Id,
-				_statisticalDataService.GetRosreestrParcelAttribute().Id,
-				_statisticalDataService.GetRosreestrBuildYearAttribute().Id,
-				_statisticalDataService.GetRosreestrCommissioningYearAttribute().Id,
-				_statisticalDataService.GetRosreestrFloorsNumberAttribute().Id,
-				_statisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute().Id,
-				_statisticalDataService.GetRosreestrFloorAttribute().Id,
-				_statisticalDataService.GetRosreestrWallMaterialAttribute().Id
+                _rosreestrRegisterService.GetRosreestrObjectNameAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrConstructionPurposeAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrParcelAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrBuildYearAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrCommissioningYearAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrFloorAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrWallMaterialAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsOksDto>(sql);
 
@@ -71,10 +75,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				RegisterCache.GetAttributeData(typeOfUsingNameAttributeId).Id,
 				RegisterCache.GetAttributeData(typeOfUsingCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(typeOfUsingCodeSourceAttributeId).Id,
-				_statisticalDataService.GetRosreestrParcelNameAttribute().Id,
-				_statisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute().Id,
-				_statisticalDataService.GetRosreestrAddressAttribute().Id,
-				_statisticalDataService.GetRosreestrLocationAttribute().Id
+                _rosreestrRegisterService.GetRosreestrParcelNameAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
+                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsZuDto>(sql);
 
