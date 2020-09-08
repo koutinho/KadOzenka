@@ -5,7 +5,6 @@ using System.Data;
 using System.IO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 
@@ -13,21 +12,25 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
 	public abstract class BaseMinMaxAverageByGroupsReport : StatisticalDataReport
 	{
-		protected readonly MinMaxAverageByGroupsService _service;
-		protected readonly UpksService UpksService;
+        protected readonly UpksService UpksService;
 		protected readonly UprsService UprsService;
 		protected readonly UpksAndUprsService UpksAndUprsService;
 
 		public BaseMinMaxAverageByGroupsReport()
 		{
-			_service = new MinMaxAverageByGroupsService(StatisticalDataService, GbuObjectService);
             UpksService = new UpksService(StatisticalDataService);
             UprsService = new UprsService(StatisticalDataService);
             UpksAndUprsService = new UpksAndUprsService(UpksService, UprsService);
         }
 
 
-		protected override string TemplateName(NameValueCollection query)
+        protected abstract string GetReportTitle();
+        protected abstract string GetDataNameColumnText();
+        protected abstract DataTable GetDataByGroups(long[] taskIdList, bool isOks);
+        protected abstract DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks);
+
+
+        protected override string TemplateName(NameValueCollection query)
 		{
 			var reportType = GetQueryParam<string>("ReportType", query);
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
@@ -47,10 +50,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 			}
 		}
 
-		protected abstract string GetReportTitle();
-		protected abstract string GetDataNameColumnText();
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -91,7 +92,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
             return string.IsNullOrWhiteSpace(name) ? "Без группы" : name;
         }
 
-        protected static decimal? GetCalcValue(UpksCalcType upksCalcType, CalculationInfoDto unitDto)
+        protected decimal? GetCalcValue(UpksCalcType upksCalcType, CalculationInfoDto unitDto)
         {
             decimal? value = null;
             switch (upksCalcType)
@@ -114,10 +115,5 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 ? Math.Round(value.Value, PrecisionForDecimalValues)
                 : (decimal?)null;
         }
-
-        protected abstract DataTable GetDataByGroups(long[] taskIdList, bool isOks);
-
-		protected abstract DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks);
-
-	}
+    }
 }

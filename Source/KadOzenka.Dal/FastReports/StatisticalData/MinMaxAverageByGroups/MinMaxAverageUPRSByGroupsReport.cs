@@ -1,10 +1,8 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
-using MinMaxAverageByGroupsCalcType = KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageByGroupsCalcType;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
@@ -37,6 +35,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 if (isOks)
                 {
                     var data = UprsService.GetDataByGroupsForOks(taskIdList);
+
                     var objectCountInGroup = data
                         .GroupBy(x => x.ParentGroup)
                         .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
@@ -44,16 +43,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     foreach (var unitDto in data)
                     {
                         var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
-                        var objectsCountInGroup = objectCountInGroup[parentGroup];
 
                         foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(
-                                PreprocessGroupName(unitDto.ParentGroup),
+                                parentGroup,
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
+                                objectCountInGroup[parentGroup],
                                 calcType.GetEnumDescription(),
                                 GetCalcValue(calcType, unitDto));
                         }
@@ -82,7 +80,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
             }
         }
 
-		protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
+        protected override DataTable GetDataByGroupsAndSubgroups(long[] taskIdList, bool isOks)
 		{
             using (var dataTable = new DataTable("Data"))
             {
@@ -99,7 +97,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
-
                     var data = UprsService.GetDataByGroupsAndSubGroupsForOks(taskIdList);
 
                     var objectCountInGroupAndSubGroup = data
@@ -111,8 +108,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     {
                         var key = PreprocessGroupName(unitDto.ParentGroup) + PreprocessGroupName(unitDto.SubGroup);
 
-                        var objectsCountInGroup = objectCountInGroupAndSubGroup[key];
-
                         foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(
@@ -121,7 +116,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
+                                objectCountInGroupAndSubGroup[key],
                                 calcType.GetEnumDescription(),
                                 GetCalcValue(calcType, unitDto));
                         }

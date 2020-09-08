@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.IO;
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
-using MinMaxAverageByGroupsCalcType = KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageByGroupsCalcType;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
@@ -67,7 +65,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     foreach (var unitDto in data)
                     {
                         var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
-                        var objectsCountInGroup = objectCountInGroup[parentGroup];
 
                         foreach (var calcType in calcTypes)
                         {
@@ -76,7 +73,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
+                                objectCountInGroup[parentGroup],
                                 calcType.GetEnumDescription(),
                                 GetCalcValue(calcType, unitDto.Upks),
                                 GetCalcValue(calcType, unitDto.Uprs));
@@ -136,8 +133,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     {
                         var key = PreprocessGroupName(unitDto.ParentGroup) + PreprocessGroupName(unitDto.SubGroup);
 
-                        var objectsCountInGroup = objectCountInGroupAndSubGroup[key];
-
                         foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(
@@ -146,7 +141,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
+                                objectCountInGroupAndSubGroup[key],
                                 calcType.GetEnumDescription(),
                                 GetCalcValue(calcType, unitDto.Upks),
                                 GetCalcValue(calcType, unitDto.Uprs));

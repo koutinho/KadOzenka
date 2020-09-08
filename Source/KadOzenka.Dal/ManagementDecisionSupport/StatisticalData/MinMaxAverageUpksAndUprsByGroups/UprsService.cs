@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             var summary = new UprsByGroupsZuDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
                 Min = result.Min(x => x.Min),
                 Max = result.Max(x => x.Max),
@@ -44,8 +44,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             var summary = new UprsByGroupsAndSubGroupsZuDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
+                SubGroup = SummaryTitle,
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
                 Min = result.Min(x => x.Min),
                 Max = result.Max(x => x.Max),

@@ -8,7 +8,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 {
     public class MinMaxAverageUpksAndUprsByGroupsBaseService
     {
+        protected readonly string SummaryTitle = "Итого по субъекту РФ г Москва";
+
         #region Entities
+
+        public class GroupingOks
+        {
+            public string PropertyType { get; set; }
+            public bool HasPurpose { get; set; }
+            public string Purpose { get; set; }
+        }
 
         protected class GroupingOksByGroupsDictionary
         {
@@ -23,6 +32,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         }
 
         #endregion
+
 
         protected string GetSqlFileContent(string fileName)
         {
@@ -63,7 +73,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             });
         }
 
-        protected static void AddSummaryByGroupsAndSubGroupsOks(List<ByGroupsAndSubGroupsOksDto> result)
+        protected void AddSummaryByGroupsAndSubGroupsOks(List<ByGroupsAndSubGroupsOksDto> result)
         {
             var groupingOksDictionaries = result.GroupBy(x => new
             {
@@ -101,7 +111,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             return new ByGroupsOksDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
                 PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,
                 Purpose = groupingOksByGroupsDictionary.Key.Purpose,
                 HasPurpose = groupingOksByGroupsDictionary.Key.HasPurpose,
@@ -113,7 +123,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             };
         }
 
-        private static ByGroupsAndSubGroupsOksDto GetSummaryByGroupsAndSubGroupsForOks(GroupingOksByGroupsAndSubGroupsDictionary groupingOksByGroupsDictionary)
+        private ByGroupsAndSubGroupsOksDto GetSummaryByGroupsAndSubGroupsForOks(GroupingOksByGroupsAndSubGroupsDictionary groupingOksByGroupsDictionary)
         {
             var objectCount = groupingOksByGroupsDictionary.Values.GroupBy(x => x.ParentGroup)
                 .Sum(x => x.Sum(y => y.ObjectsCount));
@@ -122,8 +132,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             return new ByGroupsAndSubGroupsOksDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
+                SubGroup = SummaryTitle,
                 PropertyType = groupingOksByGroupsDictionary.Key.PropertyType,
                 Purpose = groupingOksByGroupsDictionary.Key.Purpose,
                 HasPurpose = groupingOksByGroupsDictionary.Key.HasPurpose,

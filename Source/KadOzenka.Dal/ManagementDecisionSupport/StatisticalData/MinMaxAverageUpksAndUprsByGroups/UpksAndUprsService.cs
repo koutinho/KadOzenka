@@ -5,17 +5,17 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksA
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
 {
-    public class UpksAndUprsService
+    public class UpksAndUprsService : MinMaxAverageUpksAndUprsByGroupsBaseService
     {
         #region Entities
 
-        protected class GroupingOksByGroupsDictionary
+        protected new class GroupingOksByGroupsDictionary
         {
             public GroupingOks Key { get; set; }
             public List<UpksAndUprsByGroupsOksDto> Values { get; set; }
         }
 
-        protected class GroupingOksByGroupsAndSubGroupsDictionary
+        protected new class GroupingOksByGroupsAndSubGroupsDictionary
         {
             public GroupingOks Key { get; set; }
             public List<UpksAndUprsByGroupsAndSubGroupsOksDto> Values { get; set; }
@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             result.Add(new UpksAndUprsByGroupsZuDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
                 Upks = new CalculationInfoDto
                 {
@@ -93,8 +93,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
             result.Add(new ByGroupsAndSubGroupsZuDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
+                SubGroup = SummaryTitle,
                 ObjectsCount = result.Sum(x => x.ObjectsCount),
                 Upks = new CalculationInfoDto
                 {
@@ -283,13 +283,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             };
         }
 
-        private static UpksAndUprsByGroupsAndSubGroupsOksDto GetSummary(GroupingOks groupKey, int objectsCount,
+        private UpksAndUprsByGroupsAndSubGroupsOksDto GetSummary(GroupingOks groupKey, int objectsCount,
             List<CalculationInfoDto> upksCalculationInfo, List<CalculationInfoDto> uprsCalculationInfo)
         {
             return new UpksAndUprsByGroupsAndSubGroupsOksDto
             {
-                ParentGroup = "Итого по субъекту РФ г Москва",
-                SubGroup = "Итого по субъекту РФ г Москва",
+                ParentGroup = SummaryTitle,
+                SubGroup = SummaryTitle,
                 PropertyType = groupKey.PropertyType,
                 Purpose = groupKey.Purpose,
                 HasPurpose = groupKey.HasPurpose,

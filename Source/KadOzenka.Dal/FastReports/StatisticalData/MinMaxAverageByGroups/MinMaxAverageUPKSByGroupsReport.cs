@@ -30,18 +30,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 dataTable.Columns.Add("CalcType", typeof(string));
                 dataTable.Columns.Add("CalcValue", typeof(decimal));
 
+                var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
+
                 if (isOks)
                 {
                     var data = UpksService.GetDataByGroupsForOks(taskIdList);
+
                     var objectCountInGroup = data
                         .GroupBy(x => x.ParentGroup)
                         .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
 
-                    var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
                         var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
-                        var objectsCountInGroup = objectCountInGroup[parentGroup];
 
                         foreach (var calcType in calcTypes)
                         {
@@ -50,7 +51,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
+                                objectCountInGroup[parentGroup],
                                 calcType.GetEnumDescription(),
                                 GetCalcValue(calcType, unitDto));
                         }
@@ -59,10 +60,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 else
                 {
                     var data = UpksService.GetDataByGroupsForZu(taskIdList);
-                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
                     foreach (var unitDto in data)
                     {
-                        foreach (var upksCalcType in upksCalcTypes)
+                        foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(
                                 PreprocessGroupName(unitDto.ParentGroup),
@@ -70,8 +70,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 string.Empty,
                                 false,
                                 unitDto.ObjectsCount,
-                                upksCalcType.GetEnumDescription(),
-                                GetCalcValue(upksCalcType, unitDto));
+                                calcType.GetEnumDescription(),
+                                GetCalcValue(calcType, unitDto));
                         }
                     }
                 }
@@ -93,11 +93,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 dataTable.Columns.Add("CalcType", typeof(string));
                 dataTable.Columns.Add("CalcValue", typeof(decimal));
 
+                var calcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
+
                 if (isOks)
                 {
                     var data = UpksService.GetDataByGroupsAndSubGroupsForOks(taskIdList);
-                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
-
+                    
                     var objectCountInGroupAndSubGroup = data
                         .GroupBy(x => new {x.ParentGroup, x.SubGroup})
                         .ToDictionary(k => PreprocessGroupName(k.Key.ParentGroup) + PreprocessGroupName(k.Key.SubGroup),
@@ -107,9 +108,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     {
                         var key = PreprocessGroupName(unitDto.ParentGroup) + PreprocessGroupName(unitDto.SubGroup);
 
-                        var objectsCountInGroup = objectCountInGroupAndSubGroup[key];
-
-                        foreach (var upksCalcType in upksCalcTypes)
+                        foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(
                                 PreprocessGroupName(unitDto.ParentGroup),
@@ -117,20 +116,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 unitDto.PropertyType,
                                 unitDto.Purpose,
                                 unitDto.HasPurpose,
-                                objectsCountInGroup,
-                                upksCalcType.GetEnumDescription(),
-                                GetCalcValue(upksCalcType, unitDto));
+                                objectCountInGroupAndSubGroup[key],
+                                calcType.GetEnumDescription(),
+                                GetCalcValue(calcType, unitDto));
                         }
                     }
                 }
                 else
                 {
                     var data = UpksService.GetDataByGroupsAndSubgroupsForZu(taskIdList);
-                    var upksCalcTypes = System.Enum.GetValues(typeof(UpksCalcType)).Cast<UpksCalcType>().ToList();
-
                     foreach (var unitDto in data)
                     {
-                        foreach (var upksCalcType in upksCalcTypes)
+                        foreach (var calcType in calcTypes)
                         {
                             dataTable.Rows.Add(PreprocessGroupName(unitDto.ParentGroup),
                                 PreprocessGroupName(unitDto.SubGroup), 
@@ -138,8 +135,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 string.Empty, 
                                 false, 
                                 unitDto.ObjectsCount,
-                                upksCalcType.GetEnumDescription(),
-                                GetCalcValue(upksCalcType, unitDto));
+                                calcType.GetEnumDescription(),
+                                GetCalcValue(calcType, unitDto));
                         }
                     }
                 }
