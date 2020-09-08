@@ -374,7 +374,7 @@ namespace KadOzenka.Web.Controllers
 			try
 			{
                 //TODO для тестирования (без процесса)
-                new Harmonization(viewModel.ToHarmonizationSettings()).Run();
+                //new Harmonization(viewModel.ToHarmonizationSettings()).Run();
                 ////TODO для тестирования (с процессом)
                 //new HarmonizationProcess().StartProcess(new OMProcessType(), new OMQueue
                 //{
@@ -382,8 +382,8 @@ namespace KadOzenka.Web.Controllers
                 //    UserId = SRDSession.GetCurrentUserId(),
                 //    Parameters = viewModel.ToHarmonizationSettings().SerializeToXml()
                 //}, new CancellationToken());
-                queueId = 0;
-                //queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
+                //queueId = 0;
+                queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
             }
 			catch (Exception e)
 			{
