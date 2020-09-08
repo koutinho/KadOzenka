@@ -435,7 +435,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
@@ -822,7 +822,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
@@ -1089,7 +1089,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
@@ -1432,7 +1432,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
@@ -1665,7 +1665,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
@@ -1955,7 +1955,7 @@ namespace KadOzenka.Dal.DataImport
                             prCheckObr = true;
                     }
                     ObjectModel.KO.OMUnit lastUnit = null;
-                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>

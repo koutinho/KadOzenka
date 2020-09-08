@@ -160,8 +160,20 @@ namespace ObjectModel.KO
             if (Items.Count > 0)
             {
                 Items.Sort(Items[0]);
+
                 int indexActual = Items.Count - 1;
-                for (int i = Items.Count - 1; i > 0; i--)
+                int startIndex = Items.Count - 1;
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost > 0 && !Items[i].IsBad)
+                    {
+                        indexActual = i;
+                        startIndex = i;
+                        break;
+                    }
+                }
+
+                for (int i = startIndex; i > 0; i--)
                 {
                     if (Items[i].Unit.CadastralCost == Items[i - 1].Unit.CadastralCost)
                     {
@@ -186,7 +198,17 @@ namespace ObjectModel.KO
             {
                 Items.Sort(Items[0]);
                 int indexActual = Items.Count - 1;
-                for (int i = Items.Count - 1; i > 0; i--)
+                int startIndex = Items.Count - 1;
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost > 0 && !Items[i].IsBad)
+                    {
+                        indexActual = i;
+                        startIndex = i;
+                        break;
+                    }
+                }
+                for (int i = startIndex; i > 0; i--)
                 {
                     if (Items[i].Unit.CadastralCost == Items[i - 1].Unit.CadastralCost)
                     {
@@ -211,7 +233,17 @@ namespace ObjectModel.KO
             {
                 Items.Sort(Items[0]);
                 int indexActual = Items.Count - 1;
-                for (int i = Items.Count - 1; i > 0; i--)
+                int startIndex = Items.Count - 1;
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost > 0 && !Items[i].IsBad)
+                    {
+                        indexActual = i;
+                        startIndex = i;
+                        break;
+                    }
+                }
+                for (int i = startIndex; i > 0; i--)
                 {
                     if (Items[i].Unit.CadastralCost == Items[i - 1].Unit.CadastralCost)
                     {
@@ -223,10 +255,21 @@ namespace ObjectModel.KO
             }
             return Items;
         }
-        public static HistoryUnit GetPrevUnit(OMUnit current)
+        public static HistoryUnit GetPrevUnit(List<HistoryUnit> items)
         {
-            List<HistoryUnit> res= GetPrevHistoryTour(current);
-            if (res.Count > 0) return res[0];
+            if (items.Count > 0)
+            {
+                int indexActual = items.Count - 1;
+                for (int i = items.Count - 1; i >= 0; i--)
+                {
+                    if (items[i].Unit.CadastralCost > 0 && !items[i].IsBad)
+                    {
+                        indexActual = i;
+                        break;
+                    }
+                }
+                return items[indexActual];
+            }
             else return null;
         }
     }
