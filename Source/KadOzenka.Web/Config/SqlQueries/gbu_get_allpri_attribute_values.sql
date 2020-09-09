@@ -9,12 +9,13 @@ RETURNS TABLE (
 $body$
     declare	
 		_query character varying;
-		
 		_allpriTableName character varying;
 		_allpriPartitioning bigint;
 		_allpriTablePostfix character varying;
+        _additionalConditionForTablesWithPartitionByData character varying;
 		_attributeType bigint;
 		_currentEndDate timestamp without time zone;
+        
     begin
     
 		if array_length(objectids, 1) IS NULL or array_length(objectids, 1)=0 then
@@ -47,12 +48,13 @@ $body$
 		
 		if _allpriPartitioning <> 2 then
 			_query = concat(_query, '  and a.attribute_id=', attributeId);
+            _additionalConditionForTablesWithPartitionByData = ' and a2.attribute_id = a.attribute_id ';
 		end if;
 		
 		_query = concat(_query, ' AND a.s <= ''', _currentEndDate, '''::timestamp without time zone ',
 			' and a.OT = (SELECT MAX(A2.OT) 
 						FROM ', _allpriTableName, '_', _allpriTablePostfix, ' A2 
-						WHERE A2.object_id = a.object_id  AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
+						WHERE A2.object_id = a.object_id', _additionalConditionForTablesWithPartitionByData, ' AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
 		--raise notice '_query: %', _query;
 		RETURN QUERY EXECUTE _query;
 		

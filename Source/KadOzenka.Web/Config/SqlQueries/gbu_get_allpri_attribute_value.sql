@@ -6,14 +6,14 @@ RETURNS varchar AS
 $body$
     declare	
 		_query character varying;
-		
 		_allpriTableName character varying;
 		_allpriPartitioning bigint;
 		_allpriTablePostfix character varying;
+        _additionalConditionForTablesWithPartitionByData character varying;
 		_attributeType bigint;
 		_currentEndDate timestamp without time zone;
-		
 		_attributeValueString character varying;
+        
     begin
 		select CAST((CURRENT_DATE + INTERVAL '1 day - 1 second') AS TIMESTAMP) into _currentEndDate;
 		
@@ -41,12 +41,13 @@ $body$
 		
 		if _allpriPartitioning <> 2 then
 			_query = concat(_query, '  and a.attribute_id=', attributeId);
+            _additionalConditionForTablesWithPartitionByData = ' and a2.attribute_id = a.attribute_id ';
 		end if;
 		
 		_query = concat(_query, ' AND a.s <= ''', _currentEndDate, '''::timestamp without time zone ',
 			' and a.OT = (SELECT MAX(A2.OT) 
 						FROM ', _allpriTableName, '_', _allpriTablePostfix, ' A2 
-						WHERE A2.object_id = a.object_id  AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
+						WHERE A2.object_id = a.object_id', _additionalConditionForTablesWithPartitionByData, ' AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
 
 		EXECUTE _query into _attributeValueString;
 		
