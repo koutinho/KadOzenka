@@ -208,6 +208,8 @@
     <None Remove="Config\SqlQueries\AdditionalForms_CalculationAnalysis.sql" />
     <None Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
     <None Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
+    <None Remove="Config\SqlQueries\gbu_get_allpri_attribute_value.sql" />
+    <None Remove="Config\SqlQueries\gbu_get_allpri_attribute_values.sql" />
     <None Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
     <None Remove="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_CadastralRegions.sql" />
     <None Remove="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Districts.sql" />
@@ -521,6 +523,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\gbu_get_allpri_attribute_value.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\gbu_get_allpri_attribute_values.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\AdditionalForms_CalculationAnalysis.sql">
@@ -1851,6 +1859,8 @@
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationAnalysis.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\gbu_get_allpri_attribute_value.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\gbu_get_allpri_attribute_values.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
