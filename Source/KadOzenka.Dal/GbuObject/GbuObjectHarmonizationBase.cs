@@ -197,12 +197,19 @@ namespace KadOzenka.Dal.GbuObject
             if (BaseSetting.TaskFilter != null)
                 byTasks = BaseSetting.TaskFilter.Count > 0;
 
-            return byTasks 
-                ? GetObjectsByTasks() 
-                : GetObjectsWithoutTasks();
-        }
+            var objectType = BaseSetting.PropertyType;
+            if (BaseSetting.PropertyType == PropertyTypes.Pllacement &&
+                BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
+            {
+                objectType = PropertyTypes.Parking;
+            }
 
-        private List<Item> GetObjectsByTasks()
+            return byTasks 
+                ? GetObjectsByTasks(objectType) 
+                : GetObjectsWithoutTasks(objectType);
+         }
+
+        private List<Item> GetObjectsByTasks(PropertyTypes objectType)
         {
             if (BaseSetting.TaskFilter == null || BaseSetting.TaskFilter.Count == 0)
                 throw new Exception("Была выбрана фильтрация по Заданиям на оценку, но не были выбраны задания.");
@@ -211,7 +218,7 @@ namespace KadOzenka.Dal.GbuObject
             BaseSetting.TaskFilter.ForEach(taskId =>
             {
                 var units = OMUnit
-                    .Where(x => x.PropertyType_Code == BaseSetting.PropertyType && x.TaskId == taskId && x.ObjectId != null)
+                    .Where(x => x.PropertyType_Code == objectType && x.TaskId == taskId && x.ObjectId != null)
                     .Select(x => x.ObjectId)
                     .Select(x => x.CadastralNumber)
                     .Select(x => x.CreationDate)
@@ -228,9 +235,9 @@ namespace KadOzenka.Dal.GbuObject
             return FilterObjects(objects);
         }
 
-        private List<Item> GetObjectsWithoutTasks()
+        private List<Item> GetObjectsWithoutTasks(PropertyTypes objectType)
         {
-            var allObjects = OMMainObject.Where(x => x.ObjectType_Code == BaseSetting.PropertyType && x.IsActive == true)
+            var allObjects = OMMainObject.Where(x => x.ObjectType_Code == objectType && x.IsActive == true)
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Execute()
@@ -326,14 +333,9 @@ namespace KadOzenka.Dal.GbuObject
         private List<Item> FilterPlacementObjects(List<Item> allObjects)
         {
             if (BaseSetting.PropertyType != PropertyTypes.Pllacement ||
-                BaseSetting.PlacementPurpose == PlacementPurpose.None)
+                BaseSetting.PlacementPurpose == PlacementPurpose.None || 
+                BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
                 return allObjects;
-
-            //TODO
-            if (BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
-            {
-                return allObjects;
-            }
 
             var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
 
