@@ -363,11 +363,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (exCostFactors.LandShareDicId == null || exCostFactors.IndexDateDicId == null)
 			{
-				msg = "Не заданы обязательные настройки";
+				msg = @"Не задан словарь для ""Доля ЗУ"" или ""Индекс даты""";
 				return 0;
 			}
 
+			// Список значений оценочных факторов для объектов аналогов
             List<Tuple<string, string>> costFactorsDataForReport = new List<Tuple<string, string>>();
+			// Список значений оценочных факторов для объекта оценки
 			List<string> costTargetObjectDataForReport = new List<string>();
 
 			GenerateLists(exCostFactors, scenarioType);

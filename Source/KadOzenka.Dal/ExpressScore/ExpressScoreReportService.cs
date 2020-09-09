@@ -28,6 +28,8 @@ namespace KadOzenka.Dal.ExpressScore
 		/// </summary>
 		string[,] CostMatrixValueStrings;
 
+		public bool HasException { get; set; } = false;
+
 		#region required matrix params
 
 		public int CurrentRowRequiredParam { get; private set; }
@@ -58,16 +60,36 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public void InitRequiredMatrix(int row, int column)
 		{
-			RequiredMatrixValueStrings = new string[column + 1, row];
-			ColumnNameIndex = column;
-			CurrentRowRequiredParam = 0;
-			CurrentColumnRequiredParam = 0;
+			try
+			{
+				RequiredMatrixValueStrings = new string[column + 1, row];
+				ColumnNameIndex = column;
+				CurrentRowRequiredParam = 0;
+				CurrentColumnRequiredParam = 0;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				HasException = true;
+			}
 		}
 
 		public void SetNextColumnRequiredParam()
 		{
-			CurrentColumnRequiredParam++;
-			CurrentRowRequiredParam = 0;
+			try
+			{
+				CurrentColumnRequiredParam++;
+				CurrentRowRequiredParam = 0;
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				HasException = true;
+			}
+		
 		}
 
 		public void AddValueRequiredParam(string value)
@@ -80,7 +102,8 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
+				ErrorManager.LogError(e);
+				HasException = true;
 			}
 		}
 
@@ -93,7 +116,8 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
+				ErrorManager.LogError(e);
+				HasException = true;
 			}
         }
 
@@ -103,23 +127,26 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public void InitCostFactorMatrix(int row, int column)
 		{
-			if (CostMatrixValueStrings == null)
+			try
 			{
-				CostMatrixValueStrings = new string[column + 1, row];
-				ColumnNameIndex = column;
-				CurrentColumnCostMatrix = 1;
-				CurrentRowCharacteristicCostMatrix = 0;
-				CostMatrixRows = row;
+				if (CostMatrixValueStrings == null)
+				{
+					CostMatrixValueStrings = new string[column + 1, row];
+					ColumnNameIndex = column;
+					CurrentColumnCostMatrix = 1;
+					CurrentRowCharacteristicCostMatrix = 0;
+					CostMatrixRows = row;
+				}
 			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				HasException = true;
+			}
+
 		}
 
-		public void RemoveCostFactorMatrix()
-		{
-			CostMatrixValueStrings = null;
-			ColumnNameIndex = 0;
-			CurrentColumnCostMatrix = 0;
-			CurrentRowCharacteristicCostMatrix = 0;
-		}
 
 		public void AddValueCostMatrix(string value)
 		{
@@ -131,7 +158,8 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
+				ErrorManager.LogError(e);
+				HasException = true;
 			}
 		}
 
@@ -145,7 +173,8 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
+				ErrorManager.LogError(e);
+				HasException = true;
 			}
 		}
 
@@ -159,122 +188,151 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
+				ErrorManager.LogError(e);
+				HasException = true;
 			}
         }
 
 		public void SetNextColumnComplexMatrix()
 		{
-			CurrentColumnCostMatrix++;
-			CurrentRowCostMatrix = 0;
+			try
+			{
+				CurrentColumnCostMatrix++;
+				CurrentRowCostMatrix = 0;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				HasException = true;
+			}
 		}
 
 		#endregion
 
 		public string KnTargetObject { get; set; }
 
+		/// <summary>
+		/// Генерация отчета
+		/// </summary>
+		/// <param name="summaryCost"></param>
+		/// <param name="squareCost"></param>
+		/// <param name="dealType"></param>
+		/// <param name="scenario"></param>
+		/// <returns> Возвращаем ид отчета, если в результате построения отчета были выброшены исключения то возвращается -1</returns>
 		public long GenerateReport(decimal summaryCost, decimal squareCost, DealTypeShort dealType, ScenarioType scenario)
 		{
-			ExcelFile excelTemplate = new ExcelFile();
-			var mainWorkSheet = excelTemplate.Worksheets.Add("Экспресс оценка");
-			mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
+			if (HasException) return -1;
 
-			//Создаем счетсчик строки и дальше увеличиваем по необходимости
-			int numberRow = 0;
-			AddHeader(mainWorkSheet, numberRow);
-			numberRow += 2;
-
-			AddMergeElement(mainWorkSheet, numberRow, numberRow, 0, ColumnNameIndex, "Характеристики объектов-аналогов", true);
-			numberRow++;
-
-			List<List<string>> rows = new List<List<string>>();
-			if (RequiredMatrixValueStrings != null)
+			try
 			{
-				for (int i = 0; i < CurrentRowRequiredParam - 3; i++) // по строкам
-				{
-					List<string> row = new List<string>();
-					row.Add(RequiredMatrixValueStrings[ColumnNameIndex, i]);
-					for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
-					{
-						row.Add(RequiredMatrixValueStrings[j, i]);
-					}
-					rows.Add(row);
-				}
-			}
+				ExcelFile excelTemplate = new ExcelFile();
+				var mainWorkSheet = excelTemplate.Worksheets.Add("Экспресс оценка");
+				mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
 
-		
-			foreach (var row in rows)
-			{
-				AddRow(mainWorkSheet, numberRow, row);
+				//Создаем счетсчик строки и дальше увеличиваем по необходимости
+				int numberRow = 0;
+				AddHeader(mainWorkSheet, numberRow);
+				numberRow += 2;
+
+				AddMergeElement(mainWorkSheet, numberRow, numberRow, 0, ColumnNameIndex, "Характеристики объектов-аналогов", true);
 				numberRow++;
-			}
-			rows.Clear();
 
-			AddAdditionalRows(mainWorkSheet, numberRow, dealType, scenario);
-			numberRow += 4;
-
-			AddMergeElement(mainWorkSheet, numberRow, numberRow, 0, ColumnNameIndex, "Определение кадастровой стоимости", true);
-			numberRow++;
-
-			if (RequiredMatrixValueStrings != null)
-			{
-				for (int i = 4; i < CurrentRowRequiredParam; i++) // по строкам
+				List<List<string>> rows = new List<List<string>>();
+				if (RequiredMatrixValueStrings != null)
 				{
-					List<string> row = new List<string>();
-					row.Add(RequiredMatrixValueStrings[ColumnNameIndex, i]);
-					for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
+					for (int i = 0; i < CurrentRowRequiredParam - 3; i++) // по строкам
 					{
-						row.Add(RequiredMatrixValueStrings[j, i]);
+						List<string> row = new List<string>();
+						row.Add(RequiredMatrixValueStrings[ColumnNameIndex, i]);
+						for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
+						{
+							row.Add(RequiredMatrixValueStrings[j, i]);
+						}
+						rows.Add(row);
 					}
-					rows.Add(row);
 				}
-			}
 
 
-			if (CostMatrixValueStrings != null)
-			{
-				for (int i = 0; i < CostMatrixRows; i++) // по строкам
+				foreach (var row in rows)
 				{
-					List<string> row = new List<string>();
-					row.Add(CostMatrixValueStrings[ColumnNameIndex, i]);
-					for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
-					{
-						row.Add(CostMatrixValueStrings[j, i]);
-					}
-					rows.Add(row);
+					AddRow(mainWorkSheet, numberRow, row);
+					numberRow++;
 				}
-			}
-			foreach (var row in rows)
-			{
-				AddRow(mainWorkSheet, numberRow, row);
+				rows.Clear();
+
+				AddAdditionalRows(mainWorkSheet, numberRow, dealType, scenario);
+				numberRow += 4;
+
+				AddMergeElement(mainWorkSheet, numberRow, numberRow, 0, ColumnNameIndex, "Определение кадастровой стоимости", true);
 				numberRow++;
+
+				if (RequiredMatrixValueStrings != null)
+				{
+					for (int i = 4; i < CurrentRowRequiredParam; i++) // по строкам
+					{
+						List<string> row = new List<string>();
+						row.Add(RequiredMatrixValueStrings[ColumnNameIndex, i]);
+						for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
+						{
+							row.Add(RequiredMatrixValueStrings[j, i]);
+						}
+						rows.Add(row);
+					}
+				}
+
+
+				if (CostMatrixValueStrings != null)
+				{
+					for (int i = 0; i < CostMatrixRows; i++) // по строкам
+					{
+						List<string> row = new List<string>();
+						row.Add(CostMatrixValueStrings[ColumnNameIndex, i]);
+						for (int j = 0; j < ColumnNameIndex; j++) // по столбцам
+						{
+							row.Add(CostMatrixValueStrings[j, i]);
+						}
+						rows.Add(row);
+					}
+				}
+				foreach (var row in rows)
+				{
+					AddRow(mainWorkSheet, numberRow, row);
+					numberRow++;
+				}
+
+				string textSquare = "";
+				string textSummary = "";
+
+				if (dealType == DealTypeShort.Sale)
+				{
+					textSquare = "Стоимость объекта оценки, руб/кв.м";
+					textSummary = "Стоимость объекта оценки, руб";
+				}
+
+				if (dealType == DealTypeShort.Rent)
+				{
+					textSquare = "Арендная ставка объекта оценки, руб/кв. м/год";
+					textSummary = "Арендная ставка объекта оценки, руб/год";
+					squareCost *= 12;
+					summaryCost *= 12;
+				}
+
+				AddSummaryRows(mainWorkSheet, numberRow, squareCost, summaryCost, textSquare, textSummary);
+				MemoryStream stream = new MemoryStream();
+				excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+				stream.Seek(0, SeekOrigin.Begin);
+
+				long reportId = SaveReportToExportTable(stream, $"Отчет по объекту {KnTargetObject}");
+
+				return reportId;
 			}
-
-			string textSquare = "";
-			string textSummary = "";
-
-			if (dealType == DealTypeShort.Sale)
+			catch (Exception e)
 			{
-				textSquare = "Стоимость объекта оценки, руб/кв.м";
-				textSummary = "Стоимость объекта оценки, руб";
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				return -1;
 			}
-
-			if (dealType == DealTypeShort.Rent)
-			{
-				textSquare = "Арендная ставка объекта оценки, руб/кв. м/год";
-				textSummary = "Арендная ставка объекта оценки, руб/год";
-				squareCost *= 12;
-				summaryCost *= 12;
-			}
-
-			AddSummaryRows(mainWorkSheet, numberRow, squareCost, summaryCost, textSquare, textSummary);
-			MemoryStream stream = new MemoryStream();
-			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			long reportId = SaveReportToExportTable(stream, $"Отчет по объекту {KnTargetObject}");
-
-			return reportId;
 		}
 
 		private void AddBoldValue(ExcelWorksheet mainWorkSheet, int numberRow, int numberColumn, string text)

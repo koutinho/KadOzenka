@@ -30,7 +30,10 @@
 	
 	<div class="form-group">
 		<div class="col-sm-12">
-			<button id="report" data-report-id="@Model.ReportId" class="k-button">Сгенерировать отчет</button>
+			@if (Model.ReportId != -1)
+			{
+				<button id="report" data-report-id="@Model.ReportId" class="k-button">Сгенерировать отчет</button>
+			}
 		</div>
 	</div>
 	<div class="form-group">
@@ -48,10 +51,14 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	var reportId = "@Model.ReportId";
+	$(document).ready(function () {
+		if (reportId === "-1") {
+			Common.ShowError("При генерации отчета возникли ошибки. Подробности в журнале ошибок.");
+		}
 		$('#report').on('click',
 			function() {
-                var url = "@Url.Action("DownloadExportResult", "DataExport")" + `?exportId=${$(this).data('report-id')}`;
+				var url = "@Url.Action("DownloadExportResult", "DataExport")" + `?exportId=${$(this).data('report-id')}`;
 				var a = document.createElement('a');
 				a.setAttribute('href', url);
 				a.click();
