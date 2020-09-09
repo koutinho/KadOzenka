@@ -338,8 +338,9 @@ namespace KadOzenka.Dal.DataImport
             return koStatusRepeatCalc;
         }
 
-        public static void CheckChange(ObjectModel.KO.OMUnit unit, long idAttribute, KoChangeStatus status, List<GbuObjectAttribute> prevAttribs, List<GbuObjectAttribute> curAttribs)
+        public static bool CheckChange(ObjectModel.KO.OMUnit unit, long idAttribute, KoChangeStatus status, List<GbuObjectAttribute> prevAttribs, List<GbuObjectAttribute> curAttribs)
         {
+            bool res = true;
             string oldValue = string.Empty;
             string newValue = string.Empty;
             GbuObjectAttribute prevAttrib = prevAttribs.Find(x => x.AttributeId == idAttribute);
@@ -348,6 +349,7 @@ namespace KadOzenka.Dal.DataImport
             if (curAttrib != null) newValue = curAttrib.GetValueInString();
             if (oldValue != newValue)
             {
+                res = false;
                 ObjectModel.KO.OMUnitChange unitChange = new ObjectModel.KO.OMUnitChange
                 {
                     Id = -1,
@@ -358,6 +360,7 @@ namespace KadOzenka.Dal.DataImport
                 };
                 unitChange.Save();
             }
+            return res;
         }
 
 
@@ -439,140 +442,107 @@ namespace KadOzenka.Dal.DataImport
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
-                    {
-                        2
-                    };
+                         {
+                             2
+                         };
                         List<long> attribIds = new List<long>
-                    {
-                        2,   //Площадь 
-                        8,   //Местоположение 
-                        14,  //Назначение здания 
-                        15,  //Год постройки 
-                        16,  //Год ввода в эксплуатацию 
-                        17,  //Количество этажей 
-                        18,  //Количество подземных этажей 
-                        19,  //Наименование объекта 
-                        21,  //Материал стен 
-                        600, //Адрес 
-                        601, //Кадастровый квартал 
-                        602  //Земельный участок 
-                    };
+                         {
+                             2,   //Площадь 
+                             8,   //Местоположение 
+                             14,  //Назначение здания 
+                             15,  //Год постройки 
+                             16,  //Год ввода в эксплуатацию 
+                             17,  //Количество этажей 
+                             18,  //Количество подземных этажей 
+                             19,  //Наименование объекта 
+                             21,  //Материал стен 
+                             600, //Адрес 
+                             601, //Кадастровый квартал 
+                             602  //Земельный участок 
+                         };
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
                         CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        bool prAssignationObjectCheck = CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
                         CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
                         CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        bool prWallObjectCheck = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
                         CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
                         CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
+
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+
+                                //Если материал стен не поменялся
+                                if (prWallObjectCheck)
+                                {
+                                    if (Id_Factor_Wall > 0)
+                                    {
+                                        //TODO: Если в предыдущем объекте есть фактор Материал стен итоговый
+                                        //      его надо скопировать в новый объект, если нет, добавить надо.
+                                        //
+                                        //
+                                    }
+                                }
+                                else
+                                {
+                                    if (Id_Factor_Wall > 0)
+                                    {
+                                        //TODO: добавить фактор Материал стен итоговый
+                                        //      
+                                        //
+                                        //
+                                    }
+                                }
+
+                                //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
+                                if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
+                                {
+                                    if (Id_Factor_Wall > 0)
+                                    {
+                                        //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
+                                        //      его надо скопировать в новый объект, если нет, надо добавить
+                                        //      в соответствии с приоритетом 
+                                        //      1.Год ввода в эксплуатацию
+                                        //      2.Год завершения строительства
+                                    }
+                                }
+                                else
+                                {
+                                    if (Id_Factor_Wall > 0)
+                                    {
+                                        //TODO: добавить фактор Год постройки итоговый
+                                        //      в соответствии с приоритетом 
+                                        //      1.Год ввода в эксплуатацию
+                                        //      2.Год завершения строительства
+                                    }
+                                }
+                        }
+                        #endregion
+
+
                     }
                     #endregion
 
-                    #region Старое
-                    /*
-                    if (!prCheckObr)
-                    {
-                        //Признак не поменялся ли тип объекта?
-                        bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
-                        //Признак не поменялось ли наименование объекта
-                        bool prNameObjectCheck = false;
-                        List<long> sourceIds = new List<long>
-                        {
-                            2
-                        };
-                        List<long> attribIds = new List<long>
-                        {
-                            19
-                        };
-
-                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(prev.ObjectId.Value, sourceIds, attribIds);
-                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds);
-                        if (prevAttrib.Count>0 && curAttrib.Count>0)
-                        {
-
-                        }
-
-
-                        //Признак не поменялось ли назначение объекта
-                        bool prAssignationObjectCheck = false;
-                        //(prev.AssignationBuilding != null && current.AssignationBuilding != null) ? (prev.AssignationBuilding.Code == current.AssignationBuilding.Code) : false;
-
-                        //Если не было изменений типа, наименования и назначения и не было обращения
-                        if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
-                        {
-                            #region Наследование группы и подгруппы предыдущего объекта
-                            koUnit.GroupId = prev.GroupId;
-                            koUnit.Save();
-                            #endregion
-                        }
-
-
-                        //Признак не поменялся ли материал стен?
-                        bool prWallObjectCheck = ObjectCheckItem.Check(prev.Walls, current.Walls);
-                        //Признак не поменялся ли год ввода в эксплуатацию?
-                        bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
-                        //Признак не поменялся ли год завершения строительства?
-                        bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
-
-
-
-                        //Если не было обращения по объекту
-                            //Если материал стен не поменялся
-                            if (prWallObjectCheck)
-                            {
-                                if (Id_Factor_Wall > 0)
-                                {
-                                    //TODO: Если в предыдущем объекте есть фактор Материал стен итоговый
-                                    //      его надо скопировать в новый объект, если нет, добавить надо.
-                                    //
-                                    //
-                                }
-                            }
-                            else
-                            {
-                                if (Id_Factor_Wall > 0)
-                                {
-                                    //TODO: добавить фактор Материал стен итоговый
-                                    //      
-                                    //
-                                    //
-                                }
-                            }
-
-                            //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
-                            if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
-                            {
-                                if (Id_Factor_Wall > 0)
-                                {
-                                    //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
-                                    //      его надо скопировать в новый объект, если нет, надо добавить
-                                    //      в соответствии с приоритетом 
-                                    //      1.Год ввода в эксплуатацию
-                                    //      2.Год завершения строительства
-                                }
-                            }
-                            else
-                            {
-                                if (Id_Factor_Wall > 0)
-                                {
-                                    //TODO: добавить фактор Год постройки итоговый
-                                    //      в соответствии с приоритетом 
-                                    //      1.Год ввода в эксплуатацию
-                                    //      2.Год завершения строительства
-                                }
-                            }
-                    }
-                    */
-                    #endregion
                 }
-                //Если данные о прошлой оценке не найдены
                 else
                 {
                     #region Импорт нового объекта
@@ -843,49 +813,34 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        bool prNameObjectCheck = CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
                         CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         CheckChange(koUnit, 3, KoChangeStatus.Category, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        bool prAssignationObjectCheck = CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
                         CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
                         CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
                         CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    }
-                    #endregion
 
-                    #region Старое
-                    /*
-                    //Признак было ли по данному объекту обращение?
-                    bool prCheckObr = false;
-                    //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                    //надо перебрать все документы и узнать это
-                    // CheckObr = ????
-                    //
-                    //
-                    //
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
 
-                    //Признак не поменялся ли тип объекта?
-                    bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
-                    //Признак не поменялось ли наименование объекта
-                    bool prNameObjectCheck = prev.Name == current.Name;
-                    //Признак не поменялось ли назначение объекта
-                    bool prAssignationObjectCheck = (prev.Utilization != null) ? (prev.Utilization.ByDoc == current.Utilization.ByDoc && prev.Utilization.Utilization.Code == current.Utilization.Utilization.Code) : false;
-
-                    //Если не было изменений типа, наименования и назначения и не было обращения
-                    if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
-                    {
-                        #region Наследование группы и подгруппы предыдущего объекта
-                        // TODO: Пронаследовать группу и подгруппу предыдущего объекта
-                        // если статус предыдущего расчета не ошибочный
-                        //
-                        //
-                        //
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+                        }
                         #endregion
+
                     }
-                    */
                     #endregion
                 }
-                //Если данные о прошлой оценке не найдены
                 else
                 {
                     #region Импорт нового объекта
@@ -1592,7 +1547,6 @@ namespace KadOzenka.Dal.DataImport
             return koUnit;
             #endregion
         }
-
         public void ImportObjectFlat(xmlObjectFlat current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
@@ -1824,7 +1778,6 @@ namespace KadOzenka.Dal.DataImport
 
             #endregion
         }
-
         private static ObjectModel.KO.OMUnit SaveUnitFlat(xmlObjectFlat current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
             #region Задание на оценку
