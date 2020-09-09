@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using ObjectModel.KO;
 using ObjectModel.Core.TD;
 using KadOzenka.Dal.DataExport;
@@ -80,8 +81,12 @@ namespace KadOzenka.BlFrontEnd.ExportKO
             OMInstance response_doc = OMInstance.Where(x => x.Id == 100000008).SelectAll().ExecuteFirstOrDefault();
             if (response_doc != null)
             {
-	            var setting = new KOUnloadSettings
-		            { UnloadDEKOVuonExportToXml = true, IdResponseDocument = response_doc.Id };
+                var setting = new KOUnloadSettings
+                {
+                    UnloadDEKOVuonExportToXml = true,
+                    IdResponseDocument        = response_doc.Id,
+                    DirectoryName             = dir_name
+                };
 	            var koUnloadResults = KOUnloadResult.GetKoUnloadResultTypes(setting);
 
 	            var unloadResultQueue =
@@ -131,6 +136,60 @@ namespace KadOzenka.BlFrontEnd.ExportKO
             }
             else
                 throw new Exception($"Документ предоставления разъяснений не создан.");
+        }
+
+        /// <summary>
+        /// Выгрузка в Excel "Таблица 4. Группировка объектов недвижимости".
+        /// Обертка для вызова DEKODifferent.ExportToXls4
+        /// </summary>
+        public static void ExportXlsTable4()
+        {
+            string dir_name = "C:\\Temp\\KO_Excel\\Table4";
+            if (!Directory.Exists(dir_name))
+                Directory.CreateDirectory(dir_name);
+
+            //List<OMUnit> units_all = OMUnit.Where(x => x.CadastralCost > 0).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
+            //List<OMTask> listTask = OMTask.Where(x => x.Id == 1).SelectAll().Execute();
+          
+            var setting = new KOUnloadSettings
+            {
+                //IdResponseDocument = 5,
+                IdTour = 2018,
+                DirectoryName = dir_name,
+                UnloadTable04 = true,
+                TaskFilter = new System.Collections.Generic.List<long>() { 1 }
+            };
+            var koUnloadResults = KOUnloadResult.GetKoUnloadResultTypes(setting);
+
+            var unloadResultQueue =
+                new OMUnloadResultQueue
+                {
+                    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+                    DateCreated = DateTime.Now,
+                    DateStarted = DateTime.Now,
+                    Status_Code = ObjectModel.Directory.Common.ImportStatus.Running,
+                    UnloadTypesMapping = JsonConvert.SerializeObject(koUnloadResults),
+                    UnloadCurrentCount = 0,
+                    UnloadTotalCount = koUnloadResults.Count
+                };
+            unloadResultQueue.Save();
+
+            try
+            {
+                DEKODifferent.ExportToXls4(unloadResultQueue, setting, ReportProgress);
+
+                unloadResultQueue.DateFinished = DateTime.Now;
+                unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+                unloadResultQueue.Save();
+            }
+            catch (Exception e)
+            {
+                unloadResultQueue.DateFinished = DateTime.Now;
+                unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+                unloadResultQueue.ErrorMessage = e.Message;
+                unloadResultQueue.Save();
+                throw;
+            }
         }
     }
 }

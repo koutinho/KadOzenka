@@ -2122,7 +2122,7 @@ namespace KadOzenka.Dal.DataExport
                 stream.Seek(0, SeekOrigin.Begin);
                 zipFile.AddEntry(fileName, stream);
 
-                //excelAct.Save("C:\\Temp\\KO_Vuon\\ActDeterminingCadastralCostVUON.xlsx");
+                //excelAct.Save("D:\\Temp\\KO_Vuon\\ActDeterminingCadastralCostVUON.xlsx");
 
             }
             #endregion
@@ -2190,7 +2190,6 @@ namespace KadOzenka.Dal.DataExport
             #endregion
 
         }
-
     }
 
     /// <summary>
@@ -2312,18 +2311,20 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            string file_name = "Task_" + _taskid +"Таблица 4.Группировка объектов недвижимости"
+            string file_name = "Task_" + _taskid + "_Таблица 4.Группировка объектов недвижимости"
                                          + " " + _cad_num.Replace(":", "_")
                                          + "." + _count_file.ToString().PadLeft(5, '0');
 
-          long id =  SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
-
-		  return new ResultKoUnloadSettings
-		  {
-			  FileId = id,
-			  FileName = file_name,
-			  TaskId = _taskid
-		  };
+            long id =  SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            
+            //excel_edit.Save(_dir_name + "\\" + file_name + ".xlsx"); //temp
+            
+            return new ResultKoUnloadSettings
+		    {
+			    FileId = id,
+			    FileName = file_name,
+			    TaskId = _taskid
+		    };
         }
 
         /// <summary>
@@ -2519,7 +2520,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            string file_name = "Task_" + _taskid + "\\Таблица 5. Модельная стоимость"
+            string file_name = "Task_" + _taskid + "_Таблица 5. Модельная стоимость"
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
@@ -3862,7 +3863,7 @@ namespace KadOzenka.Dal.DataExport
 
                 #region Сбор и формирование данных по объекту
                 Console.WriteLine(" - заголовок ...");
-                string strDateApp = "01.01.2018";
+                string strDateApp = "01.01.2019";
                 string strDateOut = "01.01.2019";
                 string strActReq_01_06 = "-";
                 string strActReq_01_07 = "-";

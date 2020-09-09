@@ -223,6 +223,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("362", "Экспорт в Xml - КОценка по исходящим документам.", ExporterKO.ExportXmlRD);
             consoleHelper.AddCommand("363", "Экспорт в Xml - КОценка для ВУОН.", ExporterKO.ExportXmlVUON);
             consoleHelper.AddCommand("364", "Экспорт в Word - Ответные документы по объектам.", ExporterKO.ExportDocOtvet);
+            consoleHelper.AddCommand("365", "ExportXlsTable4", ExporterKO.ExportXlsTable4);
             consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
             consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
 			{
