@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Directory;
 
@@ -24,10 +25,38 @@ namespace KadOzenka.Web.Models.GbuObject
         [Required(ErrorMessage = "Выберете Тип объекта")]
 		public long? PropertyType { get; set; }
 
-		/// <summary>
-		/// Выборка по всем объектам
-		/// </summary>
-		public bool SelectAllObject { get; set; } = true;
+        /// <summary>
+        /// Дополнительное значение к типу "Здания" 
+        /// </summary>
+        public BuildingPurpose BuildingPurpose
+        {
+            get
+            {
+                if (PropertyType != (long) PropertyTypes.Building)
+                    return BuildingPurpose.None;
+                if(IsNotLiving && (IsLiving || IsApartmentHouse))
+                    return BuildingPurpose.None;
+
+                if (IsLiving && IsApartmentHouse)
+                    return BuildingPurpose.LiveAndApartmentHouse;
+                if (IsLiving)
+                    return BuildingPurpose.Live;
+                if (IsNotLiving)
+                    return BuildingPurpose.NotLive;
+                if (IsApartmentHouse)
+                    return BuildingPurpose.ApartmentHouse;
+
+                return BuildingPurpose.None;
+            }
+        }
+        public bool IsLiving { get; set; }
+        public bool IsNotLiving { get; set; }
+        public bool IsApartmentHouse { get; set; }
+
+        /// <summary>
+        /// Выборка по всем объектам
+        /// </summary>
+        public bool SelectAllObject { get; set; } = true;
 
         /// <summary>
         /// Идентификатор аттрибута - фильтра
@@ -122,6 +151,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			{
 				IdAttributeResult = IdAttributeResult.Value,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
+                BuildingPurpose = BuildingPurpose,
 				SelectAllObject = SelectAllObject,
 				IdAttributeFilter = IdAttributeFilter,
 				ValuesFilter = ValuesFilter,
@@ -231,6 +261,13 @@ namespace KadOzenka.Web.Models.GbuObject
                         new ValidationResult(errorMessage: "Выберите характеристику и ее значение на выбранную дату актуальности",
                             memberNames: new[] { nameof(IsValuesFilterUsed) });
                 }
+            }
+
+            if (PropertyType == (long)PropertyTypes.Building && IsNotLiving)
+            {
+                if (IsLiving || IsApartmentHouse)
+                    yield return new ValidationResult(
+                        $"Должен быть выбран только один тип '{BuildingPurpose.NotLive.GetEnumDescription()}' ");
             }
         }
     }

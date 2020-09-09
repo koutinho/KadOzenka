@@ -13,26 +13,32 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// Идентификатор атрибута, куда будет записан результат 
         /// </summary>
         public long IdAttributeResult;
+
         /// <summary>
         /// Тип объекта 
         /// </summary>
         public PropertyTypes PropertyType;
-        ///// <summary>
-        ///// Назначение здания для типа объекта "Здание"
-        ///// </summary>
-        //public BuildingPurpose BuildingPurpose;
+
+        /// <summary>
+        /// Назначение здания для типа объекта "Здание"
+        /// </summary>
+        public BuildingPurpose BuildingPurpose;
+
         /// <summary>
         /// Выборка по всем объектам
         /// </summary>
         public bool SelectAllObject;
+
         /// <summary>
         /// Идентификатор аттрибута - фильтра
         /// </summary>
         public long? IdAttributeFilter;
+
         /// <summary>
         /// Список значений фильтра
         /// </summary>
         public List<string> ValuesFilter;
+
         /// <summary>
         /// Список заданий на оценку
         /// </summary>

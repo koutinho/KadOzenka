@@ -10,6 +10,8 @@ using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Registers;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -31,6 +33,7 @@ namespace KadOzenka.Dal.GbuObject
         private static ABaseHarmonizationSettings BaseSetting { get; set; }
         protected static GbuReportService ReportService { get; set; }
         private static GbuObjectService GbuObjectService { get; set; }
+        private static RosreestrRegisterService RosreestrRegisterService { get; set; }
 
         private RegisterAttribute _registerAttribute;
         private RegisterAttribute ResultAttribute
@@ -56,6 +59,7 @@ namespace KadOzenka.Dal.GbuObject
             BaseSetting = setting;
             ReportService = new GbuReportService();
             GbuObjectService = new GbuObjectService();
+            RosreestrRegisterService = new RosreestrRegisterService();
         }
 
 
@@ -66,6 +70,11 @@ namespace KadOzenka.Dal.GbuObject
             ReportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             var objects = GetObjects();
+            if (BaseSetting.PropertyType == PropertyTypes.Building)
+            {
+                objects = FilterBuildingObjects(objects);
+            }
+
             var levelsAttributesIds = GetLevelsAttributesIds();
             MaxObjectsCount = objects.Count;
 
@@ -76,7 +85,7 @@ namespace KadOzenka.Dal.GbuObject
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 20
             };
-            
+
             Parallel.ForEach(objects, options, obj =>
             {
                 ProcessOneObject(obj, levelsAttributesIds);
@@ -255,6 +264,53 @@ namespace KadOzenka.Dal.GbuObject
             {
                 var lowerAttributeValue = x.GetValueInString()?.ToLower();
                 if (lowerAttributeValue != null && lowerFilterValues.Contains(lowerAttributeValue))
+                {
+                    resultObjectIds.Add(x.ObjectId);
+                }
+            });
+
+            return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+        }
+
+        private List<Item> FilterBuildingObjects(List<Item> allObjects)
+        {
+            if (BaseSetting.PropertyType != PropertyTypes.Building ||
+                BaseSetting.BuildingPurpose == BuildingPurpose.None)
+                return allObjects;
+
+            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
+
+            var buildingPurposeAttribute = RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
+
+            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
+                allObjects.Select(x => x.ObjectId).Distinct().ToList(),
+                new List<long>{ buildingPurposeAttribute.RegisterId },
+                new List<long> { buildingPurposeAttribute.Id },
+                date);
+
+            var possibleValues = new List<string>();
+            switch (BaseSetting.BuildingPurpose)
+            {
+                case BuildingPurpose.Live:
+                    possibleValues.Add("Жилое");
+                    break;
+                case BuildingPurpose.NotLive:
+                    possibleValues.Add("Нежилое");
+                    break;
+                case BuildingPurpose.ApartmentHouse:
+                    possibleValues.Add("Многоквартирный дом");
+                    break;
+                case BuildingPurpose.LiveAndApartmentHouse:
+                    possibleValues.Add("Жилое");
+                    possibleValues.Add("Многоквартирный дом");
+                    break;
+            }
+
+            var resultObjectIds = new List<long?>();
+            allObjectsAttributes.ForEach(x =>
+            {
+                var buildingPurpose = x.GetValueInString();
+                if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
                 {
                     resultObjectIds.Add(x.ObjectId);
                 }

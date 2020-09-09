@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Dal.GbuObject.Dto
+@using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
 @using ObjectModel.Directory.Common
@@ -34,6 +35,23 @@
                 @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label("ОНС").Value((long) PropertyTypes.UncompletedBuilding))
                 <span>&nbsp;</span>
                 @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Pllacement.GetEnumDescription()).Value((long) PropertyTypes.Pllacement))
+            </div>
+        </div>
+        <div class="form-group" id="purposeForBuildings" style="display: none">
+            <div class="col-sm-1 col-sm-offset-1">
+                @(Html.Kendo().CheckBoxFor(x => x.IsLiving)
+                    .Label(BuildingPurpose.Live.GetEnumDescription()))
+            </div>
+            <div class="col-sm-1">
+                @(Html.Kendo().CheckBoxFor(x => x.IsNotLiving)
+                    .Label(BuildingPurpose.NotLive.GetEnumDescription())
+                    .HtmlAttributes(new { onchange = "disablePurposeForBuildingsCheckboxes();" }))
+
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().CheckBoxFor(x => x.IsApartmentHouse)
+                    .Label(BuildingPurpose.ApartmentHouse.GetEnumDescription()))
+
             </div>
         </div>
         <fieldset class="filterFieldset">
@@ -350,10 +368,24 @@
                 $(id).prop("checked", true);
             }
 
+            if (Object.keys(val)[0] === '@(nameof(Model.IsLiving))') {
+                var isLiving = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsLiving))').prop("checked", isLiving);
+            }
+            if (Object.keys(val)[0] === '@(nameof(Model.IsNotLiving))') {
+                var isNotLiving = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsNotLiving))').prop("checked", isNotLiving);
+                disablePurposeForBuildingsCheckboxes();
+            }
+            if (Object.keys(val)[0] === '@(nameof(Model.IsApartmentHouse))') {
+                var isApartmentHouse = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsApartmentHouse))').prop("checked", isApartmentHouse);
+            }
         });
         var isSelectAllObjectsChecked =
             $('#SelectAllObject').prop('checked');
         selectAllObjectChanged(isSelectAllObjectsChecked);
+        onPropertyTypeChange();
     }
 
     function changeDataActualAvailability(isDataActualUsed) {
@@ -502,6 +534,7 @@
         $('#IsTaskFilterUsed').bind("change", function () {
             changeTaskFilterAvailability(this.checked);
         });
+        $('input[name="@nameof(Model.PropertyType)"]').on('change', onPropertyTypeChange);
 
         templateStorage.init(@((int)DataFormStorege.Harmonization),
             "SaveTemplateHarmonizationObject", "GbuObject",
@@ -576,5 +609,30 @@
                 });
             });
     });
+
+
+
+
+    function onPropertyTypeChange() {
+        var objectType = $('input[name="@nameof(Model.PropertyType)"]:checked').val();
+        if (objectType == @((long) PropertyTypes.Building)) {
+            $("#purposeForBuildings").show();
+        } else {
+            $("#purposeForBuildings").hide();
+        }
+    }
+
+    function disablePurposeForBuildingsCheckboxes() {
+        var isNotLivingChecked = $("#@nameof(Model.IsNotLiving)").is(':checked');
+        if (isNotLivingChecked) {
+            $('#@nameof(Model.IsLiving)').prop('checked', false);
+            $('#@nameof(Model.IsLiving)').attr("disabled", true);
+            $('#@nameof(Model.IsApartmentHouse)').prop('checked', false);
+            $('#@nameof(Model.IsApartmentHouse)').attr("disabled", true);
+        } else {
+            $('#@nameof(Model.IsLiving)').attr("disabled", false);
+            $('#@nameof(Model.IsApartmentHouse)').attr("disabled", false);
+        }
+    }
 </script>
 }
