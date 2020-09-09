@@ -297,20 +297,20 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
 
-            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), RosreestrRegisterService.GetRosreestrObjectNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), RosreestrRegisterService.GetRosreestrParcelNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), RosreestrRegisterService.GetRosreestrConstructionPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), RosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), RosreestrRegisterService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), RosreestrRegisterService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), RosreestrRegisterService.GetRosreestrParcelAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), RosreestrRegisterService.GetRosreestrBuildYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), RosreestrRegisterService.GetObjectNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), RosreestrRegisterService.GetParcelNameAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), RosreestrRegisterService.GetBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), RosreestrRegisterService.GetPlacementPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), RosreestrRegisterService.GetConstructionPurposeAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), RosreestrRegisterService.GetParcelAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), RosreestrRegisterService.GetRosreestrCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), RosreestrRegisterService.GetRosreestrFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), RosreestrRegisterService.GetRosreestrWallMaterialAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), RosreestrRegisterService.GetFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), RosreestrRegisterService.GetWallMaterialAttribute());
 
             return attributesDictionary;
         }

@@ -42,17 +42,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				RegisterCache.GetAttributeData(typeOfUsingGroupCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(segmentAttributeId).Id,
 				RegisterCache.GetAttributeData(functionalGroupNameAttributeId).Id,
-                _rosreestrRegisterService.GetRosreestrObjectNameAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrConstructionPurposeAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrParcelAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrBuildYearAttribute().Id,
+                _rosreestrRegisterService.GetObjectNameAttribute().Id,
+                _rosreestrRegisterService.GetConstructionPurposeAttribute().Id,
+                _rosreestrRegisterService.GetAddressAttribute().Id,
+                _rosreestrRegisterService.GetLocationAttribute().Id,
+                _rosreestrRegisterService.GetParcelAttribute().Id,
+                _rosreestrRegisterService.GetBuildYearAttribute().Id,
                 _rosreestrRegisterService.GetRosreestrCommissioningYearAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrFloorsNumberAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrFloorAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrWallMaterialAttribute().Id
+                _rosreestrRegisterService.GetFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetUndergroundFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetFloorAttribute().Id,
+                _rosreestrRegisterService.GetWallMaterialAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsOksDto>(sql);
 
@@ -75,10 +75,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				RegisterCache.GetAttributeData(typeOfUsingNameAttributeId).Id,
 				RegisterCache.GetAttributeData(typeOfUsingCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(typeOfUsingCodeSourceAttributeId).Id,
-                _rosreestrRegisterService.GetRosreestrParcelNameAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id
+                _rosreestrRegisterService.GetParcelNameAttribute().Id,
+                _rosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
+                _rosreestrRegisterService.GetAddressAttribute().Id,
+                _rosreestrRegisterService.GetLocationAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsZuDto>(sql);
 

@@ -105,8 +105,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         {
             var contents = GetSqlFileContent("UpksForOks");
 
-            var buildingPurposeAttr = _rosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
-            var placementPurposeAttr = _rosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
+            var buildingPurposeAttr = _rosreestrRegisterService.GetBuildingPurposeAttribute();
+            var placementPurposeAttr = _rosreestrRegisterService.GetPlacementPurposeAttribute();
 
             string subGroupSelectionFromQuery = string.Empty,
                 subGroupForGrouping = string.Empty,

@@ -35,8 +35,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<SubjectsUPKSByTypeAndPurposeDto> GetSubjectsUPKSByTypeAndPurposeData(long[] taskIdList)
 		{
-			var buildingPurposeAttr = RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
-			var placementPurposeAttr = RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
+			var buildingPurposeAttr = RosreestrRegisterService.GetBuildingPurposeAttribute();
+			var placementPurposeAttr = RosreestrRegisterService.GetPlacementPurposeAttribute();
 
 			string contents;
 			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportByTypeAndPurposeSqlFileName)))

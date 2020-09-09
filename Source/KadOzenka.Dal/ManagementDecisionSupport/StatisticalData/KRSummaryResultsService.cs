@@ -31,17 +31,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
 				RegisterCache.GetAttributeData(klardAttributeId).Id,
 				RegisterCache.GetAttributeData(parentKnAttributeId).Id,
-                _rosreestrRegisterService.GetRosreestrObjectNameAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrConstructionPurposeAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrParcelAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrBuildYearAttribute().Id,
+                _rosreestrRegisterService.GetObjectNameAttribute().Id,
+                _rosreestrRegisterService.GetConstructionPurposeAttribute().Id,
+                _rosreestrRegisterService.GetAddressAttribute().Id,
+                _rosreestrRegisterService.GetLocationAttribute().Id,
+                _rosreestrRegisterService.GetParcelAttribute().Id,
+                _rosreestrRegisterService.GetBuildYearAttribute().Id,
                 _rosreestrRegisterService.GetRosreestrCommissioningYearAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrFloorsNumberAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrUndergroundFloorsNumberAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrFloorAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrWallMaterialAttribute().Id
+                _rosreestrRegisterService.GetFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetUndergroundFloorsNumberAttribute().Id,
+                _rosreestrRegisterService.GetFloorAttribute().Id,
+                _rosreestrRegisterService.GetWallMaterialAttribute().Id
 			);
 
 			var result = QSQuery.ExecuteSql<KRSummaryResultsOksDto>(sql);
@@ -59,10 +59,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
 				RegisterCache.GetAttributeData(klardAttributeId).Id,
-                _rosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrAddressAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrLocationAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrParcelCategoryAttribute().Id
+                _rosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
+                _rosreestrRegisterService.GetAddressAttribute().Id,
+                _rosreestrRegisterService.GetLocationAttribute().Id,
+                _rosreestrRegisterService.GetParcelCategoryAttribute().Id
 			);
 
 			var result = QSQuery.ExecuteSql<KRSummaryResultsZuDto>(sql);

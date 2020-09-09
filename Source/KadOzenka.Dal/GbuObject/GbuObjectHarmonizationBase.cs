@@ -284,7 +284,7 @@ namespace KadOzenka.Dal.GbuObject
 
             var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
 
-            var buildingPurposeAttribute = RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute();
+            var buildingPurposeAttribute = RosreestrRegisterService.GetBuildingPurposeAttribute();
 
             var allObjectsAttributes = GbuObjectService.GetAllAttributes(
                 allObjects.Select(x => x.ObjectId).Distinct().ToList(),
@@ -337,7 +337,7 @@ namespace KadOzenka.Dal.GbuObject
 
             var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
 
-            var placementPurposeAttribute = RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
+            var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
 
             var allObjectsAttributes = GbuObjectService.GetAllAttributes(
                 allObjects.Select(x => x.ObjectId).Distinct().ToList(),

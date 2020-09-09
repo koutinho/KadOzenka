@@ -41,14 +41,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
-                RosreestrRegisterService.GetRosreestrSquareAttribute().Id,
-                RosreestrRegisterService.GetRosreestrObjectNameAttribute().Id,
-                RosreestrRegisterService.GetRosreestrTypeOfUseByDocumentsAttribute().Id,
-                RosreestrRegisterService.GetRosreestrBuildingPurposeAttribute().Id,
-                RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute().Id,
-                RosreestrRegisterService.GetRosreestrConstructionPurposeAttribute().Id,
-                RosreestrRegisterService.GetRosreestrAddressAttribute().Id,
-                RosreestrRegisterService.GetRosreestrLocationAttribute().Id
+                RosreestrRegisterService.GetSquareAttribute().Id,
+                RosreestrRegisterService.GetObjectNameAttribute().Id,
+                RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
+                RosreestrRegisterService.GetBuildingPurposeAttribute().Id,
+                RosreestrRegisterService.GetPlacementPurposeAttribute().Id,
+                RosreestrRegisterService.GetConstructionPurposeAttribute().Id,
+                RosreestrRegisterService.GetAddressAttribute().Id,
+                RosreestrRegisterService.GetLocationAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<CalculationsAnalysisReportItem>(sql);
 
