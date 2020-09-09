@@ -34,14 +34,14 @@ namespace KadOzenka.Web.Models.GbuObject
             {
                 if (PropertyType != (long) PropertyTypes.Building)
                     return BuildingPurpose.None;
-                if(IsNotLiving && (IsLiving || IsApartmentHouse))
+                if(IsNotLivingBuilding && (IsLivingBuilding || IsApartmentHouse))
                     return BuildingPurpose.None;
 
-                if (IsLiving && IsApartmentHouse)
+                if (IsLivingBuilding && IsApartmentHouse)
                     return BuildingPurpose.LiveAndApartmentHouse;
-                if (IsLiving)
+                if (IsLivingBuilding)
                     return BuildingPurpose.Live;
-                if (IsNotLiving)
+                if (IsNotLivingBuilding)
                     return BuildingPurpose.NotLive;
                 if (IsApartmentHouse)
                     return BuildingPurpose.ApartmentHouse;
@@ -49,8 +49,8 @@ namespace KadOzenka.Web.Models.GbuObject
                 return BuildingPurpose.None;
             }
         }
-        public bool IsLiving { get; set; }
-        public bool IsNotLiving { get; set; }
+        public bool IsLivingBuilding { get; set; }
+        public bool IsNotLivingBuilding { get; set; }
         public bool IsApartmentHouse { get; set; }
 
         /// <summary>
@@ -263,9 +263,9 @@ namespace KadOzenka.Web.Models.GbuObject
                 }
             }
 
-            if (PropertyType == (long)PropertyTypes.Building && IsNotLiving)
+            if (PropertyType == (long)PropertyTypes.Building && IsNotLivingBuilding)
             {
-                if (IsLiving || IsApartmentHouse)
+                if (IsLivingBuilding || IsApartmentHouse)
                     yield return new ValidationResult(
                         $"Должен быть выбран только один тип '{BuildingPurpose.NotLive.GetEnumDescription()}' ");
             }
