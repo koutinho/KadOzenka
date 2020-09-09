@@ -25,6 +25,11 @@ namespace KadOzenka.Dal.GbuObject.Dto
         public BuildingPurpose BuildingPurpose;
 
         /// <summary>
+        /// Назначение здания для типа объекта "Помещение"
+        /// </summary>
+        public PlacementPurpose PlacementPurpose;
+
+        /// <summary>
         /// Выборка по всем объектам
         /// </summary>
         public bool SelectAllObject;

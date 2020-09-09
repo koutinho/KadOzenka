@@ -54,6 +54,25 @@
 
             </div>
         </div>
+        <div class="form-group" id="purposeForPlacement" style="display: none">
+            <div class="col-sm-1 col-sm-offset-1">
+                @(Html.Kendo().CheckBoxFor(x => x.IsLivingPlacement)
+                    .Label(PlacementPurpose.Live.GetEnumDescription())
+                    .HtmlAttributes(new { onchange = "livingPurposeForPlacementChanged();" }))
+            </div>
+            <div class="col-sm-1">
+                @(Html.Kendo().CheckBoxFor(x => x.IsNotLivingPlacement)
+                    .Label(PlacementPurpose.NotLive.GetEnumDescription())
+                    .HtmlAttributes(new { onchange = "notLivingPurposeForPlacementChanged();" }))
+
+            </div>
+            <div class="col-sm-2">
+                @(Html.Kendo().CheckBoxFor(x => x.IsParkingPlace)
+                    .Label(PlacementPurpose.ParkingPlace.GetEnumDescription())
+                    .HtmlAttributes(new { onchange = "parkingPlacePurposeForPlacementChanged();" }))
+
+            </div>
+        </div>
         <fieldset class="filterFieldset">
             <div class="form-group">
                 <div class="col-sm-12">
@@ -368,6 +387,7 @@
                 $(id).prop("checked", true);
             }
 
+            //блок шаблона для Зданий
             if (Object.keys(val)[0] === '@(nameof(Model.IsLivingBuilding))') {
                 var isLiving = val[Object.keys(val)[0]];
                 $('#@(nameof(Model.IsLivingBuilding))').prop("checked", isLiving);
@@ -380,6 +400,26 @@
             if (Object.keys(val)[0] === '@(nameof(Model.IsApartmentHouse))') {
                 var isApartmentHouse = val[Object.keys(val)[0]];
                 $('#@(nameof(Model.IsApartmentHouse))').prop("checked", isApartmentHouse);
+            }
+
+            //блок шаблона для Помещений
+            if (Object.keys(val)[0] === '@(nameof(Model.IsLivingPlacement))') {
+                var isLivingPlacement = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsLivingPlacement))').prop("checked", isLivingPlacement);
+                if (isLivingPlacement)
+                    livingPurposeForPlacementChanged();
+            }
+            if (Object.keys(val)[0] === '@(nameof(Model.IsNotLivingPlacement))') {
+                var isNotLivingPlacement = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsNotLivingPlacement))').prop("checked", isNotLivingPlacement);
+                if (isNotLivingPlacement)
+                    notLivingPurposeForPlacementChanged();
+            }
+            if (Object.keys(val)[0] === '@(nameof(Model.IsParkingPlace))') {
+                var isParkingPlacePlacement = val[Object.keys(val)[0]];
+                $('#@(nameof(Model.IsParkingPlace))').prop("checked", isParkingPlacePlacement);
+                if (isParkingPlacePlacement)
+                    parkingPlacePurposeForPlacementChanged();
             }
         });
         var isSelectAllObjectsChecked =
@@ -620,19 +660,75 @@
         } else {
             $("#purposeForBuildings").hide();
         }
+        if (objectType == @((long) PropertyTypes.Pllacement)) {
+            $("#purposeForPlacement").show();
+        } else {
+            $("#purposeForPlacement").hide();
+        }
     }
 
+
     function disablePurposeForBuildingsCheckboxes() {
+        var isLiving = $("#@nameof(Model.IsLivingBuilding)"); 
+        var isApartmentHouse = $("#@nameof(Model.IsApartmentHouse)"); 
         var isNotLivingChecked = $("#@nameof(Model.IsNotLivingBuilding)").is(':checked');
         if (isNotLivingChecked) {
-            $('#@nameof(Model.IsLivingBuilding)').prop('checked', false);
-            $('#@nameof(Model.IsLivingBuilding)').attr("disabled", true);
-            $('#@nameof(Model.IsApartmentHouse)').prop('checked', false);
-            $('#@nameof(Model.IsApartmentHouse)').attr("disabled", true);
+            disableCheckBox(isLiving);
+            disableCheckBox(isApartmentHouse);
         } else {
             $('#@nameof(Model.IsLivingBuilding)').attr("disabled", false);
             $('#@nameof(Model.IsApartmentHouse)').attr("disabled", false);
         }
+    }
+
+
+    function livingPurposeForPlacementChanged() {
+        var isLiving = $("#@nameof(Model.IsLivingPlacement)");
+        var isNotLiving = $("#@nameof(Model.IsNotLivingPlacement)");
+        var isParking = $("#@nameof(Model.IsParkingPlace)");
+        var isLivingChecked = isLiving.is(':checked');
+        if (isLivingChecked) {
+            disableCheckBox(isNotLiving);
+            disableCheckBox(isParking);
+        } else {
+            isNotLiving.prop('disabled', false);
+            isParking.prop('disabled', false);
+        }
+        isLiving.prop('disabled', false);
+    }
+    function notLivingPurposeForPlacementChanged() {
+        var isLiving = $("#@nameof(Model.IsLivingPlacement)");
+        var isNotLiving = $("#@nameof(Model.IsNotLivingPlacement)");
+        var isParking = $("#@nameof(Model.IsParkingPlace)");
+        var isNotLivingChecked = isNotLiving.is(':checked');
+        if (isNotLivingChecked) {
+            disableCheckBox(isLiving);
+            disableCheckBox(isParking);
+        } else {
+            isLiving.prop('disabled', false);
+            isParking.prop('disabled', false);
+        }
+        isNotLiving.prop('disabled', false);
+    }
+    function parkingPlacePurposeForPlacementChanged() {
+        var isLiving = $("#@nameof(Model.IsLivingPlacement)");
+        var isNotLiving = $("#@nameof(Model.IsNotLivingPlacement)");
+        var isParking = $("#@nameof(Model.IsParkingPlace)");
+        var isParkingChecked = isParking.is(':checked');
+        if (isParkingChecked) {
+            disableCheckBox(isLiving);
+            disableCheckBox(isNotLiving);
+        } else {
+            isLiving.prop('disabled', false);
+            isNotLiving.prop('disabled', false);
+        }
+        isParking.prop('disabled', false);
+    }
+
+
+    function disableCheckBox(checkBox) {
+        checkBox.prop('checked', false);
+        checkBox.prop('disabled', true);
     }
 </script>
 }

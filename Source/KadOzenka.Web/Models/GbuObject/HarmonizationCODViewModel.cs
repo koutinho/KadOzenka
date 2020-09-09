@@ -38,6 +38,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				IdAttributeResult = IdAttributeResult.Value,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
                 BuildingPurpose = BuildingPurpose,
+                PlacementPurpose = PlacementPurpose,
 				SelectAllObject = SelectAllObject,
 				IdAttributeFilter = IdAttributeFilter,
 				ValuesFilter = ValuesFilter,

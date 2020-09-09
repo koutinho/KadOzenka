@@ -54,6 +54,30 @@ namespace KadOzenka.Web.Models.GbuObject
         public bool IsApartmentHouse { get; set; }
 
         /// <summary>
+        /// Дополнительное значение к типу "Помещение" 
+        /// </summary>
+        public PlacementPurpose PlacementPurpose
+        {
+            get
+            {
+                if (PropertyType != (long)PropertyTypes.Pllacement)
+                    return PlacementPurpose.None;
+
+                if (IsLivingPlacement)
+                    return PlacementPurpose.Live;
+                if (IsNotLivingPlacement)
+                    return PlacementPurpose.NotLive;
+                if (IsParkingPlace)
+                    return PlacementPurpose.ParkingPlace;
+
+                return PlacementPurpose.None;
+            }
+        }
+        public bool IsLivingPlacement { get; set; }
+        public bool IsNotLivingPlacement { get; set; }
+        public bool IsParkingPlace { get; set; }
+
+        /// <summary>
         /// Выборка по всем объектам
         /// </summary>
         public bool SelectAllObject { get; set; } = true;
@@ -152,7 +176,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				IdAttributeResult = IdAttributeResult.Value,
 				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
                 BuildingPurpose = BuildingPurpose,
-				SelectAllObject = SelectAllObject,
+                PlacementPurpose = PlacementPurpose,
+                SelectAllObject = SelectAllObject,
 				IdAttributeFilter = IdAttributeFilter,
 				ValuesFilter = ValuesFilter,
 				Level1Attribute = Level1Attribute,
@@ -267,7 +292,15 @@ namespace KadOzenka.Web.Models.GbuObject
             {
                 if (IsLivingBuilding || IsApartmentHouse)
                     yield return new ValidationResult(
-                        $"Должен быть выбран только один тип '{BuildingPurpose.NotLive.GetEnumDescription()}' ");
+                        $"Должен быть выбран только один тип для здания: '{BuildingPurpose.NotLive.GetEnumDescription()}' ");
+            }
+
+            if (PropertyType == (long)PropertyTypes.Pllacement)
+            {
+                if((IsLivingPlacement && (IsNotLivingPlacement || IsParkingPlace)) ||
+                    (IsNotLivingPlacement && (IsLivingPlacement || IsParkingPlace)) ||
+                     (IsParkingPlace && (IsLivingPlacement || IsNotLivingPlacement)))
+                    yield return new ValidationResult("Должен быть выбран только один тип для помещения");
             }
         }
     }

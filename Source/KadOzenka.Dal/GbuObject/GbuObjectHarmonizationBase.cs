@@ -74,6 +74,10 @@ namespace KadOzenka.Dal.GbuObject
             {
                 objects = FilterBuildingObjects(objects);
             }
+            if (BaseSetting.PropertyType == PropertyTypes.Pllacement)
+            {
+                objects = FilterPlacementObjects(objects);
+            }
 
             var levelsAttributesIds = GetLevelsAttributesIds();
             MaxObjectsCount = objects.Count;
@@ -303,6 +307,52 @@ namespace KadOzenka.Dal.GbuObject
                 case BuildingPurpose.LiveAndApartmentHouse:
                     possibleValues.Add("Жилое");
                     possibleValues.Add("Многоквартирный дом");
+                    break;
+            }
+
+            var resultObjectIds = new List<long?>();
+            allObjectsAttributes.ForEach(x =>
+            {
+                var buildingPurpose = x.GetValueInString();
+                if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
+                {
+                    resultObjectIds.Add(x.ObjectId);
+                }
+            });
+
+            return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+        }
+
+        private List<Item> FilterPlacementObjects(List<Item> allObjects)
+        {
+            if (BaseSetting.PropertyType != PropertyTypes.Pllacement ||
+                BaseSetting.PlacementPurpose == PlacementPurpose.None)
+                return allObjects;
+
+            //TODO
+            if (BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
+            {
+                return allObjects;
+            }
+
+            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
+
+            var placementPurposeAttribute = RosreestrRegisterService.GetRosreestrPlacementPurposeAttribute();
+
+            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
+                allObjects.Select(x => x.ObjectId).Distinct().ToList(),
+                new List<long> { placementPurposeAttribute.RegisterId },
+                new List<long> { placementPurposeAttribute.Id },
+                date);
+
+            var possibleValues = new List<string>();
+            switch (BaseSetting.PlacementPurpose)
+            {
+                case PlacementPurpose.Live:
+                    possibleValues.Add("Жилое");
+                    break;
+                case PlacementPurpose.NotLive:
+                    possibleValues.Add("Нежилое");
                     break;
             }
 
