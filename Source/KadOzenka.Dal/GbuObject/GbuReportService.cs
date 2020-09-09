@@ -85,11 +85,11 @@ namespace KadOzenka.Dal.GbuObject
 				_mainWorkSheet.Rows[row].Cells[column].SetValue(value);
 
 				if (new Random().Next(0, 10000) > 9950)
-					Serilog.Log.ForContext<ExcelFile>().Debug("Запись значения в Excel {row} {column} {value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
 			}
 			catch (Exception ex) {
 				if (new Random().Next(0, 100) > 80)
-					Serilog.Log.ForContext<ExcelFile>().Error(ex, "Ошибка записи значения в Excel {row} {column} {value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
             }
 		}
 
@@ -124,24 +124,24 @@ namespace KadOzenka.Dal.GbuObject
                             _mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
 							
 							if (successCount < 5)
-								_log.Debug("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								_log.Verbose("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
 							successCount++;
 						}
                         catch (Exception ex)
                         {
 							if (errCount < 5)
-								_log.Error(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								_log.Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
 							errCount++;
 						}
                     }
                 }
             }
-			_log.Debug("Применение стилей в Excel завершено {successCount} {errCount}", successCount, errCount);
+			_log.Debug("Применение стилей в Excel завершено. Успешно {successCount}, с ошибкой {errCount}", successCount, errCount);
 		}
 
 		public void SetIndividualWidth(int column, int width)
 		{
-			_log.Debug("Установка ширины {width} для столбца {column}", width, column);
+			_log.Verbose("Установка ширины {width} для столбца {column}", width, column);
 			_mainWorkSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
@@ -149,7 +149,6 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			try
 			{
-				_log.Debug("Сохранение отчета {fileName}", fileName);
 				MemoryStream stream = new MemoryStream();
 				_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
@@ -174,13 +173,16 @@ namespace KadOzenka.Dal.GbuObject
 				FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
 				export.Save();
 
+				_log.ForContext("ResultFileName", export.ResultFileName)
+					.ForContext("FileId", export.Id)
+					.Debug("Сохранение отчета {FileName}", fileName);
+
 				return export.Id;
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_log.Error(e, "Сохранение отчета завершилось исключением");
-				//Console.WriteLine(e);
-				ErrorManager.LogError(e);
+				_log.Error(ex, "Сохранение отчета завершилось исключением");
+				ErrorManager.LogError(ex);
 				throw;
 			}
 		}

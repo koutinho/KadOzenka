@@ -2,12 +2,14 @@
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
 	public abstract class LongProcess : ILongProcess
 	{
-        protected const int PercentageInterval = 10;
+		private readonly ILogger _log = Log.ForContext<LongProcess>();
+		protected const int PercentageInterval = 10;
         protected NotificationSender NotificationSender { get; set; }
 
 		protected LongProcess()
@@ -20,6 +22,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		public virtual void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 			throw new NotImplementedException();
 		}
 

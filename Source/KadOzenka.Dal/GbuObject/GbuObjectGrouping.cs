@@ -14,6 +14,9 @@ using System.Security.Principal;
 using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
 using DevExpress.CodeParser;
+using Serilog;
+using Newtonsoft.Json;
+using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -584,7 +587,7 @@ namespace KadOzenka.Dal.GbuObject
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
-                        Serilog.Log.Debug("Значение атрибута уровня {ValueLevel} {dataLevelFactorId} {Dictionary}", ValueLevel.Value, dataLevel.FactorId, Dictionary);
+                        Serilog.Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
                         ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
@@ -1163,10 +1166,11 @@ namespace KadOzenka.Dal.GbuObject
     /// </summary>
     public class PriorityGrouping
     {
+        private static readonly ILogger _log = Log.ForContext<PriorityGrouping>();
 
-	    #region Номера колонок отчета
+        #region Номера колонок отчета
 
-	    public static int KnColumn = 0;
+        public static int KnColumn = 0;
 
 	    public static int ResultColumn = 1;
 
@@ -1220,8 +1224,8 @@ namespace KadOzenka.Dal.GbuObject
         {
 			var reportService =  new GbuReportService();
 			var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
-
-            Serilog.Log.Logger.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
+          
+            _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
  
             reportService.AddHeaders(0, dataHeaderAndColumnNumber.Headers);
 			long reportId = 0;
@@ -1254,7 +1258,11 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
 				CurrentCount = 0;
-                Serilog.Log.Debug("Выполнение операции группировки {Count} объектов {useTask}", MaxCount, useTask);
+
+                _log.ForContext("useTask", useTask)
+                    .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
+                    .Debug("Выполнение операции группировки по {Count} объектам", MaxCount);
+
                 Parallel.ForEach(Objs, options, item => 
                 {
                     SetThreadCurrentPrincipal(userId);
@@ -1265,16 +1273,24 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     catch (Exception ex)
                     {
+                        _log.Error("Ошибка группировки по КН {CadastralNumber}", item.CadastralNumber);
+                        LogContext.PushProperty("Param", JsonConvert.SerializeObject(item));
                         ErrorManager.LogError(ex);
+                        
                     }
                 });
+                Objs.Clear();
             }
 			else
             {
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
-                Serilog.Log.Debug("Выполнение операции группировки {Count} объектов {useTask}", MaxCount, false);
+
+                _log.ForContext("useTask", useTask)
+                    .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
+                    .Debug("Выполнение операции группировки по {Count} объектам", MaxCount);
+
                 Parallel.ForEach(Objs, options, item => 
                 {
                     SetThreadCurrentPrincipal(userId);
@@ -1285,18 +1301,21 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     catch (Exception ex)
                     {
+                        _log.Error("Ошибка группировки по КН {CadastralNumber}", item.CadastralNumber);
+                        LogContext.PushProperty("Param", JsonConvert.SerializeObject(item));
                         ErrorManager.LogError(ex);
                     }
                 });
+                Objs.Clear();
             }
 
             try
             {
-                Serilog.Log.Debug("Применение стилей SetStyle");
+                _log.Verbose("Применение стилей SetStyle");
                 reportService.SetStyle();
                 reportService.SetIndividualWidth(KnColumn, 4);
                 reportService.SetIndividualWidth(ResultColumn, 6);
-                 reportService.SetIndividualWidth(ValueColumn, 3);
+                reportService.SetIndividualWidth(ValueColumn, 3);
                 reportService.SetIndividualWidth(SourceColumn, 6);
                 reportService.SetIndividualWidth(ErrorColumn, 5);
 
@@ -1310,7 +1329,7 @@ namespace KadOzenka.Dal.GbuObject
             }
             catch (Exception ex)
             {
-                Serilog.Log.Error(ex, "Форматирование и сохранение отчета завершилось с ошибкой");
+                _log.Error(ex, "Форматирование и сохранение отчета завершилось с ошибкой");
                 throw;
             }
 		          
@@ -1337,7 +1356,7 @@ namespace KadOzenka.Dal.GbuObject
 				        resHeaderList.AddRange(new List<string>{ GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()), $"(Уровень - {levelTitle}) Источник информации" });
                         
                        /// Serilog.Context.LogContext.PushProperty("lItem.IdFactor", lItem.IdFactor);
-                        Serilog.Log.ForContext("FactorID", lItem.IdFactor).Debug("Ид атрибута ОН");
+                        Log.Verbose("Атрибут ОН. {FactorName}, Id {FactorID}", lItem.IdFactor.GetValueOrDefault(), lItem.IdFactor);
                         
                         dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
 				        lastColumn++;
@@ -1346,7 +1365,7 @@ namespace KadOzenka.Dal.GbuObject
 		        }
 	        }
 
-	        res.Headers = resHeaderList;
+            res.Headers = resHeaderList;
 	        res.DictionaryColumns = dicColumns;
 	        return res;
         }

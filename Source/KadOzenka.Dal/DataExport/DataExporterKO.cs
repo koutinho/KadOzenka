@@ -4795,7 +4795,8 @@ namespace KadOzenka.Dal.DataExport
             var koUnloadResultTypes = JsonConvert.DeserializeObject<List<KoUnloadResultType>>(unloadResultQueue.UnloadTypesMapping);
             var unloadResultMethodInfoDictionary = GetUnloadResultMethodInfoDictionary();
 
-            _log.Debug(new Exception(unloadResultQueue.UnloadTypesMapping), "Выгрузка результатов {koUnloadResultTypesCount} ", koUnloadResultTypes.Count);
+            _log.ForContext("UnloadTypesMapping", unloadResultQueue.UnloadTypesMapping)
+                .Information("Текущее количество выгрузок {UnloadCurrentCount} из {UnloadTotalCount} ", unloadResultQueue.UnloadCurrentCount, unloadResultQueue.UnloadTotalCount);
 
             var unloadCurrentCount = 1;
             foreach (var koUnloadResultType in koUnloadResultTypes)
@@ -4804,26 +4805,28 @@ namespace KadOzenka.Dal.DataExport
                 unloadResultQueue.UnloadCurrentCount = unloadCurrentCount;
 	            unloadResultQueue.CurrentUnloadType_Code = koUnloadResultType;
 	            unloadResultQueue.Save();
-
-	            //TODO: сейчас не реализована Выгрузка истории по объектам
-                if (koUnloadResultType != KoUnloadResultType.UnloadHistory)
+                try
                 {
-                   
-                    var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
-		                .Invoke(null, new object[] { unloadResultQueue, setting, setProgress });
-                    
-                    if (unloadCurrentCount == 1)
+                    //TODO: сейчас не реализована Выгрузка истории по объектам
+                    if (koUnloadResultType != KoUnloadResultType.UnloadHistory)
                     {
-                        _log.Verbose("Выгрузка результатов {unloadResultCount} {unloadResult0}", unloadResult.Count, unloadResult[0]);
-                    }
+                        var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
+                            .Invoke(null, new object[] { unloadResultQueue, setting, setProgress });
 
-                    result.AddRange(unloadResult);
+                        _log.ForContext("Result_0", JsonConvert.SerializeObject(unloadResult[0])).Verbose("Выгружено {ResultCount} результатов", unloadResult.Count);
+
+                        result.AddRange(unloadResult);
+                    }
+                }
+                catch (Exception ex) {
+                    _log.ForContext("UnloadCurrentCount", unloadCurrentCount)
+                        .Warning(ex, "Ошибка в процессе выгрузки {CurrentUnloadType_Code}", unloadResultQueue.CurrentUnloadType_Code);
                 }
                 
                 unloadCurrentCount++;
-                _log.Verbose("Выгрузка результатов {unloadCurrentCount}", unloadCurrentCount);
             }
-            _log.Debug("Выгрузка результатов {resultCount} {result0}", result.Count, result[0]);
+            _log.ForContext("result_0", JsonConvert.SerializeObject(result[0]))
+                .Debug("Выгрузка результатов {resultCount} из {unloadCurrentCount}", result.Count, unloadCurrentCount);
             return result;
         }
 

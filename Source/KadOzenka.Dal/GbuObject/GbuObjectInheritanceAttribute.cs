@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using Newtonsoft.Json;
 using ObjectModel.Gbu.InheritanceAttribute;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -27,6 +29,8 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции наследования атрибутов
         /// </summary>
+        
+        private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
         public static long Run(GbuInheritanceAttributeSettings setting)
         {
 			var reportService = new GbuReportService();
@@ -46,14 +50,34 @@ namespace KadOzenka.Dal.GbuObject
                 foreach (long taskId in setting.TaskFilter)
                 {
                     Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
+                    _log.Debug("Наследование атрибутов ГБУ. Загружено {Count} объектов по ЗнО {TaskId}", Objs.Count, setting.TaskFilter);
                 }
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
-                Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, reportService); });
+
+                _log.ForContext("TasksId", setting.TaskFilter)
+                  .Debug("Выполнение операции наследования атрибутов ГБУ по {TasksCount} заданиям на оценку. Всего {Count} объектов", setting.TaskFilter.Count, MaxCount);
+
+                try {
+                    _log.Debug("Данные объекта 1: ", JsonConvert.SerializeObject(Objs[0]));
+                }
+                catch (Exception ex) {
+                    _log.Warning(ex, "Ошибка логирования");
+                }
+
+                Parallel.ForEach(Objs, options, item => { 
+                    RunOneUnit(item, setting, reportService); 
+                    Objs.Remove(item); 
+                });
+                _log.Debug("Операция наследования атрибутов ГБУ завершена");
+
+
                 CurrentCount = 0;
                 MaxCount = 0;
+                Objs.Clear();
+                _log.Debug("Переменная очищена. Записей {Count}", Objs.Count);
             }
-
+            
             reportService.SetStyle();
             reportService.SetIndividualWidth(1, 4);
             reportService.SetIndividualWidth(0, 4);

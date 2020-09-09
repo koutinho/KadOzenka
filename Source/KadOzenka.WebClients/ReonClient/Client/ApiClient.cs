@@ -549,13 +549,13 @@ namespace IO.Swagger.Client
             {
                 if (StatusCode == 200)
                 {
-                    _log.ForContext("Response", Deserialize(response, typeof(object))).Verbose(_logTemplate, StatusCode, ElapsedMs);
+                    _log.ForContext("Response", response.Content).Verbose(_logTemplate, StatusCode, ElapsedMs);
                 }
                 else
                 {
                     if (StatusCode > 300)
                     {
-                        _log.Warning(_logTemplate, StatusCode, ElapsedMs);
+                        _log.ForContext("ErrorMessage", response.ErrorMessage).Warning(_logTemplate, StatusCode, ElapsedMs);
                     }
                     else
                     {

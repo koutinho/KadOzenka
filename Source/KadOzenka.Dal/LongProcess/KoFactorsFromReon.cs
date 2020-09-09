@@ -185,7 +185,7 @@ namespace KadOzenka.Dal.LongProcess
                 
 
                     var attribute = GetAttribute(attributeName);
-                    _log.ForContext("HasInDataBase", attribute != null).Debug("Обработка атрибута с именем {AttributeName}.", attributeName);
+                    _log.ForContext("HasInDataBase", attribute != null).Verbose("Обработка атрибута с именем {AttributeName}.", attributeName);
                     if (attribute == null)
                     {
                         attribute = CreateAttribute(attributeName, attributeType);
@@ -254,7 +254,7 @@ namespace KadOzenka.Dal.LongProcess
             GraphFactor factor, OMInstance taskDocument)
         {
             _log.ForContext("HasInCache", RegisterCache.RegisterAttributes.TryGetValue(attributeId, out var _))
-                .Debug("Обработка атрибута с Id {AttributeId}.", attributeId);
+                .Verbose("Обработка атрибута с Id {AttributeId}.", attributeId);
 
             var gbuObjectAttribute = new GbuObjectAttribute
             {
