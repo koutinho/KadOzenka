@@ -1866,6 +1866,8 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Constructions.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Parkings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
   </ItemGroup>
