@@ -6,12 +6,10 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
-using Core.Register;
 using Core.Register.RegisterEntities;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Tours;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -88,17 +86,26 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public RegisterAttribute GetGroupAttributeFromTourSettings(long tourId)
         {
-            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
+            return GetTourAttribute(tourId, KoAttributeUsingType.CodeGroupAttribute);
         }
 
         public RegisterAttribute GetObjectTypeAttributeFromTourSettings(long tourId)
         {
-            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
+            return GetTourAttribute(tourId, KoAttributeUsingType.TypeRoomAttribute);
         }
 
         public RegisterAttribute GetCadastralQuartalAttributeFromTourSettings(long tourId)
         {
-            return TourFactorService.GetTourAttributeFromSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
+            return GetTourAttribute(tourId, KoAttributeUsingType.CodeQuarterAttribute);
+        }
+
+        private RegisterAttribute GetTourAttribute(long tourId, KoAttributeUsingType attributeUsingType)
+        {
+            var attribute = TourFactorService.GetTourAttributeFromSettings(tourId, attributeUsingType);
+            if (attribute == null)
+                throw new Exception($"Для тура с Id='{tourId}' не задан {attributeUsingType.GetEnumDescription()}");
+
+            return attribute;
         }
 
         #endregion
