@@ -1,22 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.UI.Registers.Reports.Model;
-using ObjectModel.Directory;
 using Core.Register;
-using Core.Register.RegisterEntities;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using System.Collections.Generic;
-using System.Linq;
 using Core.Register.QuerySubsystem;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -65,12 +54,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 infoSourceFilter, segmentFilter, usageTypeCodeFilter, usageTypeNameFilter, usageTypeCodeSourceFilter);
         }
 
+
         #region Support Methods
 
         private InputParameters GetInputParameters(NameValueCollection query)
         {
-            //return new InputParameters();
-
             var infoAboutExistenceOfOtherObjectsAttributeId = GetFilterParameterValue(query, _infoAboutExistenceOfOtherObjects, "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости");
             var infoSourceAttributeId = GetFilterParameterValue(query, _infoSource, "Источник информации");
             var segmentAttributeId = GetFilterParameterValue(query, _segment, "Сегмент");
@@ -89,85 +77,35 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        protected string GetSqlFileContent(string fileName)
-        {
-            string contents;
-            using (var sr = new StreamReader(Configuration.GetFileStream(
-                    $"\\StatisticalData\\ResultsByCadastralDistrict\\{fileName}", "sql", "SqlQueries")))
-            {
-                contents = sr.ReadToEnd();
-            }
-
-            return contents;
-        }
-
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
-            //var gbuAttributes = GbuObjectService.GetAllAttributes(
-            //        new List<long> { 11891558 },
-            //        new List<long>{ 14 },
-            //        new List<long> { 548 },
-            //        DateTime.Now.GetEndOfTheDay());
+            var sql = GetSqlFileContent("Parcels");
 
-            //var sql = GetSqlFileContent("Parcels");
-            //var result = QSQuery.ExecuteSql<ReportItem>(sql);
-            //return result;
+            var parcelName = RosreestrRegisterService.GetParcelNameAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+            var parcelCategory = RosreestrRegisterService.GetParcelCategoryAttribute();
+            var typeOfUseByDocuments = RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
+            var typeOfUseByClassifier = RosreestrRegisterService.GetTypeOfUseByClassifierAttribute();
 
-            var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
+            var infoAboutExistenceOfOtherObjects = RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId);
+            var infoSource = RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId);
+            var segment = RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId);
+            var usageTypeCode = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId);
+            var usageTypeName = RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId);
+            var usageTypeCodeSource = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId);
 
-            var units = GetUnits(taskIds, PropertyTypes.Stead);
-            //var objectIdForTesting = 11188991;
-            //units[0].ObjectId = objectIdForTesting; //объект у которого есть значения в РР (для тестирования)
+            var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+            var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+            var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
-            var gbuAttributes = GbuObjectService.GetAllAttributes(
-                units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+            var sqlWithParameters = string.Format(sql, string.Join(", ", taskIds), parcelName.Id, location.Id,
+                address.Id, formationDate.Id, parcelCategory.Id, typeOfUseByDocuments.Id, typeOfUseByClassifier.Id,
+                infoAboutExistenceOfOtherObjects.Id, infoSource.Id, segment.Id, usageTypeCode.Id, usageTypeName.Id,
+                usageTypeCodeSource.Id, objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
-            var result = new List<ReportItem>();
-            units.ToList().ForEach(unit =>
-            //units.Where(x => x.ObjectId == objectIdForTesting).ToList().ForEach(unit =>  // для тестирования
-            {
-                var item = new ReportItem
-                {
-                    CadastralNumber = unit.CadastralNumber,
-                    Square = unit.Square,
-                    Upks = unit.Upks,
-                    CadastralCost = unit.CadastralCost
-                };
-
-                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
-                item.CadastralDistrict = GetCadastralDistrict(item.CadastralQuartal);
-
-                result.Add(item);
-            });
-
-            return result.OrderBy(x => x.CadastralNumber).ToList();
-        }
-
-        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
-        {
-            //return new Dictionary<string, RegisterAttribute>();
-
-            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.ParcelName), RosreestrRegisterService.GetParcelNameAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetFormationDateAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), RosreestrRegisterService.GetParcelCategoryAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), RosreestrRegisterService.GetTypeOfUseByClassifierAttribute());
-
-            attributesDictionary.Add(nameof(ReportItem.InfoAboutExistenceOfOtherObjects), RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId));
-            attributesDictionary.Add(nameof(ReportItem.InfoSource), RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId));
-            attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
-            attributesDictionary.Add(nameof(ReportItem.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
-            attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
-            attributesDictionary.Add(nameof(ReportItem.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
-
-            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
-            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
 
             return result;
         }

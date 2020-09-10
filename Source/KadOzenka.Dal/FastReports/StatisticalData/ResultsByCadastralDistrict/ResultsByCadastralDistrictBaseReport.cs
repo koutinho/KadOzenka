@@ -6,6 +6,8 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
+using System.IO;
+using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -55,6 +57,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 DateTime.Now.GetEndOfTheDay());
 
             SetAttributes(obj.Id, parentAttributes, attributesDictionary, item);
+        }
+
+        protected string GetSqlFileContent(string fileName)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream(
+                $"\\StatisticalData\\ResultsByCadastralDistrict\\{fileName}", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            return contents;
         }
     }
 }

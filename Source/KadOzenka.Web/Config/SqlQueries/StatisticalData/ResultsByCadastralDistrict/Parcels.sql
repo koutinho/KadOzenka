@@ -1,61 +1,62 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN (15534573)
+	select u.object_id from ko_unit u where u.task_id IN ({0})
 ),
 --ROSREESTR ATTRIBUTES
 parcelNameAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
 ),
 locationAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 8)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {2})
 ),
 addressAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 600)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {3})
 ),
 formationDateAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 13)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {4})
 ),
 parcelCategoryAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 3)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {5})
 ),
 typeOfUseByDocumentsAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 4)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {6})
 ),
 typeOfUseByClassifierAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 5)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {7})
 ),
 --INPUT PARAMETERS
 infoAboutExistenceOfOtherObjectsAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 393)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {8})
 ),
 infoSourceAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 378)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {9})
 ),
 segmentAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 389)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {10})
 ),
 usageTypeCodeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 18)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {11})
 ),
 usageTypeNameAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {12})
 ),
 usageTypeCodeSourceAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 602)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {13})
 ),
 --TOUR ATTRIBUTES
 objectTypeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 603)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {14})
 ),
 cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 548)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {15})
 ),
 subGroupNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 589)
-)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {16})
+),
 
-
+initial_data as (
 SELECT distinct
-	L1_R201.OBJECT_ID,
+	--L1_R201.ID,
+	--L1_R201.OBJECT_ID,
     L1_R201.CADASTRAL_NUMBER as CadastralNumber,
     L1_R201.SQUARE as Square,
 	L1_R201.UPKS as Upks,
@@ -76,7 +77,7 @@ SELECT distinct
     objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber,
-    SUBSTRING(cadastralQuartalAttr.attributeValue, 0, 5) as CadastralDistrict			
+    SUBSTRING(cadastralQuartalAttr.attributeValue, 0, 6) as CadastralDistrict			
 		FROM KO_UNIT L1_R201
 			LEFT JOIN parcelNameAttrValues parcelNameAttr ON L1_R201.object_id=parcelNameAttr.objectId
             LEFT JOIN locationAttrValues locationAttr ON L1_R201.object_id=locationAttr.objectId
@@ -94,7 +95,32 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON L1_R201.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON L1_R201.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
-		WHERE L1_R201.TASK_ID IN (15534573)
+		WHERE L1_R201.TASK_ID IN ({0})
         AND
         (L1_R201.PROPERTY_TYPE_CODE = 4 and L1_R201.OBJECT_ID is not null)
 		ORDER BY L1_R201.CADASTRAL_NUMBER
+)
+        
+select DISTINCT ON (CadastralNumber) 
+  CadastralNumber, 
+  Square, 
+  Upks, 
+  CadastralCost, 
+  ParcelName,
+  Location,
+  Address,
+  FormationDate,
+  ParcelCategory,
+  TypeOfUseByDocuments,
+  TypeOfUseByClassifier,
+  InfoAboutExistenceOfOtherObjects,
+  InfoSource,
+  Segment,
+  UsageTypeCode,
+  UsageTypeName,
+  UsageTypeCodeSource,
+  ObjectType,
+  CadastralQuartal,
+  SubGroupNumber,
+  CadastralDistrict
+from initial_data
