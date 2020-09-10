@@ -70,14 +70,6 @@ namespace KadOzenka.Dal.GbuObject
             ReportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             var objects = GetObjects();
-            if (BaseSetting.PropertyType == PropertyTypes.Building)
-            {
-                objects = FilterBuildingObjects(objects);
-            }
-            if (BaseSetting.PropertyType == PropertyTypes.Pllacement)
-            {
-                objects = FilterPlacementObjects(objects);
-            }
 
             var levelsAttributesIds = GetLevelsAttributesIds();
             MaxObjectsCount = objects.Count;
@@ -204,10 +196,21 @@ namespace KadOzenka.Dal.GbuObject
                 objectType = PropertyTypes.Parking;
             }
 
-            return byTasks 
+            var objects = byTasks 
                 ? GetObjectsByTasks(objectType) 
                 : GetObjectsWithoutTasks(objectType);
-         }
+
+            if (BaseSetting.PropertyType == PropertyTypes.Building)
+            {
+                objects = FilterBuildingObjects(objects);
+            }
+            if (BaseSetting.PropertyType == PropertyTypes.Pllacement)
+            {
+                objects = FilterPlacementObjects(objects);
+            }
+
+            return objects;
+        }
 
         private List<Item> GetObjectsByTasks(PropertyTypes objectType)
         {

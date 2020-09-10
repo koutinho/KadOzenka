@@ -84,7 +84,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         {
             var sql = GetSqlFileContent("Buildings");
 
-            var commissioningYear = RosreestrRegisterService.GetRosreestrCommissioningYearAttribute();
+            var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
             var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
             var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
             var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();

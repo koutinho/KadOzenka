@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetLocationAttribute().Id,
                 _rosreestrRegisterService.GetParcelAttribute().Id,
                 _rosreestrRegisterService.GetBuildYearAttribute().Id,
-                _rosreestrRegisterService.GetRosreestrCommissioningYearAttribute().Id,
+                _rosreestrRegisterService.GetCommissioningYearAttribute().Id,
                 _rosreestrRegisterService.GetFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetUndergroundFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetFloorAttribute().Id,

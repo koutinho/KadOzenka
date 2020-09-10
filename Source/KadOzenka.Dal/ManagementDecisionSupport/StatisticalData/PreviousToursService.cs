@@ -307,7 +307,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             attributesDictionary.Add(nameof(PreviousTourReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), RosreestrRegisterService.GetParcelAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), RosreestrRegisterService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), RosreestrRegisterService.GetCommissioningYearAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), RosreestrRegisterService.GetFloorsNumberAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());
             attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), RosreestrRegisterService.GetWallMaterialAttribute());

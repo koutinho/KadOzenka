@@ -114,7 +114,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), RosreestrRegisterService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), RosreestrRegisterService.GetCommissioningYearAttribute());
             attributesDictionary.Add(nameof(ReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
             attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetFormationDateAttribute());
             attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());

@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.Registers
         /// <summary>
         /// Аттрибут "Год ввода в эксплуатацию"
         /// </summary>
-        public RegisterAttribute GetRosreestrCommissioningYearAttribute()
+        public RegisterAttribute GetCommissioningYearAttribute()
         {
             return GetRegisterAttributeByName(RosreestrRegisterId, "Год ввода в эксплуатацию");
         }
