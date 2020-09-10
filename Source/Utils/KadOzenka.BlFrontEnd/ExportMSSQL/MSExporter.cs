@@ -2401,17 +2401,18 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         }
         public static void GetCalcGroup()
         {
-            ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x => x.Id == 100003).SelectAll().ExecuteFirstOrDefault();
-            if (group != null)
-            {
-                //x.CadastralNumber=="77:02:0024002:1515" && 
-                List<ObjectModel.KO.OMUnit> units = ObjectModel.KO.OMUnit.Where(x => x.GroupId == group.Id && x.Status_Code == KoUnitStatus.Initial && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
-                List<long> calcParentGroup = new List<long>();
-                calcParentGroup.Add(300013);
-                calcParentGroup.Add(300014);
-                group.Calculate(units, calcParentGroup);
-                //group.CalculateResult(units);
-            }
+            ObjectModel.KO.KOCalcSettings ks = new ObjectModel.KO.KOCalcSettings();
+            ks.CalcParcel = false;
+            ks.CalcStage1 = true;
+            ks.CalcStage2 = false;
+            ks.CalcStage3 = false;
+            ks.IdTour = 2018;
+            ks.CalcAllGroups = true;
+            ks.CalcGroups = new List<long>();
+            ks.TaskFilter = new List<long>();
+            ks.TaskFilter.Add(15349237);
+
+            ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }
         public static void ImportXml2016(long idTour, long idTask)
         {

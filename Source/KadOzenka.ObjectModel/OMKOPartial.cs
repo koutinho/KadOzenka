@@ -6,6 +6,7 @@ using ObjectModel.Directory;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -572,6 +573,11 @@ namespace ObjectModel.KO
             }
             return res;
         }
+        public static List<ObjectModel.KO.OMAutoCalculationSettings> GetListGroupRobot(long tourId, bool parcel)
+        {
+            return ObjectModel.KO.OMAutoCalculationSettings.Where(x=>x.CalcParcel==parcel && x.IdTour==tourId).SelectAll().OrderBy(x=>x.NumberPriority).Execute();
+        }
+
         private static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             upks = decimal.MaxValue;
@@ -980,6 +986,7 @@ namespace ObjectModel.KO
         private List<CalcErrorItem> Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
             List<CalcErrorItem> res = new List<CalcErrorItem>();
+            if (units.Count == 0) return res;
 
             #region Моделирование
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
@@ -996,7 +1003,9 @@ namespace ObjectModel.KO
 
                     foreach (OMModelFactor weight in model.ModelFactor)
                     {
-                        weight.FillMarkCatalogs(model);
+
+                        if (weight.SignMarket)
+                            weight.FillMarkCatalogs(model);
                         if (weight.MarkerId == 1)
                         {
                             idsquarefactor = weight.FactorId;
@@ -1947,43 +1956,77 @@ namespace ObjectModel.KO
         }
         public static void CalculateSelectGroup(KOCalcSettings setting)
         {
-            List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
 
             if (setting.CalcAllGroups)
             {
-                CalcGroups = GetListGroupTour(setting.IdTour, (setting.CalcParcel ? KoGroupAlgoritm.MainParcel : KoGroupAlgoritm.MainOKS));
+                List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
+
+                foreach (ObjectModel.KO.OMAutoCalculationSettings AutoCalcGroup in RobotCalcGroups)
+                {
+                    if (AutoCalcGroup != null)
+                    {
+                        var CalcGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == AutoCalcGroup.IdGroup).SelectAll().ExecuteFirstOrDefault();
+                        if (CalcGroup != null)
+                        {
+                            List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
+                            foreach (long taskId in setting.TaskFilter)
+                            {
+                                Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            }
+
+                            if (Units.Count > 0)
+                            {
+                                List<long> calcParentGroup = new List<long>();
+                                List<ObjectModel.KO.OMCalcGroup> parentsGroups = ObjectModel.KO.OMCalcGroup.Where(x => x.GroupId == CalcGroup.Id).SelectAll().Execute();
+                                foreach (ObjectModel.KO.OMCalcGroup parentsGroup in parentsGroups)
+                                {
+                                    if (parentsGroup.ParentCalcGroupId != null)
+                                        calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
+                                }
+                                if (AutoCalcGroup.CalcStage1)
+                                    CalcGroup.Calculate(Units, calcParentGroup);
+                                if (AutoCalcGroup.CalcStage3)
+                                    CalcGroup.CalculateResult(Units);
+                            }
+                        }
+                    }
+                }
             }
             else
             {
+                List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
+
                 foreach (long idGroup in setting.CalcGroups)
                 {
                     var group = ObjectModel.KO.OMGroup.Where(x => x.Id == idGroup).SelectAll().ExecuteFirstOrDefault();
                     if (group != null) CalcGroups.Add(group);
                 }
-            }
-
-            foreach (ObjectModel.KO.OMGroup CalcGroup in CalcGroups)
-            {
-                if (CalcGroup != null)
+                foreach (ObjectModel.KO.OMGroup CalcGroup in CalcGroups)
                 {
-                    List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
-                    foreach (long taskId in setting.TaskFilter)
+                    if (CalcGroup != null)
                     {
-                        Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId== CalcGroup.Id).SelectAll().Execute());
-                    }
+                        List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
+                        foreach (long taskId in setting.TaskFilter)
+                        {
+                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                        }
 
-                    List<long> calcParentGroup = new List<long>();
-                    List<ObjectModel.KO.OMCalcGroup> parentsGroups = ObjectModel.KO.OMCalcGroup.Where(x=>x.GroupId==CalcGroup.Id).SelectAll().Execute();
-                    foreach (ObjectModel.KO.OMCalcGroup parentsGroup in parentsGroups)
-                    {
-                        if (parentsGroup.ParentCalcGroupId != null)
-                            calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
-                    }
-                    if (setting.CalcStage1)
-                        CalcGroup.Calculate(Units, calcParentGroup);
+                        if (Units.Count > 0)
+                        {
+                            List<long> calcParentGroup = new List<long>();
+                            List<ObjectModel.KO.OMCalcGroup> parentsGroups = ObjectModel.KO.OMCalcGroup.Where(x => x.GroupId == CalcGroup.Id).SelectAll().Execute();
+                            foreach (ObjectModel.KO.OMCalcGroup parentsGroup in parentsGroups)
+                            {
+                                if (parentsGroup.ParentCalcGroupId != null)
+                                    calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
+                            }
+                            if (setting.CalcStage1)
+                                CalcGroup.Calculate(Units, calcParentGroup);
 
-                    if (setting.CalcStage3)
-                        CalcGroup.CalculateResult(Units);
+                            if (setting.CalcStage3)
+                                CalcGroup.CalculateResult(Units);
+                        }
+                    }
                 }
             }
         }
