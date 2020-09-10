@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="false" RegisterId="942" DefaultLayoutId="1009421" Description="Список функций роли" LinkedRegistersList="942,945,946" SRDFunctionTag="CORE.CONF.SRD"
-              ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" ShowObjectCards="false">
-  <Buttons>
-    <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
-  </Buttons>
-    <StatusBarConfiguration StatusBarEnabled="false" />
-</RegisterView>

@@ -26,3 +26,10 @@
 /Source/Utils/KadOzenka.BlFrontEnd/obj
 /Source/Utils/KadOzenka.BlFrontEnd/bin
 /Source/KadOzenka.Web/KadOzenka.Web.csproj.user
+/Source/KadOzenka.Dal/ConfigCore
+/Source/KadOzenka.Dal/wwwroot
+/Source/KadOzenka.Web/ConfigCore
+/Source/KadOzenka.Web/wwwroot/PlatformCss
+/Source/KadOzenka.Web/wwwroot/PlatformJs
+/Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css
+/Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css.map
