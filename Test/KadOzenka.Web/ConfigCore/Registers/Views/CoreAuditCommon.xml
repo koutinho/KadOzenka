@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="true" RegisterId="940" DefaultLayoutId="1009403" LinkedRegistersList="940,942" Description="Представление для аудита"
-              JoinType="Left" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="false" ShowActualDate="false"
-              UseMasterPage="false">
-    <StatusBarConfiguration StatusBarEnabled="false" />
-</RegisterView>

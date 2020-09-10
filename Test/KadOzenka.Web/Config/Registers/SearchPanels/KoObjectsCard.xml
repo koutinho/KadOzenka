@@ -1,4 +1,0 @@
-﻿<RootElement>
-    <ControlElement Caption="Кадастровый номер" ID="cadastral_number" OwnType="Text" AttributeNumber="20101600" QueryOperation="Like" />
-    <ControlElement Caption="Тип объекта" ID="property_type" OwnType="Combo" AttributeNumber="20101800" ReferenceId="102" QueryOperation="Equal"/>
-</RootElement>

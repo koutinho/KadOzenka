@@ -1,5 +1,0 @@
-{
-	"ConnectionStrings": {
-		"dev": "Host=192.168.3.68;Port=5432;Username=cipjs_kad_ozenka;Password=cipjs_kad_ozenka;Database=cipjs_kad_ozenka;CommandTimeout=0;Keepalive=30;enlist=true;"
-	}
-}

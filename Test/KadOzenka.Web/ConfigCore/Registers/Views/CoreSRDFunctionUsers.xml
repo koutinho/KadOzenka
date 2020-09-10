@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="false" RegisterId="950" DefaultLayoutId="1095001" Description="Доступность функции в ролях" LinkedRegistersList="945,952,950,941,949" UseSubMap="true"
-              SRDFunctionTag="CORE.SRD.ROLES" ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" ShowObjectCards="false">
-    <StatusBarConfiguration StatusBarEnabled="false" />
-</RegisterView>
