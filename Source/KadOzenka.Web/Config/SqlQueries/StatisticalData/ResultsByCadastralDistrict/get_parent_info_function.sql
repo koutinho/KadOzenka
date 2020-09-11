@@ -21,27 +21,33 @@ $body$
     begin
       FOREACH _parentCadastralNumber IN ARRAY "parentCadastralNumbers"
       LOOP
+          _objectId := 0;
           --ищем парент-объект 
           select 
               obj.id, obj.object_type_code into _objectId, _objectTypeCode
           from gbu_main_object obj where cadastral_number = _parentCadastralNumber limit 1;
-          
-          --если тип объекта - "Здание"
-          if(_objectTypeCode = 5) then
-              _resultPurposeAttributeId := "buildingPurposeAttributeId";
-          end if;
-          --если тип объекта - "Сооружение"
-          if(_objectTypeCode = 7) then
-              _resultPurposeAttributeId := "constructionPurposeAttributeId";
-          end if;
-          
-          select * from gbu_get_allpri_attribute_value(_objectId, _resultPurposeAttributeId) into _purpose;
-          select * from gbu_get_allpri_attribute_value(_objectId, "groupAttributeId") into _group;
-          
-          RETURN QUERY SELECT _purpose, _group, _parentCadastralNumber;	
+		  
+		  IF FOUND THEN
+			--если тип объекта - "Здание"
+            if(_objectTypeCode = 5) then
+                _resultPurposeAttributeId := "buildingPurposeAttributeId";
+            end if;
+            --если тип объекта - "Сооружение"
+            if(_objectTypeCode = 7) then
+                _resultPurposeAttributeId := "constructionPurposeAttributeId";
+            end if;
+            
+            select * from gbu_get_allpri_attribute_value(_objectId, _resultPurposeAttributeId) into _purpose;
+            select * from gbu_get_allpri_attribute_value(_objectId, "groupAttributeId") into _group;
+            
+            RETURN QUERY SELECT _purpose, _group, _parentCadastralNumber;	
+		  END IF;
           
       END LOOP;
-    	
+      
+    	/* для тестирования
+      		select * from get_parent_info(ARRAY['77:22:0020229:2534', '77:22:0030404:31', '77:22:0020229:2534213'], 14, 22, 589)
+      	*/
 	END
 $body$
 LANGUAGE 'plpgsql'

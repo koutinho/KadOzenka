@@ -2,7 +2,7 @@ with object_ids as (
 	select u.object_id from ko_unit u where u.task_id IN ({0})
 ),
 --ROSREESTR ATTRIBUTES
-ñommissioningYearAttrValues as (
+commissioningYearAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
 ),
 buildYearAttrValues as (
@@ -74,7 +74,7 @@ SELECT distinct
     L1_R201.SQUARE as Square,
 	L1_R201.UPKS as Upks,
 	L1_R201.CADASTRAL_COST as CadastralCost,
-	ñommissioningYearAttr.attributeValue as ÑommissioningYear,
+	commissioningYearAttr.attributeValue as CommissioningYear,
     buildYearAttr.attributeValue as BuildYear,
     undergroundFloorsNumberAttr.attributeValue as UndergroundFloorsNumber,
     floorsNumberAttr.attributeValue as FloorsNumber,
@@ -95,7 +95,7 @@ SELECT distinct
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 		FROM KO_UNIT L1_R201
-			LEFT JOIN ñommissioningYearAttrValues ñommissioningYearAttr ON L1_R201.object_id=ñommissioningYearAttr.objectId
+			LEFT JOIN commissioningYearAttrValues commissioningYearAttr ON L1_R201.object_id=commissioningYearAttr.objectId
             LEFT JOIN buildYearAttrValues buildYearAttr ON L1_R201.object_id=buildYearAttr.objectId
             LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON L1_R201.object_id=undergroundFloorsNumberAttr.objectId
             LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON L1_R201.object_id=floorsNumberAttr.objectId
@@ -136,7 +136,7 @@ select DISTINCT ON (CadastralNumber)
   Square, 
   Upks, 
   CadastralCost, 
-  ÑommissioningYear,
+  CommissioningYear,
   BuildYear,
   UndergroundFloorsNumber,
   FloorsNumber,
