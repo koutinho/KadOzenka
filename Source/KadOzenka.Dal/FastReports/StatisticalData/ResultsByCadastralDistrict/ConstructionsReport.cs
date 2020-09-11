@@ -151,11 +151,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             for (var i = 0; i < operations.Count; i++)
             {
-                var formationDateStr = operations[i].FormationDate;
-                if (!string.IsNullOrWhiteSpace(formationDateStr) && DateTime.TryParse(formationDateStr, out var date))
-                {
-                    formationDateStr = date.ToString(DateFormat);
-                }
+                var formationDateStr = ProcessDate(operations[i].FormationDate);
 
                 dataTable.Rows.Add(i + 1,
                     operations[i].CadastralNumber,

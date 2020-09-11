@@ -70,5 +70,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             return contents;
         }
+
+        protected string ProcessDate(string dateStr)
+        {
+            if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
+            {
+                dateStr = date.ToString(DateFormat);
+            }
+
+            return dateStr;
+        }
     }
 }
