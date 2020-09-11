@@ -6,13 +6,14 @@ using System.Linq;
 using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
+    //TODO протестировать после того, как БД перестанет виснуть
     public class UncompletedBuildingReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _segment = "Segment";
@@ -79,6 +80,43 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 SubGroupUsageTypeCodeAttributeId = subGroupUsageTypeCodeAttributeId,
                 FunctionalSubGroupNameAttributeId = functionalSubGroupNameAttributeId
             };
+        }
+
+        private List<ReportItem> GetOperations2(long tourId, List<long> taskIds, InputParameters inputParameters)
+        {
+            var sql = GetSqlFileContent("UncompletedBuildings");
+
+            var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+            var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+            var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+            var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+            var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+            var objectName = RosreestrRegisterService.GetObjectNameAttribute();
+            var readinessPercentage = RosreestrRegisterService.GetReadinessPercentageAttribute();
+
+            var segment = RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId);
+            var usageTypeName = RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId);
+            var usageTypeCode = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId);
+            var usageTypeCodeSource = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId);
+            var subGroupUsageTypeCode = RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId);
+            var functionalSubGroupName = RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId);
+
+            var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+            var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+            var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
+
+            var sqlWithParameters = string.Format(sql, string.Join(", ", taskIds), buildYear.Id, formationDate.Id,
+                undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id, address.Id,
+                buildingPurpose.Id, objectName.Id, readinessPercentage.Id, segment.Id, usageTypeName.Id,
+                usageTypeCode.Id, usageTypeCodeSource.Id, subGroupUsageTypeCode.Id, functionalSubGroupName.Id,
+                objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
+
+            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
+
+            return result;
         }
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
@@ -180,10 +218,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             for (var i = 0; i < operations.Count; i++)
             {
+                var formationDateStr = operations[i].FormationDate;
+                if (!string.IsNullOrWhiteSpace(formationDateStr) && DateTime.TryParse(formationDateStr, out var date))
+                {
+                    formationDateStr = date.ToString(DateFormat);
+                }
+
                 dataTable.Rows.Add(i + 1,
                     operations[i].CadastralNumber,
                     operations[i].BuildYear,
-                    operations[i].FormationDate,
+                    formationDateStr,
                     operations[i].UndergroundFloorsNumber,
                     operations[i].FloorsNumber,
                     operations[i].WallMaterial,
