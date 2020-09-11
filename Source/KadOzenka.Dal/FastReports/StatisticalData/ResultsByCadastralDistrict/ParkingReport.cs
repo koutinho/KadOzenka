@@ -4,13 +4,14 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 
+//TODO протестировать после того, как БД перестанет виснуть
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
     public class ParkingReport : ResultsByCadastralDistrictBaseReport
@@ -79,6 +80,48 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 SubGroupUsageTypeCodeAttributeId = subGroupUsageTypeCodeAttributeId,
                 FunctionalSubGroupNameAttributeId = functionalSubGroupNameAttributeId
             };
+        }
+
+        private List<ReportItem> GetOperations2(long tourId, List<long> taskIds, InputParameters inputParameters)
+        {
+            var sql = GetSqlFileContent("Parkings");
+
+            var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
+            var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+            var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+            var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+            var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var parentCadastralNumber = RosreestrRegisterService.GetParentCadastralNumberAttribute();
+            var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
+            var objectName = RosreestrRegisterService.GetObjectNameAttribute();
+            var floor = RosreestrRegisterService.GetFloorAttribute();
+
+            var segment = RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId);
+            var usageTypeName = RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId);
+            var usageTypeCode = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId);
+            var usageTypeCodeSource = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId);
+            var subGroupUsageTypeCode = RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId);
+            var functionalSubGroupName = RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId);
+
+            var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+            var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+            var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
+
+            var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+            var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
+
+            var sqlWithParameters = string.Format(sql, string.Join(", ", taskIds), commissioningYear.Id, buildYear.Id,
+                undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
+                address.Id, parentCadastralNumber.Id, placementPurpose.Id, objectName.Id,
+                floor.Id, segment.Id, usageTypeName.Id, usageTypeCode.Id, usageTypeCodeSource.Id,
+                subGroupUsageTypeCode.Id, functionalSubGroupName.Id, objectType.Id, cadastralQuartal.Id,
+                subGroupNumber.Id, buildingPurpose.Id, constructionPurpose.Id, subGroupNumber.Id);
+
+            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
+
+            return result;
         }
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)

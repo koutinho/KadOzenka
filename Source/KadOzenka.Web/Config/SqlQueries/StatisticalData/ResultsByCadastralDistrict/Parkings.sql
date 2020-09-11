@@ -1,77 +1,75 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN (38676792)
+	select u.object_id from ko_unit u where u.task_id IN ({0})
 ),
 --ROSREESTR ATTRIBUTES
 ñommissioningYearAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
 ),
 buildYearAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {2})
 ),
 undergroundFloorsNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {3})
 ),
 floorsNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {4})
 ),
 wallMaterialAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {5})
 ),
 locationAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {6})
 ),
 addressAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {7})
 ),
 parentCadastralNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {8})
 ),
 placementPurposeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {9})
 ),
 objectNameAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {10})
 ),
 floorAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {11})
 ),
 
 --INPUT PARAMETERS
 segmentAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {12})
 ),
 usageTypeNameAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {13})
 ),
 usageTypeCodeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {14})
 ),
 usageTypeCodeSourceAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {15})
 ),
 subGroupUsageTypeCodeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {16})
 ),
 functionalSubGroupNameAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 1)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {17})
 ),
 
 --TOUR ATTRIBUTES
 objectTypeAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 603)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {18})
 ),
 cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 548)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {19})
 ),
 subGroupNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), 589)
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {20})
 ),
 
 
 initial_data as (
 SELECT distinct
-	--L1_R201.ID,
-	--L1_R201.OBJECT_ID,
     L1_R201.CADASTRAL_NUMBER as CadastralNumber,
     L1_R201.SQUARE as Square,
 	L1_R201.UPKS as Upks,
@@ -95,9 +93,7 @@ SELECT distinct
     functionalSubGroupNameAttr.attributeValue as FunctionalSubGroupName,
     objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
-    subGroupNumberAttr.attributeValue as SubGroupNumber,
-    (select * from  gbu_get_allpri_attribute_value((select id from gbu_main_object where cadastral_number='77:22:0020229:2534' limit 1), 14))
-    	 as ParentPurpose
+    subGroupNumberAttr.attributeValue as SubGroupNumber
 		FROM KO_UNIT L1_R201
 			LEFT JOIN ñommissioningYearAttrValues ñommissioningYearAttr ON L1_R201.object_id=ñommissioningYearAttr.objectId
             LEFT JOIN buildYearAttrValues buildYearAttr ON L1_R201.object_id=buildYearAttr.objectId
@@ -119,13 +115,22 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON L1_R201.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON L1_R201.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
-		WHERE L1_R201.TASK_ID IN (38676792)
+		WHERE L1_R201.TASK_ID IN ({0})
         AND
         (L1_R201.PROPERTY_TYPE_CODE = 11 and L1_R201.OBJECT_ID is not null)
-        and L1_R201=12435691
+        --(äëÿ òåñòèðîâàíèÿ)
+        --Id çàäà÷è - 38676792
+		--Id åäèíèö, ó êîòîðûõ åñòü ïàðåíòû 
+        --and L1_R201.Id=12435691 or L1_R201.Id=1
 		ORDER BY L1_R201.CADASTRAL_NUMBER
+),
+
+
+parentsInfo as (
+	select * from get_parent_info( ARRAY(select distinct(ParentCadastralNumber) from initial_data), {21}, {22}, {23})
 )
-        
+       
+
 select DISTINCT ON (CadastralNumber) 
   CadastralNumber, 
   Square, 
@@ -150,5 +155,8 @@ select DISTINCT ON (CadastralNumber)
   FunctionalSubGroupName,
   ObjectType,
   CadastralQuartal,
-  SubGroupNumber
-from initial_data
+  SubGroupNumber,
+  p.purpose as ParentPurpose,
+  p.group as ParentGroup
+from initial_data d
+LEFT JOIN parentsInfo p ON d.ParentCadastralNumber = p."cadastralNumberOutPut";
