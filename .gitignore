@@ -13,6 +13,8 @@
 /Source/KadOzenka.ObjectModel/obj
 /Source/KadOzenka.LongProcessService/obj
 /Source/KadOzenka.LongProcessService/bin
+/Source/KadOzenka.LongProcessService/ConfigCore
+/Source/KadOzenka.LongProcessService/wwwroot
 /Source/KadOzenka.Dal/obj
 /Source/KadOzenka.Dal/bin
 /Source/ImageProccessor/obj
@@ -25,6 +27,8 @@
 /Source/Utils/GenerateObjectModel/obj
 /Source/Utils/KadOzenka.BlFrontEnd/obj
 /Source/Utils/KadOzenka.BlFrontEnd/bin
+/Source/Utils/KadOzenka.BlFrontEnd/ConfigCore
+/Source/Utils/KadOzenka.BlFrontEnd/wwwroot
 /Source/KadOzenka.Web/KadOzenka.Web.csproj.user
 /Source/KadOzenka.Dal/ConfigCore
 /Source/KadOzenka.Dal/wwwroot
