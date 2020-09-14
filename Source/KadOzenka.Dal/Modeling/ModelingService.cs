@@ -296,15 +296,12 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
 		{
-			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
-				.OrderBy(x => x.CadastralNumber)
-				.SelectAll()
-				.Execute();
+			var models = GetMarketObjectsForModelInternal(modelId);
 
 			return models.Select(ToDto).ToList();
 		}
 
-		public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
+        public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
 		{
 			var ids = objects.Select(x => x.Id).ToList();
             if (ids.Count == 0)
@@ -339,7 +336,7 @@ namespace KadOzenka.Dal.Modeling
             var columnHeaders = new List<object> {"Кадастровый номер"};
             columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
 
-            AddRowToExcelLog(mainWorkSheet, 0, columnHeaders.ToArray());
+            AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
 
             var rowCounter = 1;
             modelMarketObjects.ForEach(modelMarketObject =>
@@ -356,9 +353,50 @@ namespace KadOzenka.Dal.Modeling
                     values.Add(message);
                 });
 
-                AddRowToExcelLog(mainWorkSheet, rowCounter++, values.ToArray());
+                AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
             });
 
+            var stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
+        public Stream ExportMarketObjectsToExcel(long modelId)
+        {
+            var modelAttributes = GetModelAttributes(modelId);
+
+            var excelTemplate = new ExcelFile();
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
+
+            var columnHeaders = new List<object>
+            {
+                "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена",
+                "Объект для обучения"
+            };
+            columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
+
+            AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
+
+            var rowCounter = 1;
+            var marketObjects = GetMarketObjectsForModelInternal(modelId);
+            marketObjects.ForEach(obj =>
+            {
+                var isExcluded = obj.IsExcluded.GetValueOrDefault();
+                var isForTraining = obj.IsForTraining.GetValueOrDefault();
+
+                var values = new List<object>
+                    {obj.Id, isExcluded, obj.CadastralNumber, obj.Price, obj.PriceFromModel, isForTraining};
+
+                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                modelAttributes.ForEach(attribute =>
+                {
+                    var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
+                    values.Add(coefficient);
+                });
+
+                AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
+            });
 
             var stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -367,7 +405,9 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        private void AddRowToExcelLog(ExcelWorksheet sheet, int row, object[] values)
+        #region Support Methods
+
+        private void AddRowToExcel(ExcelWorksheet sheet, int row, object[] values)
         {
             var col = 0;
             foreach (object value in values)
@@ -383,15 +423,32 @@ namespace KadOzenka.Dal.Modeling
                         sheet.Rows[row].Cells[col].SetValue(Convert.ToDateTime(value));
                         sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
                         break;
+                    case bool _:
+                        var res = Convert.ToBoolean(value) ? "Да" : "Нет";
+                        sheet.Rows[row].Cells[col].SetValue(res);
+                        break;
                     default:
-                        sheet.Rows[row].Cells[col].SetValue(value as string);
+                        var defaultValue = value?.ToString();
+                        sheet.Rows[row].Cells[col].SetValue(defaultValue);
                         break;
                 }
 
-                sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All,
+                    SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+
                 col++;
             }
         }
+
+        private List<OMModelToMarketObjects> GetMarketObjectsForModelInternal(long modelId)
+        {
+            return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
+                .OrderBy(x => x.CadastralNumber)
+                .SelectAll()
+                .Execute();
+        }
+
+        #endregion
 
         #endregion
 

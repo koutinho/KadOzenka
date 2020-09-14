@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DevExpress.DataProcessing;
 using KadOzenka.Dal.Modeling.Dto;
 
 namespace KadOzenka.Web.Models.Modeling

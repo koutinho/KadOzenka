@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading;
 using Core.ObjectModel.CustomAttribute;
 using Core.Register;
+using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
@@ -293,7 +294,9 @@ namespace KadOzenka.Web.Controllers
 		{
             var modelDto = ModelingService.GetModelById(modelId);
             modelDto.Attributes = ModelingService.GetModelAttributes(modelId);
+
             var model = ModelingModel.ToModel(modelDto);
+
             return View(model);
 		}
 
@@ -302,7 +305,9 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetObjectsForModel(long modelId)
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
+
 			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+
             return Json(models);
         }
 
@@ -320,6 +325,17 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Message = "Данные успешно обновлены" });
 		}
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ExportModelObjectsToExcel(long modelId)
+        {
+            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
+
+            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out var fileExtenstion, out var contentType);
+
+            return File(fileStream, contentType, $"Объекты модели {modelId}, {DateTime.Now}." + fileExtenstion);
+        }
 
         #endregion
 
