@@ -37,3 +37,7 @@
 /Source/KadOzenka.Web/wwwroot/PlatformJs
 /Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css
 /Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css.map
+/Source/ImagesProcessor/obj
+/Source/GISStandProject/obj
+/.vs
+/Source/StartProject/obj
