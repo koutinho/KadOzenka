@@ -404,6 +404,40 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
+        public void ImportModelObjectsFromExcel(ExcelFile file)
+        {
+            const int idColumnIndex = 0;
+            const int isExcludedColumnIndex = 1;
+
+            var rows = file.Worksheets[0].Rows;
+            var dictionary = new Dictionary<long, bool>();
+            for (var i = 1; i < rows.Count; i++)
+            {
+                var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
+                if (id == null || id == 0)
+                    continue;
+
+                var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ToString();
+                var isExcluded = isExcludedStr?.ToLower() == "да";
+
+                dictionary[id.Value] = isExcluded;
+            }
+
+            var modelObjects = OMModelToMarketObjects.Where(x => dictionary.Keys.Contains(x.Id))
+                .Select(x => x.IsExcluded)
+                .Execute();
+
+            foreach (var keyValuePair in dictionary)
+            {
+                var modelObject = modelObjects.FirstOrDefault(x => x.Id == keyValuePair.Key);
+                if (modelObject == null || modelObject.IsExcluded.GetValueOrDefault() == keyValuePair.Value)
+                    continue;
+
+                modelObject.IsExcluded = keyValuePair.Value;
+                modelObject.Save();
+            }
+        }
+
 
         #region Support Methods
 

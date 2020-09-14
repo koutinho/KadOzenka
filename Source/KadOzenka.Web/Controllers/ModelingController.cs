@@ -14,6 +14,8 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
@@ -28,6 +30,7 @@ using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Helpers;
 using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Http;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
@@ -335,6 +338,24 @@ namespace KadOzenka.Web.Controllers
             StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out var fileExtenstion, out var contentType);
 
             return File(fileStream, contentType, $"Объекты модели {modelId}, {DateTime.Now}." + fileExtenstion);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public JsonResult ImportModelObjectsFromExcel(IFormFile file)
+        {
+            if (file == null)
+                throw new Exception("Не выбран файл");
+
+            ExcelFile excelFile;
+            using (var stream = file.OpenReadStream())
+            {
+                excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+            }
+            
+            ModelingService.ImportModelObjectsFromExcel(excelFile);
+
+            return new JsonResult(new { Message = "Данные сохранены."});
         }
 
         #endregion

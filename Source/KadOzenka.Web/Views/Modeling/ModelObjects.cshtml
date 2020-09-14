@@ -1,5 +1,16 @@
 ﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
 
+<!-- Модальное окно для загрузки Excel-файла -->
+<div id="downloadFilesModalWnd" style="display: none; padding: 2%;">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
         <div class="col-sm-2">
@@ -63,16 +74,24 @@
             <span class="k-icon k-i-download" style="padding-right: 30%"></span>
             Выгрузить
         </a>
+        <a class="k-button k-button-icon" id="uploadBtn" style="width:120px;">
+            <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
+            Загрузить
+        </a>
     </div>
-
 </script>
 
 
-
+<script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
 	$(document).ready(function () {
         updateGrid();
+        initFileUploader();
+
+        $('#excludeBtn').on('click', excludeObjectsFromCalculation);
+        $('#exportBtn').on('click', exportObjectsToExcel);
+        $('#uploadBtn').on('click', uploadObjects);
     });
 
 
@@ -138,8 +157,6 @@
         });
 
         $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
-        $('#excludeBtn').on('click', excludeObjectsFromCalculation);
-        $('#exportBtn').on('click', exportObjectsToExcel);
     }
 
 
@@ -233,6 +250,42 @@
 
     function exportObjectsToExcel() {
         window.open('@Url.Action("ExportModelObjectsToExcel", "Modeling", new {modelId = Model.Id})');
+    }
+
+
+    function uploadObjects() {
+        var upload = $("#file").data("kendoUpload");
+        upload.clearAllFiles();
+        upload.removeAllFiles();
+        console.log('clear');
+        var modal = $("#downloadFilesModalWnd");
+        ShowModal(modal, '50%', '20%', "Загрузка объектов модели");
+    }
+
+
+    function initFileUploader() {
+        $('#file').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить Файл',
+                clearSelectedFiles: 'Очистить'
+            },
+            async: {
+                autoUpload: true,
+                saveUrl: '@Url.Action("ImportModelObjectsFromExcel", "Modeling")'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function (data) {
+                Common.ShowMessage(data.response.Message);
+                var modal = $('#downloadFilesModalWnd');
+                modal.data("kendoWindow").close();
+            },
+            error: function (e) {
+                $('html').html(e.XMLHttpRequest.responseText);
+            }
+        }).data('kendoUpload');
     }
 
 </script>
