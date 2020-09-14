@@ -59,6 +59,10 @@
             <span class="k-icon k-i-save" style="padding-right: 30%"></span>
             Сохранить
         </a>
+        <a class="k-button k-button-icon" id="exportBtn" style="width:120px;">
+            <span class="k-icon k-i-download" style="padding-right: 30%"></span>
+            Выгрузить
+        </a>
     </div>
 
 </script>
@@ -135,6 +139,7 @@
 
         $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
         $('#excludeBtn').on('click', excludeObjectsFromCalculation);
+        $('#exportBtn').on('click', exportObjectsToExcel);
     }
 
 
@@ -153,6 +158,11 @@
             };
         });
         var baseColumns = [
+            {
+                title: "Id",
+                field: "Id",
+                sortable: false
+            },
             {
                 title: "Исключен из расчета",
                 field: "IsExcluded",
@@ -218,6 +228,11 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
+    }
+
+
+    function exportObjectsToExcel() {
+        window.open('@Url.Action("ExportModelObjectsToExcel", "Modeling", new {modelId = Model.Id})');
     }
 
 </script>
