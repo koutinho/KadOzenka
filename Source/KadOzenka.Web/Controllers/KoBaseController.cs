@@ -77,6 +77,9 @@ namespace KadOzenka.Web.Controllers
 
         protected FileGeneralInfo GetFileFromSession(string fileName, RegistersExportType fileType)
         {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return null;
+
             var fileContent = HttpContext.Session.Get(fileName);
             if (fileContent == null)
                 return null;

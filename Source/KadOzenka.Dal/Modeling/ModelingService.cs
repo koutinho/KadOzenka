@@ -7,6 +7,7 @@ using System.Text;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
@@ -296,9 +297,12 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
 		{
-			var models = GetMarketObjectsForModelInternal(modelId);
+			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
+                .OrderBy(x => x.CadastralNumber)
+                .SelectAll()
+                .Execute();
 
-			return models.Select(ToDto).ToList();
+            return models.Select(ToDto).ToList();
 		}
 
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
@@ -362,7 +366,7 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream ExportMarketObjectsToExcel(long modelId)
+        public Stream ExportMarketObjectsToExcel(List<long> marketObjectIds, long modelId)
         {
             var modelAttributes = GetModelAttributes(modelId);
 
@@ -378,25 +382,32 @@ namespace KadOzenka.Dal.Modeling
 
             AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
 
-            var rowCounter = 1;
-            var marketObjects = GetMarketObjectsForModelInternal(modelId);
-            marketObjects.ForEach(obj =>
+            if (marketObjectIds != null && marketObjectIds.Count > 0)
             {
-                var isExcluded = obj.IsExcluded.GetValueOrDefault();
-                var isForTraining = obj.IsForTraining.GetValueOrDefault();
-
-                var values = new List<object>
-                    {obj.Id, isExcluded, obj.CadastralNumber, obj.Price, obj.PriceFromModel, isForTraining};
-
-                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                modelAttributes.ForEach(attribute =>
+                var rowCounter = 1;
+                var marketObjects = OMModelToMarketObjects.Where(x => marketObjectIds.Contains(x.Id)).SelectAll().Execute();
+                marketObjectIds.ForEach(id =>
                 {
-                    var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
-                    values.Add(coefficient);
-                });
+                    var obj = marketObjects.FirstOrDefault(x => x.Id == id);
+                    if (obj == null)
+                        return;
 
-                AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
-            });
+                    var values = new List<object>
+                    {
+                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
+                        obj.IsForTraining.GetValueOrDefault()
+                    };
+
+                    modelAttributes.ForEach(attribute =>
+                    {
+                        var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                        var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId)?.Coefficient;
+                        values.Add(coefficient);
+                    });
+
+                    AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
+                });
+            }
 
             var stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -472,14 +483,6 @@ namespace KadOzenka.Dal.Modeling
 
                 col++;
             }
-        }
-
-        private List<OMModelToMarketObjects> GetMarketObjectsForModelInternal(long modelId)
-        {
-            return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
-                .OrderBy(x => x.CadastralNumber)
-                .SelectAll()
-                .Execute();
         }
 
         #endregion

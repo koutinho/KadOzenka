@@ -329,15 +329,30 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Message = "Данные успешно обновлены" });
 		}
 
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        {
+            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
+
+            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
+
+            var fileStream = ModelingService.ExportMarketObjectsToExcel(objectIds, modelId);
+
+            HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
+
+            return Json(new { FileName = modelId.ToString() });
+        }
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ExportModelObjectsToExcel(long modelId)
+        public IActionResult DownloadModelObjectsFromExcel(string fileName)
         {
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
+            var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+            if (fileInfo == null)
+                return new EmptyResult();
 
-            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out var fileExtenstion, out var contentType);
-
-            return File(fileStream, contentType, $"Объекты модели {modelId}, {DateTime.Now}." + fileExtenstion);
+            return File(fileInfo.FileContent, fileInfo.ContentType, $"Объекты модели {fileName}, {DateTime.Now}.{fileInfo.FileExtension}");
         }
 
         [HttpPost]

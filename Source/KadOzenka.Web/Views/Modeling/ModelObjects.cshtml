@@ -249,7 +249,37 @@
 
 
     function exportObjectsToExcel() {
-        window.open('@Url.Action("ExportModelObjectsToExcel", "Modeling", new {modelId = Model.Id})');
+        var modelId = '@Model.Id';
+        //собираем данные так, как их видит юзер (с учетом фильтров и сортировки)
+        var dataSource = $("#grid").data("kendoGrid").dataSource;
+        var filteredDataSource = new kendo.data.DataSource({
+            data: dataSource.data(),
+            filter: dataSource.filter(),
+            sort: dataSource.sort()
+        });
+        filteredDataSource.read();
+        var data = filteredDataSource.view();
+        var objectIds = data.map(function (attribute) {
+            return attribute.Id;
+        });
+        objectIds = JSON.stringify({ 'objectIds': objectIds });
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ExportModelObjectsToExcel", "Modeling")',
+            data: { objectIdsStr: objectIds, modelId: modelId},
+            success: function (response) {
+                var url = '@Url.Action("DownloadModelObjectsFromExcel", "Modeling")?fileName=' + response.FileName;
+                console.log('url', url);
+                window.open(url);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 
@@ -257,7 +287,6 @@
         var upload = $("#file").data("kendoUpload");
         upload.clearAllFiles();
         upload.removeAllFiles();
-        console.log('clear');
         var modal = $("#downloadFilesModalWnd");
         ShowModal(modal, '50%', '20%', "Загрузка объектов модели");
     }
