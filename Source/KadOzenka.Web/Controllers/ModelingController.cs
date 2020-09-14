@@ -334,7 +334,6 @@ namespace KadOzenka.Web.Controllers
         public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
         {
             var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-
             var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
 
             var fileStream = ModelingService.ExportMarketObjectsToExcel(objectIds, modelId);
@@ -346,13 +345,14 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult DownloadModelObjectsFromExcel(string fileName)
+        public IActionResult DownloadModelObjectsFromExcel(string fileName, string modelName)
         {
             var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
             if (fileInfo == null)
                 return new EmptyResult();
 
-            return File(fileInfo.FileContent, fileInfo.ContentType, $"Объекты модели {fileName}, {DateTime.Now}.{fileInfo.FileExtension}");
+            return File(fileInfo.FileContent, fileInfo.ContentType,
+                $"Объекты модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
 
         [HttpPost]

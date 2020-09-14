@@ -269,8 +269,9 @@
             url: '@Url.Action("ExportModelObjectsToExcel", "Modeling")',
             data: { objectIdsStr: objectIds, modelId: modelId},
             success: function (response) {
-                var url = '@Url.Action("DownloadModelObjectsFromExcel", "Modeling")?fileName=' + response.FileName;
-                console.log('url', url);
+                var url =
+                    '@Url.Action("DownloadModelObjectsFromExcel", "Modeling", new {modelName = Model.Name})&fileName=' +
+                        response.FileName;
                 window.open(url);
             },
             error: function(response) {
