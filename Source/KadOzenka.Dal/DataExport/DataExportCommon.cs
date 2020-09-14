@@ -558,7 +558,9 @@ namespace KadOzenka.Dal.DataExport
                                     string _col1, double _size,
                                     HorizontalAlignment _align1, bool _border, bool _bold)
         {
-            string[] paragraphs = _col1?.Split('$');
+            _col1 = _col1.Replace("\t", "");
+            _col1 = _col1.Replace("\r\n", "\n");
+            string[] paragraphs = _col1?.Split('$', '\n', '\r');
             foreach (string partext in paragraphs)
             {
                 Paragraph paragraph = new Paragraph(_document);
