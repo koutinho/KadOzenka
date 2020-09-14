@@ -64,10 +64,10 @@ namespace CIPJS
                 .ToDictionary(h => h.Key, h => h.Value.ToString());
 
             var result = Log
-                .ForContext("RequestUsername", Core.SRD.SRDSession.GetCurrentUsername())
-                .ForContext("RequestIP", request.HttpContext.Connection.RemoteIpAddress)
-                .ForContext("RequestBody", request.Body)
-                .ForContext("RequestHost", request.Host);
+                .ForContext("Username", Core.SRD.SRDSession.GetCurrentUsername())
+                .ForContext("UserIP", request.HttpContext.Connection.RemoteIpAddress)
+                .ForContext("Body", request.Body)
+                .ForContext("Host", request.Host);
 
             return result;
         }
@@ -81,14 +81,14 @@ namespace CIPJS
                 .ToDictionary(h => h.Key, h => h.Value.ToString());
 
             var result = Log
-                .ForContext("RequestUsername", Core.SRD.SRDSession.GetCurrentUsername())
-                .ForContext("RequestUserID", Core.SRD.SRDSession.GetCurrentUserId())
-                .ForContext("RequestIP", request.HttpContext.Connection.RemoteIpAddress)
-                .ForContext("RequestHeaders", loggedHeaders, destructureObjects: true)
-                .ForContext("RequestCookies", request.Cookies)
-                .ForContext("RequestHost", request.Host)
-                .ForContext("RequestBody", request.Body)
-                .ForContext("RequestProtocol", request.Protocol);
+                .ForContext("UserName", Core.SRD.SRDSession.GetCurrentUsername())
+                .ForContext("UserID", Core.SRD.SRDSession.GetCurrentUserId())
+                .ForContext("UserIP", request.HttpContext.Connection.RemoteIpAddress)
+                .ForContext("Headers", loggedHeaders, destructureObjects: true)
+                .ForContext("Cookies", request.Cookies)
+                .ForContext("Host", request.Host)
+                .ForContext("Body", request.Body)
+                .ForContext("Protocol", request.Protocol);
 
             return result;
         }
