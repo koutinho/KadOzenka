@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.GbuObject
                 return false;
 
             var resValue = string.Empty;
-            var dictionaryRecord = CodDictionaryItems.Find(x => x.Value == sourceAttributeValueInString);
+            var dictionaryRecord = CodDictionaryItems.Find(x => x.Value == sourceAttributeValueInString.ToUpper());
             if (dictionaryRecord != null)
             {
                 var code = dictionaryRecord.Code.Replace(" ", "");

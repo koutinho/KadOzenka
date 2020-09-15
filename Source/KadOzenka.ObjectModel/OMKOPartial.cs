@@ -1910,14 +1910,44 @@ namespace ObjectModel.KO
                     {
                         foreach (DataRow row in data.Rows)
                         {
-                            string t6 = row.ItemArray[6].ParseToString();
-                            if (t6 != string.Empty && t6 != null)
-                                koeff = t6.ParseToDecimal();
+                            if (groupFactor.SignMarket.ParseToBoolean())
+                            {
+                                List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
+                                MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == this.Id && x.FactorId == groupFactor.FactorId).SelectAll().Execute());
+
+                                string t6 = row.ItemArray[6].ParseToString();
+                                if (t6 != string.Empty && t6 != null)
+                                {
+                                    OMMarkCatalog mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper());
+                                    if (mc != null)
+                                    {
+                                        koeff = mc.MetkaFactor.ParseToDecimal();
+                                    }
+                                }
+                                else
+                                {
+                                    string t7 = row.ItemArray[7].ParseToString();
+                                    if (t7 != string.Empty && t7 != null)
+                                    {
+                                        OMMarkCatalog mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t7.ToUpper());
+                                        if (mc != null)
+                                        {
+                                            koeff = mc.MetkaFactor.ParseToDecimal();
+                                        }
+                                    }
+                                }
+                            }
                             else
                             {
-                                string t7 = row.ItemArray[7].ParseToString();
-                                if (t7 != string.Empty && t7 != null)
-                                    koeff = t7.ParseToDecimal();
+                                string t6 = row.ItemArray[6].ParseToString();
+                                if (t6 != string.Empty && t6 != null)
+                                    koeff = t6.ParseToDecimal();
+                                else
+                                {
+                                    string t7 = row.ItemArray[7].ParseToString();
+                                    if (t7 != string.Empty && t7 != null)
+                                        koeff = t7.ParseToDecimal();
+                                }
                             }
                         }
                     }
