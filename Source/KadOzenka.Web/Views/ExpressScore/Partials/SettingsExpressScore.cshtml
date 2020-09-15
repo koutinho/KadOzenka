@@ -30,6 +30,13 @@
 	.remove:hover {
 		cursor: pointer;
 	}
+	.k-dropdown-wrap.k-state-default {
+		margin-right: 0;
+	}
+
+	.k-item .k-in {
+		white-space: pre-wrap;
+	}
 	/*#RequiredParam span.k-header {
 		display: none;
 	}*/
@@ -93,7 +100,7 @@
                                     .Filter(FilterType.Contains)
                                     .DataSource(source =>
                                     {
-                                        source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+                                        source.Read(a => a.Action("GetAttributesKo", "ExpressScore").Data("getDataAttribute"));
                                     }).HtmlAttributes(new
                                     {
                                         name = "YearBuildId"
@@ -264,15 +271,12 @@
 									@Html.CustomLabelFor("Имя атрибута", true)
 								</div>
 								<div class="col-sm-4">
-									@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
+									@(Html.Kendo().DropDownTreeFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
 												.DataTextField("Text")
 												.DataValueField("Value")
 												.Filter(FilterType.Contains)
-												.DataSource(source =>
-												{
-													source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
-												})
-												.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}" })
+												.ClearButton(false)
+										.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}", style = "width: 100%" })
 									)
 								</div>
 								<div class="col-sm-2">
@@ -428,7 +432,43 @@
 				fieldset$.show();
 				complexFactorsCount++;
 				refreshComplexHandlers();
+				setDataSourceAttribute(fieldset$);
 				fieldset$.get(0).scrollIntoView();
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+	function setDataSourceAttribute(fieldset$) {
+		$.ajax({
+			type: 'GET',
+			url: '@Url.Action("GetAttributesKoAndAnalogs", "ExpressScore")',
+			data: { registerId: $('#FactorRegisterId').data('kendoDropDownList') && $('#FactorRegisterId').data('kendoDropDownList').value()},
+			dataType: "json",
+			traditional: true,
+			success: function (response) {
+				var data = response.map(function(item) {
+					return {
+						Text: item.Text,
+						Value: item.Value,
+						items: item.Items.map(function(i) {
+							return {
+								Text: i.Text,
+								Value: i.Value
+							}
+
+						})
+					}
+				});
+				debugger;
+				fieldset$.find('[id ^= "AttributeId"]').each(function() {
+					$(this).data('kendoDropDownTree') && $(this).data('kendoDropDownTree').setDataSource(data);
+				});
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
 				kendo.ui.progress($('body'), false);
 			}
 		});

@@ -11,6 +11,7 @@ using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
@@ -40,13 +41,16 @@ namespace KadOzenka.Web.Controllers
 		private ViewRenderService _viewRenderService;
 		private TourFactorService TourFactorService { get; set; }
 
-		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService, ScoreCommonService scoreCommonService, TourFactorService tourFactorService)
+		public RegisterAttributeService RegisterAttributeService { get; set; }
+
+		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService,
+			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, RegisterAttributeService registerAttributeService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;
             ScoreCommonService = scoreCommonService;
             TourFactorService = tourFactorService;
-
+            RegisterAttributeService = registerAttributeService;
 		}
 
 		#endregion
@@ -138,8 +142,7 @@ namespace KadOzenka.Web.Controllers
 	        if (!ModelState.IsValid)
 		        return GenerateMessageNonValidModel();
 
-			TourFactorService.SetTourFactorAttributesValue(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
-
+	        _service.SetTargetObjectAttribute(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
 			return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
         }
 
@@ -157,7 +160,7 @@ namespace KadOzenka.Web.Controllers
             var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
             if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0) return SendErrorMessage("В настройках не задан атрибут для года постройки.");
 
-            var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds);
+            var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds, param.Kn);
             if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
             if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
@@ -445,10 +448,10 @@ namespace KadOzenka.Web.Controllers
 			return Json(dictionaries);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
-		public JsonResult GetAttributes(int registerId)
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
+		public JsonResult GetAttributesKo(int registerId)
 		{
-			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId && !x.IsPrimaryKey).Select(x => new
+			var attributes = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId && !x.IsPrimaryKey).Select(x => new
 			{
 				Text = x.Name,
 				Value = x.Id
@@ -457,7 +460,62 @@ namespace KadOzenka.Web.Controllers
 			return Json(attributes);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
+		public JsonResult GetAttributesKoAndAnalogs(int registerId)
+		{
+			var attributes = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId && !x.IsPrimaryKey).Select(x => new
+			{
+				Text = x.Name,
+				Value = x.Id,
+				x.RegisterId,
+			}).ToList();
+
+			var availableAttributeTypes = new[]
+			{
+				Consts.IntegerAttributeType, Consts.DecimalAttributeType,
+				Consts.StringAttributeType, Consts.DateAttributeType
+			};
+
+			var marketObjectAttributes = RegisterAttributeService
+				.GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+				.Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
+
+			var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attributes.FirstOrDefault()?.RegisterId);
+			var tourAttributesTree = new DropDownTreeItemModel
+			{
+				Value = Guid.NewGuid().ToString(),
+				Text = tourFactorsRegister?.Description,
+				HasChildren = attributes.Count > 0,
+				Items = attributes.Select(x => new DropDownTreeItemModel
+				{
+					Value = x.Value.ToString(),
+					Text = x.Text
+				}).ToList()
+			};
+
+			var marketObjectsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == OMCoreObject.GetRegisterId());
+			var marketObjectsRegisterAttributes = new DropDownTreeItemModel
+			{
+				Value = Guid.NewGuid().ToString(),
+				Text = marketObjectsRegister?.Description,
+				HasChildren = marketObjectAttributes.Count > 0,
+				Items = marketObjectAttributes.Select(x => new DropDownTreeItemModel
+				{
+					Value = x.Id.ToString(),
+					Text = x.Name
+				}).ToList()
+			};
+
+			var fullTree = new List<DropDownTreeItemModel>
+			{
+				tourAttributesTree,
+				marketObjectsRegisterAttributes
+			};
+
+			return Json(fullTree);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public JsonResult GetFactorRegisters(int tourId)
 		{
 			var registerFactors = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute().Select(x => new SelectListItem

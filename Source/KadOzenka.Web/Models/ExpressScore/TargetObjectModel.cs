@@ -74,7 +74,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 	        }
         }
 
-        public KoAttributeValueDto ToDto()
+        public AttributeValueDto ToDto()
         {
 	        if (ReferenceId.HasValue)
 	        {
@@ -82,11 +82,10 @@ namespace KadOzenka.Web.Models.ExpressScore
 			        .FirstOrDefault(y => y.ItemId == ReferenceItemId)?.Value;
             }
 
-            return new KoAttributeValueDto
+            return new AttributeValueDto
             {
 	            Id = Id,
-                Value = Value,
-                ReferenceItemId = ReferenceItemId
+                Value = Value
             };
         }
     }

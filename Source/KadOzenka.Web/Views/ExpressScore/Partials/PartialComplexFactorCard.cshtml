@@ -26,15 +26,12 @@
 			@Html.CustomLabelFor("Имя атрибута", true)
 		</div>
 		<div class="col-sm-4">
-			@(Html.Kendo().DropDownListFor(m => m.AttributeId)
+			@(Html.Kendo().DropDownTreeFor(m => m.AttributeId)
 						.DataTextField("Text")
 						.DataValueField("Value")
 						.Filter(FilterType.Contains)
-						.DataSource(source =>
-						{
-							source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
-						})
-						.HtmlAttributes(new { name = $"AttributeId-{ViewBag.Count}", id = $"AttributeId-{ViewBag.Count}" })
+						.ClearButton(false)
+				.HtmlAttributes(new { name = $"AttributeId-{ViewBag.Count}", id = $"AttributeId-{ViewBag.Count}", style="width: 100%" })
 			)
 		</div>
 		<div class="col-sm-2">
