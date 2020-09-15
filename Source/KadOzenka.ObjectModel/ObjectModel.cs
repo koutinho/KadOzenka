@@ -23791,6 +23791,58 @@ namespace ObjectModel.Es
     }
 }
 
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 612 Экспресс оценка. Значения объекта оценки (ES_TARGET_OBJECT_VALUE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 612)]
+    [Serializable]
+    public partial class OMTargetObjectValue : OMBaseClass<OMTargetObjectValue>
+    {
+
+        private long _unitid;
+        /// <summary>
+        /// 61200100 Идентификатор (UNIT_ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 61200100)]
+        public long UnitId
+        {
+            get
+            {
+                CheckPropertyInited("UnitId");
+                return _unitid;
+            }
+            set
+            {
+                _unitid = value;
+                NotifyPropertyChanged("UnitId");
+            }
+        }
+
+
+        private string _attributevalue;
+        /// <summary>
+        /// 61200200 Значения атрибутов (ATTRIBUTE_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61200200)]
+        public string AttributeValue
+        {
+            get
+            {
+                CheckPropertyInited("AttributeValue");
+                return _attributevalue;
+            }
+            set
+            {
+                _attributevalue = value;
+                NotifyPropertyChanged("AttributeValue");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Modeling
 {
     /// <summary>
