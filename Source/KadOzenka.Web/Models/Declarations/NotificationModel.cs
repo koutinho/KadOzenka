@@ -91,8 +91,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Приложение (ANNEX)
 		/// </summary>
 		[Display(Name = "Приложение")]
-		[MaxLength(512, ErrorMessage = "Максимальная длина значения для поля 'Приложение' составляет 512 символа")]
-		public string Annex { get; set; }
+        public string Annex { get; set; }
 
 		public bool IsEditApproveNotifications { get; set; }
 		public bool IsEditOtherNotifications { get; set; }
