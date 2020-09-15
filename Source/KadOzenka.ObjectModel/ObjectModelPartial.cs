@@ -3292,6 +3292,30 @@ namespace ObjectModel.Es
     }
 }
 
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 612 Экспресс оценка. Значения объекта оценки
+    /// </summary>
+    public partial class OMTargetObjectValue
+    {
+
+        public OMTargetObjectValue()
+        {
+
+            UnitId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMTargetObjectValue(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Modeling
 {
     /// <summary>
