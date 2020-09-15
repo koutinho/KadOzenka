@@ -2,34 +2,34 @@ with object_ids as (
 	select u.object_id from ko_unit u where u.task_id IN ({0})
 ),
 --ROSREESTR ATTRIBUTES
-ñommissioningYearAttrValues as (
+buildYearAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
 ),
-buildYearAttrValues as (
+formationDateAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {2})
 ),
-formationDateAttrValues as (
+undergroundFloorsNumberAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {3})
 ),
-undergroundFloorsNumberAttrValues as (
+floorsNumberAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {4})
 ),
-floorsNumberAttrValues as (
+wallMaterialAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {5})
 ),
-wallMaterialAttrValues as (
+locationAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {6})
 ),
-locationAttrValues as (
+addressAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {7})
 ),
-addressAttrValues as (
+buildingPurposeAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {8})
 ),
-buildingPurposeAttrValues as (
+objectNameAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {9})
 ),
-objectNameAttrValues as (
+readinessPercentageAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {10})
 ),
 
@@ -67,13 +67,10 @@ subGroupNumberAttrValues as (
 
 initial_data as (
 SELECT distinct
-	--L1_R201.ID,
-	--L1_R201.OBJECT_ID,
     L1_R201.CADASTRAL_NUMBER as CadastralNumber,
     L1_R201.SQUARE as Square,
 	L1_R201.UPKS as Upks,
 	L1_R201.CADASTRAL_COST as CadastralCost,
-	ñommissioningYearAttr.attributeValue as ÑommissioningYear,
     buildYearAttr.attributeValue as BuildYear,
     formationDateAttr.attributeValue as FormationDate,
     undergroundFloorsNumberAttr.attributeValue as UndergroundFloorsNumber,
@@ -83,6 +80,7 @@ SELECT distinct
     addressAttr.attributeValue as Address,
     buildingPurposeAttr.attributeValue as BuildingPurpose,
     objectNameAttr.attributeValue as ObjectName,
+    readinessPercentageAttr.attributeValue as ReadinessPercentage,
     segmentAttr.attributeValue as Segment,
     usageTypeNameAttr.attributeValue as UsageTypeName,
     usageTypeCodeAttr.attributeValue as UsageTypeCode,
@@ -93,7 +91,6 @@ SELECT distinct
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 		FROM KO_UNIT L1_R201
-			LEFT JOIN ñommissioningYearAttrValues ñommissioningYearAttr ON L1_R201.object_id=ñommissioningYearAttr.objectId
             LEFT JOIN buildYearAttrValues buildYearAttr ON L1_R201.object_id=buildYearAttr.objectId
             LEFT JOIN formationDateAttrValues formationDateAttr ON L1_R201.object_id=formationDateAttr.objectId
             LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON L1_R201.object_id=undergroundFloorsNumberAttr.objectId
@@ -103,6 +100,7 @@ SELECT distinct
             LEFT JOIN addressAttrValues addressAttr ON L1_R201.object_id=addressAttr.objectId
             LEFT JOIN buildingPurposeAttrValues buildingPurposeAttr ON L1_R201.object_id=buildingPurposeAttr.objectId
             LEFT JOIN objectNameAttrValues objectNameAttr ON L1_R201.object_id=objectNameAttr.objectId
+            LEFT JOIN readinessPercentageAttrValues readinessPercentageAttr ON L1_R201.object_id=readinessPercentageAttr.objectId
             LEFT JOIN segmentAttrValues segmentAttr ON L1_R201.object_id=segmentAttr.objectId
             LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON L1_R201.object_id=usageTypeNameAttr.objectId
             LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON L1_R201.object_id=usageTypeCodeAttr.objectId
@@ -114,7 +112,7 @@ SELECT distinct
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
 		WHERE L1_R201.TASK_ID IN ({0})
         AND
-        (L1_R201.PROPERTY_TYPE_CODE = 5 and L1_R201.OBJECT_ID is not null)
+        (L1_R201.PROPERTY_TYPE_CODE = 8 and L1_R201.OBJECT_ID is not null)
 		ORDER BY L1_R201.CADASTRAL_NUMBER
 )
         
@@ -123,7 +121,6 @@ select DISTINCT ON (CadastralNumber)
   Square, 
   Upks, 
   CadastralCost, 
-  ÑommissioningYear,
   BuildYear,
   FormationDate,
   UndergroundFloorsNumber,
@@ -133,6 +130,7 @@ select DISTINCT ON (CadastralNumber)
   Address,
   BuildingPurpose,
   ObjectName,
+  ReadinessPercentage,
   Segment,
   UsageTypeName,
   UsageTypeCode,

@@ -119,6 +119,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             return result;
         }
 
+        //TODO код был оставлен, т.к. из-за DDos БД невозможно понять, что тормозит: отчет или БД
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
