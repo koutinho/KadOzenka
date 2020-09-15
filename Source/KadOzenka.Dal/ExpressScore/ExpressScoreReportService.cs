@@ -544,7 +544,7 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				Console.WriteLine(e);
 				ErrorManager.LogError(e);
-				throw;
+				return -1;
 			}
 		}
 	}
