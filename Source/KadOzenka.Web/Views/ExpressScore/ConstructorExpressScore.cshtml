@@ -58,9 +58,37 @@
 		}
 	}
 
-	function handlerChangeRegister() {
-		$('[id ^= "AttributeId"]').each(function() {
-			$(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').dataSource.read();
+	function handlerChangeRegister(e) {
+		$.ajax({
+			type: 'GET',
+			url: '@Url.Action("GetAttributesKoAndAnalogs", "ExpressScore")',
+			data: { registerId: e.sender.value()},
+			dataType: "json",
+			traditional: true,
+			success: function (response) {
+				var data = response.map(function(item) {
+					return {
+						Text: item.Text,
+						Value: item.Value,
+						items: item.Items.map(function(i) {
+							return {
+								Text: i.Text,
+								Value: i.Value
+							}
+
+						})
+					}
+				});
+				$('[id ^= "AttributeId"]').each(function() {
+					$(this).data('kendoDropDownTree') && $(this).data('kendoDropDownTree').setDataSource(data);
+				});
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
 		});
 
 		$('[id ^= "CostFactors_YearBuildId"]').each(function () {

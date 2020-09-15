@@ -30,11 +30,11 @@ namespace KadOzenka.Dal.ScoreCommon
                 .Execute();
         }
 
-        public ParameterDataDto GetParameters(List<long> unitsIds, int attributeId, int registerId, QSConditionGroup qsGroup = null)
+        public ParameterDataDto GetParameters(List<long> objectIds, int attributeId, int registerId, QSConditionGroup qsGroup = null)
 		{
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.IsPrimaryKey)?.Id;
 
-			var query = GetQsQuery(registerId, (int)idAttribute.GetValueOrDefault(), unitsIds, qsGroup);
+			var query = GetQsQuery(registerId, (int)idAttribute.GetValueOrDefault(), objectIds, qsGroup);
 			query.AddColumn(new QSColumnSimple(attributeId, nameof(PureParameterDataDto.Value)));
 
 			return query.ExecuteQuery<PureParameterDataDto>().Select(x => new ParameterDataDto(x)).OrderByDescending(x => x.Id).FirstOrDefault();

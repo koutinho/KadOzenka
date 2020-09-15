@@ -161,28 +161,6 @@ namespace KadOzenka.Dal.Tours
             RegisterAttributeService.RemoveRegisterAttribute(attributeId);
         }
 
-        public void SetTourFactorAttributesValue(long unitId, List<KoAttributeValueDto> attributeValueDtos)
-        {
-	        var unit = OMUnit.Where(x => x.Id == unitId)
-		        .ExecuteFirstOrDefault();
-            if (unit == null)
-            {
-	            throw new Exception($"Не найдена единица оценки с ИД {unitId}");
-            }
-
-            foreach (var attributeValueDto in attributeValueDtos)
-            {
-	            if (attributeValueDto.ReferenceItemId.HasValue)
-	            {
-		            RegisterAttributeService.SetAttributeValue((int)unitId, attributeValueDto.Id, attributeValueDto.Value, attributeValueDto.ReferenceItemId.Value);
-                }
-	            else
-	            {
-		            RegisterAttributeService.SetAttributeValue((int)unitId, attributeValueDto.Id, attributeValueDto.Value);
-                }
-            }
-        }
-
         public List<UnitFactor> GetUnitFactorValues(long unitId)
         {
 	        var results = new List<UnitFactor>();
