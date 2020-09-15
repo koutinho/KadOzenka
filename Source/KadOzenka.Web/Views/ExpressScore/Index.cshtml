@@ -605,15 +605,23 @@
 		$('#Kn').val('');
 	}
 
-	function getAddress(coords) {
+    function getAddress(coords) {
+        var errorMessage = "Объект за пределами г.Москва";
 		myPlacemark.properties.set('iconCaption', 'поиск...');
 		ymaps.geocode(coords).then(function(res) {
-			var firstGeoObject = res.geoObjects.get(0);
-			if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 || (firstGeoObject.getAdministrativeAreas() === 1 && firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
-				removeMyPlacemark();
-				Common.ShowError("Объект за пределами г.Москва");
-				return;
-			}
+            var firstGeoObject = res.geoObjects.get(0);
+            if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 || (firstGeoObject.getAdministrativeAreas() === 1 && firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
+                removeMyPlacemark();
+                Common.ShowError(errorMessage);
+                return;
+            } else {
+                $('.k-notification-error').each(function() {
+                    var errorNotificationText = $.trim($(this).text());
+                    if (errorNotificationText === errorMessage) {
+                        $(this).hide();
+                    }
+                });
+            }
 			if (firstGeoObject.getPremiseNumber()) {
 				$('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
 				setKadNumber(firstGeoObject.getAddressLine());
