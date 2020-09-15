@@ -82,7 +82,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        private List<ReportItem> GetOperations2(long tourId, List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var sql = GetSqlFileContent("UncompletedBuildings");
 
@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         }
 
         //TODO код был оставлен, т.к. из-за DDos БД невозможно понять, что тормозит: отчет или БД
-        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperations2(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
