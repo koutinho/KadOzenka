@@ -277,7 +277,10 @@
                         @Html.CustomLabelFor(m => m.CommissioningYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.CommissioningYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                        @(Html.Kendo().DatePickerFor(m => m.CommissioningYear.DateTimeValue)
+                            .Min(new DateTime(1000, 1, 1))
+                            .Enable(Model.IsEditDeclarationCharacteristics)
+                            .Format("yyyy"))
                     </div>
                 </div>
             </div>
@@ -298,7 +301,10 @@
                         @Html.CustomLabelFor(m => m.CompletionYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.CompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                        @(Html.Kendo().DatePickerFor(m => m.CompletionYear.DateTimeValue)
+                            .Min(new DateTime(1000, 1, 1))
+                            .Enable(Model.IsEditDeclarationCharacteristics)
+                            .Format("yyyy"))
                     </div>
                 </div>
             </div>
@@ -319,7 +325,10 @@
                         @Html.CustomLabelFor(m => m.OverhaulCompletionYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.OverhaulCompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                        @(Html.Kendo().DatePickerFor(m => m.OverhaulCompletionYear.DateTimeValue)
+                            .Min(new DateTime(1000, 1, 1))
+                            .Enable(Model.IsEditDeclarationCharacteristics)
+                            .Format("yyyy"))
                     </div>
                 </div>
             </div>
@@ -340,7 +349,10 @@
                         @Html.CustomLabelFor(m => m.ReconstructionDate)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.ReconstructionDate.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
+                        @(Html.Kendo().DatePickerFor(m => m.ReconstructionDate.DateTimeValue)
+                            .Min(new DateTime(1000, 1, 1))
+                            .Enable(Model.IsEditDeclarationCharacteristics)
+                            .Format("yyyy"))
                     </div>
                 </div>
             </div>
