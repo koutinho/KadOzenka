@@ -615,7 +615,7 @@ namespace KadOzenka.Dal.ExpressScore
                    }
 
 
-                   if (targetObjectFactor == null)
+                   if (targetObjectFactor == null || targetObjectFactor.Value == null)
                    {
 	                   try
 	                   {
@@ -625,7 +625,7 @@ namespace KadOzenka.Dal.ExpressScore
 		                   var targetAttributeValue =
 			                   esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
 
-		                   var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId).Value;
+		                   var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)?.Value;
 		                   targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
 		                   {
 			                   Id = calculateSquareCost.TargetObjectId,
@@ -644,16 +644,23 @@ namespace KadOzenka.Dal.ExpressScore
 	                   }
                    }
 
-                   var analogFactor = GetEstimateParametersByKn(analog.Kn, (int) exSettingsCostFactors.TourId,
-						complex.AttributeId.GetValueOrDefault(), calculateSquareCost.MarketSegment, (int) exSettingsCostFactors.Registerid);
+                   ParameterDataDto analogFactor = null;
+				   if(IsAnalogAttribute(complex.AttributeId.GetValueOrDefault()))
+				   {
+					   analogFactor = GetEstimateParametersById((int)analog.Id,
+						   complex.AttributeId.GetValueOrDefault(), OMCoreObject.GetRegisterId());
+				   } else {
+					   analogFactor = GetEstimateParametersByKn(analog.Kn, (int)exSettingsCostFactors.TourId,
+						   complex.AttributeId.GetValueOrDefault(), calculateSquareCost.MarketSegment, (int)exSettingsCostFactors.Registerid);
+				   }
 
-					if (analogFactor == null)
-					{
+				   if (analogFactor == null)
+				   {
 						isBreak = true;
 						break;
-					}
+				   }
 
-					string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor
+				   string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor
 						.Value.ToString();
 					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>(complex.Name, valueToComplexName));
 					costTargetObjectDataForReport.Add(targetObjectFactor.Value.ToString());
@@ -1164,7 +1171,7 @@ namespace KadOzenka.Dal.ExpressScore
 					LeftOperand = new QSColumnSimple((long)costFactor.YearBuildId.GetValueOrDefault())
 				});
 
-				foreach (var factor in complexFactors)
+				foreach (var factor in complexFactors.Where(x => !IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
 				{
 					qsCGroup.Add(new QSConditionSimple
 					{

@@ -324,7 +324,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
-            data.Rows.Add("/ObjectCard?ObjId=0&RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
+            data.Rows.Add("/ObjectCard?RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
 
             return data;
         }
