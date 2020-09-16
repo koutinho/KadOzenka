@@ -644,7 +644,7 @@ namespace KadOzenka.Dal.ExpressScore
 	                   }
                    }
 
-                   ParameterDataDto analogFactor = null;
+                   ParameterDataDto analogFactor;
 				   if(IsAnalogAttribute(complex.AttributeId.GetValueOrDefault()))
 				   {
 					   analogFactor = GetEstimateParametersById((int)analog.Id,
