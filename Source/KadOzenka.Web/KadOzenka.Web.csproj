@@ -27,6 +27,10 @@
     <Content Remove="wwwroot\Config\**" />
     <EmbeddedResource Remove="wwwroot\Config\**" />
     <None Remove="wwwroot\Config\**" />
+    <Compile Remove="Pages\**" />
+    <EmbeddedResource Remove="Pages\**" />
+    <None Remove="Pages\**" />
+    <Content Remove="Pages\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1182,7 +1186,6 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Config\MapTilesConfigFiles\" />
-    <Folder Include="Pages\" />
 	  <Folder Include="Views\GknDataImport\" />
 	  <Folder Include="Views\DataImportByTemplate\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
