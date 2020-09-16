@@ -10,10 +10,10 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    //TODO протестировать после того, как БД перестанет виснуть
     public class PlacementsReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _segment = "Segment";
@@ -82,7 +82,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperationsViaSql(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var sql = GetSqlFileContent("Placements");
 
@@ -124,25 +124,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             return result;
         }
 
-        //TODO код был оставлен, т.к. из-за DDos БД невозможно понять, что тормозит: отчет или БД
-        private List<ReportItem> GetOperations2(long tourId, List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
             var units = GetUnits(taskIds, PropertyTypes.Pllacement);
-            //объект с parent-зданием (для тестирования)
-            //var objectIdForTesting = 11188991;
-            //units[0].ObjectId = objectIdForTesting;
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+                DateTime.Now.GetEndOfTheDay(), isLight: true);
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
-            //units.Where(x => x.ObjectId == objectIdForTesting).ToList().ForEach(unit =>  // для тестирования
             {
                 var item = new ReportItem
                 {
