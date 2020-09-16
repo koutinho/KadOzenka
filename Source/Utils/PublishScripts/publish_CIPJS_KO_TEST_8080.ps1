@@ -35,7 +35,7 @@ Write-Host 1. Бэкап текущей версии
 if ($backup) {
     Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
         foreach ($item in $config_array){
-            cpi -Path $site_dir\$item $backup_path\config\ -Recurse -Force -Verbose
+           # cpi -Path $site_dir\$item $backup_path\config\ -Recurse -Force -Verbose
             cpi -Path $site_dir\$item $config_path -Recurse -Force -Verbose
         }
 
