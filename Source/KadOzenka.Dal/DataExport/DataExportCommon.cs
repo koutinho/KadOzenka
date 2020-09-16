@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.TD;
 using System.Globalization;
-using System.IO;
+using System.Linq;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -554,33 +554,71 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Вставить текст в ячейку таблицы документа doc
         /// </summary>
-        public static void SetTextToCellDoc(DocumentModel _document, TableCell _cell, 
-                                    string _col1, double _size,
-                                    HorizontalAlignment _align1, bool _border, bool _bold)
+        public static void SetTextToCellDoc(DocumentModel document, TableCell cell, 
+                                    string cellText, double size,
+                                    HorizontalAlignment alignment, bool border, bool bold)
         {
-            _col1 = _col1.Replace("\t", "");
-            _col1 = _col1.Replace("\r\n", "\n");
-            string[] paragraphs = _col1?.Split('$', '\n', '\r');
+            // Спецсимволы: '\n', '\r', '\t', '\v' and '\f' не обрабатываются в Run / Run.Text
+            var symbolsToSplitOn = new List<char> { '\t', '\v', '\f' };
+            
+            var paragraphs =
+                cellText.Replace("\r\n", "\n")
+                    .Split('$', '\r', '\n'); // переносы строк, $ оставлен для обратной совместимости 
+
             foreach (string partext in paragraphs)
             {
-                Paragraph paragraph = new Paragraph(_document);
-                paragraph.ParagraphFormat.Alignment = _align1;
-                Run run = new Run(_document, partext);
-                run.CharacterFormat.FontName = "Times New Roman";
-                run.CharacterFormat.Bold = _bold;
-                run.CharacterFormat.FontColor = Color.Black;
-                run.CharacterFormat.Size = _size;
-                paragraph.Inlines.Add(run);
-                _cell.Blocks.Add(paragraph);
-                _cell.CellFormat.VerticalAlignment = VerticalAlignment.Center;
+                Paragraph paragraph = new Paragraph(document);
+                paragraph.ParagraphFormat.Alignment = alignment;
+
+
+                var inputStr = partext.Replace("\r\n", "\n"); // CRLF -> LF
+                var lastPartStartIndex = 0;
+                for (int i = 0; i < inputStr.Length; i++)
+                {
+                    if (symbolsToSplitOn.Contains(inputStr[i]) || i == inputStr.Length-1)
+                    {
+                        var strPart = inputStr.Substring(lastPartStartIndex, 
+                            (i==inputStr.Length-1)
+                                ? i - lastPartStartIndex + 1 
+                                : i - lastPartStartIndex);
+                        lastPartStartIndex = i + 1;
+                        var run = GetStyledRunInstance(document, strPart, size, bold);
+                        paragraph.Inlines.Add(run);
+
+                        switch (inputStr[i])
+                        {
+                            case '\t':
+                                paragraph.Inlines.Add(new SpecialCharacter(document,
+                                    SpecialCharacterType.Tab));
+                                break;
+                            case '\f':
+                                paragraph.Inlines.Add(new SpecialCharacter(document,
+                                    SpecialCharacterType.PageBreak));
+                                break;
+                            case '\v':
+                                paragraph.Inlines.Add(new SpecialCharacter(document,
+                                    SpecialCharacterType.ColumnBreak));
+                                break;
+                        }
+                    }
+                }
+
+                cell.Blocks.Add(paragraph);
+                cell.CellFormat.VerticalAlignment = VerticalAlignment.Center;
             }
 
-            if (_border)
-            {
-                _cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.Single, Color.Black, 1);
-            }
-            else
-                _cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.None, Color.Black, 1);
+            cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside,
+                border ? BorderStyle.Single : BorderStyle.None, Color.Black, 1);
+        }
+
+        private static Run GetStyledRunInstance(DocumentModel document, string text, double size, bool bold = false)
+        {
+            Run run = new Run(document, text);
+            run.CharacterFormat.FontName = "Times New Roman";
+            run.CharacterFormat.Bold = bold;
+            run.CharacterFormat.FontColor = Color.Black;
+            run.CharacterFormat.Size = size;
+            return run;
         }
 
         public static void SetText2Doc(DocumentModel document, TableRow row,
