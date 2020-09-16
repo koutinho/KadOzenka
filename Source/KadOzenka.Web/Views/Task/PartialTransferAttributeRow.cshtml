@@ -4,26 +4,16 @@
 
 @if ((bool)ViewData["CreateAttributes"])
 {
-<div class="form-group attributes-list">
-    <div class="col-sm-10 col-sm-offset-2">
-        <div>
-            @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
-        </div>
-    </div>
-</div>
+    <td>
+		@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+	</td>
 }
 else
 {
-<div class="form-group attributes-list">
-	<div class="col-sm-5 col-sm-offset-2">
-		<div>
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO, (IEnumerable)ViewData["KoAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
-		</div>
-	</div>
-	<div class="col-sm-5">
-		<div>
-			@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
-		</div>
-	</div>
-</div>
+    <td>
+        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO, (IEnumerable)ViewData["KoAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+    </td>
+    <td>
+        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+    </td>
 }

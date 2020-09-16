@@ -173,7 +173,50 @@ namespace KadOzenka.Web.Controllers
 			return View(model);
 		}
 
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public JsonResult GetRegisterAttributes()
+        {
+            var res = GbuObjectService.GetGbuAttributesTree()
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
+            return Json(res);
+        }
+
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public ActionResult CreateAndTransferAttributes()
+        {
+            var model = new ExportAttributesModel();
+
+            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
+
+            ViewData["KoAttributes"] = new List<string>();
+
+            model.CreateAttributes = true;
+
+            return View(model);
+        }
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public JsonResult GetTasksByTour(long tourId)
 		{
 			var tasks = TaskService.GetTasksByTour(tourId);
