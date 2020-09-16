@@ -172,7 +172,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
                                      x.PropertyType_Code == type &&
                                      x.ObjectId != null)
-                .SelectAll()
+                .Select(x => x.ObjectId)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.Square)
+                .Select(x => x.Upks)
+                .Select(x => x.CadastralCost)
                 .Execute();
         }
 

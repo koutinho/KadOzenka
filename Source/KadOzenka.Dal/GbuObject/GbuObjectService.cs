@@ -44,12 +44,13 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null, List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null)
-		{
-			return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt);
-		}
+        public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null,
+            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+        {
+            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, isLight);
+        }
 
-		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, 
+        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, 
             DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
 		{
             if(objectIds == null || objectIds.Count == 0)
@@ -92,32 +93,7 @@ namespace KadOzenka.Dal.GbuObject
 							propName = "DtValue";
 						}
 
-						var sql = $@"
-select 
-	a.id,
-	a.object_id as ObjectId,
-	a.attribute_id as AttributeId,
-	a.Ot,
-	a.S,
-	{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
-	a.value as {propName},
-
-	a.change_user_id as ChangeUserId,
-	a.change_doc_id as ChangeDocId,
-	a.change_date as ChangeDate,
-
-	a.change_id as ChangeId,
-
-	u.fullname as UserFullname,
-
-	td.regnumber as DocNumber,
-	td.description as DocType,
-	td.create_date as DocDate
-
-from {registerData.AllpriTable}_{postfix} a
-left join core_srd_user u on u.id = a.change_user_id
-left join core_td_instance td on td.id = a.change_doc_id
-where a.object_id in ({String.Join(",", objectIds)})";
+						var sql = GetSqlForRegisterWithDataPartitioning(objectIds, postfix, propName, registerData, isLight);
 
 						if (attributes != null && attributes.Count > 0)
 						{
@@ -183,6 +159,64 @@ where a.object_id in ({String.Join(",", objectIds)})";
 			return result;
 		}
 
+        private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, bool isLight)
+        {
+            if (isLight)
+				return $@"
+                    select 
+	                    --a.id,
+	                    a.object_id as ObjectId,
+	                    a.attribute_id as AttributeId,
+	                    --a.Ot,
+	                    --a.S,
+	                    --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
+	                    a.value as {propName}--,
+
+	                    --a.change_user_id as ChangeUserId,
+	                    --a.change_doc_id as ChangeDocId,
+	                    --a.change_date as ChangeDate,
+
+	                    --a.change_id as ChangeId,
+
+	                    --u.fullname as UserFullname,
+
+	                    --td.regnumber as DocNumber,
+	                    --td.description as DocType,
+	                    --td.create_date as DocDate
+
+                    from {registerData.AllpriTable}_{postfix} a
+                    --left join core_srd_user u on u.id = a.change_user_id
+                    --left join core_td_instance td on td.id = a.change_doc_id
+                    where a.object_id in ({string.Join(",", objectIds)})";
+
+			return $@"
+                select 
+	                a.id,
+	                a.object_id as ObjectId,
+	                a.attribute_id as AttributeId,
+	                a.Ot,
+	                a.S,
+	                {(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
+	                a.value as {propName},
+
+	                a.change_user_id as ChangeUserId,
+	                a.change_doc_id as ChangeDocId,
+	                a.change_date as ChangeDate,
+
+	                a.change_id as ChangeId,
+
+	                u.fullname as UserFullname,
+
+	                td.regnumber as DocNumber,
+	                td.description as DocType,
+	                td.create_date as DocDate
+
+                from {registerData.AllpriTable}_{postfix} a
+                left join core_srd_user u on u.id = a.change_user_id
+                left join core_td_instance td on td.id = a.change_doc_id
+                where a.object_id in ({string.Join(",", objectIds)})";
+        }
+
         private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
             RegisterAttribute attributeData, RegisterData registerData, bool isLight = false)
         {
@@ -194,7 +228,7 @@ where a.object_id in ({String.Join(",", objectIds)})";
 	                {attributeData.Id} as AttributeId,
 	                --a.Ot,
 	                --a.S,
-	                {(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : string.Empty)}
+	                --{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : string.Empty)}
 	                a.value as {propName}--,
 
 	                --a.change_user_id as ChangeUserId,

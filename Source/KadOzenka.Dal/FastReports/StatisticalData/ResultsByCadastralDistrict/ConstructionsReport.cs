@@ -6,7 +6,10 @@ using System.Linq;
 using Core.UI.Registers.Reports.Model;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -78,7 +81,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperationsViaSql(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
             var sql = GetSqlFileContent("Constructions");
 
@@ -113,6 +116,64 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
 
              return result;
+        }
+
+        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
+        {
+            var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
+
+            var units = GetUnits(taskIds, PropertyTypes.Construction);
+
+            var gbuAttributes = GbuObjectService.GetAllAttributes(
+                units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
+                attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
+                attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
+                DateTime.Now.GetEndOfTheDay());
+
+            var result = new List<ReportItem>();
+            units.ToList().ForEach(unit =>
+            {
+                var item = new ReportItem
+                {
+                    CadastralNumber = unit.CadastralNumber,
+                    Square = unit.Square,
+                    Upks = unit.Upks,
+                    CadastralCost = unit.CadastralCost
+                };
+
+                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
+
+                result.Add(item);
+            });
+
+            return result;
+        }
+
+        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
+        {
+            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
+            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), RosreestrRegisterService.GetCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetFormationDateAttribute());
+            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), RosreestrRegisterService.GetFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.WallMaterial), RosreestrRegisterService.GetWallMaterialAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ConstructionPurpose), RosreestrRegisterService.GetConstructionPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ObjectName), RosreestrRegisterService.GetObjectNameAttribute());
+
+            attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.SubGroupUsageTypeCode), RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.FunctionalSubGroupName), RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId));
+
+            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
+            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+
+            return result;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
