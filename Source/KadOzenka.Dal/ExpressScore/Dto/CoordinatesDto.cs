@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory;
+using System;
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
@@ -8,6 +9,17 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public decimal Lat { get; set; }
 		public decimal Lng { get; set; }
 		public string ObjectMiniCard { get; set; }
+		public string ObjectMiniCardContent { get; set; }
+		public string Images { get; set; }
+		public decimal? Price { get; set; }
+		public decimal? PricePerMeter { get; set; }
+		public decimal? Area { get; set; }
+		public string Address { get; set; }
+		public string CadastralNumber { get; set; }
+		public string PropertyMarketSegment { get; set; }
+		public string DealType { get; set; }
+		public MarketTypes Market_Code { get; set; }
+		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
 
 		public bool Equals(CoordinatesDto other)
 		{
