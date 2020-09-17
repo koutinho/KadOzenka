@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.UI.Registers.Reports.Model;
-using FastReport;
-using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -169,14 +166,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
+            return OMUnit.Where(x => taskIds.Contains((long) x.TaskId) &&
                                      x.PropertyType_Code == type &&
                                      x.ObjectId != null)
-                .Select(x => x.ObjectId)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Square)
-                .Select(x => x.Upks)
-                .Select(x => x.CadastralCost)
+                .Select(x => new
+                {
+                    x.ObjectId,
+                    x.CadastralNumber,
+                    x.Square,
+                    x.Upks,
+                    x.CadastralCost
+                })
                 .Execute();
         }
 
