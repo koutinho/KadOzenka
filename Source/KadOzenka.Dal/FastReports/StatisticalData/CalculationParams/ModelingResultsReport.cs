@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var group = GroupService.GetGroupById(groupId);
             var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
-            var operations = GetOperations(taskIdList, model?.Id);
+            var operations = GetOperations(taskIdList, model?.Id, groupId);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -49,14 +49,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId)
+        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId, long groupId)
         {
-            var units = GetUnits(taskIds);
-            //для тестирования
-            //id объекта, у которого настроены показатели вручную - 11404578
-            //объект, у которого есть адрес в гбу
-            //var objectIdForTesting = 11188991;
-            //units[1].ObjectId = objectIdForTesting;
+            var units = GetUnits(taskIds, groupId);
             if (units == null || units.Count == 0)
                 return new List<ReportItem>();
 
@@ -64,7 +59,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var groupedFactors = modelId == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(modelId.Value);
+                : FactorsService.GetGroupedModelFactors2(modelId.Value);
             var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
             var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
 
@@ -88,7 +83,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 });
             });
 
-            return items.OrderBy(x => x.CadastralDistrict).ToList();
+            return items;
+        }
+
+        protected List<OMUnit> GetUnits(List<long> taskIds, long groupId)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null && x.GroupId == groupId)
+                .Select(x => x.ObjectId)
+                .Select(x => x.PropertyType_Code)
+                .Select(x => x.CadastralBlock)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.Square)
+                .Select(x => x.Upks)
+                .Select(x => x.CadastralCost)
+                .OrderBy(x => x.CadastralBlock)
+                .Execute();
         }
 
         private List<GbuObjectAttribute> GetAddresses(List<long> objectIds)
@@ -99,7 +108,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 objectIds,
                 new List<long> {addressAttribute.RegisterId},
                 new List<long> {addressAttribute.Id},
-                DateTime.Now.GetEndOfTheDay());
+                DateTime.Now.GetEndOfTheDay(), isLight: true);
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)

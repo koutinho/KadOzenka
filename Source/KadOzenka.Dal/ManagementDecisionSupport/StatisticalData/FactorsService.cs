@@ -5,6 +5,8 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Model;
+using KadOzenka.Dal.Model.Dto;
+using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -30,6 +32,30 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 {
                     Id = y.FactorId,
                     Name = y.Factor
+                }).ToList()
+            }).ToList();
+
+            return groupedFactors;
+        }
+
+        //TODO rename after finish report optimization
+        public List<PricingFactors> GetGroupedModelFactors2(long modelId)
+        {
+            var query = ModelService.GetModelFactorsQuery(modelId);
+
+            query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorPure.FactorId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorPure.Name)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorPure.RegisterId)));
+
+            var factors = query.ExecuteQuery<ModelFactorPure>();
+
+            var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new PricingFactors
+            {
+                RegisterId = (int)x.Key,
+                Attributes = x.Select(y => new PricingFactor
+                {
+                    Id = y.FactorId,
+                    Name = y.Name
                 }).ToList()
             }).ToList();
 
