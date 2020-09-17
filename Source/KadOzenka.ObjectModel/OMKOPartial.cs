@@ -118,7 +118,7 @@ namespace ObjectModel.KO
         public CalcItem(long factorid, string value, string numeric)
         {
             if (value == string.Empty)
-                Value = numeric;
+                Value = numeric; 
             else
                 Value = value;
             FactorId = factorid;
@@ -1100,7 +1100,10 @@ namespace ObjectModel.KO
                                         {
                                             bool mok = false;
                                             decimal d = 0;
-                                            OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
+                                            OMMarkCatalog mc = null;
+                                            mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper().Replace('.',','));
+                                            if (mc==null)
+                                                mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper().Replace(',', '.'));
                                             if (mc != null)
                                             {
                                                 d = mc.MetkaFactor.ParseToDecimal();
@@ -1136,7 +1139,8 @@ namespace ObjectModel.KO
                                         }
                                         else
                                         {
-                                            bool dok = decimal.TryParse(factorValue, out decimal d);
+                                            string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                            bool dok = decimal.TryParse(factorValue.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d);
                                             if (!dok)
                                             {
                                                 error = true;
@@ -1219,7 +1223,10 @@ namespace ObjectModel.KO
                                             decimal d = 0;
                                             bool mok = false;
 
-                                            OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
+                                            OMMarkCatalog mc = null;
+                                            mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper().Replace('.', ','));
+                                            if (mc == null)
+                                                mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper().Replace(',', '.'));
                                             if (mc != null)
                                             {
                                                 d = mc.MetkaFactor.ParseToDecimal();
@@ -1249,7 +1256,8 @@ namespace ObjectModel.KO
                                         }
                                         else
                                         {
-                                            bool dok = decimal.TryParse(factorValue, out decimal d);
+                                            string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                            bool dok = decimal.TryParse(factorValue.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d);
                                             if (!dok)
                                             {
                                                 error = true;
@@ -1918,7 +1926,11 @@ namespace ObjectModel.KO
                                 string t6 = row.ItemArray[6].ParseToString();
                                 if (t6 != string.Empty && t6 != null)
                                 {
-                                    OMMarkCatalog mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper());
+                                    OMMarkCatalog mc = null;
+                                    mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper().Replace('.',','));
+                                    if (mc==null)
+                                        mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper().Replace(',', '.'));
+
                                     if (mc != null)
                                     {
                                         koeff = mc.MetkaFactor.ParseToDecimal();
@@ -1929,7 +1941,10 @@ namespace ObjectModel.KO
                                     string t7 = row.ItemArray[7].ParseToString();
                                     if (t7 != string.Empty && t7 != null)
                                     {
-                                        OMMarkCatalog mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t7.ToUpper());
+                                        OMMarkCatalog mc = null;
+                                        mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t7.ToUpper().Replace('.', ','));
+                                        if (mc == null)
+                                            mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t7.ToUpper().Replace(',', '.'));
                                         if (mc != null)
                                         {
                                             koeff = mc.MetkaFactor.ParseToDecimal();

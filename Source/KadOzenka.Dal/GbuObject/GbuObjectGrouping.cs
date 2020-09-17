@@ -1266,10 +1266,10 @@ namespace KadOzenka.Dal.GbuObject
                 Parallel.ForEach(Objs, options, item => 
                 {
                     SetThreadCurrentPrincipal(userId);
-
+                    
                     try
                     {
-                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
+                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (item.CreationDate == null) ? DateTime.Now.Date : item.CreationDate.Value.Date, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
                     }
                     catch (Exception ex)
                     {
