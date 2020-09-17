@@ -8,12 +8,9 @@ using Core.SRD;
 using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.Directory;
 using ObjectModel.Core.TD;
-using ObjectModel.KO;
 using Core.ErrorManagment;
 using System.Security.Principal;
-using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
-using DevExpress.CodeParser;
 using Serilog;
 using Newtonsoft.Json;
 using Serilog.Context;
@@ -434,7 +431,8 @@ namespace KadOzenka.Dal.GbuObject
                 return "14:000";
             }
         }
-        private ValueItem GetValueFactor(ObjectModel.Gbu.OMMainObject obj, long? idFactor, DateTime? date)
+
+        private ValueItem GetValueFactor(long objectId, long? idFactor, DateTime? date)
         {
             ValueItem res = new ValueItem
             {
@@ -445,7 +443,7 @@ namespace KadOzenka.Dal.GbuObject
 
             List<long> lstIds = new List<long>();
             if (idFactor != null) lstIds.Add(idFactor.Value);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, null, lstIds, date);
+            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(objectId, null, lstIds, date);
             if (attribs.Count > 0)
             {
                 if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
@@ -456,42 +454,16 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
 
-
-            return res;
-        }
-        private ValueItem GetValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, DateTime? date)
-        {
-            ValueItem res = new ValueItem
-            {
-                Value = string.Empty,
-                IdDocument = null,
-                AttributeName = string.Empty
-            };
-
-            List<long> lstIds = new List<long>();
-            if (idFactor != null) lstIds.Add(idFactor.Value);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, date);
-            if (attribs.Count > 0)
-            {
-                if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
-                {
-                    res.Value = attribs[0].GetValueInString();
-                    res.AttributeName = attribs[0].AttributeData.Name;
-                    res.IdDocument = attribs[0].ChangeDocId;
-                }
-            }
-
-
             return res;
         }
 
-        private void AddValueFactor(ObjectModel.Gbu.OMMainObject obj, long? idFactor, long? idDoc, DateTime date, string value)
+        private void AddValueFactor(long objectId, long? idFactor, long? idDoc, DateTime date, string value)
         {
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
                 AttributeId = idFactor.Value,
-                ObjectId = obj.Id,
+                ObjectId = objectId,
                 ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
                 S = date,
                 ChangeUserId = SRDSession.Current.UserID,
@@ -499,25 +471,10 @@ namespace KadOzenka.Dal.GbuObject
                 Ot = date,
                 StringValue = value,
             };
-            attributeValue.Save();
-        }
-	    private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
-        {
-            var attributeValue = new GbuObjectAttribute
-            {
-                Id = -1,
-                AttributeId = idFactor.Value,
-                ObjectId = unit.ObjectId.Value,
-                ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
-                S = date,
-                ChangeUserId = SRDSession.Current.UserID,
-                ChangeDate = DateTime.Now,
-                Ot = date,
-                StringValue = value,
-            };
-            attributeValue.Save();
 
+            attributeValue.Save();
         }
+
         private ValueItem GetDataLevel(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
@@ -526,7 +483,7 @@ namespace KadOzenka.Dal.GbuObject
             if (level.IdFactor != null)
             {
 	            dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-				   ValueLevel = GetValueFactor(obj, level.IdFactor, dateActual);
+				   ValueLevel = GetValueFactor(obj.Id, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
@@ -573,8 +530,10 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 }
             }
+
             return ValueLevel;
         }
+
         private ValueItem GetDataLevel(LevelItem level, ObjectModel.KO.OMUnit unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
@@ -583,7 +542,7 @@ namespace KadOzenka.Dal.GbuObject
             if (level.IdFactor != null)
             {
 	            dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-	            ValueLevel = GetValueFactor(unit, level.IdFactor, dateActual);
+	            ValueLevel = GetValueFactor(unit.ObjectId.Value, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
@@ -633,6 +592,7 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 }
             }
+
             return ValueLevel;
         }
 
@@ -710,9 +670,7 @@ namespace KadOzenka.Dal.GbuObject
                 Level10 = GetDataLevel(setting.Level10, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
                 Level11 = GetDataLevel(setting.Level11, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
-                try { 
-                
-               
+                try {
                     var levelsData = new List<DataLevel>
                     {
 	                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
@@ -720,7 +678,7 @@ namespace KadOzenka.Dal.GbuObject
                     };
                     lock (PriorityGrouping.locked)
                     {
-                        PriorityGrouping.WriteDataAllLevels(levelsData, currentRow, dicColumns, reportService);
+                        PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
                     }
               
 				    string resGroup = GetGroupCode(out string source);
@@ -753,7 +711,7 @@ namespace KadOzenka.Dal.GbuObject
                             else
                             if (source.Contains("11")) id_doc = Doc_Id_11;
 
-                            AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+                            AddValueFactor(obj.Id, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
 						    reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
 						    reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
@@ -824,7 +782,7 @@ namespace KadOzenka.Dal.GbuObject
 
 							    if (setting.IdAttributeSource != null)
 							    {
-								    AddValueFactor(obj, setting.IdAttributeSource, null, dateActual, strsource);
+								    AddValueFactor(obj.Id, setting.IdAttributeSource, null, dateActual, strsource);
 							    }
 						    }
 						    if (setting.IdAttributeDocument != null)
@@ -879,7 +837,7 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-                                AddValueFactor(obj, setting.IdAttributeDocument, null, dateActual, strsource);
+                                AddValueFactor(obj.Id, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
                             reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
 					    }
@@ -900,6 +858,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
         }
+
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual,
 	        GbuReportService reportService, Dictionary<long, long> dicColumns)
         {
@@ -910,7 +869,6 @@ namespace KadOzenka.Dal.GbuObject
 		        currentRow = reportService.GetCurrentRow();
 	        }
 
-		
 			reportService.AddValue(unit.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
 			if (unit.ObjectId != null)
             {
@@ -986,10 +944,9 @@ namespace KadOzenka.Dal.GbuObject
                     };
                     lock (PriorityGrouping.locked)
                     {
-						PriorityGrouping.WriteDataAllLevels(levelsData, currentRow, dicColumns, reportService);
+						PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
 					}
-					
-
+                    
                     string resGroup = GetGroupCode(out string source);
 
                     #region Результат
@@ -1020,7 +977,7 @@ namespace KadOzenka.Dal.GbuObject
                             else
                             if (source.Contains("11")) id_doc = Doc_Id_11;
 
-                            AddValueFactor(unit, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+                            AddValueFactor(unit.ObjectId.Value, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
 							reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
 							reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
@@ -1078,9 +1035,8 @@ namespace KadOzenka.Dal.GbuObject
 								reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
 								if (setting.IdAttributeSource != null)
 								{
-									AddValueFactor(unit, setting.IdAttributeSource, null, dateActual, strsource);
+									AddValueFactor(unit.ObjectId.Value, setting.IdAttributeSource, null, dateActual, strsource);
 								}
-							
                             }
                             if (setting.IdAttributeDocument != null)
                             {
@@ -1134,7 +1090,7 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-                                AddValueFactor(unit, setting.IdAttributeDocument, null, dateActual, strsource);
+                                AddValueFactor(unit.ObjectId.Value, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
                             lock (PriorityGrouping.locked)
                             {
@@ -1254,14 +1210,14 @@ namespace KadOzenka.Dal.GbuObject
                 List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
                 foreach (long taskId in setting.TaskFilter)
                 {
-                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute());
+                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.ObjectId != null).SelectAll().Execute());
                 }
                 MaxCount = Objs.Count;
 				CurrentCount = 0;
 
                 _log.ForContext("useTask", useTask)
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
-                    .Debug("Выполнение операции группировки по {Count} объектам", MaxCount);
+                    .Debug("Выполнение операции группировки по Задачам на  оценку. Всего {Count} объектов", MaxCount);
 
                 Parallel.ForEach(Objs, options, item => 
                 {
@@ -1276,9 +1232,9 @@ namespace KadOzenka.Dal.GbuObject
                         _log.Error("Ошибка группировки по КН {CadastralNumber}", item.CadastralNumber);
                         LogContext.PushProperty("Param", JsonConvert.SerializeObject(item));
                         ErrorManager.LogError(ex);
-                        
                     }
                 });
+
                 Objs.Clear();
             }
 			else
@@ -1289,7 +1245,7 @@ namespace KadOzenka.Dal.GbuObject
 
                 _log.ForContext("useTask", useTask)
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
-                    .Debug("Выполнение операции группировки по {Count} объектам", MaxCount);
+                    .Debug("Выполнение операции группировки по Объектам ГБУ. Всего {Count} объектов", MaxCount);
 
                 Parallel.ForEach(Objs, options, item => 
                 {
@@ -1306,6 +1262,7 @@ namespace KadOzenka.Dal.GbuObject
                         ErrorManager.LogError(ex);
                     }
                 });
+
                 Objs.Clear();
             }
 
@@ -1332,7 +1289,6 @@ namespace KadOzenka.Dal.GbuObject
                 _log.Error(ex, "Форматирование и сохранение отчета завершилось с ошибкой");
                 throw;
             }
-		          
         }
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
@@ -1370,7 +1326,7 @@ namespace KadOzenka.Dal.GbuObject
 	        return res;
         }
 
-        public static void WriteDataAllLevels(List<DataLevel> dataLevels, int rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
+        public static void AddInfoToReport(List<DataLevel> dataLevels, int rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
             foreach (var dataLevel in dataLevels)
 	        {
