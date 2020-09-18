@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -38,43 +40,24 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds)
         {
-            var units = GetUnits(taskIds, PropertyTypes.Stead);
-            ////для тестирования
-            //units = new List<OMUnit>
-            //{
-            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11188991 },
-            //    new OMUnit{CadastralNumber = "test 2", Id = 12402753, ObjectId = 11251387 }
-            //};
+            var units = GetUnitsNew(taskIds);
+            
             if (units == null || units.Count == 0)
                 return new List<ReportItem>();
 
-            var unitIds = units.Select(x => x.Id).Distinct();
-            var unitCosts = OMCostRosreestr.Where(x => unitIds.Contains(x.IdObject)).SelectAll().Execute();
-
             var attributesDictionary = GetAttributesForReport(tourId);
             var gbuAttributes = GbuObjectService.GetAllAttributes(
-                units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
+                units.Select(x => x.ObjectId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+                DateTime.Now.GetEndOfTheDay(), isLight: true);
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
             {
-                var rosreestrCost = unitCosts.FirstOrDefault(x => x.IdObject == unit.Id);
                 var item = new ReportItem
                 {
-                    CadastralNumber = unit.CadastralNumber,
-                    Square = unit.Square,
-                    CostValue = rosreestrCost?.Costvalue,
-                    DateValuation = rosreestrCost?.Datevaluation,
-                    DateEntering = rosreestrCost?.Dateentering,
-                    DateApproval = rosreestrCost?.Dateapproval,
-                    DocNumber = rosreestrCost?.Docnumber,
-                    DocDate = rosreestrCost?.Docdate,
-                    DocName = rosreestrCost?.Docname,
-                    ApplicationDate = rosreestrCost?.Applicationdate,
-                    RevisalStatementDate = rosreestrCost?.Revisalstatementdate,
+                    UnitIfo = unit
                 };
 
                 SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
@@ -83,6 +66,53 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             });
 
             return result;
+        }
+
+        protected List<UnitIfo> GetUnitsNew(List<long> taskIds)
+        {
+            var query = new QSQuery
+            {
+                MainRegisterID = OMUnit.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, taskIds.Select(x => (double) x).ToList()),
+                        new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (int)PropertyTypes.Stead),
+                        new QSConditionSimple(OMUnit.GetColumn(x => x.ObjectId), QSConditionType.IsNotNull)
+                    }
+                },
+                Joins = new List<QSJoin>
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMCostRosreestr.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMUnit.GetColumn(x => x.Id),
+                            RightOperand = OMCostRosreestr.GetColumn(x => x.IdObject)
+                        },
+                        JoinType = QSJoinType.Left
+                    }
+                }
+            };
+            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, nameof(UnitIfo.ObjectId)));
+            query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitIfo.CadastralNumber)));
+            query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(UnitIfo.Square)));
+
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Costvalue, nameof(UnitIfo.CostValue)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Datevaluation, nameof(UnitIfo.DateValuation)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Dateentering, nameof(UnitIfo.DateEntering)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Dateapproval, nameof(UnitIfo.DateApproval)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Docnumber, nameof(UnitIfo.DocNumber)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Docdate, nameof(UnitIfo.DocDate)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Docname, nameof(UnitIfo.DocName)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Applicationdate, nameof(UnitIfo.ApplicationDate)));
+            query.AddColumn(OMCostRosreestr.GetColumn(x => x.Revisalstatementdate, nameof(UnitIfo.RevisalStatementDate)));
+
+            return query.ExecuteQuery<UnitIfo>();
         }
 
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
@@ -136,7 +166,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             for (var i = 0; i < operations.Count; i++)
             {
                 dataTable.Rows.Add(i + 1,
-                    operations[i].CadastralNumber,
+                    operations[i].UnitIfo.CadastralNumber,
                     operations[i].TypeOfUseByDocuments,
                     operations[i].TypeOfUseByClassifier,
                     operations[i].FormationDate,
@@ -144,18 +174,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     operations[i].Location,
                     operations[i].Address,
                     operations[i].ParcelName,
-                    operations[i].Square,
+                    operations[i].UnitIfo.Square,
                     operations[i].ObjectType,
                     operations[i].CadastralQuartal,
-                    operations[i].CostValue?.ToString(DecimalFormat),
-                    operations[i].DateValuation?.ToString(DateFormat),
-                    operations[i].DateEntering?.ToString(DateFormat),
-                    operations[i].DateApproval?.ToString(DateFormat),
-                    operations[i].DocNumber,
-                    operations[i].DocDate?.ToString(DateFormat),
-                    operations[i].DocName,
-                    operations[i].ApplicationDate?.ToString(DateFormat),
-                    operations[i].RevisalStatementDate?.ToString(DateFormat));
+                    operations[i].UnitIfo.CostValue?.ToString(DecimalFormat),
+                    operations[i].UnitIfo.DateValuation?.ToString(DateFormat),
+                    operations[i].UnitIfo.DateEntering?.ToString(DateFormat),
+                    operations[i].UnitIfo.DateApproval?.ToString(DateFormat),
+                    operations[i].UnitIfo.DocNumber,
+                    operations[i].UnitIfo.DocDate?.ToString(DateFormat),
+                    operations[i].UnitIfo.DocName,
+                    operations[i].UnitIfo.ApplicationDate?.ToString(DateFormat),
+                    operations[i].UnitIfo.RevisalStatementDate?.ToString(DateFormat));
             }
 
             return dataTable;
@@ -167,9 +197,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private class ReportItem : InfoFromTourSettings
         {
-            //From Unit
-            public string CadastralNumber { get; set; }
-            public decimal? Square { get; set; }
+            public UnitIfo UnitIfo { get; set; }
 
             //From Rosreestr
             public string TypeOfUseByDocuments { get; set; }
@@ -182,6 +210,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             //From Tour Settings
 
+            public ReportItem()
+            {
+                UnitIfo = new UnitIfo();
+            }
+        }
+
+        public class UnitIfo
+        {
+            //From Unit
+            public long Id { get; set; }
+            public long ObjectId { get; set; }
+            public string CadastralNumber { get; set; }
+            public decimal? Square { get; set; }
 
             //From KO.CostRosreestr (KO_COST_ROSREESTR)
             /// <summary>
