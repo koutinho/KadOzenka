@@ -22,6 +22,7 @@ using ObjectModel.Core.Shared;
 using Core.Shared.Misc;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
+using ObjectModel.Core.TD;
 using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.DataImport
@@ -162,6 +163,9 @@ namespace KadOzenka.Dal.DataImport
 			ParallelOptions options, int maxColumns, List<string> columnNames, long? documentId)
 		{
             var success = true;
+            OMInstance doc = OMInstance.Where(x => x.Id == documentId).SelectAll().Execute().FirstOrDefault();
+            var docDate = doc.ApproveDate;
+
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
 				try
@@ -206,8 +210,8 @@ namespace KadOzenka.Dal.DataImport
                                 {
                                     ObjectId = objectId,
                                     AttributeId = attribute,
-                                    S = DateTime.Now,
-                                    Ot = DateTime.Now,
+                                    S = docDate ?? DateTime.Now, // установка даты актуальности по дате документа
+                                    Ot = docDate ?? DateTime.Now,
                                     ChangeDocId = documentId ?? -1
                                 };
                                 DataExportColumn column = columns.Where(x => x.AttributrId == attribute).First();
