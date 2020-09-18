@@ -33,6 +33,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities
         //From Tour Settings
 
         //Factors from Model
-        public List<FactorsService.PricingFactor> Factors { get; set; }
+        public List<FactorsService.Attribute> Factors { get; set; }
     }
 }

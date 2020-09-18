@@ -5,7 +5,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Model;
-using KadOzenka.Dal.Model.Dto;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
@@ -28,7 +27,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new PricingFactors
             {
                 RegisterId = (int)x.Key,
-                Attributes = x.Select(y => new PricingFactor
+                Attributes = x.Select(y => new Attribute
                 {
                     Id = y.FactorId,
                     Name = y.Factor
@@ -38,33 +37,35 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return groupedFactors;
         }
 
-        //TODO rename after finish report optimization
-        public List<PricingFactors> GetGroupedModelFactors2(long modelId)
+        //TODO переименовать после оптимизации
+        public List<PricingFactors> GetGroupedModelFactorsNew(long modelId)
         {
             var query = ModelService.GetModelFactorsQuery(modelId);
 
-            query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorPure.FactorId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.ValueField, nameof(ModelFactorPure.ValueField)));
             query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorPure.Name)));
             query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorPure.RegisterId)));
 
             var factors = query.ExecuteQuery<ModelFactorPure>();
 
-            var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new PricingFactors
+            var groupedFactors = factors.GroupBy(x => x.RegisterId, (key, group) => new PricingFactors
             {
-                RegisterId = (int)x.Key,
-                Attributes = x.Select(y => new PricingFactor
+                RegisterId = key,
+                Attributes = group.Select(y => new Attribute
                 {
-                    Id = y.FactorId,
-                    Name = y.Name
+                    //TODO поменять после правок платформы
+                    Id = y.Id,
+                    Name = y.ValueField,
+                    ValueField = y.Name
                 }).ToList()
             }).ToList();
 
             return groupedFactors;
         }
 
-        public Dictionary<long, List<PricingFactor>> GetPricingFactorsForUnits(List<long> unitIds, List<PricingFactors> unitFactors)
+        public Dictionary<long, List<Attribute>> GetPricingFactorsForUnits(List<long> unitIds, List<PricingFactors> unitFactors)
         {
-            var attributes = new Dictionary<long, List<PricingFactor>>();
+            var attributes = new Dictionary<long, List<Attribute>>();
             unitFactors.ForEach(factor =>
             {
                 //улучшение производительности: не делаем join c юнитами, если можем найти атрибут с ID основного ключа
@@ -81,7 +82,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
                 var query = new QSQuery
                 {
-                    MainRegisterID = factor.RegisterId,
+                    MainRegisterID = (int) factor.RegisterId,
                     Columns = factor.Attributes.Select(x => (QSColumn)new QSColumnSimple(x.Id, x.Id.ToString())).ToList(),
                     Condition = condition
                 };
@@ -95,9 +96,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                         var value = row[attribute.Id.ToString()].ParseToStringNullable();
 
                         if (!attributes.ContainsKey(unitId))
-                            attributes.Add(unitId, new List<PricingFactor>());
+                            attributes.Add(unitId, new List<Attribute>());
 
-                        attributes[unitId].Add(new PricingFactor
+                        attributes[unitId].Add(new Attribute
                         {
                             Id = attribute.Id,
                             Name = attribute.Name,
@@ -113,17 +114,27 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         #region Entities
 
+        //TODO рефакторить после окончания оптимизации
         public class PricingFactors
         {
-            public int RegisterId { get; set; }
-            public List<PricingFactor> Attributes { get; set; }
+            public long RegisterId { get; set; }
+            public List<Attribute> Attributes { get; set; }
         }
 
-        public class PricingFactor
+        public class Attribute
         {
             public long Id { get; set; }
             public string Name { get; set; }
+            public string ValueField { get; set; }
             public string Value { get; set; }
+        }
+
+        public class ModelFactorPure
+        {
+            public long Id { get; set; }
+            public string Name { get; set; }
+            public string ValueField { get; set; }
+            public long RegisterId { get; set; }
         }
 
         #endregion

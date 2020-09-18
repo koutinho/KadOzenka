@@ -17,12 +17,4 @@ namespace KadOzenka.Dal.Model.Dto
         public bool SignAdd { get; set; }
         public bool SignMarket { get; set; }
     }
-
-    public class ModelFactorPure
-    {
-        public long Id { get; set; }
-        public long FactorId { get; set; }
-        public string Name { get; set; }
-        public long RegisterId { get; set; }
-    }
 }

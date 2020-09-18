@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
-using ObjectModel.Directory;
 using Core.UI.Registers.Reports.Model;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
@@ -49,66 +49,97 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Support Methods
 
-        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId, long groupId)
+        private string GetSql(List<long> taskIds, long? modelId, long groupId,
+            List<FactorsService.PricingFactors> groupedFactors)
         {
-            var units = GetUnits(taskIds, groupId);
-            if (units == null || units.Count == 0)
-                return new List<ReportItem>();
-
-            var addresses = GetAddresses(units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList());
-
-            var groupedFactors = modelId == null
-                ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors2(modelId.Value);
-            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
-            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), groupedFactors);
-
-            var items = new List<ReportItem>();
-            units.ForEach(unit =>
+            var counter = 1;
+            var columns = string.Empty;
+            var tables = string.Empty;
+            string query;
+            
+            groupedFactors.ForEach(factors =>
             {
-                var objectFactors = pricingFactors.TryGetValue(unit.Id, out var value) ? value : attributes;
+                var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id== factors.RegisterId);
+                if(register == null)
+                    throw new Exception($"Не найден реестр с Id='{factors.RegisterId}' для факторов модели с Id='{modelId}'");
 
-                var objectAddress = addresses.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
-
-                items.Add(new ReportItem
+                factors.Attributes.ForEach(attribute =>
                 {
-                    ObjectType = unit.PropertyType_Code,
-                    CadastralDistrict = GetCadastralDistrict(unit.CadastralBlock),
-                    CadastralNumber = unit.CadastralNumber,
-                    Factors = objectFactors,
-                    Address = objectAddress,
-                    Square = unit.Square,
-                    Upks = unit.Upks,
-                    CadastralCost = unit.CadastralCost
+                    columns = $"{columns} factorsTable{counter}.{attribute.ValueField} as \"{attribute.Id}\",";
                 });
+                
+                tables = $"{tables} left join {register.QuantTable} factorsTable{counter} on unit.id = factorsTable{counter}.Id";
+                counter++;
             });
 
-            return items;
-        }
-
-        protected List<OMUnit> GetUnits(List<long> taskIds, long groupId)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null && x.GroupId == groupId)
-                .Select(x => x.ObjectId)
-                .Select(x => x.PropertyType_Code)
-                .Select(x => x.CadastralBlock)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Square)
-                .Select(x => x.Upks)
-                .Select(x => x.CadastralCost)
-                .OrderBy(x => x.CadastralBlock)
-                .Execute();
-        }
-
-        private List<GbuObjectAttribute> GetAddresses(List<long> objectIds)
-        {
             var addressAttribute = RosreestrRegisterService.GetAddressAttribute();
 
-            return GbuObjectService.GetAllAttributes(
-                objectIds,
-                new List<long> {addressAttribute.RegisterId},
-                new List<long> {addressAttribute.Id},
-                DateTime.Now.GetEndOfTheDay(), isLight: true);
+            var baseSelect = $@"SELECT
+                unit.PROPERTY_TYPE as {nameof(ReportItem.ObjectType)}, 
+                SUBSTRING(unit.CADASTRAL_BLOCK, 0, 6) as {nameof(ReportItem.CadastralDistrict)}, 
+                unit.CADASTRAL_NUMBER as {nameof(ReportItem.CadastralNumber)}, 
+                (select * from  gbu_get_allpri_attribute_value(unit.id, {addressAttribute.Id})) as {nameof(ReportItem.Address)},
+                unit.SQUARE as {nameof(ReportItem.Square)}, 
+                unit.UPKS as {nameof(ReportItem.Upks)}, 
+                unit.CADASTRAL_COST as {nameof(ReportItem.CadastralCost)} ";
+
+            if (string.IsNullOrWhiteSpace(columns))
+            {
+                query = baseSelect;
+            }
+            else
+            {
+                query = $"{baseSelect}, {columns.Remove(columns.Length - 1)} ";
+            }
+
+            //ИД, у которых внесены показатели вручную (для тестирования)
+            //and (unit.id = 16615885 or unit.id = 16615913)
+            //modelId = 100018, groupId = 100018
+            //taskId = 15365643
+            query = $@"{query} FROM ko_unit unit 
+                        {tables} 
+                    WHERE unit.TASK_ID in ({string.Join(",", taskIds)}) and unit.GROUP_ID= {groupId} 
+                    order by unit.CADASTRAL_BLOCK";
+
+            return query;
+        }
+
+        private List<ReportItem> GetOperations(List<long> taskIds, long? modelId, long groupId)
+        {
+            var groupedFactors = modelId == null
+                ? new List<FactorsService.PricingFactors>()
+                : FactorsService.GetGroupedModelFactorsNew(modelId.Value);
+            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
+
+            var sql = GetSql(taskIds, modelId, groupId, groupedFactors);
+            var command = DBMngr.Main.GetSqlStringCommand(sql);
+            var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+            var items = new List<ReportItem>();
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var item = new ReportItem
+                {
+                    ObjectType = row[nameof(ReportItem.ObjectType)].ParseToStringNullable(),
+                    CadastralDistrict = row[nameof(ReportItem.CadastralDistrict)].ParseToStringNullable(),
+                    CadastralNumber = row[nameof(ReportItem.CadastralNumber)].ParseToStringNullable(),
+                    Address = row[nameof(ReportItem.Address)].ParseToStringNullable(),
+                    Square = row[nameof(ReportItem.Square)].ParseToDecimalNullable(),
+                    Upks = row[nameof(ReportItem.Upks)].ParseToDecimalNullable(),
+                    CadastralCost = row[nameof(ReportItem.CadastralCost)].ParseToDecimalNullable(),
+                    Factors = attributes.Select(attribute =>
+                        new FactorsService.Attribute
+                        {
+                            Id = attribute.Id,
+                            Name = attribute.Name,
+                            Value = row[attribute.Id.ToString()].ParseToStringNullable()
+                        }).ToList()
+                };
+
+                items.Add(item);
+            }
+
+            return items;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -129,18 +160,34 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             for (var i = 0; i < operations.Count; i++)
             {
                 var counter = i + 1;
-                foreach (var keyValuePair in operations[i].Factors)
+                if (operations[i].Factors.Count == 0)
                 {
                     dataTable.Rows.Add(counter,
-                        operations[i].ObjectType == PropertyTypes.None ? null : operations[i].ObjectType.GetEnumDescription(),
+                        operations[i].ObjectType,
                         operations[i].CadastralDistrict,
                         operations[i].CadastralNumber,
-                        keyValuePair.Name,
-                        keyValuePair.Value,
+                        string.Empty,
+                        string.Empty,
                         operations[i].Address,
                         operations[i].Square?.ToString(DecimalFormat),
                         operations[i].Upks?.ToString(DecimalFormat),
                         operations[i].CadastralCost?.ToString(DecimalFormat));
+                }
+                else
+                {
+                    foreach (var keyValuePair in operations[i].Factors)
+                    {
+                        dataTable.Rows.Add(counter,
+                            operations[i].ObjectType,
+                            operations[i].CadastralDistrict,
+                            operations[i].CadastralNumber,
+                            keyValuePair.Name,
+                            keyValuePair.Value,
+                            operations[i].Address,
+                            operations[i].Square?.ToString(DecimalFormat),
+                            operations[i].Upks?.ToString(DecimalFormat),
+                            operations[i].CadastralCost?.ToString(DecimalFormat));
+                    }
                 }
             }
 
@@ -160,14 +207,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #endregion
 
+
         #region Entities
 
         private class ReportItem
         {
-            public PropertyTypes ObjectType { get; set; }
+            public string ObjectType { get; set; }
             public string CadastralDistrict { get; set; }
             public string CadastralNumber { get; set; }
-            public List<FactorsService.PricingFactor> Factors { get; set; }
+            public List<FactorsService.Attribute> Factors { get; set; }
             public string Address { get; set; }
             public decimal? Square { get; set; }
             public decimal? Upks { get; set; }
