@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
+using System.IO;
+using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
@@ -178,6 +180,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                     x.CadastralCost
                 })
                 .Execute();
+        }
+
+        protected string GetSqlFileContent(string folder, string fileName)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream(
+                $"\\StatisticalData\\{folder}\\{fileName}", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            return contents;
         }
 
         #endregion
