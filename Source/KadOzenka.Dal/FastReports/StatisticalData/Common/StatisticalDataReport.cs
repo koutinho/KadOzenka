@@ -182,6 +182,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                 .Execute();
         }
 
+        protected string ProcessDate(string dateStr)
+        {
+            if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
+            {
+                dateStr = date.ToString(DateFormat);
+            }
+
+            return dateStr;
+        }
+
         protected string GetSqlFileContent(string folder, string fileName)
         {
             string contents;
