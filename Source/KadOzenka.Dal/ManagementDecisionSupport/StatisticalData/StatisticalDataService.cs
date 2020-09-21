@@ -91,7 +91,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public RegisterAttribute GetObjectTypeAttributeFromTourSettings(long tourId)
         {
-            return GetTourAttribute(tourId, KoAttributeUsingType.TypeRoomAttribute);
+            return GetTourAttribute(tourId, KoAttributeUsingType.TerritoryTypeAttribute);
         }
 
         public RegisterAttribute GetCadastralQuartalAttributeFromTourSettings(long tourId)

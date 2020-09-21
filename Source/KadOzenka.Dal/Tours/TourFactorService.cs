@@ -276,13 +276,13 @@ namespace KadOzenka.Dal.Tours
             }
             paramsDto.IdCodeQuarter = codeQuarterAttributeId.Value;
 
-            var tourTypeRoomAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
-                x.AttributeUsingType_Code == KoAttributeUsingType.TypeRoomAttribute && x.AttributeId.HasValue)?.AttributeId;
-            if (!tourTypeRoomAttributeId.HasValue)
+            var tourTerritoryTypeAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
+                x.AttributeUsingType_Code == KoAttributeUsingType.TerritoryTypeAttribute && x.AttributeId.HasValue)?.AttributeId;
+            if (!tourTerritoryTypeAttributeId.HasValue)
             {
-                throw new Exception($"Для тура {tour.Year} не задан {KoAttributeUsingType.TypeRoomAttribute.GetEnumDescription()}");
+                throw new Exception($"Для тура {tour.Year} не задан {KoAttributeUsingType.TerritoryTypeAttribute.GetEnumDescription()}");
             }
-            paramsDto.IdTypeRoom = tourTypeRoomAttributeId.Value;
+            paramsDto.IdTerritoryType = tourTerritoryTypeAttributeId.Value;
 
             return paramsDto;
         }

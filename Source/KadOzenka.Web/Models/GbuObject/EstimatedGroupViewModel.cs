@@ -23,7 +23,7 @@ namespace KadOzenka.Web.Models.GbuObject
                 IdTask = IdTask.Value,
                 IdCodeQuarter = paramsDto.IdCodeQuarter,
                 IdCodeGroup = paramsDto.IdCodeGroup,
-                IdTypeRoom = paramsDto.IdTypeRoom,
+                IdTerritoryType = paramsDto.IdTerritoryType,
                 IdEstimatedSubGroup = IdEstimatedSubGroup.GetValueOrDefault()
             };
         }

@@ -47,7 +47,7 @@
 				@Html.Kendo().TextBoxFor(m => m.TerritoryType)
 			</div>
 		</div>
-		<div class="form-group">
+		@*<div class="form-group">
 			<div class="col-sm-6">
 				@Html.Kendo().CheckBox().Name("ByTypeRoom").Checked(Model.IsByTypeRoom).Label("По типу жилого помещения")
 			</div>
@@ -64,7 +64,7 @@
 									.HtmlAttributes(new { @style = "width: 100%" }).Enable(Model.IsByTypeRoom)
 				)
 			</div>
-		</div>
+		</div>*@
 		<div class="form-group">
 			<div class="col-sm-12">
 				<button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
@@ -76,7 +76,7 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
-	function changeTypeObject(e) {
+	@*function changeTypeObject(e) {
 		if (this.value() === '4' || this.value() === '11' || this.value() === '802' || this.value() === '8') {
 			$('#ByTypeRoom').prop('checked', false);
 			$('#ByTypeRoom').prop('disabled', true);
@@ -86,17 +86,17 @@
 			return;
 		}
 		$('#ByTypeRoom').prop('disabled', false);
-	}
+	}*@
 
 
 	$(function() {
-		$('#ByTypeRoom').on('change', function () {
+		@*$('#ByTypeRoom').on('change', function () {
 			if ($('#ByTypeRoom:checked').length > 0) {
 				$('#@nameof(Model.TypeOfRoom)').data("kendoDropDownList").enable(true);
 			} else {
 				$('#@nameof(Model.TypeOfRoom)').data("kendoDropDownList").enable(false);
 			}
-		});
+		});*@
 
 		$('#save').on('click',
 			function() {
