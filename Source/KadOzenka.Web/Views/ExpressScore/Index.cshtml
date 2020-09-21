@@ -31,6 +31,7 @@
         background-color: white;
         height: 95vh;
         border-radius: 10px;
+        padding-left: 10px;
         padding-right: 10px;
         overflow-y: scroll;
         overflow-x: hidden;
@@ -39,6 +40,7 @@
     .separator {
         height: 3px;
         background-color: bisque;
+        margin-left: 15px;
     }
 
     label {
@@ -245,7 +247,15 @@
 		findPoints.forEach(function (item) { if (!!map) map.geoObjects.remove(item); });
 		findPoints = [];
 		findPointsIds = [];
-	}
+    }
+
+    function declOfNum(n) {
+        n = Math.abs(n) % 100; var n1 = n % 10;
+        if (n > 10 && n < 20) { return 'ов'; }
+        if (n1 > 1 && n1 < 5) { return 'a'; }
+        if (n1 == 1) { return ''; }
+        return 'ов';
+    }
 
 	$("#slider").kendoSlider({ increaseButtonTitle: "Right", decreaseButtonTitle: "Left", min: -0, max: 30, smallStep: 1, largeStep: 10, showButtons: false, dragHandleTitle: 0 });
 	var slider = $("#slider").getKendoSlider();
@@ -430,136 +440,92 @@
 				}
 				if (data.response && data.response.targetObjectId) targetObjectId = data.response.targetObjectId;
                 if (data.response && data.response.coordinates) {
-                    Common.ShowMessage(`Было найдено ${data.response.coordinates.length} объектов.`);
+                    Common.ShowMessage(`Было найдено ${data.response.coordinates.length} объект${declOfNum(data.response.coordinates.length)}.`);
                     $(slider.wrapper).find('.k-draghandle').prop('title', data.response.coordinates.length);
                     slider.value(data.response.coordinates.length);
                     $('.calculate').prop('disabled', false);
-                    console.log(data.response.coordinates);
+
                     var coords_array = [];
                     data.response.coordinates.forEach(function (data) {
-                        var rindex = coords_array.findIndex(coord => (coord.lng == data.Lng && coord.lat == data.Lat));
+                        var rindex = coords_array.findIndex(coord => (coord.lng.toFixed(4) == data.Lng.toFixed(4) && coord.lat.toFixed(4) == data.Lat.toFixed(4)));
                         if (rindex != -1) {
-                            coords_array[rindex].ids.push(data.Id);
-                            coords_array[rindex].miniCards.push(data.ObjectMiniCard);
+                            coords_array[rindex].objs.push({
+                                id: data.Id,
+                                address: data.Address,
+                                area: data.Area,
+                                cadastralNumber: data.CadastralNumber,
+                                dealType: data.DealType,
+                                images: data.Images,
+                                market: data.Market,
+                                price: data.Price,
+                                pricePerMeter: data.PricePerMeter,
+                                propertyMarketSegment: data.PropertyMarketSegment,
+                                propertyType: data.PropertyType
+                            });
+                            coords_array[rindex].miniCardsContent.push(data.ObjectMiniCardContent);
                         }
-                        else coords_array.push({ lng: data.Lng, lat: data.Lat, ids: [data.Id], miniCards: [data.ObjectMiniCard] });
+                        else coords_array.push({
+                            lng: data.Lng,
+                            lat: data.Lat,
+                            miniCardContainer: data.ObjectMiniCard,
+                            id: data.Id,
+                            address: data.Address,
+                            currentSlide: 0,
+                            objs: [{
+                                id: data.Id,
+                                address: data.Address,
+                                area: data.Area,
+                                cadastralNumber: data.CadastralNumber,
+                                dealType: data.DealType,
+                                images: data.Images,
+                                market: data.Market,
+                                price: data.Price,
+                                pricePerMeter: data.PricePerMeter,
+                                propertyMarketSegment: data.PropertyMarketSegment,
+                                propertyType: data.PropertyType
+                            }],
+                            miniCardsContent: [data.ObjectMiniCardContent]
+                        });
                     });
 
+                    console.log(data.response.coordinates);
+                    console.log(coords_array);
+
                     coords_array.forEach(function (data) {
-                        data.ids.forEach(id => findPointsIds.push(id));
+                        data.objs.forEach(obj => findPointsIds.push(obj.id));
                         var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
-                            data.miniCards[0],
+                            data.miniCardContainer,
                             {
                                 build: function () {
                                     balloonContentLayout.superclass.build.call(this);
-                                    $("#excludeFromCalculation_" + data.ids[0]).kendoButton({ click: excludeFromCalculation });
+                                    $(`#centralBlock_${data.id}`).html(data.miniCardsContent[0]);
+                                    $(`#arrowLeft_${data.id}`).click(function () { slide(false, data); });
+                                    $(`#arrowRight_${data.id}`).click(function () { slide(true, data); });
+                                    subscribeSlider(data);
+                                    checkMiniCard(data);
                                 },
                                 clear: function () {
-                                    $("#excludeFromCalculation_" + data.ids[0]).unbind('click', excludeFromCalculation);
+                                    $("#excludeFromCalculation_" + data.objs[data.currentSlide].id).unbind('click', excludeFromCalculation);
                                     balloonContentLayout.superclass.clear.call(this);
+                                    data.currentSlide = 0;
                                 }
-                            });
+                            }
+                        );
                         var newPoint = new ymaps.Placemark(
                             [data.lat, data.lng],
-                            { pointId: data.ids[0] },
+                            { pointId: data.id },
                             {
                                 balloonContentLayout: balloonContentLayout,
                                 balloonPanelMaxMapArea: 0,
                                 preset: 'islands#orangeDotIconWithCaption'
-                            });
-                        newPoint.properties.set({ iconCaption: data.ids.length + " объектов" });
+                            }
+                        );
+                        newPoint.properties.set({ iconCaption: data.miniCardsContent.length + ` объект${declOfNum(data.miniCardsContent.length)}. ${data.address}` });
                         newPoint.options.set('balloonMinWidth', 500);
                         newPoint.options.set('balloonMaxWidth', 800);
-                        newPoint.options.set('balloonMinHeight', 420);
                         findPoints.push(newPoint);
                         map.geoObjects.add(newPoint);
                     });
-
-     //               data.response.coordinates.forEach(function (data) {
-
-     //                   findPointsIds.push(data.Id);
-     //                   // Создание макета содержимого балуна.
-     //                   var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
-     //                       data.ObjectMiniCard,
-     //                       {
-     //                           // Переопределяем функцию build, чтобы при создании макета начинать
-     //                           // слушать событие click на кнопке.
-     //                           build: function () {
-     //                               balloonContentLayout.superclass.build.call(this);
-     //                               $("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
-     //                           },
-     //                           // Переопределяем функцию clear, чтобы снять
-     //                           // прослушивание клика при удалении макета с карты.
-     //                           clear: function () {
-     //                               $("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
-     //                               balloonContentLayout.superclass.clear.call(this);
-     //                           }
-     //                       });
-     //                   var newPoint = new ymaps.Placemark([data.Lat, data.Lng],
-     //                       { pointId: data.Id },
-     //                       {
-     //                           balloonContentLayout: balloonContentLayout,
-     //                           // Запретим замену обычного балуна на балун-панель.
-     //                           // Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
-     //                           balloonPanelMaxMapArea: 0,
-     //                           preset: 'islands#orangeDotIconWithCaption'
-     //                       });
-     //                   newPoint.properties.set({
-     //                       // Формируем строку с данными об объекте.
-     //                       //iconCaption: "тест" //[firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
-     //                   });
-     //                   newPoint.options.set('balloonMinWidth', 500);
-     //                   newPoint.options.set('balloonMaxWidth', 800);
-     //                   newPoint.options.set('balloonMinHeight', 420);
-     //                   findPoints.push(newPoint);
-     //                   map.geoObjects.add(newPoint);
-
-     //                   /*
-     //                   findPointsIds.push(data.Id);
-     //                   var coord = [data.Lat, data.Lng];
-     //                   ymaps.geocode(coord).then(function (res) {
-     //                       var firstGeoObject = res.geoObjects.get(0);
-     //                       if (firstGeoObject) {
-     //                           // Создание макета содержимого балуна.
-     //                           var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
-     //                               data.ObjectMiniCard,
-     //                               {
-					//					// Переопределяем функцию build, чтобы при создании макета начинать
-					//					// слушать событие click на кнопке.
-					//					build: function() {
-					//						balloonContentLayout.superclass.build.call(this);
-					//						$("#excludeFromCalculation_" + data.Id).kendoButton({ click: excludeFromCalculation });
-					//					},
-					//					// Переопределяем функцию clear, чтобы снять
-					//					// прослушивание клика при удалении макета с карты.
-					//					clear: function() {
-					//						$("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
-					//						balloonContentLayout.superclass.clear.call(this);
-					//					}
-					//				});
-					//		    var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
-					//			    { pointId: data.Id },
-					//			    {
-					//				    balloonContentLayout: balloonContentLayout,
-					//				    // Запретим замену обычного балуна на балун-панель.
-					//					// Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
-					//					balloonPanelMaxMapArea: 0,
-					//					preset: 'islands#orangeDotIconWithCaption'
-					//				});
-					//				newPoint.properties.set({
-					//					// Формируем строку с данными об объекте.
-					//					iconCaption: [firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(), firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()].filter(Boolean).join(', ')
-					//				});
-					//				newPoint.options.set('balloonMinWidth', 500);
-					//				newPoint.options.set('balloonMaxWidth', 800);
-					//				newPoint.options.set('balloonMinHeight', 420);
-					//				findPoints.push(newPoint);
-					//				map.geoObjects.add(newPoint);
-					//		}
-     //                   });
-     //                   */
-
-					//});
 					map.setZoom(13);
 				}
 			}).always(function() { kendo.ui.progress($('body'), false); });
@@ -617,9 +583,7 @@
             } else {
                 $('.k-notification-error').each(function() {
                     var errorNotificationText = $.trim($(this).text());
-                    if (errorNotificationText === errorMessage) {
-                        $(this).hide();
-                    }
+                    if (errorNotificationText === errorMessage) { $(this).hide(); }
                 });
             }
 			if (firstGeoObject.getPremiseNumber()) {
@@ -738,7 +702,8 @@
 		});
 	}
 
-	function excludeFromCalculation() {
+    function excludeFromCalculation() {
+        checkMiniCard(data);
 		var initElement = $(this);
 		var buttonId = initElement[0].element[0].id;
 		var objId = parseInt(buttonId.split('_')[1]);
@@ -750,5 +715,34 @@
 		}
 		Common.ShowMessage("Объект исключен из расчета");
 	}
+
+    function slide(rightSlide, data) {
+        console.log("slided");
+        if (rightSlide) {
+            if (data.currentSlide >= data.miniCardsContent.length - 1) data.currentSlide = -1;
+            $(`#centralBlock_${data.id}`).html(data.miniCardsContent[++data.currentSlide]);
+        }
+        else {
+            if (data.currentSlide <= 0) data.currentSlide = data.miniCardsContent.length;
+            $(`#centralBlock_${data.id}`).html(data.miniCardsContent[--data.currentSlide]);
+        }
+        subscribeSlider(data);
+    }
+
+    function subscribeSlider(data) {
+        $(`#numOfObjs_${data.objs[data.currentSlide].id}`).text(`${data.currentSlide + 1} из ${data.miniCardsContent.length}`);
+        $(`#excludeFromCalculation_${data.objs[data.currentSlide].id}`).kendoButton({ click: function (e) { excludeFromCalculation(data); } });
+    }
+
+    function checkMiniCard(data) {
+        if (data.miniCardsContent.length <= 1) {
+            $(`#arrowLeft_${data.id}`).css("display", "none");
+            $(`#arrowRight_${data.id}`).css("display", "none");
+        }
+        else {
+            $(`#arrowLeft_${data.id}`).css("display", "block");
+            $(`#arrowRight_${data.id}`).css("display", "block");
+        }
+    }
 
 </script>

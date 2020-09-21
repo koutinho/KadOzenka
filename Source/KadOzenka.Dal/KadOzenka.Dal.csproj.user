@@ -1,4 +1,186 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="FastReports\AccountingInfoFromDeclarationNotificationReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\AdoptionOfDeclarationNotificationReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\ChangedRegisteredObjectsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\CorrectionByBargainReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\DeclarationNotificationReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\NewlyRegisteredObjectsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\PreviouslyRegisteredObjectsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\RefusalOfAccountingInformationFromDeclarationNotificationReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationsAnalysisReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationStatisticsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\AdditionalForms\ChangesUploadingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\AdditionalForms\MarketDataInfoReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\AdditionalForms\ResultsAnalysisReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\StateResultsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\CalculationParams\CalculationParamsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\CalculationParams\ModelingResultsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\Common\StatisticalDataReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\GeneralizedIndicators\BaseGeneralizedIndicatorsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\GeneralizedIndicators\GeneralizedIndicatorsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\GeneralizedIndicators\UPKSAverageValuesByCadastralQuartersReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\InfoAboutCadastralCostDeterminingMethodReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\KRSummaryResults\KRSummaryResultsOksReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\KRSummaryResults\KRSummaryResultsZuReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageByGroups\BaseMinMaxAverageByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageByGroups\MinMaxAverageUPKSByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageByGroups\MinMaxAverageUPKSUPRSByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageByGroups\MinMaxAverageUPRSByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByAdministrativeDistrictsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByAdministrativeDistricts\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByAdministrativeDistricts\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByAdministrativeDistricts\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByGroupsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsOksReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\NonuniformReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\OksReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PreviousToursReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\UniformReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\ZuReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsGroupingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsOksReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsZuReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\BuildingsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ConstructionsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ParcelsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ParkingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\PlacementsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ResultsByCadastralDistrictBaseReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageByAdministrativeDistrictsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageByCadastralQuartersReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageByCadastralRegionsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\SubjectsUPKSReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\TestBackgroundReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\TestBackgroundReport2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
