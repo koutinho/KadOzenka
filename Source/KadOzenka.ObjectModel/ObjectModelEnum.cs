@@ -10333,12 +10333,12 @@ namespace ObjectModel.Directory
         [ShortTitle("Атрибут кадастрового квартала")]
         CodeQuarterAttribute = 2,
 		/// <summary>
-		/// Атрибут типа помещения (3)
+		/// Атрибут типа территории (3)
 		/// </summary>
-		[Description("Атрибут типа помещения")]
+		[Description("Атрибут типа территории")]
         [EnumCode("3")]
-        [ShortTitle("Атрибут типа помещения")]
-        TypeRoomAttribute = 3,
+        [ShortTitle("Атрибут типа территории")]
+        TerritoryTypeAttribute = 3,
     }
 }
 
