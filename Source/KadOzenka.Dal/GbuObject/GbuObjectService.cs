@@ -56,6 +56,7 @@ namespace KadOzenka.Dal.GbuObject
             if(objectIds == null || objectIds.Count == 0)
                 return new List<GbuObjectAttribute>();
 
+            var uniqueObjectIds = objectIds.Distinct().ToList();
             var attributes = inputAttributes?.Distinct().ToList();
             if (sources == null)
 			{
@@ -93,7 +94,7 @@ namespace KadOzenka.Dal.GbuObject
 							propName = "DtValue";
 						}
 
-						var sql = GetSqlForRegisterWithDataPartitioning(objectIds, postfix, propName, registerData, isLight);
+						var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName, registerData, isLight);
 
 						if (attributes != null && attributes.Count > 0)
 						{
@@ -141,7 +142,7 @@ namespace KadOzenka.Dal.GbuObject
 								break;
 						}
 
-                        var sql = GetSqlForRegisterWithAttributePartitioning(objectIds, propName, attributeData, registerData, isLight);
+                        var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName, attributeData, registerData, isLight);
 
 						if (dateS != null || dateOt != null)
 						{
