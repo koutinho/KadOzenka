@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using Core.Register.RegisterEntities;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class OksReport : StatisticalDataReport
+    public class OksReport : PricingFactorsCompositionBaseReport
     {
         protected override string TemplateName(NameValueCollection query)
         {
@@ -38,97 +34,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds)
         {
-            var units = GetNotSteadUnits(taskIds);
-            ////для тестирования
-            //units = new List<OMUnit>
-            //{
-            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11188991 },
-            //    new OMUnit{CadastralNumber = "test 2", Id = 12402753, ObjectId = 11251387 }
-            //};
-            if (units == null || units.Count == 0)
-                return new List<ReportItem>();
+            var sql = GetSqlFileContent("Oks");
 
-            var unitIds = units.Select(x => x.Id).Distinct();
-            var unitCosts = OMCostRosreestr.Where(x => unitIds.Contains(x.IdObject)).SelectAll().Execute();
+            var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
+            var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+            var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+            var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+            var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+            var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+            var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
+            var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
+            var objectName = RosreestrRegisterService.GetObjectNameAttribute();
 
-            var attributesDictionary = GetAttributesForReport(tourId);
-            var gbuAttributes = GbuObjectService.GetAllAttributes(
-                units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+            var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+            var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+            var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
-            var result = new List<ReportItem>();
-            units.ToList().ForEach(unit =>
-            {
-                var rosreestrCost = unitCosts.FirstOrDefault(x => x.IdObject == unit.Id);
-                var item = new ReportItem
-                {
-                    CadastralNumber = unit.CadastralNumber,
-                    Square = unit.Square,
-                    CostValue = rosreestrCost?.Costvalue,
-                    DateValuation = rosreestrCost?.Datevaluation,
-                    DateEntering = rosreestrCost?.Dateentering,
-                    DateApproval = rosreestrCost?.Dateapproval,
-                    DocNumber = rosreestrCost?.Docnumber,
-                    DocDate = rosreestrCost?.Docdate,
-                    DocName = rosreestrCost?.Docname,
-                    ApplicationDate = rosreestrCost?.Applicationdate,
-                    RevisalStatementDate = rosreestrCost?.Revisalstatementdate,
-                };
+            var sqlWithParameters = string.Format(sql, string.Join(", ", taskIds), commissioningYear.Id,
+                buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
+                address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
+                objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
-                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
-
-                item.ResultPurpose = GetPurpose(unit.PropertyType_Code, item);
-
-                result.Add(item);
-            });
-
-            return result;
-        }
-
-        protected List<OMUnit> GetNotSteadUnits(List<long> taskIds)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
-                                     x.PropertyType_Code != PropertyTypes.Stead &&
-                                     x.ObjectId != null)
-                .SelectAll()
-                .Execute();
-        }
-
-        private string GetPurpose(PropertyTypes objectType, ReportItem item)
-        {
-            switch (objectType)
-            {
-                case PropertyTypes.Building:
-                    return item.BuildingPurpose;
-                case PropertyTypes.Pllacement:
-                    return item.PlacementPurpose;
-                case PropertyTypes.Construction:
-                    return item.ConstructionPurpose;
-            }
-
-            return null;
-        }
-
-        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
-        {
-            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), RosreestrRegisterService.GetCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetFormationDateAttribute());
-            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), RosreestrRegisterService.GetFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(ReportItem.WallMaterial), RosreestrRegisterService.GetWallMaterialAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.BuildingPurpose), RosreestrRegisterService.GetBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.PlacementPurpose), RosreestrRegisterService.GetPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ConstructionPurpose), RosreestrRegisterService.GetConstructionPurposeAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ObjectName), RosreestrRegisterService.GetObjectNameAttribute());
-
-            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
-            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
 
             return result;
         }
@@ -169,17 +99,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             for (var i = 0; i < operations.Count; i++)
             {
+                var formationDateStr = ProcessDate(operations[i].FormationDate);
+
                 dataTable.Rows.Add(i + 1,
                     operations[i].CadastralNumber,
                     operations[i].CommissioningYear,
                     operations[i].BuildYear,
-                    operations[i].FormationDate,
+                    formationDateStr,
                     operations[i].UndergroundFloorsNumber,
                     operations[i].FloorsNumber,
                     operations[i].WallMaterial,
                     operations[i].Location,
                     operations[i].Address,
-                    operations[i].ResultPurpose,
+                    operations[i].Purpose,
                     operations[i].ObjectName,
                     operations[i].Square,
                     operations[i].ObjectType,
@@ -217,10 +149,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             public string WallMaterial { get; set; }
             public string Location { get; set; }
             public string Address { get; set; }
-            public string BuildingPurpose { get; set; }
-            public string PlacementPurpose { get; set; }
-            public string ConstructionPurpose { get; set; }
-            public string ResultPurpose { get; set; }
+            public string Purpose { get; set; }
             public string ObjectName { get; set; }
 
             //From Tour Settings

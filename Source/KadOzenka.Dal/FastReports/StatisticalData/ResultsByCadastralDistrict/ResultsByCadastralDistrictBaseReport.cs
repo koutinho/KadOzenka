@@ -59,16 +59,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             SetAttributes(obj.Id, parentAttributes, attributesDictionary, item);
         }
 
-        protected string ProcessDate(string dateStr)
-        {
-            if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
-            {
-                dateStr = date.ToString(DateFormat);
-            }
-
-            return dateStr;
-        }
-
         protected string GetSqlFileContent(string fileName)
         {
             return GetSqlFileContent(BaseFolderWithSql, fileName);
