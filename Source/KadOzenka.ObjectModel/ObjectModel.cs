@@ -21942,6 +21942,26 @@ namespace ObjectModel.Declarations
             }
         }
 
+
+        private string _officenumber;
+        /// <summary>
+        /// 50501700 Номер офиса/помещения (OFFICE_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501700)]
+        public string OfficeNumber
+        {
+            get
+            {
+                CheckPropertyInited("OfficeNumber");
+                return _officenumber;
+            }
+            set
+            {
+                _officenumber = value;
+                NotifyPropertyChanged("OfficeNumber");
+            }
+        }
+
     }
 }
 
