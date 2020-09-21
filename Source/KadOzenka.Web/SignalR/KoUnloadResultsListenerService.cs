@@ -100,7 +100,7 @@ namespace KadOzenka.Web.SignalR
 			var omUnloadResultQueues = OMUnloadResultQueue
 				.Where(x => x.DateFinished == null || x.DateFinished >= startDate && x.DateFinished <= endDate)
 				.SelectAll()
-				.Execute().OrderBy(x => x.Id).ToList();
+				.Execute().OrderBy(x => x.DateCreated).ToList();
 
 			foreach (var unloadResultQueue in omUnloadResultQueues)
 			{
