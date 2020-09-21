@@ -242,6 +242,7 @@
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
     <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
@@ -576,6 +577,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1867,6 +1871,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Constructions.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />
