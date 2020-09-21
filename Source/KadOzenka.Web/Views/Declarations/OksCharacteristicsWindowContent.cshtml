@@ -161,10 +161,10 @@
                 <label class="control-label">8</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.FloorCount.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorCount.LongValue.HasValue || Model.FloorCount.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.FloorCount.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.FloorCount.StringValue) || Model.FloorCount.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
-                @Html.KendoEnumDropDownListFor(m => m.FloorCount.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorCount.LongValue.HasValue)
+                @Html.KendoEnumDropDownListFor(m => m.FloorCount.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.FloorCount.StringValue))
             </div>
             <div class="col-sm-8">
                 <div class="row">
@@ -172,7 +172,7 @@
                         @Html.CustomLabelFor(m => m.FloorCount)
                     </div>
                     <div class="col-sm-7">
-                        @Html.Kendo().NumericTextBoxFor(m => m.FloorCount.LongValue).Format($"N{0}").Decimals(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                        @Html.TextAreaFor(m => m.FloorCount.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                     </div>
                 </div>
             </div>
@@ -182,10 +182,10 @@
                 <label class="control-label">9</label>
             </div>
             <div class="col-sm-1">
-                @Html.KendoCheckBoxFor(m => m.FloorNumber.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || !Model.FloorNumber.LongValue.HasValue || Model.FloorNumber.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
+                @Html.KendoCheckBoxFor(m => m.FloorNumber.AdditionalInfo.IsShownInDeclaration, isReadonly: !Model.CanIncludeInFormalChecking || string.IsNullOrEmpty(Model.FloorNumber.StringValue) || Model.FloorNumber.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.None)
             </div>
             <div class="col-sm-2">
-                @Html.KendoEnumDropDownListFor(m => m.FloorNumber.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || !Model.FloorNumber.LongValue.HasValue)
+                @Html.KendoEnumDropDownListFor(m => m.FloorNumber.AdditionalInfo.HarStatus, isReadonly: !Model.IsEditDeclarationCharacteristics || string.IsNullOrEmpty(Model.FloorNumber.StringValue))
             </div>
             <div class="col-sm-8">
                 <div class="row">
@@ -193,7 +193,7 @@
                         @Html.CustomLabelFor(m => m.FloorNumber)
                     </div>
                     <div class="col-sm-7">
-                        @Html.Kendo().NumericTextBoxFor(m => m.FloorNumber.LongValue).Format($"N{0}").Decimals(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                        @Html.TextAreaFor(m => m.FloorNumber.StringValue, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                     </div>
                 </div>
             </div>
