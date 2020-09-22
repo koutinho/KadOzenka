@@ -67,8 +67,6 @@
             targetNode.addClass("k-file-success");
         }
     }
-    const mutObserver = new MutationObserver(mutationFunction);
-    mutObserver.observe($(".k-upload"), mutConfig);
 
     $(document).ready(function() {
         initIsUnitStatusUsedChangedHandler();
@@ -85,6 +83,11 @@
                 allowedExtensions: ['.xls', '.xlsx']
             }
         }).data('kendoUpload');
+        const mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
 
         $('#perform').on('click',
             function() {
