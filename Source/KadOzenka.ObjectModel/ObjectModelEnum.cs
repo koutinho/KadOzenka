@@ -4796,13 +4796,7 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         [ShortTitle("")]
         None = 0,
-		/// <summary>
-		/// Кадастровый квартал (2190)
-		/// </summary>
-		[Description("Кадастровый квартал")]
-		[EnumCode("002001010002")]
-		[ShortTitle("")]
-		CadastralQuartal = 2190,
+
 		/// <summary>
 		/// Земельный участок (4)
 		/// </summary>
@@ -4873,6 +4867,13 @@ namespace ObjectModel.Directory
         [EnumCode("002001010001")]
         [ShortTitle("")]
         OtherMore = 802,
+		/// <summary>
+		/// Кадастровый квартал (2190)
+		/// </summary>
+		[Description("Кадастровый квартал")]
+        [EnumCode("002001010002")]
+        [ShortTitle("")]
+        CadastralQuartal = 2190,
     }
 }
 
@@ -11638,6 +11639,25 @@ namespace ObjectModel.Directory.Common
         [EnumCode("7")]
         [ShortTitle("Перенос атрибутов (с созданием)")]
         TransferAttributesWithCreate = 7,
+    }
+}
+
+namespace ObjectModel.Directory.KO
+{
+    /// <summary>
+    /// Тип наследования (902)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 902)]
+    public enum FactorInheritance : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("")]
+        None = 0,
+
     }
 }
 
