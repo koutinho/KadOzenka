@@ -14,8 +14,8 @@ namespace KadOzenka.Web.Models.Tour
         [Display(Name = "Атрибут кода группы")]
         public long? CodeGroupAttributeId { get; set; }
 
-        [Display(Name = "Атрибут типа помещения")]
-        public long? TypeRoomAttributeId { get; set; }
+        [Display(Name = "Атрибут типа территории")]
+        public long? TerritoryTypeAttributeId { get; set; }
 
     }
 }

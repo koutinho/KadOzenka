@@ -433,8 +433,8 @@ namespace KadOzenka.Web.Controllers
                 TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
                 {
                     TourId = model.TourId.Value,
-                    AttributeId = model.TypeRoomAttributeId,
-                    KoAttributeUsingType = KoAttributeUsingType.TypeRoomAttribute
+                    AttributeId = model.TerritoryTypeAttributeId,
+                    KoAttributeUsingType = KoAttributeUsingType.TerritoryTypeAttribute
                 });
             }
             catch (Exception e)

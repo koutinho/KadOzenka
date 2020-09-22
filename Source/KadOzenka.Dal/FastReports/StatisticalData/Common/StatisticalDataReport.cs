@@ -159,13 +159,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                 : cadastralQuartal.Substring(0, 5);
         }
 
-        protected List<OMUnit> GetUnits(List<long> taskIds)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
-                .SelectAll()
-                .Execute();
-        }
-
         protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
         {
             return OMUnit.Where(x => taskIds.Contains((long) x.TaskId) &&

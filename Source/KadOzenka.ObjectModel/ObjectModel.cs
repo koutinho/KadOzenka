@@ -19612,12 +19612,12 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long? _har_8;
+        private string _har_8;
         /// <summary>
         /// 50201000 Количество этажей  (HAR_8)
         /// </summary>
         [RegisterAttribute(AttributeID = 50201000)]
-        public long? Har_8
+        public string Har_8
         {
             get
             {
@@ -19632,12 +19632,12 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long? _har_9;
+        private string _har_9;
         /// <summary>
         /// 50201100 Номер этажа здания или сооружения, на котором расположено помещение или машино-место (HAR_9)
         /// </summary>
         [RegisterAttribute(AttributeID = 50201100)]
-        public long? Har_9
+        public string Har_9
         {
             get
             {

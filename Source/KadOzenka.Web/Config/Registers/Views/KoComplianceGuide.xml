@@ -2,12 +2,12 @@
 <RegisterView RegisterId="254" LinkedRegistersList="254" DefaultLayoutId="1002541" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="" SearchPanel="">
 	<Buttons>
-		<Button Caption="Добавить" NavigateURL="/Tour/AddGroup" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
+		<Button Caption="Добавить" NavigateURL="/Tour/AddGroup" WindowHeight="300" WindowWidth="800" SRDFunctionTAG="">
 			<Parameters>
 				<Parameter Key="tourId" Value="{Get:TourId}" />
 			</Parameters>
 		</Button>
-		<Button Caption="Редактировать" NavigateURL="/Tour/AddGroup" NeedRefresh="true" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="">
+		<Button Caption="Редактировать" NavigateURL="/Tour/AddGroup" NeedRefresh="true" WindowHeight="300" WindowWidth="800" SRDFunctionTAG="">
 			<Parameters>
 				<Parameter Key="tourId" Value="{Get:TourId}" />
 				<Parameter Key="complianceId" Value="[ObjectId]" />

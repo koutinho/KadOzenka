@@ -245,7 +245,7 @@
         for (var i = 0; i < data.length; i++) {
             var existedElement = unloadsListDataSource.find(x => x.id === data[i].id);
             if (existedElement === undefined) {
-                unloadsListDataSource.push(data[i]);
+                unloadsListDataSource.unshift(data[i]);
                 createUnloadItem(data[i]);
             } else {
                 updateUnloadItem(data[i]);
@@ -274,7 +274,7 @@
         var templateContent = $("#unloadItemTemplate").html();
         var template = kendo.template(templateContent);
         var html = kendo.render(template, [dataItem]);
-        $("#unloadsList").append(html);
+        $("#unloadsList").prepend(html);
 
         var itemWrapper = $(`.wrapper-${dataItem.id}`);
         var totalProgress = itemWrapper.find(`.totalProgress-${dataItem.id}`);
