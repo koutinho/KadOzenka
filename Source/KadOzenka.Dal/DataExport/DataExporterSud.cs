@@ -863,7 +863,7 @@ namespace KadOzenka.Dal.DataExport
             return stream;
         }
         /// <summary>
-        /// Статискика по объектам недвидимости
+        /// Статискика по объектам недвижимости
         /// </summary>
         public static Stream ExportStatisticObject()
         {
