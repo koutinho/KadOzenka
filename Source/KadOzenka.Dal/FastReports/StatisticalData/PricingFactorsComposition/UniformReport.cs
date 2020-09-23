@@ -69,10 +69,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
-            var aaa = new List<long> {2, 4 , 5, 14, 42430534 };
+            //var test = new List<long> {2, 4, 5, 14, 42430534 };
+            var test = new List<long> { 2, 4 };
             var sources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
                                                                 x.Id != mainRegister.Id)
-                //.Where(x => aaa.Contains(x.Id))
+                //.Where(x => test.Contains(x.Id))
                 .Select(x => x.Id).ToList();
 
             var dateOt = DateTime.Now.GetEndOfTheDay();
@@ -81,8 +82,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             
             var counter = 0;
             var columns = string.Empty;
-            var joins = string.Empty;
-            var conditions = string.Empty;
             foreach (var registerId in registers)
             {
 	            var registerData = RegisterCache.GetRegisterData(registerId);
@@ -92,93 +91,71 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 		            var postfixes = new List<string> {"TXT", "NUM", "DT"};
 		            foreach (var postfix in postfixes)
 		            {
-			            counter++;
-                        var tableName = $"{registerData.AllpriTable}_{postfix}";
-			            var tableAlias = $"source_{counter}";
+			            var tableName = $"{registerData.AllpriTable}_{postfix}";
+			            var tableAlias = $"source_{++counter}";
 			            var tableAliasForFirstCondition = $"{tableAlias}_2";
 			            var tableAliasForSecondCondition = $"{tableAlias}_3";
 
-			            columns = $@"{(string.IsNullOrWhiteSpace(columns) ? "" : $" {columns} || ',' || ")} 
-                                    STRING_AGG(distinct coalesce(cast({tableAlias}.attribute_id as text), ''), ',') ";
-
-			            joins = $@" {joins} 
-                        left join {tableName} {tableAlias} on unit.object_id = {tableAlias}.object_id";
-
-			            var currentConditions = $@"
+						var currentColumn = $@" 
+						COALESCE((select string_agg(cast ({tableAlias}.attribute_id as text), ',') from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id and
                         ({tableAlias}.ID = (SELECT MAX({tableAliasForFirstCondition}.id) FROM {tableName} {tableAliasForFirstCondition} 
                         WHERE {tableAliasForFirstCondition}.object_id = {tableAlias}.object_id 
                         AND {tableAliasForFirstCondition}.attribute_id = {tableAlias}.attribute_id 
                         AND {tableAliasForFirstCondition}.ot = (SELECT MAX({tableAliasForSecondCondition}.ot) FROM {tableName} {tableAliasForSecondCondition} 
                         WHERE {tableAliasForSecondCondition}.object_id = {tableAlias}.object_id 
                         AND {tableAliasForSecondCondition}.attribute_id = {tableAlias}.attribute_id 
-                        AND {tableAliasForSecondCondition}.Ot <= {CrossDBSQL.ToDate(dateOt)})))";
+                        AND {tableAliasForSecondCondition}.Ot <= {CrossDBSQL.ToDate(dateOt)})))
+						), '') ";
 
-			            conditions = string.IsNullOrWhiteSpace(conditions)
-				            ? $@"{currentConditions}"
-				            : $@"{conditions} AND ({currentConditions})";
+			            columns = string.IsNullOrWhiteSpace(columns)
+				            ? $@"{currentColumn}"
+				            : $@"{columns}  || ',' || {currentColumn}";
 		            }
 	            }
 	            else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 	            {
-		            var attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+		            var attributes = RegisterCache.RegisterAttributes.Values.ToList()
 			            .Where(x => x.RegisterId == registerId)
-			            .Where(x => x.Id == 1 || x.Id == 44).ToList();
+			            .ToList();
 
-		            foreach (var attributeData in attributesData)
+		            foreach (var attribute in attributes)
 		            {
-			            if (attributeData.IsPrimaryKey)
-			            {
+			            if (attribute.IsPrimaryKey)
 				            continue;
-			            }
 
-                        counter++;
+			            var tableName = $"{registerData.AllpriTable}_{attribute.Id}";
+			            var tableAlias = $"gbu_source_{++counter}";
+			            var tableAliasForCondition = $"{tableAlias}_2";
 
-                        var tableName = $"{registerData.AllpriTable}_{attributeData.Id}";
-			            var tableAlias = $"gbu_source_{counter}";
-			            var tableAliasForFirstCondition = $"{tableAlias}_2";
+			            var currentColumn = $@"
+							(select COALESCE((STRING_AGG(distinct (case when {tableAlias}.id is null then '' else '{attribute.Id}' end), ',')), '')
+							from {tableName} {tableAlias} 
+							where unit.object_id = {tableAlias}.object_id AND
+							({tableAlias}.OT = (SELECT MAX({tableAliasForCondition}.OT) 
+							FROM {tableName} {tableAliasForCondition} 
+							WHERE {tableAliasForCondition}.object_id = {tableAlias}.object_id AND {tableAliasForCondition}.Ot <= {CrossDBSQL.ToDate(dateOt)})
+							or {tableAlias}.OT is null))";
 
-			            columns = $@"{(string.IsNullOrWhiteSpace(columns) ? "" : $" {columns} || ',' || ")} 
-                                    STRING_AGG(distinct (case when {tableAlias}.id is null then '' else '{attributeData.Id}' end), ',') ";
-
-                        joins = $@" {joins} 
-                        left join {tableName} {tableAlias} on unit.object_id = {tableAlias}.object_id";
-
-						var currentConditions = $@"{tableAlias}.OT = (SELECT MAX({tableAliasForFirstCondition}.OT) 
-							FROM {tableName} {tableAliasForFirstCondition} 
-							WHERE {tableAliasForFirstCondition}.object_id = {tableAlias}.object_id AND {tableAliasForFirstCondition}.Ot <= {CrossDBSQL.ToDate(dateOt)})
-							or {tableAlias}.OT is null";
-
-                        conditions = string.IsNullOrWhiteSpace(conditions)
-	                        ? $@"{currentConditions}"
-	                        : $@"{conditions} AND ({currentConditions})";
-                    }
+			            columns = string.IsNullOrWhiteSpace(columns)
+				            ? $@"{currentColumn}"
+				            : $@"{columns} || ',' || ({currentColumn})";
+		            }
 	            }
             }
 
-            var resultColumns = string.IsNullOrWhiteSpace(columns) ? "" : $"{columns.TrimEnd(',')}";
-
-            var sql = $@"select unit.cadastral_number, 
-                ({resultColumns}) as attributes
-                from ko_unit unit 
-                {joins} 
-                AND ( {conditions} ) 
-                where unit.task_id in({string.Join(',', taskIds)})--and unit.object_id in (10743778)--(549616)
-                group by unit.cadastral_number";
+            var sql = $@"select unit.cadastral_number as CadastralNumber, 
+			    ({columns}) as attributes
+				from ko_unit unit
+			    where unit.task_id in({string.Join(',', taskIds)})--and unit.object_id in (10743778)--(549616)
+			    group by unit.cadastral_number, unit.object_id
+				order by unit.cadastral_number";
 
             var results = QSQuery.ExecuteSql<DbResult>(sql);
+
             return results.Select(result => new ReportItem
             {
                 CadastralNumber = result.CadastralNumber,
-                Attributes = result.Attributes.Split(',').Where(attribute => !string.IsNullOrWhiteSpace(attribute)).Select(attributeIdStr =>
-                {
-                    var attribute = RegisterCache.RegisterAttributes.Values.ToList().FirstOrDefault(x => x.Id == attributeIdStr.ParseToLong());
-                    var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribute?.RegisterId);
-                    return new Attribute
-                    {
-                        AttributeName = attribute?.Name,
-                        RegisterName = register?.Description
-                    };
-                }).ToList()
+                Attributes = GetUniqueAttributes2(result.Attributes)
             }).ToList();
         }
 
@@ -198,6 +175,55 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 })
                 .OrderBy(x => x.CadastralNumber)
                 .Execute();
+        }
+
+        private List<Attribute> GetUniqueAttributes2(string attributesStr)
+        {
+	        var objectAttributes = attributesStr.Split(',').Where(attribute => !string.IsNullOrWhiteSpace(attribute)).Select(attributeIdStr =>
+	        {
+		        var attribute = RegisterCache.RegisterAttributes.Values.ToList()
+			        .FirstOrDefault(x => x.Id == attributeIdStr.ParseToLong());
+		        var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+		        return new Attribute
+		        {
+			        AttributeName = attribute?.Name,
+                    RegisterId = register?.Id,
+			        RegisterName = register?.Description
+		        };
+	        }).ToList();
+
+
+            if (objectAttributes.Count == 0)
+		        return new List<Attribute>();
+
+	        var gbuAttributesExceptRosreestr = objectAttributes
+		        .Where(x => x.RegisterId != RosreestrRegisterService.RosreestrRegisterId).ToList();
+
+	        var rosreestrAttributes = objectAttributes
+		        .Where(x => x.RegisterId == RosreestrRegisterService.RosreestrRegisterId).ToList();
+
+	        //симметрическая разность множеств
+	        var uniqueAttributes = new List<Attribute>();
+	        //отбираем уникальные аттрибуты из РР
+	        rosreestrAttributes.ForEach(rr =>
+	        {
+		        var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu => !string.IsNullOrWhiteSpace(gbu.AttributeName) &&
+                    gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+		        if (sameAttributes.Count == 0)
+			        uniqueAttributes.Add(rr);
+	        });
+	        //отбираем уникальные аттрибуты из всех источников кроме РР
+	        gbuAttributesExceptRosreestr.ForEach(gbu =>
+	        {
+		        var sameAttributes = rosreestrAttributes.Where(rr => !string.IsNullOrWhiteSpace(rr.AttributeName) &&
+                    gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+		        if (sameAttributes.Count == 0)
+			        uniqueAttributes.Add(gbu);
+	        });
+
+	        return uniqueAttributes;
         }
 
         private List<GbuObjectAttribute> GetUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
@@ -303,6 +329,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             public string AttributeName { get; set; }
             public string RegisterName { get; set; }
+            public long? RegisterId { get; set; }
         }
 
         public class ReportItem
