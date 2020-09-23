@@ -214,3 +214,10 @@ var heatMapData = null;
 var DISTRICTS_DATA = null;
 var SOURCE_DATA = null;
 var ACTUAL_DATE = null;
+
+var mapDataPicker = null;
+var currentFilterInfo = null;
+var initialHeatmapColorPicker = null;
+var resultHeatmapColorPicker = null;
+
+var PALETTE_SLICED_DELTA_MIN_VALUE = 4

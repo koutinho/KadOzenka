@@ -749,3 +749,32 @@ select.EditDataSelect:focus {
 	position: absolute;
 	background-color: #656e7b50;
 }
+
+#clearFiltersButton {
+    min-height: 26px;
+    border-radius: 13px;
+    padding: 0px 12px;
+    font-size: medium;
+    font-weight: bold;
+    background: #fff;
+    color: #5c9eff;
+    opacity: 1;
+}
+
+#clearFiltersButton:hover {
+    background: #edf5ff;
+}
+
+#clearFiltersButton.inactive {
+    background: #f3f3f4;
+    color: #c3c3c8;
+    border-color: #c3c3c8;
+}
+
+#clearFiltersButton.inactive:hover {
+    cursor: default;
+}
+
+.k-i-close:before {
+    font-weight: bold;
+}

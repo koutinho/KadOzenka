@@ -11,7 +11,7 @@ function createColorPicker(rgbValue, rgbPicker, rgbShowPanel) {
         parent.appendChild(elem);
     }
 
-    colorjoe.rgb(rgbPicker).on('change', function (c) {
+    return colorjoe.rgb(rgbPicker).on('change', function (c) {
         document.getElementById(rgbShowPanel).style.background = c.hex();
         document.getElementById("splicedDeltaContent").innerHTML = document.getElementById("splicedDeltaController").value;
         createColorLegend(document.getElementById("splicedDeltaController").value,
