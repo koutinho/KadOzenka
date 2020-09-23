@@ -539,6 +539,52 @@ namespace ObjectModel.KO
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 25 Источник 25
+    /// </summary>
+    public partial class OMSource25
+    {
+
+        public OMSource25()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource25(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 28 Источник 28
+    /// </summary>
+    public partial class OMSource28
+    {
+
+        public OMSource28()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource28(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 80 Справочник кадастровых кварталов
     /// </summary>
     public partial class OMKadastrKvartal
@@ -1148,6 +1194,24 @@ namespace ObjectModel.Gbu
         public List<ObjectModel.Gbu.OMSource23> Source23 { get; set; }
 
         /// <summary>
+        /// Ссылка на (25 Источник 25)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Gbu.OMSource25> Source25 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (28 Источник 28)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Gbu.OMSource28> Source28 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (100 Аналоги)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Market.OMCoreObject> CoreObject { get; set; }
+
+        /// <summary>
         /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
@@ -1205,6 +1269,12 @@ namespace ObjectModel.Gbu
             Source22 = new List<ObjectModel.Gbu.OMSource22>();
 
             Source23 = new List<ObjectModel.Gbu.OMSource23>();
+
+            Source25 = new List<ObjectModel.Gbu.OMSource25>();
+
+            Source28 = new List<ObjectModel.Gbu.OMSource28>();
+
+            CoreObject = new List<ObjectModel.Market.OMCoreObject>();
 
             Unit = new List<ObjectModel.KO.OMUnit>();
 

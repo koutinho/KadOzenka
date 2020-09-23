@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.UI.Registers.Reports.Model;
-using FastReport;
-using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -17,6 +14,8 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
+using System.IO;
+using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
@@ -160,24 +159,42 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
                 : cadastralQuartal.Substring(0, 5);
         }
 
-        protected List<OMUnit> GetUnits(List<long> taskIds)
+        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
-                .SelectAll()
+            return OMUnit.Where(x => taskIds.Contains((long) x.TaskId) &&
+                                     x.PropertyType_Code == type &&
+                                     x.ObjectId != null)
+                .Select(x => new
+                {
+                    x.ObjectId,
+                    x.CadastralNumber,
+                    x.Square,
+                    x.Upks,
+                    x.CadastralCost
+                })
                 .Execute();
         }
 
-        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
+        protected string ProcessDate(string dateStr)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
-                                     x.PropertyType_Code == type &&
-                                     x.ObjectId != null)
-                .Select(x => x.ObjectId)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Square)
-                .Select(x => x.Upks)
-                .Select(x => x.CadastralCost)
-                .Execute();
+            if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
+            {
+                dateStr = date.ToString(DateFormat);
+            }
+
+            return dateStr;
+        }
+
+        protected string GetSqlFileContent(string folder, string fileName)
+        {
+            string contents;
+            using (var sr = new StreamReader(Configuration.GetFileStream(
+                $"\\StatisticalData\\{folder}\\{fileName}", "sql", "SqlQueries")))
+            {
+                contents = sr.ReadToEnd();
+            }
+
+            return contents;
         }
 
         #endregion

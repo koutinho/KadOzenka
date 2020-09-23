@@ -14,8 +14,12 @@ using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Common;
 using ObjectModel.KO;
+using Platform.Web.Services;
+using RsmCloudService.Web.Controllers;
+using RsmCloudService.Web.Models.CoreAttachment;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -45,7 +49,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
-		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
+		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto, List<IFormFile> images)
         {
             dto.Document.ProcessDocument();
 
@@ -61,10 +65,15 @@ namespace KadOzenka.Web.Controllers
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
 			};
-			task.Save();
+            task.Save();
 
 			try
 			{
+				var attSvc = new CoreAttachmentService();
+				var attDto = new AttachmentUploadDto();
+				attDto.AttachmentRegisterId = 203;
+				attDto.AttachmentObjectId = task.Id;
+				attSvc.AttachmentUpload(attDto,images.ToArray());
 				foreach (var file in files)
 				{
 					using (var stream = file.OpenReadStream())

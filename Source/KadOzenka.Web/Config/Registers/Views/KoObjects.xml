@@ -2,15 +2,11 @@
 <RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203,963" UseSubMap="true"
               OpenEmpty="false" JoinType="Left" SearchPanel="KoObjects"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="true" ShowFilterMenu="false" SRDFunctionTag="KO.OBJECTS"
-              UseDataReaderMode="true"
-              >
+              UseDataReaderMode="true">
 
   <DefaultSearchControls>
     <ControlElement AttributeNumber="20101400" ReferenceId="209" AllowDelete="false" />
-    <ControlElement AttributeNumber="20101700" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true" DefaultValue="77:10:0003004"/>
-  </DefaultSearchControls>
-
-  <DefaultSearchControls>
+    <ControlElement AttributeNumber="20101700" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true"/>
     <ControlElement AttributeNumber="20101600" QueryOperation="Like" />
   </DefaultSearchControls>
 

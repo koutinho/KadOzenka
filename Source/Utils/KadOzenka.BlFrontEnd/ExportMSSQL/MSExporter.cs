@@ -2404,13 +2404,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             ObjectModel.KO.KOCalcSettings ks = new ObjectModel.KO.KOCalcSettings();
             ks.CalcParcel = false;
             ks.CalcStage1 = true;
-            ks.CalcStage2 = false;
-            ks.CalcStage3 = false;
+            ks.CalcStage2 = true;
+            ks.CalcStage3 = true;
             ks.IdTour = 2018;
-            ks.CalcAllGroups = true;
+            ks.CalcAllGroups = false;
             ks.CalcGroups = new List<long>();
+            ks.CalcGroups.Add(100009);
             ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(15349237);
+            ks.TaskFilter.Add(36741743);//36741743   15349237
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }

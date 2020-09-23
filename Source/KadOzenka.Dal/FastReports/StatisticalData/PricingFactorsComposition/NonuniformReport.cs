@@ -62,6 +62,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return items;
         }
 
+        protected List<OMUnit> GetUnits(List<long> taskIds)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+                .SelectAll()
+                .Execute();
+        }
+
         private List<Attribute> GetNotUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
         {
             if (objectAttributes == null || objectAttributes.Count == 0)

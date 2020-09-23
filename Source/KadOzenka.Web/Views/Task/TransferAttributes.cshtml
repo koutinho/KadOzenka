@@ -45,126 +45,54 @@
             </div>
         </div>
 
-        <div id="attributesList">
+        <div>
             <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU1, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU2, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU3, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU4, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU5, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU6, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU7, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU8, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU9, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
-            </div>
-            <div class="form-group attributes-list">
-                <div class="col-sm-5 col-sm-offset-2">
-                    <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"])
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div>
-                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU10, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-                    </div>
-                </div>
+                <table id="attributesList" class="col-sm-10 col-sm-offset-2">
+                    <tr>
+                        <th>@Html.Label("Ценообразующие факторы")</th>
+                        <th>@Html.Label("Характеристики объектов")</th>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU1, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU2, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU3, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU4, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU5, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU6, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU7, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU8, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU9, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                    <tr>
+                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"])</td>
+                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU10, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -193,13 +121,33 @@
 }
 
 <script type="text/x-kendo-template" id="templateRow">
-	<div class="wrapper-#: rowNumber #" style="display: none">
-	</div>
+	<tr class="wrapper-#: rowNumber #" style="display: none">
+
+	</tr>
 	</script>
 
 <style>
     .attributes-list {
         padding-right: 2%;
+    }
+    table {
+        border-collapse: separate;
+        border: solid 4px #9ea8b9;
+        border-radius: 10px;
+    }
+    tr { border: none; }
+    th, td {
+        margin: 10px;
+        padding: 10px;
+        border-right: solid 2px #9ea8b9; 
+        border-left: solid 2px #9ea8b9;
+    }
+    table td:first-child,table th:first-child {
+        border-left: none;
+    }
+
+    table td:last-child,table th:last-child {
+        border-right: none;
     }
      
 </style>
@@ -218,7 +166,7 @@
         var templateContent = $("#templateRow").html();
 		var template = kendo.template(templateContent);
         var result = kendo.render(template, data);
-        $("#attributesList").append(result);
+        $("#attributesList").children().append(result);
         var classWrapper = ".wrapper-" + localRowNumber;
         var idTour = $('#RatingTour').data('kendoDropDownList').value();
         var url = "@Url.Action("GetRowExport", "Task")";
@@ -523,7 +471,7 @@
     }
 
     function clearCustomLevels() {
-        var existedCustomLevels = $("div[class^='wrapper-']");
+        var existedCustomLevels = $("tr[class^='wrapper-']");
         existedCustomLevels.each(function () {
             this.remove();
         });

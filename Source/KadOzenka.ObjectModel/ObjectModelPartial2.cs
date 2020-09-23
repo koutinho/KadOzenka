@@ -438,6 +438,60 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 25 Источник 25
+    /// </summary>
+    public partial class OMSource25
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 28 Источник 28
+    /// </summary>
+    public partial class OMSource28
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 100 Аналоги
+    /// </summary>
+    public partial class OMCoreObject
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Market
 {
     /// <summary>

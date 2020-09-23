@@ -33,7 +33,7 @@ namespace KadOzenka.Web.Models.Task
 		public string CadastralBlock { get; set; }
 		[DisplayName("Тип объекта")]
 		public PropertyTypes? PropertyType { get; set; }	
-		[DisplayName("Площать")]
+		[DisplayName("Площадь")]
 		public decimal? Square { get; set; }
 		[DisplayName("Статус задания")]
 		public KoUnitStatus? Status { get; set; }	

@@ -1,4 +1,4 @@
-﻿@using KadOzenka.Web.Models.GbuObject
+@using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
 @model KadOzenka.Web.Models.Task.TaskModel
@@ -32,7 +32,13 @@
                             @Html.CustomLabelFor(m => m.NoteType)
                         </div>
                         <div class="col-sm-10">
-                            @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.NoteType, itemIds: new List<long>
+                            {
+                                (long)KoNoteType.Day,
+                                (long)KoNoteType.Petition,
+                                (long)KoNoteType.Year,
+                                (long)KoNoteType.Initial
+                            }, isReadonly: false, withoutNull: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -54,11 +60,17 @@
         <li id="XmlFiles" data-expand>
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
-                <div class="form-horizontal col-sm-12">
-                    <form id="fileForm">
-                        <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
-                    </form>
-                </div>
+                <form id="fileForm" class="form-horizontal col-sm-12">
+                    <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
+                </form>
+            </div>
+        </li>
+        <li id="ImageFiles" data-expand>
+            <span id="imagesBlockLabel">Файлы образов</span>
+            <div>
+                <form id="imageForm" class="form-horizontal col-sm-12">
+                        <input name="images" id="images" type="file" aria-label="files" />
+                </form>
             </div>
         </li>
     </ul>
@@ -117,6 +129,9 @@
                         }
 
                         var formData = new FormData($('#fileForm').get(0));
+                        var imageFormData = new FormData($('#imageForm').get(0));
+                        var images = imageFormData.getAll('images');
+                        images.forEach(x=>formData.append('images',x));
                         formData.set('TourYear', $('[name="Tour"]').val());
                         formData.set('NoteType', $('[name="NoteType"]').val());
                         var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
@@ -176,6 +191,20 @@
                     }
                 }
             });
+
+        var images = $('#images').kendoUpload({
+            multiple: true,
+            localization: {
+                select: 'Выбрать файлы'
+            },
+            error: function (e) {
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+                }
+            }
+        }).data('kendoUpload');
 
         var files = $('#files').kendoUpload({
             multiple: true,

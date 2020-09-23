@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using Core.Register.RegisterEntities;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class ZuReport : StatisticalDataReport
+    public class ZuReport : PricingFactorsCompositionBaseReport
     {
         protected override string TemplateName(NameValueCollection query)
         {
@@ -38,66 +34,25 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds)
         {
-            var units = GetUnits(taskIds, PropertyTypes.Stead);
-            ////для тестирования
-            //units = new List<OMUnit>
-            //{
-            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11188991 },
-            //    new OMUnit{CadastralNumber = "test 2", Id = 12402753, ObjectId = 11251387 }
-            //};
-            if (units == null || units.Count == 0)
-                return new List<ReportItem>();
+            var sql = GetSqlFileContent("Zu");
 
-            var unitIds = units.Select(x => x.Id).Distinct();
-            var unitCosts = OMCostRosreestr.Where(x => unitIds.Contains(x.IdObject)).SelectAll().Execute();
+            var typeOfUseByDocuments = RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
+            var typeOfUseByClassifier = RosreestrRegisterService.GetTypeOfUseByClassifierAttribute();
+            var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+            var parcelCategory = RosreestrRegisterService.GetParcelCategoryAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var parcelName = RosreestrRegisterService.GetParcelNameAttribute();
 
-            var attributesDictionary = GetAttributesForReport(tourId);
-            var gbuAttributes = GbuObjectService.GetAllAttributes(
-                units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
-                attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+            var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+            var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+            var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
-            var result = new List<ReportItem>();
-            units.ToList().ForEach(unit =>
-            {
-                var rosreestrCost = unitCosts.FirstOrDefault(x => x.IdObject == unit.Id);
-                var item = new ReportItem
-                {
-                    CadastralNumber = unit.CadastralNumber,
-                    Square = unit.Square,
-                    CostValue = rosreestrCost?.Costvalue,
-                    DateValuation = rosreestrCost?.Datevaluation,
-                    DateEntering = rosreestrCost?.Dateentering,
-                    DateApproval = rosreestrCost?.Dateapproval,
-                    DocNumber = rosreestrCost?.Docnumber,
-                    DocDate = rosreestrCost?.Docdate,
-                    DocName = rosreestrCost?.Docname,
-                    ApplicationDate = rosreestrCost?.Applicationdate,
-                    RevisalStatementDate = rosreestrCost?.Revisalstatementdate,
-                };
+            var sqlWithParameters = string.Format(sql, string.Join(", ", taskIds), typeOfUseByDocuments.Id,
+                typeOfUseByClassifier.Id, formationDate.Id, parcelCategory.Id, location.Id, address.Id, parcelName.Id,
+                objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
-                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
-
-                result.Add(item);
-            });
-
-            return result;
-        }
-
-        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId)
-        {
-            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), RosreestrRegisterService.GetTypeOfUseByClassifierAttribute());
-            attributesDictionary.Add(nameof(ReportItem.FormationDate), RosreestrRegisterService.GetFormationDateAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), RosreestrRegisterService.GetParcelCategoryAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
-            attributesDictionary.Add(nameof(ReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
-            attributesDictionary.Add(nameof(ReportItem.ParcelName), RosreestrRegisterService.GetParcelNameAttribute());
-
-            var generalAttributes = GetAttributesFromTourSettingsForReport(tourId);
-            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
 
             return result;
         }
@@ -163,6 +118,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #endregion
 
+
         #region Entities
 
         private class ReportItem : InfoFromTourSettings
@@ -170,18 +126,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //From Unit
             public string CadastralNumber { get; set; }
             public decimal? Square { get; set; }
-
-            //From Rosreestr
-            public string TypeOfUseByDocuments { get; set; }
-            public string TypeOfUseByClassifier { get; set; }
-            public string FormationDate { get; set; }
-            public string ParcelCategory { get; set; }
-            public string Location { get; set; }
-            public string Address { get; set; }
-            public string ParcelName { get; set; }
-
-            //From Tour Settings
-
 
             //From KO.CostRosreestr (KO_COST_ROSREESTR)
             /// <summary>
@@ -220,6 +164,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             /// Дата подачи заявления о пересмотре кадастровой стоимости
             /// </summary>
             public DateTime? RevisalStatementDate { get; set; }
+
+            //From Rosreestr
+            public string TypeOfUseByDocuments { get; set; }
+            public string TypeOfUseByClassifier { get; set; }
+            public string FormationDate { get; set; }
+            public string ParcelCategory { get; set; }
+            public string Location { get; set; }
+            public string Address { get; set; }
+            public string ParcelName { get; set; }
+
+            //From Tour Settings
         }
 
         #endregion

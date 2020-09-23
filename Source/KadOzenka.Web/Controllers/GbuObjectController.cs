@@ -189,7 +189,11 @@ namespace KadOzenka.Web.Controllers
             long queueId;
             try
             {
-	            queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
+                var settings = model.CovertToGroupingSettings();
+                ////TODO код для отладки
+                //PriorityGrouping.SetPriorityGroup(settings);
+                //queueId = 0;
+                queueId = SetPriorityGroupProcess.AddProcessToQueue(settings);
             }
 			catch (Exception e)
 			{
@@ -675,9 +679,10 @@ namespace KadOzenka.Web.Controllers
 	        {
 	            var estimatedGroupModelParamsDto =
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
-				queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
-					viewModel.ToGroupModel(estimatedGroupModelParamsDto));
-	        }
+	            queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
+				viewModel.ToGroupModel(estimatedGroupModelParamsDto));
+
+			}
 	        catch (Exception ex)
 	        {
 	            return SendErrorMessage(ex.Message);

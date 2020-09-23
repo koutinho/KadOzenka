@@ -8,6 +8,6 @@ namespace KadOzenka.Dal.Tours.Dto
     {
         public long IdCodeGroup { get; set; }
         public long IdCodeQuarter { get; set; }
-        public long IdTypeRoom { get; set; }
+        public long IdTerritoryType { get; set; }
     }
 }

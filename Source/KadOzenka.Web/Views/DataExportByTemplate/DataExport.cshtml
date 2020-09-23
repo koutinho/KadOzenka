@@ -223,6 +223,9 @@
         var dataSource = new kendo.data.DataSource({
             data: [ ]
         });
+        var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+        var isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
+        var isForUnits = '@((long)ViewBag.MainRegisterId == OMUnit.GetRegisterId())' == 'True';
 
         $(document).ready(function () {
             const mainRegisterId = @((long)ViewBag.MainRegisterId);
@@ -441,9 +444,6 @@
                 .expand('li[data-expand]');
 
 
-            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
-            var isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
-            var isForUnits = '@((long)ViewBag.MainRegisterId == OMUnit.GetRegisterId())' == 'True';
             $.ajax({
                 type: 'GET',
                 @if ((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId() || 
@@ -486,30 +486,13 @@
                     clearSelectedFiles: 'Очистить'
                 },
                 async: {
-                    autoUpload: isForMarketObjects || isForUnits,
+                    autoUpload: isForMarketObjects,
                     saveUrl: '@Url.Action("ParseFileColumns", "DataExportByTemplate")'
                 },
                 select: function (e) {
-                    if (isForMarketObjects || isForUnits)
+                    if (isForMarketObjects)
                         return;
-                    var upload = e.sender;
-                    Common.UI.ShowConfirm({
-                        title: 'Подтверждение',
-                        content: 'Для корректной выгрузки данных соблюдайте следующие требования к загружаемому файлу:' +
-                            '<br/> 1 столбец - № п/п' +
-                            '<br/> 2 столбец - Кадастровый номер',
-                        captionYes: "Загрузить",
-                        captionNo: "Отменить",
-                        onSuccess: function () {
-                            upload.upload();
-                        },
-                        onFail: function () {
-                            upload.clearAllFiles();
-                            var window = $(this).closest('[data-role=window]').data('kendoWindow');
-                            window.close();
-                            window.destroy();
-                        }
-                    });
+                    showNotificationWindow(e);
                 },
                 validation: {
                     allowedExtensions: ['.xls', '.xlsx']
@@ -532,15 +515,19 @@
                             excelColumnsListBox.enable(numberColumn, false);
                             excelColumnsListBox.enable(cadastralNumberColumn, false);
                             var cadastralNumberData = excelColumnsListBox.dataItem(cadastralNumberColumn);
-                            var matchingListView = $("#listView").data('kendoListView');
-                            matchingListView.dataSource.add({
-                                IsKey: true,
-                                IsReadOnly: true,
-                                ColumnName: cadastralNumberData.Name,
-                                ColumnId: cadastralNumberData.Id,
-                                AttributeDescription: 'Кадастровый номер',
-                                AttributeId: 20000200
-                            });
+                            addDataToMatchingList(cadastralNumberData, 'Кадастровый номер', 20000200);
+                        }
+                        else if (isForUnits && excelColumnsListBox.items() != null) {
+                            var numberColumnForUnits = excelColumnsListBox.items()[0];
+                            var cadastralNumberColumnForUnits = excelColumnsListBox.items()[1];
+                            var documentNumberColumnForUnits = excelColumnsListBox.items()[2];
+                            excelColumnsListBox.enable(numberColumnForUnits, false);
+                            excelColumnsListBox.enable(cadastralNumberColumnForUnits, false);
+                            excelColumnsListBox.enable(documentNumberColumnForUnits, false);
+                            var cadastralNumberDataForUnits = excelColumnsListBox.dataItem(cadastralNumberColumnForUnits);
+                            var documentNumberDataForUnits = excelColumnsListBox.dataItem(documentNumberColumnForUnits);
+                            addDataToMatchingList(cadastralNumberDataForUnits, 'Кадастровый номер', 20101600);
+                            addDataToMatchingList(documentNumberDataForUnits, 'Номер документа', 96300500);
                         }
                     }
                 },
@@ -677,6 +664,46 @@
             }
 
             return hasVisibleChildren;
+        }
+
+
+        function showNotificationWindow(e) {
+            var text = '<br/> 1 столбец - № п/п' +
+                '<br/> 2 столбец - Кадастровый номер';
+            if (isForUnits) {
+                text = '<br/> 1 столбец - № п/п' +
+                    '<br/> 2 столбец - Кадастровый номер' +
+                    '<br/> 3 столбец - Номер документа';
+            }
+            var upload = e.sender;
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Для корректной выгрузки данных соблюдайте следующие требования к загружаемому файлу:' + text,
+                captionYes: "Загрузить",
+                captionNo: "Отменить",
+                onSuccess: function () {
+                    upload.upload();
+                },
+                onFail: function () {
+                    upload.clearAllFiles();
+                    var window = $(this).closest('[data-role=window]').data('kendoWindow');
+                    window.close();
+                    window.destroy();
+                }
+            });
+        }
+
+
+        function addDataToMatchingList(column, description, attributeId) {
+            var matchingListView = $("#listView").data('kendoListView');
+            matchingListView.dataSource.add({
+                IsKey: true,
+                IsReadOnly: true,
+                ColumnName: column.Name,
+                ColumnId: column.Id,
+                AttributeDescription: description,
+                AttributeId: attributeId
+            });
         }
     </script>
 }

@@ -372,6 +372,26 @@ namespace ObjectModel.Gbu
     [Serializable]
     public partial class OMSource28 : OMBaseClass<OMSource28>
     {
+
+        private long _id;
+        /// <summary>
+        /// 1717 ИД (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 1717)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
     }
 }
 
@@ -13213,6 +13233,153 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 263 Настройки факторов (KO_FACTOR_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 263)]
+    [Serializable]
+    public partial class OMFactorSettings : OMBaseClass<OMFactorSettings>
+    {
+
+        private long? _id;
+        /// <summary>
+        /// 26300100 Идентификатор (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300100)]
+        public long? Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _factorid;
+        /// <summary>
+        /// 26300200 Идентификатор фактора (FACTOR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300200)]
+        public long? FactorId
+        {
+            get
+            {
+                CheckPropertyInited("FactorId");
+                return _factorid;
+            }
+            set
+            {
+                _factorid = value;
+                NotifyPropertyChanged("FactorId");
+            }
+        }
+
+
+        private string _inheritance;
+        /// <summary>
+        /// 26300300 Тип наследования (справочник KOFactorInheritance) (INHERITANCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300300)]
+        public string Inheritance
+        {
+            get
+            {
+                CheckPropertyInited("Inheritance");
+                return _inheritance;
+            }
+            set
+            {
+                _inheritance = value;
+                NotifyPropertyChanged("Inheritance");
+            }
+        }
+
+
+        private ObjectModel.Directory.KO.FactorInheritance _inheritance_Code;
+        /// <summary>
+        /// 26300300 Тип наследования (справочник KOFactorInheritance) (справочный код) (INHERITANCE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300300)]
+        public ObjectModel.Directory.KO.FactorInheritance Inheritance_Code
+        {
+            get
+            {
+                CheckPropertyInited("Inheritance_Code");
+                return this._inheritance_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_inheritance))
+                    {
+                         _inheritance = descr;
+                    }
+                }
+                else
+                {
+                     _inheritance = descr;
+                }
+
+                this._inheritance_Code = value;
+                NotifyPropertyChanged("Inheritance");
+                NotifyPropertyChanged("Inheritance_Code");
+            }
+        }
+
+
+        private string _source;
+        /// <summary>
+        /// 26300400 Источник для факторов отсутствующих в данных ГБУ (SOURCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300400)]
+        public string Source
+        {
+            get
+            {
+                CheckPropertyInited("Source");
+                return _source;
+            }
+            set
+            {
+                _source = value;
+                NotifyPropertyChanged("Source");
+            }
+        }
+
+
+        private long? _correctfactorid;
+        /// <summary>
+        /// 26300500 Идентификатор корректируемого фактора (CORRECT_FACTOR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26300500)]
+        public long? CorrectFactorId
+        {
+            get
+            {
+                CheckPropertyInited("CorrectFactorId");
+                return _correctfactorid;
+            }
+            set
+            {
+                _correctfactorid = value;
+                NotifyPropertyChanged("CorrectFactorId");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
@@ -19612,12 +19779,12 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long? _har_8;
+        private string _har_8;
         /// <summary>
         /// 50201000 Количество этажей  (HAR_8)
         /// </summary>
         [RegisterAttribute(AttributeID = 50201000)]
-        public long? Har_8
+        public string Har_8
         {
             get
             {
@@ -19632,12 +19799,12 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long? _har_9;
+        private string _har_9;
         /// <summary>
         /// 50201100 Номер этажа здания или сооружения, на котором расположено помещение или машино-место (HAR_9)
         /// </summary>
         [RegisterAttribute(AttributeID = 50201100)]
-        public long? Har_9
+        public string Har_9
         {
             get
             {
@@ -21939,6 +22106,26 @@ namespace ObjectModel.Declarations
             {
                 _flat = value;
                 NotifyPropertyChanged("Flat");
+            }
+        }
+
+
+        private string _officenumber;
+        /// <summary>
+        /// 50501700 Номер офиса/помещения (OFFICE_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501700)]
+        public string OfficeNumber
+        {
+            get
+            {
+                CheckPropertyInited("OfficeNumber");
+                return _officenumber;
+            }
+            set
+            {
+                _officenumber = value;
+                NotifyPropertyChanged("OfficeNumber");
             }
         }
 

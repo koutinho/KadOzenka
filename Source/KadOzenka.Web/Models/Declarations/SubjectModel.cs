@@ -92,6 +92,12 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Квартира")]
 		public ulong? Flat { get; set; }
 
+		/// <summary>
+		/// Номер офиса/помещения (OFFICE_NUMBER)
+		/// </summary>
+		[Display(Name = "Номер офиса/помещения")]
+		public string OfficeNumber { get; set; }
+
 		public bool IsEditSubject { get; set; }
 		public bool IsCreateSubject { get; set; }
 
@@ -119,6 +125,7 @@ namespace KadOzenka.Web.Models.Declarations
 				Street = entity.Street,
 				House = entity.House,
 				Building = entity.Building,
+				OfficeNumber = entity.OfficeNumber
 			};
 			if (!string.IsNullOrWhiteSpace(entity.Flat))
 			{
@@ -147,6 +154,11 @@ namespace KadOzenka.Web.Models.Declarations
 			if (subjectViewModel.Type != null)
 			{
 				entity.Type_Code = (SubjectType)subjectViewModel.Type;
+			}
+
+			if (entity.Type_Code == SubjectType.Ul)
+			{
+				entity.OfficeNumber = subjectViewModel.OfficeNumber;
 			}
 		}
 

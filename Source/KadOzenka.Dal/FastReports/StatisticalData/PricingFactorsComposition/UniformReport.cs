@@ -37,16 +37,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var items = new List<ReportItem>();
             var units = GetUnits(taskIds);
-            ////для тестирования
-            //units = new List<OMUnit>
-            //{
-            //    new OMUnit{CadastralNumber = "test 1", Id = 14974931, ObjectId = 11251387 },
-            //    new OMUnit{CadastralNumber = "test 2", Id = 13900719, ObjectId = 10433956 }
-            //};
 
             var objectsAttributes = GbuObjectService.GetAllAttributes(
-                units.Where(x => x.ObjectId != null).Select(x => x.ObjectId.Value).ToList(),
-                dateOt: DateTime.Now.GetEndOfTheDay());
+                units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(),
+                dateOt: DateTime.Now.GetEndOfTheDay(),
+                isLight: true);
 
             units.ForEach(unit =>
             {
@@ -64,6 +59,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             });
 
             return items;
+        }
+
+        protected List<OMUnit> GetUnits(List<long> taskIds)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+                .Select(x => new
+                {
+                    x.ObjectId,
+                    x.CadastralNumber
+                })
+                .OrderBy(x => x.CadastralNumber)
+                .Execute();
         }
 
         private List<GbuObjectAttribute> GetUniqueAttributes(List<GbuObjectAttribute> objectAttributes)
@@ -105,6 +112,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
         {
+            var titleForCharacteristic = "Характеристика объекта";
+            var titleForSource = "Итоговый источник информации";
+
             var dataTable = new DataTable("Data");
 
             dataTable.Columns.Add("Number");
@@ -115,28 +125,42 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             //для формирования матрицы нужен дубляж значения всех строк кроме характеристик
             for (var i = 0; i < operations.Count; i++)
             {
-                for (var j = 0; j < operations[i].Attributes.Count; j++)
+                if (operations[i].Attributes.Count == 0)
                 {
-                    for (var counter = 0; counter < 2; counter++)
-                    {
-                        string title, value;
-                        if (counter % 2 == 0)
-                        {
-                            title = $"Характеристика объекта {j + 1}";
-                            value = operations[i].Attributes.ElementAtOrDefault(j)?.AttributeName;
-                        }
-                        else
-                        {
-                            title = $"Итоговый источник информации {j + 1}";
-                            value = operations[i].Attributes.ElementAtOrDefault(j)?.RegisterName;
-                        }
+                    dataTable.Rows.Add(i + 1,
+                        operations[i].CadastralNumber,
+                        $"{titleForCharacteristic} 1",
+                        string.Empty);
 
-                        dataTable.Rows.Add(i + 1,
-                            operations[i].CadastralNumber, 
-                            title,
-                            value);
+                    dataTable.Rows.Add(i + 1,
+                        operations[i].CadastralNumber,
+                        $"{titleForSource} 1",
+                        string.Empty);
+                }
+                else
+                {
+                    for (var j = 0; j < operations[i].Attributes.Count; j++)
+                    {
+                        for (var counter = 0; counter < 2; counter++)
+                        {
+                            string title, value;
+                            if (counter % 2 == 0)
+                            {
+                                title = $"{titleForCharacteristic} {j + 1}";
+                                value = operations[i].Attributes.ElementAtOrDefault(j)?.AttributeName;
+                            }
+                            else
+                            {
+                                title = $"{titleForSource} {j + 1}";
+                                value = operations[i].Attributes.ElementAtOrDefault(j)?.RegisterName;
+                            }
+
+                            dataTable.Rows.Add(i + 1,
+                                operations[i].CadastralNumber,
+                                title,
+                                value);
+                        }
                     }
-                   
                 }
             }
 

@@ -59,7 +59,16 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script>
-    $(document).ready(function () {
+    // Подсветка файла после его выбора (select в kendoUpload срабатывает раньше чем элемент создается)
+    const mutConfig = { childList: true, subtree: true };
+    const mutationFunction = function(mutList, observer) {
+        const targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
+
+    $(document).ready(function() {
         initIsUnitStatusUsedChangedHandler();
 
         $('#file').kendoUpload({
@@ -68,15 +77,20 @@
                 select: 'Загрузить файл'
             },
             async: {
-                autoUpload: true
+                autoUpload: false
             },
             validation: {
-                allowedExtensions: ['.xls','.xlsx']
+                allowedExtensions: ['.xls', '.xlsx']
             }
         }).data('kendoUpload');
+        const mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
 
         $('#perform').on('click',
-            function () {
+            function() {
                 var form = $('form');
                 var formObject = Common.Functions.FormToObject(form);
                 var files = $('#file').data('kendoUpload').getFiles();
@@ -103,7 +117,7 @@
                     data: formData,
                     contentType: false,
                     processData: false,
-                    success: function (data) {
+                    success: function(data) {
                         if (data.Errors) {
                             var errors = getErrors(data.Errors);
                             Common.ShowError(errors);

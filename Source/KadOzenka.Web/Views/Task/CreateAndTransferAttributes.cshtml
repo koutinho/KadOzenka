@@ -1,0 +1,400 @@
+﻿@using KadOzenka.Web.Models.GbuObject
+@using KadOzenka.Web.Models.Task
+@model KadOzenka.Web.Models.Task.ExportAttributesModel
+
+@using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
+{
+    <div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
+        @Html.HiddenFor(x => x.CreateAttributes)
+
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Тур оценки")
+            </div>
+            <div class="col-sm-4">
+                @(Html.Kendo().DropDownListFor(x => x.RatingTour)
+                    .DataTextField("Text")
+                    .DataValueField("Value"))
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.TaskFilter)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter(FilterType.Contains))
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-9 col-sm-offset-2">
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsZu)
+                        .Label(ObjectTypeExtended.Zu.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsOks)
+                        .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-7 col-sm-offset-2">
+                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+                {
+                    ControllerName = "Task",
+                    ActionName = "GetTemplatesForTransferAttributes",
+                    Parameters = "isCreateMode=" + Model.CreateAttributes
+                }))
+            </div>
+            <div class="col-sm-2 col-sm-offset-1">
+                @(Html.Kendo().Button()
+                    .Name("execute")
+                    .Content("Выполнить").HtmlAttributes(new { @type = "button" }))
+            </div>
+        </div>
+
+        <div id="factorsTreeList"></div>
+    </div>
+}
+
+<script type="text/x-kendo-template" id="templateRow">
+	<div class="wrapper-#: rowNumber #" style="display: none">
+	</div>
+	</script>
+
+<style>
+    .attributes-list {
+        padding-right: 2%;
+    }
+    .k-checkbox-label:before{
+        top: -5px;
+        width: 20px;
+        height: 20px;
+        padding-top: 0px;
+        line-height: 20px;
+    }
+    .k-checkbox:indeterminate + .k-checkbox-label:after {
+        width: 16px;
+        height: 16px;
+        top: 6px;
+        left: 11px;
+        border-style: none;
+    }
+</style>
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        getAttributes();
+        //$('#factorsTreeList').on('check', onCheck);
+    });
+
+    function checkedNodeValues(nodes, checkedNodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].hasChildren) {
+                checkedNodeValues(nodes[i].children.view(), checkedNodes);
+            }
+            else if (nodes[i].checked) {
+                checkedNodes.push(nodes[i].Value);
+            }
+        }
+    }
+
+    function checkNodesByValue(nodeValues) {
+        var ds = $('#factorsTreeList').data('kendoTreeView');
+        var treeLeafNodes = ds.dataSource.flatView().map(x => x.items.map(y => y)).flatMap(z => z);
+        treeLeafNodes.forEach(x => ds.dataItem(ds.findByUid(x.uid)).set('checked', false));
+        var filtered = treeLeafNodes.filter(x => nodeValues.includes(x.Value));
+        filtered.forEach(x => ds.dataItem(ds.findByUid(x.uid)).set('checked',true));
+    }
+
+    function onCheck() {
+        var checkedNodes = [],
+            treeView = $('#factorsTreeList').data('kendoTreeView');
+
+        checkedNodeValues(treeView.dataSource.view(), checkedNodes);
+        console.log(checkedNodes);
+    }
+
+    function getAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("GetRegisterAttributes", "Task")",
+            dataType: "json",
+            success: function(response) {
+                var data = response.map(function(factorBase) {
+                    return {
+                        Value: factorBase.Value,
+                        Text: factorBase.Text,
+                        items: factorBase.Items.map(function(factor) {
+                            return {
+                                Value: factor.Value,
+                                Text: factor.Text
+                            }
+                        })
+                    }
+                });
+                $('#factorsTreeList').kendoTreeView({
+                    dataSource: data,
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    checkboxes: {
+                        checkChildren: true
+                    },
+                    check: onCheck
+                });
+                $('#factorsTreeList').kendoTooltip({
+                    filter: ".k-in",
+                    content: function (e) {
+                        var factorsTreeList = $('#factorsTreeList').data('kendoTreeView');
+                        var text= $(e.target)[0].innerText;
+                        var model = factorsTreeList.findByText(text);
+                        var dataItem = factorsTreeList.dataItem(model);
+                        return dataItem.Text;
+                    }
+                });
+                $('#confirmBtnBlock').show();
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    var rowNumber = 1;
+    @*function addNewRow(localRowNumber, idAttributeKo, idAttributeGbu) {
+        var objectType = getObjectType();
+        if (objectType === -1)
+            return;
+        kendo.ui.progress($('body'), true);
+        var data = [{ rowNumber: localRowNumber }];
+        var templateContent = $('#templateRow').html();
+        var template = kendo.template(templateContent);
+        var result = kendo.render(template, data);
+        $('#attributesList').append(result);
+        var classWrapper = ".wrapper-" + localRowNumber;
+        var idTour = $('#RatingTour').data('kendoDropDownList').value();
+        var url = "@Url.Action("GetRowExport", "Task")";
+        $(classWrapper).load(url, { rowNumber: localRowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
+            function(response) {
+                $(classWrapper).show(500);
+                if (idAttributeKo || idAttributeGbu) {
+                    var attributeKoElement = '@nameof(PartialExportAttributesRowModel.IdAttributeKO)';
+                    var attributeGbuElement = '@nameof(PartialExportAttributesRowModel.IdAttributeGbu)';
+                    fillLevelFromTemplate(attributeKoElement, "kendoDropDownList", localRowNumber, idAttributeKo);
+                    fillLevelFromTemplate(attributeGbuElement, "kendoDropDownTree", localRowNumber, idAttributeGbu);
+                }
+                kendo.ui.progress($('body'), false);
+            });
+    }
+
+    function fillLevelFromTemplate(elementName, elementType, localRowNumber, value) {
+        var dropDownTree = $("#" + elementName + "_" + localRowNumber).data(elementType);
+        if (dropDownTree) {
+            dropDownTree.value(value || '');
+            dropDownTree.trigger('change');
+        }
+    }*@
+    
+    $(document).ready(function() {
+        $('[name="RatingTour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                filter: "contains",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Tour")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
+        $('#@nameof(Model.IsZu)').on('change', initKoAttributes);
+        $('#@nameof(Model.IsOks)').on('change', initKoAttributes);
+
+        $('#execute').on('click', transferAttributes);
+
+        @if (Model.CreateAttributes)
+        {<Text>
+        beforeLoad();
+        </Text>}
+
+        templateStorage.init(0,
+            '@Model.MethodToSaveTemplate', "Task",
+            '@Model.MethodToGetTemplate', "Task",
+            fillForm, addCustomLevelsToForm);
+    });
+    
+    function beforeLoad() {
+        $('[id^="IdAttributeKO"]').parents('.col-sm-5').hide();
+        var gbuCells = $('[id^="IdAttributeGBU"]').parents('.col-sm-5');
+        gbuCells.removeClass('col-sm-5").addClass("col-sm-10 col-sm-offset-2');
+    }
+    function initTasksList() {
+        var tourId = $('#@nameof(Model.RatingTour)').val();
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTasksByTour", "Task")',
+                    data: { tourId: tourId },
+                    dataType: 'json'
+                }
+            }
+        });
+        var tasksMultiSelect = $('#@nameof(Model.TaskFilter)').data('kendoMultiSelect');
+        if (tasksMultiSelect) {
+            tasksMultiSelect.setDataSource(dataSource);
+        }
+    }
+    
+    function getObjectType() {
+        var isZu =  $('#@nameof(Model.IsZu)').prop('checked');
+        var isOks = $('#@nameof(Model.IsOks)').prop('checked');
+        if (!isZu && !isOks) {
+            Common.ShowError('Не выбран тип');
+            return -1;
+        }
+        if (isZu && isOks)
+            return '@ObjectTypeExtended.Both';
+        if (isOks)
+            return '@ObjectTypeExtended.Oks';
+
+        return '@ObjectTypeExtended.Zu';
+    }
+
+    function initKoAttributes() {
+        var objectType = getObjectType();
+        var tourId = $('#RatingTour').val();
+        var koAttributesSource = objectType === -1
+            ? null
+            : new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetKoAttributes", "Task")',
+                        data: { tourId: tourId, objectType: objectType },
+                        dataType: 'json'
+                    }
+                }
+            });
+        $('[name^="IdAttributeKO"]').each(function() {
+            $(this).kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
+                filter: "contains",
+                dataSource: koAttributesSource
+            });
+        });
+    }
+
+
+    function addCustomLevelsToForm(formObject) {
+        if (!formObject) {
+            return formObject;
+        }
+        var exportAttribute = [];
+        var selectedAttr = [];
+        var treeView = $('#factorsTreeList').data('kendoTreeView');
+
+        checkedNodeValues(treeView.dataSource.view(), selectedAttr);
+        selectedAttr.forEach(x => exportAttribute.push({
+            IdAttributeGbu: x,
+            IdAttributeKO: null
+        }));
+
+        return Object.assign({}, formObject, {ExportAttribute: exportAttribute});
+    }
+
+
+    function transferAttributes() {
+        var objectType = getObjectType();
+        if (objectType === -1)
+            return; 
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject['TaskFilter'] = $('#TaskFilter').data('kendoMultiSelect').value();
+        formObject = addCustomLevelsToForm(formObject);
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function fillForm(data) {
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value([]);
+        rowNumber = 1;
+        var attrValues = [];
+        data.forEach(function (val) {
+
+            if (Object.keys(val)[0] === '@(nameof(Model.RatingTour))') {
+                var tourDropDownList = $('#@(nameof(Model.RatingTour))').data('kendoDropDownList');
+                tourDropDownList.value(val[Object.keys(val)[0]] || '');
+                tourDropDownList.trigger('change');
+            }
+
+            if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
+                var currentValue = $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value();
+                currentValue.push([val[Object.keys(val)[0]]]);
+                $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value(currentValue);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsOks))') {
+                $('#@(nameof(Model.IsOks))').prop("checked", val[Object.keys(val)[0]]);
+            }
+
+            if (Object.keys(val)[0] === '@(nameof(Model.IsZu))') {
+                $('#@(nameof(Model.IsZu))').prop("checked", val[Object.keys(val)[0]]);
+            }
+
+            if (Object.keys(val)[0].startsWith('IdAttributeGBU')) {
+                var x = Object.values(val)[0];
+                if (x)
+                    attrValues.push(String(x));
+            }
+
+            if (Object.keys(val)[0].startsWith('@(nameof(Model.ExportAttribute))')) {
+                var y = Object.values(val)[0];
+                if (y.IdAttributeGbu)
+                    attrValues.push(String(y.IdAttributeGbu));
+            }
+        });
+        checkNodesByValue(attrValues);
+        console.log(attrValues);
+    }
+</script>

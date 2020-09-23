@@ -6,13 +6,13 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
-using System.IO;
-using Core.ConfigParam;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
     public class ResultsByCadastralDistrictBaseReport : StatisticalDataReport
     {
+        protected readonly string BaseFolderWithSql = "ResultsByCadastralDistrict";
+
         protected interface IParentInfo
         {
             string ParentPurpose { get; set; }
@@ -61,24 +61,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         protected string GetSqlFileContent(string fileName)
         {
-            string contents;
-            using (var sr = new StreamReader(Configuration.GetFileStream(
-                $"\\StatisticalData\\ResultsByCadastralDistrict\\{fileName}", "sql", "SqlQueries")))
-            {
-                contents = sr.ReadToEnd();
-            }
-
-            return contents;
-        }
-
-        protected string ProcessDate(string dateStr)
-        {
-            if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
-            {
-                dateStr = date.ToString(DateFormat);
-            }
-
-            return dateStr;
+            return GetSqlFileContent(BaseFolderWithSql, fileName);
         }
     }
 }

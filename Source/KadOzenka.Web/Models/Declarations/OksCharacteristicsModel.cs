@@ -85,12 +85,14 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Количество этажей (HAR_8)
 		/// </summary>
 		[Display(Name = "Количество этажей")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage = "Максимальная длина значения для поля 'Количество этажей' составляет 4096 символа")]
 		public CharacteristicModel FloorCount { get; set; }
 
 		/// <summary>
 		/// Номер этажа здания или сооружения, на котором расположено помещение или машино-место (HAR_9)
 		/// </summary>
 		[Display(Name = "Номер этажа здания или сооружения, на котором расположено помещение или машино-место")]
+		[CharacteristicsModelMaxLength(4096, ErrorMessage = "Максимальная длина значения для поля 'Номер этажа здания или сооружения, на котором расположено помещение или машино-место' составляет 4096 символа")]
 		public CharacteristicModel FloorNumber { get; set; }
 
 		/// <summary>
@@ -324,7 +326,7 @@ namespace KadOzenka.Web.Models.Declarations
 				FloorNumber = new CharacteristicModel { Value = entity?.Har_9, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_9))) },
 				BuildingWallMaterial = new CharacteristicModel { Value = entity?.Har_10, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_10))) },
 				MainSupportingStructuresMaterial = new CharacteristicModel { Value = entity?.Har_11, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_11))) },
-				RoofMaterial = new CharacteristicModel { Value = entity?.Har_12, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_13))) },
+				RoofMaterial = new CharacteristicModel { Value = entity?.Har_12, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_12))) },
 				CommissioningYear = new CharacteristicModel { Value = entity?.Har_13, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_13))) },
 				CompletionYear = new CharacteristicModel { Value = entity?.Har_14, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_14))) },
 				OverhaulCompletionYear = new CharacteristicModel { Value = entity?.Har_15, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos?.FirstOrDefault(x => entity != null && x.HarOKSName == nameof(entity.Har_15))) },
@@ -416,9 +418,14 @@ namespace KadOzenka.Web.Models.Declarations
 			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
 			if (harInfo == null)
 			{
-				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReadinessDegreeOns.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
 			}
-			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReadinessDegreeOns.AdditionalInfo, ref harInfo);
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReadinessDegreeOns.AdditionalInfo, ref harInfo);
+			}
 
 			entity.Har_6 = parcelCharacteristicsViewModel.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue;
 			harName = nameof(entity.Har_6);
@@ -448,7 +455,7 @@ namespace KadOzenka.Web.Models.Declarations
 				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DesignedPurposeOns.AdditionalInfo, ref harInfo);
 			}
 
-			entity.Har_8 = parcelCharacteristicsViewModel.FloorCount.LongValue;
+			entity.Har_8 = parcelCharacteristicsViewModel.FloorCount.StringValue;
 			harName = nameof(entity.Har_8);
 			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
 			if (harInfo == null)
@@ -462,14 +469,19 @@ namespace KadOzenka.Web.Models.Declarations
 				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorCount.AdditionalInfo, ref harInfo);
 			}
 
-			entity.Har_9 = parcelCharacteristicsViewModel.FloorNumber.LongValue;
+			entity.Har_9 = parcelCharacteristicsViewModel.FloorNumber.StringValue;
 			harName = nameof(entity.Har_9);
 			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
 			if (harInfo == null)
 			{
-				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorNumber.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
 			}
-			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorNumber.AdditionalInfo, ref harInfo);
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorNumber.AdditionalInfo, ref harInfo);
+			}
 
 			entity.Har_10 = parcelCharacteristicsViewModel.BuildingWallMaterial.StringValue;
 			harName = nameof(entity.Har_10);
@@ -490,18 +502,28 @@ namespace KadOzenka.Web.Models.Declarations
 			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
 			if (harInfo == null)
 			{
-				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.MainSupportingStructuresMaterial.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
 			}
-			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.MainSupportingStructuresMaterial.AdditionalInfo, ref harInfo);
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.MainSupportingStructuresMaterial.AdditionalInfo, ref harInfo);
+			}
 
 			entity.Har_12 = parcelCharacteristicsViewModel.RoofMaterial.StringValue;
 			harName = nameof(entity.Har_12);
 			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
 			if (harInfo == null)
 			{
-				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.RoofMaterial.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
 			}
-			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.RoofMaterial.AdditionalInfo, ref harInfo);
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.RoofMaterial.AdditionalInfo, ref harInfo);
+			}
 
 			entity.Har_13 = parcelCharacteristicsViewModel.CommissioningYear.DateTimeValue;
 			harName = nameof(entity.Har_13);

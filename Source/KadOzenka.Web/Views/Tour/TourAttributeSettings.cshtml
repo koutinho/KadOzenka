@@ -48,10 +48,10 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.TypeRoomAttributeId)
+				@Html.CustomLabelFor(m => m.TerritoryTypeAttributeId)
 			</div>
 			<div class="col-sm-10">
-				@Html.KendoDropDownListTreeWithButton(m => m.TypeRoomAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+				@Html.KendoDropDownListTreeWithButton(m => m.TerritoryTypeAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
 		<div class="form-group">
@@ -119,7 +119,7 @@
             if (response.Data) {
                 changeAttrValue($('#CodeGroupAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.CodeGroupAttribute.GetEnumCode());
                 changeAttrValue($('#CodeQuarterAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.CodeQuarterAttribute.GetEnumCode());
-                changeAttrValue($('#TypeRoomAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.TypeRoomAttribute.GetEnumCode());
+				changeAttrValue($('#TerritoryTypeAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.TerritoryTypeAttribute.GetEnumCode());
 
             }
         }).fail(function (response, textStatus, errorThrown) {

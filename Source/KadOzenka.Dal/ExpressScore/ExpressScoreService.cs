@@ -661,7 +661,7 @@ namespace KadOzenka.Dal.ExpressScore
 				   }
 
 				   string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor
-						.Value.ToString();
+						.Value?.ToString();
 					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>(complex.Name, valueToComplexName));
 					costTargetObjectDataForReport.Add(targetObjectFactor.Value.ToString());
 

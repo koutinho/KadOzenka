@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.KoObject
 		public long IdTask { get; set; }
 		public long IdCodeGroup { get; set; }
 		public long IdCodeQuarter { get; set; }
-		public long IdTypeRoom { get; set; }
+		public long IdTerritoryType { get; set; }
 
 		/// <summary>
 		/// Result parameter.
@@ -125,27 +125,6 @@ namespace KadOzenka.Dal.KoObject
 					return;
 				}
 				{
-					if (complianceGuides.Any(x => x.TypeRoom != null && x.TypeRoom != KoTypeOfRoom.None.GetEnumDescription()) )
-					{
-						var attributeRoom = OMAttribute.Where(x => x.Id == param.IdTypeRoom).SelectAll()
-							.ExecuteFirstOrDefault();
-						// берем тип помещения
-						ValueItem typeRoom = GetValueFactor(gbuObject, attributeRoom.RegisterId, attributeRoom.Id);
-						if (string.IsNullOrEmpty(typeRoom.Value))
-						{
-							AddErrorRow($"Не найден тип помещения для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
-							return;
-						}
-						var group = complianceGuides.FirstOrDefault(x => x.TypeRoom == typeRoom.Value);
-						if (group.TypeRoom == null)
-						{
-							AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
-							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, group.Group, reportService);
-							return;
-						}
-						
-					}
-
 					var attributeQuarter = OMAttribute.Where(x => x.Id == param.IdCodeQuarter).SelectAll()
 						.ExecuteFirstOrDefault();
 					// берем кадастровый квартал
@@ -157,34 +136,35 @@ namespace KadOzenka.Dal.KoObject
 						return;
 					}
 
+					var gbuQuarterObject = OMMainObject.Where(x => x.CadastralNumber == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
+
 					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
-					if (kv == null)
+					if (gbuQuarterObject == null)
 					{
-						AddErrorRow($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник", rowReport, reportService);
+						AddErrorRow($"Не найден объект кадастровый квартал {codeQuarter.Value} .", rowReport, reportService);
 						return;
 					}
-					var task = OMTask.Where(x => x.Id == param.IdTask).SelectAll().ExecuteFirstOrDefault();
-					var tourYear = OMTour.Where(x => x.Id == task.TourId).SelectAll().ExecuteFirstOrDefault().Year;
+					var attributeTerritoryType = OMAttribute.Where(x => x.Id == param.IdTerritoryType).SelectAll().ExecuteFirstOrDefault();
 
-					switch (tourYear)
+					ValueItem territoryType = GetValueFactor(gbuObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
+
+					if (string.IsNullOrEmpty(territoryType.Value))
 					{
-						case 2017:
-                            var value2017 = complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group;
-                            AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value2017);
-							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2017, reportService);
-							break;
-						case 2020:
-						case 2018:
-                            var value2020 = complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group;
-                            AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value2020);
-							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2020, reportService);
-							break;
-						default:
-						{
-							AddErrorRow("Для выбранного тура не предусмотренны параметры проставления оценки", rowReport, reportService);
-							return;
-						}
+						AddErrorRow($"Не найден тип территории для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
+						return;
 					}
+
+					var complianceGuid = complianceGuides
+						.FirstOrDefault(x => x.SubGroup.ToString() == territoryType.Value);
+
+					if (string.IsNullOrEmpty(complianceGuid.Code))
+					{
+						AddErrorRow($"Не найдено значение в таблице сопоставления, для кода {codeGroup.Value} и подгуппы {territoryType.Value}", rowReport, reportService);
+						return;
+					}
+					var value = complianceGuid.Group;
+					AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+					AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 				}
 			});
 			reportService.SetStyle();
@@ -237,7 +217,7 @@ namespace KadOzenka.Dal.KoObject
 			{
 				if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
 				{
-					res.Value = attribs[0].StringValue;
+					res.Value = attribs[0].GetValueInString();
 					res.IdDocument = attribs[0].ChangeDocId;
 				}
 			}
@@ -253,7 +233,7 @@ namespace KadOzenka.Dal.KoObject
 			{
 				long.TryParse(complianceGuide.SubGroup?.Split('.')[1], out var sGroup);
 				if(complianceGuide.SubGroup != null)
-					res.Add(new ComplianceGuid { Group = complianceGuide.SubGroup, Code = complianceGuide.Code, TypeRoom = complianceGuide.TypeRoom, SubGroup = sGroup });
+					res.Add(new ComplianceGuid { Group = complianceGuide.SubGroup, Code = complianceGuide.Code, SubGroup = sGroup });
 			}
 
 			return res;
