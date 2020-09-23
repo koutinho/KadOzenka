@@ -77,6 +77,7 @@ function refreshFilterWidget(filterInfo) {
     listenFilter(filterInfo.sourceTypeFilter.sourceTypeList, filterInfo, false, 'sourceButton', 'source');
     listenFilter(filterInfo.districtTypeFilter.districtTypeList, filterInfo, false, 'districtButton', 'district');
 
+    currentFilterInfo = filterInfo;
 };
 
 function listenFilter(initialList, filterInfo, inPool, panelId, type) {
@@ -88,7 +89,6 @@ function listenFilter(initialList, filterInfo, inPool, panelId, type) {
                 SetFilterData(generateNewFilter(filterInfo));
             }
             else {
-                console.log(document.getElementsByClassName(panelId));
                 Array.from(document.getElementsByClassName(panelId)).forEach(x => { if (x.id != this.id) x.classList.add("inactive"); });
                 this.classList.toggle("inactive");
                 switch (type) {
@@ -106,6 +106,13 @@ function listenFilter(initialList, filterInfo, inPool, panelId, type) {
     });
 };
 
+function resetFilter(initialList) {
+    initialList.forEach(x => {
+        var element = document.getElementById(`${x.Name}FilterButton`);
+        element.classList.add("inactive");
+    });
+}
+
 function toTarget() { if (clusterSelected) map.setCenter(clusterSelected.coords, clusterSelected.zoom, "map"); };
 
 function changeMapType(type, element) {
@@ -113,6 +120,11 @@ function changeMapType(type, element) {
     element.classList.toggle("inactive");
     changeLayer(!element.classList.contains("inactive") ? type : 0);
 };
+
+function resetMapType() {
+    Array.from(document.getElementsByClassName("layerButton")).forEach(x => { x.classList.add("inactive"); });
+    changeLayer(0);
+}
 
 function changeLayer(type) {
     if(type != null) currentLayer = type;
@@ -246,14 +258,52 @@ function setHeatMapButtonState(active) {
     if (active) {
         document.getElementById("refreshHeatMapButton").classList.remove("inactive");
         document.getElementById("refreshHeatMapButton").innerHTML = "Идёт обновление<div class=\"preloaderImage\"></div>";
+        document.getElementById("clearFiltersButton").classList.add("inactive");
     }
     else {
         document.getElementById("refreshHeatMapButton").classList.add("inactive");
         document.getElementById("refreshHeatMapButton").innerHTML = "Обновить";
+        document.getElementById("clearFiltersButton").classList.remove("inactive");
     }
 };
 
 function setActualDate(date) {
-    ACTUAL_DATE = date.toLocaleDateString("ru-RU");
+    if (date) {
+        ACTUAL_DATE = date.toLocaleDateString("ru-RU");
+    } else {
+        ACTUAL_DATE = null;
+    }
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
 };
+
+function clearFilters() {
+    if (currentFilterInfo && !document.getElementById("clearFiltersButton").classList.contains("inactive")) {
+        SOURCE_DATA = null;
+        DISTRICTS_DATA = null;
+        ACTUAL_DATE = null;
+        heatMapData = null;
+
+        resetFilter(currentFilterInfo.dealTypeFilter.dealTypeList);
+        resetFilter(currentFilterInfo.propertyTypeFilter.propertyTypeList);
+        resetFilter(currentFilterInfo.propertyMarketFilter.propertyMarketSegmentList);
+        resetFilter(currentFilterInfo.commertialMarketFilter.commertialMarketSegmentList);
+        resetFilter(currentFilterInfo.sourceTypeFilter.sourceTypeList);
+        resetFilter(currentFilterInfo.districtTypeFilter.districtTypeList);
+        resetMapType();
+        mapDataPicker.clear();
+        initialHeatmapColorPicker.set('#000000');
+        resultHeatmapColorPicker.set('#000000');
+        setSplicedDeltaValue(PALETTE_SLICED_DELTA_MIN_VALUE);
+
+        refreshCurrentToken();
+        SetFilterData(generateNewFilter(currentFilterInfo));
+    }
+}
+
+function setSplicedDeltaValue(value) {
+    $("#splicedDeltaController").val(value);
+    document.getElementById("splicedDeltaContent").innerHTML = value;
+    createColorLegend(document.getElementById("splicedDeltaController").value,
+        document.getElementById('rgbInitialShowPanel').style.background,
+        document.getElementById('rgbResultShowPanel').style.background);
+}

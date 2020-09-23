@@ -55,6 +55,12 @@ function creatFilterWidget() {
                  <div id="filterControl" class="filterControl">
                     <div id="filterImage" class="filterImage inactive"></div>
                     <div id="allFiltersContainer" class="allFiltersContainer inactive">
+                        <div class="filterPanel">
+                            <div id="clearFiltersButton" class="filterButton">
+                                <span class="k-icon k-i-close"></span>
+                                Сбросить фильтры
+                            </div>
+                        </div>
                         <div class="filterPanelContainer inline">
                             <div class="filterPanel filterLabel">Тип сделки</div>
                             <div id="dealTypePanel" class="filterPanel"></div>
@@ -141,7 +147,8 @@ function creatFilterWidget() {
         },
         addEventListeners: function () {
 
-            $('#MapDataPicker').datepicker({ maxDate: new Date(), inline: true, onSelect: function onSelect(fd, date) { setActualDate(date); } });
+            mapDataPicker = $('#MapDataPicker').datepicker({ maxDate: new Date(), inline: true, onSelect: function onSelect(fd, date) { setActualDate(date); } })
+                .data('datepicker');
 
             document.getElementById("filterImage").addEventListener("click", function (e) {
                 document.getElementById("filterImage").classList.toggle("inactive");
@@ -166,10 +173,7 @@ function creatFilterWidget() {
             document.getElementById("quartalLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.quartal, e.target); });
 
             document.getElementById("splicedDeltaController").addEventListener("input", function () {
-                document.getElementById("splicedDeltaContent").innerHTML = this.value;
-                createColorLegend(document.getElementById("splicedDeltaController").value,
-                    document.getElementById('rgbInitialShowPanel').style.background,
-                    document.getElementById('rgbResultShowPanel').style.background);
+                setSplicedDeltaValue(this.value);
             });
 
             document.getElementById("refreshHeatMapButton").addEventListener('click', function (e) {
@@ -180,12 +184,13 @@ function creatFilterWidget() {
                 }
             });
 
-            createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel');
-            createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel');
-            document.getElementById("splicedDeltaContent").innerHTML = document.getElementById("splicedDeltaController").value;
-            createColorLegend(document.getElementById("splicedDeltaController").value,
-                document.getElementById('rgbInitialShowPanel').style.background,
-                document.getElementById('rgbResultShowPanel').style.background);
+            initialHeatmapColorPicker = createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel');
+            resultHeatmapColorPicker = createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel');
+            setSplicedDeltaValue(document.getElementById("splicedDeltaController").value);
+
+            document.getElementById("clearFiltersButton").addEventListener('click', function (e) {
+                clearFilters();
+            });
         }
     });
 }
