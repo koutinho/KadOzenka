@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 
@@ -11,6 +13,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 	public class CalculateCadastralPriceLongProcess : LongProcess
 	{
 		public const string LongProcessName = "CalculateCadastralPrice";
+		private static readonly int KnColumn = 0;
+		private static readonly int ErrorColumn = 1;
 
 		public static long AddProcessToQueue(KOCalcSettings settings)
 		{
@@ -24,10 +28,12 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<KOCalcSettings>();
-				OMGroup.CalculateSelectGroup(settings);
+				var reportId = PerformProc(settings);
 
 				WorkerCommon.SetProgress(processQueue, 100);
-				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", "Операция успешно завершена.");
+				string message = "Операция успешно завершена." +
+				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", message);
 			}
 			catch (Exception ex)
 			{
@@ -35,6 +41,29 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", $"Операция была прервана: {ex.Message} (Подробнее в журнале: {errorId})");
 				throw;
 			}
+		}
+
+		private long PerformProc(KOCalcSettings settings)
+		{
+			var reportService = new GbuReportService();
+			reportService.AddHeaders(0, new List<string> {"КН", "Ошибка"});
+
+			var result = OMGroup.CalculateSelectGroup(settings);
+
+			var currentReportRow = 1;
+			foreach (var errorItem in result)
+			{
+				reportService.AddValue(errorItem.CadastralNumber, KnColumn, currentReportRow);
+				reportService.AddValue(errorItem.Error, ErrorColumn, currentReportRow);
+				currentReportRow++;
+			}
+
+			reportService.SetStyle();
+			reportService.SetIndividualWidth(KnColumn, 4);
+			reportService.SetIndividualWidth(ErrorColumn, 5);
+			var reportId = reportService.SaveReport("Отчет по итогам расчета кадастровой стоимости");
+
+			return reportId;
 		}
 	}
 }
