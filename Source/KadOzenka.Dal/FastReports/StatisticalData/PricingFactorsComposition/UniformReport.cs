@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
@@ -10,6 +11,8 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
+using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
@@ -69,8 +72,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
-            //var test = new List<long> {2, 4, 5, 14, 42430534 };
-            var test = new List<long> { 2, 4 };
+            var test = new List<long> {2, 4, 5, 14, 42430534 };
+            //var test = new List<long> { 14 };
             var sources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
                                                                 x.Id != mainRegister.Id)
                 //.Where(x => test.Contains(x.Id))
@@ -97,7 +100,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 			            var tableAliasForSecondCondition = $"{tableAlias}_3";
 
 						var currentColumn = $@" 
-						COALESCE((select string_agg(cast ({tableAlias}.attribute_id as text), ',') from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id and
+						(select string_agg(cast ({tableAlias}.attribute_id as text), ',') from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id and
                         ({tableAlias}.ID = (SELECT MAX({tableAliasForFirstCondition}.id) FROM {tableName} {tableAliasForFirstCondition} 
                         WHERE {tableAliasForFirstCondition}.object_id = {tableAlias}.object_id 
                         AND {tableAliasForFirstCondition}.attribute_id = {tableAlias}.attribute_id 
@@ -105,11 +108,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                         WHERE {tableAliasForSecondCondition}.object_id = {tableAlias}.object_id 
                         AND {tableAliasForSecondCondition}.attribute_id = {tableAlias}.attribute_id 
                         AND {tableAliasForSecondCondition}.Ot <= {CrossDBSQL.ToDate(dateOt)})))
-						), '') ";
+						)";
 
 			            columns = string.IsNullOrWhiteSpace(columns)
 				            ? $@"{currentColumn}"
-				            : $@"{columns}  || ',' || {currentColumn}";
+				            : $@"{columns}, {currentColumn}";
 		            }
 	            }
 	            else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
@@ -128,7 +131,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 			            var tableAliasForCondition = $"{tableAlias}_2";
 
 			            var currentColumn = $@"
-							(select COALESCE((STRING_AGG(distinct (case when {tableAlias}.id is null then '' else '{attribute.Id}' end), ',')), '')
+							(select (STRING_AGG(distinct (case when {tableAlias}.id is null then '' else '{attribute.Id}' end), ','))
 							from {tableName} {tableAlias} 
 							where unit.object_id = {tableAlias}.object_id AND
 							({tableAlias}.OT = (SELECT MAX({tableAliasForCondition}.OT) 
@@ -138,17 +141,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 			            columns = string.IsNullOrWhiteSpace(columns)
 				            ? $@"{currentColumn}"
-				            : $@"{columns} || ',' || ({currentColumn})";
+				            : $@"{columns}, ({currentColumn})";
 		            }
 	            }
             }
 
-            var sql = $@"select unit.cadastral_number as CadastralNumber, 
-			    ({columns}) as attributes
+            var sql = $@"with data as(
+				select unit.cadastral_number as CadastralNumber,
+				ARRAY[
+			    {columns}] as attributes
 				from ko_unit unit
-			    where unit.task_id in({string.Join(',', taskIds)})--and unit.object_id in (10743778)--(549616)
+			    where unit.task_id in({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE = 4 --and unit.object_id in (10743778)--(549616)
 			    group by unit.cadastral_number, unit.object_id
-				order by unit.cadastral_number";
+				order by unit.cadastral_number)
+
+				select cadastralNumber, array_remove(attributes, NULL) as attributes from data";
 
             var results = QSQuery.ExecuteSql<DbResult>(sql);
 
@@ -159,15 +166,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             }).ToList();
         }
 
+
         public class DbResult
         {
             public string CadastralNumber { get; set; }
-            public string Attributes { get; set; }
+            public string[] Attributes { get; set; }
         }
 
         protected List<OMUnit> GetUnits(List<long> taskIds)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null && x.PropertyType_Code == PropertyTypes.Stead)
                 .Select(x => new
                 {
                     x.ObjectId,
@@ -177,21 +185,29 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 .Execute();
         }
 
-        private List<Attribute> GetUniqueAttributes2(string attributesStr)
+        private List<Attribute> GetUniqueAttributes2(string[] attributesStr)
         {
-	        var objectAttributes = attributesStr.Split(',').Where(attribute => !string.IsNullOrWhiteSpace(attribute)).Select(attributeIdStr =>
+	        var objectAttributes = new List<Attribute>();
+            attributesStr.Where(attribute => !string.IsNullOrWhiteSpace(attribute)).ForEach(attributeIdStr =>
 	        {
-		        var attribute = RegisterCache.RegisterAttributes.Values.ToList()
-			        .FirstOrDefault(x => x.Id == attributeIdStr.ParseToLong());
-		        var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribute?.RegisterId);
-		        return new Attribute
+		        foreach (var processedAttributeId in attributeIdStr.Split(','))
 		        {
-			        AttributeName = attribute?.Name,
-                    RegisterId = register?.Id,
-			        RegisterName = register?.Description
-		        };
-	        }).ToList();
+			        var attribute = RegisterCache.RegisterAttributes.Values.ToList()
+				        .FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
 
+			        var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+
+                    if(attribute == null || register == null)
+                        continue;
+
+                    objectAttributes.Add(new Attribute
+			        {
+				        AttributeName = attribute.Name,
+				        RegisterId = register.Id,
+				        RegisterName = register.Description
+			        });
+		        }
+	        });
 
             if (objectAttributes.Count == 0)
 		        return new List<Attribute>();
@@ -207,7 +223,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	        //отбираем уникальные аттрибуты из РР
 	        rosreestrAttributes.ForEach(rr =>
 	        {
-		        var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu => !string.IsNullOrWhiteSpace(gbu.AttributeName) &&
+		        var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu => 
                     gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
 		        if (sameAttributes.Count == 0)
@@ -216,7 +232,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	        //отбираем уникальные аттрибуты из всех источников кроме РР
 	        gbuAttributesExceptRosreestr.ForEach(gbu =>
 	        {
-		        var sameAttributes = rosreestrAttributes.Where(rr => !string.IsNullOrWhiteSpace(rr.AttributeName) &&
+		        var sameAttributes = rosreestrAttributes.Where(rr => 
                     gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
 		        if (sameAttributes.Count == 0)
