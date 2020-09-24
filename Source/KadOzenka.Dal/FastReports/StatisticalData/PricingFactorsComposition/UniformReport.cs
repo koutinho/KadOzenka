@@ -153,7 +153,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 						var currentColumn = $@" 
 						(select string_agg(distinct cast ({tableAlias}.attribute_id as text), ',') 
-						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id group by {tableAlias}.attribute_id)";
+						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id)";
 
 						columns = string.IsNullOrWhiteSpace(columns)
 							? $@"{currentColumn}"
