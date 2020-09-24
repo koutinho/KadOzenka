@@ -141,6 +141,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 		{
 			var counter = 0;
 			var columns = string.Empty;
+			var joins = string.Empty;
+			var conditions = string.Empty;
 			foreach (var register in _cachedRegisters)
 			{
 				if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
@@ -148,55 +150,59 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 					var postfixes = new List<string> { "TXT", "NUM", "DT" };
 					foreach (var postfix in postfixes)
 					{
+						counter++;
 						var tableName = $"{register.AllpriTable}_{postfix}";
-						var tableAlias = $"source_{++counter}";
+						var tableAlias = $"source_{counter}";
 
-						var currentColumn = $@" 
-						(select string_agg(distinct cast ({tableAlias}.attribute_id as text), ',') 
-						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id)";
+						columns = $@"{(string.IsNullOrWhiteSpace(columns) ? "" : $" {columns}, ")} 
+                                    STRING_AGG(distinct cast({tableAlias}.attribute_id as text), ',')";
 
-						columns = string.IsNullOrWhiteSpace(columns)
-							? $@"{currentColumn}"
-							: $@"{columns}, {currentColumn}";
+						joins = $@" {joins} 
+                        left join {tableName} {tableAlias} on unit.object_id = {tableAlias}.object_id";
 					}
 				}
 				else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 				{
-					var attributes = _cachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
-					foreach (var attribute in attributes)
+					var attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+						.Where(x => x.RegisterId == register.Id).ToList();
+
+					foreach (var attributeData in attributesData)
 					{
-						if (attribute.IsPrimaryKey)
+						if (attributeData.IsPrimaryKey)
+						{
 							continue;
+						}
 
-						var tableName = $"{register.AllpriTable}_{attribute.Id}";
-						var tableAlias = $"gbu_source_{++counter}";
+						counter++;
 
-						var currentColumn = $@"
-							(select (case when {tableAlias}.id is null then '' else '{attribute.Id}' end)
-							from {tableName} {tableAlias} 
-							where unit.object_id = {tableAlias}.object_id limit 1)";
+						var tableName = $"{register.AllpriTable}_{attributeData.Id}";
+						var tableAlias = $"gbu_source_{counter}";
 
-						columns = string.IsNullOrWhiteSpace(columns)
-							? $"{currentColumn}"
-							: $"{columns}, ({currentColumn})";
+						columns = $@"{(string.IsNullOrWhiteSpace(columns) ? "" : $" {columns}, ")} 
+                                    STRING_AGG(distinct (case when {tableAlias}.id is null then '' else '{attributeData.Id}' end), ',') ";
+
+						joins = $@" {joins} 
+                        left join {tableName} {tableAlias} on unit.object_id = {tableAlias}.object_id";
 					}
 				}
 			}
 
-			var sql = $@"with data as(
-				select unit.cadastral_number as CadastralNumber,
-				ARRAY[
-			    {columns}
-				] as attributes
-				from ko_unit unit
-			    where unit.task_id in({string.Join(',', taskIds)}) 
-			    group by unit.cadastral_number, unit.object_id
+			var resultColumns = string.IsNullOrWhiteSpace(columns) ? "" : $"{columns.TrimEnd(',')}";
+
+			var sql = $@"with data as(select unit.cadastral_number as cadastralnumber, 
+                ARRAY[{resultColumns}] as attributes
+                from ko_unit unit 
+                {joins} 
+                --AND ( {conditions} ) 
+                where unit.task_id in({string.Join(',', taskIds)})--and unit.object_id in (10743778)--(549616)
+                group by unit.cadastral_number
 				order by unit.cadastral_number)
 
 				select cadastralNumber, array_remove(attributes, NULL) as attributes from data";
 
 			return QSQuery.ExecuteSql<ReportItem>(sql);
 		}
+
 
 		private DataTable GetItemDataTable(List<ReportItem> operations)
         {
