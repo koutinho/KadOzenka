@@ -11658,6 +11658,27 @@ namespace ObjectModel.Directory.KO
         [ShortTitle("")]
         None = 0,
 
+		/// <summary>
+		/// Наследование при совпадении квартала (2191)
+		/// </summary>
+		[Description("Наследование при совпадении квартала")]
+        [EnumCode("1")]
+        [ShortTitle("")]
+        ftKvartal = 2191,
+		/// <summary>
+		/// Наследование при совпадении года постройки (2192)
+		/// </summary>
+		[Description("Наследование при совпадении года постройки")]
+        [EnumCode("2")]
+        [ShortTitle("")]
+        ftYear = 2192,
+		/// <summary>
+		/// Наследование при совпадении материала стен  (2193)
+		/// </summary>
+		[Description("Наследование при совпадении материала стен ")]
+        [EnumCode("3")]
+        [ShortTitle("")]
+        ftWall = 2193,
     }
 }
 
