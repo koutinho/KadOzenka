@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         #region Support Methods
 
-        public List<ReportItem> GetOperations(List<long> taskIds)
+        public List<ReportItem> GetOperations2(List<long> taskIds)
         {
             var items = new List<ReportItem>();
             var units = GetUnits(taskIds).ToList();
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     CadastralNumber = unit.CadastralNumber,
                     Attributes = GetUniqueAttributes(objAttributes).Select(x => new Attribute
                     {
-                        AttributeName = x.GetAttributeName(),
+	                    Name = x.GetAttributeName(),
                         RegisterName = x.RegisterData.Description
                     }).ToList()
                 });
@@ -68,31 +68,30 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return items;
         }
 
-        public List<ReportItem> GetOperations2(List<long> taskIds)
+        public List<ReportItem> GetOperations(List<long> taskIds)
         {
             var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
             //var test = new List<long> {2, 4, 5, 14, 42430534 };
             //var test = new List<long> { 14 };
-            var sources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
+            var cachedRegisters = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
                                                                 x.Id != mainRegister.Id)
                 //.Where(x => test.Contains(x.Id))
-                .Select(x => x.Id).ToList();
+                .ToList();
 
-            var registers = sources.Distinct().ToList();
-            
+            var registerIds = cachedRegisters.Select(x => x.Id).ToList();
+            var cachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x => registerIds.Contains(x.RegisterId)).ToList();
+
             var counter = 0;
             var columns = string.Empty;
-            foreach (var registerId in registers)
+            foreach (var register in cachedRegisters)
             {
-	            var registerData = RegisterCache.GetRegisterData(registerId);
-
-	            if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
+	            if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 	            {
 		            var postfixes = new List<string> {"TXT", "NUM", "DT"};
 		            foreach (var postfix in postfixes)
 		            {
-			            var tableName = $"{registerData.AllpriTable}_{postfix}";
+			            var tableName = $"{register.AllpriTable}_{postfix}";
 			            var tableAlias = $"source_{++counter}";
 
 			            var currentColumn = $@" 
@@ -104,22 +103,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				            : $@"{columns}, {currentColumn}";
 		            }
 	            }
-	            else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+	            else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 	            {
-		            var attributes = RegisterCache.RegisterAttributes.Values.ToList()
-			            .Where(x => x.RegisterId == registerId)
-			            .ToList();
+		            var attributes = cachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
 
 		            foreach (var attribute in attributes)
 		            {
 			            if (attribute.IsPrimaryKey)
 				            continue;
 
-			            var tableName = $"{registerData.AllpriTable}_{attribute.Id}";
+			            var tableName = $"{register.AllpriTable}_{attribute.Id}";
 			            var tableAlias = $"gbu_source_{++counter}";
 
 			            var currentColumn = $@"
-							(select (case when {tableAlias}.id is null then '' else '44' end)
+							(select (case when {tableAlias}.id is null then '' else '{attribute.Id}' end)
 							from {tableName} {tableAlias} 
 							where unit.object_id = {tableAlias}.object_id limit 1)";
 
@@ -146,9 +143,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             var results = QSQuery.ExecuteSql<DbResult>(sql);
 
-            var cachedAttributes = RegisterCache.RegisterAttributes.Values.ToList();
-            var cachedRegisters = RegisterCache.Registers.Values.ToList();
-
             return results.Select(result => new ReportItem
             {
                 CadastralNumber = result.CadastralNumber,
@@ -173,7 +167,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 			        objectAttributes.Add(new Attribute
 			        {
-				        AttributeName = attribute.Name,
+				        Name = attribute.Name,
 				        RegisterId = register.Id,
 				        RegisterName = register.Description
 			        });
@@ -194,21 +188,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	        //отбираем уникальные аттрибуты из РР
 	        rosreestrAttributes.ForEach(rr =>
 	        {
-		        var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
-				        gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase))
-			        .ToList();
+		        var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
+				        gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
 
-		        if (sameAttributes.Count == 0)
+                if (!isSameAttributesExist)
 			        uniqueAttributes.Add(rr);
 	        });
 	        //отбираем уникальные аттрибуты из всех источников кроме РР
 	        gbuAttributesExceptRosreestr.ForEach(gbu =>
 	        {
-		        var sameAttributes = rosreestrAttributes.Where(rr =>
-				        gbu.AttributeName.StartsWith(rr.AttributeName, StringComparison.InvariantCultureIgnoreCase))
-			        .ToList();
+		        var isSameAttributesExist = rosreestrAttributes.Any(rr =>
+				        gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
 
-		        if (sameAttributes.Count == 0)
+		        if (!isSameAttributesExist)
 			        uniqueAttributes.Add(gbu);
 	        });
 
@@ -310,7 +302,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                             if (counter % 2 == 0)
                             {
                                 title = $"{titleForCharacteristic} {j + 1}";
-                                value = operations[i].Attributes.ElementAtOrDefault(j)?.AttributeName;
+                                value = operations[i].Attributes.ElementAtOrDefault(j)?.Name;
                             }
                             else
                             {
@@ -337,7 +329,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         public class Attribute
         {
-            public string AttributeName { get; set; }
+            public string Name { get; set; }
             public string RegisterName { get; set; }
             public long? RegisterId { get; set; }
         }
