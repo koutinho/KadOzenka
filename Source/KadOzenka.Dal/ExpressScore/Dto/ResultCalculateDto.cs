@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.Enum;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
@@ -17,13 +18,12 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 	{
 		public int Id { get; set; }
 		public decimal SummaryCost { get; set; }
-
 		public decimal SquareCost { get; set; }
-
 		public long ReportId { get; set; }
-
 		public List<AnalogResultDto> Analogs { get; set; }
-
 		public DealTypeShort DealType { get; set; }
+		public string Address { get; set; }
+		public decimal Area { get; set; }
+		public MarketSegment MarketSegment { get; set; }
 	}
 }
