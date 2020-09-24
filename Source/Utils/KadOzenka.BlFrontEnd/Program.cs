@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory.Core.LongProcess;
@@ -95,6 +96,11 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("11042", "Парсинг дополнительных данных для Яндекс недвижимость", () =>
             {
 	            new YandexFilling().FillAdditionalData(false);
+			});
+
+			consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
+			{
+				new AddingMissingDataFromGbuPartProc().PerformProc(false);
 			});
 
 			consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });

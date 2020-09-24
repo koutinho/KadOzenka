@@ -100,7 +100,6 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 				int totalCount = objects.Count, currentCount = 0, correctCount = 0, updateCount = 0, errorCount = 0;
 				foreach (OMCoreObject marketObject in objects)
 				{
-					DateTime currentTime = DateTime.Now;
 					try
 					{
 						driver.Navigate().GoToUrl(marketObject.Url);
@@ -110,7 +109,6 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 						var deserializedObject = (JObject)JsonConvert.DeserializeObject(jsObjectData.ToString());
 						if (UpdateObject(deserializedObject, marketObject))
 						{
-							marketObject.LastDateUpdate = currentTime;
 							marketObject.Save();
 							updateCount++;
 						}

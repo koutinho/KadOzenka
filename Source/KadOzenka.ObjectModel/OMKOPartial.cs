@@ -1999,9 +1999,9 @@ namespace ObjectModel.KO
             });
 
         }
-        public static void CalculateSelectGroup(KOCalcSettings setting)
+        public static List<CalcErrorItem> CalculateSelectGroup(KOCalcSettings setting)
         {
-
+	        List<CalcErrorItem> result = new List<CalcErrorItem>();
             if (setting.CalcAllGroups)
             {
                 List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
@@ -2028,8 +2028,12 @@ namespace ObjectModel.KO
                                     if (parentsGroup.ParentCalcGroupId != null)
                                         calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
                                 }
+
                                 if (AutoCalcGroup.CalcStage1)
-                                    CalcGroup.Calculate(Units, calcParentGroup);
+                                {
+	                                var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+	                                result.AddRange(calculationResult);
+                                }
                                 if (AutoCalcGroup.CalcStage3)
                                     CalcGroup.CalculateResult(Units);
                             }
@@ -2065,8 +2069,12 @@ namespace ObjectModel.KO
                                 if (parentsGroup.ParentCalcGroupId != null)
                                     calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
                             }
+
                             if (setting.CalcStage1)
-                                CalcGroup.Calculate(Units, calcParentGroup);
+                            {
+	                            var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+                                result.AddRange(calculationResult);
+                            }
 
                             if (setting.CalcStage3)
                                 CalcGroup.CalculateResult(Units);
@@ -2074,6 +2082,8 @@ namespace ObjectModel.KO
                     }
                 }
             }
+
+            return result;
         }
         public static string GetFormulaKoeff(OMGroup _parent_group, bool upks, string value)
         {

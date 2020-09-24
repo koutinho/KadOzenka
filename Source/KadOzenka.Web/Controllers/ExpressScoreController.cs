@@ -609,27 +609,27 @@ namespace KadOzenka.Web.Controllers
 		private void BuildObjectCards(List<CoordinatesDto> coordinates)
 		{
 			var resultObjectIds = coordinates.Select(x => x.Id).ToList();
-			var resultObjects = OMCoreObject.Where(x => resultObjectIds.Contains(x.Id))
-				.Select(x => new
-				{
-					x.Id,
-					x.Images,
-					x.Price,
-					x.PricePerMeter,
-					x.Area,
-					x.Address,
-					x.CadastralNumber,
-					x.PropertyMarketSegment,
-					x.DealType,
-					x.Market_Code,
-					x.PropertyTypesCIPJS_Code
-				}).Execute();
+			var resultObjects = 
+				OMCoreObject
+				.Where(x => resultObjectIds.Contains(x.Id))
+				.Select(x => new { x.Id, x.Images, x.Price, x.PricePerMeter, x.Area, x.Address, x.CadastralNumber, x.PropertyMarketSegment, x.DealType, x.Market_Code, x.PropertyTypesCIPJS_Code })
+				.Execute();
 
 			coordinates.ForEach(x =>
 			{
 				var resultObject = resultObjects.FirstOrDefault(y => y.Id == x.Id);
-				x.ObjectMiniCard = _viewRenderService.ToString("MarketObjects/ObjectMiniCard",
-					CoreObjectDto.MapToMiniCard(resultObject));
+				x.ObjectMiniCard = _viewRenderService.ToString("MarketObjects/ObjectMiniCard", CoreObjectDto.MapToMiniCard(resultObject));
+				x.ObjectMiniCardContent = _viewRenderService.ToString("MarketObjects/ObjectMiniCardContent", CoreObjectDto.MapToMiniCard(resultObject));
+				x.Images = resultObject.Images;
+				x.Price = resultObject.Price;
+				x.PricePerMeter = resultObject.PricePerMeter;
+				x.Area = resultObject.Area;
+				x.Address = resultObject.Address;
+				x.CadastralNumber = resultObject.CadastralNumber;
+				x.PropertyMarketSegment = resultObject.PropertyMarketSegment;
+				x.DealType = resultObject.DealType;
+				x.Market_Code = resultObject.Market_Code;
+				x.PropertyTypesCIPJS_Code = resultObject.PropertyTypesCIPJS_Code;
 			});
 		}
 
