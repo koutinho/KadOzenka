@@ -72,7 +72,6 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Причина отказа (REJECTION_REASON)
 		/// </summary>
 		[Display(Name = "Причина отказа")]
-		[MaxLength(1024, ErrorMessage = "Максимальная длина значения для поля 'Причина отказа' составляет 1024 символа")]
 		public string RejectionReason { get; set; }
 
 		/// <summary>
