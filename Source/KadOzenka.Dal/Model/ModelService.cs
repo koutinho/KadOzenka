@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.Model
         {
             var query = new QSQuery
             {
-                MainRegisterID = OMModelFactor.GetRegisterId(),
+                MainRegisterID = OMAttribute.GetRegisterId(),
                 Condition = new QSConditionGroup
                 {
                     Type = QSConditionGroupType.And,
@@ -69,7 +69,7 @@ namespace KadOzenka.Dal.Model
                 {
                     new QSJoin
                     {
-                        RegisterId = OMAttribute.GetRegisterId(),
+                        RegisterId = OMModelFactor.GetRegisterId(),
                         JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,

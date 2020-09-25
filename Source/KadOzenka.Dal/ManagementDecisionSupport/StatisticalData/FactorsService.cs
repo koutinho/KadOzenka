@@ -24,24 +24,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public List<PricingFactors> GetGroupedModelFactors(long modelId)
         {
-            var factors = ModelService.GetModelFactors(modelId);
-
-            var groupedFactors = factors.GroupBy(x => x.RegisterId).Select(x => new PricingFactors
-            {
-                RegisterId = (int)x.Key,
-                Attributes = x.Select(y => new Attribute
-                {
-                    Id = y.FactorId,
-                    Name = y.Factor
-                }).ToList()
-            }).ToList();
-
-            return groupedFactors;
-        }
-
-        //TODO переименовать после оптимизации
-        public List<PricingFactors> GetGroupedModelFactorsNew(long modelId)
-        {
             var query = ModelService.GetModelFactorsQuery(modelId);
 
             query.AddColumn(OMAttribute.GetColumn(x => x.ValueField, nameof(ModelFactorPure.ValueField)));
@@ -146,9 +128,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             };
         }
 
-        public List<Attribute> ProcessModelFactors(DataRow row, List<Attribute> attributes)
+        public List<Attribute> ProcessModelFactors(DataRow row, List<Attribute> generalAttributes)
         {
-	        return attributes.Select(attribute =>
+	        return generalAttributes.Select(attribute =>
 		        new Attribute
 		        {
 			        Id = attribute.Id,
@@ -160,30 +142,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         #region Entities
 
-        //TODO рефакторить после окончания оптимизации
         public class PricingFactors
         {
             public long RegisterId { get; set; }
             public List<Attribute> Attributes { get; set; }
         }
 
+        //TODO объединить классы Attribute и ModelFactorPure. сейчас это невозможно из-за ошибки платформы
+        //TODO (ORM делает неправильный маппинг при ExecuteQuery)
         public class Attribute
         {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string ValueField { get; set; }
+	        public long Id { get; set; }
+	        public string Name { get; set; }
+	        public string ValueField { get; set; }
             public string Value { get; set; }
         }
 
-        public class ModelFactorPure
-        {
-            public long Id { get; set; }
-            public string Name { get; set; }
-            public string ValueField { get; set; }
+		public class ModelFactorPure
+		{
+	        public long Id { get; set; }
+	        public string Name { get; set; }
+	        public string ValueField { get; set; }
             public long RegisterId { get; set; }
-        }
+		}
 
-        public class ModelFactorsSql
+		public class ModelFactorsSql
         {
 	        public string Columns { get; set; }
 	        public string Tables { get; set; }

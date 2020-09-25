@@ -166,11 +166,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         private List<OMTour> GetToursByTasks(List<long> taskIds)
         {
-            return OMTask.Where(x => taskIds.Contains(x.Id))
-                .Select(x => x.ParentTour.Id)
-                .Select(x => x.ParentTour.Year)
-                .SelectAll()
-                .Execute()
+	        return OMTask.Where(x => taskIds.Contains(x.Id))
+		        .Select(x => new
+		        {
+			        x.ParentTour.Id,
+			        x.ParentTour.Year
+                })
+		        .Execute()
                 .Select(x => x.ParentTour)
                 .DistinctBy(x => x.Id)
                 .ToList();
@@ -178,7 +180,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         private List<FactorsService.PricingFactors> GetPricingFactors(long groupId)
         {
-            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
             ////TODO: для тестирования
             //var model = OMModel.Where(x => x.Id == 7977478).SelectAll().ExecuteFirstOrDefault();
             return model == null
@@ -188,7 +190,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<OMTour> tours)
         {
-            var tourIds = tours.Select(x => x.Id).ToList();
+	        var tourIds = tours.Select(x => x.Id).ToList();
             var tourAttributes = new Dictionary<long, TourAttributesFromSettings>();
             tourIds.ForEach(tourId =>
             {
@@ -237,7 +239,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 objectIds,
                 allRegisterIds.Distinct().ToList(),
                 allAttributeIds.Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay());
+                DateTime.Now.GetEndOfTheDay(),
+                isLight: true);
         }
 
         private static void SetRosreestrAttributes(List<GbuObjectAttribute> objectAttributes, Dictionary<string, RegisterAttribute> rosreestrAttributes,
@@ -317,9 +320,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         protected List<OMUnit> GetUnits(List<long> taskIds)
         {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
-                .SelectAll()
-                .Execute();
+	        return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+	            .Select(x => new
+	            {
+                    x.ObjectId,
+                    x.TourId,
+                    x.CadastralNumber,
+                    x.Square,
+                    x.CadastralCost,
+                    x.PropertyType_Code
+                }).Execute();
         }
 
         #endregion

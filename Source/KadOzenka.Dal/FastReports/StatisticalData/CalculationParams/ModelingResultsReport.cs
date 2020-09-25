@@ -85,8 +85,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupedFactors = modelId == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactorsNew(modelId.Value);
-            var attributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
+                : FactorsService.GetGroupedModelFactors(modelId.Value);
+            var generalAttributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
 
             var sql = GetSql(taskIds, modelId, groupId, groupedFactors);
             var command = DBMngr.Main.GetSqlStringCommand(sql);
@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                     Square = row[nameof(ReportItem.Square)].ParseToDecimalNullable(),
                     Upks = row[nameof(ReportItem.Upks)].ParseToDecimalNullable(),
                     CadastralCost = row[nameof(ReportItem.CadastralCost)].ParseToDecimalNullable(),
-                    Factors = FactorsService.ProcessModelFactors(row, attributes)
+                    Factors = FactorsService.ProcessModelFactors(row, generalAttributes)
                 };
 
                 items.Add(item);
