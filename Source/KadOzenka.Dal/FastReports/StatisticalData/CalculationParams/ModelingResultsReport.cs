@@ -52,25 +52,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         private string GetSql(List<long> taskIds, long? modelId, long groupId,
             List<FactorsService.PricingFactors> groupedFactors)
         {
-            var counter = 1;
-            var columns = string.Empty;
-            var tables = string.Empty;
-            string query;
-            
-            groupedFactors.ForEach(factors =>
-            {
-                var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id== factors.RegisterId);
-                if(register == null)
-                    throw new Exception($"Не найден реестр с Id='{factors.RegisterId}' для факторов модели с Id='{modelId}'");
-
-                factors.Attributes.ForEach(attribute =>
-                {
-                    columns = $"{columns} factorsTable{counter}.{attribute.ValueField} as \"{attribute.Id}\",";
-                });
-                
-                tables = $"{tables} left join {register.QuantTable} factorsTable{counter} on unit.id = factorsTable{counter}.Id";
-                counter++;
-            });
+	        var sqlForModelFactors = FactorsService.GetSqlForModelFactors(modelId, groupedFactors);
 
             var addressAttribute = RosreestrRegisterService.GetAddressAttribute();
 
@@ -83,21 +65,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 unit.UPKS as {nameof(ReportItem.Upks)}, 
                 unit.CADASTRAL_COST as {nameof(ReportItem.CadastralCost)} ";
 
-            if (string.IsNullOrWhiteSpace(columns))
-            {
-                query = baseSelect;
-            }
-            else
-            {
-                query = $"{baseSelect}, {columns.Remove(columns.Length - 1)} ";
-            }
+            var query = string.IsNullOrWhiteSpace(sqlForModelFactors.Columns) 
+	            ? baseSelect 
+	            : $"{baseSelect}, {sqlForModelFactors.Columns} ";
 
             //ИД, у которых внесены показатели вручную (для тестирования)
             //and (unit.id = 16615885 or unit.id = 16615913)
             //modelId = 100018, groupId = 100018
             //taskId = 15365643
             query = $@"{query} FROM ko_unit unit 
-                        {tables} 
+                        {sqlForModelFactors.Tables} 
                     WHERE unit.TASK_ID in ({string.Join(",", taskIds)}) and unit.GROUP_ID= {groupId} 
                     order by unit.CADASTRAL_BLOCK";
 
@@ -127,13 +104,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                     Square = row[nameof(ReportItem.Square)].ParseToDecimalNullable(),
                     Upks = row[nameof(ReportItem.Upks)].ParseToDecimalNullable(),
                     CadastralCost = row[nameof(ReportItem.CadastralCost)].ParseToDecimalNullable(),
-                    Factors = attributes.Select(attribute =>
-                        new FactorsService.Attribute
-                        {
-                            Id = attribute.Id,
-                            Name = attribute.Name,
-                            Value = row[attribute.Id.ToString()].ParseToStringNullable()
-                        }).ToList()
+                    Factors = FactorsService.ProcessModelFactors(row, attributes)
                 };
 
                 items.Add(item);

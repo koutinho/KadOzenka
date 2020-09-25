@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -111,6 +113,50 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return attributes;
         }
 
+        public ModelFactorsSql GetSqlForModelFactors(long? modelId, List<PricingFactors> groupedFactors)
+        {
+            if(modelId == null)
+                return new ModelFactorsSql();
+
+            var counter = 0;
+            var columns = new StringBuilder();
+            var tables = new StringBuilder();
+            groupedFactors.ForEach(factors =>
+            {
+                var register = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == factors.RegisterId);
+                if (register == null)
+                    throw new Exception($"Не найден реестр с Id='{factors.RegisterId}' для факторов модели с Id='{modelId}'");
+
+                factors.Attributes.ForEach(attribute =>
+                {
+                    columns.Append($" factorsTable{counter}.{attribute.ValueField} as \"{attribute.Id}\",");
+                });
+
+                tables.Append($" left join {register.QuantTable} factorsTable{counter} on unit.id = factorsTable{counter}.Id");
+                counter++;
+            });
+            //удаляем ',' в селекте для последнего столбца
+            if (columns.Length > 0)
+	            columns.Length--;
+
+            return new ModelFactorsSql
+            {
+                Columns = columns.ToString(),
+                Tables = tables.ToString()
+            };
+        }
+
+        public List<Attribute> ProcessModelFactors(DataRow row, List<Attribute> attributes)
+        {
+	        return attributes.Select(attribute =>
+		        new Attribute
+		        {
+			        Id = attribute.Id,
+			        Name = attribute.Name,
+			        Value = row[attribute.Id.ToString()].ParseToStringNullable()
+		        }).ToList();
+        }
+
 
         #region Entities
 
@@ -135,6 +181,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             public string Name { get; set; }
             public string ValueField { get; set; }
             public long RegisterId { get; set; }
+        }
+
+        public class ModelFactorsSql
+        {
+	        public string Columns { get; set; }
+	        public string Tables { get; set; }
         }
 
         #endregion
