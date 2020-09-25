@@ -1,5 +1,6 @@
 ﻿using Core.ErrorManagment;
 using Core.Main.FileStorages;
+using Core.Register;
 using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
@@ -491,50 +492,31 @@ namespace KadOzenka.Dal.DataImport
                                 #endregion
                             }
 
-                                //Если материал стен не поменялся
-                                if (prWallObjectCheck)
+                            //Если материал стен не поменялся
+                            ObjectModel.KO.OMFactorSettings fswall = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
+                            if (fswall != null)
+                            {
+                                if (fswall.FactorId != null)
                                 {
-                                    if (Id_Factor_Wall > 0)
-                                    {
-                                        //TODO: Если в предыдущем объекте есть фактор Материал стен итоговый
-                                        //      его надо скопировать в новый объект, если нет, добавить надо.
-                                        //
-                                        //
-                                    }
+                                    long id_factor = fswall.FactorId.ParseToLong();
+                                    //Если в предыдущем объекте есть фактор Материал стен итоговый
+                                    //его надо скопировать в новый объект, если нет, добавить надо.
+                                    koUnit.AddKOFactor(id_factor, (prWallObjectCheck) ? lastUnit : null, xmlCodeName.GetNames(current.Walls));
                                 }
-                                else
-                                {
-                                    if (Id_Factor_Wall > 0)
-                                    {
-                                        //TODO: добавить фактор Материал стен итоговый
-                                        //      
-                                        //
-                                        //
-                                    }
-                                }
+                            }
 
-                                //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
-                                if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
+                            //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
+                            ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
+                            if (fsyear != null)
+                            {
+                                if (fsyear.FactorId != null)
                                 {
-                                    if (Id_Factor_Wall > 0)
-                                    {
-                                        //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
-                                        //      его надо скопировать в новый объект, если нет, надо добавить
-                                        //      в соответствии с приоритетом 
-                                        //      1.Год ввода в эксплуатацию
-                                        //      2.Год завершения строительства
-                                    }
+                                    long id_factor = fsyear.FactorId.ParseToLong();
+                                    //Если в предыдущем объекте есть фактор Год постройки итоговый
+                                    //его надо скопировать в новый объект, если нет, добавить надо.
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
                                 }
-                                else
-                                {
-                                    if (Id_Factor_Wall > 0)
-                                    {
-                                        //TODO: добавить фактор Год постройки итоговый
-                                        //      в соответствии с приоритетом 
-                                        //      1.Год ввода в эксплуатацию
-                                        //      2.Год завершения строительства
-                                    }
-                                }
+                            }
                         }
                         #endregion
 
@@ -576,38 +558,27 @@ namespace KadOzenka.Dal.DataImport
                     #endregion
 
                     #region Заполнение фактора Материал стен на основании данных ГКН
-                    if (Id_Factor_Wall > 0)
+                    ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
+                    if (fs != null)
                     {
-                        if (current.Walls.Count > 0)
+                        if (fs.FactorId != null)
                         {
-                            //TODO: Добавить фактор Материал стен на основании данных ГКН
-                            //
-                            //
-                            //
+                            long id_factor = fs.FactorId.ParseToLong();
+                            //добавить фактор Материал стен итоговый
+                            koUnit.AddKOFactor(id_factor, null, xmlCodeName.GetNames(current.Walls));
                         }
                     }
                     #endregion
 
                     #region Заполнение фактора Год постройки
-                    if (Id_Factor_Year > 0)
+                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
+                    if (fsyear != null)
                     {
-                        if (current.Years != null)
+                        if (fsyear.FactorId != null)
                         {
-                            if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
-                            {
-                                //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
-                                //
-                                //
-                                //
-                            }
-                            else
-                            if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
-                            {
-                                //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
-                                //
-                                //
-                                //
-                            }
+                            long id_factor = fsyear.FactorId.ParseToLong();
+                            //добавить фактор Год постройки итоговый
+                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
                         }
                     }
                     #endregion
@@ -1048,104 +1019,71 @@ namespace KadOzenka.Dal.DataImport
                     if (lastUnit != null)
                     {
                         List<long> sourceIds = new List<long>
-                    {
-                        2
-                    };
+                         {
+                             2
+                         };
                         List<long> attribIds = new List<long>
-                    {
-                        44,  //Площадь 
-                        22,  //Назначение
-                        15,  //Год постройки 
-                        16,  //Год ввода в эксплуатацию 
-                        17,  //Количество этажей 
-                        18,  //Количество подземных этажей 
-                        19,  //Наименование
-                        8,   //Местоположение 
-                        600, //Адрес 
-                        601, //Кадастровый квартал 
-                        602  //Земельный участок 
-                    };
+                         {
+                             44,  //Площадь 
+                             22,  //Назначение
+                             15,  //Год постройки 
+                             16,  //Год ввода в эксплуатацию 
+                             17,  //Количество этажей 
+                             18,  //Количество подземных этажей 
+                             19,  //Наименование
+                             8,   //Местоположение 
+                             600, //Адрес 
+                             601, //Кадастровый квартал 
+                             602  //Земельный участок 
+                         };
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
                         CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        bool prAssignationObjectCheck = CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
                         CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
                         CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
                         CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
                         CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
                         CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
-                    }
-                    #endregion
 
-                    #region Старое
-                    /*
-                    //Признак было ли по данному объекту обращение?
-                    bool prCheckObr = false;
-                    //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                    //надо перебрать все документы и узнать это
-                    // CheckObr = ????
-                    //
-                    //
-                    //
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
 
-                    //Признак не поменялся ли тип объекта?
-                    bool prTypeObjectCheck = prev.TypeObject == current.TypeObject;
-                    //Признак не поменялось ли наименование объекта
-                    bool prNameObjectCheck = prev.Name == current.Name;
-                    //Признак не поменялось ли назначение объекта
-                    bool prAssignationObjectCheck = (prev.AssignationName != null && current.AssignationName != null) ? (prev.AssignationName == current.AssignationName) : false;
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
 
-                    //Если не было изменений типа, наименования и назначения и не было обращения
-                    if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
-                    {
-                        #region Наследование группы и подгруппы предыдущего объекта
-                        // TODO: Пронаследовать группу и подгруппу предыдущего объекта
-                        // если статус предыдущего расчета не ошибочный
-                        //
-                        //
-                        //
+                            //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
+                            ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
+                            if (fsyear != null)
+                            {
+                                if (fsyear.FactorId != null)
+                                {
+                                    long id_factor = fsyear.FactorId.ParseToLong();
+                                    //Если в предыдущем объекте есть фактор Год постройки итоговый
+                                    //его надо скопировать в новый объект, если нет, добавить надо.
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
+                                }
+                            }
+                        }
                         #endregion
+
+
+
                     }
-
-                    //Признак не поменялся ли год ввода в эксплуатацию?
-                    bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
-                    //Признак не поменялся ли год завершения строительства?
-                    bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
-
-
-
-                    //Если не было обращения по объекту
-                    if (!prCheckObr)
-                    {
-                        //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
-                        if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
-                        {
-                            if (Id_Factor_Year > 0)
-                            {
-                                //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
-                                //      его надо скопировать в новый объект, если нет, надо добавить
-                                //      в соответствии с приоритетом 
-                                //      1.Год ввода в эксплуатацию
-                                //      2.Год завершения строительства
-                            }
-                        }
-                        else
-                        {
-                            if (Id_Factor_Year > 0)
-                            {
-                                //TODO: добавить фактор Год постройки итоговый
-                                //      в соответствии с приоритетом 
-                                //      1.Год ввода в эксплуатацию
-                                //      2.Год завершения строительства
-                            }
-                        }
-                    }
-                    */
                     #endregion
                 }
                 //Если данные о прошлой оценке не найдены
@@ -1184,25 +1122,15 @@ namespace KadOzenka.Dal.DataImport
                     #endregion
 
                     #region Заполнение фактора Год постройки
-                    if (Id_Factor_Year > 0)
+                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
+                    if (fsyear != null)
                     {
-                        if (current.Years != null)
+                        if (fsyear.FactorId != null)
                         {
-                            if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
-                            {
-                                //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
-                                //
-                                //
-                                //
-                            }
-                            else
-                            if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
-                            {
-                                //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
-                                //
-                                //
-                                //
-                            }
+                            long id_factor = fsyear.FactorId.ParseToLong();
+                            //Если в предыдущем объекте есть фактор Год постройки итоговый
+                            //его надо скопировать в новый объект, если нет, добавить надо.
+                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
                         }
                     }
                     #endregion
