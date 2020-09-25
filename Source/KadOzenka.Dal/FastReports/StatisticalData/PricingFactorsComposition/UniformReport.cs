@@ -4,40 +4,26 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Text;
-using Core.Register;
 using Core.Register.QuerySubsystem;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
     public class UniformReport : StatisticalDataReport
     {
-	    private static List<RegisterData> _cachedRegisters;
-	    private static List<RegisterAttribute> _cachedAttributes;
-	    private static long _rosreestrRegisterId;
+	    public static UniformReportService UniformReportService { get; set; }
 
 	    public UniformReport()
 	    {
-		    var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
-
-			//для тестирования
-			//var test = new List<long> {2, 4, 5, 14, 42430534 };
-			//--and unit.object_id in (10743778)--(549616)
-			_cachedRegisters = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
-		                                                                 x.Id != mainRegister.Id)
-			    //.Where(x => test.Contains(x.Id))
-			    .ToList();
-
-		    var registerIds = _cachedRegisters.Select(x => x.Id).ToList();
-		    _cachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x => registerIds.Contains(x.RegisterId)).ToList();
-
-		    _rosreestrRegisterId = RosreestrRegisterService.RosreestrRegisterId;
+			UniformReportService = new UniformReportService();
 	    }
 
-        protected override string TemplateName(NameValueCollection query)
+
+
+		protected override string TemplateName(NameValueCollection query)
         {
             return "PricingFactorsCompositionUniformReport";
         }
@@ -65,7 +51,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				select unit.cadastral_number as CadastralNumber,
 				ARRAY[");
 			var postfixes = new List<string> { "TXT", "NUM", "DT" };
-			foreach (var register in _cachedRegisters)
+			foreach (var register in UniformReportService.CachedRegisters)
 			{
 				if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 				{
@@ -81,7 +67,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				}
 				else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 				{
-					var attributes = _cachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
+					var attributes = UniformReportService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
 					foreach (var attribute in attributes)
 					{
 						if (attribute.IsPrimaryKey)
@@ -110,6 +96,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 			return QSQuery.ExecuteSql<ReportItem>(sql.ToString());
 		}
+
+		//TODO доделать
+		//public List<ReportItem> GetOperations(List<long> taskIds)
+		//{
+		//	var longPerformanceTaskIds = UniformReportService.GetLongPerformanceTasks();
+		//	var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
+		//	var tasIdsForCache = longPerformanceTaskIds.Except(taskIds).ToList();
+
+		//	var runtimeResults = new List<ReportItem>();
+		//	if (tasIdsForRuntime.Count != 0)
+		//	{
+		//		var runtimeSql = UniformReportService.GetBasicSql(tasIdsForRuntime);
+		//		runtimeSql.Append("select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
+		//		runtimeResults = QSQuery.ExecuteSql<ReportItem>(runtimeSql.ToString());
+		//	}
+
+		//	if (tasIdsForCache.Count != 0)
+		//	{
+		//		var cacheSql = $"select * from {UniformReportService.TableName} where task_id in ({string.Join(',', tasIdsForCache)})";
+		//		var cacheResults = QSQuery.ExecuteSql<ReportItem>(cacheSql);
+		//		runtimeResults.AddRange(cacheResults);
+		//	}
+
+		//	return runtimeResults;
+		//}
 
 		private DataTable GetItemDataTable(List<ReportItem> operations)
         {
@@ -198,8 +209,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				{
 					foreach (var processedAttributeId in attributeIdStr.Split(','))
 					{
-						var attribute = _cachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
-						var register = _cachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+						var attribute = UniformReportService.CachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
+						var register = UniformReportService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
 						if (attribute == null || register == null)
 							continue;
 
@@ -215,8 +226,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				if (objectAttributes.Count == 0)
 					return new List<Attribute>();
 
-				var gbuAttributesExceptRosreestr = objectAttributes.Where(x => x.RegisterId != _rosreestrRegisterId).ToList();
-				var rosreestrAttributes = objectAttributes.Where(x => x.RegisterId == _rosreestrRegisterId).ToList();
+				var gbuAttributesExceptRosreestr = objectAttributes
+					.Where(x => x.RegisterId != UniformReportService.RosreestrRegisterId).ToList();
+				var rosreestrAttributes = objectAttributes
+					.Where(x => x.RegisterId == UniformReportService.RosreestrRegisterId).ToList();
 
 				//симметрическая разность множеств
 				var uniqueAttributes = new List<Attribute>();
