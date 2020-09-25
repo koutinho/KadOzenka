@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.EnterpriseLibrary.Data;
@@ -10,12 +11,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 	{
 		private static readonly ILogger Log = Serilog.Log.ForContext<UniformReportLongProcess>();
 		public UniformReportService UniformReportService { get; set; }
+		public const string LongProcessName = nameof(UniformReportLongProcess);
 
 		public UniformReportLongProcess()
 		{
 			UniformReportService = new UniformReportService();
 		}
 
+		public static long AddProcessToQueue()
+		{
+			return LongProcessManager.AddTaskToQueue(LongProcessName);
+		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
