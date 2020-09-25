@@ -2,6 +2,16 @@
 @using KadOzenka.Dal.ExpressScore.Dto
 @model ResultCalculateDto
 
+<style type="text/css">
+    #gearButton-100_wrapper {
+		display: none;
+    }
+
+    #showRefreshButton-100 {
+		display: none;
+    }
+</style>
+
 <div class="form-horizontal col-sm-12">
 	<div class="form-group"></div>
 	@if (Model.DealType == DealTypeShort.Sale)
@@ -12,6 +22,18 @@
 			</div>
 			<div class="col-sm-12">
 				<text>Удельный показатель рыночной стоимости объекта оценки, руб/кв.м: </text><text id="squareCost">@(Model.SquareCost.ToString("N"))</text>
+			</div>
+			<div class="col-sm-12">
+                <text>Адрес объекта оценки: </text><text id="address">@(Model.Address)</text>
+			</div>
+			<div class="col-sm-12">
+                <text>Площадь объекта оценки: </text><text id="area">@(Model.Area)</text>
+			</div>
+			<div class="col-sm-12">
+                <text>Сегмент рынка объекта оценки: </text><text id="marketSegment">@(Model.MarketSegment.GetEnumDescription())</text>
+			</div>
+			<div class="col-sm-12">
+                <text>Тип объекта оценки: </text><text id="marketSegment">@(Model.DealType.GetEnumDescription())</text>
 			</div>
 		</div>
 	}

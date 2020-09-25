@@ -222,7 +222,7 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("302", "Экспорт данных судебной подсистемы в Xml", SudExporter.ExportXml);
 			consoleHelper.AddCommand("303", "Экспорт данных судебной подсистемы в Excel", SudExporter.ExportExcel);
 			consoleHelper.AddCommand("304", "Статистика сводная в Excel", SudExporter.ExportStatExcel);
-			consoleHelper.AddCommand("305", "Статискика по объектам недвидимости в Excel", SudExporter.ExportStatObjectExcel);
+			consoleHelper.AddCommand("305", "Статискика по объектам недвижимости в Excel", SudExporter.ExportStatObjectExcel);
 			consoleHelper.AddCommand("306", "Статистика по положительным судебным решениям в Excel", SudExporter.ExportStatCheckExcel);
 			consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
 			consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);

@@ -311,6 +311,9 @@ namespace KadOzenka.Dal.ExpressScore
 			resultCalculate.SquareCost = Math.Round(squareCost, 2);
 			resultCalculate.SummaryCost = summaryCost;
 			resultCalculate.Id = id;
+			resultCalculate.Address = inputParam.Address;
+			resultCalculate.Area = inputParam.Square;
+			resultCalculate.MarketSegment = inputParam.Segment;
 
 			resultCalculate.ReportId = ReportService.GenerateReport(summaryCost, squareCost, inputParam.DealType, inputParam.ScenarioType);
 
