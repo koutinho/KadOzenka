@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
@@ -60,7 +61,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 		public List<ReportItem> GetOperations(List<long> taskIds)
 		{
 			var counter = 0;
-			var columns = string.Empty;
+			var sql = new StringBuilder(@"with data as(
+				select unit.cadastral_number as CadastralNumber,
+				ARRAY[");
 			var postfixes = new List<string> { "TXT", "NUM", "DT" };
 			foreach (var register in _cachedRegisters)
 			{
@@ -71,13 +74,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 						var tableName = $"{register.AllpriTable}_{postfix}";
 						var tableAlias = $"source_{++counter}";
 
-						var currentColumn = $@" 
+						sql.Append($@" 
 						(select string_agg(distinct cast ({tableAlias}.attribute_id as text), ',') 
-						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id)";
-
-						columns = string.IsNullOrWhiteSpace(columns)
-							? $"{currentColumn}"
-							: $"{columns}, {currentColumn}";
+						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id),");
 					}
 				}
 				else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
@@ -91,31 +90,25 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 						var tableName = $"{register.AllpriTable}_{attribute.Id}";
 						var tableAlias = $"gbu_source_{++counter}";
 
-						var currentColumn = $@"
+						sql.Append($@"
 							(select (case when {tableAlias}.id is null then '' else '{attribute.Id}' end)
 							from {tableName} {tableAlias} 
-							where unit.object_id = {tableAlias}.object_id limit 1)";
-
-						columns = string.IsNullOrWhiteSpace(columns)
-							? $"{currentColumn}"
-							: $"{columns}, {currentColumn}";
+							where unit.object_id = {tableAlias}.object_id limit 1),");
 					}
 				}
 			}
+			//удаляем ',' после последнего столбца
+			sql.Length--;
 
-			var sql = $@"with data as(
-				select unit.cadastral_number as CadastralNumber,
-				ARRAY[
-			    {columns}
-				] as attributes
-				from ko_unit unit
-			    where unit.task_id in({string.Join(',', taskIds)}) 
-			    group by unit.cadastral_number, unit.object_id
+			sql.Append($@"] as attributes
+			from ko_unit unit
+				where unit.task_id in ({ string.Join(',', taskIds)}) 
+				group by unit.cadastral_number, unit.object_id
 				order by unit.cadastral_number)
 
-				select cadastralNumber, array_remove(attributes, NULL) as attributes from data";
+			select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
 
-			return QSQuery.ExecuteSql<ReportItem>(sql);
+			return QSQuery.ExecuteSql<ReportItem>(sql.ToString());
 		}
 
 		private DataTable GetItemDataTable(List<ReportItem> operations)
