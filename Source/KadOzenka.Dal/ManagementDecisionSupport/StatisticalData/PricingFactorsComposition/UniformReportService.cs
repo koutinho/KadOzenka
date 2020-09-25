@@ -41,7 +41,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 
 		public List<long> GetLongPerformanceTasks()
 		{
-			return new List<long> { 15534573 };
 			var sql = $"select task_id as id from ko_unit group by task_id having count(*) > {MaxNumberOfUnits}";
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
