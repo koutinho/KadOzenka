@@ -61,7 +61,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         protected string GetSqlFileContent(string fileName)
         {
-            return GetSqlFileContent(BaseFolderWithSql, fileName);
+            return StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, fileName);
         }
     }
 }

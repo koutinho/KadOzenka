@@ -8,7 +8,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         protected string GetSqlFileContent(string fileName)
         {
-            return GetSqlFileContent(BaseFolderWithSql, fileName);
+            return StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, fileName);
         }
     }
 }

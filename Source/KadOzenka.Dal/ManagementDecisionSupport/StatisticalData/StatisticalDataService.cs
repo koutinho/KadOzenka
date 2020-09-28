@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.ConfigParam;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -15,6 +16,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class StatisticalDataService
     {
+	    public string SqlQueriesFolder => "SqlQueries";
         private TourFactorService TourFactorService { get; set; }
 
         public StatisticalDataService()
@@ -22,12 +24,29 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             TourFactorService = new TourFactorService();
         }
 
-        public string SqlQueriesFolder => "SqlQueries";
+
+
+        #region Sql Files Content
 
         public FileStream GetSqlQueryFileStream(string fileName)
         {
-	        return Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", SqlQueriesFolder);
+	        return Configuration.GetFileStream(fileName, "sql", SqlQueriesFolder);
         }
+
+        public string GetSqlFileContent(string folder, string fileName)
+        {
+	        var pathToFile = $"\\StatisticalData\\{folder}\\{fileName}";
+
+            string contents;
+	        using (var sr = new StreamReader(GetSqlQueryFileStream(pathToFile)))
+	        {
+		        contents = sr.ReadToEnd();
+	        }
+
+	        return contents;
+        }
+
+        #endregion
 
         public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, List<QSCondition> additionalConditions = null, List<QSJoin> additionalJoins = null)
         {
