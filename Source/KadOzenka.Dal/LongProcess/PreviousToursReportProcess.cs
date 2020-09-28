@@ -215,7 +215,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     tourYears.ForEach(tourYear =>
                     {
-                        var itemInTour = groupedItem.FirstOrDefault(x => x.Tour?.Year.ToString() == tourYear);
+                        var itemInTour = groupedItem.FirstOrDefault(x => x.TourYear?.ToString() == tourYear);
                         rowValues.Add(PreviousToursService.GetValueForReportItem(title, itemInTour)?.ToString());
                     });
                 });
@@ -224,7 +224,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     tourYears.ForEach(tourYear =>
                     {
-                        var itemInTour = groupedItem.FirstOrDefault(x => x.Tour?.Year.ToString() == tourYear);
+                        var itemInTour = groupedItem.FirstOrDefault(x => x.TourYear?.ToString() == tourYear);
                         var itemFactor = itemInTour?.Factors?.FirstOrDefault(x => x.Name == factorName);
                         rowValues.Add(itemFactor?.Value);
                     });

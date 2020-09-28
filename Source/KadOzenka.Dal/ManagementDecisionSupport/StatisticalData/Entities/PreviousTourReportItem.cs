@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities
 {
     public class PreviousTourReportItem : InfoFromTourSettings
     {
-        public OMTour Tour { get; set; }
-
-        //From Unit
+	    //From Unit
         public string CadastralNumber { get; set; }
         public decimal? Square { get; set; }
         public decimal? CadastralCost { get; set; }
+        public long? TourYear { get; set; }
 
         //From Rosreestr
         public string OksName { get; set; }

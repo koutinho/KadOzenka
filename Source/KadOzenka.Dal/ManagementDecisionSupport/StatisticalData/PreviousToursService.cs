@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
                 var item = new PreviousTourReportItem
                 {
-                    Tour = tour,
+                    TourYear = tour?.Year,
                     CadastralNumber = unit.CadastralNumber,
                     Square = unit.Square,
                     CadastralCost = unit.CadastralCost,
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             {
                 Title = ReportTitle,
                 ColumnTitles = _columnTitles,
-                Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.Tour?.Year).ToList(),
+                Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.TourYear).ToList(),
                 Tours = tours.OrderBy(x => x.Year).ToList(),
                 PricingFactors = attributes.OrderBy(x => x.Name).ToList()
             };

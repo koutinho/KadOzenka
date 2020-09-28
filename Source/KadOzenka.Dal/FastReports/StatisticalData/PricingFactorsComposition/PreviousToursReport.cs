@@ -91,7 +91,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     dataTable.Rows.Add(counter,
                         item.CadastralNumber,
                         title,
-                        item.Tour?.Year,
+                        item.TourYear,
                         value);
                 });
 
@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                     dataTable.Rows.Add(counter,
                         item.CadastralNumber,
                         keyValuePair.Name,
-                        item.Tour?.Year,
+                        item.TourYear,
                         keyValuePair.Value);
                 }
             }
