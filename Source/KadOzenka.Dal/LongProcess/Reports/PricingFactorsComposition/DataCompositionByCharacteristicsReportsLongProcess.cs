@@ -6,15 +6,15 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	public class UniformReportLongProcess : LongProcess
+	public class DataCompositionByCharacteristicsReportsLongProcess : LongProcess
 	{
-		private static readonly ILogger Log = Serilog.Log.ForContext<UniformReportLongProcess>();
-		public UniformReportService UniformReportService { get; set; }
-		public const string LongProcessName = nameof(UniformReportLongProcess);
+		private static readonly ILogger Log = Serilog.Log.ForContext<DataCompositionByCharacteristicsReportsLongProcess>();
+		public DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
+		public const string LongProcessName = nameof(DataCompositionByCharacteristicsReportsLongProcess);
 
-		public UniformReportLongProcess()
+		public DataCompositionByCharacteristicsReportsLongProcess()
 		{
-			UniformReportService = new UniformReportService();
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 		}
 
 		public static long AddProcessToQueue()
@@ -26,17 +26,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		{
 			Log.Information("Старт фонового процесса: {Description}.", processType.Description);
 
-			UniformReportService.CreteCacheTable();
+			DataCompositionByCharacteristicsService.CreteCacheTable();
 			Log.Verbose("Создана таблица-кеш для данных отчета.");
 
-			var taskIds = UniformReportService.GetLongPerformanceTasks();
+			var taskIds = DataCompositionByCharacteristicsService.GetLongPerformanceTasks();
 			Log.Verbose("Количество задач с большим числом юнитов {count}.", taskIds.Count);
 			
 			taskIds.ForEach(taskId =>
 			{
 				Log.ForContext("TaskId", taskId).Verbose("Начата обработка задачи с Id {taskId}.", taskId);
 
-				UniformReportService.FillCache(taskId);
+				DataCompositionByCharacteristicsService.FillCache(taskId);
 
 				Log.Verbose("Закончена обработка задачи с Id {taskId}.", taskId);
 			});

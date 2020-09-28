@@ -13,11 +13,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
     public class UniformReport : StatisticalDataReport
     {
-	    public static UniformReportService UniformReportService { get; set; }
+	    public static DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
 	    public UniformReport()
 	    {
-			UniformReportService = new UniformReportService();
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 	    }
 
 
@@ -45,20 +45,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		public List<ReportItem> GetOperations(List<long> taskIds)
 		{
-			var longPerformanceTaskIds = UniformReportService.GetCachedTaskIds();
+			var longPerformanceTaskIds = DataCompositionByCharacteristicsService.GetCachedTaskIds();
 			var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
 			var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
 
 			var runtimeResults = new List<ReportItem>();
 			if (tasIdsForRuntime.Count != 0)
 			{
-				var runtimeSql = UniformReportService.GetSqlForRuntime(tasIdsForRuntime);
+				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
 				runtimeResults = QSQuery.ExecuteSql<ReportItem>(runtimeSql);
 			}
 
 			if (tasIdsForCache.Count != 0)
 			{
-				var cacheSql = UniformReportService.GetSqlForCache(tasIdsForCache);
+				var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
 				var cacheResults = QSQuery.ExecuteSql<ReportItem>(cacheSql);
 				runtimeResults.AddRange(cacheResults);
 			}
@@ -153,8 +153,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				{
 					foreach (var processedAttributeId in attributeIdStr.Split(','))
 					{
-						var attribute = UniformReportService.CachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
-						var register = UniformReportService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+						var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
+						var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
 						if (attribute == null || register == null)
 							continue;
 
@@ -171,9 +171,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 					return new List<Attribute>();
 
 				var gbuAttributesExceptRosreestr = objectAttributes
-					.Where(x => x.RegisterId != UniformReportService.RosreestrRegisterId).ToList();
+					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 				var rosreestrAttributes = objectAttributes
-					.Where(x => x.RegisterId == UniformReportService.RosreestrRegisterId).ToList();
+					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 
 				//симметрическая разность множеств
 				var uniqueAttributes = new List<Attribute>();

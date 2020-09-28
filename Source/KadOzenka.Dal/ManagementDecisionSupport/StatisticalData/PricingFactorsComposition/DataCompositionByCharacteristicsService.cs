@@ -11,16 +11,16 @@ using Platform.Register;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition
 {
-	public class UniformReportService
+	public class DataCompositionByCharacteristicsService
 	{
 		private const int MaxNumberOfUnits = 200000;
-		public string TableName => "uniformreport";
+		public string TableName => "data_composition_by_characteristics";
 		public static List<RegisterData> CachedRegisters { get; private set; }
 		public static List<RegisterAttribute> CachedAttributes { get; private set; }
 		public static long RosreestrRegisterId { get; private set; }
 
 
-		public UniformReportService()
+		public DataCompositionByCharacteristicsService()
 		{
 			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
