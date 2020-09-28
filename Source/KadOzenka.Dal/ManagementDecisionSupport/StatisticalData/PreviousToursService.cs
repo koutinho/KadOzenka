@@ -54,18 +54,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
-            var factorsByRegisters = GetPricingFactors(groupId);
-            var attributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
+	        var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+	        var factorsByRegisters = model == null
+		        ? new List<FactorsService.PricingFactors>()
+		        : FactorsService.GetGroupedModelFactors(model.Id);
+	        var attributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
 
             var tours = GetToursByTasks(taskIds);
             var units = GetUnits(taskIds, groupId);
-            ////TODO: для тестирования
-            //var units = new List<OMUnit>
-            //{
-            //    new OMUnit {CadastralNumber = "KN_1", Id = 12435691, ObjectId = 11188991, TourId = 2016},
-            //    new OMUnit {CadastralNumber = "KN_2", Id = 15731468, ObjectId = 11404578, TourId = 2018}
-            //};
-            //var tours = new List<OMTour> { new OMTour { Id = 2016, Year = 2016 }, new OMTour { Id = 2018, Year = 2018 } };
             if (units == null || units.Count == 0)
             {
                 return new PreviousToursReportInfo
@@ -176,16 +172,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 .Select(x => x.ParentTour)
                 .DistinctBy(x => x.Id)
                 .ToList();
-        }
-
-        private List<FactorsService.PricingFactors> GetPricingFactors(long groupId)
-        {
-            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
-            ////TODO: для тестирования
-            //var model = OMModel.Where(x => x.Id == 7977478).SelectAll().ExecuteFirstOrDefault();
-            return model == null
-                ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(model.Id);
         }
 
         private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<OMTour> tours)
