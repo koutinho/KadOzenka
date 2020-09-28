@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var attributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
 
             var tours = GetToursByTasks(taskIds);
-            var units = GetUnits(taskIds);
+            var units = GetUnits(taskIds, groupId);
             ////TODO: для тестирования
             //var units = new List<OMUnit>
             //{
@@ -318,9 +318,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return attributesDictionary;
         }
 
-        protected List<OMUnit> GetUnits(List<long> taskIds)
+        protected List<OMUnit> GetUnits(List<long> taskIds, long groupId)
         {
-	        return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null)
+	        return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null && x.GroupId == groupId)
 	            .Select(x => new
 	            {
                     x.ObjectId,
