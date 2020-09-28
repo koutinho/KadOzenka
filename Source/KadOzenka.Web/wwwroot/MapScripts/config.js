@@ -209,6 +209,7 @@ var pointsData = null;
 var avaliableCIPJSTypes = null;
 var avaliableSegments = null;
 var avaliableStatuses = null;
+var avaliableQualityClasses = null;
 var heatMapData = null;
 
 var DISTRICTS_DATA = null;

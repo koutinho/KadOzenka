@@ -151,6 +151,34 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
+                            <label class="control-label">Тип входа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" id="EntranceType" value="@Model.EntranceType" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Класс качества</label>
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoEnumDropDownListFor(x => x.QualityClassCode, isReadonly: false, id: "QualityClassCode")
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Состояние отделки</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Линия застройки</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" id="BuildingLine" value="@Model.BuildingLine" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
                             <label class="control-label">Ссылка на объявление</label>
                         </div>
                         <div class="col-sm-2">
@@ -286,7 +314,7 @@
                             <label class="control-label">Номер этажа</label>
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.FloorNumber" />
+                            @Html.KendoNumericTextBoxFor(x => x.FloorNumber, precision:0, isReadonly:false, id: "FloorNumber")
                         </div>
                     </div>
                     <div class="form-group">
@@ -491,6 +519,11 @@
     jQuery("#ObjectType").change(function () { dataChanged(); });
     jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
     jQuery("#ObjectStatus").change(function () { dataChanged(); });
+    $('#EntranceType').change(function () { dataChanged(); });
+    $('#QualityClassCode').change(function () { dataChanged(); });
+    $('#Renovation').change(function () { dataChanged(); });
+    $('#BuildingLine').change(function () { dataChanged(); });
+    $('#FloorNumber').change(function () { dataChanged(); });
     document.getElementById("cancelBtn").addEventListener("click", function () { cancelData(); });
     document.getElementById("saveBtn").addEventListener("click", function () { saveData(); });
 
@@ -499,34 +532,51 @@
             "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
             "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
             "@Html.Raw((int)Model.StatusCode)" != jQuery("#ObjectStatus").data("kendoDropDownList").value() ||
-            "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value()) {
+            "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value() ||
+            "@Model.EntranceType" != $('#EntranceType').val() ||
+            "@((long)Model.QualityClassCode.GetValueOrDefault())" != $('#QualityClassCode').data("kendoDropDownList").value() ||
+            "@Model.Renovation" != $('#Renovation').val() ||
+            "@Model.BuildingLine" != $('#BuildingLine').val() ||
+            "@Model.FloorNumber.ToString()" != $('#FloorNumber').val()) {
             document.getElementById("saveBtn").classList.remove("blocked");
             document.getElementById("cancelBtn").classList.remove("blocked");
-        }
-        else {
+        } else {
             document.getElementById("saveBtn").classList.add("blocked");
             document.getElementById("cancelBtn").classList.add("blocked");
         }
     };
 
-    function cancelData() { document.location.reload(); };
+    function cancelData() {
+        if (!document.getElementById("cancelBtn").classList.contains('blocked')) {
+            document.location.reload();
+        }
+    };
 
     function saveData() {
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("ChangeObject", "Map")',
-            data: {
+        if (!document.getElementById("saveBtn").classList.contains('blocked')) {
+            kendo.ui.progress($('body'), true);
+
+            var data = {
                 id: @Model.Id,
                 lng: parseFloat(document.getElementById("lngTextBox").value.replace(',', '.')),
                 lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
                 propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
                 marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
-                statusCode: parseInt(jQuery("#ObjectStatus").get()[0].value)
-            },
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function () { document.location.reload(); }
-        });
+                statusCode: parseInt(jQuery("#ObjectStatus").get()[0].value),
+                entranceType: $('#EntranceType').val(),
+                qualityClassCode: $('#QualityClassCode').data("kendoDropDownList").value(),
+                renovation: $('#Renovation').val(),
+                buildingLine: $('#BuildingLine').val(),
+                floorNumber: $('#FloorNumber').data("kendoNumericTextBox").value()
+            };
+            $.post('@Url.Action("ChangeObject", "Map")', data).done(function(response) {
+                document.location.reload();
+            }).fail(function(response, textStatus, errorThrown) {
+                Common.ShowError(response.responseText);
+            }).always(function() {
+                kendo.ui.progress($('body'), false);
+            });
+        }
     };
 
 </script>

@@ -212,11 +212,24 @@ function dataChanged(cartData) {
         cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
         cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
         cartData.statusCode != document.getElementById(`statusSelect_${cartData.id}`).value ||
-        cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value) {
+        cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value ||
+        ((cartData.entranceType && cartData.entranceType != $(`#entranceTypeTextBox_${cartData.id}`).val()) ||
+        ($(`#entranceTypeTextBox_${cartData.id}`).val() &&
+            $(`#entranceTypeTextBox_${cartData.id}`).val() != cartData.entranceType)) ||
+        cartData.qualityClassCode != document.getElementById(`qualityClassSelect_${cartData.id}`).value ||
+        ((cartData.renovation && cartData.renovation != $(`#renovationTextBox_${cartData.id}`).val()) ||
+            ($(`#renovationTextBox_${cartData.id}`).val() &&
+                $(`#renovationTextBox_${cartData.id}`).val() != cartData.renovation)) ||
+        ((cartData.buildingLine && cartData.buildingLine != $(`#buildingLineTextBox_${cartData.id}`).val()) ||
+            ($(`#buildingLineTextBox_${cartData.id}`).val() &&
+                $(`#buildingLineTextBox_${cartData.id}`).val() != cartData.buildingLine)
+        ) ||
+        ((cartData.floorNumber && cartData.floorNumber != $(`#floorNumberTextBox_${cartData.id}`).val()) ||
+            ($(`#floorNumberTextBox_${cartData.id}`).val() &&
+                $(`#floorNumberTextBox_${cartData.id}`).val() != cartData.floorNumber))) {
         document.getElementById(`saveBtn_${cartData.id}`).classList.remove("blocked");
         document.getElementById(`undoBtn_${cartData.id}`).classList.remove("blocked");
-    }
-    else {
+    } else {
         document.getElementById(`saveBtn_${cartData.id}`).classList.add("blocked");
         document.getElementById(`undoBtn_${cartData.id}`).classList.add("blocked");
     }
@@ -229,6 +242,11 @@ function undoDataChanges(cartData) {
         document.getElementById(`typeSelect_${cartData.id}`).value = cartData.propertyTypeCode;
         document.getElementById(`segmentSelect_${cartData.id}`).value = cartData.marketSegmentCode;
         document.getElementById(`statusSelect_${cartData.id}`).value = cartData.statusCode;
+        $(`#entranceTypeTextBox_${cartData.id}`).val(cartData.entranceType);
+        document.getElementById(`qualityClassSelect_${cartData.id}`).value = cartData.qualityClassCode;
+        $(`#renovationTextBox_${cartData.id}`).val(cartData.renovation);
+        $(`#buildingLineTextBox_${cartData.id}`).val(cartData.buildingLine);
+        $(`#floorNumberTextBox_${cartData.id}`).val(cartData.floorNumber);
         dataChanged(cartData);
     }
 };
@@ -241,7 +259,12 @@ function saveDataChanges(cartData) {
             lat: parseFloat(document.getElementById(`latTextBox_${cartData.id}`).value),
             propertyTypeCode: parseInt(document.getElementById(`typeSelect_${cartData.id}`).value),
             marketSegmentCode: parseInt(document.getElementById(`segmentSelect_${cartData.id}`).value),
-            statusCode: parseInt(document.getElementById(`statusSelect_${cartData.id}`).value)
+            statusCode: parseInt(document.getElementById(`statusSelect_${cartData.id}`).value),
+            entranceType: $(`#entranceTypeTextBox_${cartData.id}`).val(),
+            qualityClassCode: parseInt(document.getElementById(`qualityClassSelect_${cartData.id}`).value),
+            renovation: $(`#renovationTextBox_${cartData.id}`).val(),
+            buildingLine: $(`#buildingLineTextBox_${cartData.id}`).val(),
+            floorNumber: parseInt($(`#floorNumberTextBox_${cartData.id}`).val())
         };
         ChangeObject(result);
     }
