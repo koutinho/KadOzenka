@@ -7,6 +7,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Registers;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using Platform.Register;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition
 {
@@ -42,6 +43,61 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		public List<long> GetLongPerformanceTasks()
 		{
 			var sql = $"select task_id as id from ko_unit group by task_id having count(*) > {MaxNumberOfUnits}";
+			return GetTaskIds(sql);
+		}
+
+		public List<long> GetCachedTaskIds()
+		{
+			var sql = $"select distinct task_id as id from {TableName}";
+			return GetTaskIds(sql);
+		}
+
+		public void CreteCacheTable()
+		{
+			var sql = $@"DROP TABLE IF EXISTS {TableName};
+
+				CREATE TABLE {TableName} (
+				    task_id				bigint NOT NULL,
+				    cadastral_number	varchar(20) NOT NULL,
+				    attributes			text[]
+				);
+
+				CREATE INDEX ON {TableName} (task_id);";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			DBMngr.Main.ExecuteNonQuery(command);
+		}
+
+		public void FillCache(long taskId)
+		{
+			var sql = GetBasicSql(taskId);
+			sql.Append($@"
+					INSERT INTO {TableName} 
+					select {taskId}, cadastralNumber, array_remove(attributes, NULL) as attributes from data;");
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql.ToString());
+			DBMngr.Main.ExecuteNonQuery(command);
+		}
+
+		public string GetSqlForRuntime(List<long> taskIds)
+		{
+			var runtimeSql = GetBasicSql(taskIds);
+
+			runtimeSql.Append("select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
+
+			return runtimeSql.ToString();
+		}
+
+		public string GetSqlForCache(List<long> taskIds)
+		{
+			return $"select cadastral_number as cadastralNumber, attributes from {TableName} where task_id in ({string.Join(',', taskIds)})";
+		}
+
+
+		#region Support Methods
+
+		private List<long> GetTaskIds(string sql)
+		{
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
@@ -54,12 +110,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			return tasIds;
 		}
 
-		public StringBuilder GetBasicSql(long taskId)
+		private StringBuilder GetBasicSql(long taskId)
 		{
 			return GetBasicSql(new List<long> {taskId});
 		}
 
-		public StringBuilder GetBasicSql(List<long> taskIds)
+		private StringBuilder GetBasicSql(List<long> taskIds)
 		{
 			var counter = 0;
 			var sql = new StringBuilder(@"with data as(
@@ -69,7 +125,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var postfixes = new List<string> { "TXT", "NUM", "DT" };
 			foreach (var register in CachedRegisters)
 			{
-				if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
+				if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
 				{
 					foreach (var postfix in postfixes)
 					{
@@ -81,7 +137,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id),");
 					}
 				}
-				else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+				else if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
 				{
 					var attributes = CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
 					foreach (var attribute in attributes)
@@ -110,5 +166,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 
 			return sql;
 		}
+
+		#endregion
 	}
 }

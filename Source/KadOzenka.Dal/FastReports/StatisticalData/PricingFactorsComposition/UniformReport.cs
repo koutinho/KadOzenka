@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
@@ -46,81 +45,26 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		public List<ReportItem> GetOperations(List<long> taskIds)
 		{
-			var counter = 0;
-			var sql = new StringBuilder(@"with data as(
-				select unit.cadastral_number as CadastralNumber,
-				ARRAY[");
-			var postfixes = new List<string> { "TXT", "NUM", "DT" };
-			foreach (var register in UniformReportService.CachedRegisters)
+			var longPerformanceTaskIds = UniformReportService.GetCachedTaskIds();
+			var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
+			var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
+
+			var runtimeResults = new List<ReportItem>();
+			if (tasIdsForRuntime.Count != 0)
 			{
-				if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
-				{
-					foreach (var postfix in postfixes)
-					{
-						var tableName = $"{register.AllpriTable}_{postfix}";
-						var tableAlias = $"source_{++counter}";
-
-						sql.Append($@" 
-						(select string_agg(distinct cast ({tableAlias}.attribute_id as text), ',') 
-						from {tableName} {tableAlias} where unit.object_id = {tableAlias}.object_id),");
-					}
-				}
-				else if (register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
-				{
-					var attributes = UniformReportService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
-					foreach (var attribute in attributes)
-					{
-						if (attribute.IsPrimaryKey)
-							continue;
-
-						var tableName = $"{register.AllpriTable}_{attribute.Id}";
-						var tableAlias = $"gbu_source_{++counter}";
-
-						sql.Append($@"
-							(select (case when {tableAlias}.id is null then '' else '{attribute.Id}' end)
-							from {tableName} {tableAlias} 
-							where unit.object_id = {tableAlias}.object_id limit 1),");
-					}
-				}
+				var runtimeSql = UniformReportService.GetSqlForRuntime(tasIdsForRuntime);
+				runtimeResults = QSQuery.ExecuteSql<ReportItem>(runtimeSql);
 			}
-			//удаляем ',' после последнего столбца
-			sql.Length--;
 
-			sql.Append($@"] as attributes
-			from ko_unit unit
-				where unit.task_id in ({ string.Join(',', taskIds)}) 
-				group by unit.cadastral_number, unit.object_id
-				order by unit.cadastral_number)
+			if (tasIdsForCache.Count != 0)
+			{
+				var cacheSql = UniformReportService.GetSqlForCache(tasIdsForCache);
+				var cacheResults = QSQuery.ExecuteSql<ReportItem>(cacheSql);
+				runtimeResults.AddRange(cacheResults);
+			}
 
-			select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
-
-			return QSQuery.ExecuteSql<ReportItem>(sql.ToString());
+			return runtimeResults;
 		}
-
-		//TODO доделать
-		//public List<ReportItem> GetOperations(List<long> taskIds)
-		//{
-		//	var longPerformanceTaskIds = UniformReportService.GetLongPerformanceTasks();
-		//	var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
-		//	var tasIdsForCache = longPerformanceTaskIds.Except(taskIds).ToList();
-
-		//	var runtimeResults = new List<ReportItem>();
-		//	if (tasIdsForRuntime.Count != 0)
-		//	{
-		//		var runtimeSql = UniformReportService.GetBasicSql(tasIdsForRuntime);
-		//		runtimeSql.Append("select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
-		//		runtimeResults = QSQuery.ExecuteSql<ReportItem>(runtimeSql.ToString());
-		//	}
-
-		//	if (tasIdsForCache.Count != 0)
-		//	{
-		//		var cacheSql = $"select * from {UniformReportService.TableName} where task_id in ({string.Join(',', tasIdsForCache)})";
-		//		var cacheResults = QSQuery.ExecuteSql<ReportItem>(cacheSql);
-		//		runtimeResults.AddRange(cacheResults);
-		//	}
-
-		//	return runtimeResults;
-		//}
 
 		private DataTable GetItemDataTable(List<ReportItem> operations)
         {
