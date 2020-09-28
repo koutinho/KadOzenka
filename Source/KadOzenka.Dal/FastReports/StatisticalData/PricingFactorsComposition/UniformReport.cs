@@ -3,25 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class UniformReport : StatisticalDataReport
-    {
-	    public static DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
-
-	    public UniformReport()
-	    {
-			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
-	    }
-
-
-
+    public class UniformReport : DataCompositionByCharacteristicsBaseReport
+	{
 		protected override string TemplateName(NameValueCollection query)
         {
             return "PricingFactorsCompositionUniformReport";
@@ -31,7 +20,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var taskIds = GetTaskIdList(query).ToList();
 
-            var operations = GetOperations(taskIds);
+            var operations = GetOperations<ReportItem>(taskIds);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -42,29 +31,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 
 		#region Support Methods
-
-		public List<ReportItem> GetOperations(List<long> taskIds)
-		{
-			var longPerformanceTaskIds = DataCompositionByCharacteristicsService.GetCachedTaskIds();
-			var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
-			var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
-
-			var runtimeResults = new List<ReportItem>();
-			if (tasIdsForRuntime.Count != 0)
-			{
-				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
-				runtimeResults = QSQuery.ExecuteSql<ReportItem>(runtimeSql);
-			}
-
-			if (tasIdsForCache.Count != 0)
-			{
-				var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
-				var cacheResults = QSQuery.ExecuteSql<ReportItem>(cacheSql);
-				runtimeResults.AddRange(cacheResults);
-			}
-
-			return runtimeResults;
-		}
 
 		private DataTable GetItemDataTable(List<ReportItem> operations)
         {
@@ -125,19 +91,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return dataTable;
         }
 
-        #endregion
+		#endregion
 
 
-        #region Entities
+		#region Entities
 
-        public class Attribute
-        {
-            public string Name { get; set; }
-            public string RegisterName { get; set; }
-            public long? RegisterId { get; set; }
-        }
-
-		public class ReportItem
+		private class ReportItem
 		{
 			private List<Attribute> _fullAttributes;
 
