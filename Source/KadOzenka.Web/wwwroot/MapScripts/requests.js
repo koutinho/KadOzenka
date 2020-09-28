@@ -93,20 +93,15 @@ function SetAvaliableValues() {
         url: "Map/GetAvaliableValues",
         data: { },
         contentType: 'application/json; charset=utf-8',
-        success: function (avaliableData) { avaliableCIPJSTypes = avaliableData.CIPJSType, avaliableSegments = avaliableData.MarketSegment, avaliableStatuses = avaliableData.Status }
+        success: function (avaliableData) { avaliableCIPJSTypes = avaliableData.CIPJSType, avaliableSegments = avaliableData.MarketSegment, avaliableStatuses = avaliableData.Status, avaliableQualityClasses = avaliableData.QualityClass }
     });
 };
 
 function ChangeObject(object) {
-    $.ajax({
-        type: "GET",
-        url: "Map/ChangeObject",
-        data: object,
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        success: function () {
-            GetRequiredInfo(ids);
-            GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
-        }
+    $.post("Map/ChangeObject", object).done(function (response) {
+        GetRequiredInfo(ids);
+        GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+    }).fail(function (response, textStatus, errorThrown) {
+        Common.ShowError(response.responseText);
     });
 };

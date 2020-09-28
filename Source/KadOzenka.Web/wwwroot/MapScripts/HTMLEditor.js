@@ -2,6 +2,7 @@
     avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     availableStatusOptions = avaliableStatuses.filter(function (x) { return x.code != cartData.statusCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
+    avaliableQualityClassOptions = avaliableQualityClasses.filter(function (x) { return x.code != cartData.qualityClassCode }).map(function (x) { return `<option value="${x.code}">${!x.value ? '' :  x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     document.getElementById("dataContentContainer").innerHTML += `
         <div class="DataItemContainer">
             <div class="Container">
@@ -34,10 +35,10 @@
                     <div class="Value">${(cartData.area || cartData.areaLand) ? `${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}` : "—"}</div>
                 </div>
             `}
-            ${cartData.floor == null && cartData.floorCount == null ? "" : `
+            ${cartData.floorNumber == null && cartData.floorCount == null ? "" : `
                 <div class="Container">
-                    <div class="Name">${cartData.floor == null ? "Количество&nbsp;этажей" : "Этаж"}</div>
-                    <div class="Value">${getFloor(cartData.floor, cartData.floorCount)}</div>
+                    <div class="Name">${cartData.floorNumber == null ? "Количество&nbsp;этажей" : "Этаж"}</div>
+                    <div class="Value">${getFloor(cartData.floorNumber, cartData.floorCount)}</div>
                 </div>
             `}
             <div class="Container">
@@ -121,6 +122,41 @@
                     </div>
                 </div>
                 <div class="Container">
+                    <div class="Name">Тип входа</div>
+                     <div class="Value">
+                        <input id="entranceTypeTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.entranceType == null ? '' : cartData.entranceType}">
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Класс качества</div>
+                    <div class="Value">
+                        <div class="EditDataSelectContainer">
+                            <select id="qualityClassSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
+                                <option value="${cartData.qualityClassCode}">${!cartData.qualityClass ? '' : cartData.qualityClass.length < 28 ? cartData.qualityClass : '...' + cartData.qualityClass.substr(0, 27)  }</option>
+                                ${avaliableQualityClassOptions}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Состояние отделки</div>
+                     <div class="Value">
+                        <input id="renovationTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.renovation == null ? '' : cartData.renovation }">
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Линия застройки</div>
+                     <div class="Value">
+                        <input id="buildingLineTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.buildingLine == null ? '' : cartData.buildingLine}">
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Номер этажа</div>
+                     <div class="Value">
+                        <input id="floorNumberTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.floorNumber == null ? '' : cartData.floorNumber}">
+                    </div>
+                </div>
+                <div class="Container">
                     <div id="saveBtn_${cartData.id}" class="Button blocked">Сохранить</div>
                     <div id="undoBtn_${cartData.id}" class="Button blocked">Отменить</div>
                 </div>
@@ -136,6 +172,11 @@ function addEventsCard(cartData) {
     document.getElementById(`typeSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
     document.getElementById(`segmentSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
     document.getElementById(`statusSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`entranceTypeTextBox_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`qualityClassSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`renovationTextBox_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`buildingLineTextBox_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`floorNumberTextBox_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
     document.getElementById(`saveBtn_${cartData.id}`).addEventListener('click', function () { saveDataChanges(cartData); });
     document.getElementById(`undoBtn_${cartData.id}`).addEventListener('click', function () { undoDataChanges(cartData); });
 };
