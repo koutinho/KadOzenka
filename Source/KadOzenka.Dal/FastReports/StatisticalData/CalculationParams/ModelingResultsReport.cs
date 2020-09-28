@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 unit.PROPERTY_TYPE as {nameof(ReportItem.ObjectType)}, 
                 SUBSTRING(unit.CADASTRAL_BLOCK, 0, 6) as {nameof(ReportItem.CadastralDistrict)}, 
                 unit.CADASTRAL_NUMBER as {nameof(ReportItem.CadastralNumber)}, 
-                (select * from  gbu_get_allpri_attribute_value(unit.id, {addressAttribute.Id})) as {nameof(ReportItem.Address)},
+                (select * from  gbu_get_allpri_attribute_value(unit.object_id, {addressAttribute.Id})) as {nameof(ReportItem.Address)},
                 unit.SQUARE as {nameof(ReportItem.Square)}, 
                 unit.UPKS as {nameof(ReportItem.Upks)}, 
                 unit.CADASTRAL_COST as {nameof(ReportItem.CadastralCost)} ";
