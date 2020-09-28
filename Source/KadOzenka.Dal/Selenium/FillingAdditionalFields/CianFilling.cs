@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 					UpdateObject(deserializedObject, initialObject);
 					Console.WriteLine($"Тип помещения:'{initialObject.PlacementType}', "
 					+ $"Тип входа:'{initialObject.EntranceType}', "
-					+ $"Состояние:'{initialObject.Quality}', "
+					+ $"Состояние отделки:'{initialObject.Renovation}', "
 					+ $"Коммунальные платежи включены:'{initialObject.IsUtilitiesIncluded}', "
 					+ $"Эксплуатационные расходы включены:'{initialObject.IsOperatingCostsIncluded}', "
 					+ $"НДС:'{initialObject.Vat}'; ");
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 					x.LastDateUpdate,
 					x.PlacementType,
 					x.EntranceType,
-					x.Quality,
+					x.Renovation,
 					x.IsUtilitiesIncluded,
 					x.IsOperatingCostsIncluded,
 					x.Vat,
@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 					x.LastDateUpdate,
 					x.PlacementType,
 					x.EntranceType,
-					x.Quality,
+					x.Renovation,
 					x.IsUtilitiesIncluded,
 					x.IsOperatingCostsIncluded,
 					x.Vat,
@@ -147,7 +147,7 @@ namespace KadOzenka.Dal.Selenium.FillingAdditionalFields
 
 			if (!deserializedObject.SelectToken("quality").IsNullOrEmpty())
 			{
-				initialObject.Quality =
+				initialObject.Renovation =
 					deserializedObject.SelectToken("quality").Value<string>();
 				isObjectUpdated = true;
 			}
