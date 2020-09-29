@@ -67,6 +67,37 @@ namespace KadOzenka.Dal.YandexParsing
 				}
 			}
 
+			if (!obj.SelectToken("cards.offers.apartment.renovation").IsNullOrEmpty())
+			{
+				switch (obj.SelectToken("cards.offers.apartment.renovation")?.Value<string>())
+				{
+					case nameof(YandexRenovationType.DESIGNER_RENOVATION):
+						marketObject.Renovation = YandexRenovationType.DESIGNER_RENOVATION.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+					case nameof(YandexRenovationType.NEEDS_RENOVATION):
+						marketObject.Renovation = YandexRenovationType.NEEDS_RENOVATION.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+					case nameof(YandexRenovationType.NON_GRANDMOTHER):
+						marketObject.Renovation = YandexRenovationType.NON_GRANDMOTHER.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+					case nameof(YandexRenovationType.COSMETIC_DONE):
+						marketObject.Renovation = YandexRenovationType.COSMETIC_DONE.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+					case nameof(YandexRenovationType.PRIME_RENOVATION):
+						marketObject.Renovation = YandexRenovationType.PRIME_RENOVATION.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+					case nameof(YandexRenovationType.EURO):
+						marketObject.Renovation = YandexRenovationType.EURO.GetEnumDescription();
+						isObjectUpdated = true;
+						break;
+				}
+			}
+
 			if (!obj.SelectToken("cards.offers.utilitiesIncluded").IsNullOrEmpty())
 			{
 				marketObject.IsUtilitiesIncluded = obj.SelectToken("cards.offers.utilitiesIncluded")?.Value<bool>();

@@ -965,7 +965,7 @@ namespace ObjectModel.Market
 
         private long? _floornumber;
         /// <summary>
-        /// 10004100 Количество этажей (FLOOR_NUMBER)
+        /// 10004100 Номер этажа (FLOOR_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004100)]
         public long? FloorNumber
@@ -2174,6 +2174,46 @@ namespace ObjectModel.Market
             {
                 _entrancetype = value;
                 NotifyPropertyChanged("EntranceType");
+            }
+        }
+
+
+        private string _renovation;
+        /// <summary>
+        /// 10009009 Состояние отделки (RENOVATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009009)]
+        public string Renovation
+        {
+            get
+            {
+                CheckPropertyInited("Renovation");
+                return _renovation;
+            }
+            set
+            {
+                _renovation = value;
+                NotifyPropertyChanged("Renovation");
+            }
+        }
+
+
+        private string _buildingline;
+        /// <summary>
+        /// 10009010 Линия застройки (BUILDING_LINE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009010)]
+        public string BuildingLine
+        {
+            get
+            {
+                CheckPropertyInited("BuildingLine");
+                return _buildingline;
+            }
+            set
+            {
+                _buildingline = value;
+                NotifyPropertyChanged("BuildingLine");
             }
         }
 

@@ -153,13 +153,18 @@ namespace KadOzenka.Web.Controllers
                         address = x.Address,
                         images = x.Images,
                         id = x.Id,
-                        floor = x.FloorNumber,
+                        floorNumber = x.FloorNumber,
                         floorCount = x.FloorsCount,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
                         lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy"),
                         lng = x.Lng,
-                        lat = x.Lat
+                        lat = x.Lat,
+                        entranceType = x.EntranceType,
+                        qualityClassCode = x.QualityClass_Code,
+                        qualityClass = x.QualityClass,
+                        renovation = x.Renovation,
+                        buildingLine = x.BuildingLine
                     });
                 });
             }
@@ -308,25 +313,26 @@ namespace KadOzenka.Web.Controllers
             List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).SelectAll().Execute();
             List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).SelectAll().Execute();
             List<OMReferenceItem> status = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ProcessType_Code).ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> qualityClass = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.QualityClass_Code).ReferenceId).SelectAll().Execute();
+            qualityClass.Add(new OMReferenceItem{ItemId = 0, Value = null});
+
             return Json(new 
             { 
                 CIPJSType = CIPJSType.Select(x => new { code = x.ItemId, value = x.Value }), 
                 MarketSegment = MarketSegment.Select(x => new { code = x.ItemId, value = x.Value }),
-                Status = status.Select(x => new { code = x.ItemId, value = x.Value }) 
+                Status = status.Select(x => new { code = x.ItemId, value = x.Value }),
+                QualityClass = qualityClass.Select(x => new { code = x.ItemId, value = x.Value })
             });
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
-        public JsonResult ChangeObject(long? id, decimal? lng, decimal? lat, long? propertyTypeCode, long? marketSegmentCode, long? statusCode)
+        public JsonResult ChangeObject(MarketSaveObjectDto dto)
         {
-            OMCoreObject obj = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            obj.Lng = lng;
-            obj.Lat = lat;
-            obj.PropertyTypesCIPJS_Code = (PropertyTypesCIPJS) propertyTypeCode;
-            obj.PropertyMarketSegment_Code = (MarketSegment) marketSegmentCode;
-            obj.ProcessType_Code = (ProcessStep) statusCode;
+            OMCoreObject obj = OMCoreObject.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
+            MarketSaveObjectDto.ToEntity(dto, ref obj);
             obj.Save();
-            object result = OMCoreObject.Where(x => x.Id == id).SelectAll().Execute().Select(x => {
+
+            object result = OMCoreObject.Where(x => x.Id == dto.Id).SelectAll().Execute().Select(x => {
                 return new
                 {
                     segment = FormSegment(x.PropertyMarketSegment),
@@ -338,7 +344,14 @@ namespace KadOzenka.Web.Controllers
                     statusCode = x.ProcessType_Code,
                     id = x.Id,
                     lng = x.Lng,
-                    lat = x.Lat
+                    lat = x.Lat,
+                    entranceType = x.EntranceType,
+                    qualityClassCode = x.QualityClass_Code,
+                    qualityClass = x.QualityClass,
+                    renovation = x.Renovation,
+                    buildingLine = x.BuildingLine,
+                    floorNumber = x.FloorNumber,
+                    floorCount = x.FloorsCount
                 };
             }).FirstOrDefault();
             return Json(result);

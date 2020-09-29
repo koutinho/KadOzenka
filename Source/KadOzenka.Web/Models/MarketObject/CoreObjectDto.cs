@@ -67,6 +67,10 @@ namespace KadOzenka.Web.Models.MarketObject
         public decimal? PricePerSquareMeter { get; set; }
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
+		public string EntranceType { get; set; }
+		public QualityClass? QualityClassCode { get; set; }
+		public string Renovation { get; set; }
+		public string BuildingLine { get; set; }
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -109,7 +113,11 @@ namespace KadOzenka.Web.Models.MarketObject
                 PricePerSquareMeter =
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity) : (decimal?) null
+						? GetPricePerSquareMeter(entity) : (decimal?) null,
+                EntranceType = entity.EntranceType,
+                QualityClassCode = entity.QualityClass_Code,
+                Renovation = entity.Renovation,
+				BuildingLine = entity.BuildingLine
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
