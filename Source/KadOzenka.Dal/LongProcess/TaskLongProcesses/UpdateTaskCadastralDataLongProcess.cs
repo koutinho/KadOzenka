@@ -114,6 +114,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					unit.CadastralBlock = currentCadastralQuarter;
 					unit.BuildingCadastralNumber = currentBuildingCadastralNumber;
 					unit.Save();
+					unit.InheritedKOFactors();
 				}
 			});
 
@@ -155,6 +156,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.CadastralBlock)
 				.Select(x => x.BuildingCadastralNumber)
+				.Select(x => x.TourId)
 				.Execute();
 		}
 

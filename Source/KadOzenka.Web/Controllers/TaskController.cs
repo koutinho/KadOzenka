@@ -12,6 +12,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
@@ -39,6 +40,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
 
@@ -1013,6 +1015,13 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var taskName = TaskService.GetTemplateForTaskName(taskId);
+			//////TODO код для отладки
+			//new UpdateTaskCadastralDataLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = taskId
+			//}, new CancellationToken());
 			UpdateTaskCadastralDataLongProcess.AddProcessToQueue(taskId);
 
 			return Content($"Процесс Актуализация кадастровых данных для задания на оценку '{taskName}' успешно добавлен в очередь");
