@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Registers;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -54,62 +53,75 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
-	        var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
-	        var factorsByRegisters = model == null
-		        ? new List<FactorsService.PricingFactors>()
-		        : FactorsService.GetGroupedModelFactors(model.Id);
-	        var attributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
+            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+            var factorsByRegisters = model == null
+                ? new List<FactorsService.PricingFactors>()
+                : FactorsService.GetGroupedModelFactors(model.Id);
+            var generalAttributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
 
-            var tours = GetToursByTasks(taskIds);
-            var units = GetUnits(taskIds, groupId);
-            if (units == null || units.Count == 0)
-            {
-                return new PreviousToursReportInfo
-                {
-                    Title = ReportTitle,
-                    ColumnTitles = _columnTitles,
-                    Tours = tours.OrderBy(x => x.Year).ToList(),
-                    PricingFactors = attributes.OrderBy(x => x.Name).ToList()
-                };
-            }
+            var sqlFileContent = StatisticalDataService.GetSqlFileContent("PricingFactorsComposition", "PreviousTours");
 
-            var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList();
-            var tourAttributes = GetToursAttributes(tours);
-            var rosreestrAttributes = GetRosreestrAttributes();
-            var gbuAttributes = GetGbuAttributes(objectIds, tourAttributes, rosreestrAttributes);
+            var oksName = RosreestrRegisterService.GetObjectNameAttribute();
+            var zuName = RosreestrRegisterService.GetParcelNameAttribute();
+            var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+            var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
+            var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
+            var permittedUse = RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
+            var address = RosreestrRegisterService.GetAddressAttribute();
+            var location = RosreestrRegisterService.GetLocationAttribute();
+            var parentCadastralNumberForOks = RosreestrRegisterService.GetParcelAttribute();
+            var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+            var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
+            var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+            var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+            var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
 
-            var pricingFactors = FactorsService.GetPricingFactorsForUnits(units.Select(x => x.Id).Distinct().ToList(), factorsByRegisters);
+            var sqlForModelFactors = FactorsService.GetSqlForModelFactors(model?.Id, factorsByRegisters);
+
+            var sqlWithParameters = string.Format(sqlFileContent, string.Join(", ", taskIds), groupId, oksName.Id,
+	            zuName.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, permittedUse.Id, address.Id,
+	            location.Id, parentCadastralNumberForOks.Id, buildYear.Id, commissioningYear.Id, floorsNumber.Id, 
+	            undergroundFloorsNumber.Id, wallMaterial.Id, sqlForModelFactors.Columns, sqlForModelFactors.Tables);
+
+            var command = DBMngr.Main.GetSqlStringCommand(sqlWithParameters);
+            var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
             var items = new List<PreviousTourReportItem>();
-            units.ToList().ForEach(unit =>
+            foreach (DataRow row in dataTable.Rows)
             {
-                var tour = tours.FirstOrDefault(x => x.Id == unit.TourId);
-                var objectFactors = pricingFactors.TryGetValue(unit.Id, out var value) ? value : attributes;
-
-                var item = new PreviousTourReportItem
+	            var item = new PreviousTourReportItem
                 {
-                    TourYear = tour?.Year,
-                    CadastralNumber = unit.CadastralNumber,
-                    Square = unit.Square,
-                    CadastralCost = unit.CadastralCost,
-                    Factors = objectFactors
-                };
+	                CadastralNumber = row[nameof(PreviousTourReportItem.CadastralNumber)].ParseToStringNullable(),
+	                Square = row[nameof(PreviousTourReportItem.Square)].ParseToDecimalNullable(),
+	                CadastralCost = row[nameof(PreviousTourReportItem.CadastralCost)].ParseToDecimalNullable(),
+                    TourYear = row[nameof(PreviousTourReportItem.TourYear)].ParseToLongNullable(),
+                    ResultName = row[nameof(PreviousTourReportItem.ResultName)].ParseToStringNullable(),
+                    ResultPurpose = row[nameof(PreviousTourReportItem.ResultPurpose)].ParseToStringNullable(),
+                    PermittedUse = row[nameof(PreviousTourReportItem.PermittedUse)].ParseToStringNullable(),
+                    Address = row[nameof(PreviousTourReportItem.Address)].ParseToStringNullable(),
+                    Location = row[nameof(PreviousTourReportItem.Location)].ParseToStringNullable(),
+                    ParentCadastralNumberForOks = row[nameof(PreviousTourReportItem.ParentCadastralNumberForOks)].ParseToStringNullable(),
+                    BuildYear = row[nameof(PreviousTourReportItem.BuildYear)].ParseToStringNullable(),
+                    CommissioningYear = row[nameof(PreviousTourReportItem.CommissioningYear)].ParseToStringNullable(),
+                    FloorsNumber = row[nameof(PreviousTourReportItem.FloorsNumber)].ParseToStringNullable(),
+                    UndergroundFloorsNumber = row[nameof(PreviousTourReportItem.UndergroundFloorsNumber)].ParseToStringNullable(),
+                    WallMaterial = row[nameof(PreviousTourReportItem.WallMaterial)].ParseToStringNullable(),
+                    ObjectType = row[nameof(PreviousTourReportItem.ObjectType)].ParseToStringNullable(),
+                    CadastralQuartal = row[nameof(PreviousTourReportItem.CadastralQuartal)].ParseToStringNullable(),
+                    SubGroupNumber = row[nameof(PreviousTourReportItem.SubGroupNumber)].ParseToStringNullable(),
+                    Factors = FactorsService.ProcessModelFactors(row, generalAttributes)
+	            };
 
-                var objectAttributes = gbuAttributes.Where(x => x.ObjectId == unit.ObjectId).ToList();
-                SetRosreestrAttributes(objectAttributes, rosreestrAttributes, item);
-                SetAttributesFromTourSettings(objectAttributes, tour?.Id, tourAttributes, item);
-                SetAttributesAccordingToObjectType(unit.PropertyType_Code, item);
-
-                items.Add(item);
-            });
+	            items.Add(item);
+            }
 
             return new PreviousToursReportInfo
             {
                 Title = ReportTitle,
                 ColumnTitles = _columnTitles,
-                Items = items.OrderBy(x => x.CadastralNumber).ThenBy(x => x.TourYear).ToList(),
-                Tours = tours.OrderBy(x => x.Year).ToList(),
-                PricingFactors = attributes.OrderBy(x => x.Name).ToList()
+                Items = items.ToList(),
+                Tours = GetToursByTasks(taskIds).OrderBy(x => x.Year).ToList(),
+                PricingFactors = generalAttributes.OrderBy(x => x.Name).ToList()
             };
         }
 
@@ -168,173 +180,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			        x.ParentTour.Id,
 			        x.ParentTour.Year
                 })
+		        .OrderBy(x => x.ParentTour.Year)
 		        .Execute()
                 .Select(x => x.ParentTour)
                 .DistinctBy(x => x.Id)
                 .ToList();
-        }
-
-        private Dictionary<long, TourAttributesFromSettings> GetToursAttributes(List<OMTour> tours)
-        {
-	        var tourIds = tours.Select(x => x.Id).ToList();
-            var tourAttributes = new Dictionary<long, TourAttributesFromSettings>();
-            tourIds.ForEach(tourId =>
-            {
-                var objectTypeAttribute = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
-                var cadastralQuartalAttribute = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
-                var groupAttribute = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
-                var item = new TourAttributesFromSettings
-                {
-                    ObjectType = objectTypeAttribute,
-                    CadastralQuartal = cadastralQuartalAttribute,
-                    Group = groupAttribute
-                };
-
-                if (objectTypeAttribute != null)
-                {
-                    item.RegisterIds.Add(objectTypeAttribute.RegisterId);
-                    item.AttributeIds.Add(objectTypeAttribute.Id);
-                }
-                if (cadastralQuartalAttribute != null)
-                {
-                    item.RegisterIds.Add(cadastralQuartalAttribute.RegisterId);
-                    item.AttributeIds.Add(cadastralQuartalAttribute.Id);
-                }
-                if (groupAttribute != null)
-                {
-                    item.RegisterIds.Add(groupAttribute.RegisterId);
-                    item.AttributeIds.Add(groupAttribute.Id);
-                }
-
-                tourAttributes[tourId] = item;
-            });
-
-            return tourAttributes;
-        }
-
-        private List<GbuObjectAttribute> GetGbuAttributes(List<long> objectIds, Dictionary<long, TourAttributesFromSettings> tourAttributes,
-            Dictionary<string, RegisterAttribute> rosreestrAttributes)
-        {
-            var allRegisterIds = tourAttributes.Values.SelectMany(x => x.RegisterIds).ToList();
-            var allAttributeIds = tourAttributes.Values.SelectMany(x => x.AttributeIds).ToList();
-
-            allRegisterIds.AddRange(rosreestrAttributes.Values.Select(x => (long)x.RegisterId));
-            allAttributeIds.AddRange(rosreestrAttributes.Values.Select(x => x.Id));
-
-            return GbuObjectService.GetAllAttributes(
-                objectIds,
-                allRegisterIds.Distinct().ToList(),
-                allAttributeIds.Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay(),
-                isLight: true);
-        }
-
-        private static void SetRosreestrAttributes(List<GbuObjectAttribute> objectAttributes, Dictionary<string, RegisterAttribute> rosreestrAttributes,
-            PreviousTourReportItem item)
-        {
-            foreach (var objectAttribute in objectAttributes)
-            {
-                var attributeKeys = rosreestrAttributes.Where(x => x.Value.Id == objectAttribute.AttributeId)
-                    .Select(x => x.Key);
-                foreach (var key in attributeKeys)
-                {
-                    item.GetType().GetProperty(key)?.SetValue(item, objectAttribute.GetValueInString());
-                }
-            }
-        }
-
-        private static void SetAttributesFromTourSettings(List<GbuObjectAttribute> objectAttributes, long? tourId,
-            Dictionary<long, TourAttributesFromSettings> tourAttributesFromSettings, PreviousTourReportItem item)
-        {
-            if (tourId == null || !tourAttributesFromSettings.TryGetValue(tourId.Value, out var tourAttributes))
-                return;
-
-            item.ObjectType = objectAttributes.FirstOrDefault(x => x.AttributeId == tourAttributes.ObjectType?.Id)?.GetValueInString();
-            item.CadastralQuartal = objectAttributes.FirstOrDefault(x => x.AttributeId == tourAttributes.CadastralQuartal?.Id)?.GetValueInString();
-            item.SubGroupNumber = objectAttributes.FirstOrDefault(x => x.AttributeId == tourAttributes.Group?.Id)?.GetValueInString();
-        }
-
-        private void SetAttributesAccordingToObjectType(PropertyTypes objectType, PreviousTourReportItem item)
-        {
-            string purpose = null, name = null, parentCadastralNumberForOks = item.ParentCadastralNumberForOks;
-            switch (objectType)
-            {
-                case PropertyTypes.Building:
-                    purpose = item.BuildingPurpose;
-                    name = item.OksName;
-                    break;
-                case PropertyTypes.Pllacement:
-                    purpose = item.PlacementPurpose;
-                    name = item.OksName;
-                    break;
-                case PropertyTypes.Construction:
-                    purpose = item.ConstructionPurpose;
-                    name = item.OksName;
-                    break;
-                case PropertyTypes.Stead:
-                    name = item.ZuName;
-                    parentCadastralNumberForOks = null;
-                    break;
-            }
-
-            item.ResultPurpose = purpose;
-            item.ResultName = name;
-            item.ParentCadastralNumberForOks = parentCadastralNumberForOks;
-        }
-
-        private Dictionary<string, RegisterAttribute> GetRosreestrAttributes()
-        {
-            var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-
-            attributesDictionary.Add(nameof(PreviousTourReportItem.OksName), RosreestrRegisterService.GetObjectNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ZuName), RosreestrRegisterService.GetParcelNameAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildingPurpose), RosreestrRegisterService.GetBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PlacementPurpose), RosreestrRegisterService.GetPlacementPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ConstructionPurpose), RosreestrRegisterService.GetConstructionPurposeAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.PermittedUse), RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Address), RosreestrRegisterService.GetAddressAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.Location), RosreestrRegisterService.GetLocationAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.ParentCadastralNumberForOks), RosreestrRegisterService.GetParcelAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.BuildYear), RosreestrRegisterService.GetBuildYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.CommissioningYear), RosreestrRegisterService.GetCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.FloorsNumber), RosreestrRegisterService.GetFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.UndergroundFloorsNumber), RosreestrRegisterService.GetUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(PreviousTourReportItem.WallMaterial), RosreestrRegisterService.GetWallMaterialAttribute());
-
-            return attributesDictionary;
-        }
-
-        protected List<OMUnit> GetUnits(List<long> taskIds, long groupId)
-        {
-	        return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.ObjectId != null && x.GroupId == groupId)
-	            .Select(x => new
-	            {
-                    x.ObjectId,
-                    x.TourId,
-                    x.CadastralNumber,
-                    x.Square,
-                    x.CadastralCost,
-                    x.PropertyType_Code
-                }).Execute();
-        }
-
-        #endregion
-
-        #region Entities
-
-        private class TourAttributesFromSettings
-        {
-            public RegisterAttribute ObjectType { get; set; }
-            public RegisterAttribute CadastralQuartal { get; set; }
-            public RegisterAttribute Group { get; set; }
-            public List<long> RegisterIds { get; set; }
-            public List<long> AttributeIds { get; set; }
-
-            public TourAttributesFromSettings()
-            {
-                RegisterIds = new List<long>();
-                AttributeIds = new List<long>();
-            }
         }
 
         #endregion
