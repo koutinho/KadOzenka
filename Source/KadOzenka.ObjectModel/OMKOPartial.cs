@@ -2,6 +2,7 @@
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using DocumentFormat.OpenXml.Drawing;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
 using System;
 using System.Collections.Generic;
@@ -339,6 +340,123 @@ namespace ObjectModel.KO
             this.ObjectId = mainObject.Id;
             this.Save();
         }
+
+        public void AddKOFactor(long factorId, OMUnit prev, object value)
+        {
+            var attributeData = RegisterCache.GetAttributeData(factorId);
+            long RegId = attributeData.RegisterId;
+            int referenceItemId = -1;
+            if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
+            {
+                OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == value.ToString()).ExecuteFirstOrDefault();
+                if (item != null) referenceItemId = (int)item.ItemId;
+            }
+
+            if (prev != null)
+            {
+                System.Data.DataTable data = RegisterStorage.GetAttribute((int)prev.Id, (int)RegId, factorId);
+                if (data != null)
+                {
+                    ObjectModel.KO.CalcItem ci = null;
+                    foreach (System.Data.DataRow row in data.Rows)
+                    {
+                        ci = (new ObjectModel.KO.CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                    }
+                    if (ci != null)
+                    {
+                        switch (attributeData.Type)
+                        {
+                            case RegisterAttributeType.INTEGER:
+                                value = ci.Value.ParseToLongNullable();
+                                break;
+                            case RegisterAttributeType.DECIMAL:
+                                value = ci.Value.ParseToDecimalNullable();
+                                break;
+                            case RegisterAttributeType.BOOLEAN:
+                                value = ci.Value.ParseToBooleanNullable();
+                                break;
+                            case RegisterAttributeType.STRING:
+                                value = ci.Value.ToString();
+                                break;
+                            case RegisterAttributeType.DATE:
+                                value = ci.Value.ParseToDateTimeNullable();
+                                break;
+                        }
+                    }
+                }
+            }
+            RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
+            registerObject.SetAttributeValue(factorId, value, referenceItemId);
+            RegisterStorage.Save(registerObject);
+        }
+        public void InheritedKOFactor(long factorId, OMUnit prev)
+        {
+            if (prev != null)
+            {
+                var attributeData = RegisterCache.GetAttributeData(factorId);
+                long RegId = attributeData.RegisterId;
+                System.Data.DataTable data = RegisterStorage.GetAttribute((int)prev.Id, (int)RegId, factorId);
+                if (data != null)
+                {
+                    object value = null;
+                    ObjectModel.KO.CalcItem ci = null;
+                    foreach (System.Data.DataRow row in data.Rows)
+                    {
+                        ci = (new ObjectModel.KO.CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                    }
+                    if (ci != null)
+                    {
+                        switch (attributeData.Type)
+                        {
+                            case RegisterAttributeType.INTEGER:
+                                value = ci.Value.ParseToLongNullable();
+                                break;
+                            case RegisterAttributeType.DECIMAL:
+                                value = ci.Value.ParseToDecimalNullable();
+                                break;
+                            case RegisterAttributeType.BOOLEAN:
+                                value = ci.Value.ParseToBooleanNullable();
+                                break;
+                            case RegisterAttributeType.STRING:
+                                value = ci.Value.ToString();
+                                break;
+                            case RegisterAttributeType.DATE:
+                                value = ci.Value.ParseToDateTimeNullable();
+                                break;
+                        }
+
+                        if (value != null)
+                        {
+                            int referenceItemId = -1;
+                            if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
+                            {
+                                OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == value.ToString()).ExecuteFirstOrDefault();
+                                if (item != null) referenceItemId = (int)item.ItemId;
+                            }
+                            RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
+                            registerObject.SetAttributeValue(factorId, value, referenceItemId);
+                            RegisterStorage.Save(registerObject);
+                        }
+
+                    }
+                }
+            }
+        }
+        public void InheritedKOFactors()
+        {
+            List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(this);
+            ObjectModel.KO.OMUnit lastUnit = null;
+            if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
+            if (lastUnit != null)
+            {
+                List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
+                foreach(ObjectModel.KO.OMFactorSettings oldfactor in oldfactors)
+                {
+                    InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit);
+                }
+            }
+        }
+
     }
     public partial class OMModel
     {
