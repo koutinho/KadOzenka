@@ -151,12 +151,15 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private List<OMUnit> GetUnits(long taskId)
 		{
 			return OMUnit.Where(x => x.TaskId == taskId)
-				.Select(x => x.Id)
-				.Select(x => x.ObjectId)
-				.Select(x => x.CadastralNumber)
-				.Select(x => x.CadastralBlock)
-				.Select(x => x.BuildingCadastralNumber)
-				.Select(x => x.TourId)
+				.Select(x => new
+				{
+					x.Id,
+					x.ObjectId,
+					x.CadastralNumber,
+					x.CadastralBlock,
+					x.BuildingCadastralNumber,
+					x.TourId
+				})
 				.Execute();
 		}
 
