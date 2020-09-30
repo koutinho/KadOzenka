@@ -293,29 +293,29 @@ namespace KadOzenka.Dal.ExpressScore
 			};
 
 			resultCalculate = new ResultCalculateDto();
-			var squareCost = CalculateSquareCost(calculateSquareCost, out string msg, out List<long> successAnalogIds);
+			var squarePerMeterCost = CalculateSquarePerMeterCost(calculateSquareCost, out string msg, out List<long> successAnalogIds);
 
-			var summaryCost = Math.Round(squareCost * inputParam.Square, 2);
-			if (squareCost == 0)
+			var summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
+			if (squarePerMeterCost == 0)
 			{
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
 			}
 
 			DealType dealType = inputParam.DealType == DealTypeShort.Rent ? DealType.RentDeal : DealType.SaleDeal;
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, summaryCost, squareCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
+			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, summaryCost, squarePerMeterCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
 				segmentType: inputParam.Segment, dealType: dealType, address: inputParam.Address);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
-			resultCalculate.SquareCost = Math.Round(squareCost, 2);
+			resultCalculate.SquareCost = Math.Round(squarePerMeterCost, 2);
 			resultCalculate.SummaryCost = summaryCost;
 			resultCalculate.Id = id;
 			resultCalculate.Address = inputParam.Address;
 			resultCalculate.Area = inputParam.Square;
 			resultCalculate.MarketSegment = inputParam.Segment;
 
-			resultCalculate.ReportId = ReportService.GenerateReport(summaryCost, squareCost, inputParam.DealType, inputParam.ScenarioType);
+			resultCalculate.ReportId = ReportService.GenerateReport(summaryCost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
 
 			var resultAnalogs = inputParam.Analogs.Where(x => successAnalogIds.Contains(x.Id)).Select(x => new AnalogResultDto
 			{
@@ -341,10 +341,10 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 		public string RecalculateExpressScore(InputCalculateDto inputParam,  List<int> analogIds,
-			  int expressScoreId,  out decimal cost, out decimal squareCost, out long reportId)
+			  int expressScoreId,  out decimal cost, out decimal squarePerMeterCost, out long reportId)
 		{
 			cost = 0;
-			squareCost = 0;
+			squarePerMeterCost = 0;
 			reportId = 0;
 
 			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
@@ -360,21 +360,21 @@ namespace KadOzenka.Dal.ExpressScore
 				TargetObjectId = inputParam.TargetObjectId,
 				Kn = inputParam.Kn
 			};
-			squareCost = CalculateSquareCost(calculateSquareCost, out string msg, out var successAnalogIds);
+			squarePerMeterCost = CalculateSquarePerMeterCost(calculateSquareCost, out string msg, out var successAnalogIds);
 
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
-			cost = Math.Round(squareCost * inputParam.Square, 2);
-			squareCost = Math.Round(squareCost, 2);
+			cost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
+			squarePerMeterCost = Math.Round(squarePerMeterCost, 2);
 
-			reportId = ReportService.GenerateReport(cost, squareCost, inputParam.DealType, inputParam.ScenarioType);
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, cost, squareCost, out int id, expressScoreId);
+			reportId = ReportService.GenerateReport(cost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
+			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, cost, squarePerMeterCost, out int id, expressScoreId);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			return msg;
 		}
 
-        private decimal CalculateSquareCost(CalculateSquareCostDto calculateSquareCost, out string msg, out List<long> successAnalogIds)
+        private decimal CalculateSquarePerMeterCost(CalculateSquareCostDto calculateSquareCost, out string msg, out List<long> successAnalogIds)
 		{
 			msg = "";
 			List<decimal> res = new List<decimal>();
