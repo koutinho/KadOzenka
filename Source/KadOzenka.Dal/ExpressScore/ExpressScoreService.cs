@@ -926,7 +926,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent)
 				{
-					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная арендная ставка объектов-аналогов, руб/кв.м/год", Math.Round(cost * 12, 2).ToString("N")));
+					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная арендная ставка объектов-аналогов, руб/кв.м/год", (Math.Round(cost, 2)* 12).ToString("N")));
 				}
 				costTargetObjectDataForReport.Add("");
 
@@ -938,11 +938,11 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (res.Count == 0)
 			{
-					msg = "Не один аналог не подошел для расчета.";
+					msg = "Ни один аналог не подошел для расчета.";
 					return 0;
 			}
 
-			return res.Sum(x => x) / res.Count;
+			return Math.Round(res.Sum(x => x) / res.Count, 2);
 		}
 
         #region Support For Cost Calculation
