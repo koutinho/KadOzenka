@@ -592,7 +592,7 @@
         myPlacemark.properties.set('iconCaption', 'поиск...');
 		ymaps.geocode(coords).then(function(res) {
             var firstGeoObject = res.geoObjects.get(0);
-            if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 || (firstGeoObject.getAdministrativeAreas() === 1 && firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
+            if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas()[0] !== "Москва") {
                 removeMyPlacemark();
                 Common.ShowError("Объект за пределами г.Москва");
                 return;
