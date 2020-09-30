@@ -449,10 +449,13 @@ namespace ObjectModel.KO
             if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
             if (lastUnit != null)
             {
-                List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
-                foreach(ObjectModel.KO.OMFactorSettings oldfactor in oldfactors)
+                if (lastUnit.CadastralBlock == this.CadastralBlock)
                 {
-                    InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit);
+                    List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
+                    foreach (ObjectModel.KO.OMFactorSettings oldfactor in oldfactors)
+                    {
+                        InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit);
+                    }
                 }
             }
         }

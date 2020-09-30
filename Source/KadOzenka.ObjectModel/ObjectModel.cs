@@ -13283,12 +13283,12 @@ namespace ObjectModel.KO
     public partial class OMFactorSettings : OMBaseClass<OMFactorSettings>
     {
 
-        private long? _id;
+        private long _id;
         /// <summary>
         /// 26300100 Идентификатор (ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 26300100)]
-        public long? Id
+        [PrimaryKey(AttributeID = 26300100)]
+        public long Id
         {
             get
             {
