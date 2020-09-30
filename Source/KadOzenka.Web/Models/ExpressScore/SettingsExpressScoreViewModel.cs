@@ -97,6 +97,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 
             ValidateVat(errors);
             ValidateSquareCostFactor(errors);
+            ValidateCorrectionByBargainCoef(errors);
 
             if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
@@ -199,6 +200,14 @@ namespace KadOzenka.Web.Models.ExpressScore
 		            errors.Add(new ValidationResult("Не создан фактор площади."));
 	            }
             }
+        }
+
+        private void ValidateCorrectionByBargainCoef(List<ValidationResult> errors)
+        {
+	        if (CostFactors.IsCorrectionByBargainUsedInCalculations.GetValueOrDefault() && !CostFactors.CorrectionByBargainCoef.HasValue)
+	        {
+				errors.Add(new ValidationResult("Не указан коэффициент корректировки на торг."));
+			}
         }
 
 		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)

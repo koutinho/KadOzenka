@@ -72,6 +72,15 @@ namespace KadOzenka.Dal.ExpressScore.Dto
         /// </summary>
         public bool? IsSquareFactorUsedInCalculations { get; set; }
 
+        /// <summary>
+        /// Флаг использования корректировки на торг при расчете
+        /// </summary>
+		public bool? IsCorrectionByBargainUsedInCalculations { get; set; }
+		/// <summary>
+		/// Коэффициент корректировки на торг для типов «Предложение-продажа» и «Предложение-аренда»
+		/// </summary>
+		public decimal? CorrectionByBargainCoef { get; set; }
+
 		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}

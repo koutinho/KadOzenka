@@ -570,26 +570,43 @@ namespace KadOzenka.Dal.ExpressScore
 					costTargetObjectDataForReport.Add("");
 				}
 
+				if (exCostFactors.IsCorrectionByBargainUsedInCalculations.GetValueOrDefault())
+				{
+					var coefficient = analog.DealType == DealType.RentDeal || analog.DealType == DealType.SaleDeal
+						? 1
+						: exCostFactors.CorrectionByBargainCoef;
+
+					text = new KeyValuePair<string, string>(@"Корректировка ""Корректировка на торг""",
+						coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
+					if (coefficient != null)
+					{
+						try
+						{
+							cost = cost * coefficient.GetValueOrDefault();
+						}
+						catch (OverflowException e)
+						{
+							GenerateOverflowException(e, analog.Kn, "Корректировку на торг", coefficient);
+						}
+					}
+					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
+					costTargetObjectDataForReport.Add("");
+				}
+
 				foreach (var simple in exCostFactors.SimpleCostFactors)
                 {
-                    var coefficient =
-                        simple.Name == "Корректировка на торг" &&
-                        (analog.DealType == DealType.RentDeal || analog.DealType == DealType.SaleDeal)
-                            ? 1
-                            : simple.Coefficient.GetValueOrDefault();
-
-                    text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
-                        coefficient.ToString(DecimalFormatForCoefficientsFromConstructor));
+	                text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
+						 simple.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
 
                     if (simple.Coefficient != null)
                     {
                         try
                         {
-                            cost = cost * coefficient;
+	                        cost = cost * simple.Coefficient.GetValueOrDefault();
                         }
                         catch (OverflowException e)
                         {
-                            GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", coefficient);
+                            GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", simple.Coefficient);
                         }
                     }
                     costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));

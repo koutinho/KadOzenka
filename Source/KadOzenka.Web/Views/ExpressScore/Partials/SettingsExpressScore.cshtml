@@ -198,6 +198,29 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-3">
+                        @Html.CustomLabelFor("Учитывать корректировку на торг")
+                    </div>
+                    <div class="col-sm-1">
+                        @(Html.Kendo().CheckBoxFor(m => m.CostFactors.IsCorrectionByBargainUsedInCalculations)
+                            .HtmlAttributes(new
+                            {
+                                name = nameof(CostFactorsDto.IsCorrectionByBargainUsedInCalculations),
+                                onchange = "setCorrectionByBargainCoef();"
+                            }))
+                    </div>
+                    <div class="col-sm-7" id="correctionByBargainCoef" style="@(Model.CostFactors.IsCorrectionByBargainUsedInCalculations.GetValueOrDefault() ? "" : "display:none;")">
+                        <div class="col-sm-4">
+                            @Html.CustomLabelFor("Коэффициент", true)
+                        </div>
+                        <div class="col-sm-6">
+                            @(Html.Kendo().NumericTextBox().Name(nameof(Model.CostFactors.CorrectionByBargainCoef))
+                                .Decimals(6).Format("n6").Spinners(false)
+                                .Value(Model.CostFactors.CorrectionByBargainCoef.HasValue ? (double)Model.CostFactors.CorrectionByBargainCoef.GetValueOrDefault() : (double?)null))
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
                         @Html.CustomLabelFor("Использовать площадь при расчете")
                     </div>
                     <div class="col-sm-9">
@@ -344,7 +367,9 @@
 				FloorDicId: formObject["FloorDicId"],
                 IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
 				VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"],
-                IsSquareFactorUsedInCalculations: formObject["@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)"]
+				IsSquareFactorUsedInCalculations: formObject["@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)"],
+				IsCorrectionByBargainUsedInCalculations: formObject["@nameof(CostFactorsDto.IsCorrectionByBargainUsedInCalculations)"],
+                CorrectionByBargainCoef: formObject["@nameof(CostFactorsDto.CorrectionByBargainCoef)"]
 			},
 			SegmentType: "@Model.SegmentType"
         }
@@ -466,6 +491,14 @@
         }
     }
 
+    function setCorrectionByBargainCoef() {
+		var isCorrectionByBargainUsed = $("input[name='@nameof(CostFactorsDto.IsCorrectionByBargainUsedInCalculations)']").is(':checked');
+		if (isCorrectionByBargainUsed) {
+            $("#correctionByBargainCoef").show();
+        } else {
+            $("#correctionByBargainCoef").hide();
+        }
+    }
 
 
 
