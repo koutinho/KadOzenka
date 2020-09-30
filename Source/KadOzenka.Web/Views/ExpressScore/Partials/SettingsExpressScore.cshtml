@@ -196,6 +196,19 @@
                             }))
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        @Html.CustomLabelFor("Использовать площадь при расчете")
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().CheckBoxFor(m => m.CostFactors.IsSquareFactorUsedInCalculations)
+                            .HtmlAttributes(new
+                            {
+                                name = nameof(CostFactorsDto.IsSquareFactorUsedInCalculations),
+                                onchange = "setSquareFactor();"
+                            }))
+                    </div>
+                </div>
             </fieldset>
 		</li>
 		<li id="StaticFactor" data-expand>
@@ -206,25 +219,7 @@
 					foreach (var factor in Model.CostFactors.SimpleCostFactors)
 					{
 						<div class="for-remove" id="simple-factor-@i">
-							<div class="form-group">
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Имя коэф.", true)
-								</div>
-								<div class="col-sm-4">
-									@Html.Kendo().TextBox().Name($"Name-simple-{i}").Value(Model.CostFactors.SimpleCostFactors[i].Name)
-								</div>
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Коэф.", true)
-								</div>
-								<div class="col-sm-3">
-									@Html.Kendo().NumericTextBox().Name($"Coefficient-simple-{i}").Spinners(false).Decimals(6).Format("n6").Value((double)Model.CostFactors.SimpleCostFactors[i].Coefficient.GetValueOrDefault())
-								</div>
-                                <div class="col-sm-1">
-                                    <button disabled="@(!Model.IsEdit)" type="button" class="k-button-icon k-button remove-simple">
-                                        <span class="k-i-close k-icon"></span>
-                                    </button>
-                                </div>
-							</div>
+                            @(await Html.PartialAsync("PartialSimpleFactorCard.cshtml", Model.CostFactors.SimpleCostFactors[i], new ViewDataDictionary(ViewData){{ "Count", i }, {"IsEdit", Model.IsEdit} }))
 						</div>
 						i++;
 					}
@@ -246,56 +241,9 @@
 					i = 0;
 					foreach (var item in Model.CostFactors.ComplexCostFactors)
 					{
-						<fieldset id="factor-@i">
-							<div class="form-group">
-								<div class="col-sm-12" style="@(Model.IsEdit ? "" :"display:none;")">
-									<span class="k-icon k-i-close remove" style="float: right; margin-top: 5px;"></span>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Имя фактора", true)
-								</div>
-								<div class="col-sm-4">
-									@Html.Kendo().TextBox().Name($"Name-{i}").Value(Model.CostFactors.ComplexCostFactors[i].Name)
-								</div>
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Коэф. влияния", true)
-								</div>
-								<div class="col-sm-4">
-									@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(6).Format("n6").Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Имя атрибута", true)
-								</div>
-								<div class="col-sm-4">
-									@(Html.Kendo().DropDownTreeFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
-												.DataTextField("Text")
-												.DataValueField("Value")
-												.Filter(FilterType.Contains)
-												.ClearButton(false)
-										.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}", style = "width: 100%" })
-									)
-								</div>
-								<div class="col-sm-2">
-									@Html.CustomLabelFor("Справочник")
-								</div>
-								<div class="col-sm-4">
-									@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].DictionaryId)
-												.DataTextField("Text")
-												.DataValueField("Value")
-												.Filter(FilterType.Contains)
-												.DataSource(source =>
-												{
-													source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-												})
-												.HtmlAttributes(new { name = $"DictionaryId-{i}", id = $"DictionaryId-{i}" })
-									)
-								</div>
-							</div>
-						</fieldset>
+					    <fieldset id="factor-@i">
+                            @(await Html.PartialAsync("PartialComplexFactorCard.cshtml", Model.CostFactors.ComplexCostFactors[i], new ViewDataDictionary(ViewData){{ "Count", i }, {"IsEdit", Model.IsEdit} }))
+                        </fieldset>
 						<div class="form-group"></div>
 						i++;
 					}
@@ -366,6 +314,7 @@
 					obj['Coefficient'] = validateParams(formObject[`Coefficient-${i}`]);
 					obj['AttributeId'] = validateParams(formObject[`AttributeId-${i}`]);
 					obj['DictionaryId'] = formObject[`DictionaryId-${i}`];
+                    obj['ComplexCostFactorType'] = formObject[`ComplexCostFactorType-${i}`];
 					complexCostFactors.push(obj);
 				}
 			}
@@ -394,7 +343,8 @@
 				IndexDateDicId: formObject["IndexDateDicId"],
 				FloorDicId: formObject["FloorDicId"],
                 IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
-                VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"]
+				VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"],
+                IsSquareFactorUsedInCalculations: formObject["@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)"]
 			},
 			SegmentType: "@Model.SegmentType"
         }
@@ -422,9 +372,12 @@
 		return parameter;
 	}
 
-	function handlerComplexFactor() {
+    function handlerComplexFactor(factorSpecialization) {
 		kendo.ui.progress($('body'), true);
 		var url = "@Url.Action("AddNewComplexCard","ExpressScore")" + `?count=${complexFactorsCount}`;
+        if (factorSpecialization)
+			url += `&factorSpecialization=${factorSpecialization}`;
+
         var fieldset$ = $('<fieldset id="factor-' + complexFactorsCount +'" style= "display: none"></fieldset>');
 		$(fieldset$).load(url, null, function (data, status, jqXGR) {
 			if (status === 'success') {
@@ -460,7 +413,7 @@
 						})
 					}
 				});
-				debugger;
+
 				fieldset$.find('[id ^= "AttributeId"]').each(function() {
 					$(this).data('kendoDropDownTree') && $(this).data('kendoDropDownTree').setDataSource(data);
 				});
@@ -499,6 +452,17 @@
             $("#dictionaryForVat").show();
         } else {
             $("#dictionaryForVat").hide();
+        }
+	}
+
+    function setSquareFactor() {
+        var isSquareFactorUsed = $("input[name='@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)']").is(':checked');
+		if (isSquareFactorUsed) {
+            handlerComplexFactor("@(ComplexCostFactorSpecialization.SquareFactor)");
+        } else {
+            var squareFactorHiddenField =
+                $('.complexCostFactorType[value="@(ComplexCostFactorSpecialization.SquareFactor)"]');
+            squareFactorHiddenField.closest('fieldset').remove();
         }
     }
 

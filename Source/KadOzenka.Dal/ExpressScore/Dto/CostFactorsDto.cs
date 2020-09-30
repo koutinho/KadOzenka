@@ -2,6 +2,12 @@
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
+	public enum ComplexCostFactorSpecialization
+	{
+		Common,
+		SquareFactor
+	}
+
 	public class SimpleCostFactor
 	{
 		public string Name { get; set; }
@@ -10,10 +16,24 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 
 	public class ComplexCostFactor
 	{
+		public ComplexCostFactor()
+		{
+		}
+
+		public ComplexCostFactor(ComplexCostFactorSpecialization factorSpecialization)
+		{
+			ComplexCostFactorType = factorSpecialization;
+			if (factorSpecialization == ComplexCostFactorSpecialization.SquareFactor)
+			{
+				Name = "Площадь";
+			}
+		}
+
 		public string Name { get; set; }
 		public decimal? Coefficient { get; set; }
 		public int? AttributeId { get; set; }
 		public int? DictionaryId { get; set; }
+		public ComplexCostFactorSpecialization ComplexCostFactorType { get; set; }
 	}
 	public class CostFactorsDto
 	{
@@ -47,7 +67,12 @@ namespace KadOzenka.Dal.ExpressScore.Dto
         /// </summary>
         public decimal? VatDictionaryId { get; set; }
 
-        public List<SimpleCostFactor> SimpleCostFactors { get; set; }
+        /// <summary>
+        /// Флаг использования фактора площади при расчете
+        /// </summary>
+        public bool? IsSquareFactorUsedInCalculations { get; set; }
+
+		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}
 }

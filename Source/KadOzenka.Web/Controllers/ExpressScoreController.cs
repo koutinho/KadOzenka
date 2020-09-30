@@ -531,17 +531,19 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
-		public ActionResult AddNewComplexCard(int count)
+		public ActionResult AddNewComplexCard(int count, ComplexCostFactorSpecialization factorSpecialization = ComplexCostFactorSpecialization.Common)
 		{
 			ViewBag.Count = count;
-			return PartialView("Partials/PartialComplexFactorCard", new ComplexCostFactor());
+			ViewBag.IsEdit = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT);
+			return PartialView("Partials/PartialComplexFactorCard", new ComplexCostFactor(factorSpecialization));
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
 		public ActionResult AddNewSimpleCard(int count)
 		{
 			ViewBag.Count = count;
-			return PartialView("Partials/PartialSimpleFactorCard", new ComplexCostFactor());
+			ViewBag.IsEdit = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT);
+			return PartialView("Partials/PartialSimpleFactorCard", new SimpleCostFactor());
 		}
 
 		[HttpGet]

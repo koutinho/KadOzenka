@@ -96,6 +96,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 			}
 
             ValidateVat(errors);
+            ValidateSquareCostFactor(errors);
 
             if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
@@ -187,7 +188,20 @@ namespace KadOzenka.Web.Models.ExpressScore
             }
         }
 
-        private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)
+        private void ValidateSquareCostFactor(List<ValidationResult> errors)
+        {
+	        if (CostFactors.IsSquareFactorUsedInCalculations.GetValueOrDefault())
+            {
+	            if (CostFactors.ComplexCostFactors == null ||
+	                CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.All(x =>
+		                x.ComplexCostFactorType != ComplexCostFactorSpecialization.SquareFactor))
+	            {
+		            errors.Add(new ValidationResult("Не создан фактор площади."));
+	            }
+            }
+        }
+
+		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)
         {
             return OMEsReference.Where(x => x.Id == dictionaryId)
                 .Select(x => x.ValueType_Code)
