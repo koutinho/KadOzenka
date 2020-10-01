@@ -18,22 +18,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		protected List<T> GetOperations<T>(List<long> taskIds) where T : new()
 		{
-			var longPerformanceTaskIds = DataCompositionByCharacteristicsService.GetCachedTaskIds();
-			var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
-			var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
-
 			var runtimeResults = new List<T>();
-			if (tasIdsForRuntime.Count != 0)
-			{
-				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
-				runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
-			}
 
-			if (tasIdsForCache.Count != 0)
+			if (DataCompositionByCharacteristicsService.IsCacheTableExists())
 			{
-				var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
-				var cacheResults = QSQuery.ExecuteSql<T>(cacheSql);
-				runtimeResults.AddRange(cacheResults);
+				var longPerformanceTaskIds = DataCompositionByCharacteristicsService.GetCachedTaskIds();
+				var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
+				var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
+
+				if (tasIdsForRuntime.Count != 0)
+				{
+					var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
+					runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
+				}
+
+				if (tasIdsForCache.Count != 0)
+				{
+					var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
+					var cacheResults = QSQuery.ExecuteSql<T>(cacheSql);
+					runtimeResults.AddRange(cacheResults);
+				}
+			}
+			else
+			{
+				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(taskIds);
+				runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
 			}
 
 			return runtimeResults;

@@ -70,6 +70,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			DBMngr.Main.ExecuteNonQuery(command);
 		}
 
+		public bool IsCacheTableExists()
+		{
+			var isExists = false;
+
+			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{TableName}') as {nameof(isExists)}";
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+			if (dataTable.Rows.Count > 0)
+			{
+				isExists = dataTable.Rows[0][nameof(isExists)].ParseToBooleanNullable().GetValueOrDefault();
+			}
+
+			return isExists;
+		}
+
 		public void FillCache(long taskId)
 		{
 			var sql = GetBasicSql(taskId);
