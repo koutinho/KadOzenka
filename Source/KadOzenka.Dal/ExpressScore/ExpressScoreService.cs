@@ -7,6 +7,7 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.Registers;
@@ -20,11 +21,15 @@ using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using Serilog;
 
 namespace KadOzenka.Dal.ExpressScore
 {
 	public class ExpressScoreService
 	{
+
+		private static readonly ILogger _log = Log.ForContext<ExpressScoreReportService>();
+
 		public ScoreCommonService ScoreCommonService { get; set; }
 		public RegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
@@ -625,11 +630,20 @@ namespace KadOzenka.Dal.ExpressScore
 		                   var esTargetObjectValue = OMTargetObjectValue.Where(x => x.UnitId == calculateSquareCost.TargetObjectId).SelectAll()
 			                   .ExecuteFirstOrDefault();
 
-		                   var targetAttributeValue =
+							_log.Debug("Объект esTargetObjectValue is null " + esTargetObjectValue.IsNullOrDbNull().ToString());
+							_log.Debug("Свойство AttributeValue объекта esTargetObjectValue " + esTargetObjectValue.AttributeValue.IsNullOrDbNull().ToString());
+							_log.Debug("Попытка десериализовать XML из Свойства AttributeValue" + esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>().Count());
+
+						   var targetAttributeValue =
 			                   esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
 
-		                   var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)?.Value;
-		                   targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
+							_log.Debug("Объект targetAttributeValue is null " + esTargetObjectValue.IsNullOrDbNull().ToString());
+
+						    var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)?.Value;
+
+							_log.Debug("Объект attributeValue " + attributeValue.IsNullOrDbNull().ToString());
+
+							targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
 		                   {
 			                   Id = calculateSquareCost.TargetObjectId,
 			                   Value = attributeValue
