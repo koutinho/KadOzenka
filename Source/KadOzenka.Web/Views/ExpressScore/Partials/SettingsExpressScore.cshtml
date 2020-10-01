@@ -496,7 +496,8 @@
 		if (isCorrectionByBargainUsed) {
             $("#correctionByBargainCoef").show();
         } else {
-            $("#correctionByBargainCoef").hide();
+			$("#correctionByBargainCoef").hide();
+            $("#@nameof(CostFactorsDto.CorrectionByBargainCoef)").data("kendoNumericTextBox").value(null);
         }
     }
 
