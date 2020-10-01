@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Core.UI.Registers.Reports.Model;
@@ -32,7 +29,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var taskIdList = GetTaskIdList(query).ToList();
             var groupId = GetGroupIdFromFilter(query);
 
-            var group = GroupService.GetGroupById(groupId);
+            var group = OMGroup.Where(x => x.Id == groupId).Select(x => new
+            {
+                x.GroupName,
+                x.Number
+            }).ExecuteFirstOrDefault();
             var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);
@@ -165,13 +166,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return dataTable;
         }
 
-        private DataTable GetCommonDataTable(GroupDto group)
+        private DataTable GetCommonDataTable(OMGroup group)
         {
             var dataTable = new DataTable("Common");
 
             dataTable.Columns.Add("GroupName");
 
-            dataTable.Rows.Add(group.Name);
+            dataTable.Rows.Add($"{group?.Number}. {group?.GroupName}");
 
             return dataTable;
         }
