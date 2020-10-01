@@ -30,15 +30,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			Log.Verbose("Создана таблица-кеш для данных отчета.");
 
 			var taskIds = DataCompositionByCharacteristicsService.GetLongPerformanceTasks();
-			Log.Verbose("Количество задач с большим числом юнитов {count}.", taskIds.Count);
+			Log.Verbose("Количество задач с большим числом юнитов {Сount}.", taskIds.Count);
 			
 			taskIds.ForEach(taskId =>
 			{
-				Log.ForContext("TaskId", taskId).Verbose("Начата обработка задачи с Id {taskId}.", taskId);
+				Log.Verbose("Начата обработка задачи с Id {TaskId}.", taskId);
 
 				DataCompositionByCharacteristicsService.FillCache(taskId);
 
-				Log.Verbose("Закончена обработка задачи с Id {taskId}.", taskId);
+				Log.Verbose("Закончена обработка задачи с Id {TaskId}.", taskId);
 			});
 		}
 	}
