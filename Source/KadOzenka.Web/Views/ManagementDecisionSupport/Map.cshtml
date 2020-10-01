@@ -169,9 +169,8 @@
 
         function initMap() {
             var script = document.createElement('script');
-            //script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
-            console.log(`@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&'));
-            script.src = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
+            var srciptSrc = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
+            script.src = AppData.useSandBoxKey ? `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.sandboxKey}&lang=${AppData.lang}` : srciptSrc;
             script.type = "text/javascript";
             document.head.appendChild(script);
             script.onload = function () {
