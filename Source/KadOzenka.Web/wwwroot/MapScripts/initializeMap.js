@@ -2,19 +2,28 @@ var map;
 var editMode;
 
 function init() {
-    console.log(srciptSrc);
+
     var script = document.createElement('script');
-    script.src = srciptSrc;
-    //`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
-    document.head.appendChild(script);
-    script.onload = function () {
-        //var wmsScript = document.createElement('script');
-        //wmsScript.src = `/MapScripts/layer-wms.js`;
-        //document.head.appendChild(wmsScript);
-        ymaps.ready(function() { initMap(); });
+    if (AppData.useSandBoxKey) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.sandboxKey}&lang=${AppData.lang}`)
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                var data = xhr.responseText.replaceAll(AppData.sandboxKey, AppData.key);
+                script.innerHTML = data;
+                setTimeout(() => { initMap(); SetAvaliableValues(); }, 2000);
+                document.head.appendChild(script);
+            }
+        };
+        xhr.send();
     }
-    //ymaps.ready(function () { initMap(); });
-    SetAvaliableValues();
+    else {
+        script.src = srciptSrc;
+        console.log(script.src);
+        document.head.appendChild(script);
+        script.onload = function () { ymaps.ready(function () { initMap(); }); };
+        SetAvaliableValues();
+    }
 };
 
 function initMap() {

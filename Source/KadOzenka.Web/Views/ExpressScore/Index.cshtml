@@ -551,10 +551,9 @@
 
 	// инициализация карты и евенты
 	function init() {
-		var script = document.createElement('script');
-        console.log(`@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&'));
-        script.src = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
-		//`http://10.80.214.37:8888/?protocol=https&version=2.1&lang=ru_RU&key=5b7a0369-63be-4edd-ac27-716d52c64d46`;
+        var script = document.createElement('script');
+        var srciptSrc = `@ConfigurationManager.AppSettings["YandexLink"]`.replace(/&amp;/g, '&');
+        script.src = AppData.useSandBoxKey ? `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.sandboxKey}&lang=${AppData.lang}` : srciptSrc;
 		//`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
         script.type = "text/javascript";
 		document.head.appendChild(script);
