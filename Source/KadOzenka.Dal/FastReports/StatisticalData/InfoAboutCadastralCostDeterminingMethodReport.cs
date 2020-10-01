@@ -75,6 +75,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(ReportItem.ObjectPropertyType)));
             query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(ReportItem.CadastralNumber)));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(ReportItem.GroupName)));
+            query.AddColumn(OMGroup.GetColumn(x => x.Number, nameof(ReportItem.GroupNumber)));
             query.AddColumn(OMModel.GetColumn(x => x.CalculationType_Code, nameof(ReportItem.ModelCalculationType)));
             query.AddColumn(OMModel.GetColumn(x => x.CalculationMethod_Code, nameof(ReportItem.ModelCalculationMethod)));
             query.AddColumn(OMModel.GetColumn(x => x.Name, nameof(ReportItem.ModelName)));
@@ -86,6 +87,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                 var objectPropertyType = (PropertyTypes) row[nameof(ReportItem.ObjectPropertyType)].ParseToLong();
                 var cadastralNumber = row[nameof(ReportItem.CadastralNumber)].ParseToString();
                 var groupName = row[nameof(ReportItem.GroupName)].ParseToString();
+                var groupNumber = row[nameof(ReportItem.GroupNumber)].ParseToString();
                 var modelCalculationType = (KoCalculationType)row[nameof(ReportItem.ModelCalculationType)].ParseToLong();
                 var modelCalculationMethod = (KoCalculationMethod)row[nameof(ReportItem.ModelCalculationMethod)].ParseToLong();
                 var modelName = row[nameof(ReportItem.ModelName)].ParseToString();
@@ -95,6 +97,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                     ObjectPropertyType =  objectPropertyType,
                     CadastralNumber = cadastralNumber,
                     GroupName = groupName,
+                    GroupNumber = groupNumber,
                     ModelCalculationType = modelCalculationType,
                     ModelCalculationMethod = modelCalculationMethod,
                     ModelName = modelName
@@ -124,7 +127,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                         ? null 
                         : operations[i].ObjectPropertyType.GetEnumDescription(),
                     operations[i].CadastralNumber,
-                    operations[i].GroupName,
+                    $"{operations[i].GroupNumber}. {operations[i].GroupName}",
                     operations[i].ModelingWay.GetEnumDescription(),
                     operations[i].ModelCalculationType == KoCalculationType.None 
                         ? null 
@@ -147,6 +150,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
             public PropertyTypes ObjectPropertyType { get; set; }
             public string CadastralNumber { get; set; }
             public string GroupName { get; set; }
+            public string GroupNumber { get; set; }
 
             public KoModelingWay ModelingWay =>
                 ModelCalculationMethod == KoCalculationMethod.IndividualCalculation
