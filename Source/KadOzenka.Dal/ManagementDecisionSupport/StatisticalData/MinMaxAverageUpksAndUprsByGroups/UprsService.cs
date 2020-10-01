@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             if (withSubGroups)
             {
                 subGroupSelectionFromGrouping = @"temp.""SubGroup"",";
-                subGroupSelectionFromQuery = @"L1_R205.GROUP_NAME as ""SubGroup"",";
+                subGroupSelectionFromQuery = @"(COALESCE(L1_R205.NUMBER, '') || '. ' || L1_R205.GROUP_NAME) as ""SubGroup"",";
                 subGroupForGrouping = @", temp.""SubGroup""";
             }
 
@@ -117,7 +117,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
                 subGroupForSorting = string.Empty;
             if (withSubGroups)
             {
-                subGroupSelectionFromQuery = @"L1_R205.GROUP_NAME SubGroup, ";
+                subGroupSelectionFromQuery = @"(COALESCE(L1_R205.NUMBER, '') || '. ' || L1_R205.GROUP_NAME) SubGroup, ";
                 subGroupForGrouping = @"d.SubGroup, ";
                 subGroupForResultData = @"dg.SubGroup, ";
                 subGroupForResult = @"rd.SubGroup, ";

@@ -41,7 +41,7 @@ select
 from
 (
   select
-  (SELECT L2_R205.GROUP_NAME AS "GROUP_NAME" FROM KO_GROUP L2_R205 WHERE L2_R205.ID = L1_R205.PARENT_ID) as "ParentGroup",
+  (SELECT (COALESCE(L2_R205.NUMBER, '') || '. ' || L2_R205.GROUP_NAME) AS "GROUP_NAME" FROM KO_GROUP L2_R205 WHERE L2_R205.ID = L1_R205.PARENT_ID) as "ParentGroup",
   {1}
   (select get_market_object_price_for_uprs(L1_R201.cadastral_number)) / NULLIF(L1_R201.SQUARE, 0) as "UprsObjectValue",
   (select get_market_object_price_for_uprs(L1_R201.cadastral_number)) as "UprsObjectCost",

@@ -24,7 +24,7 @@ placementAttrValues as (
 initialData as (
 	select * from (
 		SELECT 
-        	(SELECT L2_R205.GROUP_NAME AS "20500300" FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) ParentGroup,
+        	(SELECT (COALESCE(L2_R205.NUMBER, '') || '. ' || L2_R205.GROUP_NAME) AS "20500300" FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) ParentGroup,
             {3}
 			L1_R201.ID,
 			L1_R201.PROPERTY_TYPE,
