@@ -401,7 +401,7 @@ namespace KadOzenka.Dal.ExpressScore
                         sheet.Columns[col].Style.Font.Size = 250;
                         sheet.Columns[col].Style.Font.Weight = 600;
                         sheet.Columns[col].SetWidth(8.0, LengthUnit.Centimeter);
-                        if (val.Contains("Корректировка"))
+                        if (val != null  && val.Contains("Корректировка"))
                         {
                             isGreen = true;
                         }
