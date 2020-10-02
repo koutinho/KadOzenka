@@ -16,6 +16,7 @@ using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;

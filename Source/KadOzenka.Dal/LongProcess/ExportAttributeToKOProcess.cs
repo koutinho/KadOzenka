@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.LongProcess
         public static void AddProcessToQueue(GbuExportAttributeSettings settings)
 		{
             _log.Information(new Exception(settings.SerializeToXml()), "Добавление в очередь фонового процесса {LongProcessName}", LongProcessName);
+            
             LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
 

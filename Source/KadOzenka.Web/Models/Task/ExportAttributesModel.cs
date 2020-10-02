@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.Tours;
@@ -16,28 +17,6 @@ using ObjectModel.KO;
 namespace KadOzenka.Web.Models.Task
 {
 	#region Entities
-
-	public enum ObjectTypeExtended
-	{
-		[Description("Объект капитального строительства")]
-		Oks,
-		[Description("Земельный участок")]
-		Zu,
-		[Description("ОКС/ЗУ")]
-		Both
-	}
-
-	public enum PlacementPurpose
-	{
-		[Description("Значение отсутствует")]
-		None = 0,
-
-		[Description("Жилое")]
-		Live = 1,
-
-		[Description("Нежилое")]
-		NotLive = 2
-	}
 
 	public class OksAdditionalFilters
 	{

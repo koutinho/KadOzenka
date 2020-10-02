@@ -381,8 +381,6 @@ namespace ObjectModel.Gbu.ExportAttribute
         /// Список сопоставленных атрибутов
         /// </summary>
         public List<ExportAttributeItem> Attributes;
-
-
     }
 }
 
