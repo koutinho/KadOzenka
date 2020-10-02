@@ -14,37 +14,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
-	#region Entities
-
-	public class OksAdditionalFilters
-	{
-		public bool IsBuildings { get; set; }
-		public bool IsPlacements { get; set; }
-		public bool IsUncompletedBuildings { get; set; }
-		public bool IsConstructions { get; set; }
-
-		[Display(Name = "Жилые")]
-		public bool IsLivePlacement { get; set; }
-		[Display(Name = "Нежилые")]
-		public bool IsNotLivePlacement { get; set; }
-
-		public PlacementPurpose PlacementPurpose
-		{
-			get
-			{
-				if (IsLivePlacement)
-					return PlacementPurpose.Live;
-				if(IsNotLivePlacement)
-					return PlacementPurpose.NotLive;
-
-				return PlacementPurpose.None;
-			}
-		}
-	}
-
-	#endregion
-
-    public class ExportAttributesModel : IValidatableObject
+	public class ExportAttributesModel : IValidatableObject
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
@@ -162,20 +132,32 @@ namespace KadOzenka.Web.Models.Task
         }
 
         public GbuExportAttributeSettings ToGbuExportAttributeSettings()
-		{
-			return new GbuExportAttributeSettings
-			{
-				TaskFilter = TaskFilter,
-				Attributes = GetAttributeItems()
-			};
-		}
+        {
+	        var attributes = GetAttributeItems();
+	        return ToAttributes(attributes);
+        }
 
 		public GbuExportAttributeSettings ToGbuExportAndCreateAttributeSettings()
 		{
+			var attributes = CreateAttributeItems();
+			return ToAttributes(attributes);
+		}
+
+		private GbuExportAttributeSettings ToAttributes(List<ExportAttributeItem> attributes)
+		{
 			return new GbuExportAttributeSettings
 			{
 				TaskFilter = TaskFilter,
-				Attributes = CreateAttributeItems()
+				ObjType = ObjType,
+				OksAdditionalFilters = new Dal.GbuObject.Dto.OksAdditionalFilters
+				{
+					IsBuildings = OksAdditionalFilters.IsBuildings,
+					IsPlacements = OksAdditionalFilters.IsPlacements,
+					IsUncompletedBuildings = OksAdditionalFilters.IsUncompletedBuildings,
+					IsConstructions = OksAdditionalFilters.IsConstructions,
+					PlacementPurpose = OksAdditionalFilters.PlacementPurpose
+				},
+				Attributes = attributes
 			};
 		}
 
@@ -364,7 +346,10 @@ namespace KadOzenka.Web.Models.Task
 		#endregion
     }
 
-    public class Control : Attribute
+
+	#region Entities
+
+	public class Control : Attribute
     {
 	    public string Name;
 	    public int NumberControl;
@@ -375,4 +360,32 @@ namespace KadOzenka.Web.Models.Task
 		    NumberControl = number;
 	    }
     }
+
+    public class OksAdditionalFilters
+    {
+	    public bool IsBuildings { get; set; }
+	    public bool IsPlacements { get; set; }
+	    public bool IsUncompletedBuildings { get; set; }
+	    public bool IsConstructions { get; set; }
+
+	    [Display(Name = "Жилые")]
+	    public bool IsLivePlacement { get; set; }
+	    [Display(Name = "Нежилые")]
+	    public bool IsNotLivePlacement { get; set; }
+
+	    public PlacementPurpose PlacementPurpose
+	    {
+		    get
+		    {
+			    if (IsLivePlacement)
+				    return PlacementPurpose.Live;
+			    if (IsNotLivePlacement)
+				    return PlacementPurpose.NotLive;
+
+			    return PlacementPurpose.None;
+		    }
+	    }
+    }
+
+    #endregion
 }
