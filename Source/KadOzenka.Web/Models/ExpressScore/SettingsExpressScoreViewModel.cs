@@ -98,6 +98,7 @@ namespace KadOzenka.Web.Models.ExpressScore
             ValidateVat(errors);
             ValidateSquareCostFactor(errors);
             ValidateCorrectionByBargainCoef(errors);
+            ValidateOperatingCostsCoef(errors);
 
             if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
@@ -208,6 +209,14 @@ namespace KadOzenka.Web.Models.ExpressScore
 	        {
 				errors.Add(new ValidationResult("Не указан коэффициент корректировки на торг."));
 			}
+        }
+
+        private void ValidateOperatingCostsCoef(List<ValidationResult> errors)
+        {
+	        if (CostFactors.IsOperatingCostsUsedInCalculations.GetValueOrDefault() && !CostFactors.OperatingCostsCoef.HasValue)
+	        {
+		        errors.Add(new ValidationResult("Не указан коэффициент операционных расходов."));
+	        }
         }
 
 		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)

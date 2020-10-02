@@ -81,6 +81,15 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// </summary>
 		public decimal? CorrectionByBargainCoef { get; set; }
 
+		/// <summary>
+		/// Флаг учитывания операционных расходов при расчете
+		/// </summary>
+		public bool? IsOperatingCostsUsedInCalculations { get; set; }
+		/// <summary>
+		/// Коэффициент операционных расходов при расчете
+		/// </summary>
+		public decimal? OperatingCostsCoef { get; set; }
+
 		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}

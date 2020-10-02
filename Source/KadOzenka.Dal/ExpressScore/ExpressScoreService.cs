@@ -259,7 +259,8 @@ namespace KadOzenka.Dal.ExpressScore
 					x.BuildingYear,
 					x.Address,
 					x.DealType_Code,
-                    x.Vat_Code
+                    x.Vat_Code,
+                    x.IsOperatingCostsIncluded
 				}).Execute().Select(x => new AnalogDto
 				{
 					Id = x.Id,
@@ -271,7 +272,8 @@ namespace KadOzenka.Dal.ExpressScore
 					YearBuild = x.BuildingYear.GetValueOrDefault(),
 					Address = x.Address,
 					DealType = x.DealType_Code,
-                    Vat = x.Vat_Code
+                    Vat = x.Vat_Code,
+                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded
                 }).ToList();
 		}
 
@@ -509,10 +511,17 @@ namespace KadOzenka.Dal.ExpressScore
 
                 #endregion
 
-                if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent && exCostFactors.IsVatIncluded.GetValueOrDefault())
+                if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent)
                 {
-                    cost = AddVat(exCostFactors.VatDictionaryId, calculateSquareCost.TargetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
-                }
+	                if (exCostFactors.IsVatIncluded.GetValueOrDefault())
+	                {
+		                cost = AddVat(exCostFactors.VatDictionaryId, calculateSquareCost.TargetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
+					}
+					if (exCostFactors.IsOperatingCostsUsedInCalculations.GetValueOrDefault())
+					{
+						cost = AddOperatingCosts(exCostFactors.OperatingCostsCoef, calculateSquareCost.TargetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
+					}
+				}
 
                 #region Корректировка на этаж
 
@@ -1006,7 +1015,42 @@ namespace KadOzenka.Dal.ExpressScore
             return cost;
         }
 
-        private string GetVatLabel(VatType? vat)
+		private decimal AddOperatingCosts(decimal? operatingCostsCoef, long? targetMarketObjectId, AnalogDto analog, decimal cost,
+			List<string> costTargetObjectDataForReport, ref List<Tuple<string, string>> costFactorsDataForReport)
+		{
+			var analogCorrection = analog.IsOperatingCostsIncluded.GetValueOrDefault() 
+				? operatingCostsCoef 
+				: 1;
+
+			if (analogCorrection != null)
+			{
+				try
+				{
+					cost = cost * analogCorrection.Value;
+				}
+				catch (OverflowException e)
+				{
+					GenerateOverflowException(e, analog.Kn, "Корректировку на операционные расходы", analogCorrection);
+				}
+			}
+
+			AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Наличие операционных расходов", 
+				analog.IsOperatingCostsIncluded.GetValueOrDefault() ? "Включены" : "Не включены"));
+			AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка на операционные расходы", analogCorrection?.ToString()));
+
+			bool? targetMarketObjectIsOperatingCostsIncluded = null;
+			if (targetMarketObjectId != null)
+			{
+				targetMarketObjectIsOperatingCostsIncluded = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.IsOperatingCostsIncluded)
+					.ExecuteFirstOrDefault()?.IsOperatingCostsIncluded;
+			}
+			costTargetObjectDataForReport.Add(targetMarketObjectIsOperatingCostsIncluded.GetValueOrDefault() ? "Включены" : "Не включены");
+			costTargetObjectDataForReport.Add(string.Empty);
+
+			return cost;
+		}
+
+		private string GetVatLabel(VatType? vat)
         {
             var isVatIncluded = vat == VatType.NDS;
             return isVatIncluded ? "С НДС" : "Без НДС";

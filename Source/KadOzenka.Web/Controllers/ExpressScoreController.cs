@@ -34,6 +34,8 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ExpressScoreController : KoBaseController
 	{
+		public static readonly decimal OperatingCostsCoefDefaultValue = 0.81m;
+
 		#region Init
 
 		private ExpressScoreService _service;
