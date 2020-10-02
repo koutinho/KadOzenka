@@ -404,9 +404,7 @@ namespace KadOzenka.Dal.ExpressScore
 			try
 			{
 				exCostFactors = exSettingsCostFactors.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-				try { _log.Debug("exCostFactors: {exCostFactors}", JsonConvert.SerializeObject(exCostFactors)); }
-				catch (Exception ex) { _log.Error(ex, "Ошибка сериализации exCostFactors"); }
-			}
+            }
 			catch (Exception e)
 			{
 				ErrorManager.LogError(e);
@@ -429,8 +427,8 @@ namespace KadOzenka.Dal.ExpressScore
 			GenerateLists(exCostFactors, calculateSquareCost.ScenarioType);
 
 			foreach (var analog in calculateSquareCost.Analogs)
-			{
-				decimal yPrice = 0; // Удельный показатель стоимости
+            {
+                decimal yPrice = 0; // Удельный показатель стоимости
 
 				if (analog.Price != 0 && analog.Square != 0) yPrice = analog.Price / analog.Square;
 
@@ -608,11 +606,15 @@ namespace KadOzenka.Dal.ExpressScore
 
 
 				bool isBreak = false;
-				int kCount = 2;
+				int amountSuccessComplexFactors = 2;
 				var idAnalog = OMCoreObject.Where(x => x.CadastralNumber == calculateSquareCost.Kn).ExecuteFirstOrDefault()?.Id;
 
-				try { _log.Debug("exCostFactors перед заходом в foreach: {exCostFactors}", JsonConvert.SerializeObject(exCostFactors)); }
-				catch (Exception ex) { _log.Error(ex, "Ошибка сериализации exCostFactors"); }
+
+                int countRow = costFactorsDataForReport.Count + GetCountReportRowComplexFactors(exCostFactors.ComplexCostFactors);
+
+                countRow++;/*Строка на скорректированную стоимость*/
+
+                ReportService.InitCostFactorMatrix(countRow, calculateSquareCost.Analogs.Count + 1);
 
 				foreach (var complex in exCostFactors.ComplexCostFactors)
                 {
@@ -633,35 +635,22 @@ namespace KadOzenka.Dal.ExpressScore
 		                   complex.AttributeId.GetValueOrDefault(), (int)exSettingsCostFactors.Registerid, calculateSquareCost.MarketSegment);
                    }
 
-					try { _log.Debug("targetObjectFactor перед заходом в foreach: {targetObjectFactor}", JsonConvert.SerializeObject(targetObjectFactor)); }
-					catch (Exception ex) { _log.Error(ex, "Ошибка сериализации targetObjectFactor"); }
-
-					if (targetObjectFactor == null || targetObjectFactor.Value == null)
+                   if (targetObjectFactor == null || targetObjectFactor.Value == null)
                    {
 	                   try
 	                   {
 		                   var esTargetObjectValue = OMTargetObjectValue.Where(x => x.UnitId == calculateSquareCost.TargetObjectId).SelectAll()
 			                   .ExecuteFirstOrDefault();
 
-							//_log.Debug("Объект esTargetObjectValue is null " + esTargetObjectValue.IsNullOrDbNull().ToString());
-							//_log.Debug("Свойство AttributeValue объекта esTargetObjectValue " + esTargetObjectValue.AttributeValue.IsNullOrDbNull().ToString());
-							//_log.Debug("Попытка десериализовать XML из Свойства AttributeValue" + esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>().Count());
 
 						   var targetAttributeValue =
 			                   esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
 
-							//_log.Debug("Объект targetAttributeValue is null " + esTargetObjectValue.IsNullOrDbNull().ToString());
 
 						    var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)?.Value;
 
-							//targetAttributeValue.ForEach(x => { _log.Debug($"=====> {x.Id} {complex.AttributeId}: {x.Id == complex.AttributeId }; { x.Id == ((int)complex.AttributeId)} ({targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)}; {targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId)?.Value})"); });
 
-							//try { _log.Debug("Объект complex {complex}", JsonConvert.SerializeObject(complex)); } catch(Exception e) { _log.Error(e, e.Message); }
-
-							//_log.Debug("Объект attributeValue " + attributeValue.IsNullOrDbNull().ToString());
-							
-
-							targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
+                            targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
 							{
 								Id = calculateSquareCost.TargetObjectId,
 								Value = attributeValue
@@ -670,7 +659,7 @@ namespace KadOzenka.Dal.ExpressScore
 							if (targetObjectFactor == null || targetObjectFactor.Value == null)
 							{
 								_log.Warning("targetObjectFactor или targetObjectFactor.Value имеют значение null");
-								//throw new Exception("Не найденны данные для объекта оценки");
+                                targetObjectFactor = new ParameterDataDto();
 							}
 	                   }
 	                   catch (Exception e)
@@ -719,7 +708,7 @@ namespace KadOzenka.Dal.ExpressScore
 									costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
 									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 									costTargetObjectDataForReport.Add(complexCoefficientStr);
-										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
+                                    AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", "1"));
 									costTargetObjectDataForReport.Add("");
 									break;
 								}
@@ -732,7 +721,7 @@ namespace KadOzenka.Dal.ExpressScore
 									var coeff = Math.Exp((double) (targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 								            Math.Exp((double) (analogC * complex.Coefficient.GetValueOrDefault()));
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", coeff.ToString("N")));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
 
                                 try
                                 {
@@ -763,7 +752,7 @@ namespace KadOzenka.Dal.ExpressScore
 									costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
 									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 									costTargetObjectDataForReport.Add(complexCoefficientStr);
-										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name+@"""" + $" K({kCount})", "1"));
+                                    AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name+@"""" + $" K({amountSuccessComplexFactors})", "1"));
 									costTargetObjectDataForReport.Add("");
 									break;
 								}
@@ -774,7 +763,7 @@ namespace KadOzenka.Dal.ExpressScore
 								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 									var coeff = Math.Exp((double)(targetObjectC * complex.Coefficient.GetValueOrDefault())) / Math.Exp((double)(analogC * complex.Coefficient.GetValueOrDefault()));
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", coeff.ToString("N")));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
 								costTargetObjectDataForReport.Add("");
 
                                 try
@@ -805,7 +794,7 @@ namespace KadOzenka.Dal.ExpressScore
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", "1"));
 								costTargetObjectDataForReport.Add("");
 									break;
 							}
@@ -822,7 +811,7 @@ namespace KadOzenka.Dal.ExpressScore
 								var coeff = Math.Exp((double) (targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 							            Math.Exp((double) (analogC * complex.Coefficient.GetValueOrDefault()));
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", coeff.ToString("N")));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
 								costTargetObjectDataForReport.Add("");
 								
                             try
@@ -844,22 +833,15 @@ namespace KadOzenka.Dal.ExpressScore
 							}
 							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 							costTargetObjectDataForReport.Add(complexCoefficientStr);
-							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({kCount})", "1"));
+							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", "1"));
 							costTargetObjectDataForReport.Add("");
 							break;
 						}
 					}
 
-					kCount++;
+					amountSuccessComplexFactors++;
 				}
 
-				int countRow = isBreak
-					? costFactorsDataForReport.Count + GetCountReportRowComplexFactors(exCostFactors.ComplexCostFactors) 
-					: costFactorsDataForReport.Count;
-
-				countRow++;/*Строка на скорректированную стоимость*/
-
-				ReportService.InitCostFactorMatrix(countRow, calculateSquareCost.Analogs.Count + 1);
 
 				if (isBreak)
 				{

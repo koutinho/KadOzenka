@@ -378,7 +378,6 @@ namespace KadOzenka.Dal.ExpressScore
             {
                 foreach (var val in values)
                 {
-                    _log.Debug("======> row={row}, column={col}, value={val}", row, col, val);
                     if (decimal.TryParse(val, out var d))
                     {
                         sheet.Rows[row].Cells[col].SetValue(val.Replace(",", "."));
@@ -406,8 +405,6 @@ namespace KadOzenka.Dal.ExpressScore
                             isGreen = true;
                         }
                     }
-
-                    //sheet.Rows[row].SetHeight(1.5, LengthUnit.Centimeter);
                     sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
                     sheet.Rows[row].Cells[col].Style.WrapText = true;
                     sheet.Rows[row].Cells[col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
