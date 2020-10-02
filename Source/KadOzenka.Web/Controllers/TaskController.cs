@@ -335,16 +335,16 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-        public JsonResult SaveTemplateForTransferAttributesWithCreate(string nameTemplate, [FromForm]ExportAttributesModel viewModel)
+        public JsonResult SaveTemplateForTransferAttributesWithCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel)
         {
-            return SaveTemplate(nameTemplate, DataFormStorege.TransferAttributesWithCreate, viewModel.SerializeToXml());
+            return SaveTemplate(nameTemplate, isCommon, DataFormStorege.TransferAttributesWithCreate, viewModel.SerializeToXml());
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-        public JsonResult SaveTemplateForTransferAttributesWithoutCreate(string nameTemplate, [FromForm]ExportAttributesModel viewModel)
+        public JsonResult SaveTemplateForTransferAttributesWithoutCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel)
         {
-            return SaveTemplate(nameTemplate, DataFormStorege.TransferAttributesWithoutCreate, viewModel.SerializeToXml());
+            return SaveTemplate(nameTemplate, isCommon, DataFormStorege.TransferAttributesWithoutCreate, viewModel.SerializeToXml());
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]

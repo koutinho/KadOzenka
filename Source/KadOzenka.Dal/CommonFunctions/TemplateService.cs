@@ -9,9 +9,11 @@ namespace KadOzenka.Dal.CommonFunctions
     {
         public List<OMDataFormStorage> GetTemplates(DataFormStorege formType)
         {
-            return OMDataFormStorage
-                .Where(x => x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == formType).SelectAll()
-                .Execute();
+	        return OMDataFormStorage
+		        .Where(x => (x.UserId == SRDSession.GetCurrentUserId().GetValueOrDefault() || x.IsCommon == true) &&
+		                    x.FormType_Code == formType)
+		        .SelectAll()
+		        .Execute();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/20/2020 12:59:19" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="10/01/2020 14:48:43" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -74,39 +74,39 @@
       <Column Name="ObjectsCount" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="997" PaperHeight="210" RawPaperSize="9" Guides="9.45,3628.8,8.69,83.16,242.68,365.15,365.53,487.25,487.62,610.09,610.47,732.1899,83.54,243.06,3087.13,3218.3,853.15,1012.67,1013.04,1172.56,1172.93,1323,1482.52,1604.24,1604.61,1754.68,1895.3,1895.67,2007.94,2139.48,2251.75,2252.12,2411.64,2674.35,2824.42,2965.04,2965.41,3471.93,3631.45,3218.67,3312.04,3312.41,731.43,2139.11,2533.36,2533.73" UnlimitedWidth="true">
-    <ReportTitleBand Name="ReportTitle1" Width="3693.06" Height="66.15" Guides="9.45,66.15">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="997" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
+    <ReportTitleBand Name="ReportTitle1" Width="3693.06" Height="66.15">
       <TextObject Name="Text1" Left="9.45" Top="9.45" Width="3619.35" Height="56.7" Text="Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета" Font="Times New Roman, 14pt, style=Bold"/>
     </ReportTitleBand>
-    <DataBand Name="BandItem" Top="527.75" Width="3693.06" Height="107.15" Guides="0,103.95" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
-      <TextObject Name="Text60" Left="8.69" Width="74.47" Height="103.95" Border.Lines="All" Text="[Item.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text57" Left="242.68" Width="122.47" Height="103.95" Border.Lines="All" Text="[Item.CommissioningYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text58" Left="365.53" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.BuildYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text59" Left="487.62" Width="122.47" Height="103.95" Border.Lines="All" Text="[Item.UndergroundFloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text62" Left="610.47" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.FloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text61" Left="83.54" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text82" Left="3087.13" Width="131.17" Height="103.95" Border.Lines="All" Text="[Item.FunctionalSubGroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text64" Left="853.15" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.Location]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text65" Left="1013.04" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text66" Left="1172.93" Width="150.07" Height="103.95" Border.Lines="All" Text="[Item.ParentPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text67" Left="1323" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.ParentCadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text68" Left="1482.52" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.ParentGroup]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text69" Left="1604.61" Width="150.07" Height="103.95" Border.Lines="All" Text="[Item.PlacementPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text70" Left="1754.68" Width="140.62" Height="103.95" Border.Lines="All" Text="[Item.ObjectName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text71" Left="1895.67" Width="112.27" Height="103.95" Border.Lines="All" Text="[Item.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text73" Left="2139.48" Width="112.27" Height="103.95" Border.Lines="All" Text="[Item.Floor]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text74" Left="2252.12" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.CadastralQuartal]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text77" Left="2674.35" Width="150.07" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text78" Left="2824.42" Width="140.62" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeCodeSource]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text79" Left="2965.41" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.SubGroupUsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text85" Left="3471.93" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text86" Left="3218.67" Width="93.37" Height="103.95" Border.Lines="All" Text="[Item.Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text87" Left="3312.41" Width="159.52" Height="103.95" Border.Lines="All" Text="[Item.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text63" Left="731.43" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.WallMaterial]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text72" Left="2007.94" Width="131.17" Height="103.95" Border.Lines="All" Text="[Item.ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text75" Left="2411.64" Width="121.72" Height="103.95" Border.Lines="All" Text="[Item.Segment]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text76" Left="2533.73" Width="140.62" Height="103.95" Border.Lines="All" Text="[Item.UsageTypeName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader1" Top="70.15" Width="3693.06" Height="453.6" Guides="0,434.7,453.6">
+    <DataBand Name="BandItem" Top="526.15" Width="3693.06" Height="107.15" CanGrow="true" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text60" Left="8.69" Width="74.47" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text57" Left="242.68" Width="122.47" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.CommissioningYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text58" Left="365.53" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.BuildYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text59" Left="487.62" Width="122.47" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.UndergroundFloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text62" Left="610.47" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.FloorsNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text61" Left="83.54" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text82" Left="3087.13" Width="131.17" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.FunctionalSubGroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text64" Left="853.15" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Location]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text65" Left="1013.04" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text66" Left="1172.93" Width="150.07" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.ParentPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text67" Left="1323" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.ParentCadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text68" Left="1482.52" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.ParentGroup]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text69" Left="1604.61" Width="150.07" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.PlacementPurpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text70" Left="1754.68" Width="140.62" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.ObjectName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text71" Left="1895.67" Width="112.27" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text73" Left="2139.48" Width="112.27" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Floor]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text74" Left="2252.12" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.CadastralQuartal]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text77" Left="2674.35" Width="150.07" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.UsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text78" Left="2824.42" Width="140.62" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.UsageTypeCodeSource]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text79" Left="2965.41" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.SubGroupUsageTypeCode]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text85" Left="3471.93" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.CadastralCost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text86" Left="3218.67" Width="93.37" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text87" Left="3312.41" Width="159.52" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text63" Left="731.43" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.WallMaterial]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text72" Left="2007.94" Width="131.17" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text75" Left="2411.64" Width="121.72" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.Segment]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text76" Left="2533.73" Width="140.62" Height="103.95" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Item.UsageTypeName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="69.35" Width="3693.06" Height="453.6">
         <TextObject Name="Text2" Left="8.69" Width="74.47" Height="434.7" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text18" Left="242.68" Top="434.7" Width="122.47" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text19" Left="365.53" Top="434.7" Width="121.72" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -163,6 +163,6 @@
         <TextObject Name="Text52" Left="2533.73" Width="140.62" Height="434.7" Border.Lines="All" Text="Наименование вида использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="638.9" Width="3693.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="636.5" Width="3693.06" Height="47.25"/>
   </ReportPage>
 </Report>

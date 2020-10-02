@@ -76,6 +76,7 @@ namespace KadOzenka.Dal.Tasks
             };
             query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
             query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
+            query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
             query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
             query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
             query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
@@ -131,7 +132,7 @@ namespace KadOzenka.Dal.Tasks
 
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)
         {
-            return GetTemplateForTaskName(x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
+            return GetTemplateForTaskName(x.EstimationDate, x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
         }
 
         public string GetTemplateForTaskName(long taskId)
@@ -164,7 +165,8 @@ namespace KadOzenka.Dal.Tasks
 	        };
 	        query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
 	        query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
-	        query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
+	        query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
+            query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
 	        query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
 	        query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
 
@@ -177,9 +179,9 @@ namespace KadOzenka.Dal.Tasks
 	        return GetTemplateForTaskName(taskList.First());
         }
 
-        public string GetTemplateForTaskName(DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
+        public string GetTemplateForTaskName(DateTime? estimationDate, DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
         {
-            return $"{documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
+            return $"{estimationDate?.ToShortDateString()}, {documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
         }
 
         public void UpdateTaskData(TaskDto dto)

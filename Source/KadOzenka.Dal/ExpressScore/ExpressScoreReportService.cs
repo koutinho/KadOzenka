@@ -223,11 +223,11 @@ namespace KadOzenka.Dal.ExpressScore
 		/// Генерация отчета
 		/// </summary>
 		/// <param name="summaryCost"></param>
-		/// <param name="squareCost"></param>
+		/// <param name="squarePerMeterCost"></param>
 		/// <param name="dealType"></param>
 		/// <param name="scenario"></param>
 		/// <returns> Возвращаем ид отчета, если в результате построения отчета были выброшены исключения то возвращается -1</returns>
-		public long GenerateReport(decimal summaryCost, decimal squareCost, DealTypeShort dealType, ScenarioType scenario)
+		public long GenerateReport(decimal summaryCost, decimal squarePerMeterCost, DealTypeShort dealType, ScenarioType scenario)
 		{
 			if (HasException) return -1;
 
@@ -321,11 +321,11 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					textSquare = "Арендная ставка объекта оценки, руб/кв. м/год";
 					textSummary = "Арендная ставка объекта оценки, руб/год";
-					squareCost *= 12;
+					squarePerMeterCost *= 12;
 					summaryCost *= 12;
 				}
 
-				AddSummaryRows(mainWorkSheet, numberRow, squareCost, summaryCost, textSquare, textSummary);
+				AddSummaryRows(mainWorkSheet, numberRow, squarePerMeterCost, summaryCost, textSquare, textSummary);
 				MemoryStream stream = new MemoryStream();
 				excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
