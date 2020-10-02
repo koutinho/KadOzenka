@@ -2,6 +2,7 @@
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
+@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
@@ -41,6 +42,42 @@
                 <div class="radio-inline">
                     @(Html.Kendo().CheckBoxFor(x => x.IsOks)
                         .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="additionalFiltersForOks" style="display: none; margin-left: 6%;">
+            <div class="col-sm-9 col-sm-offset-2">
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsBuildings)
+                        .Label(PropertyTypes.Building.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsPlacements)
+                        .Name(nameof(Model.OksAdditionalFilters.IsPlacements))
+                        .Label(PropertyTypes.Pllacement.GetEnumDescription())
+                        .HtmlAttributes(new
+                        {
+                            onchange = "showAdditionalFiltersForPlacements();"
+                        }))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsUncompletedBuildings)
+                        .Label(PropertyTypes.UncompletedBuilding.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsConstructions)
+                        .Label(PropertyTypes.Construction.GetEnumDescription()))
+                </div>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3" id="additionalFiltersForPlacement" style="display: none; margin-top: 1%;">
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsLivePlacement)
+                        .Label(PlacementPurpose.Live.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsNotLivePlacement)
+                        .Label(PlacementPurpose.NotLive.GetEnumDescription()))
                 </div>
             </div>
         </div>
@@ -285,8 +322,9 @@
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
         $('#@nameof(Model.IsZu)').on('change', initKoAttributes);
+        $('#@nameof(Model.IsZu)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#@nameof(Model.IsOks)').on('change', initKoAttributes);
-
+        $('#@nameof(Model.IsOks)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#execute').on('click', transferAttributes);
 
         @if (Model.CreateAttributes)
@@ -298,9 +336,11 @@
             '@Model.MethodToSaveTemplate', "Task",
             '@Model.MethodToGetTemplate', "Task",
             fillForm, addCustomLevelsToForm);
+
+        setVisibilityForAdditionalFiltersForOks();
     });
 
-    
+
 
 
 
@@ -470,11 +510,32 @@
         });
     }
 
+
     function clearCustomLevels() {
         var existedCustomLevels = $("tr[class^='wrapper-']");
         existedCustomLevels.each(function () {
             this.remove();
         });
+    }
+
+
+    function setVisibilityForAdditionalFiltersForOks() {
+        var isOks = $('#@nameof(Model.IsOks)').prop("checked");
+        if (isOks) {
+            $("#additionalFiltersForOks").show();
+        } else {
+            $("#additionalFiltersForOks").hide();
+        }
+    }
+
+
+    function showAdditionalFiltersForPlacements(e) {
+        var isPlacements = $('#@nameof(Model.OksAdditionalFilters.IsPlacements)').prop("checked");
+        if (isPlacements) {
+            $("#additionalFiltersForPlacement").show();
+        } else {
+            $("#additionalFiltersForPlacement").hide();
+        }
     }
 
 </script>

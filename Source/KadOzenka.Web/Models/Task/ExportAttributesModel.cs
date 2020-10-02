@@ -15,15 +15,57 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
-    public enum ObjectTypeExtended
-    {
-        [Description("Объект капитального строительства")]
-        Oks,
-        [Description("Земельный участок")]
-        Zu,
-        [Description("ОКС/ЗУ")]
-        Both
-    }
+	#region Entities
+
+	public enum ObjectTypeExtended
+	{
+		[Description("Объект капитального строительства")]
+		Oks,
+		[Description("Земельный участок")]
+		Zu,
+		[Description("ОКС/ЗУ")]
+		Both
+	}
+
+	public enum PlacementPurpose
+	{
+		[Description("Значение отсутствует")]
+		None = 0,
+
+		[Description("Жилое")]
+		Live = 1,
+
+		[Description("Нежилое")]
+		NotLive = 2
+	}
+
+	public class OksAdditionalFilters
+	{
+		public bool IsBuildings { get; set; }
+		public bool IsPlacements { get; set; }
+		public bool IsUncompletedBuildings { get; set; }
+		public bool IsConstructions { get; set; }
+
+		[Display(Name = "Жилые")]
+		public bool IsLivePlacement { get; set; }
+		[Display(Name = "Нежилые")]
+		public bool IsNotLivePlacement { get; set; }
+
+		public PlacementPurpose PlacementPurpose
+		{
+			get
+			{
+				if (IsLivePlacement)
+					return PlacementPurpose.Live;
+				if(IsNotLivePlacement)
+					return PlacementPurpose.NotLive;
+
+				return PlacementPurpose.None;
+			}
+		}
+	}
+
+	#endregion
 
     public class ExportAttributesModel : IValidatableObject
     {
@@ -33,7 +75,6 @@ namespace KadOzenka.Web.Models.Task
         public bool IsOks { get; set; }
         [Display(Name = "Земельный участок")]
         public bool IsZu { get; set; }
-
         public ObjectTypeExtended ObjType
         {
             get
@@ -46,6 +87,8 @@ namespace KadOzenka.Web.Models.Task
                     : ObjectTypeExtended.Zu;
             }
         }
+
+        public OksAdditionalFilters OksAdditionalFilters { get; set; }
 
         public long RatingTour { get; set; }
 
@@ -124,6 +167,7 @@ namespace KadOzenka.Web.Models.Task
         {
             TourFactorService = new TourFactorService();
             IsOks = true;
+            OksAdditionalFilters = new OksAdditionalFilters();
         }
 
 
