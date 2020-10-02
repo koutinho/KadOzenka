@@ -27,7 +27,6 @@ using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ObjectModel.Core.Register;
-using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;

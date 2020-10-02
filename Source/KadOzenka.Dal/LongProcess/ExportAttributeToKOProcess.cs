@@ -6,8 +6,8 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Gbu.ExportAttribute;
 using System.Threading.Tasks;
+using KadOzenka.Dal.GbuObject.Dto;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
