@@ -307,37 +307,37 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateGroupingObject(string nameTemplate, [FromForm]GroupingObject model)
+		public JsonResult SaveTemplateGroupingObject(string nameTemplate, bool isCommon, [FromForm]GroupingObject model)
 		{
-			return SaveTemplate(nameTemplate, DataFormStorege.Normalisation, model.SerializeToXml());
+			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Normalisation, model.SerializeToXml());
 		}
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, [FromForm]HarmonizationViewModel viewModel)
+		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationViewModel viewModel)
 		{
-			return SaveTemplate(nameTemplate, DataFormStorege.Harmonization, viewModel.SerializeToXml());
+			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Harmonization, viewModel.SerializeToXml());
 		}
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, [FromForm]HarmonizationCODViewModel viewModel)
+		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationCODViewModel viewModel)
 		{
-			return SaveTemplate(nameTemplate, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
+			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
 		}
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateUnloading(string nameTemplate, [FromForm]UnloadingFromDicViewModel viewModel)
+		public JsonResult SaveTemplateUnloading(string nameTemplate, bool isCommon, [FromForm]UnloadingFromDicViewModel viewModel)
 		{
-			return SaveTemplate(nameTemplate, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
+			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
 		}
 
 	    [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, [FromForm]EstimatedGroupViewModel model)
+		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, bool isCommon, [FromForm]EstimatedGroupViewModel model)
 	    {
-	        return SaveTemplate(nameTemplate, DataFormStorege.EstimatedGroup, model.SerializeToXml());
+	        return SaveTemplate(nameTemplate, isCommon, DataFormStorege.EstimatedGroup, model.SerializeToXml());
 	    }
 
         #endregion

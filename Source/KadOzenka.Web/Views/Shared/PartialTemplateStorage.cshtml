@@ -6,7 +6,10 @@
 	<div class="template-name-wrapper"  style="display: none; flex-grow: 0.8">
 		<div style="display: flex; padding-left: 4px;">
 			@Html.Kendo().TextBox().Name("templateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" })
-			<button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button"><i class="fas fa-check"></i></button>
+            <div style="padding: 1% 2% 0 2%">
+                @Html.Kendo().CheckBox().Name("isCommon").Label("Общий")
+            </div>
+            <button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button"><i class="fas fa-check"></i></button>
 		</div>
 	</div>
 	<div class="template-select-wrapper"  style="display: none; flex-grow: 0.8">
@@ -97,7 +100,8 @@
                             formObject = self.additionalFormObjectMapping(formObject);
                         }
 
-						var url = "/"+ self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate + "?nameTemplate=" + $('#templateName').val();
+						var url = "/" + self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate +
+                            "?nameTemplate=" + $('#templateName').val() + "&isCommon=" + $("#isCommon").is(':checked');
 
                         $.post(url, formObject).done(function (response) {
 							kendo.ui.progress($('body'), false);
@@ -110,6 +114,7 @@
 								kendo.ui.progress($('body'), false);
 								Common.ShowMessage("Выполнено");
 								$('#templateName').val("");
+                                $("#isCommon").prop("checked", false);
 								$('#selectedTemplate').data("kendoDropDownList").dataSource.read();
 								$('#selectedTemplate').data("kendoDropDownList").refresh();
 							}
