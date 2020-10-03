@@ -3863,8 +3863,7 @@ namespace KadOzenka.Dal.DataExport
 
                 #region Сбор и формирование данных по объекту
                 Console.WriteLine(" - заголовок ...");
-                string strDateApp = "01.01.2019";
-                string strDateOut = "01.01.2019";
+                string strDateApp = (task.EstimationDate != null) ? task.EstimationDate.Value.ToString("dd.MM.yyyy") : "-";
                 string strActReq_01_06 = "-";
                 string strActReq_01_07 = "-";
                 string strActReq_01_10 = "01.01.2019";
@@ -3872,13 +3871,11 @@ namespace KadOzenka.Dal.DataExport
                 string value_attr = "";
 
                 #region Нашли и записали в список входящий документ
-                //OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
                 KoNoteType doc_status = task.NoteType_Code;
                 #endregion
                 OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
                 if (doc_out != null)
                 {
-                    strDateOut = doc_out.CreateDate.ToString("dd.MM.yyyy"); //odoc.DATE_DOC.ToString("dd.MM.yyyy");
                     switch (doc_status)
                     {
                         case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
