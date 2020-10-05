@@ -124,8 +124,11 @@ namespace KadOzenka.Dal.GbuObject
                     switch (attributeData.Type)
                     {
                         case RegisterAttributeType.INTEGER:
-                            value = value.ParseToLongNullable();
-                            break;
+                            //из-за несовпадения типов данных в КО и ГБУ нужно попробовать сделать дополнительный парсинг
+                            //например, площадь в КО - целое число, а в ГБУ - вещественное
+                            //если сделать приведение вещественного числа к long, то будет null
+                            value = value.ParseToLongNullable() ?? value.ParseToDecimalNullable();
+	                        break;
                         case RegisterAttributeType.DECIMAL:
                             value = value.ParseToDecimalNullable();
                             break;
