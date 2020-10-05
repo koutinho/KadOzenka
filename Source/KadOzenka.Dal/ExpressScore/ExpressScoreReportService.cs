@@ -572,6 +572,7 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 			catch (Exception e)
 			{
+				_log.Error("Сохранение отчета экспресс оценки. {message}", e.Message);
 				Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				return -1;
