@@ -192,6 +192,61 @@ namespace KadOzenka.Dal.ExpressScore
 			return condition;
 		}
 
+        public QSCondition GetActualDateCondition(DateTime actualDate)
+        {
+
+			actualDate = actualDate + new TimeSpan(23, 59, 59);
+
+			DateTime minSearchDate  = new DateTime(actualDate.Year - 1, actualDate.Month, actualDate.Day);
+
+
+			var actualDateCondition = new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = OMPriceHistory.GetColumn(x => x.ChangingDate),
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = OMPriceHistory.GetColumn(x => x.ChangingDate),
+				RightOperand = new QSColumnConstant(minSearchDate)
+			}).Or(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = OMCoreObject.GetColumn(x => x.ParserTime),
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = OMCoreObject.GetColumn(x => x.ParserTime),
+				RightOperand = new QSColumnConstant(minSearchDate)
+			})).Or(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
+				RightOperand = new QSColumnConstant(minSearchDate)
+			}));
+
+			return actualDateCondition;
+        }
+
+        public List<QSJoin> JoinPriceHistory()
+        {
+			return new List<QSJoin>()
+			{
+				new QSJoin
+				{
+					JoinCondition = new QSConditionSimple(OMPriceHistory.GetColumn(x => x.InitialId), QSConditionType.Equal,
+						OMCoreObject.GetColumn(x => x.Id)),
+					RegisterId = OMPriceHistory.GetRegisterId()
+				}
+			};
+        }
 		public List<CoordinatesDto> GetNearestCoordinates(Dictionary<long, CoordinatesDto> coordinates, Dictionary<long, double> distances, int quantity)
 		{
 			List<KeyValuePair<long, double>> myList = distances.ToList();
