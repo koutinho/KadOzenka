@@ -149,14 +149,16 @@ namespace KadOzenka.Web.Models.Task
 			{
 				TaskFilter = TaskFilter,
 				ObjType = ObjType,
-				OksAdditionalFilters = new Dal.GbuObject.Dto.OksAdditionalFilters
-				{
-					IsBuildings = OksAdditionalFilters.IsBuildings,
-					IsPlacements = OksAdditionalFilters.IsPlacements,
-					IsUncompletedBuildings = OksAdditionalFilters.IsUncompletedBuildings,
-					IsConstructions = OksAdditionalFilters.IsConstructions,
-					PlacementPurpose = OksAdditionalFilters.PlacementPurpose
-				},
+				OksAdditionalFilters = ObjType == ObjectTypeExtended.Zu
+					? new Dal.GbuObject.Dto.OksAdditionalFilters()
+					: new Dal.GbuObject.Dto.OksAdditionalFilters
+					{
+						IsBuildings = OksAdditionalFilters.IsBuildings,
+						IsPlacements = OksAdditionalFilters.IsPlacements,
+						IsUncompletedBuildings = OksAdditionalFilters.IsUncompletedBuildings,
+						IsConstructions = OksAdditionalFilters.IsConstructions,
+						PlacementPurpose = OksAdditionalFilters.PlacementPurpose
+					},
 				Attributes = attributes
 			};
 		}
@@ -377,6 +379,9 @@ namespace KadOzenka.Web.Models.Task
 	    {
 		    get
 		    {
+			    if (!IsPlacements)
+				    return PlacementPurpose.None;
+
 			    if (IsLivePlacement && IsNotLivePlacement)
 				    return PlacementPurpose.LiveAndNotLive;
 			    if (IsLivePlacement)
