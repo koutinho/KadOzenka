@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Registers;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using Serilog;
@@ -23,6 +24,9 @@ namespace KadOzenka.Dal.GbuObject
     public class ExportAttributeToKO
     {
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKO>();
+        private RosreestrRegisterService RosreestrRegisterService { get; }
+        private GbuObjectService GbuObjectService { get; }
+
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
@@ -38,7 +42,15 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции переноса атрибутов
         /// </summary>
-        public static void Run(GbuExportAttributeSettings setting, OMQueue processQueue)
+
+        public ExportAttributeToKO()
+        {
+	        RosreestrRegisterService = new RosreestrRegisterService();
+	        GbuObjectService = new GbuObjectService();
+        }
+        
+        
+        public void Run(GbuExportAttributeSettings setting, OMQueue processQueue)
         {
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -73,13 +85,13 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        public static void RunOneUnit(UnitPure unit, GbuExportAttributeSettings setting, List<long> lstIds)
+        public void RunOneUnit(UnitPure unit, GbuExportAttributeSettings setting, List<long> lstIds)
         {
             lock (locked)
             {
                 CurrentCount++;
             }
-            var attributes = new GbuObjectService().GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
+            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
 
             foreach (GbuObjectAttribute attrib in attributes)
             {
@@ -90,8 +102,7 @@ namespace KadOzenka.Dal.GbuObject
                     _log.ForContext("IdAttributeGBU", current.IdAttributeGBU)
                         .ForContext("AttributeId", current.IdAttributeKO)
                         .Verbose("ExportAttributeToKO.RunOneUnit");
-               
-
+                    
                 //if (current != null)
                 //{
 	                var attributeData = RegisterCache.GetAttributeData((int)current.IdAttributeKO);
@@ -141,7 +152,7 @@ namespace KadOzenka.Dal.GbuObject
 
         #region Support Methods
 
-        private static List<UnitPure> GetUnits(GbuExportAttributeSettings settings)
+        private List<UnitPure> GetUnits(GbuExportAttributeSettings settings)
         {
 	        var query = new QSQuery
 	        {
@@ -163,10 +174,57 @@ namespace KadOzenka.Dal.GbuObject
 	        };
 	        query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, nameof(UnitPure.ObjectId)));
             query.AddColumn(OMUnit.GetColumn(x => x.CreationDate, nameof(UnitPure.CreationDate)));
+            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitPure.ObjectType)));
 
-            //var sql = query.GetSql();
-           
-            return query.ExecuteQuery<UnitPure>();
+            var allUnits = query.ExecuteQuery<UnitPure>();
+            if (settings.OksAdditionalFilters.IsPlacements)
+            {
+	            return FilterPlacementObjects(allUnits, settings);
+            }
+
+            return allUnits;
+        }
+
+        private List<UnitPure> FilterPlacementObjects(List<UnitPure> allUnits, GbuExportAttributeSettings settings)
+        {
+	        if (settings.OksAdditionalFilters.PlacementPurpose == PlacementPurpose.None)
+		        return allUnits;
+
+	        var placements = allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList();
+	        var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
+
+	        var placementsAttributes = GbuObjectService.GetAllAttributes(
+		        placements.Select(x => x.ObjectId).ToList(),
+		        new List<long> { placementPurposeAttribute.RegisterId },
+		        new List<long> { placementPurposeAttribute.Id },
+		        DateTime.Now.GetEndOfTheDay());
+
+	        var possibleValues = new List<string>();
+	        switch (settings.OksAdditionalFilters.PlacementPurpose)
+	        {
+		        case PlacementPurpose.Live:
+			        possibleValues.Add("Жилое");
+			        break;
+		        case PlacementPurpose.NotLive:
+			        possibleValues.Add("Нежилое");
+			        break;
+		        case PlacementPurpose.LiveAndNotLive:
+			        possibleValues.Add("Жилое");
+			        possibleValues.Add("Нежилое");
+			        break;
+            }
+
+            var resultObjectIds = allUnits.Where(x => x.ObjectType != PropertyTypes.Pllacement).Select(x => x.ObjectId).ToList();
+	        placementsAttributes.ForEach(x =>
+	        {
+		        var placementPurpose = x.GetValueInString();
+		        if (!string.IsNullOrWhiteSpace(placementPurpose) && possibleValues.Contains(placementPurpose))
+		        {
+			        resultObjectIds.Add(x.ObjectId);
+		        }
+	        });
+
+	        return allUnits.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
         }
 
         private static QSCondition GetConditionForObjectType(GbuExportAttributeSettings settings)
@@ -211,6 +269,7 @@ namespace KadOzenka.Dal.GbuObject
 	        public long Id { get; set; }
 	        public long ObjectId { get; set; }
 	        public DateTime? CreationDate { get; set; }
+	        public PropertyTypes? ObjectType { get; set; }
         }
 
         #endregion

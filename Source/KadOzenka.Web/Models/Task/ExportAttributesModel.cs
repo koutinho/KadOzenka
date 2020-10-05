@@ -377,6 +377,8 @@ namespace KadOzenka.Web.Models.Task
 	    {
 		    get
 		    {
+			    if (IsLivePlacement && IsNotLivePlacement)
+				    return PlacementPurpose.LiveAndNotLive;
 			    if (IsLivePlacement)
 				    return PlacementPurpose.Live;
 			    if (IsNotLivePlacement)

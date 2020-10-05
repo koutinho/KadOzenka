@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.LongProcess
                 }, cancelProgressCounterToken);
 
                 var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
-                ExportAttributeToKO.Run(settings, processQueue);
+                new ExportAttributeToKO().Run(settings, processQueue);
                 //TestLongRunningProcess(settings);
 
                 cancelProgressCounterSource.Cancel();
