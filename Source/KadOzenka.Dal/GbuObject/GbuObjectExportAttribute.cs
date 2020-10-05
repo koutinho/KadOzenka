@@ -114,7 +114,10 @@ namespace KadOzenka.Dal.GbuObject
                     int referenceItemId = -1;
                     if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
                     {
-                        OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == value.ToString()).ExecuteFirstOrDefault();
+	                    var valueStr = value?.ToString();
+	                    OMReferenceItem item = OMReferenceItem
+		                    .Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == valueStr)
+		                    .ExecuteFirstOrDefault();
                         if (item != null) referenceItemId = (int)item.ItemId;
                     }
 
@@ -130,7 +133,7 @@ namespace KadOzenka.Dal.GbuObject
                             value = value.ParseToBooleanNullable();
                             break;
                         case RegisterAttributeType.STRING:
-                            value = value.ToString();
+                            value = value.ParseToStringNullable();
                             break;
                         case RegisterAttributeType.DATE:
                             value = value.ParseToDateTimeNullable();
