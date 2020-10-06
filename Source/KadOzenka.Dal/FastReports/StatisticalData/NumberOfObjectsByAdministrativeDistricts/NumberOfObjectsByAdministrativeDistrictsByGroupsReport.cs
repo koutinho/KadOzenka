@@ -41,21 +41,22 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 		{
 			var taskList = GetTaskIdList(query);
 			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));
+			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 
 			DataSet dataset;
 			switch (divisionType)
 			{
 				case StatisticDataAreaDivisionType.RegionNumbers:
-					dataset = GetDataForCadastralRegions(taskList);
+					dataset = GetDataForCadastralRegions(taskList, zuOksObjectType == "ОКС");
 					break;
 				case StatisticDataAreaDivisionType.Districts:
-					dataset = GetDataForDistricts(taskList);
+					dataset = GetDataForDistricts(taskList, zuOksObjectType == "ОКС");
 					break;
 				case StatisticDataAreaDivisionType.Regions:
-					dataset = GetDataForRegions(taskList);
+					dataset = GetDataForRegions(taskList, zuOksObjectType == "ОКС");
 					break;
 				case StatisticDataAreaDivisionType.Quarters:
-					dataset = GetDataForQuarters(taskList);
+					dataset = GetDataForQuarters(taskList, zuOksObjectType == "ОКС");
 					break;
 				default:
 					throw new InvalidDataException($"Неизвестный тип деления для количества объектов по группам: {divisionType}");
@@ -64,7 +65,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			return dataset;
 		}
 
-		private DataSet GetDataForCadastralRegions(long[] taskList)
+		private DataSet GetDataForCadastralRegions(long[] taskList, bool isOks)
 		{
 			var dataSet = new DataSet();
 
@@ -82,7 +83,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 					dataTable.Columns.Add("Group", typeof(string));
 					dataTable.Columns.Add("ObjectsCount", typeof(long));
 
-					var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.RegionNumbers);
+					var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.RegionNumbers, isOks);
 					foreach (var unitDto in data)
 					{
 						dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -99,7 +100,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			return dataSet;
 		}
 
-		private DataSet GetDataForDistricts(long[] taskList)
+		private DataSet GetDataForDistricts(long[] taskList, bool isOks)
 		{
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -113,7 +114,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Districts);
+			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Districts, isOks);
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -126,7 +127,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			return dataSet;
 		}
 
-		private DataSet GetDataForRegions(long[] taskList)
+		private DataSet GetDataForRegions(long[] taskList, bool isOks)
 		{
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -140,7 +141,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Regions);
+			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Regions, isOks);
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.FirstParentName, unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -154,7 +155,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		}
 
-		private DataSet GetDataForQuarters(long[] taskList)
+		private DataSet GetDataForQuarters(long[] taskList, bool isOks)
 		{
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -171,7 +172,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 			
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Quarters);
+			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Quarters, isOks);
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.FirstParentName, unitDto.SecondParentName, unitDto.ThirdParentName, unitDto.Name, unitDto.Group, unitDto.ObjectsCount);

@@ -24,6 +24,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
+			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -36,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
-			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsBySubject(taskIdList);
+			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsBySubject(taskIdList, zuOksObjectType == "ОКС");
 
 			foreach (var unitDto in data)
 			{

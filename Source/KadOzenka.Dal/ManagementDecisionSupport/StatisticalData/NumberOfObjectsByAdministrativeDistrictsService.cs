@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			_gbuObjectService = gbuObjectService;
 		}
 
-		public List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto> GetNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes(long[] taskList, StatisticDataAreaDivisionType divisionType)
+		public List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto> GetNumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes(long[] taskList, StatisticDataAreaDivisionType divisionType, bool isOks)
 		{
 			string contents, fileName = string.Empty;
 			switch (divisionType)
@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					break;
 			}
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks));
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>();
 
 			if (table.Count != 0)
@@ -109,11 +109,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
 		}
 
-		public List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto> GetNumberOfObjectsByAdministrativeDistrictsBySubject(long[] taskList)
+		public List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto> GetNumberOfObjectsByAdministrativeDistrictsBySubject(long[] taskList, bool isOks)
 		{
 			string contents;
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("NumberOfObjectsByAdministrativeDistrictsBySubject", "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks));
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
 			if (table.Count != 0)
 			{
@@ -155,7 +155,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			*/
 		}
 
-		public List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto> GetNumberOfObjectsByAdministrativeDistrictsByGroups(long[] taskList, StatisticDataAreaDivisionType areaDivisionType)
+		public List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto> GetNumberOfObjectsByAdministrativeDistrictsByGroups(long[] taskList, StatisticDataAreaDivisionType areaDivisionType, bool isOks)
 		{
 
 			string contents, fileName = string.Empty;
@@ -175,7 +175,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					break;
 			}
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks));
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto>();
 			if(table.Count != 0)
             {
