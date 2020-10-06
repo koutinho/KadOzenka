@@ -231,15 +231,18 @@
                 {
                     field: 'IsNormalized',
                     title: 'Нормализация',
-                    template: '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
+                    template: '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />',
+                    attributes: { style: "text-align: center;" }
                 },
                 {
                     field: 'DictionaryName',
-                    title: 'Справочник'
+                    title: 'Справочник',
+                    attributes: { style: "text-align: center;" }
                 },
                 {
                     field: 'Coefficient',
-                    title: 'Коэффициент'
+                    title: 'Коэффициент',
+                    attributes: { style: "text-align: center;" }
                 }
             ],
             change: changeToolBarButtonsClass,

@@ -60,6 +60,11 @@ namespace KadOzenka.Dal.Modeling
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
             AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
+            var groupedModelAttributes = modelAttributes?.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
+            {
+	            RegisterId = (int)k,
+	            Attributes = g.ToList()
+            }).ToList();
 
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
@@ -71,7 +76,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog("Обработано объектов: ");
             marketObjects.ForEach(groupedObj =>
             {
-                var isForTraining = i < marketObjects.Count / 2;
+	            var isForTraining = i < marketObjects.Count / 2.0;
                 i++;
                 var modelObject = new OMModelToMarketObjects
                 {
@@ -85,7 +90,7 @@ namespace KadOzenka.Dal.Modeling
                     ? unitsDictionary[modelObject.CadastralNumber]
                     : new List<long>();
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(modelAttributes, groupedObj.Id, objectUnitIds, dictionaries);
+                var objectCoefficients = ModelingService.GetCoefficientsForObject(groupedModelAttributes, groupedObj.Id, objectUnitIds, dictionaries);
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
 
@@ -161,17 +166,19 @@ namespace KadOzenka.Dal.Modeling
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
             return OMCoreObject.Where(x =>
-                    x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    x.CadastralNumber != null &&
-                    x.ProcessType_Code != ProcessStep.Excluded)
+					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+					x.CadastralNumber != null &&
+					x.ProcessType_Code != ProcessStep.Excluded
+					//x.Id == 17812712
+					)
                 //TODO ждем выполнения CIPJSKO-307
                 //.And(territoryCondition)
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.Price)
-                //TODO для тестирования
-                //.SetPackageIndex(0)
-                //.SetPackageSize(2000)
+				////TODO для тестирования
+				//.SetPackageIndex(0)
+				//.SetPackageSize(2000)
                 .Execute()
                 .GroupBy(x => new
                 {

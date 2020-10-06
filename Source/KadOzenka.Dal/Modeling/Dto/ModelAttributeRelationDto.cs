@@ -1,4 +1,6 @@
-﻿namespace KadOzenka.Dal.Modeling.Dto
+﻿using Core.Register;
+
+namespace KadOzenka.Dal.Modeling.Dto
 {
 	public class ModelAttributeRelationDto
 	{
@@ -7,6 +9,7 @@
 		public long AttributeId { get; set; }
 		public string AttributeName { get; set; }
 		public int AttributeType { get; set; }
+		public RegisterAttributeType AttributeTypeCode => (RegisterAttributeType) AttributeType;
 		public long? DictionaryId { get; set; }
 		public string DictionaryName { get; set; }
 		public bool IsNormalized => DictionaryId != null;
