@@ -398,15 +398,26 @@
 				}
 			}
             });
+        if (koAttributesSource) {
+            //загружаем атрибуты для каждого дроп-дауна только один раз
+            koAttributesSource.fetch(function() {
+                var data = koAttributesSource.data();
+                initDropDownListForKoAttributes(data);
+            });
+        } else {
+            initDropDownListForKoAttributes(null);
+        }
+    }
+    function initDropDownListForKoAttributes(data) {
         $('[name^="IdAttributeKO"]').each(function() {
-			$(this).kendoDropDownList({
-				dataTextField: 'Text',
-				dataValueField: 'Value',
-				optionLabel: " ",
+            $(this).kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
                 filter: "contains",
-                dataSource: koAttributesSource
-			});
-		});
+                dataSource: { data: data }
+            });
+        });
     }
 
 
