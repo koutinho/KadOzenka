@@ -327,7 +327,7 @@ namespace KadOzenka.Dal.ExpressScore
 				Price = x.Price
 			}).ToList();
 
-			resultCalculate.Analogs = resultAnalogs;
+			resultCalculate. Analogs = resultAnalogs;
 			resultCalculate.DealType = inputParam.DealType;
 
 			return msg;

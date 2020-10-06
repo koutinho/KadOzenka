@@ -4,6 +4,12 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
+	public class DataToGrid
+	{
+		public List<string> HeadersList { get; set; }
+
+		public List<List<string>> Rows { get; set; }
+	}
 	public class AnalogResultDto : AnalogDto
 	{
 		public string Address { get; set; }
@@ -25,5 +31,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public string Address { get; set; }
 		public decimal Area { get; set; }
 		public MarketSegment MarketSegment { get; set; }
+
+		/// <summary>
+		/// Данные для грида 
+		/// </summary>
+		public DataToGrid DataToGrid { get; set; }
 	}
 }
