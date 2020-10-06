@@ -16,13 +16,13 @@
                             @Html.CustomLabelFor(x => x.Tour)
                         </div>
                         <div class="col-sm-4">
-                            <input id="Tour" name="Tour" editmode="true" />
+                            @Html.KendoDropDownListFor(x => x.TourId, "GetRatingTours", "Tour")
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.NoteType)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -30,13 +30,13 @@
                             @Html.CustomLabelFor(x => x.DocumentId)
                         </div>
                         <div class="col-sm-4">                            
-                            @Html.KendoTextBoxFor(x => x.Document, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.Document, isReadonly: true)
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.TaskCreationDate)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoDatePickerFor(x => x.TaskCreationDate, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.TaskCreationDate, isReadonly: true)
                         </div>
                     </div>
                 </div>
@@ -52,13 +52,13 @@
                             @Html.CustomLabelFor(x => x.CadastralNumber)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.CadastralNumber, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.CadastralNumber, isReadonly: true)
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralBlock)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.CadastralBlock, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.CadastralBlock, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -66,13 +66,13 @@
                             @Html.CustomLabelFor(x => x.PropertyType)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.PropertyType, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.PropertyType, isReadonly: true)
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Square)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.Square, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.Square, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -80,13 +80,13 @@
                             @Html.CustomLabelFor(x => x.Status)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.Status, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.Status, isReadonly: true)
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.UnitCreationDate)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoDatePickerFor(x => x.UnitCreationDate, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.UnitCreationDate, isReadonly: true)
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                             @Html.CustomLabelFor(x => x.GroupNumber)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.GroupNumber, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.GroupNumber, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -110,13 +110,13 @@
                             @Html.CustomLabelFor(x => x.GroupName)
                         </div>
                         <div class="col-sm-4">
-                            <input id="GroupName" name="GroupName" editmode="true" />
+                            @Html.KendoDropDownListFor(x => x.GroupId, "GetAllGroups", "Tour")
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.UpksPre)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.UpksPre, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.UpksPre, isReadonly: true, precision: 2)
                         </div>
                     </div>
                     <div class="form-group">
@@ -124,13 +124,13 @@
                             @Html.CustomLabelFor(x => x.CadastralCostPre)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.CadastralCostPre, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.CadastralCostPre, isReadonly: true, precision:2)
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Upks)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.Upks, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.Upks, isReadonly: true, precision: 2)
                         </div>
                     </div>
                     <div class="form-group">
@@ -138,13 +138,13 @@
                             @Html.CustomLabelFor(x => x.CadastralCost)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.CadastralCost, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.CadastralCost, isReadonly: true, precision: 2)
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.StatusRepeatCalc)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.StatusRepeatCalc, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.StatusRepeatCalc, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -152,13 +152,13 @@
                             @Html.CustomLabelFor(x => x.StatusResultCalc)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.StatusResultCalc, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.StatusResultCalc, isReadonly: true)
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.ParentCalcType)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoEnumDropDownListFor(x => x.ParentCalcType, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.ParentCalcType, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -166,13 +166,13 @@
                             @Html.CustomLabelFor(x => x.ParentCalcNumber)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.ParentCalcNumber, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.ParentCalcNumber, isReadonly: true)
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.ResponseDocId)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.ResponseDoc, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.ResponseDoc, isReadonly: true)
                         </div>
                     </div>
                 </div>
@@ -188,13 +188,13 @@
                             @Html.CustomLabelFor(x => x.Datevaluation)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoDatePickerFor(x => x.Datevaluation, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.Datevaluation, isReadonly: true)
                         </div>                    
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CostValue)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoNumericTextBoxFor(x => x.CostValue, isReadonly: false)
+                            @Html.KendoNumericTextBoxFor(x => x.CostValue, isReadonly: true, precision: 2)
                         </div>
                     </div>
                     <div class="form-group">
@@ -202,7 +202,7 @@
                             @Html.CustomLabelFor(x => x.DocName)
                         </div>
                         <div class="col-sm-10">
-                            @Html.KendoTextBoxFor(x => x.DocName, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.DocName, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -210,13 +210,13 @@
                             @Html.CustomLabelFor(x => x.DocNumber)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoTextBoxFor(x => x.DocNumber, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.DocNumber, isReadonly: true)
                         </div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.DocDate)
                         </div>
                         <div class="col-sm-4">
-                            @Html.KendoDatePickerFor(x => x.DocDate, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.DocDate, isReadonly: true)
                         </div>
                     </div>
                 </div>
@@ -299,49 +299,6 @@
             position: "top",
             autoHide: true,
             showAfter: 500
-        });
-
-        $('[name="Tour"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetRatingTours", "Task")',
-                            dataType: 'json'
-                        }
-                    }
-                }
-            });
-
-        $('[name="Tour"]').data('kendoDropDownList').bind("dataBound", function () {
-            $('[name="Tour"]').data('kendoDropDownList').select(function (dataItem) {
-                return dataItem.Value == '@Model.TourId';
-            });
-        });
-
-        $('[name="GroupName"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                filter: "contains",
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetAllGroups", "Tour")',
-                            dataType: 'json'
-                        }
-                    }
-                }
-            });
-
-        $('[name="GroupName"]').data('kendoDropDownList').bind("dataBound", function () {
-            $('[name="GroupName"]').data('kendoDropDownList').select(function (dataItem) {
-                return dataItem.Value == '@Model.GroupId';
-            });
         });
 
         $('#explicationGrid').kendoGrid({
