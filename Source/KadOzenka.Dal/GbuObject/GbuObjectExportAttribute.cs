@@ -123,8 +123,6 @@ namespace KadOzenka.Dal.GbuObject
                         .ForContext("AttributeId", current.IdAttributeKO)
                         .Verbose("ExportAttributeToKO.RunOneUnit");
                     
-                //if (current != null)
-                //{
 					long id_factor = current.IdAttributeKO;
                     long RegId = koAttributeData.RegisterId;
                     object value = attrib.GetValueInString();
@@ -163,16 +161,16 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     registerObject.SetAttributeValue((int)id_factor, value, referenceItemId);
                     RegisterStorage.Save(registerObject);
-                    
+
                     operationResult.Atributes.Add(new Attribute
                     {
+                        Index = setting.Attributes.IndexOf(current),
                         KoAttributeName = koAttributeData.Name,
                         GbuAttributeName = gbuAttributeData.Name,
                         GbuRegisterName = gbuAttributeData.RegisterName,
                         Value = value,
-                        Warning = koAttributeData.Type != gbuAttributeData.Type ? GetWarningMesage(koAttributeData, gbuAttributeData) : ""
+                        Warning = koAttributeData.Type != gbuAttributeData.Type ? GetWarningMessage(koAttributeData, gbuAttributeData) : ""
                     });
-                    //}
                 }
                 catch (System.Exception ex)
                 {
@@ -183,7 +181,8 @@ namespace KadOzenka.Dal.GbuObject
                     
                     operationResult.Atributes.Add(new Attribute
                     {
-	                    KoAttributeName = koAttributeData.Name,
+	                    Index = setting.Attributes.IndexOf(current),
+                        KoAttributeName = koAttributeData.Name,
 	                    GbuAttributeName = gbuAttributeData.Name,
                         GbuRegisterName = gbuAttributeData.RegisterName,
                         Error = $"Ошибка обработки (журнал: {errorId})."
@@ -304,7 +303,7 @@ namespace KadOzenka.Dal.GbuObject
 	        throw new ArgumentException("Не указан тип объекта");
         }
 
-        private static string GetWarningMesage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
+        private static string GetWarningMessage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
         {
 	        return $"Типы данных не совпадают. Тип КО - '{koAttributeData.Type.GetEnumDescription()}', тип ГБУ - '{gbuAttributeData.Type.GetEnumDescription()}'";
         }
@@ -336,6 +335,7 @@ namespace KadOzenka.Dal.GbuObject
 
         public class Attribute
         {
+            public int Index { get; set; }
             public string KoAttributeName { get; set; }
             public string GbuAttributeName { get; set; }
             public string GbuRegisterName { get; set; }

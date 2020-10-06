@@ -88,6 +88,8 @@ namespace KadOzenka.Dal.LongProcess
 
 		private string GenerateReport(GbuExportAttributeSettings settings, List<ExportAttributeToKO.OperationResult> exportResults)
 		{
+			_log.Information("Начато формирование отчета.");
+
 			var cadastralNumberColumn = new GbuReportService.Column
 			{
 				Index = 0,
@@ -112,12 +114,12 @@ namespace KadOzenka.Dal.LongProcess
 			headers.Insert(0, cadastralNumberColumn.Header);
 			ReportService.AddHeaders(0, headers);
 
+			var copiedColumnsStartIndex = cadastralNumberColumn.Index + 1;
 			exportResults.ForEach(exportResult =>
 			{
 				var currentReportRowIndex = ReportService.GetCurrentRow();
 				ReportService.AddValue(exportResult.CadastralNumber, cadastralNumberColumn.Index, currentReportRowIndex);
 
-				var columnIndex = cadastralNumberColumn.Index + 1;
 				exportResult.Atributes.ForEach(attribute =>
 				{
 					var color = SpreadsheetColor.FromName(ColorName.White);
@@ -137,16 +139,14 @@ namespace KadOzenka.Dal.LongProcess
 					var cellStyle = new CellStyle();
 					cellStyle.FillPattern.SetPattern(FillPatternStyle.Solid, color, SpreadsheetColor.FromName(ColorName.Black));
 
-					ReportService.AddValue(columnValue, columnIndex, currentReportRowIndex, cellStyle);
-					columnIndex++;
+					ReportService.AddValue(columnValue, attribute.Index + copiedColumnsStartIndex, currentReportRowIndex, cellStyle);
 				});
 			});
 
 			ReportService.SetStyle();
 			ReportService.SaveReport(ReportName);
 
-			//TODO для тестирования
-			var link = $"https://localhost:50252{ReportService.UrlToDownload}";
+			_log.Information("Закончено формирование отчета.");
 
 			return ReportService.UrlToDownload;
 		}
