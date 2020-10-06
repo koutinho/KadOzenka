@@ -1061,8 +1061,8 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId.Value,
-				model.BuildingCadastralNumberGbuAttributeId.Value);
+			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
+				model.BuildingCadastralNumberGbuAttributeId);
 
 			return Json(new { Success = "Сохранено успешно" });
 		}
