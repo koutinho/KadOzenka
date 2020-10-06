@@ -16,5 +16,6 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public ScenarioType? ScenarioType { get; set; }
 
 		public string Kn { get; set; }
+		public decimal Square { get; set; }
 	}
 }

@@ -35,7 +35,7 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-        protected JsonResult SaveTemplate(string nameTemplate, DataFormStorege formType, string serializeData)
+        protected JsonResult SaveTemplate(string nameTemplate, bool isCommon, DataFormStorege formType, string serializeData)
         {
 	        if (string.IsNullOrEmpty(nameTemplate))
 	        {
@@ -44,13 +44,15 @@ namespace KadOzenka.Web.Controllers
 
 	        try
 	        {
-		        new OMDataFormStorage()
+		        var userId = isCommon ? (int?) null : SRDSession.GetCurrentUserId().GetValueOrDefault();
+
+                new OMDataFormStorage
 		        {
-			        UserId = SRDSession.GetCurrentUserId().Value,
+			        UserId = userId,
 			        FormType_Code = formType,
 			        Data = serializeData,
 			        TemplateName = nameTemplate,
-
+                    IsCommon = isCommon
 		        }.Save();
 	        }
 	        catch (Exception e)
@@ -119,9 +121,12 @@ namespace KadOzenka.Web.Controllers
         protected List<PartialDocument> GetDocumentsForPartialView()
         {
             return OMInstance.Where(x => x)
-                .Select(x => x.RegNumber)
-                .Select(x => x.Description)
-                .OrderBy(x => x.RegNumber)
+	            .Select(x => new
+	            {
+		            x.RegNumber,
+		            x.Description
+	            })
+	            .OrderBy(x => x.RegNumber)
                 .Execute()
                 .Select(x => new PartialDocument
                 {

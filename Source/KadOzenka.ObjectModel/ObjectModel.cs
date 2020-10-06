@@ -2217,6 +2217,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _cct;
+        /// <summary>
+        /// 10009011 Коэффициент ценности территории (КЦТ) (CCT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009011)]
+        public decimal? CCT
+        {
+            get
+            {
+                CheckPropertyInited("CCT");
+                return _cct;
+            }
+            set
+            {
+                _cct = value;
+                NotifyPropertyChanged("CCT");
+            }
+        }
+
     }
 }
 
@@ -25375,12 +25395,12 @@ namespace ObjectModel.Common
         }
 
 
-        private long _userid;
+        private long? _userid;
         /// <summary>
         /// 80200200 ИД пользователя (ID_USER)
         /// </summary>
         [RegisterAttribute(AttributeID = 80200200)]
-        public long UserId
+        public long? UserId
         {
             get
             {
@@ -25486,6 +25506,26 @@ namespace ObjectModel.Common
             {
                 _templatename = value;
                 NotifyPropertyChanged("TemplateName");
+            }
+        }
+
+
+        private bool? _iscommon;
+        /// <summary>
+        /// 80200600 Признак общего шаблона (IS_COMMON)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200600)]
+        public bool? IsCommon
+        {
+            get
+            {
+                CheckPropertyInited("IsCommon");
+                return _iscommon;
+            }
+            set
+            {
+                _iscommon = value;
+                NotifyPropertyChanged("IsCommon");
             }
         }
 

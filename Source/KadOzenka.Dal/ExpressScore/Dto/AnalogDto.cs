@@ -46,5 +46,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
         /// НДС
         /// </summary>
         public VatType? Vat { get; set; }
-    }
+
+        /// <summary>
+        /// Операционные расходы включены
+        /// </summary>
+        public bool? IsOperatingCostsIncluded { get; set; }
+	}
 }
