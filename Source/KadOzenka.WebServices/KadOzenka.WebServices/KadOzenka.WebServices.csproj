@@ -17,6 +17,9 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <Folder Include="Exceptions\" />
+    <Folder Include="Resources\" />
+    <Folder Include="Services\Rsm\Dto\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
