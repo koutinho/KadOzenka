@@ -12,7 +12,8 @@ initialData as(
 			when '{0}'='RegionNumbers' then left(marketDict.CADASTRAL_QUARTAL, 5)
 			when '{0}'='Quarters' then marketDict.CADASTRAL_QUARTAL
 		end as Name,
-		(SELECT parentGroup.GROUP_NAME
+		(SELECT case when parentGroup.NUMBER is null then parentGroup.GROUP_NAME 
+                else CONCAT(parentGroup.NUMBER, '. ', parentGroup.GROUP_NAME) end
 			FROM KO_GROUP parentGroup
 			WHERE parentGroup.ID = subgroup.PARENT_ID
 		) AS ParentGroup,

@@ -14,6 +14,9 @@ namespace KadOzenka.Dal.GbuObject.Dto
         NotLive = 2,
 
         [Description("Машино-место")]
-        ParkingPlace = 3
+        ParkingPlace = 3,
+
+        [Description("Жилое и нежилое")]
+        LiveAndNotLive = 3
     }
 }

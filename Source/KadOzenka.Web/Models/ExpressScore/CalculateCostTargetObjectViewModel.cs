@@ -23,7 +23,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// <summary>
 		/// Ид найденных аналогов
 		/// </summary>
-		[Required(ErrorMessage = "Не найдены объкты аналоги")]
+		[Required(ErrorMessage = "Не найдены объекты-аналоги")]
 		public List<int> SelectedPoints { get; set; }
 
 		/// <summary>

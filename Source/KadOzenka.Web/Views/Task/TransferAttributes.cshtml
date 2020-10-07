@@ -1,7 +1,9 @@
 ﻿@using System.Collections
+@using KadOzenka.Dal.GbuObject.Dto
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
+@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
@@ -41,6 +43,41 @@
                 <div class="radio-inline">
                     @(Html.Kendo().CheckBoxFor(x => x.IsOks)
                         .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" id="additionalFiltersForOks" style="display: none; margin-left: 6%;">
+            <div class="col-sm-9 col-sm-offset-2">
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsBuildings)
+                        .Label(PropertyTypes.Building.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsPlacements)
+                        .Label(PropertyTypes.Pllacement.GetEnumDescription())
+                        .HtmlAttributes(new
+                        {
+                            onchange = "showAdditionalFiltersForPlacements();"
+                        }))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsUncompletedBuildings)
+                        .Label(PropertyTypes.UncompletedBuilding.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsConstructions)
+                        .Label(PropertyTypes.Construction.GetEnumDescription()))
+                </div>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3" id="additionalFiltersForPlacement" style="display: none; margin-top: 1%;">
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsLivePlacement)
+                        .Label(PlacementPurpose.Live.GetEnumDescription()))
+                </div>
+                <div class="radio-inline">
+                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsNotLivePlacement)
+                        .Label(PlacementPurpose.NotLive.GetEnumDescription()))
                 </div>
             </div>
         </div>
@@ -285,8 +322,9 @@
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
         $('#@nameof(Model.IsZu)').on('change', initKoAttributes);
+        $('#@nameof(Model.IsZu)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#@nameof(Model.IsOks)').on('change', initKoAttributes);
-
+        $('#@nameof(Model.IsOks)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#execute').on('click', transferAttributes);
 
         @if (Model.CreateAttributes)
@@ -298,9 +336,11 @@
             '@Model.MethodToSaveTemplate', "Task",
             '@Model.MethodToGetTemplate', "Task",
             fillForm, addCustomLevelsToForm);
+
+        setVisibilityForAdditionalFiltersForOks();
     });
 
-    
+
 
 
 
@@ -358,15 +398,26 @@
 				}
 			}
             });
+        if (koAttributesSource) {
+            //загружаем атрибуты для каждого дроп-дауна только один раз
+            koAttributesSource.fetch(function() {
+                var data = koAttributesSource.data();
+                initDropDownListForKoAttributes(data);
+            });
+        } else {
+            initDropDownListForKoAttributes(null);
+        }
+    }
+    function initDropDownListForKoAttributes(data) {
         $('[name^="IdAttributeKO"]').each(function() {
-			$(this).kendoDropDownList({
-				dataTextField: 'Text',
-				dataValueField: 'Value',
-				optionLabel: " ",
+            $(this).kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
                 filter: "contains",
-                dataSource: koAttributesSource
-			});
-		});
+                dataSource: { data: data }
+            });
+        });
     }
 
 
@@ -426,55 +477,88 @@
         clearCustomLevels();
         rowNumber = 1;
         data.forEach(function (val) {
-            if (Object.keys(val)[0] === '@(nameof(Model.RatingTour))') {
+            var elementName = Object.keys(val)[0];
+            var elementValue = val[elementName];
+            if (elementName === '@(nameof(Model.RatingTour))') {
                 var tourDropDownList = $('#@(nameof(Model.RatingTour))').data("kendoDropDownList");
-                tourDropDownList.value(val[Object.keys(val)[0]] || '');
+                tourDropDownList.value(elementValue || '');
                 tourDropDownList.trigger('change');
             }
 
-            if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
+            if (elementName.includes('@(nameof(Model.TaskFilter))')) {
                 var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-                currentValue.push([val[Object.keys(val)[0]]]);
+                currentValue.push([elementValue]);
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.IsOks))') {
-                $('#@(nameof(Model.IsOks))').prop("checked", val[Object.keys(val)[0]]);
+            if (elementName === '@(nameof(Model.IsOks))') {
+                $('#@(nameof(Model.IsOks))').prop("checked", elementValue);
+            }
+            if (elementName === '@(nameof(Model.IsZu))') {
+                $('#@(nameof(Model.IsZu))').prop("checked", elementValue);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.IsZu))') {
-                $('#@(nameof(Model.IsZu))').prop("checked", val[Object.keys(val)[0]]);
+            if (elementName.startsWith('@(nameof(Model.OksAdditionalFilters))')) {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
             }
 
-            if (Object.keys(val)[0].startsWith('IdAttributeGBU')) {
-                var kendoDropDownTree = $('#' + Object.keys(val)[0]).data('kendoDropDownTree');
+            if (elementName.startsWith('IdAttributeGBU')) {
+                var kendoDropDownTree = $('#' + elementName).data('kendoDropDownTree');
                 if (kendoDropDownTree) {
-                    kendoDropDownTree.value(val[Object.keys(val)[0]] || '');
+                    kendoDropDownTree.value(elementValue || '');
                     kendoDropDownTree.trigger('change');
                 }
             }
 
-            if (Object.keys(val)[0].startsWith('IdAttributeKO')) {
-                var kendoDropDownList = $('#' + Object.keys(val)[0]).data('kendoDropDownList');
+            if (elementName.startsWith('IdAttributeKO')) {
+                var kendoDropDownList = $('#' + elementName).data('kendoDropDownList');
                 if (kendoDropDownList) {
-                    kendoDropDownList.value(val[Object.keys(val)[0]] || '');
+                    kendoDropDownList.value(elementValue || '');
                     kendoDropDownList.trigger('change');
                 }
             }
 
-            if (Object.keys(val)[0].startsWith('@(nameof(Model.ExportAttribute))')) {
-                var additionalCustomLevel = val[Object.keys(val)[0]];
+            if (elementName.startsWith('@(nameof(Model.ExportAttribute))')) {
+                var additionalCustomLevel = elementValue;
                 addNewRow(rowNumber, additionalCustomLevel.IdAttributeKO, additionalCustomLevel.IdAttributeGbu);
                 rowNumber++;
             }
         });
     }
 
+
     function clearCustomLevels() {
         var existedCustomLevels = $("tr[class^='wrapper-']");
         existedCustomLevels.each(function () {
             this.remove();
         });
+    }
+
+
+    function setVisibilityForAdditionalFiltersForOks() {
+        var isOks = $('#@nameof(Model.IsOks)').prop("checked");
+        if (isOks) {
+            $("#additionalFiltersForOks").show();
+        } else {
+            $("#additionalFiltersForOks").hide();
+        }
+    }
+
+
+    function showAdditionalFiltersForPlacements() {
+        var placementElementId = getElementId('@nameof(Model.OksAdditionalFilters.IsPlacements)');
+        var isPlacements = $('#' + placementElementId).prop("checked");
+        if (isPlacements) {
+            $("#additionalFiltersForPlacement").show();
+        } else {
+            $("#additionalFiltersForPlacement").hide();
+        }
+    }
+
+
+    function getElementId(propertyName) {
+        return '@nameof(Model.OksAdditionalFilters)' + '_' + propertyName;
     }
 
 </script>
