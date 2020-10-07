@@ -6,6 +6,7 @@ using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Platform.Register;
 
@@ -36,7 +37,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			CachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x => registerIds.Contains(x.RegisterId)).ToList();
 
 			var rosreestrRegisterService = new RosreestrRegisterService();
-			RosreestrRegisterId = rosreestrRegisterService.RosreestrRegisterId;
+			RosreestrRegisterId = rosreestrRegisterService.RegisterId;
 		}
 
 
