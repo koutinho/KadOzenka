@@ -36,7 +36,6 @@ namespace KadOzenka.Dal.Model
         public List<ModelFactorDto> GetModelFactors(long modelId)
         {
             var query = GetModelFactorsQuery(modelId);
-
             query.AddColumn(OMModelFactor.GetColumn(x => x.ModelId, nameof(ModelFactorDto.ModelId)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorDto.FactorId)));
             query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorDto.Factor)));
@@ -56,7 +55,7 @@ namespace KadOzenka.Dal.Model
         {
             var query = new QSQuery
             {
-                MainRegisterID = OMAttribute.GetRegisterId(),
+                MainRegisterID = OMModelFactor.GetRegisterId(),
                 Condition = new QSConditionGroup
                 {
                     Type = QSConditionGroupType.And,
@@ -69,7 +68,7 @@ namespace KadOzenka.Dal.Model
                 {
                     new QSJoin
                     {
-                        RegisterId = OMModelFactor.GetRegisterId(),
+                        RegisterId = OMAttribute.GetRegisterId(),
                         JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,

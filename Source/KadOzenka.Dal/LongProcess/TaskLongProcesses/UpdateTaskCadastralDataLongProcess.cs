@@ -32,8 +32,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			TaskService = new TaskService();
 		}
 
-		private long _cadastralQuarterAttrId;
-		private long _buildingCadastralNumberAttrId;
+		private long? _cadastralQuarterAttrId;
+		private long? _buildingCadastralNumberAttrId;
 		private string _taskName;
 		private object _locked;
 
@@ -86,17 +86,21 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				MaxDegreeOfParallelism = 20
 			};
 			var currentDate = DateTime.Now;
-			var gbuAttrIdList = new List<long> { _cadastralQuarterAttrId, _buildingCadastralNumberAttrId };
+			var gbuAttrIdList = new List<long>();
+			if(_cadastralQuarterAttrId.HasValue)
+				gbuAttrIdList.Add(_cadastralQuarterAttrId.Value);
+			if(_buildingCadastralNumberAttrId.HasValue)
+				gbuAttrIdList.Add(_buildingCadastralNumberAttrId.Value);
 
 			Parallel.ForEach(units, options, unit =>
 			{
 				var gbuAttrValues = GbuObjectService.GetAllAttributes(unit.ObjectId.Value, null, gbuAttrIdList, currentDate);
-				var currentCadastralQuarter = gbuAttrValues
-					.FirstOrDefault(x => x.AttributeId == _cadastralQuarterAttrId)
-					?.GetValueInString();
-				var currentBuildingCadastralNumber = gbuAttrValues
-					.FirstOrDefault(x => x.AttributeId == _buildingCadastralNumberAttrId)
-					?.GetValueInString();
+				var currentCadastralQuarter = _cadastralQuarterAttrId.HasValue
+					? gbuAttrValues.FirstOrDefault(x => x.AttributeId == _cadastralQuarterAttrId)?.GetValueInString()
+					: unit.CadastralBlock;
+				var currentBuildingCadastralNumber = _buildingCadastralNumberAttrId.HasValue
+					? gbuAttrValues.FirstOrDefault(x => x.AttributeId == _buildingCadastralNumberAttrId)?.GetValueInString()
+					: unit.BuildingCadastralNumber;
 
 				if (currentCadastralQuarter != unit.CadastralBlock || currentBuildingCadastralNumber != unit.BuildingCadastralNumber)
 				{
@@ -132,19 +136,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private void SetupInitialSettings(long taskId)
 		{
 			var cadastralQuarterAttrId = UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
-			if (!cadastralQuarterAttrId.HasValue)
-			{
-				throw new Exception("Не заданы настройки Атрибута кадастрового квартала");
-			}
-			_cadastralQuarterAttrId = cadastralQuarterAttrId.Value;
-
-			var buildingCadastralNumberAttrId =
-				UpdateCadastralDataService.GetCadastralDataBuildingCadastralNumberAttributeId();
-			if (!buildingCadastralNumberAttrId.HasValue)
-			{
-				throw new Exception("Не заданы настройки Атрибута кадастрового номера здания");
-			}
-			_buildingCadastralNumberAttrId = buildingCadastralNumberAttrId.Value;
+			_cadastralQuarterAttrId = cadastralQuarterAttrId;
+			var buildingCadastralNumberAttrId = UpdateCadastralDataService.GetCadastralDataBuildingCadastralNumberAttributeId();
+			_buildingCadastralNumberAttrId = buildingCadastralNumberAttrId;
 			_taskName = TaskService.GetTemplateForTaskName(taskId);
 		}
 

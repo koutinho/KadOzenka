@@ -1214,8 +1214,16 @@ namespace ObjectModel.KO
                                             if (ci != null) factorValue = ci.Value;
                                         }
 
+                                        string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
 
-                                        string factorName = weight.FactorId.ParseToString();//TODO: наименование фактора
+                                        if (string.IsNullOrWhiteSpace(factorValue))
+                                        {
+	                                        error = true;
+	                                        lock (res)
+	                                        {
+		                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+	                                        }
+                                        }
 
                                         if (weight.SignMarket)
                                         {
@@ -1337,7 +1345,16 @@ namespace ObjectModel.KO
                                             if (ci != null) factorValue = ci.Value;
                                         }
 
-                                        string factorName = weight.FactorId.ParseToString();//TODO: наименование фактора
+                                        string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
+
+                                        if (string.IsNullOrWhiteSpace(factorValue))
+                                        {
+	                                        error = true;
+	                                        lock (res)
+	                                        {
+		                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+	                                        }
+                                        }
 
                                         if (weight.SignMarket)
                                         {
