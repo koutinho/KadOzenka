@@ -96,7 +96,7 @@ namespace KadOzenka.Dal.LongProcess
                         ProcessFile(fileInfo, omTask.Id);
                     }
 
-                    var taskNumber = TaskService.GetTemplateForTaskName(task.DocDate, task.DocNumber, omTask.NoteType);
+                    var taskNumber = TaskService.GetTemplateForTaskName(task.DateAppraisal, task.DocDate, task.DocNumber, omTask.NoteType);
                     AddRowToReport(taskNumber, omTask.CreationDate, task.TourYear, task.XmlDocUrls.Count, string.Empty);
                 }
                 catch (Exception ex)
@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.LongProcess
                     long errorId = ErrorManager.LogError(ex);
                     errorIds.Add(errorId);
 
-                    var taskNumber = TaskService.GetTemplateForTaskName(task.DocDate, task.DocNumber, omTask?.NoteType);
+                    var taskNumber = TaskService.GetTemplateForTaskName(task.DateAppraisal, task.DocDate, task.DocNumber, omTask?.NoteType);
                     AddRowToReport(taskNumber, omTask?.CreationDate, task.TourYear, task.XmlDocUrls.Count,
                         $"Ошибка загрузки (журнал: {errorId})");
                 }

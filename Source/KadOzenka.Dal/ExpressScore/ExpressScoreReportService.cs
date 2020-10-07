@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
+using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
@@ -13,11 +15,13 @@ using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 using ObjectModel.Sud;
+using Serilog;
 
 namespace KadOzenka.Dal.ExpressScore
 {
 	public class ExpressScoreReportService
 	{
+        private static readonly ILogger _log = Log.ForContext<ExpressScoreReportService>();
 		/// <summary>
 		/// Матрица для обязательных параметров
 		/// </summary>
@@ -100,7 +104,8 @@ namespace KadOzenka.Dal.ExpressScore
 				CurrentRowRequiredParam++;
 			}
 			catch (Exception e)
-			{
+            {
+				_log.Error("Ошибка при добавлении обязательного параметра в матрицу", e);
 				Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				HasException = true;
@@ -115,7 +120,8 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+                _log.Error("Ошибка при добавлении характеристики", e);
+                Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				HasException = true;
 			}
@@ -187,6 +193,7 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 			catch (Exception e)
 			{
+				_log.Error("Ошибка при добавление характеристики", e);
 				Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				HasException = true;
@@ -216,15 +223,15 @@ namespace KadOzenka.Dal.ExpressScore
 		/// Генерация отчета
 		/// </summary>
 		/// <param name="summaryCost"></param>
-		/// <param name="squareCost"></param>
+		/// <param name="squarePerMeterCost"></param>
 		/// <param name="dealType"></param>
 		/// <param name="scenario"></param>
 		/// <returns> Возвращаем ид отчета, если в результате построения отчета были выброшены исключения то возвращается -1</returns>
-		public long GenerateReport(decimal summaryCost, decimal squareCost, DealTypeShort dealType, ScenarioType scenario)
+		public long GenerateReport(decimal summaryCost, decimal squarePerMeterCost, DealTypeShort dealType, ScenarioType scenario)
 		{
 			if (HasException) return -1;
 
-			try
+            try
 			{
 				ExcelFile excelTemplate = new ExcelFile();
 				var mainWorkSheet = excelTemplate.Worksheets.Add("Экспресс оценка");
@@ -314,11 +321,11 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					textSquare = "Арендная ставка объекта оценки, руб/кв. м/год";
 					textSummary = "Арендная ставка объекта оценки, руб/год";
-					squareCost *= 12;
+					squarePerMeterCost *= 12;
 					summaryCost *= 12;
 				}
 
-				AddSummaryRows(mainWorkSheet, numberRow, squareCost, summaryCost, textSquare, textSummary);
+				AddSummaryRows(mainWorkSheet, numberRow, squarePerMeterCost, summaryCost, textSquare, textSummary);
 				MemoryStream stream = new MemoryStream();
 				excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
@@ -360,51 +367,64 @@ namespace KadOzenka.Dal.ExpressScore
 
 		private void AddRow(ExcelWorksheet sheet, int row, List<string> values)
 		{
+            _log.ForContext("current_row", row)
+                .ForContext("current_Sheet_is_not_null", !sheet.IsNullOrDbNull())
+                .ForContext("all_values_for_row", values)
+                .Verbose("Добавление строки в отчет");
+
 			bool isGreen = false;
 			int col = 0;
-			foreach (var val in values)
-			{
-				if (decimal.TryParse(val, out var d))
-				{
-					sheet.Rows[row].Cells[col].SetValue(val.Replace(",", "."));
-				}
-				else
-				if (DateTime.TryParse(val, out var dat))
-				{
-					sheet.Rows[row].Cells[col].SetValue(val);
-					sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
-			
-				}
-				else
-				{
-					sheet.Rows[row].Cells[col].SetValue(val);
-					sheet.Columns[col].SetWidth(5.0, LengthUnit.Centimeter);
-				}
+            try
+            {
+                foreach (var val in values)
+                {
+                    if (decimal.TryParse(val, out var d))
+                    {
+                        sheet.Rows[row].Cells[col].SetValue(val.Replace(",", "."));
+                    }
+                    else
+                    if (DateTime.TryParse(val, out var dat))
+                    {
+                        sheet.Rows[row].Cells[col].SetValue(val);
+                        sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
 
-				if (col == 0)
-				{
-					sheet.Columns[col].Style.Font.Size = 250;
-					sheet.Columns[col].Style.Font.Weight = 600;
-					sheet.Columns[col].SetWidth(8.0, LengthUnit.Centimeter);
-					if (val.Contains("Корректировка"))
-					{
-						isGreen = true;
-					}
-				}
+                    }
+                    else
+                    {
+                        sheet.Rows[row].Cells[col].SetValue(val);
+                        sheet.Columns[col].SetWidth(5.0, LengthUnit.Centimeter);
+                    }
 
-				//sheet.Rows[row].SetHeight(1.5, LengthUnit.Centimeter);
-				sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-				sheet.Rows[row].Cells[col].Style.WrapText = true;
-				sheet.Rows[row].Cells[col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-				sheet.Rows[row].Cells[col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-				if (isGreen)
-				{
-					sheet.Rows[row].Cells[col].Style.FillPattern.SetPattern(FillPatternStyle.ThinHorizontalCrosshatch,
-						SpreadsheetColor.FromArgb(225, 232, 225), SpreadsheetColor.FromArgb(225, 232, 225));
-				}
-                
-				col++;
+                    if (col == 0)
+                    {
+                        sheet.Columns[col].Style.Font.Size = 250;
+                        sheet.Columns[col].Style.Font.Weight = 600;
+                        sheet.Columns[col].SetWidth(8.0, LengthUnit.Centimeter);
+                        if (val != null  && val.Contains("Корректировка"))
+                        {
+                            isGreen = true;
+                        }
+                    }
+                    sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                    sheet.Rows[row].Cells[col].Style.WrapText = true;
+                    sheet.Rows[row].Cells[col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+                    sheet.Rows[row].Cells[col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+                    if (isGreen)
+                    {
+                        sheet.Rows[row].Cells[col].Style.FillPattern.SetPattern(FillPatternStyle.ThinHorizontalCrosshatch,
+                            SpreadsheetColor.FromArgb(225, 232, 225), SpreadsheetColor.FromArgb(225, 232, 225));
+                    }
+
+                    col++;
+                }
 			}
+            catch (Exception e)
+            {
+                HasException = true;
+                ErrorManager.LogError(e);
+                Console.WriteLine(e);
+            }
+
         }
 
 		private void AddSummaryRows(ExcelWorksheet mainWorkSheet, int numberRow, decimal squareCost, decimal summaryCost, string textSquare, string textSummary)
@@ -516,7 +536,17 @@ namespace KadOzenka.Dal.ExpressScore
         }
 		private long SaveReportToExportTable(MemoryStream stream, string fileName)
 		{
+            if (HasException)
+            {
+                return -1;
+            }
 			var currentDate = DateTime.Now;
+
+            if (!SRDSession.GetCurrentUserId().HasValue)
+            {
+                _log.ForContext("UserId", SRDSession.GetCurrentUserId())
+                    .Warning("Сохранение отчета");
+			}
 
 			try
 			{
@@ -542,6 +572,7 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 			catch (Exception e)
 			{
+				_log.Error("Сохранение отчета экспресс оценки. {message}", e.Message);
 				Console.WriteLine(e);
 				ErrorManager.LogError(e);
 				return -1;

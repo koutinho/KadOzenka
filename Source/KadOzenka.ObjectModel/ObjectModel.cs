@@ -2217,6 +2217,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _cct;
+        /// <summary>
+        /// 10009011 Коэффициент ценности территории (КЦТ) (CCT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009011)]
+        public decimal? CCT
+        {
+            get
+            {
+                CheckPropertyInited("CCT");
+                return _cct;
+            }
+            set
+            {
+                _cct = value;
+                NotifyPropertyChanged("CCT");
+            }
+        }
+
     }
 }
 
