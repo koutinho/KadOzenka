@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishSc
 		Utils\PublishScripts\release_build.ps1 = Utils\PublishScripts\release_build.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj", "{C9003E80-9E76-4021-A6B9-F71849EACB0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,6 +160,14 @@ Global
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.ActiveCfg = Release|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|x86.Build.0 = Release|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Debug|x86.Build.0 = Debug|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,60 +181,9 @@ Global
 		{35BD5D31-C805-4528-AA4E-855795AFE7AE} = {424A8967-E655-42CB-A88A-B30251FB0ACB}
 		{B35699D8-1146-4F67-BAA1-000AF81FB776} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{D70D30D5-2A3F-49C7-AB77-97982F483540} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{C9003E80-9E76-4021-A6B9-F71849EACB0C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 14
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
-		SccProjectTopLevelParentUniqueName1 = KadOzenka.sln
-		SccProjectName1 = Utils/GenerateObjectModel
-		SccLocalPath1 = Utils\\GenerateObjectModel
-		SccProjectUniqueName2 = KadOzenka.Dal\\KadOzenka.Dal.csproj
-		SccProjectName2 = KadOzenka.Dal
-		SccLocalPath2 = KadOzenka.Dal
-		SccProjectUniqueName3 = KadOzenka.Web\\KadOzenka.Web.csproj
-		SccProjectName3 = KadOzenka.Web
-		SccLocalPath3 = KadOzenka.Web
-		SccProjectUniqueName4 = Utils\\GenerateDbScripts\\GenerateDbScripts.csproj
-		SccProjectTopLevelParentUniqueName4 = KadOzenka.sln
-		SccProjectName4 = Utils/GenerateDbScripts
-		SccLocalPath4 = Utils\\GenerateDbScripts
-		SccProjectUniqueName5 = Utils\\KadOzenka.BlFrontEnd\\KadOzenka.BlFrontEnd.csproj
-		SccProjectTopLevelParentUniqueName5 = KadOzenka.sln
-		SccProjectName5 = Utils/KadOzenka.BlFrontEnd
-		SccLocalPath5 = Utils\\KadOzenka.BlFrontEnd
-		SccProjectUniqueName6 = KadOzenka.ObjectModel\\KadOzenka.ObjectModel.csproj
-		SccProjectName6 = KadOzenka.ObjectModel
-		SccLocalPath6 = KadOzenka.ObjectModel
-		SccProjectUniqueName7 = ImageProccessor\\ImageProccessor.csproj
-		SccProjectTopLevelParentUniqueName7 = KadOzenka.sln
-		SccProjectName7 = ImageProccessor
-		SccLocalPath7 = ImageProccessor
-		SccProjectUniqueName8 = Utils\\EP.SdkCore\\EP.Sdk.Core.csproj
-		SccProjectTopLevelParentUniqueName8 = KadOzenka.sln
-		SccProjectName8 = Utils/EP.SdkCore
-		SccLocalPath8 = Utils\\EP.SdkCore
-		SccProjectUniqueName9 = KadOzenka.WebClients\\KadOzenka.WebClients.csproj
-		SccProjectName9 = KadOzenka.WebClients
-		SccLocalPath9 = KadOzenka.WebClients
-		SccProjectUniqueName10 = KadOzenka.Test.ReonWebServiceMock\\KadOzenka.Test.ReonWebServiceMock.csproj
-		SccProjectTopLevelParentUniqueName10 = KadOzenka.sln
-		SccProjectName10 = KadOzenka.Test.ReonWebServiceMock
-		SccLocalPath10 = KadOzenka.Test.ReonWebServiceMock
-		SccProjectUniqueName11 = KadOzenka.WebServices\\KadOzenka.WebServices\\KadOzenka.WebServices.csproj
-		SccProjectName11 = KadOzenka.WebServices/KadOzenka.WebServices
-		SccLocalPath11 = KadOzenka.WebServices\\KadOzenka.WebServices
-		SccProjectUniqueName12 = Parser\\Parser.csproj
-		SccProjectTopLevelParentUniqueName12 = KadOzenka.sln
-		SccProjectName12 = Parser
-		SccLocalPath12 = Parser
-		SccProjectUniqueName13 = KadOzenka.LongProcessService\\KadOzenka.LongProcessService.csproj
-		SccProjectName13 = KadOzenka.LongProcessService
-		SccLocalPath13 = KadOzenka.LongProcessService
 	EndGlobalSection
 EndGlobal
