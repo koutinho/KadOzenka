@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Domain.Model;
 using KadOzenka.WebServices.Exceptions;
@@ -33,20 +34,22 @@ namespace KadOzenka.WebServices.Services.Rsm
 					unit.Upks,
 					unit.CadastralCost,
 					TaskId = task.Id,
-					TaskCreationDate = task.CreationDate,
+					TaskDocumentID = task.DocumentId,
 					TaskStatus = task.Status
 				}).ToList();
 
-			var lastReadyTask = units.Where(x => x.TaskStatus == taskReadyStatusCode)
-				.OrderByDescending(x => x.TaskCreationDate).FirstOrDefault();
-			if (lastReadyTask == null)
-				throw new NotFoundException($"В единицах оценки тура {tour.Year} года с кадастровым номером {cadastralNumber} не найдено задания на оценку со статусом '{taskReadyStatus}'");
+			var unitsWithReadyTask = units.Where(x => x.TaskStatus == taskReadyStatusCode).ToList();
+			if (unitsWithReadyTask.Count == 0)
+				throw new NotFoundException($"В единицах оценки тура {tour.Year} года с кадастровым номером '{cadastralNumber}' не найдено задания на оценку со статусом '{taskReadyStatus}'");
 
-			var resultUnit = units.First(x => x.TaskId == lastReadyTask.TaskId);
+			var readyTasksDocumentIds = unitsWithReadyTask.Select(x => x.TaskDocumentID).Distinct().ToList();
+			var document = GetDocument(readyTasksDocumentIds, tour.Year);
+
+			var resultUnit = unitsWithReadyTask.First(x => x.TaskDocumentID == document.Id);
 
 			Group resultGroup = null;
 			var resultSubGroup = _appContext.Groups.FirstOrDefault(x => x.Id == resultUnit.GroupId);
-			if(resultSubGroup != null)
+			if (resultSubGroup != null)
 				resultGroup = _appContext.Groups.FirstOrDefault(x => x.Id == resultSubGroup.ParentId);
 
 			return new RsmEvaluationResultDto
@@ -68,6 +71,16 @@ namespace KadOzenka.WebServices.Services.Rsm
 				throw new NotFoundException($"Тур '{tourYear}' не найден, туры ранее {tourYear} года также не найдены");
 
 			return tour;
+		}
+
+		private TdInstance GetDocument(List<int> documentIds, long tourYear)
+		{
+			var document = _appContext.TdInstances.Where(x => documentIds.Contains(x.Id) && x.ApproveDate != null)
+				.OrderByDescending(x => x.ApproveDate).FirstOrDefault();
+			if (document == null)
+				throw new NotFoundException($"Для тура {tourYear} не найдено документа");
+
+			return document;
 		}
 
 		#endregion
