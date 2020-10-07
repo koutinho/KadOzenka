@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
@@ -402,8 +403,10 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
+            consoleHelper.AddCommand("558", "Проверка получения данных для грида результатов ЭО", TestServiceES.TestDataResultGrid);
 
-            //consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
-        }
+
+			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
+		}
     }
 }
