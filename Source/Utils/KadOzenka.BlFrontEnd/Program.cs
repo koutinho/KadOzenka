@@ -415,7 +415,7 @@ namespace KadOzenka.BlFrontEnd
 	            var attributes = new List<ExportAttributeItem>
 		            {new ExportAttributeItem {IdAttributeGBU = 600, IdAttributeKO = 25118600}};
 
-	            ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 	            {
 		            TaskFilter = tasks,
 		            Attributes = attributes,
@@ -425,13 +425,13 @@ namespace KadOzenka.BlFrontEnd
 			            IsBuildings = true
 		            }
 	            }, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
 					ObjType = ObjectTypeExtended.Oks
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
@@ -441,7 +441,7 @@ namespace KadOzenka.BlFrontEnd
 						IsBuildings = true
 					}
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
@@ -452,7 +452,7 @@ namespace KadOzenka.BlFrontEnd
 						IsPlacements = true
 					}
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
