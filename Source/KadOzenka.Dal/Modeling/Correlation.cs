@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using ObjectModel.Market;
+using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -24,8 +25,8 @@ namespace KadOzenka.Dal.Modeling
         private string ResultMessage { get; set; }
         protected override string SubjectForMessageInNotification => "Процесс корреляции";
 
-        public Correlation(string inputParametersXml, OMQueue processQueue)
-            : base(processQueue)
+        public Correlation(string inputParametersXml, OMQueue processQueue, ILogger logger)
+            : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<CorrelationInputParameters>();
         }

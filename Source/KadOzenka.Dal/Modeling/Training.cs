@@ -16,6 +16,7 @@ using ObjectModel.Ko;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
+using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -27,8 +28,8 @@ namespace KadOzenka.Dal.Modeling
         protected ScoreCommonService ScoreCommonService { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
-        public Training(string inputParametersXml, OMQueue processQueue)
-            : base(processQueue)
+        public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
+            : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
