@@ -10,6 +10,9 @@
     #showRefreshButton-100 {
 		display: none;
     }
+	#resultGrid > table {
+		table-layout: fixed;
+	}
 </style>
 
 <div class="form-horizontal col-sm-12">
@@ -24,16 +27,16 @@
 				<text>Удельный показатель рыночной стоимости объекта оценки, руб/кв.м: </text><text id="squareCost">@(Model.SquareCost.ToString("N"))</text>
 			</div>
 			<div class="col-sm-12">
-                <text>Адрес объекта оценки: </text><text id="address">@(Model.Address)</text>
+				<text>Адрес объекта оценки: </text><text id="address">@(Model.Address)</text>
 			</div>
 			<div class="col-sm-12">
-                <text>Площадь объекта оценки: </text><text id="area">@(Model.Area)</text>
+				<text>Площадь объекта оценки: </text><text id="area">@(Model.Area)</text>
 			</div>
 			<div class="col-sm-12">
-                <text>Сегмент рынка объекта оценки: </text><text id="marketSegment">@(Model.MarketSegment.GetEnumDescription())</text>
+				<text>Сегмент рынка объекта оценки: </text><text id="marketSegment">@(Model.MarketSegment.GetEnumDescription())</text>
 			</div>
 			<div class="col-sm-12">
-                <text>Тип объекта оценки: </text><text id="marketSegment">@(Model.DealType.GetEnumDescription())</text>
+				<text>Тип объекта оценки: </text><text id="marketSegment">@(Model.DealType.GetEnumDescription())</text>
 			</div>
 		</div>
 	}
@@ -69,182 +72,140 @@
 				     data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid100"></div>
 			</div>
 		</div>*@
-	<table id="resultGrid">
-		<thead>
-			<tr>
-				<th data-field="make"><input type='checkbox' id='header-chb' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='header-chb'></label></th>
-				<th data-field="make">Car Make</th>
-				<th data-field="model">Car Model</th>
-				<th data-field="year">Year</th>
-				<th data-field="category">Category</th>
-				<th data-field="airconditioner">Air Conditioner</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td><input type='checkbox' class='k-checkbox row-checkbox'><label class='k-checkbox-label'></label></td>
-				<td>Volvo</td>
-				<td>S60</td>
-				<td>2010</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Audi</td>
-				<td>A4</td>
-				<td>2002</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>BMW</td>
-				<td>535d</td>
-				<td>2006</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>BMW</td>
-				<td>320d</td>
-				<td>2006</td>
-				<td>Saloon</td>
-				<td>No</td>
-			</tr>
-			<tr>
-				<td>VW</td>
-				<td>Passat</td>
-				<td>2007</td>
-				<td>Saloon</td>
-				<td>No</td>
-			</tr>
-			<tr>
-				<td>VW</td>
-				<td>Passat</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Peugeot</td>
-				<td>407</td>
-				<td>2006</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Honda</td>
-				<td>Accord</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>No</td>
-			</tr>
-			<tr>
-				<td>Alfa Romeo</td>
-				<td>159</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>No</td>
-			</tr>
-			<tr>
-				<td>Nissan</td>
-				<td>Almera</td>
-				<td>2001</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Mitsubishi</td>
-				<td>Lancer</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Opel</td>
-				<td>Vectra</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Toyota</td>
-				<td>Avensis</td>
-				<td>2006</td>
-				<td>Saloon</td>
-				<td>No</td>
-			</tr>
-			<tr>
-				<td>Toyota</td>
-				<td>Avensis</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Toyota</td>
-				<td>Avensis</td>
-				<td>2008</td>
-				<td>Saloon</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Audi</td>
-				<td>Q7</td>
-				<td>2007</td>
-				<td>SUV</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Hyundai</td>
-				<td>Santa Fe</td>
-				<td>2012</td>
-				<td>SUV</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Hyundai</td>
-				<td>Santa Fe</td>
-				<td>2013</td>
-				<td>SUV</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Nissan</td>
-				<td>Qashqai</td>
-				<td>2007</td>
-				<td>SUV</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Mercedez</td>
-				<td>B Class</td>
-				<td>2007</td>
-				<td>Hatchback</td>
-				<td>Yes</td>
-			</tr>
-			<tr>
-				<td>Lancia</td>
-				<td>Ypsilon</td>
-				<td>2006</td>
-				<td>Hatchback</td>
-				<td>Yes</td>
-			</tr>
-		</tbody>
-	</table>
+		<div id="resultGrid"></div>
 	</div>
 </div>
 
+<script type="text/x-kendo-template" id="recTemplate">
+	<div class="recBtnContainer">
+		<button class="k-button" id="recalculateES">Пересчитать</button>
+	</div>
+</script>
+
 <script type="text/javascript">
+	debugger;
 	var reportId = "@Model.ReportId";
+	var dataGrid = null;
+	var data = null;
+	var columns = null;
+	var expressScoreId = "@ViewBag.EsId";
+	try {
+		var dataToGridString = JSON.stringify(@Html.Raw(Model.DataToGrid));
+		dataGrid = JSON.parse(dataToGridString);
+
+		data = dataGrid.rows.map((arr) => {
+			var correctObj = {};
+			arr.forEach((obj) => {
+				if (parseInt(obj["key"]).valueOf()) {
+					correctObj["_" + obj["key"]] = obj["value"];
+					return;
+				}
+				correctObj[obj["key"]] = obj["value"];
+			});
+			return new Object(correctObj);
+		});
+
+
+		columns = dataGrid.headers.map((item) => { return { title: item.text, field: "_" + item.dataField} });
+	} catch (e) {
+		console.error("Ошибка при парсинге данных", e);
+	}
+
+	var chColumn = [
+		{
+			title: 'Выбрать все',
+			headerTemplate: "<input type='checkbox' id='header-chb' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='header-chb'></label>",
+			template: function (dataItem) {
+				return "<input type='checkbox' id='" + dataItem.id + "' class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='" + dataItem.id + "'></label>";
+			},
+			width: 40
+		}
+	];
+
+
+
+	var checkedIds = {};
+	function selectRow() {
+		var checked = this.checked,
+			row = $(this).closest("tr"),
+			grid = $("#resultGrid").data("kendoGrid"),
+			dataItem = grid.dataItem(row);
+
+		checkedIds[dataItem.id] = checked;
+
+		if (checked) {
+			row.addClass("k-state-selected");
+
+			var checkHeader = true;
+
+			$.each(grid.items(), function (index, item) {
+				if (!($(item).hasClass("k-state-selected"))) {
+					checkHeader = false;
+				}
+			});
+
+			$("#header-chb")[0].checked = checkHeader;
+		} else {
+
+			row.removeClass("k-state-selected");
+			$("#header-chb")[0].checked = false;
+		}
+	}
+
+	function onDataBound(e) {
+		debugger;
+		for (var i = 1; i < this.columns.length; i++) {
+			this.autoFitColumn(this.columns[i]);
+		}
+		var view = this.dataSource.view();
+		for (var i = 0; i < view.length; i++) {
+			if (checkedIds[view[i].id]) {
+				this.tbody.find("tr[data-uid='" + view[i].uid + "']")
+					.addClass("k-state-selected")
+					.find(".k-checkbox")
+					.attr("checked", "checked");
+			}
+		}
+	}
+
+	function updateCost(cost, squareCost) {
+		if (cost && squareCost) {
+			$('#cost').text(cost.toLocaleString());
+			$('#squareCost').text(squareCost.toLocaleString());
+		}
+	}
+	function updateReportId(reportId = null) { if (reportId) $('#report').data('report-id', reportId); }
 	$(document).ready(function () {
-		$("#resultGrid").kendoGrid({
-			height: 400,
-			sortable: true,
+		var grid = $("#resultGrid").kendoGrid({
+			height: 510,
+			width: "100%",
+			resizable: true,
 			pageable: {
 				pageSize: 5
 			},
-			selectable: "multiple, row"
+			dataBound: onDataBound,
+			toolbar: kendo.template($("#recTemplate").html()),
+			columns: [...chColumn,...columns]
+		}).data("kendoGrid");
+
+		grid.table.on("click", ".row-checkbox", selectRow);
+		grid.setDataSource(data);
+
+		$('#header-chb').change(function (ev) {
+			var checked = ev.target.checked;
+			$('.row-checkbox').each(function (idx, item) {
+				if (checked) {
+					if (!($(item).closest('tr').is('.k-state-selected'))) {
+						$(item).click();
+					}
+				} else {
+					if ($(item).closest('tr').is('.k-state-selected')) {
+						$(item).click();
+					}
+				}
+			});
 		});
+
 		if (reportId === "-1") {
 			Common.ShowError("При генерации отчета возникли ошибки. Подробности в журнале ошибок.");
 		}
@@ -255,6 +216,37 @@
 				a.setAttribute('href', url);
 				a.click();
 				console.log('report id', $(this).data('report-id'));
+			});
+
+		$('#recalculateES').on('click',
+			function() {
+				var checked = [];
+				for (var i in checkedIds) {
+					if (checkedIds[i]) {
+						checked.push(i);
+					}
+				}
+				var data = {
+					analogIds: checked,
+					expressScoreId
+				}
+				kendo.ui.progress($('#successDialog'), true);
+
+				$.post("@Url.Action("RecalculateAnalog", "ExpressScore")", data).done(function (data) {
+					if (data.Errors) {
+						var errors = getErrors(data.Errors);
+						Common.ShowError(errors);
+					}
+					if (data.success) {
+						debugger;
+						updateCost(data.success.cost, data.success.squareCost);
+						updateReportId(data.success.reportId);
+							Common.ShowMessage("Перерасчет успешно выполнен.");
+					}
+
+				}).always(function() {
+					kendo.ui.progress($('#successDialog'), false);
+				});
 			});
 	});
 </script>
