@@ -19,6 +19,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using Kendo.Mvc.Extensions;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
@@ -518,18 +519,49 @@ namespace KadOzenka.Dal.Modeling
             return ScoreCommonService.GetDictionaries(dictionaryIds);
         }
 
-        public List<CoefficientForObject> GetCoefficientsForObject(List<GroupedModelAttributes> groupedModelAttributes, 
-	        long marketObjectId, List<long> unitIds, List<OMEsReference> dictionaries)
+        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMEsReference> dictionaries,
+	        List<ModelAttributeRelationDto> modelAttributes)
         {
-	        var coefficients = new List<CoefficientForObject>();
-	        groupedModelAttributes.ForEach(modelAttribute =>
+	        var query = new QSQuery
 	        {
-		        var currentCoefficients = GetCoefficients(marketObjectId, unitIds, dictionaries, modelAttribute);
+		        MainRegisterID = OMCoreObject.GetRegisterId(),
+		        Condition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.In,
+			        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
+			        RightOperand = new QSColumnConstant(objectIds)
+		        }
+	        };
 
+	        return GetCoefficients(query, dictionaries, modelAttributes);
+        }
+
+        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMEsReference> dictionaries,
+	        List<GroupedModelAttributes> modelAttributes)
+        {
+	        var coefficients = new Dictionary<long, List<CoefficientForObject>>();
+
+	        modelAttributes.ForEach(modelAttribute =>
+	        {
+		        var idAttribute = RegisterCache.RegisterAttributes.Values
+			        .FirstOrDefault(x => x.RegisterId == modelAttribute.RegisterId && x.IsPrimaryKey)?.Id;
+
+		        var query = new QSQuery
+		        {
+			        MainRegisterID = modelAttribute.RegisterId,
+			        Condition = new QSConditionSimple
+			        {
+				        ConditionType = QSConditionType.In,
+				        LeftOperand = new QSColumnSimple((int)idAttribute),
+				        RightOperand = new QSColumnConstant(unitIds)
+			        }
+		        };
+
+		        var currentCoefficients = GetCoefficients(query, dictionaries, modelAttribute.Attributes);
 		        coefficients.AddRange(currentCoefficients);
 	        });
 
-	        return coefficients;
+            return coefficients;
         }
 
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
@@ -595,52 +627,23 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-        private List<CoefficientForObject> GetCoefficients(long objectId, List<long> unitIds,
-	        List<OMEsReference> dictionaries, GroupedModelAttributes modelAttributes)
+		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(QSQuery query, List<OMEsReference> dictionaries, List<ModelAttributeRelationDto> attributes)
         {
-	        QSQuery query;
-	        if (modelAttributes.RegisterId == OMCoreObject.GetRegisterId())
-	        {
-		        query = new QSQuery
-		        {
-			        MainRegisterID = OMCoreObject.GetRegisterId(),
-			        Condition = new QSConditionSimple
-			        {
-				        ConditionType = QSConditionType.Equal,
-				        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-				        RightOperand = new QSColumnConstant(objectId)
-			        }
-		        };
-            }
-	        else
-	        {
-		        var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == modelAttributes.RegisterId && x.IsPrimaryKey)?.Id;
-
-                query = new QSQuery
-		        {
-			        MainRegisterID = modelAttributes.RegisterId,
-			        Condition = new QSConditionSimple
-			        {
-				        ConditionType = QSConditionType.In,
-				        LeftOperand = new QSColumnSimple((int)idAttribute),
-				        RightOperand = new QSColumnConstant(unitIds)
-                    }
-		        };
-            }
-            
-            modelAttributes.Attributes.ForEach(attribute =>
+	        attributes.ForEach(attribute =>
             {
 	            query.AddColumn(attribute.AttributeId, attribute.AttributeId.ToString());
             });
 
             var sql = query.GetSql();
 
-            var coefficients = new List<CoefficientForObject>();
+            var coefficients = new Dictionary<long, List<CoefficientForObject>>();
             var table = query.ExecuteQuery();
             for (var i = 0; i < table.Rows.Count; i++)
             {
 	            var row = table.Rows[i];
-	            modelAttributes.Attributes.ForEach(attribute =>
+	            var id = row["id"].ParseToLong();
+	            var currentCoefficients = new List<CoefficientForObject>();
+	            attributes.ForEach(attribute =>
 	            {
 		            var value = row[attribute.AttributeId.ToString()].ParseToStringNullable();
 
@@ -660,8 +663,10 @@ namespace KadOzenka.Dal.Modeling
 
 			            coefficient = CalculateCoefficientViaDictionary(value, attribute, dictionary);
 		            }
-		            coefficients.Add(coefficient);
+		            currentCoefficients.Add(coefficient);
 	            });
+
+	            coefficients[id] = currentCoefficients;
             }
 
             return coefficients;

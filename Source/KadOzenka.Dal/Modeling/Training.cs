@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
@@ -8,8 +10,10 @@ using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.ScoreCommon;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
+using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 
@@ -60,11 +64,14 @@ namespace KadOzenka.Dal.Modeling
 
             var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
             AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
-            var groupedModelAttributes = modelAttributes?.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
+            var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
 	            RegisterId = (int)k,
 	            Attributes = g.ToList()
             }).ToList();
+            var marketObjectAttributes = groupedModelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId())
+	            .SelectMany(x => x.Attributes).ToList();
+            var tourFactorsAttributes = groupedModelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
 
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
@@ -74,30 +81,56 @@ namespace KadOzenka.Dal.Modeling
 
             var i = 0;
             AddLog("Обработано объектов: ");
-            marketObjects.ForEach(groupedObj =>
+            var packageSize = 500;
+            var packageIndex = 0;
+            for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
             {
-	            var isForTraining = i < marketObjects.Count / 2.0;
-                i++;
-                var modelObject = new OMModelToMarketObjects
+	            var marketObjectsPage = marketObjects.Skip(packageIndex * packageSize).Take(packageSize).ToList();
+                if(marketObjectsPage.Count == 0)
+                    break;
+                
+                var marketObjectIds = marketObjectsPage.Select(x => x.Id).ToList();
+                var units = unitsDictionary.Where(x => marketObjectIds.Contains(x.Key)).ToList();
+                var unitIds = units.SelectMany(x => x.Value).ToList();
+
+                var marketObjectCoefficients =
+	                ModelingService.GetCoefficientsFromMarketObject(marketObjectIds, dictionaries,
+		                marketObjectAttributes);
+                var unitsCoefficients =
+	                ModelingService.GetCoefficientsFromTourFactors(unitIds, dictionaries, tourFactorsAttributes);
+
+                marketObjectsPage.ForEach(marketObject =>
                 {
-                    ModelId = Model.Id,
-                    CadastralNumber = groupedObj.CadastralNumber,
-                    Price = groupedObj.Price,
-                    IsForTraining = isForTraining
-                };
+	                var isForTraining = i < marketObjects.Count / 2.0;
+	                i++;
+	                var modelObject = new OMModelToMarketObjects
+	                {
+		                ModelId = Model.Id,
+		                CadastralNumber = marketObject.CadastralNumber,
+		                Price = marketObject.Price,
+		                IsForTraining = isForTraining
+	                };
 
-                var objectUnitIds = unitsDictionary.ContainsKey(modelObject.CadastralNumber)
-                    ? unitsDictionary[modelObject.CadastralNumber]
-                    : new List<long>();
+	                var currentMarketObjectCoefficients = marketObjectCoefficients.ContainsKey(marketObject.Id)
+		                ? marketObjectCoefficients[marketObject.Id]
+		                : new List<CoefficientForObject>();
 
-                var objectCoefficients = ModelingService.GetCoefficientsForObject(groupedModelAttributes, groupedObj.Id, objectUnitIds, dictionaries);
-                modelObject.Coefficients = objectCoefficients.SerializeToXml();
-                modelObject.Save();
+                    var currentUnits = units.Where(x => x.Key == marketObject.Id).SelectMany(x => x.Value).ToList();
+	                var currentUnitsCoefficients = unitsCoefficients.Where(x => currentUnits.Contains(x.Key)).SelectMany(x => x.Value).ToList();
 
-                if (i % 100 == 0)
-                    AddLog($"{i}, ", false);
-            });
-             AddLog($"{i}.", false);
+                    currentMarketObjectCoefficients.AddRange(currentUnitsCoefficients);
+
+	                modelObject.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
+	                modelObject.Save();
+
+	                if (i % 100 == 0)
+		                AddLog($"{i}, ", false);
+                });
+
+                packageIndex++;
+            }
+	       
+	        AddLog($"{i}.", false);
         }
 
         protected override object GetRequestForService()
@@ -173,9 +206,11 @@ namespace KadOzenka.Dal.Modeling
 					)
                 //TODO ждем выполнения CIPJSKO-307
                 //.And(territoryCondition)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Price)
+                .Select(x => new
+                {
+	                x.CadastralNumber,
+	                x.Price
+                })
 				////TODO для тестирования
 				//.SetPackageIndex(0)
 				//.SetPackageSize(2000)
@@ -207,13 +242,34 @@ namespace KadOzenka.Dal.Modeling
             return relation;
         }
 
-        private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
+        private Dictionary<long, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
         {
             var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
 
-            var units = ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int) Model.TourId);
+            var units = GetUnitsByCadastralNumbers(cadastralNumbers, (int) Model.TourId);
 
-            return units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+            return units.GroupBy(x => x.MarketObjectId).ToDictionary(k => k.Key, v => v.Select(x => x.UnitId).ToList());
+        }
+
+        public List<MarketObjectToUnitRelation> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, int tourId)
+        {
+	        if (cadastralNumbers == null || cadastralNumbers.Count == 0)
+		        return new List<MarketObjectToUnitRelation>();
+
+	        //сделано строкой, т.к. ОРМ делает дополнительные ненужные джоины, если делать через QSQuery
+            var cadastralNumbersStr = new StringBuilder();
+	        cadastralNumbers.ForEach(x => { cadastralNumbersStr.Append("'").Append(x).Append("'").Append(","); });
+	        cadastralNumbersStr.Length--;
+
+            var sql = $@"SELECT 
+				MarketObject.ID AS {nameof(MarketObjectToUnitRelation.MarketObjectId)},
+				Unit.ID AS {nameof(MarketObjectToUnitRelation.UnitId)}
+		        FROM MARKET_CORE_OBJECT MarketObject
+			        LEFT JOIN KO_UNIT Unit ON (MarketObject.CADASTRAL_NUMBER = Unit.CADASTRAL_NUMBER)
+		        WHERE
+		        (MarketObject.CADASTRAL_NUMBER IN({cadastralNumbersStr}) AND Unit.TOUR_ID = {tourId})";
+
+            return QSQuery.ExecuteSql<MarketObjectToUnitRelation>(sql);
         }
 
         /// <summary>
@@ -278,6 +334,16 @@ namespace KadOzenka.Dal.Modeling
             }
 
             Model.Save();
+        }
+
+        #endregion
+
+        #region Entities
+
+        public class MarketObjectToUnitRelation
+        {
+	        public long MarketObjectId { get; set; }
+	        public long UnitId { get; set; }
         }
 
         #endregion
