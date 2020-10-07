@@ -6,6 +6,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -15,7 +16,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 	public class MinMaxAverageUPKSByAdministrativeDistrictsService
 	{
-
 		private class InitialData
 		{
 			public long id { get; set; }
@@ -30,11 +30,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			public decimal max { get; set; }
 		}
 
-		private readonly StatisticalDataService _statisticalDataService;
+		private readonly GbuCodRegisterService _gbuCodRegisterService;
 
-		public MinMaxAverageUPKSByAdministrativeDistrictsService(StatisticalDataService statisticalDataService)
+		public MinMaxAverageUPKSByAdministrativeDistrictsService(GbuCodRegisterService gbuCodRegisterService)
 		{
-			_statisticalDataService = statisticalDataService;
+			_gbuCodRegisterService = gbuCodRegisterService;
 		}
 
 		public List<MinMaxAverageUPKSByAdministrativeDistrictsDto> GetMinMaxAverageUPKSByAdministrativeDistricts(long[] taskList, MinMaxAverageUPKSByAdministrativeDistrictsType reportType)
@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
 			var data = new List<MinMaxAverageUPKSByAdministrativeDistrictsDto>();
 
 			if (table.Count != 0)
