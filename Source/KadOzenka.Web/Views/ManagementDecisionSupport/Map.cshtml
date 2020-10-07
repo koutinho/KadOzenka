@@ -142,6 +142,7 @@
     <script src="~/MapPlugins/Colorjoe/js/scale.fix.js" charset="utf-8"></script>
     <script src="~/MapScripts/config.js" charset="utf-8"></script>
     <script src="~/js/custom-validation.js" charset="utf-8"></script>
+    <script src="~/js/unauthorized-ajax-error-handler.js"></script>
 
     <script type="text/javascript">
         var map;
@@ -449,6 +450,10 @@
                 success: function (result) {
                     heatMapData = result;
                     changeLayer(divisionGroup[0]);
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                    kendo.ui.progress($('#importForm'), false);
                 }
             });
         }
