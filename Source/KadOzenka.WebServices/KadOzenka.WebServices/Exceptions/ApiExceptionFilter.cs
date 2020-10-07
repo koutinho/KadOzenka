@@ -12,9 +12,13 @@ namespace KadOzenka.WebServices.Exceptions
 			{
 				SetExceptionContext(context, HttpStatusCode.NotFound);
 			}
-			if (context.Exception is BadRequestException)
+			else if (context.Exception is BadRequestException)
 			{
 				SetExceptionContext(context, HttpStatusCode.BadRequest);
+			}
+			else
+			{
+				SetExceptionContext(context, HttpStatusCode.InternalServerError);
 			}
 
 			base.OnException(context);
