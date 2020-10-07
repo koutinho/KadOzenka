@@ -77,7 +77,9 @@ namespace KadOzenka.Dal.Modeling
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
-            var unitsDictionary = GetUnits(marketObjects);
+            var unitsDictionary = tourFactorsAttributes.Count == 0 
+	            ? new Dictionary<long, List<long>>() 
+	            : GetUnits(marketObjects);
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
@@ -246,21 +248,13 @@ namespace KadOzenka.Dal.Modeling
         private Dictionary<long, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
         {
             var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+            if (cadastralNumbers.Count == 0)
+	            return new Dictionary<long, List<long>>();
 
-            var units = GetUnitsByCadastralNumbers(cadastralNumbers, (int) Model.TourId);
-
-            return units.GroupBy(x => x.MarketObjectId).ToDictionary(k => k.Key, v => v.Select(x => x.UnitId).ToList());
-        }
-
-        public List<MarketObjectToUnitRelation> GetUnitsByCadastralNumbers(List<string> cadastralNumbers, int tourId)
-        {
-	        if (cadastralNumbers == null || cadastralNumbers.Count == 0)
-		        return new List<MarketObjectToUnitRelation>();
-
-	        //сделано строкой, т.к. ОРМ делает дополнительные ненужные джоины, если делать через QSQuery
+            //сделано строкой, т.к. ОРМ делает дополнительные ненужные джоины, если делать через QSQuery
             var cadastralNumbersStr = new StringBuilder();
-	        cadastralNumbers.ForEach(x => { cadastralNumbersStr.Append("'").Append(x).Append("'").Append(","); });
-	        cadastralNumbersStr.Length--;
+            cadastralNumbers.ForEach(x => { cadastralNumbersStr.Append("'").Append(x).Append("'").Append(","); });
+            cadastralNumbersStr.Length--;
 
             var sql = $@"SELECT 
 				MarketObject.ID AS {nameof(MarketObjectToUnitRelation.MarketObjectId)},
@@ -268,9 +262,11 @@ namespace KadOzenka.Dal.Modeling
 		        FROM MARKET_CORE_OBJECT MarketObject
 			        LEFT JOIN KO_UNIT Unit ON (MarketObject.CADASTRAL_NUMBER = Unit.CADASTRAL_NUMBER)
 		        WHERE
-		        (MarketObject.CADASTRAL_NUMBER IN({cadastralNumbersStr}) AND Unit.TOUR_ID = {tourId})";
+		        (MarketObject.CADASTRAL_NUMBER IN({cadastralNumbersStr}) AND Unit.TOUR_ID = {Model.TourId})";
 
-            return QSQuery.ExecuteSql<MarketObjectToUnitRelation>(sql);
+            var units = QSQuery.ExecuteSql<MarketObjectToUnitRelation>(sql);
+
+            return units.GroupBy(x => x.MarketObjectId).ToDictionary(k => k.Key, v => v.Select(x => x.UnitId).ToList());
         }
 
         /// <summary>
