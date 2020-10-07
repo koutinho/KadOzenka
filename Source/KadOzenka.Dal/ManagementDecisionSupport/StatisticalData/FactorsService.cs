@@ -26,6 +26,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         {
             var query = ModelService.GetModelFactorsQuery(modelId);
 
+            query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorPure.FactorId)));
             query.AddColumn(OMAttribute.GetColumn(x => x.ValueField, nameof(ModelFactorPure.ValueField)));
             query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorPure.Name)));
             query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorPure.RegisterId)));
@@ -38,7 +39,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 Attributes = group.Select(y => new Attribute
                 {
                     //TODO поменять после правок платформы
-                    Id = y.Id,
+                    Id = y.FactorId,
                     Name = y.ValueField,
                     ValueField = y.Name
                 }).ToList()
@@ -160,7 +161,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public class ModelFactorPure
 		{
-	        public long Id { get; set; }
+			public long Id { get; set; }
+            public long FactorId { get; set; }
 	        public string Name { get; set; }
 	        public string ValueField { get; set; }
             public long RegisterId { get; set; }

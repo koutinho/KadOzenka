@@ -113,6 +113,9 @@
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\DataCompositionByCharacteristicsBaseReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\NonuniformReport.cs">
       <SubType>Component</SubType>
     </Compile>

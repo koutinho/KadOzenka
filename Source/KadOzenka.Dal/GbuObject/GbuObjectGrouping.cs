@@ -475,6 +475,22 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
         }
 
+        private static bool CompareDictToValue(string dict, string val)
+        {
+            string CleanUp(string x)
+            {
+                // Оставляем только значимые символы в строках
+                return x
+                    .Replace(" ", "")
+                    .Replace("\n","")
+                    .Replace("\r","")
+                    .ToLower();
+            }
+
+            return CleanUp(dict) == CleanUp(val);
+        }
+
+
         private ValueItem GetDataLevel(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
@@ -488,7 +504,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x.Value, ValueLevel.Value));
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -549,7 +565,7 @@ namespace KadOzenka.Dal.GbuObject
                         Serilog.Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x.Value,ValueLevel.Value));
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -1219,10 +1235,10 @@ namespace KadOzenka.Dal.GbuObject
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
                     .Debug("Выполнение операции группировки по Задачам на  оценку. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item => 
+                Parallel.ForEach(Objs, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
-                    
+
                     try
                     {
                         new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (item.CreationDate == null) ? DateTime.Now.Date : item.CreationDate.Value.Date, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
@@ -1247,7 +1263,7 @@ namespace KadOzenka.Dal.GbuObject
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
                     .Debug("Выполнение операции группировки по Объектам ГБУ. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item => 
+                Parallel.ForEach(Objs, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
 
