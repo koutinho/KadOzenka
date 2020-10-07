@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols;
-using System.Configuration;
 using System.IO;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Services;
@@ -16,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Diagnostics;
 using Core.ErrorManagment;
+using KadOzenka.WebServices.Services.Rsm;
 
 namespace KadOzenka.WebServices
 {
@@ -61,6 +56,7 @@ namespace KadOzenka.WebServices
 			}, ServiceLifetime.Singleton);
 
 			services.AddTransient<JournalService>();
+			services.AddTransient<RsmService>();
 		}
 
 		/// <summary>
