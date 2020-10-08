@@ -182,6 +182,7 @@
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <None Remove="Config\Registers\Views\ModelingDictionaries.xml" />
+    <None Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <None Remove="Config\Registers\Views\ModelingModels.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -382,6 +383,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingDictionaryValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\ModelingDictionaries.xml">
@@ -916,6 +920,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\ModelingDictionaryValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
@@ -1818,6 +1825,7 @@
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
@@ -1839,6 +1847,7 @@
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingDictionaries.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />

@@ -33,6 +33,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -454,6 +455,21 @@ namespace KadOzenka.Web.Controllers
             ModelingProcess.AddProcessToQueue(inputRequest);
 
             return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь. Результат будет отправлен на почту."});
+        }
+
+        #endregion
+
+        //TODO добавить SRD
+        #region Dictionaries
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
+        {
+	        var dictionary = OMModelingDictionaries.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
+	        var model = DictionaryModel.FromEntity(dictionary, showItems);
+
+	        return View(model);
         }
 
         #endregion
