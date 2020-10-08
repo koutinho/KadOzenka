@@ -28,11 +28,15 @@ LocationAttrValues as (
 
 LandCategoryAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {5})
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {6})
 )
 
 select
 	u.CADASTRAL_NUMBER as CadastralNumber,
-	u.CADASTRAL_BLOCK as CadastralQuarter,
+	COALESCE(cadastralQuartalGbu.attributeValue, u.CADASTRAL_BLOCK) as CadastralQuarter,
 	u.PROPERTY_TYPE as PropertyType,
 	u.SQUARE as Square,
 	u.UPKS as Upks,
@@ -48,3 +52,4 @@ from unit_data  u
 	left outer join AddressAttrValues Address on u.object_id=Address.objectId
 	left outer join LocationAttrValues Location on u.object_id=Location.objectId
 	left outer join LandCategoryAttrValues LandCategory on u.object_id=LandCategory.objectId
+	left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.object_id=cadastralQuartalGbu.objectId
