@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
             var unitsDictionary = tourFactorsAttributes.Count == 0 
-	            ? new Dictionary<long, List<long>>() 
+	            ? new Dictionary<string, List<long>>() 
 	            : GetUnits(marketObjects);
             AddLog($"Получено {unitsDictionary.Sum(x => x.Value?.Count)} Единиц оценки для всех объектов.");
 
@@ -91,9 +91,10 @@ namespace KadOzenka.Dal.Modeling
 	            var marketObjectsPage = marketObjects.Skip(packageIndex * packageSize).Take(packageSize).ToList();
                 if(marketObjectsPage.Count == 0)
                     break;
-                
+
                 var marketObjectIds = marketObjectsPage.Select(x => x.Id).ToList();
-                var units = unitsDictionary.Where(x => marketObjectIds.Contains(x.Key)).ToList();
+                var marketObjectCadastralNumbers = marketObjectsPage.Select(x => x.CadastralNumber).ToList();
+                var units = unitsDictionary.Where(x => marketObjectCadastralNumbers.Contains(x.Key)).ToList();
                 var unitIds = units.SelectMany(x => x.Value).ToList();
 
                 var marketObjectCoefficients =
@@ -118,8 +119,8 @@ namespace KadOzenka.Dal.Modeling
 		                ? marketObjectCoefficients[marketObject.Id]
 		                : new List<CoefficientForObject>();
 
-                    var currentUnits = units.Where(x => x.Key == marketObject.Id).SelectMany(x => x.Value).ToList();
-	                var currentUnitsCoefficients = unitsCoefficients.Where(x => currentUnits.Contains(x.Key)).SelectMany(x => x.Value).ToList();
+                    var currentUnits = units.Where(x => x.Key == marketObject.CadastralNumber).SelectMany(x => x.Value).ToList();
+                    var currentUnitsCoefficients = unitsCoefficients.Where(x => currentUnits.Contains(x.Key)).SelectMany(x => x.Value).ToList();
 
                     currentMarketObjectCoefficients.AddRange(currentUnitsCoefficients);
 
@@ -154,7 +155,9 @@ namespace KadOzenka.Dal.Modeling
                 var coefficients = new List<decimal?>();
                 allAttributes.ForEach(modelAttribute =>
                 {
-                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.Coefficient);
+	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
+		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
+                    coefficients.Add(currentAttribute?.Coefficient);
                 });
 
                 //TODO эта проверка будет в сервисе
@@ -245,28 +248,13 @@ namespace KadOzenka.Dal.Modeling
             return relation;
         }
 
-        private Dictionary<long, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
+        private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
         {
-            var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
-            if (cadastralNumbers.Count == 0)
-	            return new Dictionary<long, List<long>>();
+	        var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
 
-            //сделано строкой, т.к. ОРМ делает дополнительные ненужные джоины, если делать через QSQuery
-            var cadastralNumbersStr = new StringBuilder();
-            cadastralNumbers.ForEach(x => { cadastralNumbersStr.Append("'").Append(x).Append("'").Append(","); });
-            cadastralNumbersStr.Length--;
+	        var units = ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)Model.TourId);
 
-            var sql = $@"SELECT 
-				MarketObject.ID AS {nameof(MarketObjectToUnitRelation.MarketObjectId)},
-				Unit.ID AS {nameof(MarketObjectToUnitRelation.UnitId)}
-		        FROM MARKET_CORE_OBJECT MarketObject
-			        LEFT JOIN KO_UNIT Unit ON (MarketObject.CADASTRAL_NUMBER = Unit.CADASTRAL_NUMBER)
-		        WHERE
-		        (MarketObject.CADASTRAL_NUMBER IN({cadastralNumbersStr}) AND Unit.TOUR_ID = {Model.TourId})";
-
-            var units = QSQuery.ExecuteSql<MarketObjectToUnitRelation>(sql);
-
-            return units.GroupBy(x => x.MarketObjectId).ToDictionary(k => k.Key, v => v.Select(x => x.UnitId).ToList());
+	        return units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
         }
 
         /// <summary>
