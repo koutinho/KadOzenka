@@ -23,7 +23,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		public bool IsEdit { get; set; }
 
-		public static DictionaryModel FromEntity(OMModelingDictionary entity, bool showItems = false)
+		public static DictionaryModel ToModel(OMModelingDictionary entity, bool showItems = false)
 		{
 			var hasValues = entity == null || !OMModelingDictionariesValues.Where(x => x.DictionaryId == entity.Id).ExecuteExists();
 

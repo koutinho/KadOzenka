@@ -472,7 +472,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
         {
 	        var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
-            var model = DictionaryModel.FromEntity(dictionary, showItems);
+            var model = DictionaryModel.ToModel(dictionary, showItems);
 
 	        return View(model);
         }
@@ -491,6 +491,37 @@ namespace KadOzenka.Web.Controllers
 		        DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
 
             return Json(new { Success = "Сохранено успешно", Id = id });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DictionaryDelete(long dictionaryId)
+        {
+	        try
+	        {
+		        var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+		        return View(DictionaryModel.ToModel(dictionary));
+            }
+	        catch (Exception ex)
+	        {
+		        return SendErrorMessage(ex.Message);
+	        }
+        }
+
+        [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DeleteDictionary(long dictionaryId)
+        {
+	        try
+	        {
+		        DictionaryService.DeleteDictionary(dictionaryId);
+	        }
+	        catch (Exception ex)
+	        {
+		        return SendErrorMessage(ex.Message);
+	        }
+
+	        return Json(new { Success = true });
         }
 
         [HttpGet]

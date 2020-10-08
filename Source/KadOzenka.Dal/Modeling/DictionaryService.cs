@@ -84,6 +84,21 @@ namespace KadOzenka.Dal.ExpressScore
 	        dictionary.Save();
         }
 
+        public void DeleteDictionary(long id)
+        {
+	        var reference = GetDictionaryById(id);
+
+	        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+	        {
+		        var referenceItems = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).Execute();
+		        referenceItems.ForEach(x => x.Destroy());
+
+		        reference.Destroy();
+
+		        ts.Complete();
+	        }
+        }
+
         #region Support Methods
 
         public void ValidateDictionary(string name, long id)
@@ -168,27 +183,6 @@ namespace KadOzenka.Dal.ExpressScore
         #endregion
 
         #endregion
-
-        public void DeleteReference(long id, ReferenceItemCodeType? valueType = null)
-        {
-            var reference = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {id}");
-            }
-
-            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-            {
-                var referenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == id).Execute();
-                foreach (var referenceItem in referenceItems)
-                {
-                    referenceItem.Destroy();
-                }
-                reference.Destroy();
-
-                ts.Complete();
-            }
-        }
 
         public void CreateOrUpdateReferenceThroughLongProcess(OMImportDataLog import, ImportFileFromExcelDto settings)
         {
