@@ -1,5 +1,9 @@
 /Source/Parser/bin
 /Source/Parser/obj
+/Source/Proxy/bin
+/Source/Proxy/obj
+/Source/ProxyChecker/bin
+/Source/ProxyChecker/obj
 /Source/KadOzenka.WebServices/KadOzenka.WebServices/bin
 /Source/KadOzenka.WebServices/KadOzenka.WebServices/obj
 /Source/KadOzenka.WebClients/obj
