@@ -248,13 +248,55 @@ namespace KadOzenka.Dal.Modeling
             return relation;
         }
 
-        private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> groupedObjects)
+        private Dictionary<string, List<long>> GetUnits(List<MarketObjectPure> marketObjects)
         {
-	        var cadastralNumbers = groupedObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+	        var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).ToList();
+	        if (cadastralNumbers.Count == 0)
+		        return new Dictionary<string, List<long>>();
 
-	        var units = ScoreCommonService.GetUnitsByCadastralNumbers(cadastralNumbers, (int)Model.TourId);
+	        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+		        .Select(x => new
+		        {
+			        x.CadastralNumber,
+                    x.PropertyType_Code,
+                    x.BuildingCadastralNumber
+                })
+		        .Execute();
+
+	        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+	        if (placementUnits.Count > 0)
+	        {
+		        ProcessPlacemenUnits(placementUnits, units);
+	        }
 
 	        return units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+        }
+
+        private void ProcessPlacemenUnits(List<OMUnit> placementUnits, List<OMUnit> units)
+        {
+	        AddLog($"Найдено {placementUnits.Count} Единиц оценки с типом '{PropertyTypes.Pllacement.GetEnumDescription()}'");
+
+	        var buildingCadastralNumbers = placementUnits
+		        .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
+		        .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
+	        var buildingUnits = buildingCadastralNumbers.Count > 0
+		        ? OMUnit.Where(x => buildingCadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+			        .Select(x => x.CadastralNumber)
+			        .Execute()
+		        : new List<OMUnit>();
+
+	        placementUnits.ForEach(placementUnit =>
+	        {
+		        if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
+		        {
+			        var currentBuildingUnits = buildingUnits.Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
+			        currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
+			        units.AddRange(buildingUnits);
+			        AddLog($"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'");
+		        }
+
+		        units.Remove(placementUnit);
+	        });
         }
 
         /// <summary>
