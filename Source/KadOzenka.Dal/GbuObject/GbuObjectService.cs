@@ -14,11 +14,13 @@ using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using ObjectModel.Directory;
 using Platform.Register;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
     public class GbuObjectService
     {
+        private static readonly ILogger _log = Log.ForContext<GbuObjectService>();
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
 
 		public static GbuObjectAttribute CheckExistsValueFromAttributeIdPartition(long objectId, long attributeId, DateTime otDate)
@@ -30,8 +32,12 @@ namespace KadOzenka.Dal.GbuObject
 			if (registerData.AllpriPartitioning != Platform.Register.AllpriPartitioningType.AttributeId) return null;
 
 			var sql = $@"select A.change_date as ChangeDate, A.change_doc_id as ChangeDocId from {registerData.AllpriTable}_{attributeData.Id} A where A.object_Id = {objectId} and A.Ot = {CrossDBSQL.ToDate(otDate)}";
-			Serilog.Log.Debug("GbuObjectAttribute {sql}", sql);
-			return QSQuery.ExecuteSql<GbuObjectAttribute>(sql).FirstOrDefault();
+            
+            _log.ForContext("SQL", sql)
+                .ForContext("OtDate", CrossDBSQL.ToDate(otDate))
+                .Verbose("Проверка наличия значения по объекту {ObjectId} в {AllpriTable}_{AttributeDataId}", objectId, registerData.AllpriTable, attributeData.Id);
+			
+            return QSQuery.ExecuteSql<GbuObjectAttribute>(sql).FirstOrDefault();
 		}
 
 		public static DateTime GetNextOtFromAttributeIdPartition(long objectId, long attributeId, DateTime otDate)
