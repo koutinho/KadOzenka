@@ -25,8 +25,7 @@ namespace KadOzenka.Dal.ScoreCommon
                 return new List<OMUnit>();
 
             return OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == tourId)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
+	            .Select(x => x.CadastralNumber)
                 .Execute();
         }
 

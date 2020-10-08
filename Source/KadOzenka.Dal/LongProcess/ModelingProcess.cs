@@ -6,11 +6,14 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class ModelingProcess : LongProcess
     {
+	    private readonly ILogger _log = Log.ForContext<ModelingProcess>();
+
         public static void AddProcessToQueue(ModelingInputParameters inputParameters)
         {
             LongProcessManager.AddTaskToQueue(nameof(ModelingProcess), parameters: inputParameters.SerializeToXml());
@@ -20,6 +23,7 @@ namespace KadOzenka.Dal.LongProcess
             CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
+            _log.Information("Старт фонового процесса для Моделирования {InputParameters}", processQueue.Parameters);
 
             ModelingInputParameters inputParameters = null;
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
@@ -38,6 +42,8 @@ namespace KadOzenka.Dal.LongProcess
             var strategy = GetModelingStrategy(inputParameters, processQueue);
             AddLog(processQueue, $"Запущено моделирование вида '{inputParameters.Mode.GetEnumDescription()}'");
             strategy.Process();
+
+            _log.Information("Закончен фоновый процесс Моделирования");
         }
 
 
@@ -48,11 +54,11 @@ namespace KadOzenka.Dal.LongProcess
             switch (inputParameters.Mode)
             {
                 case ModelingMode.Training:
-                    return new Training(inputParameters.InputParametersXml, processQueue);
+                    return new Training(inputParameters.InputParametersXml, processQueue, _log);
                 case ModelingMode.Prediction:
-                    return new Prediction(inputParameters.InputParametersXml, processQueue);
+                    return new Prediction(inputParameters.InputParametersXml, processQueue, _log);
                 case ModelingMode.Correlation:
-                    return new Correlation(inputParameters.InputParametersXml, processQueue);
+                    return new Correlation(inputParameters.InputParametersXml, processQueue, _log);
                 default:
                     throw new Exception("Не определен тип моделирования");
             }

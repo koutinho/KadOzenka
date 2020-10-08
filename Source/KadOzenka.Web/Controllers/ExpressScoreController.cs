@@ -266,7 +266,6 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(resMsg);
 			}
 
-			ViewBag.Filter = $"10002000={string.Join(',', resultCalculate.Analogs.Select(x => x.Id).ToList())}";
 			ViewBag.EsId = resultCalculate.Id;
 			return PartialView("Partials/PartialGridResultExpressScore", resultCalculate);
 		}
