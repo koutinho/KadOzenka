@@ -13447,7 +13447,7 @@ namespace ObjectModel.KO
     /// </summary>
     [RegisterInfo(RegisterID = 264)]
     [Serializable]
-    public partial class OMModelingDictionaries : OMBaseClass<OMModelingDictionaries>
+    public partial class OMModelingDictionary : OMBaseClass<OMModelingDictionary>
     {
 
         private long _id;

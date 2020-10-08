@@ -16,6 +16,7 @@ using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
@@ -43,14 +44,16 @@ namespace KadOzenka.Web.Controllers
 		public ModelingService ModelingService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
+        public DictionaryService DictionaryService { get; set; }
 
 
         public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService)
+            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService)
         {
             ModelingService = modelingService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
+            DictionaryService = dictionaryService;
         }
 
 
@@ -466,10 +469,26 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
         {
-	        var dictionary = OMModelingDictionaries.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
+	        var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
 	        var model = DictionaryModel.FromEntity(dictionary, showItems);
 
 	        return View(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
+        public ActionResult DictionaryCard(DictionaryModel viewModel)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var id = viewModel.Id;
+	        if (id == -1)
+		        id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
+	        else
+		        DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
+
+            return Json(new { Success = "Сохранено успешно", Id = id });
         }
 
         #endregion

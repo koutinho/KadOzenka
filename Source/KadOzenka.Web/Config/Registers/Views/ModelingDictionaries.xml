@@ -19,7 +19,7 @@
 	        </Parameters>
 	    </Button>
 
-	    <!--<Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-plus"/>-->
+	    <Button Caption="Добавить" NavigateURL="/Modeling/DictionaryCard" WindowHeight="200" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-plus"/>
 
         <!--<Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-edit" >
 	        <ConditionGroups>

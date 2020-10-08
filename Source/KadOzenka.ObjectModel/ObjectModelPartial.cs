@@ -2247,10 +2247,10 @@ namespace ObjectModel.KO
     /// <summary>
     /// 264 Моделирование. Справочники
     /// </summary>
-    public partial class OMModelingDictionaries
+    public partial class OMModelingDictionary
     {
 
-        public OMModelingDictionaries()
+        public OMModelingDictionary()
         {
 
             Id = -1;
@@ -2259,7 +2259,7 @@ namespace ObjectModel.KO
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMModelingDictionaries(bool trackPropertyChanging) : this()
+        public OMModelingDictionary(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
