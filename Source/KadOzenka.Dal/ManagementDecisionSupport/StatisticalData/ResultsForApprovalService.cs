@@ -4,6 +4,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -11,11 +12,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	public class ResultsForApprovalService
 	{
 		private readonly StatisticalDataService _statisticalDataService;
+		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly string _reportResultsForApprovalUpksAverageSqlFileName = "ResultsForApprovalUpksAverage";
 
-		public ResultsForApprovalService(StatisticalDataService statisticalDataService)
+		public ResultsForApprovalService(StatisticalDataService statisticalDataService, GbuCodRegisterService gbuCodRegisterService)
 		{
 			_statisticalDataService = statisticalDataService;
+			_gbuCodRegisterService = gbuCodRegisterService;
 		}
 
 		public List<ResultsForApprovalDto> GetResultsForApprovalData(long[] taskIdList)
@@ -53,7 +56,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				contents = sr.ReadToEnd();
 			}
 
-			var sql = string.Format(contents, areaDivisionType, string.Join(", ", taskIdList), isOks);
+			var sql = string.Format(contents, areaDivisionType, string.Join(", ", taskIdList), isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id);
 			var result = QSQuery.ExecuteSql<ResultsForApprovalUpksAverageDto>(sql);
 			return result;
 		}
