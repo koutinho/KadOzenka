@@ -85,9 +85,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return units.Select(unit =>
             {
 	            var cadastralQuartalGbu = cadastralQuartalGbuAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
+	            var cadastralQuartal = !string.IsNullOrEmpty(cadastralQuartalGbu)
+		            ? cadastralQuartalGbu
+		            : unit.CadastralBlock;
+
                 return new ReportItem
 	            {
-		            CadastralDistrict = GetCadastralDistrict(!string.IsNullOrEmpty(cadastralQuartalGbu) ? cadastralQuartalGbu : unit.CadastralBlock),
+		            CadastralQuartal = cadastralQuartal,
+		            CadastralDistrict = GetCadastralDistrict(cadastralQuartal),
 		            CadastralNumber = unit.CadastralNumber,
 		            Type = unit.PropertyType_Code,
 		            Square = unit.Square,
@@ -95,7 +100,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 		            Cost = unit.CadastralCost
 	            };
 	            
-            }).ToList();
+            }).OrderBy(x => x.CadastralQuartal).ToList();
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -130,6 +135,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
         private class ReportItem
         {
+	        public string CadastralQuartal{ get; set; }
             public string CadastralDistrict { get; set; }
             public string CadastralNumber { get; set; }
             public PropertyTypes Type { get; set; }

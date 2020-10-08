@@ -29,7 +29,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
                 .Select(x => x.Square)
                 .Select(x => x.Upks)
                 .Select(x => x.CadastralCost)
-                .OrderBy(x => x.CadastralBlock)
                 .Execute();
         }
     }
