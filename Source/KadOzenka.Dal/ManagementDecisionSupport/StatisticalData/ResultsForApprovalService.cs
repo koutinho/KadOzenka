@@ -5,6 +5,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -23,7 +24,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<ResultsForApprovalDto> GetResultsForApprovalData(long[] taskIdList)
 		{
-			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList);
+			var notCadastralQuarterType = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
+				QSConditionType.NotEqual, (long) PropertyTypes.CadastralQuartal);
+			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, new List<QSCondition>{ notCadastralQuarterType });
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "CadastralCost"));
 
