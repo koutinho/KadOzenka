@@ -42,7 +42,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                     Type = QSConditionGroupType.And,
                     Conditions = new List<QSCondition>
                     {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIds.Select(x => (double)x).ToList())
+                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIds.Select(x => (double)x).ToList()), 
+	                    new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.CadastralQuartal)
                     }
                 },
                 Joins = new List<QSJoin>
