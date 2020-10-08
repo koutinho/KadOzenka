@@ -2,21 +2,21 @@
 <RegisterView RegisterId="265" LinkedRegistersList="264,265" DefaultLayoutId="1000265"
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false" SearchPanel="ModelingDictionaryValues"
               UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
-    <!--<Buttons>
-        <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/Modeling/DictionaryValueCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
             <Parameters>
-                <Parameter Key="referenceId" Value="{Get:ReferenceId}" />
+                <Parameter Key="dictionaryId" Value="{Get:DictionaryId}" />
             </Parameters>
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
-                        <Condition Key="{Get:ReferenceId}" Operation="Equal" Value="-1" AndOr="Or" />
-                        <Condition Key="{Get:ReferenceId}" Operation="IsNull" AndOr="Or" />
+                        <Condition Key="{Get:DictionaryId}" Operation="Equal" Value="-1" AndOr="Or" />
+                        <Condition Key="{Get:DictionaryId}" Operation="IsNull" AndOr="Or" />
                     </Conditions>
                 </ConditionGroup>
             </ConditionGroups>
         </Button>
-        <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceItemCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
+        <Button Caption="Редактировать" NavigateURL="/Modeling/DictionaryValueCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -25,12 +25,12 @@
                 </ConditionGroup>
             </ConditionGroups>
             <Parameters>
-                <Parameter Key="id" Value="[ObjectID]" />
-                <Parameter Key="referenceId" Value="{Get:ReferenceId}" />
+                <Parameter Key="dictionaryValueId" Value="[ObjectID]" />
+                <Parameter Key="dictionaryId" Value="{Get:DictionaryId}" />
             </Parameters>
         </Button>
 
-        <Button Caption="Удалить" NavigateURL="/ExpressScopeReference/DeleteReferenceItem" WindowHeight="180" WindowWidth="800" SRDFunctionTag="EXPRESSSCORE.REFERENCES.EDIT">
+        <!--<Button Caption="Удалить" NavigateURL="/Modeling/DeleteDictionaryValue" WindowHeight="180" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -39,8 +39,8 @@
                 </ConditionGroup>
             </ConditionGroups>
             <Parameters>
-                <Parameter Key="id" Value="[ObjectID]" />
+                <Parameter Key="dictionaryValueId" Value="[ObjectID]" />
             </Parameters>
-        </Button>
-    </Buttons>-->
+        </Button>-->
+    </Buttons>
 </RegisterView>

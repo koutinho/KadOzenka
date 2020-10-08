@@ -15,6 +15,7 @@ using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
@@ -43,36 +44,125 @@ namespace KadOzenka.Dal.ExpressScore
 	        return false;
         }
 
+        #region Dictionary
+
+        public OMModelingDictionary GetDictionaryById(long id)
+        {
+	        var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+	        if (dictionary == null)
+		        throw new Exception($"Не найден справочник с ИД {id}");
+
+	        return dictionary;
+        }
+
         public long CreateDictionary(string name, ReferenceItemCodeType valueType)
         {
-            ValidateDictionary(name, -1);
+	        ValidateDictionary(name, -1);
 
-            return new OMModelingDictionary
-            {
-                Name = name, 
-                Type_Code = valueType
-            }.Save();
+	        return new OMModelingDictionary
+	        {
+		        Name = name, 
+		        Type_Code = valueType
+	        }.Save();
         }
 
         public void UpdateDictionary(long id, string newName, ReferenceItemCodeType newValueType)
         {
-            var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            if (dictionary == null)
-	            throw new Exception($"Не найден справочник с ИД {id}");
+	        var dictionary = GetDictionaryById(id);
 
-            ValidateDictionary(newName, id);
+	        ValidateDictionary(newName, id);
 
-            if (dictionary.Type_Code != newValueType)
-            {
-                var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
-                if (hasValues)
-	                throw new Exception("Нельзя изменить тип для непустого справочника");
-            }
+	        if (dictionary.Type_Code != newValueType)
+	        {
+		        var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
+		        if (hasValues)
+			        throw new Exception("Нельзя изменить тип для непустого справочника");
+	        }
 
-            dictionary.Name = newName;
-            dictionary.Type_Code = newValueType;
-            dictionary.Save();
+	        dictionary.Name = newName;
+	        dictionary.Type_Code = newValueType;
+	        dictionary.Save();
         }
+
+        #region Support Methods
+
+        public void ValidateDictionary(string name, long id)
+        {
+	        if (string.IsNullOrWhiteSpace(name))
+		        throw new Exception("Невозможно создать справочник с пустым именем");
+
+	        var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
+	        if (isExistsDictionaryWithTheSameName)
+		        throw new Exception($"Справочник '{name}' уже существует");
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Values
+
+        public OMModelingDictionariesValues GetDictionaryValueById(long id)
+        {
+	        var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            if (dictionaryValue == null)
+		        throw new Exception($"Не найдено значение с ИД = '{id}'");
+
+	        return dictionaryValue;
+        }
+
+        public long CreateDictionaryValue(DictionaryValueDto dto)
+        {
+	        var reference = GetDictionaryById(dto.DictionaryId);
+
+	        ValidateDictionaryValue(reference, dto.Value, -1);
+
+	        return new OMModelingDictionariesValues
+            {
+                DictionaryId = dto.DictionaryId,
+                Value = dto.Value,
+                CalculationValue = dto.CalcValue
+            }.Save();
+        }
+
+        public void UpdateDictionaryValue(DictionaryValueDto dto)
+        {
+            var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
+            if (dictionaryValue == null)
+	            throw new Exception($"Не найдено значение справочника с ИД = '{dto.Id}'");
+
+            var dictionary = GetDictionaryById(dto.DictionaryId);
+
+            ValidateDictionaryValue(dictionary, dto.Value, dto.Id);
+
+            dictionaryValue.Value = dto.Value;
+            dictionaryValue.CalculationValue = dto.CalcValue;
+            dictionaryValue.Save();
+        }
+
+        #region Support Methods
+
+        public void ValidateDictionaryValue(OMModelingDictionary dictionary, string value, long dictionaryValueId)
+        {
+	        var isEmptyValue = string.IsNullOrWhiteSpace(value);
+
+            var canParseToNumber = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Number && decimal.TryParse(value, out _);
+	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Date && DateTime.TryParse(value, out _);
+
+	        if (!isEmptyValue && !canParseToNumber && !canParseToDate)
+		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
+
+	        var isExistsTheSameReferenceItem = OMModelingDictionariesValues
+		        .Where(x => x.Id != dictionaryValueId && x.DictionaryId == dictionary.Id && x.Value == value)
+		        .ExecuteExists();
+	        if (isExistsTheSameReferenceItem)
+		        throw new Exception($"Значение '{value}' в справочнике '{dictionary.Name}' уже существует.");
+        }
+
+        #endregion
+
+        #endregion
 
         public void DeleteReference(long id, ReferenceItemCodeType? valueType = null)
         {
@@ -93,68 +183,6 @@ namespace KadOzenka.Dal.ExpressScore
 
                 ts.Complete();
             }
-        }
-
-        public long CreateReferenceItem(ReferenceItemDto dto)
-        {
-            var reference = OMEsReference.Where(x => x.Id == dto.ReferenceId).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
-            }
-
-            if (dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.Value, out var decimalResult)
-                    || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.Value, out var dateResult)))
-            {
-                throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
-            }
-
-            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.Value == dto.Value).ExecuteExists();
-            if (isExistsTheSameReferenceItem)
-            {
-                throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
-            }
-
-            var item = new OMEsReferenceItem
-            {
-                ReferenceId = dto.ReferenceId,
-                Value = dto.Value,
-                CalculationValue = dto.CalcValue
-            };
-            var id = item.Save();
-
-            return id;
-        }
-
-        public void UpdateReferenceItem(ReferenceItemDto dto)
-        {
-            var item = OMEsReferenceItem.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
-            if (item == null)
-            {
-                throw new Exception($"Не найдено значение справочника с ИД {dto.Id}");
-            }
-
-            var reference = OMEsReference.Where(x => x.Id == dto.ReferenceId).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
-            }
-
-            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.Value == dto.Value && x.Id != dto.Id && x.ReferenceId == dto.ReferenceId).ExecuteExists();
-            if (isExistsTheSameReferenceItem)
-            {
-                throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
-            }
-
-            if (dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.Value, out var decimalResult)
-                || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.Value, out var dateResult)))
-            {
-                throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
-            }
-
-            item.Value = dto.Value;
-            item.CalculationValue = dto.CalcValue;
-            item.Save();
         }
 
         public void DeleteReferenceItem(long id)
@@ -460,19 +488,5 @@ namespace KadOzenka.Dal.ExpressScore
 	        long res = mainWorkSheet.Rows.Count;
 	        return res;
         }
-
-        #region Support Methods
-
-        public void ValidateDictionary(string name, long id)
-        {
-	        if (string.IsNullOrWhiteSpace(name))
-		        throw new Exception("Невозможно создать справочник с пустым именем");
-
-	        var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
-	        if (isExistsDictionaryWithTheSameName)
-		        throw new Exception($"Справочник '{name}' уже существует");
-        }
-
-        #endregion
     }
 }

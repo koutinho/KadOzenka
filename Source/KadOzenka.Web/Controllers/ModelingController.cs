@@ -30,10 +30,12 @@ using ObjectModel.Market;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Helpers;
+using KadOzenka.Web.Models.ExpressScoreReference;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.ES;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -470,13 +472,13 @@ namespace KadOzenka.Web.Controllers
         public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
         {
 	        var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
-	        var model = DictionaryModel.FromEntity(dictionary, showItems);
+            var model = DictionaryModel.FromEntity(dictionary, showItems);
 
 	        return View(model);
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult DictionaryCard(DictionaryModel viewModel)
         {
 	        if (!ModelState.IsValid)
@@ -487,6 +489,33 @@ namespace KadOzenka.Web.Controllers
 		        id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
 	        else
 		        DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
+
+            return Json(new { Success = "Сохранено успешно", Id = id });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DictionaryValueCard(long dictionaryValueId, long dictionaryId)
+        {
+	        var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
+	        dictionaryId = dictionaryValue == null ? dictionaryId : dictionaryValue.DictionaryId;
+	        var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+
+	        return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DictionaryValueCard(DictionaryValueModel viewModel)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var id = viewModel.Id;
+	        if (id == -1)
+		        id = DictionaryService.CreateDictionaryValue(viewModel.ToDto());
+	        else
+		        DictionaryService.UpdateDictionaryValue(viewModel.ToDto());
 
             return Json(new { Success = "Сохранено успешно", Id = id });
         }
