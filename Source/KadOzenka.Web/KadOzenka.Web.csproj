@@ -181,6 +181,7 @@
     <None Remove="Config\Registers\Views\MarketObjectCard.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <None Remove="Config\Registers\Views\ModelingDictionaries.xml" />
     <None Remove="Config\Registers\Views\ModelingModels.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -381,6 +382,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingDictionaries.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoComplianceGuide.xml">
@@ -1834,6 +1838,7 @@
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaries.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />

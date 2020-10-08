@@ -2242,6 +2242,54 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 264 Моделирование. Справочники
+    /// </summary>
+    public partial class OMModelingDictionaries
+    {
+
+        public OMModelingDictionaries()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelingDictionaries(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 265 Моделирование. Значения справочников
+    /// </summary>
+    public partial class OMModelingDictionariesValues
+    {
+
+        public OMModelingDictionariesValues()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelingDictionariesValues(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
