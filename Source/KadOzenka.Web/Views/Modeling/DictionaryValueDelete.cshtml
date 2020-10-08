@@ -1,0 +1,75 @@
+﻿@model KadOzenka.Web.Models.Modeling.DictionaryValueModel
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.CustomLabel($"Вы уверены что хотите удалить значение '{Model.GetValue()}' справочника '{Model.DictionaryName}' (ИД {Model.DictionaryId})?")
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-group"></div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button disabled="@(!Model.IsEditItem)" class="k-button k-button-icontext" style="float: right" id="delete" type="button">
+                <span class="k-icon k-i-check"></span>Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#delete').on('click',
+            function () {
+                var btn = this;
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'DELETE',
+                    url: '@Url.Action("DeleteDictionaryValue", "Modeling", new { dictionaryValueId = Model.Id})',
+                    success: function(response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        } else {
+                            if (response.Success) {
+                                Common.ShowMessage("Значение успешно удалено");
+                                $(btn).attr('disabled', true);
+                            }
+                        }
+                    },
+                    error: function(response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            });
+        @*var btn = this;
+                kendo.ui.progress($('body'), true);
+
+                $.($('form').attr('action'), {id: @Model.Id}).done(function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success) {
+                        Common.ShowMessage("Значение '@Model.Value' справочника '@Model.ReferenceName' (ИД @Model.ReferenceId) успешно удалено");
+                        $(btn).attr('disabled', true);
+                    }
+                }).fail(function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
+                });
+            });*@
+    });
+</script>

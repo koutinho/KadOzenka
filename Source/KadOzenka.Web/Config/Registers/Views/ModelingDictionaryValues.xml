@@ -30,7 +30,7 @@
             </Parameters>
         </Button>
 
-        <!--<Button Caption="Удалить" NavigateURL="/Modeling/DeleteDictionaryValue" WindowHeight="180" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
+        <Button Caption="Удалить" NavigateURL="/Modeling/DictionaryValueDelete" WindowHeight="180" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -41,6 +41,6 @@
             <Parameters>
                 <Parameter Key="dictionaryValueId" Value="[ObjectID]" />
             </Parameters>
-        </Button>-->
+        </Button>
     </Buttons>
 </RegisterView>

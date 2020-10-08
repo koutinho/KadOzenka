@@ -128,9 +128,7 @@ namespace KadOzenka.Dal.ExpressScore
 
         public void UpdateDictionaryValue(DictionaryValueDto dto)
         {
-            var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
-            if (dictionaryValue == null)
-	            throw new Exception($"Не найдено значение справочника с ИД = '{dto.Id}'");
+	        var dictionaryValue = GetDictionaryValueById(dto.Id);
 
             var dictionary = GetDictionaryById(dto.DictionaryId);
 
@@ -139,6 +137,13 @@ namespace KadOzenka.Dal.ExpressScore
             dictionaryValue.Value = dto.Value;
             dictionaryValue.CalculationValue = dto.CalcValue;
             dictionaryValue.Save();
+        }
+
+        public void DeleteDictionaryValue(long id)
+        {
+	        var dictionaryValue = GetDictionaryValueById(id);
+
+	        dictionaryValue.Destroy();
         }
 
         #region Support Methods
@@ -183,17 +188,6 @@ namespace KadOzenka.Dal.ExpressScore
 
                 ts.Complete();
             }
-        }
-
-        public void DeleteReferenceItem(long id)
-        {
-            var item = OMEsReferenceItem.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            if (item == null)
-            {
-                throw new Exception($"Не найдено значение справочника с ИД {id}");
-            }
-
-            item.Destroy();
         }
 
         public void CreateOrUpdateReferenceThroughLongProcess(OMImportDataLog import, ImportFileFromExcelDto settings)

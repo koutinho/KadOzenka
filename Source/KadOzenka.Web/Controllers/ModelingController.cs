@@ -520,6 +520,39 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Success = "Сохранено успешно", Id = id });
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DictionaryValueDelete(long dictionaryValueId)
+        {
+	        try
+	        {
+		        var dictionaryValue = DictionaryService.GetDictionaryValueById(dictionaryValueId);
+		        var dictionary = DictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
+
+		        return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
+            }
+	        catch (Exception ex)
+	        {
+		        return SendErrorMessage(ex.Message);
+	        }
+        }
+
+        [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DeleteDictionaryValue(long dictionaryValueId)
+        {
+	        try
+	        {
+		        DictionaryService.DeleteDictionaryValue(dictionaryValueId);
+            }
+	        catch (Exception ex)
+	        {
+		        return SendErrorMessage(ex.Message);
+	        }
+
+            return Json(new { Success = true });
+        }
+
         #endregion
 
 

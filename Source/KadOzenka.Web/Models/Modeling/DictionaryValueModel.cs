@@ -66,19 +66,7 @@ namespace KadOzenka.Web.Models.Modeling
 
         public DictionaryValueDto ToDto()
         {
-            string value;
-            switch (ValueType)
-            {
-	            case ReferenceItemCodeType.Date:
-		            value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
-		            break;
-	            case ReferenceItemCodeType.Number:
-		            value = NumberValue?.ToString();
-		            break;
-	            default:
-		            value = Value;
-		            break;
-            }
+            var value = GetValue();
 
             return new DictionaryValueDto
             {
@@ -87,6 +75,25 @@ namespace KadOzenka.Web.Models.Modeling
                 Value = value,
                 CalcValue = CalcValue
             };
+        }
+
+        public string GetValue()
+        {
+	        string value;
+            switch (ValueType)
+	        {
+		        case ReferenceItemCodeType.Date:
+			        value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
+			        break;
+		        case ReferenceItemCodeType.Number:
+			        value = NumberValue?.ToString();
+			        break;
+		        default:
+			        value = Value;
+			        break;
+	        }
+
+            return value;
         }
     }
 }
