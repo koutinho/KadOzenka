@@ -20,32 +20,42 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
-        $('#delete').on('click',
-            function () {
-                var btn = this;
-                kendo.ui.progress($('body'), true);
-                $.ajax({
-                    type: 'DELETE',
-                    url: '@Url.Action("DeleteDictionaryValue", "Modeling", new { dictionaryValueId = Model.Id})',
-                    success: function(response) {
-                        if (response.Errors) {
-                            var errors = getErrors(response.Errors);
-                            Common.ShowError(errors);
-                            return;
-                        } else {
-                            if (response.Success) {
-                                Common.ShowMessage("Значение успешно удалено");
-                                $(btn).attr('disabled', true);
-                            }
-                        }
-                    },
-                    error: function(response) {
-                        Common.ShowError(response.responseText);
-                    },
-                    complete: function() {
-                        kendo.ui.progress($('body'), false);
-                    }
-                });
-            });
+        $('#delete').on('click', deleteDictionaryValue);
     });
+
+
+
+    function deleteDictionaryValue(btn) {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'DELETE',
+            url: '@Url.Action("DeleteDictionaryValue", "Modeling", new { dictionaryValueId = Model.Id})',
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    if (response.Success) {
+                        Common.ShowMessage("Значение успешно удалено");
+                        $(btn).attr('disabled', true);
+                        closeMainWindow();
+                    }
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function closeMainWindow() {
+        setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 1000);
+    }
 </script>

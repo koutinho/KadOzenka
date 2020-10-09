@@ -63,26 +63,39 @@
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#save').on('click',
-            function () {
-                kendo.ui.progress($('body'), true);
-                var form = $('form');
-                var formObject = Common.Functions.FormToObject(form);
-                $.post(form.attr('action'), formObject).done(function (response) {
-                    if (response.Errors) {
-                        var errors = getErrors(response.Errors);
-                        Common.ShowError(errors);
-                        return;
-                    }
-                    if (response.Success && response.Id) {
-                        $('#@Html.IdFor(m => m.Id)').val(response.Id);
-                        Common.ShowMessage(response.Success);
-                    }
-                }).fail(function (response, textStatus, errorThrown) {
-                    Common.ShowError(response.responseText);
-                }).always(function() {
-                    kendo.ui.progress($('body'), false);
-                });
-            });
+
+        $('#save').on('click', saveDictionaryValue);
     });
+
+
+
+    function saveDictionaryValue() {
+        kendo.ui.progress($('body'), true);
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        $.post(form.attr('action'), formObject).done(function (response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            if (response.Success && response.Id) {
+                $('#@Html.IdFor(m => m.Id)').val(response.Id);
+                Common.ShowMessage(response.Success);
+                closeMainWindow();
+            }
+        }).fail(function (response, textStatus, errorThrown) {
+            Common.ShowError(response.responseText);
+        }).always(function() {
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+
+    function closeMainWindow() {
+        setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 1000);
+    }
+
 </script>

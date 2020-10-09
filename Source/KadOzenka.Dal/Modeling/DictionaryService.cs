@@ -171,7 +171,7 @@ namespace KadOzenka.Dal.Modeling
             var canParseToNumber = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Number && decimal.TryParse(value, out _);
 	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Date && DateTime.TryParse(value, out _);
 
-	        if (!isEmptyValue && !canParseToNumber && !canParseToDate)
+	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && dictionary.Type_Code != ReferenceItemCodeType.String)
 		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
 
 	        var isExistsTheSameDictionaryValue = OMModelingDictionariesValues

@@ -56,48 +56,26 @@
 <script type="text/javascript">
     var grid;
     $(document).ready(function () {
-        var observer = new MutationObserver(function (mutationsList, observer) {
-            for (let mutation of mutationsList) {
-                for (let node of mutation.addedNodes) {
-                    if (!(node instanceof HTMLElement))
-                        continue;
-                    if (node.matches('div[class="contentPanel"]')) {
-                        grid = $("#Grid-265").data("kendoGrid");
-                        if(grid)
-                            grid.bind("dataBound", dataBound);
-                    }
-                    for (let elem of node.querySelectorAll('div[class="contentPanel"]')) {
-                        grid = $("#Grid-265").data("kendoGrid");
-                        if (grid)
-                            grid.bind("dataBound", dataBound);
+        //обновление грида, если в нем были изменения (добавили/удалили значение словаря)
+        var registerId = $('#Grid-265').val();
+        if (!registerId) {
+            var observer = new MutationObserver(function (mutationsList, observer) {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'childList') {
+                        if (mutation.removedNodes && mutation.removedNodes.length == 1 && mutation.removedNodes.item(0)
+                            && mutation.removedNodes.item(0).classList && mutation.removedNodes.item(0).classList.contains('k-window')
+                        ) {
+                            window.location.reload();
+                        }
                     }
                 }
-            }
-        });
-        observer.observe(document.getElementsByTagName('body')[0], { childList: true, subtree: true });
-
-        $('#save').on('click',
-            function () {
-                kendo.ui.progress($('body'), true);
-                var form = $('form');
-                var formObject = Common.Functions.FormToObject(form);
-                $.post(form.attr('action'), formObject).done(function (response) {
-                    if (response.Errors) {
-                        var errors = getErrors(response.Errors);
-                        Common.ShowError(errors);
-                        return;
-                    }
-                    if (response.Success && response.Id) {
-                        $('#@Html.IdFor(m => m.Id)').val(response.Id);
-                        Common.ShowMessage(response.Success);
-                    }
-                }).fail(function (response, textStatus, errorThrown) {
-                    Common.ShowError(response.responseText);
-                }).always(function () {
-                    kendo.ui.progress($('body'), false);
-                });
             });
+            observer.observe(document.getElementsByTagName('body')[0], { childList: true, subtree: true });
+        }
+       
+        $('#save').on('click', saveDictionary);
     });
+
 
     function dataBound(e) {
         var itemCount = e.sender.dataSource.total();
@@ -106,5 +84,35 @@
         } else {
             $('#@(nameof(Model.ValueType))').data('kendoDropDownList').readonly();
         }
+    }
+
+
+    function saveDictionary() {
+        kendo.ui.progress($('body'), true);
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        $.post(form.attr('action'), formObject).done(function (response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            if (response.Success && response.Id) {
+                $('#@Html.IdFor(m => m.Id)').val(response.Id);
+                Common.ShowMessage(response.Success);
+                if ('@Model.ShowItems' !== "True")
+                    closeMainWindow();
+            }
+        }).fail(function (response, textStatus, errorThrown) {
+            Common.ShowError(response.responseText);
+        }).always(function () {
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+    function closeMainWindow() {
+        setTimeout(function () {
+            window.parent.parent.location.reload();
+        }, 1000);
     }
 </script>
