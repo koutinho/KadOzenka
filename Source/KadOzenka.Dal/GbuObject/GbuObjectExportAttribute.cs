@@ -107,7 +107,7 @@ namespace KadOzenka.Dal.GbuObject
 			{
                 CadastralNumber = unit.CadastralNumber
 			};
-            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
+            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, DateTime.Now.GetEndOfTheDay());
 
             foreach (GbuObjectAttribute attrib in attributes)
             {
@@ -310,7 +310,9 @@ namespace KadOzenka.Dal.GbuObject
 	        public long Id { get; set; }
 	        public long ObjectId { get; set; }
 	        public string CadastralNumber { get; set; }
-	        public DateTime? CreationDate { get; set; }
+            //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
+            //TODO если хотфикс будет заапрувлен, нужно убрать
+            public DateTime? CreationDate { get; set; }
 	        public PropertyTypes? ObjectType { get; set; }
         }
 
