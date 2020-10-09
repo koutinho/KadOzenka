@@ -102,5 +102,5 @@ FROM KO_UNIT unit
     LEFT OUTER JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
     LEFT OUTER JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 WHERE 
-	(unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE <> 4 AND unit.OBJECT_ID IS NOT NULL)
+	(unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND unit.OBJECT_ID IS NOT NULL)
     order by unit.CADASTRAL_NUMBER
