@@ -61,9 +61,9 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 						{
 							break;
 						}
-						if (DictionaryService.AllRows > 0 && DictionaryService.CurrentRow > 0)
+						if (DictionaryService.RowsCount > 0 && DictionaryService.CurrentRow > 0)
 						{
-							var newProgress = (long)Math.Round(((double)DictionaryService.CurrentRow / DictionaryService.AllRows) * 100);
+							var newProgress = (long)Math.Round(((double)DictionaryService.CurrentRow / DictionaryService.RowsCount) * 100);
 							if (newProgress != processQueue.Progress)
 							{
 								WorkerCommon.SetProgress(processQueue, newProgress);
@@ -78,12 +78,12 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 				_log.ForContext("IsNewDictionary", settings.IsNewDictionary).Verbose("Создание или обновление словаря.");
 				if (settings.IsNewDictionary)
 				{
-					DictionaryService.CreateReferenceFromExcel(fileStream, settings.FileInfo,
+					DictionaryService.CreateDictionaryFromExcel(fileStream, settings.FileInfo,
 						settings.NewDictionaryName, import);
 				}
 				else
 				{
-					DictionaryService.UpdateReferenceFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
+					DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
 						settings.DeleteOldValues, import);
 				}
 

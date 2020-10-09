@@ -139,8 +139,8 @@
 
                         if (response.Success) {
 							Common.ShowMessage(response.message);
-                            if (response.idNewReference && updateReferenceControl) {
-                                updateReferenceControl(response.idNewReference);
+                            if (response.newDictionaryId && updateReferenceControl) {
+                                updateReferenceControl(response.newDictionaryId);
 							}
 							if (response.isLongProcess) {
 								uploadControl.clearAllFiles();

@@ -14,25 +14,22 @@ using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
-using ObjectModel.ES;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
     public class DictionaryService
     {
-        public const string DateCreatedStringFormat = "yyyyMMddHHmmss";
-        public int AllRows { get; private set; } = 1;
+	    public int RowsCount { get; private set; } = 1;
 		public int CurrentRow { get; private set; }
 
         private const long MaxRowInFileDuringImport = 10000;
-        private static readonly int MainRegisterId = OMEsReference.GetRegisterId();
-        private static readonly string RegisterViewId = "EsReferences";
+        private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
+        private static readonly string RegisterViewId = "ModelingDictionaries";
 
         public bool MustUseLongProcess(Stream fileStream)
         {
@@ -111,8 +108,8 @@ namespace KadOzenka.Dal.Modeling
 
         private void DeleteDictionaryValues(long dictionaryId)
         {
-	        var referenceItems = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
-	        referenceItems.ForEach(x => x.Destroy());
+	        var dictionaryValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
+	        dictionaryValues.ForEach(x => x.Destroy());
         }
 
         #endregion
@@ -133,9 +130,9 @@ namespace KadOzenka.Dal.Modeling
 
         public long CreateDictionaryValue(DictionaryValueDto dto)
         {
-	        var reference = GetDictionaryById(dto.DictionaryId);
+	        var dictionary = GetDictionaryById(dto.DictionaryId);
 
-	        ValidateDictionaryValue(reference, dto.Value, -1);
+	        ValidateDictionaryValue(dictionary, dto.Value, -1);
 
 	        return new OMModelingDictionariesValues
             {
@@ -177,10 +174,10 @@ namespace KadOzenka.Dal.Modeling
 	        if (!isEmptyValue && !canParseToNumber && !canParseToDate)
 		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
 
-	        var isExistsTheSameReferenceItem = OMModelingDictionariesValues
+	        var isExistsTheSameDictionaryValue = OMModelingDictionariesValues
 		        .Where(x => x.Id != dictionaryValueId && x.DictionaryId == dictionary.Id && x.Value == value)
 		        .ExecuteExists();
-	        if (isExistsTheSameReferenceItem)
+	        if (isExistsTheSameDictionaryValue)
 		        throw new Exception($"Значение '{value}' в справочнике '{dictionary.Name}' уже существует.");
         }
 
@@ -190,7 +187,7 @@ namespace KadOzenka.Dal.Modeling
 
         #region Import from Excel
 
-        public long CreateReferenceFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
+        public long CreateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 	        string newDictionaryName, OMImportDataLog import)
         {
 	        var dictionaryId = CreateDictionary(newDictionaryName, fileImportInfo.ValueType);
@@ -201,7 +198,7 @@ namespace KadOzenka.Dal.Modeling
 	        return dictionaryId;
         }
 
-        public void UpdateReferenceFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
+        public void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 	        long dictionaryId, bool deleteOldValues, OMImportDataLog import)
         {
 	        var existedDictionary = GetDictionaryById(dictionaryId);
@@ -286,7 +283,7 @@ namespace KadOzenka.Dal.Modeling
 	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 	        var mainWorkSheet = excelFile.Worksheets[0];
 
-	        AllRows = mainWorkSheet.Rows.Count;
+	        RowsCount = mainWorkSheet.Rows.Count;
 	        var cancelTokenSource = new CancellationTokenSource();
 	        var options = new ParallelOptions
 	        {
@@ -366,10 +363,7 @@ namespace KadOzenka.Dal.Modeling
 	        {
 		        case ReferenceItemCodeType.Number:
 			        if (!cellValue.TryParseToDecimal(out var number))
-			        {
-				        throw new Exception(
-					        $"Значение '{cellValue}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
-			        }
+				        throw new Exception($"Значение '{cellValue}' не может быть приведено к типу 'Число'");
 			        valueString = number.ToString();
 			        break;
 		        case ReferenceItemCodeType.String:
@@ -377,11 +371,7 @@ namespace KadOzenka.Dal.Modeling
 			        break;
 		        case ReferenceItemCodeType.Date:
 			        if (!cellValue.TryParseToDateTime(out var date))
-			        {
-				        throw new Exception(
-					        $"Значение '{cellValue}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
-			        }
-
+				        throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Дата'");
 			        valueString = date.ToString(CultureInfo.CurrentCulture);
 			        break;
 	        }

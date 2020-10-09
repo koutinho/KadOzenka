@@ -542,7 +542,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
 	            return GenerateMessageNonValidModel();
 
-            long? referenceId = null;
+            long? dictionaryId = null;
             object returnedData;
             try
             {
@@ -595,12 +595,12 @@ namespace KadOzenka.Web.Controllers
 						var dictionary = viewModel.Dictionary;
 						if (dictionary.IsNewDictionary)
 						{
-							referenceId = DictionaryService.CreateReferenceFromExcel(fileStream, importInfo,
+							dictionaryId = DictionaryService.CreateDictionaryFromExcel(fileStream, importInfo,
 								dictionary.NewDictionaryName, import);
 						}
 						else
 						{
-							DictionaryService.UpdateReferenceFromExcel(fileStream, importInfo,
+							DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
 								dictionary.DictionaryId.GetValueOrDefault(-1), dictionary.DeleteOldValues, import);
 						}
 
@@ -608,7 +608,7 @@ namespace KadOzenka.Web.Controllers
 						{
 							Success = true,
 							message = "Справочник успешно импортирован",
-							idNewReference = viewModel.Dictionary.IsNewDictionary ? referenceId : null,
+							newDictionaryId = viewModel.Dictionary.IsNewDictionary ? dictionaryId : null,
 						};
 					}
 				}
