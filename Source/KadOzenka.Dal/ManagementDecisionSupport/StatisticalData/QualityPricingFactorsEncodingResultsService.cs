@@ -15,16 +15,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	{
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
+		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly string _reportGroupingSqlFileName = "QualityPricingFactorsEncodingResultsGrouping";
 		private readonly string _reportOksSqlFileName = "QualityPricingFactorsEncodingResultsOks";
 		private readonly string _reportZuSqlFileName = "QualityPricingFactorsEncodingResultsZu";
 
-		public QualityPricingFactorsEncodingResultsService(StatisticalDataService statisticalDataService)
+		public QualityPricingFactorsEncodingResultsService(StatisticalDataService statisticalDataService, GbuCodRegisterService gbuCodRegisterService)
 		{
 			_statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
-
-        }
+            _gbuCodRegisterService = gbuCodRegisterService;
+		}
 
 		public List<QualityPricingFactorsEncodingResultsOksDto> GetDataForOksObjects(long[] taskIdList, long parentKnAttributeId, long typeOfUsingNameAttributeId, long typeOfUsingCodeAttributeId,
 			long typeOfUsingCodeSourceAttributeId, long typeOfUsingGroupCodeAttributeId, long functionalGroupNameAttributeId, long segmentAttributeId)
@@ -53,7 +54,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetUndergroundFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetFloorAttribute().Id,
-                _rosreestrRegisterService.GetWallMaterialAttribute().Id
+                _rosreestrRegisterService.GetWallMaterialAttribute().Id,
+				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsOksDto>(sql);
 
@@ -79,7 +81,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetParcelNameAttribute().Id,
                 _rosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
                 _rosreestrRegisterService.GetAddressAttribute().Id,
-                _rosreestrRegisterService.GetLocationAttribute().Id
+                _rosreestrRegisterService.GetLocationAttribute().Id,
+				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsZuDto>(sql);
 

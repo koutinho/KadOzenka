@@ -5,7 +5,7 @@
 	u.PROPERTY_TYPE,
 	u.SQUARE
 	from ko_unit u
-	where u.property_type_code<>4 and u.task_id IN ({0})
+	where u.property_type_code<>4 and u.PROPERTY_TYPE_CODE<>2190 and u.task_id IN ({0})
 ),
 
 ParentKnAttrValues as (
@@ -78,12 +78,16 @@ FloorNumberAttrValues as (
 
 WallMaterialAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {18})
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {14})
 )
 
 select
 	u.PROPERTY_TYPE as PropertyType,
 	u.CADASTRAL_NUMBER as CadastralNumber,
-	u.CADASTRAL_BLOCK as CadastralQuarter,
+	COALESCE(cadastralQuartalGbu.attributeValue, u.CADASTRAL_BLOCK) as CadastralQuarter,
 	u.SQUARE as Square,
 	ParentKn.attributeValue as ParentKn,
 	TypeOfUsingName.attributeValue as TypeOfUsingName,
@@ -122,3 +126,4 @@ from unit_data  u
 	left outer join UndergroundFloorCountAttrValues UndergroundFloorCount on u.object_id=UndergroundFloorCount.objectId	
 	left outer join FloorNumberAttrValues FloorNumber on u.object_id=FloorNumber.objectId	
 	left outer join WallMaterialAttrValues WallMaterial on u.object_id=WallMaterial.objectId	
+	left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.object_id=cadastralQuartalGbu.objectId
