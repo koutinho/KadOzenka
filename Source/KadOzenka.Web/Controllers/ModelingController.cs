@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
+using Core.ErrorManagment;
 using Core.ObjectModel.CustomAttribute;
 using Core.Register;
 using Core.Register.Enums;
@@ -15,8 +15,6 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
@@ -30,14 +28,13 @@ using ObjectModel.Market;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Helpers;
-using KadOzenka.Web.Models.ExpressScoreReference;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.ES;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
+using System.IO;
+using KadOzenka.Dal.LongProcess.ExpressScore;
+using KadOzenka.Dal.Modeling.Dto;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -500,8 +497,9 @@ namespace KadOzenka.Web.Controllers
 	        try
 	        {
 		        var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+
 		        return View(DictionaryModel.ToModel(dictionary));
-            }
+	        }
 	        catch (Exception ex)
 	        {
 		        return SendErrorMessage(ex.Message);
@@ -522,6 +520,106 @@ namespace KadOzenka.Web.Controllers
 	        }
 
 	        return Json(new { Success = true });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DictionaryImport()
+        {
+            ViewData["References"] = OMModelingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
+            {
+                Text = x.Name,
+                Value = x.Id
+            }).ToList();
+
+            return View(new DictionaryImportModel());
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel viewModel)
+        {
+            if (!ModelState.IsValid)
+	            return GenerateMessageNonValidModel();
+
+            long? referenceId = null;
+            object returnedData;
+            try
+            {
+                using (var fileStream = file.OpenReadStream())
+                {
+	                var importInfo = new DictionaryImportFileInfoDto
+                    {
+                        FileName = file.FileName,
+                        ValueColumnName = viewModel.Value,
+                        CalcValueColumnName = viewModel.CalcValue,
+                        ValueType = viewModel.ValueType
+                    };
+
+	                var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+
+					if (DictionaryService.MustUseLongProcess(fileStream))
+					{
+						fileStream.Seek(0, SeekOrigin.Begin);
+						
+						var inputParameters = new DictionaryImportFileFromExcelDto
+						{
+							DeleteOldValues = viewModel.Dictionary.DeleteOldValues,
+							FileInfo = importInfo,
+							DictionaryId = viewModel.Dictionary.DictionaryId.GetValueOrDefault(),
+							IsNewDictionary = viewModel.Dictionary.IsNewDictionary,
+							NewDictionaryName = viewModel.Dictionary.NewDictionaryName
+						};
+						////TODO для тестирования
+						//new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+						//{
+						//	Status_Code = Status.Added,
+						//	UserId = SRDSession.GetCurrentUserId(),
+						//	ObjectId = import.Id,
+						//	Parameters = inputParameters.SerializeToXml()
+						//}, new CancellationToken());
+
+						ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
+
+						returnedData = new
+						{
+							Success = true,
+							message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.",
+							isLongProcess = true
+						};
+					}
+					else
+					{
+						fileStream.Seek(0, SeekOrigin.Begin);
+
+						var dictionary = viewModel.Dictionary;
+						if (dictionary.IsNewDictionary)
+						{
+							referenceId = DictionaryService.CreateReferenceFromExcel(fileStream, importInfo,
+								dictionary.NewDictionaryName, import);
+						}
+						else
+						{
+							DictionaryService.UpdateReferenceFromExcel(fileStream, importInfo,
+								dictionary.DictionaryId.GetValueOrDefault(-1), dictionary.DeleteOldValues, import);
+						}
+
+						returnedData = new
+						{
+							Success = true,
+							message = "Справочник успешно импортирован",
+							idNewReference = viewModel.Dictionary.IsNewDictionary ? referenceId : null,
+						};
+					}
+				}
+			}
+            catch (Exception ex)
+            {
+                ErrorManager.LogError(ex);
+                return SendErrorMessage(ex.Message);
+            }
+
+            return Json(returnedData);
         }
 
         [HttpGet]

@@ -22,7 +22,7 @@ using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.ExpressScore
+namespace KadOzenka.Dal.Modeling
 {
     public class DictionaryService
     {
@@ -30,18 +30,17 @@ namespace KadOzenka.Dal.ExpressScore
         public int AllRows { get; private set; } = 1;
 		public int CurrentRow { get; private set; }
 
-        private const long MaxRow = 10000;
+        private const long MaxRowInFileDuringImport = 10000;
         private static readonly int MainRegisterId = OMEsReference.GetRegisterId();
         private static readonly string RegisterViewId = "EsReferences";
 
-        public bool UseLongProcess(Stream fileStream)
+        public bool MustUseLongProcess(Stream fileStream)
         {
-	        if (GetCountRows(fileStream) > MaxRow)
-	        {
-		        return true;
-	        }
+	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+	        
+	        var mainWorkSheet = excelFile.Worksheets[0];
 
-	        return false;
+	        return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
         }
 
         #region Dictionary
@@ -86,22 +85,21 @@ namespace KadOzenka.Dal.ExpressScore
 
         public void DeleteDictionary(long id)
         {
-	        var reference = GetDictionaryById(id);
+	        var dictionary = GetDictionaryById(id);
 
 	        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
 	        {
-		        var referenceItems = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).Execute();
-		        referenceItems.ForEach(x => x.Destroy());
+		        DeleteDictionaryValues(id);
 
-		        reference.Destroy();
+				dictionary.Destroy();
 
-		        ts.Complete();
+				ts.Complete();
 	        }
         }
 
         #region Support Methods
 
-        public void ValidateDictionary(string name, long id)
+        private void ValidateDictionary(string name, long id)
         {
 	        if (string.IsNullOrWhiteSpace(name))
 		        throw new Exception("Невозможно создать справочник с пустым именем");
@@ -109,6 +107,12 @@ namespace KadOzenka.Dal.ExpressScore
 	        var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
 	        if (isExistsDictionaryWithTheSameName)
 		        throw new Exception($"Справочник '{name}' уже существует");
+        }
+
+        private void DeleteDictionaryValues(long dictionaryId)
+        {
+	        var referenceItems = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
+	        referenceItems.ForEach(x => x.Destroy());
         }
 
         #endregion
@@ -184,136 +188,54 @@ namespace KadOzenka.Dal.ExpressScore
 
         #endregion
 
-        public void CreateOrUpdateReferenceThroughLongProcess(OMImportDataLog import, ImportFileFromExcelDto settings)
+        #region Import from Excel
+
+        public long CreateReferenceFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
+	        string newDictionaryName, OMImportDataLog import)
         {
-	        OMEsReference reference;
-	        if (settings.IsNewReference)
-	        {
-		        long referenceId = CreateDictionary(settings.NewReferenceName, settings.FileInfo.ValueType);
-		        reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
-	        }
-	        else
-	        {
-		        reference = OMEsReference.Where(x => x.Id == settings.IdReference).SelectAll().ExecuteFirstOrDefault();
-		        if (reference == null)
-		        {
-			        throw new Exception($"Не найден справочник с ИД {settings.IdReference}");
-		        }
+	        var dictionaryId = CreateDictionary(newDictionaryName, fileImportInfo.ValueType);
+	        var dictionary = GetDictionaryById(dictionaryId);
 
-		        if (reference.ValueType_Code != settings.FileInfo.ValueType && !settings.DeleteOldValues)
-		        {
-			        throw new Exception($"Нельзя изменить тип справочника без удаления старых значений");
-		        }
+	        ImportDictionaryValues(fileStream, dictionary, fileImportInfo, import);
 
-		        if (settings.DeleteOldValues)
-		        {
-			        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-			        {
-				        var referenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == settings.IdReference).Execute();
-				        foreach (var referenceItem in referenceItems)
-				        {
-					        referenceItem.Destroy();
-				        }
-
-				        reference.ValueType_Code = settings.FileInfo.ValueType;
-				        reference.Save();
-				        ts.Complete();
-			        }
-				}
-			}
-
-	        var dataFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-		        import.DataFileName);
-
-            var resFileStream = ImportReferenceItemsFromExcel(dataFileStream, reference, settings.FileInfo);
-            SaveResultFile(import, resFileStream);
-            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id);
-		}
-
-        public void UpdateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, long referenceId, bool deleteOldValues)
-        {
-            var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {referenceId}");
-            }
-
-            if (reference.ValueType_Code != fileImportInfo.ValueType && !deleteOldValues)
-            {
-                throw new Exception($"Нельзя изменить тип справочника без удаления старых значений");
-            }
-
-            if (deleteOldValues)
-            {
-                using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-                {
-                    var referenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).Execute();
-                    foreach (var referenceItem in referenceItems)
-                    {
-                        referenceItem.Destroy();
-                    }
-
-                    reference.ValueType_Code = fileImportInfo.ValueType;
-                    reference.Save();
-                    ts.Complete();
-                }
-            }
-			PreparingForImportAndImport(fileStream, reference, fileImportInfo);
-		}
-
-        public long CreateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, string referenceName)
-        {
-	   
-			long referenceId = CreateDictionary(referenceName, fileImportInfo.ValueType);
-            var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
-
-
-            PreparingForImportAndImport(fileStream, reference, fileImportInfo);
-			return referenceId;
+	        return dictionaryId;
         }
 
-        public void PreparingForImportAndImport(Stream fileStream, OMEsReference reference,
-	        ImportReferenceFileInfoDto fileImportInfo)
+        public void UpdateReferenceFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
+	        long dictionaryId, bool deleteOldValues, OMImportDataLog import)
         {
-	        var import = CreateDataFileImport(fileStream, fileImportInfo);
-	        try
+	        var existedDictionary = GetDictionaryById(dictionaryId);
+	        if (existedDictionary.Type_Code != fileImportInfo.ValueType && !deleteOldValues)
+		        throw new Exception("Нельзя изменить тип справочника без удаления старых значений");
+
+	        if (deleteOldValues)
 	        {
-		        import.Status_Code = ImportStatus.Running;
-		        import.DateStarted = DateTime.Now;
-		        import.Save();
+		        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+		        {
+			        DeleteDictionaryValues(existedDictionary.Id);
 
-		        var resFileStream = ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
-		        SaveResultFile(import, resFileStream);
+			        existedDictionary.Type_Code = fileImportInfo.ValueType;
+			        existedDictionary.Save();
 
-		        import.Status_Code = ImportStatus.Completed;
-		        import.Save();
-
-                SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(fileImportInfo.FileName), import.Id);
+			        ts.Complete();
+		        }
 	        }
-	        catch (Exception ex)
-	        {
-		        long errorId = ErrorManager.LogError(ex);
-		        import.Status_Code = ImportStatus.Faulted;
-		        import.DateFinished = DateTime.Now;
-		        import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
-		        import.Save();
 
-		        throw;
-            }
+	        ImportDictionaryValues(fileStream, existedDictionary, fileImportInfo, import);
         }
 
-        public static OMImportDataLog CreateDataFileImport(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo)
+        public static OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
         {
 	        var currentTime = DateTime.Now;
-	        var fileName = $"{DataImporterCommon.GetDataFileTitle(fileImportInfo.FileName)} ({currentTime.GetString().Replace(":", "_")})";
+	        var fileName = $"{DataImporterCommon.GetDataFileTitle(inputFileName)} ({currentTime.GetString().Replace(":", "_")})";
 
-            var import = new OMImportDataLog
+	        var import = new OMImportDataLog
 	        {
-		        UserId = SRDSession.GetCurrentUserId().Value,
+		        UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 		        DateCreated = currentTime,
 		        Status_Code = ImportStatus.Added,
 		        DataFileTitle = fileName,
-		        FileExtension = DataImporterCommon.GetFileExtension(fileImportInfo.FileName),
+		        FileExtension = DataImporterCommon.GetFileExtension(inputFileName),
 		        MainRegisterId = MainRegisterId,
 		        RegisterViewId = RegisterViewId
 	        };
@@ -326,122 +248,145 @@ namespace KadOzenka.Dal.ExpressScore
 	        return import;
         }
 
-        private Stream ImportReferenceItemsFromExcel(Stream fileStream, OMEsReference reference,
-            ImportReferenceFileInfoDto fileImportInfo)
+		#region Support Methods
+
+		private void ImportDictionaryValues(Stream fileStream, OMModelingDictionary dictionary,
+			DictionaryImportFileInfoDto fileImportInfo, OMImportDataLog import)
+		{
+			try
+			{
+				import.Status_Code = ImportStatus.Running;
+				import.DateStarted = DateTime.Now;
+				import.Save();
+
+				var resFileStream = ProcessDictionaryValuesInExcel(fileStream, dictionary, fileImportInfo);
+				SaveResultFile(import, resFileStream);
+
+				import.Status_Code = ImportStatus.Completed;
+				import.Save();
+
+				SendImportResultNotification(dictionary.Name, DataImporterCommon.GetDataFileTitle(fileImportInfo.FileName), import.Id);
+			}
+			catch (Exception ex)
+			{
+				long errorId = ErrorManager.LogError(ex);
+				import.Status_Code = ImportStatus.Faulted;
+				import.DateFinished = DateTime.Now;
+				import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+				import.Save();
+
+				throw;
+			}
+		}
+
+		private Stream ProcessDictionaryValuesInExcel(Stream fileStream, OMModelingDictionary dictionary,
+	        DictionaryImportFileInfoDto fileImportInfo)
         {
 	        fileStream.Seek(0, SeekOrigin.Begin);
-			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-			var mainWorkSheet = excelFile.Worksheets[0];
+	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+	        var mainWorkSheet = excelFile.Worksheets[0];
 
-			AllRows = mainWorkSheet.Rows.Count;
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
-            object locked = new object();
+	        AllRows = mainWorkSheet.Rows.Count;
+	        var cancelTokenSource = new CancellationTokenSource();
+	        var options = new ParallelOptions
+	        {
+		        CancellationToken = cancelTokenSource.Token,
+		        MaxDegreeOfParallelism = 1
+	        };
+	        var locked = new object();
 
-            var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-            var columnNames = new List<string>();
-            for (var i = 0; i < maxColumns; i++)
-            {
-                columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
-            }
+	        var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+	        var columnNames = new List<string>();
+	        for (var i = 0; i < maxColumns; i++)
+	        {
+		        columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+	        }
             
-            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-            var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
+	        mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
+	        var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0).ToList();
 
-            Parallel.ForEach(dataRows, options, row =>
-            {
-                try
-                {
-                    var cellValue = mainWorkSheet.Rows[row.Index]
-                        .Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)];
-                    var cellCalcValue = mainWorkSheet.Rows[row.Index]
-                        .Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)];
+	        Parallel.ForEach(dataRows, options, row =>
+	        {
+		        try
+		        {
+			        var value = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)].Value;
+			        var calculationValue = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)].Value;
 
-                    if (!cellCalcValue.Value.TryParseToDecimal(out var calcValue))
-                    {
-                        throw new Exception(
-                            $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
-                    }
+			        if (!calculationValue.TryParseToDecimal(out var calcValue))
+				        throw new Exception($"Значение '{value}' не может быть приведено к числу");
 
-                    string valueString = null;
-                    switch (fileImportInfo.ValueType)
-                    {
-                        case ReferenceItemCodeType.Number:
-                            if (!cellValue.Value.TryParseToDecimal(out var number))
-                            {
-                                throw new Exception(
-                                    $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
-                            }
-
-                            valueString = number.ToString();
-                            break;
-                        case ReferenceItemCodeType.String:
-                            valueString = cellValue.Value.ToString();
-                            break;
-                        case ReferenceItemCodeType.Date:
-                            if (!cellValue.Value.TryParseToDateTime(out var date))
-                            {
-                                throw new Exception(
-                                    $"Значение '{cellValue.Value.ToString()}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
-                            }
-
-                            valueString = date.ToString(CultureInfo.CurrentCulture);
-                            break;
-                    }
-
-                    OMEsReferenceItem obj;
-					//lock (locked)
-					{
-						obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll().ExecuteFirstOrDefault();
-					}
-
-					if (obj != null)
-                    {
-                        obj.CalculationValue = calcValue;
-						//lock (locked)
+			        var valueString = GetValueFromExcelCell(fileImportInfo.ValueType, value);
+			        var obj = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionary.Id && x.Value == valueString)
+				        .SelectAll().ExecuteFirstOrDefault();
+			        if (obj != null && obj.CalculationValue != calcValue)
+			        {
+				        obj.CalculationValue = calcValue;
+						obj.Save();
+						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
+			        }
+			        else
+			        {
+						new OMModelingDictionariesValues
 						{
-                            obj.Save();
-                        }
-                        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
-                    }
-                    else
-                    {
-						//lock (locked)
-						{
-                            new OMEsReferenceItem
-                            {
-                                ReferenceId = reference.Id,
-                                Value = valueString,
-                                CalculationValue = calcValue
-                            }.Save();
-                        }
-                        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
-                    }
-					lock(locked)
-					{
-						CurrentRow++;
-					}
-                }
-                catch (Exception ex)
-                {
-                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
-                    for (int i = 0; i < maxColumns; i++)
-                    {
-                        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
-                    }
-                }
-            });
+							DictionaryId = dictionary.Id,
+							Value = valueString,
+							CalculationValue = calcValue
+						}.Save();
+						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
+			        }
+			        lock(locked)
+			        {
+				        CurrentRow++;
+			        }
+		        }
+		        catch (Exception ex)
+		        {
+			        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
+			        for (var i = 0; i < maxColumns; i++)
+			        {
+				        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+			        }
+		        }
+	        });
 
-            MemoryStream stream;
-            stream = new MemoryStream();
-            excelFile.Save(stream, SaveOptions.XlsxDefault);
-            stream.Seek(0, SeekOrigin.Begin);
+	        var stream = new MemoryStream();
+	        excelFile.Save(stream, SaveOptions.XlsxDefault);
+	        stream.Seek(0, SeekOrigin.Begin);
 
-			return stream;
+	        return stream;
+        }
+
+        private string GetValueFromExcelCell(ReferenceItemCodeType valueType, object cellValue)
+        {
+	        if (cellValue == null)
+		        return null;
+
+	        string valueString = null;
+	        switch (valueType)
+	        {
+		        case ReferenceItemCodeType.Number:
+			        if (!cellValue.TryParseToDecimal(out var number))
+			        {
+				        throw new Exception(
+					        $"Значение '{cellValue}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+			        }
+			        valueString = number.ToString();
+			        break;
+		        case ReferenceItemCodeType.String:
+			        valueString = cellValue.ToString();
+			        break;
+		        case ReferenceItemCodeType.Date:
+			        if (!cellValue.TryParseToDateTime(out var date))
+			        {
+				        throw new Exception(
+					        $"Значение '{cellValue}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
+			        }
+
+			        valueString = date.ToString(CultureInfo.CurrentCulture);
+			        break;
+	        }
+
+	        return valueString;
         }
 
         private void SaveResultFile(OMImportDataLog import, Stream streamResult)
@@ -453,28 +398,24 @@ namespace KadOzenka.Dal.ExpressScore
 	        import.Save();
         }
 
-        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId)
+        private void SendImportResultNotification(string dictionaryName, string fileName, long importId)
         {
-            new MessageService().SendMessages(new MessageDto
-            {
-                Addressers =
-                    new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
-                Subject = $"Результат загрузки данных в справочник: {reference.Name} от ({DateTime.Now.GetString()})",
-                Message = $@"Загрузка файла ""{fileName}"" была завершена.
+	        new MessageService().SendMessages(new MessageDto
+	        {
+		        Addressers =
+			        new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
+		        Subject = $"Результат загрузки данных в справочник: {dictionaryName} от ({DateTime.Now.GetString()})",
+		        Message = $@"Загрузка файла ""{fileName}"" была завершена.
 <a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
 <a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
-                IsUrgent = true,
-                IsEmail = true,
-                ExpireDate = DateTime.Now.AddHours(2)
-            });
+		        IsUrgent = true,
+		        IsEmail = true,
+		        ExpireDate = DateTime.Now.AddHours(2)
+	        });
         }
 
-        private long GetCountRows(Stream fileStream)
-        {
-	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-	        var mainWorkSheet = excelFile.Worksheets[0];
-	        long res = mainWorkSheet.Rows.Count;
-	        return res;
-        }
+        #endregion
+
+        #endregion
     }
 }

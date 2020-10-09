@@ -1,0 +1,170 @@
+﻿@using KadOzenka.Web.Models.Modeling
+@model KadOzenka.Web.Models.Modeling.DictionaryImportModel
+
+@using (Html.BeginForm("DictionaryImport", "Modeling", FormMethod.Post))
+{
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Value)
+            </div>
+            <div class="col-sm-10">
+                @Html.Kendo().DropDownListFor(m => m.Value).DataTextField("Name").DataValueField("Name")
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.CalcValue)
+            </div>
+            <div class="col-sm-10">
+                @Html.Kendo().DropDownListFor(m => m.CalcValue).DataTextField("Name").DataValueField("Name")
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.ValueType)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoEnumDropDownListFor(m => m.ValueType, false, withoutNull: true)
+            </div>
+        </div>
+        <div class="form-group"></div>
+        @(await Html.PartialAsync("Partials/PartialDictionary", new PartialDictionaryModel
+        {
+            ModelPrefix = $"{nameof(Model.Dictionary)}",
+            DictionaryId = Model.Dictionary.DictionaryId,
+            DeleteOldValues = Model.Dictionary.DeleteOldValues,
+            IsNewDictionary = Model.Dictionary.IsNewDictionary,
+            NewDictionaryName = Model.Dictionary.NewDictionaryName
+        }))
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div>
+                <span>
+                    <button id="importButton" type="button" class="k-button" style="float: right">Загрузить</button>
+                </span>
+            </div>
+        </div>
+    </div>
+}
+
+@section styles {
+    <style>
+        .form-horizontal .form-group {
+            margin-right: 0;
+            margin-left: 0;
+        }
+    </style>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    var dataSource = new kendo.data.DataSource({
+        data: [ ]
+    });
+    var uploadControl;
+
+    $(document).ready(function () {
+        $(`#@(nameof(Model.CalcValue))`).data('kendoDropDownList').setDataSource(dataSource);
+        $(`#@(nameof(Model.Value))`).data('kendoDropDownList').setDataSource(dataSource);
+
+        uploadControl = $('#files').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить Файл'
+            },
+            async: {
+                autoUpload: true,
+                saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function (e) {
+                if (e.operation === "upload") {
+                    dataSource.data(e.response.ColumnsNames);
+                }
+            },
+            error: function (e) {
+                dataSource.data([]);
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            },
+            clear: function (e) {
+                dataSource.data([]);
+            }
+        }).data('kendoUpload');
+
+        $('#importButton').on('click',
+            function () {
+	            var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                var files = uploadControl.getFiles();
+                if (files.length === 0) {
+                    Common.ShowError("Файл не выбран");
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append("viewModel.Value", formObject.Value);
+                formData.append("viewModel.CalcValue", formObject.CalcValue);
+                formData.append("viewModel.ValueType", formObject.ValueType);
+                formData.append("viewModel.Dictionary.DictionaryId", formObject["Dictionary.DictionaryId"]);
+                formData.append("viewModel.Dictionary.DeleteOldValues", formObject["Dictionary.DeleteOldValues"]);
+                formData.append("viewModel.Dictionary.NewDictionaryName", formObject["Dictionary.NewDictionaryName"]);
+                formData.append("viewModel.Dictionary.IsNewDictionary", formObject["Dictionary.IsNewDictionary"]);
+                formData.append("file", files[0].rawFile);
+	            kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+					success: function (response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (response.Success) {
+							Common.ShowMessage(response.message);
+                            if (response.idNewReference && updateReferenceControl) {
+                                updateReferenceControl(response.idNewReference);
+							}
+							if (response.isLongProcess) {
+								uploadControl.clearAllFiles();
+
+								$("#@(nameof(Model.CalcValue))").data('kendoDropDownList').setDataSource(new kendo.data.DataSource({
+									data: [ ]
+								}));
+								$("#@(nameof(Model.Value))").data('kendoDropDownList').setDataSource(new kendo.data.DataSource({
+									data: [ ]
+								}));
+
+								$("#@(nameof(Model.ValueType))").data("kendoDropDownList").value(-1);
+							}
+
+                        }
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function (data) {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            });
+    });
+</script>
+

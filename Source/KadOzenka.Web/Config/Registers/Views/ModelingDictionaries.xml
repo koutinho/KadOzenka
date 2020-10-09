@@ -47,8 +47,7 @@
 	        </Parameters>
 	    </Button>
 
-      <!--<Button Caption="Импорт справочника" NavigateURL="/ExpressScopeReference/DataImport" WindowHeight="470" WindowWidth="840" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-code">
-	    </Button>-->
+      <Button Caption="Импорт справочника" NavigateURL="/Modeling/DictionaryImport" WindowHeight="470" WindowWidth="840" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-code"/>
   </Buttons>
 
   <Tabs>
@@ -61,6 +60,6 @@
   </Tabs>
 
   <RowMenuButtons>
-    <!--<Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>-->
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
   </RowMenuButtons>
 </RegisterView>
