@@ -557,12 +557,11 @@ namespace KadOzenka.Web.Controllers
                     };
 
 	                var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
-
-					if (DictionaryService.MustUseLongProcess(fileStream))
+	                fileStream.Seek(0, SeekOrigin.Begin);
+                    if (DictionaryService.MustUseLongProcess(fileStream))
 					{
 						fileStream.Seek(0, SeekOrigin.Begin);
-						
-						var inputParameters = new DictionaryImportFileFromExcelDto
+                        var inputParameters = new DictionaryImportFileFromExcelDto
 						{
 							DeleteOldValues = viewModel.Dictionary.DeleteOldValues,
 							FileInfo = importInfo,
