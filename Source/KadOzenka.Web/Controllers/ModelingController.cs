@@ -461,11 +461,11 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        //TODO добавить SRD
+
         #region Dictionaries
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
         public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
         {
 	        var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
@@ -475,7 +475,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public ActionResult DictionaryCard(DictionaryModel viewModel)
         {
 	        if (!ModelState.IsValid)
@@ -491,7 +491,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DictionaryDelete(long dictionaryId)
         {
 	        try
@@ -507,7 +507,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DeleteDictionary(long dictionaryId)
         {
 	        try
@@ -523,7 +523,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DictionaryImport()
         {
             ViewData["References"] = OMModelingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
@@ -536,7 +536,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -623,7 +623,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES)]
         public ActionResult DictionaryValueCard(long dictionaryValueId, long dictionaryId)
         {
 	        var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
@@ -634,7 +634,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
         public ActionResult DictionaryValueCard(DictionaryValueModel viewModel)
         {
 	        if (!ModelState.IsValid)
@@ -650,7 +650,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
         public IActionResult DictionaryValueDelete(long dictionaryValueId)
         {
 	        try
@@ -667,7 +667,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
         public IActionResult DeleteDictionaryValue(long dictionaryValueId)
         {
 	        try

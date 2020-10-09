@@ -60,7 +60,7 @@ namespace KadOzenka.Web.Models.Modeling
                 NumberValue = numberValue,
                 DateTimeValue = dateValue,
                 CalcValue = value?.CalculationValue,
-                IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.KO_DICT_MODELS)
+                IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)
             };
         }
 

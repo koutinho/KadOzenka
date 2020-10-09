@@ -27,7 +27,7 @@ namespace KadOzenka.Web.Models.Modeling
 		{
 			var hasValues = entity == null || !OMModelingDictionariesValues.Where(x => x.DictionaryId == entity.Id).ExecuteExists();
 
-			var isEditAvailable = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.KO_DICT_MODELS);
+			var isEditAvailable = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION);
 
 			return new DictionaryModel
 			{
