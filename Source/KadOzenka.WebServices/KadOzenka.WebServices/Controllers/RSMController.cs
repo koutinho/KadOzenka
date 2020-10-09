@@ -56,7 +56,9 @@ namespace KadOzenka.WebServices.Controllers
 				GroupNumber = result.GroupNumber,
 				SubGroupNumber = result.SubGroupNumber,
 				Upks = result.Upks,
-				CadastralCost = result.CadastralCost
+				CadastralCost = result.CadastralCost,
+				TypeOfUseByDocuments = result.TypeOfUseByDocuments,
+				TypeOfUseByClassifier = result.TypeOfUseByClassifier
 			};
 
 			return Ok(message);

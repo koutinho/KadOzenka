@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Core.Shared.Extensions;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Domain.Model;
 using KadOzenka.WebServices.Exceptions;
 using KadOzenka.WebServices.Services.ModelDto;
+using Microsoft.EntityFrameworkCore;
 
 namespace KadOzenka.WebServices.Services.Rsm
 {
@@ -11,6 +14,8 @@ namespace KadOzenka.WebServices.Services.Rsm
 	{
 		private int taskReadyStatusCode = 2;
 		private string taskReadyStatus = "Готово";
+		private const string TableWithTypeOfUseByDocuments = "GBU_SOURCE2_A_4";
+		private const string TableWithTypeOfUseByClassifier = "GBU_SOURCE2_A_5";
 		private ApplicationContext _appContext;
 
 		public RsmService(ApplicationContext appContext)
@@ -33,6 +38,7 @@ namespace KadOzenka.WebServices.Services.Rsm
 					unit.GroupId,
 					unit.Upks,
 					unit.CadastralCost,
+					unit.ObjectId,
 					TaskId = task.Id,
 					TaskDocumentID = task.DocumentId,
 					TaskStatus = task.Status
@@ -47,6 +53,9 @@ namespace KadOzenka.WebServices.Services.Rsm
 
 			var resultUnit = unitsWithReadyTask.First(x => x.TaskDocumentID == document.Id);
 
+			var gbuTypeOfUserByDocuments = GetGbuAttributes(resultUnit.ObjectId, TableWithTypeOfUseByDocuments);
+			var gbuTypeOfUserByClassifier = GetGbuAttributes(resultUnit.ObjectId, TableWithTypeOfUseByClassifier);
+
 			Group resultGroup = null;
 			var resultSubGroup = _appContext.Groups.FirstOrDefault(x => x.Id == resultUnit.GroupId);
 			if (resultSubGroup != null)
@@ -57,7 +66,9 @@ namespace KadOzenka.WebServices.Services.Rsm
 				GroupNumber = resultGroup?.Number,
 				SubGroupNumber = resultSubGroup?.Number,
 				Upks = resultUnit.Upks,
-				CadastralCost = resultUnit.CadastralCost
+				CadastralCost = resultUnit.CadastralCost,
+				TypeOfUseByDocuments = gbuTypeOfUserByDocuments,
+				TypeOfUseByClassifier = gbuTypeOfUserByClassifier
 			};
 		}
 
@@ -81,6 +92,40 @@ namespace KadOzenka.WebServices.Services.Rsm
 				throw new NotFoundException($"Для тура {tourYear} не найдено документа");
 
 			return document;
+		}
+
+		private string GetGbuAttributes(long objectId, string tableName)
+		{
+			var date = DateTime.Now.GetEndOfTheDay().ToString("yyyy-MM-dd HH:mm:ss:ffffff");
+
+			var sql = $@"select 
+			  a.value as Value
+			from {tableName} a        
+			where a.object_id in ({objectId}) AND A.s <= TO_TIMESTAMP('{date}','yyyy-mm-dd hh24:mi:ss:us')::timestamp without time zone 
+			and 
+			A.OT = (SELECT MAX(A2.OT) FROM GBU_SOURCE2_A_4 A2 
+			  WHERE A2.object_id = A.object_id 
+			  AND A2.s <= TO_TIMESTAMP('{date}','yyyy-mm-dd hh24:mi:ss:us')::timestamp without time zone)";
+
+			string value = null;
+			using (var command = _appContext.Database.GetDbConnection().CreateCommand())
+			{
+				command.CommandText = sql;
+				_appContext.Database.OpenConnection();
+				using (var result = command.ExecuteReader())
+				{
+					if (result.HasRows)
+					{
+						while (result.Read())
+						{
+							value = result.GetString(0);
+							break;
+						}
+					}
+				}
+			}
+
+			return value;
 		}
 
 		#endregion
