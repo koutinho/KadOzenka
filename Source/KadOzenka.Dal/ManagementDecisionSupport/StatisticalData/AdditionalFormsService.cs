@@ -6,6 +6,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -47,7 +48,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				JoinType = QSJoinType.Inner
 			};
 
-			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, additionalJoins: new List<QSJoin> {unitChangeJoin, taskJoin});
+			var notCadastralQuarterType = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
+				QSConditionType.NotEqual, (long)PropertyTypes.CadastralQuartal);
+			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, new List<QSCondition>{ notCadastralQuarterType }, new List<QSJoin> {unitChangeJoin, taskJoin});
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.StatusRepeatCalc, "StatusRepeatCalc"));

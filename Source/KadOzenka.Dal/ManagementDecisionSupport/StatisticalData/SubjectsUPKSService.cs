@@ -3,6 +3,7 @@ using System.IO;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {

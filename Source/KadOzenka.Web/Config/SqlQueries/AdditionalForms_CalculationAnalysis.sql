@@ -1,14 +1,14 @@
-﻿with unit_data as(
+﻿with unit_init_data as(
 SELECT 
 	L1_R200.ID AS GbuObjectId,
 	L1_R200.CADASTRAL_NUMBER AS CadastralNumber,
 	L1_R200.OBJECT_TYPE_CODE AS PropertyType,
 	L1_R201.CADASTRAL_BLOCK AS CadastralQuartal,
-	L1_R107.ZONE AS Zone,
 	L1_R203.NOTE_TYPE_CODE AS TaskType,
-	L1_R205.GROUP_NAME AS GroupName,
-	(SELECT 
-		L2_R205.GROUP_NAME AS "20500300"
+	(case when L1_R205.NUMBER is null then L1_R205.GROUP_NAME 
+          else CONCAT(L1_R205.NUMBER, '. ', L1_R205.GROUP_NAME) end) AS GroupName,
+	(SELECT (case when L2_R205.NUMBER is null then L2_R205.GROUP_NAME 
+            else CONCAT(L2_R205.NUMBER, '. ', L2_R205.GROUP_NAME) end) AS "20500300"
 		FROM KO_GROUP L2_R205
 		WHERE L2_R205.ID = L1_R205.PARENT_ID
 	) AS ParentGroup,
@@ -29,62 +29,78 @@ SELECT
 FROM KO_UNIT L1_R201
 	 JOIN GBU_MAIN_OBJECT L1_R200
 	 	ON (L1_R201.OBJECT_ID = L1_R200.ID)
-	 LEFT JOIN MARKET_REGION_DICTIONATY L1_R107
-	 	ON (L1_R201.CADASTRAL_BLOCK = L1_R107.CADASTRAL_QUARTAL)
 	 JOIN KO_TASK L1_R203
 	 	ON (L1_R201.TASK_ID = L1_R203.ID)
 	 LEFT JOIN KO_GROUP L1_R205
 	 	ON (L1_R201.GROUP_ID = L1_R205.ID)
-WHERE L1_R201.TASK_ID in ({0})
+WHERE L1_R201.TASK_ID in ({0}) and L1_R201.property_type_code<>2190
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_init_data), {1})
+),
+
+unit_data as(
+	select u.GbuObjectId, u.CadastralNumber, u.PropertyType, u.TaskType, u.GroupName, u.ParentGroup, 
+		u.ObjectUpks, u.ObjectCost, u.UnitCreationDate, u.Status, u.ChangedFactors,
+		COALESCE(cadastralQuartalGbu.attributeValue, u.CadastralQuartal) as CadastralQuartal,
+		marketDict.ZONE AS Zone
+	from unit_init_data u
+		left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.GbuObjectId=cadastralQuartalGbu.objectId
+		LEFT JOIN MARKET_REGION_DICTIONATY marketDict 
+			ON COALESCE(cadastralQuartalGbu.attributeValue, u.CadastralQuartal)=marketDict.CADASTRAL_QUARTAL
 ),
 
 RosreestrSquareAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {1})
-),
-
-ObjectNameAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {2})
 ),
 
-TypeOfUseAttrValues as (
+ObjectNameAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {3})
 ),
 
-BuildingPurposeAttrValues as (
+TypeOfUseAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {4})
 ),
 
-PlacementPurposeAttrValues as (
+BuildingPurposeAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {5})
 ),
 
-ConstructionPurposeAttrValues as (
+PlacementPurposeAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {6})
 ),
 
-AddressAttrValues as (
+ConstructionPurposeAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {7})
 ),
 
-LocationAttrValues as (
+AddressAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {8})
 ),
 
-gko2018Data as (
+LocationAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from unit_data), {9})
+),
+
+gko2018InitData as (
 	select d.CadastralNumber,
+	d.GbuObjectId,
 	d.CadastralQuartal,
 	d.Upks,
 	d.CadastralCost,
 	d.GroupName,
 	d.ParentGroup
 	from (
-		select u.CADASTRAL_NUMBER as CadastralNumber, 
+		select u.CADASTRAL_NUMBER as CadastralNumber, u.OBJECT_ID as GbuObjectId,
 		row_number() over (PARTITION BY u.CADASTRAL_NUMBER) as num,
 		u.CADASTRAL_BLOCK as CadastralQuartal,
 		u.UPKS as Upks,
 		u.CADASTRAL_COST as CadastralCost,
-		g.GROUP_NAME as GroupName,
-		(SELECT parent_gr.GROUP_NAME
+		(case when g.NUMBER is null then g.GROUP_NAME 
+          else CONCAT(g.NUMBER, '. ', g.GROUP_NAME) end) as GroupName,
+		(SELECT (case when parent_gr.NUMBER is null then parent_gr.GROUP_NAME 
+					else CONCAT(parent_gr.NUMBER, '. ', parent_gr.GROUP_NAME) end)
 			FROM KO_GROUP parent_gr
 			WHERE parent_gr.ID = g.PARENT_ID
 		) AS ParentGroup
@@ -93,8 +109,23 @@ gko2018Data as (
 			join ko_task task on task.id=u.task_id
 			join ko_tour tour on tour.id=task.tour_id
 			left join ko_group g on u.group_id=g.id
-		where tour.year=2018 and task.note_type_code=4 ) d
+		where tour.year=2018 and task.note_type_code=4 and u.property_type_code<>2190) d
 	where d.num=1
+),
+
+cadastralQuartal2018AttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select GbuObjectId from gko2018InitData), {1})
+),
+
+gko2018Data as (
+	select d.CadastralNumber,
+		COALESCE(cadastralQuartalGbu.attributeValue, d.CadastralQuartal) as CadastralQuartal,
+		d.Upks,
+		d.CadastralCost,
+		d.GroupName,
+		d.ParentGroup
+	from gko2018InitData d
+		left outer join cadastralQuartal2018AttrValues cadastralQuartalGbu on d.GbuObjectId=cadastralQuartalGbu.objectId
 ),
 
 zones_info as (

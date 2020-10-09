@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 {
@@ -11,7 +12,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 		private readonly ResultsForApprovalService _service;
 		public ResultsForApprovalReport()
 		{
-			_service = new ResultsForApprovalService(StatisticalDataService);
+			_service = new ResultsForApprovalService(StatisticalDataService, new GbuCodRegisterService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)

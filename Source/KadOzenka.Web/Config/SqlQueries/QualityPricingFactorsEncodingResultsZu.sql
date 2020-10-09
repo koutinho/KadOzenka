@@ -46,12 +46,16 @@ AddressAttrValues as (
 
 LocationAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {10})
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {11})
 )
 
 select
 	u.PROPERTY_TYPE as PropertyType,
 	u.CADASTRAL_NUMBER as CadastralNumber,
-	u.CADASTRAL_BLOCK as CadastralQuarter,
+	COALESCE(cadastralQuartalGbu.attributeValue, u.CADASTRAL_BLOCK) as CadastralQuarter,
 	u.SQUARE as Square,
 	LinkedObjectsInfo.attributeValue as LinkedObjectsInfo,
 	LinkedObjectsInfoSource.attributeValue as LinkedObjectsInfoSource,
@@ -74,3 +78,4 @@ from unit_data  u
 	left outer join PermittedUsingAttrValues PermittedUsing on u.object_id=PermittedUsing.objectId	
 	left outer join AddressAttrValues Address on u.object_id=Address.objectId	
 	left outer join LocationAttrValues Location on u.object_id=Location.objectId
+	left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.object_id=cadastralQuartalGbu.objectId

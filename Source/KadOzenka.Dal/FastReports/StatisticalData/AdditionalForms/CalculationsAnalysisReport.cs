@@ -41,7 +41,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
-                RosreestrRegisterService.GetSquareAttribute().Id,
+				GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id,
+				RosreestrRegisterService.GetSquareAttribute().Id,
                 RosreestrRegisterService.GetObjectNameAttribute().Id,
                 RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
                 RosreestrRegisterService.GetBuildingPurposeAttribute().Id,

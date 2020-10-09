@@ -3,6 +3,7 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
 {

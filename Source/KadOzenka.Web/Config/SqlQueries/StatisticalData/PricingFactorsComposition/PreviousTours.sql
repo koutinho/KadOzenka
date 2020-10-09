@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0}) and u.group_id = {1} --and u.id=15280959
+	select u.object_id from ko_unit u where u.task_id IN ({0}) and u.group_id = {1} and u.PROPERTY_TYPE_CODE<>2190 --and u.id=15280959
 ),
 
 --ROSREESTR ATTRIBUTES
