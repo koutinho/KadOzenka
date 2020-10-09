@@ -83,7 +83,7 @@ SELECT
     (select * from gbu_get_allpri_attribute_value(unit.object_id, 
     	(select attribute_id from tourAttrValues tourAttr where unit.tour_id=tourAttr.tour_id and tourAttr.attribute_using_type_code = 2 limit 1))) as CadastralQuartal,
     (select * from gbu_get_allpri_attribute_value(unit.object_id, 
-    	(select attribute_id from tourAttrValues tourAttr where unit.tour_id=tourAttr.tour_id and tourAttr.attribute_using_type_code = 1 limit 1))) as SubGroupNumber,
+    	(select attribute_id from tourAttrValues tourAttr where unit.tour_id=tourAttr.tour_id and tourAttr.attribute_using_type_code = 1 limit 1))) as SubGroupNumber
     -- MODEL FACTORS
     {16}
     

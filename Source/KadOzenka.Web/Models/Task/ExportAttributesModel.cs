@@ -1,31 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Controllers;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.Gbu.ExportAttribute;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
-    public enum ObjectTypeExtended
-    {
-        [Description("Объект капитального строительства")]
-        Oks,
-        [Description("Земельный участок")]
-        Zu,
-        [Description("ОКС/ЗУ")]
-        Both
-    }
-
-    public class ExportAttributesModel : IValidatableObject
+	public class ExportAttributesModel : IValidatableObject
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
@@ -33,7 +22,6 @@ namespace KadOzenka.Web.Models.Task
         public bool IsOks { get; set; }
         [Display(Name = "Земельный участок")]
         public bool IsZu { get; set; }
-
         public ObjectTypeExtended ObjType
         {
             get
@@ -46,6 +34,8 @@ namespace KadOzenka.Web.Models.Task
                     : ObjectTypeExtended.Zu;
             }
         }
+
+        public OksAdditionalFilters OksAdditionalFilters { get; set; }
 
         public long RatingTour { get; set; }
 
@@ -124,6 +114,7 @@ namespace KadOzenka.Web.Models.Task
         {
             TourFactorService = new TourFactorService();
             IsOks = true;
+            OksAdditionalFilters = new OksAdditionalFilters();
         }
 
 
@@ -141,20 +132,34 @@ namespace KadOzenka.Web.Models.Task
         }
 
         public GbuExportAttributeSettings ToGbuExportAttributeSettings()
-		{
-			return new GbuExportAttributeSettings
-			{
-				TaskFilter = TaskFilter,
-				Attributes = GetAttributeItems()
-			};
-		}
+        {
+	        var attributes = GetAttributeItems();
+	        return ToAttributes(attributes);
+        }
 
 		public GbuExportAttributeSettings ToGbuExportAndCreateAttributeSettings()
 		{
+			var attributes = CreateAttributeItems();
+			return ToAttributes(attributes);
+		}
+
+		private GbuExportAttributeSettings ToAttributes(List<ExportAttributeItem> attributes)
+		{
 			return new GbuExportAttributeSettings
 			{
 				TaskFilter = TaskFilter,
-				Attributes = CreateAttributeItems()
+				ObjType = ObjType,
+				OksAdditionalFilters = ObjType == ObjectTypeExtended.Zu
+					? new Dal.GbuObject.Dto.OksAdditionalFilters()
+					: new Dal.GbuObject.Dto.OksAdditionalFilters
+					{
+						IsBuildings = OksAdditionalFilters.IsBuildings,
+						IsPlacements = OksAdditionalFilters.IsPlacements,
+						IsUncompletedBuildings = OksAdditionalFilters.IsUncompletedBuildings,
+						IsConstructions = OksAdditionalFilters.IsConstructions,
+						PlacementPurpose = OksAdditionalFilters.PlacementPurpose
+					},
+				Attributes = attributes
 			};
 		}
 
@@ -343,7 +348,10 @@ namespace KadOzenka.Web.Models.Task
 		#endregion
     }
 
-    public class Control : Attribute
+
+	#region Entities
+
+	public class Control : Attribute
     {
 	    public string Name;
 	    public int NumberControl;
@@ -354,4 +362,37 @@ namespace KadOzenka.Web.Models.Task
 		    NumberControl = number;
 	    }
     }
+
+    public class OksAdditionalFilters
+    {
+	    public bool IsBuildings { get; set; }
+	    public bool IsPlacements { get; set; }
+	    public bool IsUncompletedBuildings { get; set; }
+	    public bool IsConstructions { get; set; }
+
+	    [Display(Name = "Жилые")]
+	    public bool IsLivePlacement { get; set; }
+	    [Display(Name = "Нежилые")]
+	    public bool IsNotLivePlacement { get; set; }
+
+	    public PlacementPurpose PlacementPurpose
+	    {
+		    get
+		    {
+			    if (!IsPlacements)
+				    return PlacementPurpose.None;
+
+			    if (IsLivePlacement && IsNotLivePlacement)
+				    return PlacementPurpose.LiveAndNotLive;
+			    if (IsLivePlacement)
+				    return PlacementPurpose.Live;
+			    if (IsNotLivePlacement)
+				    return PlacementPurpose.NotLive;
+
+			    return PlacementPurpose.None;
+		    }
+	    }
+    }
+
+    #endregion
 }

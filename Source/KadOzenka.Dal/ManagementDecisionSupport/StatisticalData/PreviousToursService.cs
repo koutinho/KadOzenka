@@ -78,6 +78,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
 
             var sqlForModelFactors = FactorsService.GetSqlForModelFactors(model?.Id, factorsByRegisters);
+            if (!string.IsNullOrWhiteSpace(sqlForModelFactors.Columns))
+	            sqlForModelFactors.Columns = $", {sqlForModelFactors.Columns}";
 
             var sqlWithParameters = string.Format(sqlFileContent, string.Join(", ", taskIds), groupId, oksName.Id,
 	            zuName.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, permittedUse.Id, address.Id,

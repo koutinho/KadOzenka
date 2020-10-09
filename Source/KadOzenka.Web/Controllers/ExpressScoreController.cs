@@ -178,8 +178,9 @@ namespace KadOzenka.Web.Controllers
 
 			var condition = 
 				_service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
+			var actualDateCondition = _service.GetActualDateCondition(param.ActualDate.Value);
 
-			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(condition).Select(x => new { x.Id, x.Lat, x.Lng });
+			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(condition.And(actualDateCondition)).SetJoins(_service.JoinPriceHistory()).Select(x => new { x.Id, x.Lat, x.Lng });
 
 			var objects = qSQuery
 				.Execute()
@@ -188,39 +189,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
 
-			//Проверяем дату актуальности
-			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
-			{
-				var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
-				var idsObjects = objects.Select(y => y.Id).ToList();
-				var cachePriceHistory = OMPriceHistory.Where(x => idsObjects.Contains(x.InitialId)).SelectAll().Execute();
-
-				var successIdsObjects = new List<long>();
-				foreach (var obj in objects)
-				{
-					var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate).ToList();
-					if (historyPrices.Count > 0)
-					{
-						searchedAnalogs.Add(obj);
-						successIdsObjects.Add(obj.Id.GetValueOrDefault());
-					}
-				}
-
-				List<CoordinatesDto> leftoversObjects = objects.Where(x => !successIdsObjects.Contains(x.Id.GetValueOrDefault())).ToList();
-
-				if (leftoversObjects.Count > 0)
-				{
-					var idsLeftOversObjects = leftoversObjects.Select(x => x.Id).ToList();
-					var cacheAnalogs = OMCoreObject.Where(x => idsLeftOversObjects.Contains(x.Id)).SelectAll().Execute();
-					foreach (var obj in leftoversObjects)
-					{
-						var analogs = cacheAnalogs.Where(x => x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate));
-						if (analogs.Any()) searchedAnalogs.Add(obj);
-					}
-                }
-			}
-
-			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });
+			var coordinatesInput = objects.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });
 
 			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(coordinatesInput, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
 
@@ -297,7 +266,6 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(resMsg);
 			}
 
-			ViewBag.Filter = $"10002000={string.Join(',', resultCalculate.Analogs.Select(x => x.Id).ToList())}";
 			ViewBag.EsId = resultCalculate.Id;
 			return PartialView("Partials/PartialGridResultExpressScore", resultCalculate);
 		}

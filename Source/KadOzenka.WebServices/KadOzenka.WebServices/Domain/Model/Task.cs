@@ -29,5 +29,8 @@ namespace KadOzenka.WebServices.Domain.Model
 		/// </summary>
 		[Column("document_id")]
 		public int DocumentId { get; set; }
+
+		[Column("status_code")]
+		public int Status { get; set; }
 	}
 }

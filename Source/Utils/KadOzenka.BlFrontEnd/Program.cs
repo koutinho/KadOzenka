@@ -39,7 +39,10 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
+using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory.Core.LongProcess;
@@ -402,8 +405,66 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
+			consoleHelper.AddCommand("559", "Проверка получения данных для грида результатов ЭО", TestServiceES.TestDataResultGrid);
+            consoleHelper.AddCommand("558", "Перенос атрибутов", () =>
+            {
+	            var queue = new OMQueue
+	            {
+		            Status_Code = Status.Added,
+		            UserId = SRDSession.GetCurrentUserId()
+	            };
+	            var tasks = new List<long> {15534573};
+	            var attributes = new List<ExportAttributeItem>
+		            {new ExportAttributeItem {IdAttributeGBU = 600, IdAttributeKO = 25118600}};
+            
 
-            //consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
-        }
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
+	            {
+		            TaskFilter = tasks,
+		            Attributes = attributes,
+		            ObjType = ObjectTypeExtended.Zu,
+		            OksAdditionalFilters = new OksAdditionalFilters
+		            {
+			            IsBuildings = true
+		            }
+	            }, queue);
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
+				{
+					TaskFilter = tasks,
+					Attributes = attributes,
+					ObjType = ObjectTypeExtended.Oks
+				}, queue);
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
+				{
+					TaskFilter = tasks,
+					Attributes = attributes,
+					ObjType = ObjectTypeExtended.Oks,
+					OksAdditionalFilters = new OksAdditionalFilters
+					{
+						IsBuildings = true
+					}
+				}, queue);
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
+				{
+					TaskFilter = tasks,
+					Attributes = attributes,
+					ObjType = ObjectTypeExtended.Both,
+					OksAdditionalFilters = new OksAdditionalFilters
+					{
+						IsBuildings = true,
+						IsPlacements = true
+					}
+				}, queue);
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
+				{
+					TaskFilter = tasks,
+					Attributes = attributes,
+					ObjType = ObjectTypeExtended.Both
+				}, queue);
+			});
+
+
+			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
+		}
     }
 }

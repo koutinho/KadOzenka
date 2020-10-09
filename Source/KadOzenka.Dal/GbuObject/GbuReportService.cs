@@ -4,24 +4,23 @@ using System.IO;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
-using DevExpress.CodeParser.Diagnostics;
-using DevExpress.DataAccess.DataFederation;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
-using ObjectModel.ES;
 using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.GbuObject
 {
 	public class GbuReportService
 	{
+		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={_reportId}";
+
 		private ExcelFile _excelTemplate;
 		private ExcelWorksheet _mainWorkSheet;
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
-
 		private int _currentRow { get; set; }
+		private long _reportId { get; set; }
 
 		public GbuReportService()
 		{
@@ -79,10 +78,16 @@ namespace KadOzenka.Dal.GbuObject
 
 		}
 
-		public void AddValue(string value, int column, int row)
+		public void AddValue(string value, int column, int row, CellStyle cellStyle = null)
 		{
-			try {
-				_mainWorkSheet.Rows[row].Cells[column].SetValue(value);
+			try
+			{
+				var cell = _mainWorkSheet.Rows[row].Cells[column];
+
+				cell.SetValue(value);
+
+				if (cellStyle != null)
+					cell.Style = cellStyle;
 
 				if (new Random().Next(0, 10000) > 9950)
 					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
@@ -177,7 +182,8 @@ namespace KadOzenka.Dal.GbuObject
 					.ForContext("FileId", export.Id)
 					.Debug("Сохранение отчета {FileName}", fileName);
 
-				return export.Id;
+				_reportId = export.Id;
+				return _reportId;
 			}
 			catch (Exception ex)
 			{
@@ -186,5 +192,16 @@ namespace KadOzenka.Dal.GbuObject
 				throw;
 			}
 		}
+
+		#region Entities
+
+		public class Column
+		{
+			public int Index { get; set; }
+			public string Header { get; set; }
+			public int Width { get; set; }
+		}
+
+		#endregion
 	}
 }

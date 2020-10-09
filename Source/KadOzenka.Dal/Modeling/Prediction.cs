@@ -10,6 +10,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
+using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -20,8 +21,8 @@ namespace KadOzenka.Dal.Modeling
         protected OMModelingModel Model { get; }
         protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{Model.Name}'";
 
-        public Prediction(string inputParametersXml, OMQueue processQueue)
-            : base(processQueue)
+        public Prediction(string inputParametersXml, OMQueue processQueue, ILogger logger)
+            : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);

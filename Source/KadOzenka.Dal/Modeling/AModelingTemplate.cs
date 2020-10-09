@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KadOzenka.Dal.LongProcess;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -18,12 +19,14 @@ namespace KadOzenka.Dal.Modeling
         private static HttpClient _httpClient;
         protected ModelingService ModelingService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
+        protected ILogger Logger { get; set; }
 
 
-        protected AModelingTemplate(OMQueue processQueue)
+        protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
             ModelingService = new ModelingService(new ScoreCommonService());
             ProcessQueue = processQueue;
+            Logger = logger;
         }
 
         public void Process()
@@ -114,6 +117,8 @@ namespace KadOzenka.Dal.Modeling
 
             ProcessQueue.Log = newLog;
             ProcessQueue.Save();
+
+            Logger.Information(message);
         }
 
 

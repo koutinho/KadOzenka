@@ -113,6 +113,9 @@
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\DataCompositionByCharacteristicsBaseReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\NonuniformReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -120,6 +123,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PreviousToursReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PricingFactorsCompositionBaseReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\UniformReport.cs">

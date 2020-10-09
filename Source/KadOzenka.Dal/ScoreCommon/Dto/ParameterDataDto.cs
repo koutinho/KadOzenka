@@ -23,6 +23,12 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 			Value = es.Value;
 		}
 
+        public ParameterDataDto()
+        {
+            Id = -1;
+            Value = string.Empty;
+        }
+
 		private DateTime _date;
 
 		public DateTime DateValue

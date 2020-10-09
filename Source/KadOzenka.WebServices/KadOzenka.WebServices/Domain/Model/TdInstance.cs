@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KadOzenka.WebServices.Domain.Model
 {
@@ -11,5 +12,10 @@ namespace KadOzenka.WebServices.Domain.Model
 		[Column("regnumber")]
 		public string RegNumber { get; set; }
 
+		/// <summary>
+		/// Дата выпуска документа
+		/// </summary>
+		[Column("approve_date")]
+		public DateTime? ApproveDate { get; set; }
 	}
 }
