@@ -14,7 +14,7 @@ using ObjectModel.Directory.Common;
 using ObjectModel.KO;
 using Serilog;
 
-namespace KadOzenka.Dal.LongProcess.ExpressScore
+namespace KadOzenka.Dal.LongProcess
 {
 	public class ModelDictionaryImportFromExcelLongProcess : LongProcess
 	{
