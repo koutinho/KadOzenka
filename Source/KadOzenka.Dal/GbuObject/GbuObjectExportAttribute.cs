@@ -10,11 +10,10 @@ using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using Serilog;
-using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
