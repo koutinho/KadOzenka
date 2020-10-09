@@ -13,7 +13,7 @@ with unit_data as (
 	from ko_unit u
 		join ko_task task on task.id=u.task_id
 		join ko_tour tour on tour.id=task.tour_id
-	where u.task_id in ({0})
+	where u.task_id in ({0}) and u.property_type_code<>2190
 ),
 
 prev_unit_with_the_same_kn_data as (
@@ -27,7 +27,7 @@ prev_unit_with_the_same_kn_data as (
 			join unit_data ud on u.cadastral_number=ud.CadastralNumber
 			join ko_task task on u.task_id=task.id
 			join ko_tour tour on tour.id=task.tour_id
-		where tour.year<ud.TourYear and task.note_type_code=4
+		where tour.year<ud.TourYear and task.note_type_code=4 and u.property_type_code<>2190
 	) num_data where num_data.num=1
 )
 
