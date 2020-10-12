@@ -181,6 +181,8 @@
     <None Remove="Config\Registers\Views\MarketObjectCard.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <None Remove="Config\Registers\Views\ModelingDictionaries.xml" />
+    <None Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <None Remove="Config\Registers\Views\ModelingModels.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -225,8 +227,7 @@
     <None Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPRSZu.sql" />
-    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql" />
-    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Quarters.sql" />
@@ -381,6 +382,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingDictionaryValues.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingDictionaries.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoComplianceGuide.xml">
@@ -596,10 +603,7 @@
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByType.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql">
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql">
@@ -912,6 +916,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\ModelingDictionaryValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
@@ -1814,6 +1821,7 @@
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
@@ -1834,6 +1842,8 @@
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaries.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
@@ -1875,6 +1885,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />

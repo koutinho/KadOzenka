@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 {
@@ -20,7 +21,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 
 		protected ResultsForApprovalUpksAverageReport()
 		{
-			_service = new ResultsForApprovalService(StatisticalDataService);
+			_service = new ResultsForApprovalService(StatisticalDataService, new GbuCodRegisterService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)

@@ -164,9 +164,9 @@
         var model = '@Json.Serialize(Model.Attributes)';
         var modelAttributes = JSON.parse(model);
         var additionalColumns = modelAttributes.map(function (attribute) {
-            var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ") == undefined " +
+            var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + " && x.Value != null) == undefined " +
                 "? EmptyField " +
-                ": Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ").Coefficient";
+                ": Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + " && x.Value != null).Coefficient";
             return {
                 title: attribute.AttributeName,
                 field: field,

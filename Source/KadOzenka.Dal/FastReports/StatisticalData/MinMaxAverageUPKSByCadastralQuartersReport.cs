@@ -5,6 +5,7 @@ using System.Data;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
@@ -14,7 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		public MinMaxAverageUPKSByCadastralQuartersReport()
 		{
-			_service = new MinMaxAverageUPKSByCadastralQuartersService(new StatisticalDataService());
+			_service = new MinMaxAverageUPKSByCadastralQuartersService(new StatisticalDataService(), new GbuCodRegisterService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)

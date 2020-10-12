@@ -879,6 +879,24 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 265 Моделирование. Значения справочников
+    /// </summary>
+    public partial class OMModelingDictionariesValues
+    {
+        /// <summary>
+        /// Ссылка на (264 Моделирование. Справочники)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Sud
 {
     /// <summary>
@@ -1314,11 +1332,11 @@ namespace ObjectModel.Modeling
     public partial class OMModelAttributesRelation
     {
         /// <summary>
-        /// Ссылка на (609 Экспресс оценка. Справочники)
+        /// Ссылка на (264 Моделирование. Справочники)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
-        public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
+        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
 
         /// <summary>
         /// Ссылка на (700 Моделирование)
