@@ -673,59 +673,38 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetUnitFactors(long id, bool showOnlyModelFactors = true)
+		public JsonResult GetUnitFactors(long id, bool showOnlyModelFactors = true, bool isShowOnlyFilledFactors = false)
 		{
-			List<UnitFactorsDto> factors = new List<UnitFactorsDto>();
-			OMUnit unit = OMUnit.Where(x => x.Id == id)
-				.SelectAll()
+			var unit = OMUnit.Where(x => x.Id == id)
+				.Select(x => new
+				{
+					x.GroupId,
+					x.TourId, 
+					x.PropertyType_Code
+				})
 				.ExecuteFirstOrDefault();
 
 			if (unit != null)
 			{
+				var modelFactorIds = new List<long>();
 				if (showOnlyModelFactors)
 				{
-					OMModel model = OMModel.Where(x => x.GroupId == unit.GroupId)
-						.SelectAll()
-						.ExecuteFirstOrDefault();
-
+					var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
 					if (model != null)
 					{
-						if (model.ModelFactor.Count == 0)
-							model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-						var modelFactorIds = model.ModelFactor.Where(x => x.FactorId.HasValue)
-							.Select(x => x.FactorId.Value).ToList();
-
-						var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
-						foreach (var factorValue in factorsValues)
-						{
-							if (modelFactorIds.Any(x => x == factorValue.AttributeId))
-							{
-								factors.Add(new UnitFactorsDto{
-									FactorId = factorValue.AttributeId,
-									FactorName = factorValue.GetFactorName(),
-									FactorValue = factorValue.GetValueInString()
-								});
-							}
-						}
+						modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+							.Select(x => x.FactorId)
+							.Execute()
+							.Select(x => x.FactorId.GetValueOrDefault()).ToList();
 					}
 				}
-				else
-				{
-					var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
-					foreach (var factorValue in factorsValues)
-					{
-						factors.Add(new UnitFactorsDto
-						{
-							FactorId = factorValue.AttributeId,
-							FactorName = factorValue.GetFactorName(),
-							FactorValue = factorValue.GetValueInString()
-						});
-					}
-				}
+
+				var factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
+				var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
+				return Json(result);
 			}
 
-			return Json(factors);
+			return Json(new List<UnitFactorsDto>());
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
@@ -745,11 +724,36 @@ namespace KadOzenka.Web.Controllers
 			return Json(new List<SelectListItem>());
 		}
 
+
+		#region Support Methods
+
+		private List<UnitFactorsDto> MapFactors(List<UnitFactor> factors, bool isShowOnlyFilledFactors)
+		{
+			var result = new List<UnitFactorsDto>();
+			foreach (var factorValue in factors)
+			{
+				var value = factorValue.GetValueInString();
+				if (!isShowOnlyFilledFactors || !string.IsNullOrWhiteSpace(value))
+				{
+					result.Add(new UnitFactorsDto
+					{
+						FactorId = factorValue.AttributeId,
+						FactorName = factorValue.GetFactorName(),
+						FactorValue = value
+					});
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
-        #region Расчет кадастровой стоимости
+		#endregion
 
-        [HttpGet]
+		#region Расчет кадастровой стоимости
+
+		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
 		public ActionResult CalculateCadastralPrice()
         {

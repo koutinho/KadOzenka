@@ -18,11 +18,19 @@ namespace KadOzenka.Dal.Registers
             return OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
         }
 
-        public List<OMAttribute> GetActiveRegisterAttributes(long registerId)
+        public List<OMAttribute> GetActiveRegisterAttributes(long registerId, List<long> attributes = null)
         {
-            return OMAttribute
-                .Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false &&
-                            x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
+	        var query = OMAttribute
+		        .Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false &&
+		                    x.IsPrimaryKey.Coalesce(false) == false).SelectAll();
+
+	        if (attributes != null && attributes.Count > 0)
+	        {
+		        query.And(new QSConditionSimple(OMAttribute.GetColumn(x => x.Id), QSConditionType.In,
+			        attributes.Select(x => (double)x)));
+            }
+
+	        return query.OrderBy(x => x.Name).Execute();
         }
 
         public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, bool withValueField, long? referenceId = null)
