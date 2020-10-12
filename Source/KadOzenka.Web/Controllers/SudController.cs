@@ -657,7 +657,7 @@ namespace KadOzenka.Web.Controllers
 		public IQueryable GetAutoCompleteCourt(string searchText)
 		{
 			return OMSud
-				.Where(x => x.Number.StartsWith(searchText))
+				.Where(x => x.Number.StartsWith(searchText) || x.AppealNumber.StartsWith(searchText) || x.ArchiveNumber.StartsWith(searchText))
 				.SelectAll().OrderBy(x => x.Number).Execute().Select(x => new
 				{
 					x.Id,

@@ -17615,6 +17615,26 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private DateTime? _appealdate;
+        /// <summary>
+        /// 31601000 Дата определения (апелляция) (APPEAL_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31601000)]
+        public DateTime? AppealDate
+        {
+            get
+            {
+                CheckPropertyInited("AppealDate");
+                return _appealdate;
+            }
+            set
+            {
+                _appealdate = value;
+                NotifyPropertyChanged("AppealDate");
+            }
+        }
+
     }
 }
 
