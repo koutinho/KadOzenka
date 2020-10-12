@@ -36,7 +36,9 @@ namespace KadOzenka.WebServices
 		/// <param name="services"></param>
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
+			//если подключим платформу, нужно раскомментить, чтобы сваггер сгененрировал файл для контроллеров только из этого проекта
+			services.AddMvc()//(c => c.Conventions.Add(new ApiExplorerSpecialConvention()))
+				.AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 			services.AddSwaggerGen(c => {
@@ -71,7 +73,6 @@ namespace KadOzenka.WebServices
 				app.UseDeveloperExceptionPage();
 			}
 
-
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(
@@ -105,5 +106,15 @@ namespace KadOzenka.WebServices
 		{
 			return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CheckoutAd.Api.xml");
 		}
+
+
+		////Нужен, чтобы сваггер генерировал определения только для методов с аттрибутом ShowInSwagger
+		//public class ApiExplorerSpecialConvention : IActionModelConvention
+		//{
+		//	public void Apply(ActionModel action)
+		//	{
+		//		action.ApiExplorer.IsVisible = action.Attributes.OfType<ShowInSwaggerAttribute>().Any();
+		//	}
+		//}
 	}
 }
