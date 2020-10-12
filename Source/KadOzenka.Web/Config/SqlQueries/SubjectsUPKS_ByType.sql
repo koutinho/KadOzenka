@@ -7,7 +7,7 @@ with initialData as (
 		L1_R201.CADASTRAL_COST,
 		L1_R201.SQUARE
 	FROM KO_UNIT L1_R201
-	WHERE L1_R201.TASK_ID IN ({0})
+	WHERE L1_R201.TASK_ID IN ({0}) AND L1_R201.PROPERTY_TYPE_CODE<>2190
 ),
 
 dataGroupedByPropertyType as (
@@ -28,7 +28,7 @@ propertyTypeDictionary as(
 	select itemId as PropertyTypeCode,
 	value as PropertyType
 	from core_reference_item
-	where referenceid=102
+	where referenceid=102 AND itemId<>2190
 ),
 
 result_data as (

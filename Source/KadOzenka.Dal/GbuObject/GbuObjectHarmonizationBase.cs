@@ -11,6 +11,7 @@ using Core.Register.RegisterEntities;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.GbuObject

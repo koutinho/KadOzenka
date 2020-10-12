@@ -37,6 +37,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			var conditions = new List<QSCondition>();
+			//TODO: при переделке отчета учесть, что теперь мы исключаем юниты типа "Кадастровый квартал" (PropertyTypes.CadastralQuartal)
 			if (isOksReportType)
 			{
 				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
@@ -64,6 +65,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 			conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, new List<double> { firstTourTaskId.GetValueOrDefault(), secondTourTaskId.GetValueOrDefault() }));
 
+			/*TODO: при переделке отчета учесть, что теперь кадастровый квартал сначала юнита ищется в гбу части по атрибуту "Кадастровый квартал итоговый"
+			//TODO: если он отсутствует, то тогда уже берется поле юнита CADASTRAL_BLOCK
+			//TODO: атрибут "Кадастровый квартал итоговый" получать через сервис GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
+			//TODO: пример можно посмотреть в NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql
+			*/
 			var query = new QSQuery
 			{
 				MainRegisterID = OMUnit.GetRegisterId(),

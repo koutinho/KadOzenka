@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 {
@@ -16,7 +17,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 
 		public BaseGeneralizedIndicatorsReport()
 		{
-			_service = new GeneralizedIndicatorsService(StatisticalDataService);
+			_service = new GeneralizedIndicatorsService(StatisticalDataService, new GbuCodRegisterService());
 		}
 
 		protected abstract string GetReportTitle(NameValueCollection query);

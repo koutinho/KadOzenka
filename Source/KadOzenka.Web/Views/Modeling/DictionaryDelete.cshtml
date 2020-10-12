@@ -1,0 +1,59 @@
+﻿@model KadOzenka.Web.Models.Modeling.DictionaryModel
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.CustomLabel($"Вы уверены что хотите удалить справочник '{Model.Name}' (ИД {Model.Id})?")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button class="k-button k-button-icontext" style="float: right" id="delete" type="button">
+                <span class="k-icon k-i-check"></span>Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#delete').on('click', deleteDictionary);
+    });
+
+
+
+    function deleteDictionary(btn) {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'DELETE',
+            url: '@Url.Action("DeleteDictionary", "Modeling", new { dictionaryId = Model.Id})',
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    if (response.Success) {
+                        Common.ShowMessage("Справочник успешно удален");
+                        $(btn).attr('disabled', true);
+                        CloseMainWindow();
+                    }
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function CloseMainWindow() {
+        setTimeout(function () {
+            window.parent.parent.location.reload();
+        }, 1000);
+    }
+</script>

@@ -512,6 +512,18 @@ namespace ObjectModel.SRD
               // Удаление документа (649)
               public const string DOCUMENTS_DELETE = "DOCUMENTS.DELETE";
                 
+              // Просмотр справочников моделирования (651)
+              public const string KO_DICT_MODELS_DICTIONARIES = "KO.DICT.MODELS.DICTIONARIES";
+                
+              // Работа со справочниками моделирования (652)
+              public const string KO_DICT_MODELS_DICTIONARIES_MODIFICATION = "KO.DICT.MODELS.DICTIONARIES.MODIFICATION";
+                
+              // Просмотр значений справочников моделирования (653)
+              public const string KO_DICT_MODELS_DICTIONARIES_VALUES = "KO.DICT.MODELS.DICTIONARIES.VALUES";
+                
+              // Работа со значениями справочников моделирования (654)
+              public const string KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION = "KO.DICT.MODELS.DICTIONARIES.VALUES.MODIFICATION";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 

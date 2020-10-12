@@ -8,7 +8,7 @@
 	u.UPKS,
 	u.CADASTRAL_COST
 	from ko_unit u
-	where u.property_type_code<>4 and u.task_id IN ({0})
+	where u.property_type_code<>4 and u.property_type_code<>2190 and u.task_id IN ({0})
 ),
 
 KladrAttrValues as (
@@ -61,11 +61,15 @@ FloorNumberAttrValues as (
 
 WallMaterialAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {13})
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {14})
 )
 
 select
 	u.CADASTRAL_NUMBER as CadastralNumber,
-	u.CADASTRAL_BLOCK as CadastralQuarter,
+	COALESCE(cadastralQuartalGbu.attributeValue, u.CADASTRAL_BLOCK) as CadastralQuarter,
 	u.PROPERTY_TYPE as PropertyType,
 	u.SQUARE as Square,
 	u.DEGREE_READINESS as DegreeReadiness,
@@ -98,6 +102,6 @@ from unit_data  u
 	left outer join UndergroundFloorCountAttrValues UndergroundFloorCount on u.object_id=UndergroundFloorCount.objectId
 	left outer join FloorNumberAttrValues FloorNumber on u.object_id=FloorNumber.objectId
 	left outer join WallMaterialAttrValues WallMaterial on u.object_id=WallMaterial.objectId
-
+	left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.object_id=cadastralQuartalGbu.objectId
 	
 	

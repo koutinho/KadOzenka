@@ -2,25 +2,13 @@
 	select itemId as PropertyTypeCode,
 	value as PropertyType
 	from core_reference_item
-	where referenceid=102
-),
-
-object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
-),
-
-buildingAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
-),
-
-placementAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {2})
+	where referenceid=102 AND itemId<>2190
 ),
 
 initialData as (
-	select * from (
 		SELECT 
 			L1_R201.ID,
+			L1_R201.object_id,
 			L1_R201.PROPERTY_TYPE,
 			L1_R201.PROPERTY_TYPE_CODE,
 			L1_R201.UPKS,
@@ -29,24 +17,28 @@ initialData as (
 			(case when L1_R201.PROPERTY_TYPE='Здание' or L1_R201.PROPERTY_TYPE='Помещение'
 				then true
 				else false
-			end) as HAS_PURPOSE,
-			(case when L1_R201.PROPERTY_TYPE='Здание' then buildingPurpose.attributeValue
-			when L1_R201.PROPERTY_TYPE='Помещение' then placementPurpose.attributeValue
-			else null end) as PURPOSE		
+			end) as HAS_PURPOSE
 		FROM KO_UNIT L1_R201
-			LEFT OUTER JOIN buildingAttrValues buildingPurpose ON L1_R201.object_id=buildingPurpose.objectId
-			LEFT OUTER JOIN placementAttrValues placementPurpose ON L1_R201.object_id=placementPurpose.objectId
-		WHERE L1_R201.TASK_ID IN ({0})
-	) d
-	where (d.HAS_PURPOSE=false or d.HAS_PURPOSE=true and d.PURPOSE is not null)
+		WHERE L1_R201.TASK_ID IN ({0}) AND L1_R201.PROPERTY_TYPE_CODE<>2190
+),
+
+buildingAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from initialData), {1})
+),
+
+placementAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from initialData), {2})
 ),
 
 dataGroupedByPropertyType as (
+select * from (
 	select 
 		d.PROPERTY_TYPE,
 		d.PROPERTY_TYPE_CODE,
 		d.HAS_PURPOSE,
-		d.PURPOSE,
+		(case when d.PROPERTY_TYPE='Здание' then buildingPurpose.attributeValue
+			when d.PROPERTY_TYPE='Помещение' then placementPurpose.attributeValue
+			else null end) as PURPOSE,	
 		count(d.ID) as OBJECTS_COUNT,
 		min(d.UPKS) as MIN_UPKS, 
 		max(d.UPKS) as MAX_UPKS, 
@@ -54,7 +46,10 @@ dataGroupedByPropertyType as (
 		sum(d.CADASTRAL_COST) as SUM_CADASTRAL_COST,
 		sum(d.SQUARE) as SUM_SQUARE
 	from initialData d
-	group by d.PROPERTY_TYPE, d.PROPERTY_TYPE_CODE, d.HAS_PURPOSE, d.PURPOSE
+		LEFT OUTER JOIN buildingAttrValues buildingPurpose ON d.object_id=buildingPurpose.objectId
+		LEFT OUTER JOIN placementAttrValues placementPurpose ON d.object_id=placementPurpose.objectId
+	group by d.PROPERTY_TYPE, d.PROPERTY_TYPE_CODE, d.HAS_PURPOSE, PURPOSE) d1
+where (d1.HAS_PURPOSE=false or d1.HAS_PURPOSE=true and d1.PURPOSE is not null)
 ),
 
 result_data as (

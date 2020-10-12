@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var baseSelect = $@"SELECT
                 unit.PROPERTY_TYPE as {nameof(ReportItem.ObjectType)}, 
-                SUBSTRING(unit.CADASTRAL_BLOCK, 0, 6) as {nameof(ReportItem.CadastralDistrict)}, 
+                SUBSTRING(COALESCE((select * from  gbu_get_allpri_attribute_value(unit.object_id, {GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id})), unit.CADASTRAL_BLOCK), 0, 6) as {nameof(ReportItem.CadastralDistrict)}, 
                 unit.CADASTRAL_NUMBER as {nameof(ReportItem.CadastralNumber)}, 
                 (select * from  gbu_get_allpri_attribute_value(unit.object_id, {addressAttribute.Id})) as {nameof(ReportItem.Address)},
                 unit.SQUARE as {nameof(ReportItem.Square)}, 
@@ -76,8 +76,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             //taskId = 15365643
             query = $@"{query} FROM ko_unit unit 
                         {sqlForModelFactors.Tables} 
-                    WHERE unit.TASK_ID in ({string.Join(",", taskIds)}) and unit.GROUP_ID= {groupId} 
-                    order by unit.CADASTRAL_BLOCK";
+                    WHERE unit.TASK_ID in ({string.Join(",", taskIds)}) and unit.GROUP_ID= {groupId} and unit.PROPERTY_TYPE_CODE<>2190
+                    order by COALESCE((select * from  gbu_get_allpri_attribute_value(unit.object_id, 548)), unit.CADASTRAL_BLOCK)";
 
             return query;
         }

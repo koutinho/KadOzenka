@@ -13440,6 +13440,205 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 264 Моделирование. Справочники (KO_MODELING_DICTIONARIES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 264)]
+    [Serializable]
+    public partial class OMModelingDictionary : OMBaseClass<OMModelingDictionary>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 26400200 Имя (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26400200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 26400300 Тип (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26400300)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ReferenceItemCodeType _type_Code;
+        /// <summary>
+        /// 26400300 Тип (справочный код) (TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26400300)]
+        public ObjectModel.Directory.ES.ReferenceItemCodeType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 265 Моделирование. Значения справочников (KO_MODELING_DICTIONARIES_VALUES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 265)]
+    [Serializable]
+    public partial class OMModelingDictionariesValues : OMBaseClass<OMModelingDictionariesValues>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _dictionaryid;
+        /// <summary>
+        /// 26500200 ИД справочника (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26500200)]
+        public long DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _value;
+        /// <summary>
+        /// 26500300 Значение (VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26500300)]
+        public string Value
+        {
+            get
+            {
+                CheckPropertyInited("Value");
+                return _value;
+            }
+            set
+            {
+                _value = value;
+                NotifyPropertyChanged("Value");
+            }
+        }
+
+
+        private decimal? _calculationvalue;
+        /// <summary>
+        /// 26500400 Значение для расчета (CALCULATION_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26500400)]
+        public decimal? CalculationValue
+        {
+            get
+            {
+                CheckPropertyInited("CalculationValue");
+                return _calculationvalue;
+            }
+            set
+            {
+                _calculationvalue = value;
+                NotifyPropertyChanged("CalculationValue");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
