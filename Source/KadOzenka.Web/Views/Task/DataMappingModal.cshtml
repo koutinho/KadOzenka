@@ -1,4 +1,4 @@
-﻿@model (long,long)
+﻿@model KadOzenka.Web.Models.Task.DataMappingModalModel
 
 <div>
     <div id="grid"></div>
@@ -16,11 +16,11 @@
              dataSource: {
                 transport: {
                     read: {
-                        url: '@Url.Action("GetDataMapping", "Task")' + '?taskId=@Model.Item1&objectId=' + @Model.Item2,
+                        url: '@Url.Action("GetDataMapping", "Task")' + '?taskId=@Model.TaskId&objectId=' + @Model.ObjectId,
                         dataType: "json"
                     }
                 },
-                filter: { field: "ObjectId", operator: "eq", value: @Model.Item2 }
+                filter: { field: "ObjectId", operator: "eq", value: @Model.ObjectId }
             },
             scrollable: false,
             sortable: true,

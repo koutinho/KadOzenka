@@ -1038,7 +1038,12 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
 			}
 
-			return View((taskId,objectId));
+			var model = new DataMappingModalModel
+			{
+				TaskId = taskId,
+				ObjectId = objectId
+			};
+			return View(model);
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
