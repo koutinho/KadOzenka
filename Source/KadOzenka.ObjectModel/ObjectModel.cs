@@ -17169,6 +17169,26 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private bool? _isdecisionenteredintoforce;
+        /// <summary>
+        /// 31502300 Решение вступило в законную силу (IS_DECISION_ENTERED_INTO_FORCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31502300)]
+        public bool? IsDecisionEnteredIntoForce
+        {
+            get
+            {
+                CheckPropertyInited("IsDecisionEnteredIntoForce");
+                return _isdecisionenteredintoforce;
+            }
+            set
+            {
+                _isdecisionenteredintoforce = value;
+                NotifyPropertyChanged("IsDecisionEnteredIntoForce");
+            }
+        }
+
     }
 }
 

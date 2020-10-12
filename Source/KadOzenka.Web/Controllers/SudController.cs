@@ -26,7 +26,7 @@ using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class SudController : BaseController
+	public class SudController : KoBaseController
 	{
 		#region ObjectCard
 
@@ -52,18 +52,9 @@ namespace KadOzenka.Web.Controllers
 			{
 				drs = new OMDRS();
 			}
-			bool isEditPermission = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
 
 			var model = ObjectCardModel.FromOM(obj, drs);
-			model.IsEditPermission = isEditPermission;
-			model.IsApprovePermission =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE) ||
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
+
 			return View(model);
 		}
 
@@ -78,9 +69,9 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.IdObject == id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			var model = ObjectCardModel.FromOM(obj, drs);
 
-
-			return JsonResponse(ObjectCardModel.FromOM(obj, drs));
+			return JsonResponse(model);
 		}
 
 		[HttpPost]
@@ -93,22 +84,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 			var obj = OMObject
 				.Where(x => x.Id == data.Id)
@@ -140,6 +116,16 @@ namespace KadOzenka.Web.Controllers
 			if (data.Id == -1 && existObject != null || data.Id != -1 && existObject != null && data.Id != existObject?.Id)
 			{
 				return NotFound($"Объект {data.Kn} на {data.Date?.ToShortDateString()} уже внесен");
+			}
+
+			if (data.IsDecisionEnteredIntoForce.GetValueOrDefault() != obj.IsDecisionEnteredIntoForce.GetValueOrDefault())
+			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT_DECISION_ENTERED_INTO_FORCE, true, false, true);
+			}
+
+			if (data.IsDecisionEnteredIntoForce.GetValueOrDefault() && obj.IsDecisionEnteredIntoForce.GetValueOrDefault())
+			{
+				return SendErrorMessage("Объект в статусе Решение вступило в законную силу является нередактируемым");
 			}
 
 			using (var ts = new TransactionScope())

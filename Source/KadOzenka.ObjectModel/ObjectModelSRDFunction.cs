@@ -512,6 +512,9 @@ namespace ObjectModel.SRD
               // Удаление документа (649)
               public const string DOCUMENTS_DELETE = "DOCUMENTS.DELETE";
                 
+              // Редактирование статуса Решение вступило в законную силу (655)
+              public const string SUD_OBJECTS_EDIT_DECISION_ENTERED_INTO_FORCE = "SUD.OBJECTS.EDIT.DECISION_ENTERED_INTO_FORCE";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 

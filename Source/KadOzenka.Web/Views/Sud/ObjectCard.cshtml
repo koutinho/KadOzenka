@@ -198,16 +198,29 @@
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.IsException)
 						</div>
-						<div class="col-sm-2">
-							@if (Model.Id != -1)
-							{
-								@Html.KendoCheckBoxFor(m => m.IsException)
-							}
-							else
-							{
-								@Html.KendoCheckBoxFor(m => m.IsException, isReadonly: false)
-							}
-						</div>
+                        <div class="col-sm-2">
+                            @if (Model.Id != -1)
+                            {
+                                @Html.KendoCheckBoxFor(m => m.IsException)
+                            }
+                            else
+                            {
+                                @Html.KendoCheckBoxFor(m => m.IsException, isReadonly: false)
+                            }
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.IsDecisionEnteredIntoForce)
+                        </div>
+                        <div class="col-sm-2">
+                            @if (Model.Id != -1)
+                            {
+                                @Html.KendoCheckBoxFor(m => m.IsDecisionEnteredIntoForce, editMode: Model.IsDecisionEnteredIntoForcePermission)
+                            }
+                            else
+                            {
+                                @Html.KendoCheckBoxFor(m => m.IsDecisionEnteredIntoForce, isReadonly: !Model.IsDecisionEnteredIntoForcePermission)
+                            }
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -220,7 +233,7 @@
 					<div class="form-horizontal col-sm-12">
 						<div class="form-group"></div>
 						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetLinkCard")"
-							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-IsDecisionEnteredIntoForce="@Model.IsDecisionEnteredIntoForce" data-param-Pageable="false" data-param-Scrollable="true"
 							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid304"></div>
 						<div class="form-group"></div>
 					</div>
@@ -232,7 +245,7 @@
 					<div class="form-horizontal col-sm-12">
 						<div class="form-group"></div>
 						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudZakLinkCard")"
-							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-IsDecisionEnteredIntoForce="@Model.IsDecisionEnteredIntoForce" data-param-Pageable="false" data-param-Scrollable="true"
 							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid302"></div>
 						<div class="form-group"></div>
 					</div>
@@ -244,7 +257,7 @@
 					<div class="form-horizontal col-sm-12">
 						<div class="form-group"></div>
 						<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudReshLinkCard")"
-							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-Pageable="false" data-param-Scrollable="true"
+							 data-param-SudObjectId="@Model.Id" data-param-IsRemoved="@Model.IsRemovedObject" data-param-IsDecisionEnteredIntoForce="@Model.IsDecisionEnteredIntoForce" data-param-Pageable="false" data-param-Scrollable="true"
 							 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid314"></div>
 						<div class="form-group"></div>
 					</div>
@@ -516,79 +529,61 @@
 
 @section scripts {
 	<script src="~/js/jquery.fancybox.min.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        var isEditPermission = "@Model.IsEditPermission" === "True";
+        var isApprovePermission = "@Model.IsApprovePermission" === "True";
+        var isRemoved = "@Model.IsRemovedObject" === "True";
+        var isDecisionEnteredIntoForce = "@Model.IsDecisionEnteredIntoForce" === "True";
+        var isDecisionEnteredIntoForcePermission = "@Model.IsDecisionEnteredIntoForcePermission" === "True";
+        var canEditObject = isEditPermission && !isRemoved && (!isDecisionEnteredIntoForce || (isDecisionEnteredIntoForce && isDecisionEnteredIntoForcePermission));
+        var canApproveObject = isApprovePermission && !isRemoved && !isDecisionEnteredIntoForce;
 
-	<script type="text/javascript">
-		$(document).ready(function() {
+        $(document).ready(function() {
 
-			//Автокомлит для кадастрового номера
-			function onSelect(e) {
-				var url = "@Url.Action("GetAutoFillDataByKn", "Sud")" + `?kn=${e.dataItem.value}`;
-				$.get(url).done(function (response) {
-					$('#Address').val(response.Address);
-					$('#ObjectType').data('kendoDropDownList').value(response.Type);
-					console.log('response', response);
-				});
-			}
+            //Автокомлит для кадастрового номера
+            function onSelect(e) {
+                var url = "@Url.Action("GetAutoFillDataByKn", "Sud")" + `?kn=${e.dataItem.value}`;
+                $.get(url).done(function (response) {
+                    $('#Address').val(response.Address);
+                    $('#ObjectType').data('kendoDropDownList').value(response.Type);
+                    console.log('response', response);
+                });
+            }
 
-			var dataSource = new kendo.data.DataSource({
-				serverFiltering: true,
-				transport: {
-					read: {
-						url: "@Url.Action("GetKnData", "Sud")",
-						dataType: "json",
-						data: function(opt) {
-							return {
-								searchText: $("#Kn").val()
-							}
-						}
-					}
-				}
-			});
-			$("#Kn").kendoAutoComplete({
-				dataTextField: "text",
-				select: onSelect,
-				filter: "contains",
-				minLength: 3,
-				clearButton: false,
-				dataSource: dataSource
-			});
-			// end auto complete
+            var dataSource = new kendo.data.DataSource({
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@Url.Action("GetKnData", "Sud")",
+                        dataType: "json",
+                        data: function(opt) {
+                            return {
+                                searchText: $("#Kn").val()
+                            }
+                        }
+                    }
+                }
+            });
+            $("#Kn").kendoAutoComplete({
+                dataTextField: "text",
+                select: onSelect,
+                filter: "contains",
+                minLength: 3,
+                clearButton: false,
+                dataSource: dataSource
+            });
 
-			const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
-			panelbar.expand('li[data-expand]');
+            const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+            panelbar.expand('li[data-expand]');
 
-			$("#navigation-menu a").mPageScroll2id({
-				highlightSelector: "#navigation-menu a"
-			});
-			/*$.ajaxDataLoader.addMethod('resizeGrid302', function() {
-			    resizeGrid($("#Grid-302"));
-			});
+            $("#navigation-menu a").mPageScroll2id({
+                highlightSelector: "#navigation-menu a"
+            });
 
-			$.ajaxDataLoader.addMethod('resizeGrid304', function () {
-			    resizeGrid($("#Grid-304"));
-			});
-
-			$.ajaxDataLoader.addMethod('resizeGrid314', function () {
-			    resizeGrid($("#Grid-314"));
-			});
-
-			function resizeGrid(grid) {
-			    if (grid.length) {
-			        var dataArea = grid.find(".k-grid-content");
-			        grid.css('height', '100%');
-			        dataArea.css('height', '100%');
-			    }
-			}*/
-			var isEditPermission = "@Model.IsEditPermission" === "True";
-			var isApprovePermission = "@Model.IsApprovePermission" === "True";
-			var isRemoved = "@Model.IsRemovedObject" === "True";
-
-			isEditPermission = isEditPermission && !isRemoved;
-			isApprovePermission = isApprovePermission && !isRemoved;
-
-			const toolbar = $("#toolbar").kendoToolBar({
-				items: [
-					@if (Model.Id != -1)
+            const toolbar = $("#toolbar").kendoToolBar({
+                items: [
+                    @if (Model.Id != -1)
 					{
 						@Html.Raw(@"{
 						type: 'button',
@@ -601,7 +596,7 @@
 						hidden: false
 					}," +
 
-								  @"{
+                                  @"{
 						type: 'button',
 						id: 'editBtn',
 						text: '',
@@ -612,9 +607,9 @@
 						toolbar.show($('#cancelBtn'));
 					},
 					icon: 'edit',
-					hidden: !isEditPermission && isRemoved
+					hidden: !canEditObject
 					}," +
-								  @"{
+                                  @"{
 						type: 'button',
 						id: 'saveBtn',
 						text: '',
@@ -627,35 +622,28 @@
 								url: form.attr('action'),
 								data: formObject,
 								success: function(data) {
-									kendo.ui.progress($('body'), false);
-									if (data.Errors) {
-										var errors = $.map(distinctErrors(data.Errors),
-											function(el) {
-												return el.Message;
-											});
+									if (data.Errors && data.Errors.length > 0) {
+										var errors = getErrors(data.Errors);
 										Common.ShowError(errors);
 										return;
 									}
 									if (data.Success) {
 										Common.ShowMessage(data.Success);
-										updateData(() => {
-											KendoExtension.ToggleEditMode(false);
-											toolbar.show($('#editBtn'));
-											toolbar.hide($('#saveBtn'));
-											toolbar.hide($('#cancelBtn'));
-										});
+                                        document.location.reload();
 									}
 								},
 								error: function(response) {
-									kendo.ui.progress($('body'), false);
 									Common.ShowError(response.responseText);
-								}
+								},
+                                complete: function() {
+                                    kendo.ui.progress($('body'), false);
+                                }
 							});
 						},
 						icon: 'save',
 						hidden: true
 					}," +
-								  @"{
+                                  @"{
 						type: 'button',
 						id: 'cancelBtn',
 						text: '',
@@ -668,7 +656,7 @@
 							rootWindow.location = '" + ("~/ObjectCard?ObjId=" + @Model.Id + @"&RegisterViewId=SudObjects&isVertical=true&useMasterPage=true").ResolveClientUrl() + @"';
 						},
 						icon: 'cancel',
-					hidden: !isEditPermission
+					hidden: true 
 					}," + @"{
                         type: 'button',
                         id: 'approveBtn',
@@ -679,7 +667,7 @@
                             Common.UI.ChooseWindow(title, contentUrl);
                                  },
 						icon: 'check',
-                        hidden: !isApprovePermission
+                        hidden: !canApproveObject
                         }")
 						;
 					}
@@ -698,12 +686,8 @@
 								url: form.attr('action'),
 								data: formObject,
 								success: function(data) {
-									kendo.ui.progress($('body'), false);
-									if (data.Errors) {
-										var errors = $.map(distinctErrors(data.Errors),
-											function(el) {
-												return el.Message;
-											});
+									if (data.Errors && data.Errors.length > 0) {
+										var errors = getErrors(data.Errors);
 										Common.ShowError(errors);
 										return;
 									}
@@ -718,84 +702,80 @@
 									}
 								},
 								error: function(response) {
-									kendo.ui.progress($('body'), false);
 									Common.ShowError(response.responseText);
-								}
+								},
+                                complete: function() {
+                                    kendo.ui.progress($('body'), false);
+                                }
 							});
 						},
 						icon: 'save',
-						hidden: !isEditPermission
+						hidden: !canEditObject
 					}")
 					}
-			]
-		}).data('kendoToolBar');
+            ]
+        }).data('kendoToolBar');
 
-		$("#toolbar").kendoTooltip({
-			filter: "a.k-button",
-			content: function(e) {
-				switch ($(e.target).attr('id')) {
-				case "reloadCardBtn":
-					return "Обновить";
-				case "editBtn":
-					return "Редактировать";
-				case "saveBtn":
-					return "Сохранить";
-				case "cancelBtn":
-					return "Отмена";
-				case "print":
-					return "Печать";
-				case "approveBtn":
-					return "Утвердить";
-				}
-			},
-			position: "top",
-			autoHide: true,
-			showAfter: 500
-		});
-		});
+        $("#toolbar").kendoTooltip({
+            filter: "a.k-button",
+            content: function(e) {
+                switch ($(e.target).attr('id')) {
+                case "reloadCardBtn":
+                    return "Обновить";
+                case "editBtn":
+                    return "Редактировать";
+                case "saveBtn":
+                    return "Сохранить";
+                case "cancelBtn":
+                    return "Отмена";
+                case "print":
+                    return "Печать";
+                case "approveBtn":
+                    return "Утвердить";
+                }
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+});
 
-		function distinctErrors(errors) {
-			var result = [];
-			$.each(errors,
-				function(index, event) {
-					var events = $.grep(result,
-						function(e) {
-							return event.Message === e.Message;
-						});
-					if (events.length === 0) {
-						result.push(event);
-					}
-				});
+        function updateData(successCallbackFunc) {
+            var id = $('#Id').val();
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetObjectInfo", "Sud")',
+                data: { 'id': id },
+                success: function(response) {
+                    if (response.Errors && response.Errors.length > 0) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
 
-			return result;
-		}
+                    if (response.Data.IsDecisionEnteredIntoForce != isDecisionEnteredIntoForce
+                        || response.Data.IsDecisionEnteredIntoForcePermission != isDecisionEnteredIntoForcePermission
+                        || response.Data.IsEditPermission != isEditPermission
+                        || response.Data.IsApprovePermission != isApprovePermission
+                        || response.Data.IsRemovedObject != isRemoved) {
+                        document.location.reload();
+                    }
 
-		function updateData(successCallbackFunc) {
-			var id = $('#Id').val();
-			kendo.ui.progress($('body'), true);
-			$.ajax({
-				type: 'GET',
-				url: '@Url.Action("GetObjectInfo", "Sud")',
-				data: { 'id': id },
-				success: function(response) {
-					kendo.ui.progress($('body'), false);
+                    var form = $('form');
+                    Common.Functions.ObjectToForm(response.Data, form);
 
-					if (response.Errors && response.Errors[0]) {
-						Common.ShowError(response.Errors);
-						return;
-					}
-					var form = $('form');
-					Common.Functions.ObjectToForm(response.Data, form);
-
-					if (successCallbackFunc) {
-						successCallbackFunc();
-					}
+                    if (successCallbackFunc) {
+                        successCallbackFunc();
+                    }
+                },
+                error: function(response) {
+                    Common.ShowError(response && response.responseText);
 				},
-				error: function(response) {
-					kendo.ui.progress($('body'), false);
-					Common.ShowError(response && response.responseText);
-				}
-			});
-		}
-	</script>
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+    </script>
 }

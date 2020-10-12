@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 using ObjectModel.Sud;
 using Core.Shared.Extensions;
+using Core.SRD;
 using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -82,11 +83,16 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Исключение")]
 		public bool? IsException { get; set; }
 
+		[Display(Name = "Решение вступило в законную силу")]
+		public bool? IsDecisionEnteredIntoForce { get; set; }
+
 		public bool IsEditPermission { get; set; }
 
 		public bool IsApprovePermission { get; set; }
 
 		public bool IsRemovedObject { get; set; }
+
+		public bool IsDecisionEnteredIntoForcePermission { get; set; }
 
 
 		public static ObjectCardModel FromOM(OMObject omObject, OMDRS omDrs)
@@ -122,8 +128,21 @@ namespace KadOzenka.Web.Models.Sud
 				ApplicantType = omObject.ApplicantType_Code,
 				TypeOfOwnership = omObject.TypeOfOwnership_Code,
 				IsException = Convert.ToBoolean(omObject.Exception),
-				IsRemovedObject = omObject.IsRemoved.GetValueOrDefault()
+				IsRemovedObject = omObject.IsRemoved.GetValueOrDefault(),
+				IsDecisionEnteredIntoForce = omObject.IsDecisionEnteredIntoForce.GetValueOrDefault()
 			};
+
+			model.IsEditPermission = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
+			model.IsApprovePermission =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
+			model.IsDecisionEnteredIntoForcePermission = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT_DECISION_ENTERED_INTO_FORCE);
+
 			return model;
 		}
 
@@ -151,6 +170,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.ApplicantType_Code = model.ApplicantType.GetValueOrDefault();
 			omObject.TypeOfOwnership_Code = model.TypeOfOwnership.GetValueOrDefault();
 			omObject.Exception = Convert.ToInt16(model.IsException);
+			omObject.IsDecisionEnteredIntoForce = model.IsDecisionEnteredIntoForce;
 
 			omDrs.DrsGroup = model.DrsGroup;
 			omDrs.DrsSq1 = model.Basement;

@@ -6,7 +6,8 @@
 	      <ConditionGroups>
 		      <ConditionGroup HideOrDisable="Hide">
 			      <Conditions>
-				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True"/>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="Or"/>
+                      <Condition Key="{Get:IsDecisionEnteredIntoForce}" Operation="Equal" Value="True" AndOr="Or"/>
 			      </Conditions>
 		      </ConditionGroup>
 	      </ConditionGroups>
@@ -19,7 +20,8 @@
 	      <ConditionGroups>
 		      <ConditionGroup HideOrDisable="Hide">
 			      <Conditions>
-				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="And"/>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="Or"/>
+                      <Condition Key="{Get:IsDecisionEnteredIntoForce}" Operation="Equal" Value="True" AndOr="Or"/>
 			      </Conditions>
 		      </ConditionGroup>
 	      </ConditionGroups>
