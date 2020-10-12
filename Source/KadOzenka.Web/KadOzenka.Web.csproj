@@ -227,8 +227,7 @@
     <None Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
     <None Remove="Config\SqlQueries\MinMaxAverageUPRSZu.sql" />
-    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql" />
-    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Quarters.sql" />
@@ -604,10 +603,7 @@
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByType.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Districts.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_RegionNumbers.sql">
+    <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_Regions.sql">
@@ -1889,6 +1885,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />

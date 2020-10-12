@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 
 		public QualityPricingFactorsEncodingResultsOksReport()
 		{
-			_service = new QualityPricingFactorsEncodingResultsService(StatisticalDataService);
+			_service = new QualityPricingFactorsEncodingResultsService(StatisticalDataService, GbuCodRegisterService);
 		}
 
 		protected override string TemplateName(NameValueCollection query)

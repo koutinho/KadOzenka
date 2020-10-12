@@ -10,6 +10,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -26,6 +27,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         protected readonly GbuObjectService GbuObjectService;
 		protected readonly StatisticalDataService StatisticalDataService;
         protected readonly RosreestrRegisterService RosreestrRegisterService;
+        protected readonly GbuCodRegisterService GbuCodRegisterService;
         protected readonly ModelService ModelService;
 		protected readonly GroupService GroupService;
 		protected readonly FactorsService FactorsService;
@@ -35,6 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 			GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
+            GbuCodRegisterService = new GbuCodRegisterService();
             ModelService = new ModelService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();

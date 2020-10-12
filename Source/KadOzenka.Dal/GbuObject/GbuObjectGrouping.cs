@@ -13,6 +13,7 @@ using System.Security.Principal;
 using Core.Shared.Extensions;
 using Serilog;
 using Newtonsoft.Json;
+using ObjectModel.KO;
 using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
@@ -475,7 +476,7 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
         }
 
-        private static bool CompareDictToValue(string dict, string val)
+        private static bool CompareDictToValue(OMCodDictionary dict, ValueItem val)
         {
             string CleanUp(string x)
             {
@@ -487,7 +488,19 @@ namespace KadOzenka.Dal.GbuObject
                     .ToLower();
             }
 
-            return CleanUp(dict) == CleanUp(val);
+            bool toLowerResult = dict.Value.ToLower() == val.Value.ToLower();
+            bool cleanUpResult = CleanUp(dict.Value) == CleanUp(val.Value);
+
+            if (toLowerResult != cleanUpResult)
+            {
+                Log.ForContext("dictValue", JsonConvert.SerializeObject(dict))
+                    .ForContext("checkedValue", JsonConvert.SerializeObject(val))
+                    .ForContext("toLowerEquality",toLowerResult)
+                    .ForContext("cleanUpEquality",cleanUpResult)
+                    .Warning("Нормализация: Разные результаты методов сравнения значений.");
+            }
+
+            return cleanUpResult || toLowerResult;
         }
 
 
@@ -504,7 +517,8 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x.Value, ValueLevel.Value));
+                        var dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -562,10 +576,11 @@ namespace KadOzenka.Dal.GbuObject
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
-                        Serilog.Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
+                        Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x.Value,ValueLevel.Value));
+                        var dictionaryRecord =  Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");

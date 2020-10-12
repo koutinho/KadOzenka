@@ -1,40 +1,18 @@
-﻿using System;
-using System.Linq;
-using Core.Register;
-using Core.Shared.Extensions;
-using ObjectModel.Core.Register;
-using ObjectModel.Gbu;
-using Core.Register.RegisterEntities;
+﻿using Core.Register.RegisterEntities;
 
-namespace KadOzenka.Dal.Registers
+namespace KadOzenka.Dal.Registers.GbuRegistersServices
 {
-    public class RosreestrRegisterService
+    public class RosreestrRegisterService : GbuRegisterService
     {
-        private long? _rosreestrRegisterId;
-        public long RosreestrRegisterId
-        {
-            get
-            {
-                if (_rosreestrRegisterId != null)
-                    return _rosreestrRegisterId.Value;
+	    protected override string RegisterName => "Источник: Росреестр";
 
-                var omMainObjectRegisterId = OMMainObject.GetRegisterId();
-                _rosreestrRegisterId = OMRegister
-                    .Where(x => x.MainRegister == omMainObjectRegisterId &&
-                                x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault().RegisterId;
 
-                return _rosreestrRegisterId.Value;
-            }
-        }
-
-        #region Rosreestr Attributes
-
-        /// <summary>
+	    /// <summary>
         /// Аттрибут "Наименование объекта"
         /// </summary>
         public RegisterAttribute GetObjectNameAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование объекта");
+            return GetRegisterAttributeByName(RegisterId, "Наименование объекта");
         }
 
         /// <summary>
@@ -42,7 +20,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetParcelNameAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование земельного участка");
+            return GetRegisterAttributeByName(RegisterId, "Наименование земельного участка");
         }
 
         /// <summary>
@@ -50,7 +28,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetConstructionPurposeAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение сооружения");
+            return GetRegisterAttributeByName(RegisterId, "Назначение сооружения");
         }
 
         /// <summary>
@@ -58,7 +36,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetAddressAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Адрес");
+            return GetRegisterAttributeByName(RegisterId, "Адрес");
         }
 
         /// <summary>
@@ -66,7 +44,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetLocationAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Местоположение");
+            return GetRegisterAttributeByName(RegisterId, "Местоположение");
         }
 
         /// <summary>
@@ -74,7 +52,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetParcelAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Земельный участок");
+            return GetRegisterAttributeByName(RegisterId, "Земельный участок");
         }
 
         /// <summary>
@@ -82,7 +60,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetBuildYearAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Год постройки");
+            return GetRegisterAttributeByName(RegisterId, "Год постройки");
         }
 
         /// <summary>
@@ -90,7 +68,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetCommissioningYearAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Год ввода в эксплуатацию");
+            return GetRegisterAttributeByName(RegisterId, "Год ввода в эксплуатацию");
         }
 
         /// <summary>
@@ -98,7 +76,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetFloorsNumberAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Количество этажей");
+            return GetRegisterAttributeByName(RegisterId, "Количество этажей");
         }
 
         /// <summary>
@@ -106,7 +84,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetUndergroundFloorsNumberAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Количество подземных этажей");
+            return GetRegisterAttributeByName(RegisterId, "Количество подземных этажей");
         }
 
         /// <summary>
@@ -114,7 +92,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetFloorAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Этаж");
+            return GetRegisterAttributeByName(RegisterId, "Этаж");
         }
 
         /// <summary>
@@ -122,7 +100,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetWallMaterialAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Материал стен");
+            return GetRegisterAttributeByName(RegisterId, "Материал стен");
         }
 
         /// <summary>
@@ -130,7 +108,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetTypeOfUseByDocumentsAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Вид использования по документам");
+            return GetRegisterAttributeByName(RegisterId, "Вид использования по документам");
         }
 
         /// <summary>
@@ -138,7 +116,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetTypeOfUseByClassifierAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Вид использования по классификатору");
+            return GetRegisterAttributeByName(RegisterId, "Вид использования по классификатору");
         }
 
         /// <summary>
@@ -146,7 +124,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetParcelCategoryAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Категория земель");
+            return GetRegisterAttributeByName(RegisterId, "Категория земель");
         }
 
         /// <summary>
@@ -154,7 +132,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetSquareAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Площадь");
+            return GetRegisterAttributeByName(RegisterId, "Площадь");
         }
 
         /// <summary>
@@ -162,7 +140,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetFormationDateAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Дата образования");
+            return GetRegisterAttributeByName(RegisterId, "Дата образования");
         }
 
         /// <summary>
@@ -170,7 +148,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetBuildingPurposeAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение здания");
+            return GetRegisterAttributeByName(RegisterId, "Назначение здания");
         }
 
         /// <summary>
@@ -178,7 +156,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetReadinessPercentageAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Процент готовности");
+            return GetRegisterAttributeByName(RegisterId, "Процент готовности");
         }
 
         /// <summary>
@@ -186,7 +164,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetPlacementPurposeAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение помещения");
+            return GetRegisterAttributeByName(RegisterId, "Назначение помещения");
         }
 
         /// <summary>
@@ -194,7 +172,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetParentCadastralNumberAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Кадастровый номер здания или сооружения, в котором расположено помещение");
+            return GetRegisterAttributeByName(RegisterId, "Кадастровый номер здания или сооружения, в котором расположено помещение");
         }
 
         /// <summary>
@@ -202,27 +180,7 @@ namespace KadOzenka.Dal.Registers
         /// </summary>
         public RegisterAttribute GetObjectNameNumberAttribute()
         {
-            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование объекта");
+            return GetRegisterAttributeByName(RegisterId, "Наименование объекта");
         }
-
-        #endregion
-
-        #region Support Methods
-
-        private long GetFirstAttributeId(long registerId)
-        {
-            return registerId * Math.Pow(10, (8 - Math.Floor(Math.Log10(registerId) + 1))).ParseToLong() + 100;
-        }
-
-        private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
-        {
-            var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.Name == name);
-            if (attribute == null)
-                throw new Exception($"Не найден аттрибут Росреестра с именем '{name}'");
-
-            return attribute;
-        }
-
-        #endregion
     }
 }

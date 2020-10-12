@@ -292,7 +292,7 @@ namespace KadOzenka.Dal.Modeling
 		        .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
 		        .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
 	        var buildingUnits = buildingCadastralNumbers.Count > 0
-		        ? OMUnit.Where(x => buildingCadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+		        ? OMUnit.Where(x => buildingCadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId && x.PropertyType_Code == PropertyTypes.Building)
 			        .Select(x => x.CadastralNumber)
 			        .Execute()
 		        : new List<OMUnit>();

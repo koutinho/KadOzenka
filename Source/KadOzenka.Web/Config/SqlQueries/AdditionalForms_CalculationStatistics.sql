@@ -8,7 +8,7 @@
 		join ko_unit u on u.group_id=g.id
 		left join ko_group pg on g.parent_id=pg.id
 	where u.task_id in ({0})
-	and case when '{1}'= 'True' then u.PROPERTY_TYPE_CODE<>4
+	and case when '{1}'= 'True' then u.PROPERTY_TYPE_CODE<>4 and u.PROPERTY_TYPE_CODE<>2190
 			else u.PROPERTY_TYPE_CODE=4
 		end
 )

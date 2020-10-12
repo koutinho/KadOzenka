@@ -1002,6 +1002,20 @@ namespace KadOzenka.Web.Controllers
 			return View(taskId);
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult DataMappingModal(long taskId, long objectId)
+		{
+			OMTask task = OMTask.Where(x => x.Id == taskId)
+				.ExecuteFirstOrDefault();
+
+			if (task == null)
+			{
+				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+			}
+
+			return View((taskId,objectId));
+		}
+
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)
 		{
@@ -1023,11 +1037,7 @@ namespace KadOzenka.Web.Controllers
 				.Select(x => x.DocumentId)
 				.ExecuteFirstOrDefault();
 					
-			List<DataMappingDto> list = new List<DataMappingDto>();
-
-			TaskService.FetchGbuData(list, objectId, task, "num");
-			TaskService.FetchGbuData(list, objectId, task, "dt");
-			TaskService.FetchGbuData(list, objectId, task, "txt");
+			List<DataMappingDto> list = TaskService.FetchGbuData(objectId, task);
 
 			list = list.Where(x => !Object.Equals(x.Value, x.OldValue)).ToList();
 

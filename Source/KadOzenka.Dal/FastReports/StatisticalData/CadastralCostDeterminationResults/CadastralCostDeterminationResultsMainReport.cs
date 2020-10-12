@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Core.Register;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
@@ -74,15 +76,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             if (units.Count == 0)
                 return new List<ReportItem>();
 
-            return units.Select(unit => new ReportItem
+            var cadastralQuartalGbuAttributes = GbuObjectService.GetAllAttributes(
+	            units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
+	            new List<long>{ GbuCodRegisterService.GetCadastralQuarterFinalAttribute().RegisterId},
+	            new List<long> { GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id },
+	            DateTime.Now.GetEndOfTheDay());
+
+            return units.Select(unit =>
             {
-                CadastralDistrict = GetCadastralDistrict(unit.CadastralBlock),
-                CadastralNumber = unit.CadastralNumber,
-                Type = unit.PropertyType_Code,
-                Square = unit.Square,
-                Upks = unit.Upks,
-                Cost = unit.CadastralCost
-            }).ToList();
+	            var cadastralQuartalGbu = cadastralQuartalGbuAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
+	            var cadastralQuartal = !string.IsNullOrEmpty(cadastralQuartalGbu)
+		            ? cadastralQuartalGbu
+		            : unit.CadastralBlock;
+
+                return new ReportItem
+	            {
+		            CadastralQuartal = cadastralQuartal,
+		            CadastralDistrict = GetCadastralDistrict(cadastralQuartal),
+		            CadastralNumber = unit.CadastralNumber,
+		            Type = unit.PropertyType_Code,
+		            Square = unit.Square,
+		            Upks = unit.Upks,
+		            Cost = unit.CadastralCost
+	            };
+	            
+            }).OrderBy(x => x.CadastralQuartal).ToList();
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -117,6 +135,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
         private class ReportItem
         {
+	        public string CadastralQuartal{ get; set; }
             public string CadastralDistrict { get; set; }
             public string CadastralNumber { get; set; }
             public PropertyTypes Type { get; set; }
