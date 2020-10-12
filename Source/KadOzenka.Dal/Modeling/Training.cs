@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.ScoreCommon;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
 using ObjectModel.KO;
@@ -25,7 +21,6 @@ namespace KadOzenka.Dal.Modeling
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         protected OMModelingModel Model { get; }
-        protected ScoreCommonService ScoreCommonService { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
         public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
@@ -33,7 +28,6 @@ namespace KadOzenka.Dal.Modeling
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
-            ScoreCommonService = new ScoreCommonService();
         }
 
 
@@ -361,16 +355,6 @@ namespace KadOzenka.Dal.Modeling
             }
 
             Model.Save();
-        }
-
-        #endregion
-
-        #region Entities
-
-        public class MarketObjectToUnitRelation
-        {
-	        public long MarketObjectId { get; set; }
-	        public long UnitId { get; set; }
         }
 
         #endregion

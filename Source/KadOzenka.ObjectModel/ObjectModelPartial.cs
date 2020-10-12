@@ -2250,6 +2250,18 @@ namespace ObjectModel.KO
     public partial class OMModelingDictionary
     {
 
+
+        /// <summary>
+        /// Ссылка на (265 Моделирование. Значения справочников)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMModelingDictionariesValues> ModelingDictionariesValues { get; set; }
+
+        /// <summary>
+        /// Ссылка на (701 Связь модели с атрибутами)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
         public OMModelingDictionary()
         {
 
@@ -2257,6 +2269,10 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            ModelingDictionariesValues = new List<ObjectModel.KO.OMModelingDictionariesValues>();
+
+            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
 
         }
         public OMModelingDictionary(bool trackPropertyChanging) : this()
@@ -3360,12 +3376,6 @@ namespace ObjectModel.ES
         /// </summary>
         [Reference]
         public List<ObjectModel.ES.OMEsReferenceItem> EsReferenceItem { get; set; }
-
-        /// <summary>
-        /// Ссылка на (701 Связь модели с атрибутами)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
         public OMEsReference()
         {
 
@@ -3375,8 +3385,6 @@ namespace ObjectModel.ES
             PropertyChangedList = new HashSet<String>();
 
             EsReferenceItem = new List<ObjectModel.ES.OMEsReferenceItem>();
-
-            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
 
         }
         public OMEsReference(bool trackPropertyChanging) : this()

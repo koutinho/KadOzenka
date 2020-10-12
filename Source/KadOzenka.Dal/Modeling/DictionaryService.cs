@@ -40,9 +40,35 @@ namespace KadOzenka.Dal.Modeling
 	        return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
         }
 
-        #region Dictionary
+		#region Dictionary
 
-        public OMModelingDictionary GetDictionaryById(long id)
+		public List<OMModelingDictionary> GetDictionaries()
+		{
+			return OMModelingDictionary.Where(x => true).SelectAll().Execute();
+		}
+
+		public List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true)
+		{
+			if (dictionaryIds == null || dictionaryIds.Count == 0)
+				return new List<OMModelingDictionary>();
+
+			var dictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+
+			if (!withItems)
+				return dictionaries;
+
+			var dictionariesItems = OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll()
+				.Execute().ToList();
+
+			dictionaries.ForEach(dictionary =>
+			{
+				dictionary.ModelingDictionariesValues = dictionariesItems.Where(item => item.DictionaryId == dictionary.Id).ToList();
+			});
+
+			return dictionaries;
+		}
+
+		public OMModelingDictionary GetDictionaryById(long id)
         {
 	        var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
 	        if (dictionary == null)
@@ -94,9 +120,61 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        #region Support Methods
+        public decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary)
+        {
+	        if (dictionary == null)
+		        return 0;
 
-        private void ValidateDictionary(string name, long id)
+	        if (dictionary.Type_Code == ReferenceItemCodeType.String)
+	        {
+		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+
+		        return referenceItems?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
+	        }
+
+	        return 0;
+        }
+
+        public decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary)
+        {
+	        if (dictionary == null || date == null)
+		        return 0;
+
+	        if (dictionary.Type_Code == ReferenceItemCodeType.Date)
+	        {
+		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+
+		        return referenceItems?.Select(x => new
+		        {
+			        Key = DateTime.TryParse(x.Value, out var parsedDate) ? parsedDate : (DateTime?) null,
+			        Value = x.CalculationValue
+		        }).FirstOrDefault(x => x.Key == date)?.Value ?? 1;
+	        }
+	        return 0;
+        }
+
+        public decimal GetCoefficientFromNumberFactor(decimal? number, OMModelingDictionary dictionary)
+        {
+	        if (dictionary == null || number == null)
+		        return number ?? 0;
+
+	        if (dictionary.Type_Code == ReferenceItemCodeType.Number)
+	        {
+		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+
+		        return referenceItems?.Select(x => new
+		        {
+			        Key = decimal.TryParse(x.Value, out var res) ? res : decimal.Zero,
+			        Value = x.CalculationValue
+		        }).FirstOrDefault(x => x.Key == number)?.Value ?? 1;
+	        }
+	        return 0;
+        }
+
+
+		#region Support Methods
+
+		private void ValidateDictionary(string name, long id)
         {
 	        if (string.IsNullOrWhiteSpace(name))
 		        throw new Exception("Невозможно создать справочник с пустым именем");
@@ -112,14 +190,19 @@ namespace KadOzenka.Dal.Modeling
 	        dictionaryValues.ForEach(x => x.Destroy());
         }
 
-        #endregion
+		#endregion
 
-        #endregion
+		#endregion
 
 
-        #region Values
+		#region Values
 
-        public OMModelingDictionariesValues GetDictionaryValueById(long id)
+		public List<OMModelingDictionariesValues> GetDictionaryValues(long dictionaryId)
+		{
+			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
+		}
+
+		public OMModelingDictionariesValues GetDictionaryValueById(long id)
         {
 	        var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             if (dictionaryValue == null)
@@ -404,8 +487,8 @@ namespace KadOzenka.Dal.Modeling
 	        });
         }
 
-        #endregion
+		#endregion
 
-        #endregion
+		#endregion
     }
 }

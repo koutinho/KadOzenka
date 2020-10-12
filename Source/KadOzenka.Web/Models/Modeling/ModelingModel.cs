@@ -7,7 +7,6 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory.ES;
-using ObjectModel.ES;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -96,7 +95,7 @@ namespace KadOzenka.Web.Models.Modeling
             var attributeIds = Attributes.Select(x => x.AttributeId);
             var dictionaryIds = Attributes.Select(x => x.DictionaryId);
             var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
-            var omDictionaries = OMEsReference.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.ValueType_Code).Execute();
+            var omDictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute();
 
             foreach (var modelAttribute in Attributes)
             {
@@ -109,7 +108,7 @@ namespace KadOzenka.Web.Models.Modeling
                 }
                 if (modelAttribute.DictionaryId.GetValueOrDefault() != 0)
                 {
-                    var dictionaryType = omDictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId)?.ValueType_Code;
+                    var dictionaryType = omDictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId)?.Type_Code;
                     switch (attribute?.Type)
                     {
                         case RegisterAttributeType.STRING:
@@ -131,9 +130,9 @@ namespace KadOzenka.Web.Models.Modeling
             return errors;
         }
 
-        private string GenerateMessage(string attributeName, ReferenceItemCodeType referenceItemCodeType)
+        private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
         {
-            return $"Выберите словарь типа '{referenceItemCodeType.GetEnumDescription()}' для атрибута '{attributeName}'";
+            return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
         }
     }
 }

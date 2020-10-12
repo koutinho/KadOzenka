@@ -33,8 +33,11 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using System.IO;
+using System.Threading;
 using KadOzenka.Dal.LongProcess.ExpressScore;
 using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -63,7 +66,9 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelCard(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
+
             var model = ModelingModel.ToModel(modelDto);
+
             return View(model);
 		}
 
@@ -128,6 +133,7 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetModelAttributes(long modelId)
 		{
 			var attributes = ModelingService.GetModelAttributes(modelId);
+
 			return Json(attributes);
 		}
 
@@ -679,6 +685,20 @@ namespace KadOzenka.Web.Controllers
 	        }
 
             return Json(new { Success = true });
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
+        public JsonResult GetDictionaries()
+        {
+	        var dictionaries = DictionaryService.GetDictionaries().Select(x => new
+	        {
+		        Text = x.Name,
+		        Value = (int)x.Id
+	        }).ToList();
+
+	        dictionaries.Insert(0, new { Text = string.Empty, Value = 0 });
+
+	        return Json(dictionaries);
         }
 
         #endregion
