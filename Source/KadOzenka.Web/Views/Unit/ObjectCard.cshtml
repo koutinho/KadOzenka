@@ -353,7 +353,9 @@
             },
             columns: [
                 {
-                    field: 'FactorName', title: 'Фактор'
+                    field: 'FactorName',
+                    title: 'Фактор',
+                    filterable: false
                 },
                 {
                     field: 'FactorValue', title: 'Значение'
@@ -363,6 +365,16 @@
             pageable: {
                 pageSize: 10
             },
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    }
+                }
+            }
         });
 
         $("#factors-switch").kendoSwitch({
