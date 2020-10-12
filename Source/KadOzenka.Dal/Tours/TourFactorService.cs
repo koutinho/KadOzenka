@@ -161,21 +161,16 @@ namespace KadOzenka.Dal.Tours
             RegisterAttributeService.RemoveRegisterAttribute(attributeId);
         }
 
-        public List<UnitFactor> GetUnitFactorValues(OMUnit unit)
+        public List<UnitFactor> GetUnitFactorValues(OMUnit unit, List<long> attributes)
         {
 	        var tourRegister = GetTourRegister(unit.TourId.GetValueOrDefault(),
 		        unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks);
 	        if (tourRegister == null)
-	        {
 		        throw new Exception($"Не найден реестр факторов для тура с ИД {unit.TourId} для типа объекта {unit.PropertyType_Code.GetEnumDescription()}");
-            }
 
-	        var results = new List<UnitFactor>();
-            var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegister.RegisterId);
+	        var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegister.RegisterId, attributes);
 	        if (tourAttributes.IsEmpty())
-	        {
-		        return results;
-	        }
+		        return new List<UnitFactor>();
 
 	        var query = GetUnitFactorsQuery(unit.Id, tourRegister);
 	        foreach (var factor in tourAttributes)
@@ -186,8 +181,8 @@ namespace KadOzenka.Dal.Tours
 		        query.AddColumn(factor.Id, factor.Id.ToString());
 	        }
 
-            var table = query.ExecuteQuery();
-
+	        var results = new List<UnitFactor>();
+	        var table = query.ExecuteQuery();
 	        foreach (var factor in tourAttributes)
 	        {
 		        if (factor.IsPrimaryKey != null && factor.IsPrimaryKey.Value)

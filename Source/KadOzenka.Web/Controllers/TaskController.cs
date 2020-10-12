@@ -686,29 +686,22 @@ namespace KadOzenka.Web.Controllers
 
 			if (unit != null)
 			{
+				var modelFactorIds = new List<long>();
 				if (showOnlyModelFactors)
 				{
 					var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
 					if (model != null)
 					{
-						var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+						modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
 							.Select(x => x.FactorId)
 							.Execute()
-							.Select(x => x.FactorId).ToList();
-
-						//TODO
-						var factorsValues = TourFactorService.GetUnitFactorValues(unit)
-							.Where(x => modelFactorIds.Contains(x.AttributeId)).ToList();
-						var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
-						return Json(result);
+							.Select(x => x.FactorId.GetValueOrDefault()).ToList();
 					}
 				}
-				else
-				{
-					var factorsValues = TourFactorService.GetUnitFactorValues(unit);
-					var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
-					return Json(result);
-				}
+
+				var factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
+				var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
+				return Json(result);
 			}
 
 			return Json(new List<UnitFactorsDto>());
