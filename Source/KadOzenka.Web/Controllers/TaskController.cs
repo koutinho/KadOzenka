@@ -653,19 +653,26 @@ namespace KadOzenka.Web.Controllers
 
 				List<OMGroup> groups = OMGroup.Where(x => groupIds.Contains(x.Id))
 					.Select(x => x.GroupName)
+					.Select(x => x.Number)
 					.Execute();
 
 				if (groups.Any())
 				{
-					result = explications.Select(x => new UnitExplicationDto
+					result = explications.Select(x =>
 					{
-						Id = x.Id,
-						GroupId = x.GroupId,
-						Group = groups.Find(y => y.Id == x.GroupId).GroupName,
-						Square = x.Square,
-						Upks = x.Upks,
-						Kc = x.Kc,
-						Analog = x.NameAnalog.ToString()
+						var group = groups.Find(y => y.Id == x.GroupId);
+						return new UnitExplicationDto
+						{
+							Id = x.Id,
+							GroupId = x.GroupId,
+							Group = group != null 
+								? $"{group.Number}. {group.GroupName}" 
+								: null,
+							Square = x.Square,
+							Upks = x.Upks,
+							Kc = x.Kc,
+							Analog = x.NameAnalog?.ToString()
+						};
 					}).ToList();
 				}
 			}
