@@ -39,6 +39,19 @@
 	.k-item .k-in {
 		white-space: pre-wrap;
 	}
+
+	.hint {
+		background-color: white;
+	}
+
+	.placeholder {
+		opacity: 0.6;
+	}
+
+	fieldset.complex-factor fieldset {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 	/*#RequiredParam span.k-header {
 		display: none;
 	}*/
@@ -292,7 +305,6 @@
 					    <fieldset id="factor-@i">
                             @(await Html.PartialAsync("PartialComplexFactorCard.cshtml", Model.CostFactors.ComplexCostFactors[i], new ViewDataDictionary(ViewData){{ "Count", i }, {"IsEdit", Model.IsEdit} }))
                         </fieldset>
-						<div class="form-group"></div>
 						i++;
 					}
 				}
@@ -363,6 +375,7 @@
 					obj['AttributeId'] = validateParams(formObject[`AttributeId-${i}`]);
 					obj['DictionaryId'] = formObject[`DictionaryId-${i}`];
                     obj['ComplexCostFactorType'] = formObject[`ComplexCostFactorType-${i}`];
+					obj['ShowInCalculatePage'] = formObject[`ShowInCalculatePage-${i}`];
 					complexCostFactors.push(obj);
 				}
 			}
@@ -541,8 +554,6 @@
     }
 
 
-
-
 	$(document).ready(function () {
 		refreshComplexHandlers();
         refreshSimpleHandlers();
@@ -563,6 +574,17 @@
 					}
 				});
 			});
+		$(".complex-factor").kendoSortable({
+			hint:function(element) {
+				return element.clone().addClass("hint")
+					.height(element.height())
+					.width(element.width());
+			},
+			placeholder:function(element) {
+				return element.clone().addClass("placeholder");
+			},
+			ignore: "input, span"
+		});
 	});
 
 </script>

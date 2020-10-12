@@ -99,8 +99,10 @@ namespace KadOzenka.Web.Models.ExpressScore
             ValidateSquareCostFactor(errors);
             ValidateCorrectionByBargainCoef(errors);
             ValidateOperatingCostsCoef(errors);
+            ValidateShowInCalculatePageParameter(errors);
 
-            if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
+
+			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
 				foreach (var complexFactor in CostFactors.ComplexCostFactors)
 				{
@@ -217,6 +219,22 @@ namespace KadOzenka.Web.Models.ExpressScore
 	        {
 		        errors.Add(new ValidationResult("Не указан коэффициент операционных расходов."));
 	        }
+        }
+
+        private void ValidateShowInCalculatePageParameter(List<ValidationResult> errors)
+        {
+	        if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count > 0)
+	        {
+		        foreach (var complexCostFactor in CostFactors.ComplexCostFactors)
+		        {
+			        if (complexCostFactor.ShowInCalculatePage && complexCostFactor.DictionaryId == 0 ||
+			            complexCostFactor.DictionaryId == null)
+			        {
+						errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить словарь. Т.к выбрана возможность изменения параметра на странице расчетов"));
+			        }
+		        }
+	        }
+
         }
 
 		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)

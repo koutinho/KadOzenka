@@ -34,6 +34,11 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public int? AttributeId { get; set; }
 		public int? DictionaryId { get; set; }
 		public ComplexCostFactorSpecialization ComplexCostFactorType { get; set; }
+
+		/// <summary>
+		/// Чекбокс указывающий что данный параемтр будет отображаться на странице расчетов
+		/// </summary>
+		public bool ShowInCalculatePage { get; set; }
 	}
 	public class CostFactorsDto
 	{
