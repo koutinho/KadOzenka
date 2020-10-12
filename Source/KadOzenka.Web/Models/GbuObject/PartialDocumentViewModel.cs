@@ -8,7 +8,7 @@ namespace KadOzenka.Web.Models.GbuObject
 	public class PartialDocumentViewModel
     {
         public string ModelPrefix { get; set; }
-        private DocumentService DocumentService { get; set; }
+        private DocumentService DocumentService { get; }
 
         [Display(Name = "Документ")]
         public long? IdDocument { get; set; }
@@ -21,6 +21,10 @@ namespace KadOzenka.Web.Models.GbuObject
 
         [Display(Name = "Дата создания")]
         public DateTime? NewDocumentDate { get; set; }
+        
+        [Display(Name = "Дата выпуска")]
+        [Required(ErrorMessage = "'Дата выпуска документа' - обязательное поле")]
+        public DateTime? NewDocumentApproveDate { get; set; }
 
         [Display(Name = "Дата изменения")]
         public DateTime? NewDocumentChangeDate { get; set; }
@@ -33,7 +37,8 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public PartialDocumentViewModel()
         {
-            DocumentService = new DocumentService();
+	        NewDocumentDate = DateTime.Today;
+	        DocumentService = new DocumentService();
         }
 
 
@@ -42,11 +47,15 @@ namespace KadOzenka.Web.Models.GbuObject
             if (!IsNewDocument)
                 return;
 
+            if (NewDocumentApproveDate == null)
+	            throw new Exception("Не заполнена Дата выпуска документа");
+
             var documentDto = new DocumentDto
             {
                 RegNumber = NewDocumentRegNumber,
                 Description = NewDocumentName,
                 CreateDate = NewDocumentDate,
+                ApproveDate = NewDocumentApproveDate,
                 ChangeDate = NewDocumentChangeDate
             };
 

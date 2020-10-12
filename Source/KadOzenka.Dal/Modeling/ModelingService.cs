@@ -8,13 +8,9 @@ using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using DevExpress.CodeParser;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.ScoreCommon;
-using KadOzenka.Dal.ScoreCommon.Dto;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
@@ -26,11 +22,11 @@ namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
-		public ScoreCommonService ScoreCommonService { get; set; }
+		public DictionaryService DictionaryService { get; set; }
 
-		public ModelingService(ScoreCommonService scoreCommonService)
+		public ModelingService(DictionaryService dictionaryService)
 		{
-			ScoreCommonService = scoreCommonService;
+			DictionaryService = dictionaryService;
 		}
 
 		#region CRUD Model
@@ -155,12 +151,12 @@ namespace KadOzenka.Dal.Modeling
 					},
 					new QSJoin
 					{
-						RegisterId = OMEsReference.GetRegisterId(),
+						RegisterId = OMModelingDictionary.GetRegisterId(),
 						JoinCondition = new QSConditionSimple
 						{
 							ConditionType = QSConditionType.Equal,
 							LeftOperand = OMModelAttributesRelation.GetColumn(x => x.DictionaryId),
-							RightOperand = OMEsReference.GetColumn(x => x.Id)
+							RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Left
 					}
@@ -171,8 +167,8 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
             query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
 
             var attributes = new List<ModelAttributeRelationDto>();
@@ -513,13 +509,15 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public List<OMEsReference> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
+        public List<OMModelingDictionary> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
         {
-            var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value).Distinct().ToList();
-            return ScoreCommonService.GetDictionaries(dictionaryIds);
+	        var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value)
+		        .Distinct().ToList();
+           
+            return DictionaryService.GetDictionaries(dictionaryIds);
         }
 
-        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMEsReference> dictionaries,
+        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
 	        List<ModelAttributeRelationDto> modelAttributes)
         {
 	        var query = new QSQuery
@@ -536,7 +534,7 @@ namespace KadOzenka.Dal.Modeling
 	        return GetCoefficients(query, dictionaries, modelAttributes);
         }
 
-        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMEsReference> dictionaries,
+        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
 	        List<GroupedModelAttributes> modelAttributes)
         {
 	        var coefficients = new Dictionary<long, List<CoefficientForObject>>();
@@ -627,7 +625,7 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(QSQuery query, List<OMEsReference> dictionaries, List<ModelAttributeRelationDto> attributes)
+		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(QSQuery query, List<OMModelingDictionary> dictionaries, List<ModelAttributeRelationDto> attributes)
         {
 	        attributes.ForEach(attribute =>
             {
@@ -672,7 +670,7 @@ namespace KadOzenka.Dal.Modeling
             return coefficients;
         }
 
-        private CoefficientForObject CalculateCoefficientViaDictionary(object value, ModelAttributeRelationDto modelAttribute, OMEsReference dictionary)
+        private CoefficientForObject CalculateCoefficientViaDictionary(object value, ModelAttributeRelationDto modelAttribute, OMModelingDictionary dictionary)
         {
             var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
 
@@ -688,8 +686,7 @@ namespace KadOzenka.Dal.Modeling
                     {
                         var stringValue = value?.ParseToString();
                         coefficient.Value = stringValue;
-                        coefficient.Coefficient =
-                            ScoreCommonService.GetCoefficientFromStringFactor(stringValue, dictionary);
+                        coefficient.Coefficient = DictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
                     }
 
                     break;
@@ -704,8 +701,7 @@ namespace KadOzenka.Dal.Modeling
                     {
                         var dateValue = value?.ParseToDateTimeNullable();
                         coefficient.Value = dateValue?.ToShortDateString();
-                        coefficient.Coefficient =
-                            ScoreCommonService.GetCoefficientFromDateFactor(dateValue, dictionary);
+                        coefficient.Coefficient = DictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
                     }
 
                     break;
@@ -716,7 +712,7 @@ namespace KadOzenka.Dal.Modeling
                 {
                     var numberValue = value?.ParseToDecimalNullable();
 
-                    var number = ScoreCommonService.GetCoefficientFromNumberFactor(numberValue, dictionary);
+                    var number = DictionaryService.GetCoefficientFromNumberFactor(numberValue, dictionary);
 
                     coefficient.Value = number.ToString();
                     coefficient.Coefficient = number;

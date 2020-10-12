@@ -96,6 +96,7 @@ namespace CIPJS
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
+	        services.AddSingleton<DictionaryService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
