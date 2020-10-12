@@ -9,6 +9,8 @@ WITH propertyTypeDictionary as(
     (itemId <> 4 or itemId is null)
     AND
     (itemId <> 0 or itemId is null)
+    AND
+    (itemId <> 2190 or itemId is null)
 ),
 
 object_ids as (
@@ -50,6 +52,8 @@ initialData as (
         (L1_R201.PROPERTY_TYPE_CODE <> 4 or L1_R201.PROPERTY_TYPE_CODE is null)
          AND
         (L1_R201.PROPERTY_TYPE_CODE <> 0 or L1_R201.PROPERTY_TYPE_CODE is null)
+        AND
+        (L1_R201.PROPERTY_TYPE_CODE <> 2190 or L1_R201.PROPERTY_TYPE_CODE is null)
 	) d
 	where (d.HAS_PURPOSE=false or (d.HAS_PURPOSE=true and d.PURPOSE is not null)) 
 ),

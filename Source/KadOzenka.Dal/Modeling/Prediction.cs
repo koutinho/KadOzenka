@@ -10,6 +10,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
+using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -20,8 +21,8 @@ namespace KadOzenka.Dal.Modeling
         protected OMModelingModel Model { get; }
         protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{Model.Name}'";
 
-        public Prediction(string inputParametersXml, OMQueue processQueue)
-            : base(processQueue)
+        public Prediction(string inputParametersXml, OMQueue processQueue, ILogger logger)
+            : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
@@ -74,7 +75,9 @@ namespace KadOzenka.Dal.Modeling
                 var coefficients = new List<decimal?>();
                 allAttributes.ForEach(modelAttribute =>
                 {
-                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.Coefficient);
+	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
+		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
+                    coefficients.Add(currentAttribute?.Coefficient);
                 });
 
                 //TODO эта проверка будет в сервисе
@@ -257,7 +260,7 @@ namespace KadOzenka.Dal.Modeling
             modelObjects.ForEach(modelObject =>
             {
                 var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId);
+                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
                 if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message) ||
                     objectCoefficient.Value == null)
                     return;

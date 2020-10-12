@@ -10,10 +10,12 @@ using Core.Shared.Extensions;
 using System;
 using System.Linq;
 using System.Transactions;
+using Core.Register;
 using Core.Shared.Misc;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Models.Task;
 using ObjectModel.Common;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Dal.Tasks
 {
@@ -94,40 +96,59 @@ namespace KadOzenka.Dal.Tasks
             return GetTaskDocumentInfoList().Where(x => tourIds.Contains(x.TourId)).ToList();
         }
 
-        public void FetchGbuData(List<DataMappingDto> list, long objectId, OMTask task, string postfix)
+        public List<DataMappingDto> FetchGbuData(long objectId, OMTask task)
         {
-            string sql = $@"select DISTINCT object_id, attribute_id, value, ot from gbu_source2_a_{postfix}
+            var list = new List<DataMappingDto>();
+            var reg = Core.Register.RegisterCache.GetAttributeDataList(2);
+            var attrTypes = new List<RegisterAttributeType>
+                {RegisterAttributeType.STRING, RegisterAttributeType.DATE, RegisterAttributeType.DECIMAL};
+            foreach (var attribute in reg)
+            {
+                if (!attrTypes.Contains(attribute.Type))
+                    continue;
+
+                var postfix = attribute.Id;
+
+                string sql = $@"select DISTINCT object_id, value, ot from gbu_source2_a_{postfix}
 				where object_id={objectId} and change_doc_id={task.DocumentId}
 				";
 
-            DbCommand command = DBMngr.Main.GetSqlStringCommand(sql);
-            DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+                DbCommand command = DBMngr.Main.GetSqlStringCommand(sql);
+                DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
-            foreach (DataRow row in dt.Rows)
-            {
-                list.Add(new DataMappingDto
+                if (dt.Rows.Count == 0) continue;
+
+                var newRecords = new List<DataMappingDto>();
+                foreach (DataRow row in dt.Rows)
                 {
-                    ObjectId = row["object_id"].ParseToLong(),
-                    AttributeId = row["attribute_id"].ParseToLong(),
-                    Value = row["value"].ParseToStringNullable()
-                });
-            }
+                    newRecords.Add(new DataMappingDto
+                    {
+                        ObjectId = row["object_id"].ParseToLong(),
+                        AttributeId = postfix.ParseToLong(),
+                        Value = row["value"].ParseToStringNullable()
+                    });
+                }
 
-            //предыдущие значения
-            DateTime oldDate = dt.Rows[0]["ot"].ParseToDateTime();
+                //предыдущие значения
+                DateTime oldDate = dt.Rows[0]["ot"].ParseToDateTime();
 
-            foreach (var attributeClass in list)
-            {
-                attributeClass.Attribute = Core.Register.RegisterCache.GetAttributeData((int)attributeClass.AttributeId).Name;
+                foreach (var attributeClass in newRecords)
+                {
+                    attributeClass.Attribute = Core.Register.RegisterCache
+                        .GetAttributeData((int) attributeClass.AttributeId).Name;
 
-                sql = $@"select value from gbu_source2_a_{postfix}
-						where object_id={objectId} and attribute_id={attributeClass.AttributeId}
+                    sql = $@"select value from gbu_source2_a_{postfix}
+						where object_id={objectId} 
 							and ot < to_date('{oldDate.ToString("dd-MM-yyyy")}','dd-mm-yyyy')
 						order by ot desc
 						limit 1;";
-                command = DBMngr.Main.GetSqlStringCommand(sql);
-                attributeClass.OldValue = DBMngr.Main.ExecuteScalar(command)?.ToString();
+                    command = DBMngr.Main.GetSqlStringCommand(sql);
+                    attributeClass.OldValue = DBMngr.Main.ExecuteScalar(command)?.ToString();
+                }
+                newRecords.ForEach(x=>list.Add(x));
             }
+
+            return list;
         }
 
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)

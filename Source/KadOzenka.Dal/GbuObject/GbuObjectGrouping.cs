@@ -13,6 +13,7 @@ using System.Security.Principal;
 using Core.Shared.Extensions;
 using Serilog;
 using Newtonsoft.Json;
+using ObjectModel.KO;
 using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
@@ -475,6 +476,34 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
         }
 
+        private static bool CompareDictToValue(OMCodDictionary dict, ValueItem val)
+        {
+            string CleanUp(string x)
+            {
+                // Оставляем только значимые символы в строках
+                return x
+                    .Replace(" ", "")
+                    .Replace("\n","")
+                    .Replace("\r","")
+                    .ToLower();
+            }
+
+            bool toLowerResult = dict.Value.ToLower() == val.Value.ToLower();
+            bool cleanUpResult = CleanUp(dict.Value) == CleanUp(val.Value);
+
+            if (toLowerResult != cleanUpResult)
+            {
+                Log.ForContext("dictValue", JsonConvert.SerializeObject(dict))
+                    .ForContext("checkedValue", JsonConvert.SerializeObject(val))
+                    .ForContext("toLowerEquality",toLowerResult)
+                    .ForContext("cleanUpEquality",cleanUpResult)
+                    .Warning("Нормализация: Разные результаты методов сравнения значений.");
+            }
+
+            return cleanUpResult || toLowerResult;
+        }
+
+
         private ValueItem GetDataLevel(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
@@ -488,7 +517,8 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
+                        var dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -546,10 +576,11 @@ namespace KadOzenka.Dal.GbuObject
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
-                        Serilog.Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
+                        Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
                     if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value.ToLower() == ValueLevel.Value.ToLower());
+                        var dictionaryRecord =  Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -1219,10 +1250,10 @@ namespace KadOzenka.Dal.GbuObject
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
                     .Debug("Выполнение операции группировки по Задачам на  оценку. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item => 
+                Parallel.ForEach(Objs, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
-                    
+
                     try
                     {
                         new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (item.CreationDate == null) ? DateTime.Now.Date : item.CreationDate.Value.Date, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
@@ -1247,7 +1278,7 @@ namespace KadOzenka.Dal.GbuObject
                     .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
                     .Debug("Выполнение операции группировки по Объектам ГБУ. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item => 
+                Parallel.ForEach(Objs, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
 

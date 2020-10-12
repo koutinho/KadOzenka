@@ -3,7 +3,7 @@ using System.IO;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
-using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -11,6 +11,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	{
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
+		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly string _reportOksSqlFileName = "KRSummaryResultsOKS";
 		private readonly string _reportZuSqlFileName = "KRSummaryResultsZU";
 
@@ -18,6 +19,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		{
 			_statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
+            _gbuCodRegisterService = new GbuCodRegisterService();
 		}
 
 		public List<KRSummaryResultsOksDto> GetKRSummaryResultsOksData(long[] taskIdList, long klardAttributeId, long parentKnAttributeId)
@@ -41,7 +43,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetUndergroundFloorsNumberAttribute().Id,
                 _rosreestrRegisterService.GetFloorAttribute().Id,
-                _rosreestrRegisterService.GetWallMaterialAttribute().Id
+                _rosreestrRegisterService.GetWallMaterialAttribute().Id,
+				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 
 			var result = QSQuery.ExecuteSql<KRSummaryResultsOksDto>(sql);
@@ -62,7 +65,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetTypeOfUseByDocumentsAttribute().Id,
                 _rosreestrRegisterService.GetAddressAttribute().Id,
                 _rosreestrRegisterService.GetLocationAttribute().Id,
-                _rosreestrRegisterService.GetParcelCategoryAttribute().Id
+                _rosreestrRegisterService.GetParcelCategoryAttribute().Id,
+				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 
 			var result = QSQuery.ExecuteSql<KRSummaryResultsZuDto>(sql);

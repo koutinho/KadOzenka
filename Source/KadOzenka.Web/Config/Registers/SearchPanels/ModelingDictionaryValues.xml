@@ -1,0 +1,11 @@
+﻿<RootElement>
+    <ControlElement Caption="Код справочника" ID="item_value" OwnType="Text" AttributeNumber="26500300" QueryOperation="Like" />
+    <ControlElement Caption="Значение для расчета" ID="item_calc_value" OwnType="Panel">
+        <children>
+            <ControlElement Caption="с " ID="item_calc_value_from" OwnType="Text" AttributeNumber="26500400" QueryOperation="MoreThan" />
+            <ControlElement Caption="по" ID="item_calc_value_to" OwnType="Text" AttributeNumber="26500400" QueryOperation="LessThan" />
+        </children>
+    </ControlElement>
+
+    <ControlElement Caption="Значение для расчета" ID="item_calc_value" OwnType="Text" AttributeNumber="26500400" QueryOperation="Equal" />
+</RootElement>

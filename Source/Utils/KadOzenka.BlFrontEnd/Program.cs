@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -404,6 +405,7 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
+			consoleHelper.AddCommand("559", "Проверка получения данных для грида результатов ЭО", TestServiceES.TestDataResultGrid);
             consoleHelper.AddCommand("558", "Перенос атрибутов", () =>
             {
 	            var queue = new OMQueue
@@ -414,8 +416,9 @@ namespace KadOzenka.BlFrontEnd
 	            var tasks = new List<long> {15534573};
 	            var attributes = new List<ExportAttributeItem>
 		            {new ExportAttributeItem {IdAttributeGBU = 600, IdAttributeKO = 25118600}};
+            
 
-	            ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 	            {
 		            TaskFilter = tasks,
 		            Attributes = attributes,
@@ -425,13 +428,13 @@ namespace KadOzenka.BlFrontEnd
 			            IsBuildings = true
 		            }
 	            }, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
 					ObjType = ObjectTypeExtended.Oks
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
@@ -441,7 +444,7 @@ namespace KadOzenka.BlFrontEnd
 						IsBuildings = true
 					}
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,
@@ -452,7 +455,7 @@ namespace KadOzenka.BlFrontEnd
 						IsPlacements = true
 					}
 				}, queue);
-				ExportAttributeToKO.Run(new GbuExportAttributeSettings
+	            new ExportAttributeToKO().Run(new GbuExportAttributeSettings
 				{
 					TaskFilter = tasks,
 					Attributes = attributes,

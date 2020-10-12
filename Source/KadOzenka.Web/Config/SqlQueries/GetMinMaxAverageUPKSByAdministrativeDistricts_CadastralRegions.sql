@@ -1,29 +1,36 @@
-WITH cte2 AS (
-	WITH cte1 AS (
+WITH unit_data AS (
 		SELECT
-			L1_R201.ID AS id, 
-			substring(L1_R107.CADASTRAL_QUARTAL from 1 for 5) AS  cadastralQuartal, 
-			L1_R107.REGION_CODE AS regionCode, 
-			L1_R107.DISTRICT_CODE AS districtCode, 
+			L1_R201.ID AS id,
+			L1_R201.OBJECT_ID as ObjectId,
+			L1_R201.CADASTRAL_BLOCK AS CadastralQuartal,
 			L1_R201.PROPERTY_TYPE_CODE AS propertyTypeCode, 
 			L1_R201.UPKS AS objectUpks, 
 			L1_R201.CADASTRAL_COST AS objectCost, 
 			L1_R201.SQUARE AS objectSquare 
-		FROM KO_UNIT L1_R201 JOIN MARKET_REGION_DICTIONATY L1_R107 ON (L1_R201.CADASTRAL_BLOCK = L1_R107.CADASTRAL_QUARTAL) 
-		WHERE (L1_R201.TASK_ID IN ({0}))
-	) 
+		FROM KO_UNIT L1_R201
+		WHERE (L1_R201.TASK_ID IN ({0}) AND L1_R201.PROPERTY_TYPE_CODE<>2190)
+),
+
+cadastralQuartalAttrValues as (
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select ObjectId from unit_data), {1})
+),
+
+cte2 AS (
 	SELECT 
-		cadastralQuartal AS cadastralDistrict, 
-		propertyTypeCode as propertyTypeCode,  
-		count(id) as objectsCount, 
-		MIN(objectUpks) as min, 
-		round(avg(objectUpks), 2) as average, 
+		substring(L1_R107.CADASTRAL_QUARTAL from 1 for 5) AS cadastralDistrict, 
+		u.propertyTypeCode as propertyTypeCode,  
+		count(u.id) as objectsCount, 
+		MIN(u.objectUpks) as min, 
+		round(avg(u.objectUpks), 2) as average, 
 		CASE
-			WHEN sum(objectSquare) != 0 THEN round(sum(objectCost)/sum(objectSquare), 2)
+			WHEN sum(u.objectSquare) != 0 THEN round(sum(u.objectCost)/sum(u.objectSquare), 2)
 			ELSE 0
 		END as averageWeight, 
-		MAX(objectUpks) as max
-	FROM cte1 
+		MAX(u.objectUpks) as max
+	FROM unit_data u 
+	left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.ObjectId=cadastralQuartalGbu.objectId
+	JOIN MARKET_REGION_DICTIONATY L1_R107 
+		ON COALESCE(cadastralQuartalGbu.attributeValue, u.CadastralQuartal)=L1_R107.CADASTRAL_QUARTAL
 	GROUP BY (cadastralDistrict, propertyTypeCode) 
 	ORDER BY cadastralDistrict, propertyTypeCode
 )

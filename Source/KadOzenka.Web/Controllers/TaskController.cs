@@ -638,90 +638,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region Единица оценки
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult Unit(long objectId)
-		{
-			OMUnit unit = OMUnit.Where(x => x.ObjectId == objectId)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			UnitDto dto = UnitDto.ToDto(unit);
-
-			bool isEditPermission = true;
-			ViewBag.IsEditPermission = isEditPermission;
-
-			return View(dto);
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult Unit(UnitDto dto)
-		{
-			OMUnit unit = OMUnit.Where(x => x.Id == dto.Id)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			if (unit != null)
-			{
-				unit.Id = dto.Id.Value;
-
-				unit.CadastralNumber = dto.CadastralNumber;
-				unit.CadastralBlock = dto.CadastralBlock;
-				unit.PropertyType_Code = dto.PropertyType ?? PropertyTypes.None;
-				unit.Square = dto.Square;
-				unit.Status_Code = dto.Status ?? KoUnitStatus.None;
-				unit.CreationDate = dto.UnitCreationDate;
-
-				unit.UpksPre = dto.UpksPre;
-				unit.CadastralCostPre = dto.CadastralCostPre;
-				unit.Upks = dto.Upks;
-				unit.CadastralCost = dto.CadastralCost;
-				unit.StatusRepeatCalc_Code = dto.StatusRepeatCalc ?? KoStatusRepeatCalc.None;
-				unit.StatusResultCalc_Code = dto.StatusResultCalc ?? KoStatusResultCalc.None;
-				unit.ParentCalcType_Code = dto.ParentCalcType ?? KoParentCalcType.None;
-				unit.ParentCalcNumber = dto.ParentCalcNumber;
-
-				unit.GroupId = dto.GroupId;
-				unit.Save();
-			}
-
-			OMTask task = OMTask.Where(x => x.Id == dto.TaskId)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			if (task != null)
-			{
-				task.Id = dto.Id.Value;
-
-				task.TourId = dto.TourId;
-				task.NoteType_Code = dto.NoteType ?? KoNoteType.None;
-				//task.DocumentId = dto.DocumentId;
-				task.CreationDate = dto.TaskCreationDate;
-				//task.ResponseDocId = dto.ResponseDocId;
-
-				task.Save();
-			}
-
-			OMCostRosreestr costRosreestr = OMCostRosreestr.Where(x => x.IdObject == dto.Id)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			if (costRosreestr != null)
-			{
-				costRosreestr.Id = dto.CostRosreestrId.Value;
-				costRosreestr.Datevaluation = dto.Datevaluation;
-				costRosreestr.Costvalue = dto.CostValue;
-				costRosreestr.Docname = dto.DocName;
-				costRosreestr.Docnumber = dto.DocNumber;
-				costRosreestr.Docdate = dto.DocDate;
-
-				costRosreestr.Save();
-			}
-
-			return Json(new { Success = "Успешно сохранено" });
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetExplication(long id)
 		{
 			List<UnitExplicationDto> result = new List<UnitExplicationDto>();
@@ -1061,8 +978,8 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId.Value,
-				model.BuildingCadastralNumberGbuAttributeId.Value);
+			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
+				model.BuildingCadastralNumberGbuAttributeId);
 
 			return Json(new { Success = "Сохранено успешно" });
 		}
@@ -1083,6 +1000,20 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return View(taskId);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult DataMappingModal(long taskId, long objectId)
+		{
+			OMTask task = OMTask.Where(x => x.Id == taskId)
+				.ExecuteFirstOrDefault();
+
+			if (task == null)
+			{
+				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+			}
+
+			return View((taskId,objectId));
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
@@ -1106,11 +1037,7 @@ namespace KadOzenka.Web.Controllers
 				.Select(x => x.DocumentId)
 				.ExecuteFirstOrDefault();
 					
-			List<DataMappingDto> list = new List<DataMappingDto>();
-
-			TaskService.FetchGbuData(list, objectId, task, "num");
-			TaskService.FetchGbuData(list, objectId, task, "dt");
-			TaskService.FetchGbuData(list, objectId, task, "txt");
+			List<DataMappingDto> list = TaskService.FetchGbuData(objectId, task);
 
 			list = list.Where(x => !Object.Equals(x.Value, x.OldValue)).ToList();
 

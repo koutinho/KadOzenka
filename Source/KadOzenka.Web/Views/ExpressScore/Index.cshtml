@@ -220,6 +220,7 @@
 <script src="~/js/jquery.fias.min.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/common-modals.js"></script>
+<script src="~/js/unauthorized-ajax-error-handler.js"></script>
 
 <!-- Поиск точек, поиск адреса и кад номера. Настройки карты-->
 <script type="text/javascript">
@@ -663,11 +664,10 @@
 				var errors = getErrors(data.Errors);
 				Common.ShowError(errors);
 				return;
-			}
-			$('.wrapper-success-dialog').html(data);
-			$('.ajax-data-loading').ajaxDataLoader();
+            }
 			$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
-        })
+			$('.wrapper-success-dialog').html(data);
+			})
             .fail(function (response) {
                 Common.ShowError(response.responseText);
             })

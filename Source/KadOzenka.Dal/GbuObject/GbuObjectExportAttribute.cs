@@ -10,11 +10,10 @@ using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using Serilog;
-using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -75,9 +74,7 @@ namespace KadOzenka.Dal.GbuObject
             }
             WorkerCommon.LogState(processQueue, $"Найдено {setting.Attributes.Count} пар атрибутов.");
             WorkerCommon.LogState(processQueue, $"Найдено {setting.TaskFilter.Count} заданий на оценку.");
-			Log.Verbose("Найдено {AttributesCount} пар атрибутов.", setting.Attributes.Count);
-            Log.Verbose("Найдено {TaskCount} заданий на оценку.", setting.TaskFilter.Count);
-
+       
             if (setting.TaskFilter.Count > 0)
             {
 	            var units = GetUnits(setting);
@@ -85,8 +82,8 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = units.Count;
                 CurrentCount = 0;
 				WorkerCommon.LogState(processQueue, $"Найдено {units.Count} единиц оценки.");
-				Log.Verbose("Найдено {UnitsCount} единиц оценки.", units.Count);
-				var gbuAttributeIds = gbuAttributes.Select(x => x.Id).ToList();
+
+                var gbuAttributeIds = gbuAttributes.Select(x => x.Id).ToList();
 				Parallel.ForEach(units, options, item => { RunOneUnit(item, setting, gbuAttributeIds, gbuAttributes); });
 				CurrentCount = 0;
                 MaxCount = 0;
@@ -109,7 +106,8 @@ namespace KadOzenka.Dal.GbuObject
 			{
                 CadastralNumber = unit.CadastralNumber
 			};
-            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
+            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, DateTime.Now.GetEndOfTheDay());
+
             foreach (GbuObjectAttribute attrib in attributes)
             {
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
@@ -119,11 +117,7 @@ namespace KadOzenka.Dal.GbuObject
 
                 try
                 {
-                    _log.ForContext("IdAttributeGBU", current.IdAttributeGBU)
-                        .ForContext("AttributeId", current.IdAttributeKO)
-                        .Verbose("ExportAttributeToKO.RunOneUnit");
-                    
-					long id_factor = current.IdAttributeKO;
+                    long id_factor = current.IdAttributeKO;
                     long RegId = koAttributeData.RegisterId;
                     object value = attrib.GetValueInString();
 
@@ -175,9 +169,6 @@ namespace KadOzenka.Dal.GbuObject
                 catch (System.Exception ex)
                 {
 	                var errorId = ErrorManager.LogError(ex);
-                    _log.ForContext("IdAttributeGBU", current.IdAttributeGBU)
-                        .ForContext("AttributeId", current.IdAttributeKO)
-                        .ForContext("attrib", JsonConvert.SerializeObject(attrib)).Error(ex, "ExportAttributeToKO.RunOneUnit");
                     
                     operationResult.Atributes.Add(new Attribute
                     {
@@ -318,7 +309,9 @@ namespace KadOzenka.Dal.GbuObject
 	        public long Id { get; set; }
 	        public long ObjectId { get; set; }
 	        public string CadastralNumber { get; set; }
-	        public DateTime? CreationDate { get; set; }
+            //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
+            //TODO если хотфикс будет заапрувлен, нужно убрать
+            public DateTime? CreationDate { get; set; }
 	        public PropertyTypes? ObjectType { get; set; }
         }
 

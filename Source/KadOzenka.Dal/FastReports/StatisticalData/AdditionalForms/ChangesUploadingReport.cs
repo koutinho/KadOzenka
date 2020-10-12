@@ -23,7 +23,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
-			var reportType = GetQueryParam<string>("ReportType", query);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -38,7 +37,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("NewValue", typeof(string));
 			dataTable.Columns.Add("Changing", typeof(string));
 
-			var isOksReportType = reportType == "Статистика по группам с количеством ОКС";
 			var data = _service.GetChangesUploadingData(taskIdList);
 
 			foreach (var unitDto in data)

@@ -5,6 +5,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
@@ -40,7 +41,7 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 					if (gbuObject != null)
 					{
 						var attributesValues = GbuObjectService.GetAllAttributes(gbuObject.Id,
-							new List<long> { RosreestrRegisterService.RosreestrRegisterId },
+							new List<long> { RosreestrRegisterService.RegisterId },
 							new List<long>
 							{
 								buildYearAttributeId,
