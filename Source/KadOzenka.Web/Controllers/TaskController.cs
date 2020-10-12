@@ -690,13 +690,12 @@ namespace KadOzenka.Web.Controllers
 
 					if (model != null)
 					{
-						if (model.ModelFactor.Count == 0)
-							model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+						var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+							.Select(x => x.FactorId)
+							.Execute()
+							.Select(x => x.FactorId).ToList();
 
-						var modelFactorIds = model.ModelFactor.Where(x => x.FactorId.HasValue)
-							.Select(x => x.FactorId.Value).ToList();
-
-						var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
+						var factorsValues = TourFactorService.GetUnitFactorValues(unit);
 						foreach (var factorValue in factorsValues)
 						{
 							if (modelFactorIds.Any(x => x == factorValue.AttributeId))
@@ -712,7 +711,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				else
 				{
-					var factorsValues = TourFactorService.GetUnitFactorValues(unit.Id);
+					var factorsValues = TourFactorService.GetUnitFactorValues(unit);
 					foreach (var factorValue in factorsValues)
 					{
 						factors.Add(new UnitFactorsDto
