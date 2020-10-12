@@ -3863,8 +3863,7 @@ namespace KadOzenka.Dal.DataExport
 
                 #region Сбор и формирование данных по объекту
                 Console.WriteLine(" - заголовок ...");
-                string strDateApp = "01.01.2019";
-                string strDateOut = "01.01.2019";
+                string strDateApp = (task.EstimationDate != null) ? task.EstimationDate.Value.ToString("dd.MM.yyyy") : "-";
                 string strActReq_01_06 = "-";
                 string strActReq_01_07 = "-";
                 string strActReq_01_10 = "01.01.2019";
@@ -3872,13 +3871,11 @@ namespace KadOzenka.Dal.DataExport
                 string value_attr = "";
 
                 #region Нашли и записали в список входящий документ
-                //OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
                 KoNoteType doc_status = task.NoteType_Code;
                 #endregion
                 OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
                 if (doc_out != null)
                 {
-                    strDateOut = doc_out.CreateDate.ToString("dd.MM.yyyy"); //odoc.DATE_DOC.ToString("dd.MM.yyyy");
                     switch (doc_status)
                     {
                         case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
@@ -4032,12 +4029,12 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.11",
                      "Сведения об органе, его местонахождении, официальном сайте в информационно-телекоммуникационной сети «Интернет», адресе электронной почты, контактных телефонах, в который следует обращаться в отношении исчисления налогов, исчисляемых от кадастровой стоимости объекта недвижимости",
-                     "Управление Федеральной налоговой службы России по г. Москве" + "$" +
+                     "Управление Федеральной налоговой службы по г. Москве" + "$" +
                      "Адрес: 125284, г. Москва, Хорошевское шоссе, д. 12А" + "$" +
                      "https://www.nalog.ru" + "$" +
                      "Телефоны:" + "$" +
-                     "Контакт - центр: +7(495) 276 - 22 - 22" + "$" +
-                     "Для справок: +7(495) 400 - 67 - 68",
+                     "Для справок: +7 (495) 400-67-90, +7(495) 400-67- 68" + "$" +
+                     "Единый контакт-центр: 8-800-222-2222",
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4288,32 +4285,16 @@ namespace KadOzenka.Dal.DataExport
 
                             foreach (OMModelFactor factor in model_calc.ModelFactor)
                             {
-                                RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                                factor.FillMarkCatalogs(model_calc);
-
-                                string  attribute_name = (attribute_factor != null)?attribute_factor.Name:"-";
-                                long      attribute_id = (attribute_factor != null)?attribute_factor.Id:0;
+                                string attribute_name = "-";
+                                long attribute_id = -1;
                                 string attribute_value = "-";
+                                string attribute_source = "-";
 
-                                int? factorReestrId = OMGroup.GetFactorReestrId(calc_group);
-                                List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                                DataTable data = (factorReestrId != null) ?
-                                                  RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value) :
-                                                  null;
-                                if (data != null)
-                                {
-                                    foreach (DataRow row in data.Rows)
-                                    {
-                                        FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
-                                    }
-                                    CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
-                                                            FactorValuesGroup.Find(x => x.FactorId == factor.FactorId) :
-                                                            null;
-                                    if (factor_item != null)
-                                    {
-                                        attribute_value = factor_item.Value;
-                                    }
-                                }
+                                GetAttributeValue(_unit, calc_group, task, factor.FactorId, factor.SignMarket,
+                                                   out attribute_id,
+                                                   out attribute_name,
+                                                   out attribute_value,
+                                                   out attribute_source);
 
                                 pp++;
                                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
@@ -4321,12 +4302,38 @@ namespace KadOzenka.Dal.DataExport
                                      "2.3." + pp.ToString(),
                                      attribute_name,
                                      attribute_value,
-                                     GetSourceAttributeFromGbu(_unit, attribute_id, attribute_value, task.EstimationDate),
+                                     attribute_source,
                                      12,
                                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
                                      true, false);
                             }
                         }
+                        List<OMGroupFactor> group_factors = OMGroupFactor.Where(x => x.GroupId == calc_group.Id).SelectAll().Execute();
+                        foreach (OMGroupFactor factor in group_factors)
+                        {
+                            string attribute_name = "-";
+                            long attribute_id = -1;
+                            string attribute_value = "-";
+                            string attribute_source = "-";
+
+                            GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
+                                               out attribute_id,
+                                               out attribute_name,
+                                               out attribute_value,
+                                               out attribute_source);
+
+                            pp++;
+                            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                                 "2.3." + pp.ToString(),
+                                 attribute_name,
+                                 attribute_value,
+                                 attribute_source,
+                                 12,
+                                 HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                                 true, false);
+                        }
+
                     }
                 }
                 #endregion
@@ -4340,32 +4347,16 @@ namespace KadOzenka.Dal.DataExport
 
                     foreach (OMModelFactor factor in model.ModelFactor)
                     {
-                        RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                        factor.FillMarkCatalogs(model);
-
-                        string  attribute_name = (attribute_factor != null) ? attribute_factor.Name : "-";
-                        long      attribute_id = (attribute_factor != null) ? attribute_factor.Id : -1;
+                        string attribute_name = "-";
+                        long attribute_id = -1;
                         string attribute_value = "-";
+                        string attribute_source = "-";
 
-                        int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
-                        List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                        DataTable data = (factorReestrId != null) ?
-                                          RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value) :
-                                          null;
-                        if (data != null)
-                        {
-                            foreach (DataRow row in data.Rows)
-                            {
-                                FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
-                            }
-                            CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
-                                                    FactorValuesGroup.Find(x => x.FactorId == factor.FactorId) :
-                                                    null;
-                            if (factor_item != null)
-                            {
-                                attribute_value = factor_item.Value;
-                            }
-                        }
+                        GetAttributeValue(_unit, group_unit, task, factor.FactorId, factor.SignMarket,
+                                           out attribute_id,
+                                           out attribute_name,
+                                           out attribute_value,
+                                           out attribute_source);
 
                         pp++;
                         idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
@@ -4373,11 +4364,37 @@ namespace KadOzenka.Dal.DataExport
                              "2.3." + pp.ToString(),
                              attribute_name,
                              attribute_value,
-                             GetSourceAttributeFromGbu(_unit, attribute_id, attribute_value, task.EstimationDate),
+                             attribute_source,
                              12,
                              HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
                              true, false);
                     }
+                }
+
+                List<OMGroupFactor> gr_factors = OMGroupFactor.Where(x => x.GroupId == group_unit.Id).SelectAll().Execute();
+                foreach (OMGroupFactor factor in gr_factors)
+                {
+                    string attribute_name = "-";
+                    long attribute_id = -1;
+                    string attribute_value = "-";
+                    string attribute_source = "-";
+
+                    GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
+                                       out attribute_id,
+                                       out attribute_name,
+                                       out attribute_value,
+                                       out attribute_source);
+
+                    pp++;
+                    idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                    DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                         "2.3." + pp.ToString(),
+                         attribute_name,
+                         attribute_value,
+                         attribute_source,
+                         12,
+                         HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                         true, false);
                 }
                 #endregion
 
@@ -4391,7 +4408,7 @@ namespace KadOzenka.Dal.DataExport
                 string parent_calc_number = (_unit.ParentCalcNumber == null) ? string.Empty : _unit.ParentCalcNumber;
                 bool dd = false;
                 bool jj = true;
-                
+
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding)//  subgroup.Type_SubGroup == 9)
                 {
                     if ((calc_unit != null) && ((parent_calc_number == calc_unit.CadastralNumber) || parent_calc_number == string.Empty))
@@ -4687,6 +4704,66 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
+        /// <summary>
+        /// Получить значения аттрибутов фактора
+        /// </summary>
+        public static void GetAttributeValue(OMUnit _unit, OMGroup _group, OMTask _task, long? _factor_id, bool _sign_market,
+                                             out long attr_id, out string attr_name, out string attr_value, out string attr_source)
+        {
+            RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(_factor_id));
+
+            attr_id = (attribute_factor != null) ? attribute_factor.Id : -1;
+            attr_name = (attribute_factor != null) ? attribute_factor.Name : "-";
+            attr_value = "-";
+            attr_source = "-";
+
+            int? factorReestrId = OMGroup.GetFactorReestrId(_group);
+            List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+            DataTable data = (factorReestrId != null) ?
+                              RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value) :
+                              null;
+            if (data != null)
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                }
+                CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
+                                        FactorValuesGroup.Find(x => x.FactorId == _factor_id) :
+                                        null;
+                if (factor_item != null)
+                {
+                    attr_value = factor_item.Value;
+
+                    //Ищем источник в OMFactorSetting в KO, если нет, то в ГБУ
+                    OMFactorSettings factor_sett = OMFactorSettings.Where(x => x.FactorId == attribute_factor.Id).SelectAll().ExecuteFirstOrDefault();
+                    attr_source = (factor_sett != null) ? factor_sett.Source : GetSourceAttributeFromGbu(_unit, attr_id, factor_item.Value, _task.EstimationDate);
+
+                    #region Если есть метка, получаем результирущий коэффициент в подставляемое значение
+                    if (_sign_market.ParseToBoolean())
+                    {
+                        List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
+                        MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == _group.Id && x.FactorId == factor_item.FactorId).SelectAll().Execute());
+
+                        OMMarkCatalog mc = null;
+                        string temp_val = attr_value;
+                        mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace('.', ','));
+                        if (mc == null)
+                            mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace(',', '.'));
+
+                        if (mc != null)
+                        {
+                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(".00000000000000000000", ".00") + ")";
+                        }
+                    }
+                    #endregion
+                }
+            }
+        }
+
+        /// <summary>
+        /// Получить расчетную группц объекта оценки
+        /// </summary>
         public static void GetCalcGroupFromUnit(OMUnit _unit, DateTime? _estimatedate, out OMUnit unit_out, out OMGroup group_out)
         {
             unit_out = null;
@@ -4743,15 +4820,18 @@ namespace KadOzenka.Dal.DataExport
 
                 if (attribs.Count > 0)
                 {
-                    if (attribs[0].NumValue.ToString() == _value)
+                    foreach (GbuObjectAttribute attrib in attribs)
                     {
-                        var gbuAttribute = new GbuObjectService().GetGbuAttributes().FirstOrDefault(x => x.Id == transferAttribute.GbuId);
-                        if (gbuAttribute != null)
+                        if (attrib.NumValue.ToString() == _value)
                         {
-                            var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == gbuAttribute.RegisterId);
-                            if (attribute_source != null)
+                            var gbuAttribute = new GbuObjectService().GetGbuAttributes().FirstOrDefault(x => x.Id == transferAttribute.GbuId);
+                            if (gbuAttribute != null)
                             {
-                                source_out = attribute_source.Description;
+                                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == gbuAttribute.RegisterId);
+                                if (attribute_source != null)
+                                {
+                                    source_out = attribute_source.Description;
+                                }
                             }
                         }
                     }
@@ -4761,6 +4841,7 @@ namespace KadOzenka.Dal.DataExport
             return source_out;
         }
     }
+
 
     /// <summary>
     /// Класс итоговой выгрузки результатов
