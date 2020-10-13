@@ -257,7 +257,8 @@ namespace KadOzenka.Dal.Modeling
                     {
                         ModelId = modelDto.ModelId,
                         FactorId = newAttribute.AttributeId,
-                        DictionaryId = newAttribute.DictionaryId
+                        DictionaryId = newAttribute.DictionaryId,
+                        MarkerId = -1
                     }.Save();
                 });
 
