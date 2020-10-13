@@ -184,6 +184,7 @@
     <None Remove="Config\Registers\Views\ModelingDictionaries.xml" />
     <None Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <None Remove="Config\Registers\Views\ModelingModels.xml" />
+    <None Remove="Config\Registers\Views\ModelingModels2.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
     <None Remove="Config\Registers\Views\SignatoriesPersonSelect.xml" />
@@ -454,6 +455,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\Documents.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\ModelingModels2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\ModelingModels.xml">
@@ -1845,6 +1849,7 @@
     <ConfigPath Remove="Config\Registers\Views\ModelingDictionaries.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
+    <ConfigPath Remove="Config\Registers\Views\ModelingModels2.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
