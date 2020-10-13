@@ -161,15 +161,17 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ValidateModel(modelDto);
 
-			return new OMModel
+			var model = new OMModel
 			{
 				Name = modelDto.Name,
-                Description = modelDto.Description,
+				Description = modelDto.Description,
 				TourId = modelDto.TourId,
 				GroupId = modelDto.GroupId,
-				Formula = "-",
-                AlgoritmType_Code = KoAlgoritmType.None
-			}.Save();
+				AlgoritmType_Code = KoAlgoritmType.None
+			};
+			model.Formula = model.GetFormulaFull(true);
+
+            return model.Save();
 		}
 
 		public bool UpdateModel(ModelingModelDto modelDto)
@@ -190,6 +192,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.TourId = modelDto.TourId;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
+                existedModel.Formula = existedModel.GetFormulaFull(true);
                 if (isModelChanged)
                 {
                     existedModel.LinearTrainingResult = null;
