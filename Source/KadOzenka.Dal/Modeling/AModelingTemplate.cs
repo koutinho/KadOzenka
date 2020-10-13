@@ -8,6 +8,7 @@ using ObjectModel.Modeling;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Core.ErrorManagment;
 using KadOzenka.Dal.LongProcess;
 using Newtonsoft.Json;
 using Serilog;
@@ -58,8 +59,9 @@ namespace KadOzenka.Dal.Modeling
             }
             catch (Exception exception)
             {
+	            var errorId = ErrorManager.LogError(exception);
                 RollBackResult();
-                SendFailNotification(ProcessQueue, exception);
+                SendFailNotification(ProcessQueue, exception, errorId);
                 throw;
             }
         }
@@ -85,9 +87,9 @@ namespace KadOzenka.Dal.Modeling
             NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
-        protected virtual void SendFailNotification(OMQueue processQueue, Exception exception)
+        protected virtual void SendFailNotification(OMQueue processQueue, Exception exception, long errorId)
         {
-            var message = $"Операция завершена с ошибкой: {exception.Message}. \nПодробнее в списке процессов.";
+            var message = $"Операция завершена с ошибкой: {exception.Message}.\nПодробнее в списке процессов.\nЖурнал: {errorId}";
             NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 

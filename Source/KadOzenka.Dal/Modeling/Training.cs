@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
-using DevExpress.Data.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
@@ -37,6 +36,9 @@ namespace KadOzenka.Dal.Modeling
             var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
+                //TODO CIPJSKO-526 заменить URL после правок сервиса моделирования
+                case ModelType.All:
+		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
                 case ModelType.Linear:
                     return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
                 case ModelType.Exponential:
@@ -109,7 +111,7 @@ namespace KadOzenka.Dal.Modeling
 	                {
 		                ModelId = Model.Id,
 		                CadastralNumber = marketObject.CadastralNumber,
-		                Price = marketObject.Price,
+		                Price = marketObject.PricePerMeter,
 		                IsForTraining = isForTraining
 	                };
 
@@ -172,6 +174,7 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
+        //TODO CIPJSKO-526 добавить обработку по всем
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
             var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
@@ -212,7 +215,7 @@ namespace KadOzenka.Dal.Modeling
                 .Select(x => new
                 {
 	                x.CadastralNumber,
-	                x.Price
+	                x.PricePerMeter
                 })
 				////TODO для тестирования
 				//.SetPackageIndex(0)
@@ -221,13 +224,13 @@ namespace KadOzenka.Dal.Modeling
                 .GroupBy(x => new
                 {
                     x.CadastralNumber,
-                    x.Price
+                    x.PricePerMeter
                 })
                 .Select(x => new MarketObjectPure
                 {
                     Id = x.Max(y => y.Id),
                     CadastralNumber = x.Key.CadastralNumber,
-                    Price = x.Key.Price.GetValueOrDefault()
+                    PricePerMeter = x.Key.PricePerMeter.GetValueOrDefault()
                 }).ToList();
         }
 
@@ -367,6 +370,10 @@ namespace KadOzenka.Dal.Modeling
                     break;
                 case ModelType.Multiplicative:
                     Model.MultiplicativeTrainingResult = trainingResult;
+                    break;
+                //TODO CIPJSKO-526
+                case ModelType.All:
+	                Model.LinearTrainingResult = trainingResult;
                     break;
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
