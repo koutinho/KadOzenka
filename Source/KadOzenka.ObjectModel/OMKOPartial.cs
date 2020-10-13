@@ -463,6 +463,8 @@ namespace ObjectModel.KO
     }
     public partial class OMModel
     {
+	    public string InternalName => $"model_{Id}";
+
         public string GetFormulaFull(bool upks)
         {
             string str_koeff = GetFormulaKoeff(false, string.Empty);

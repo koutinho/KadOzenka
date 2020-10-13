@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.LongProcess;
 using Newtonsoft.Json;
+using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.Dal.Modeling
@@ -94,9 +95,9 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        protected OMModelingModel GetModel(long modelId)
+        protected OMModel GetModel(long modelId)
         {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
                 throw new Exception($"Не найдена модель с Id='{modelId}'");
 

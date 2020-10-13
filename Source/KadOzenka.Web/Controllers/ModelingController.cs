@@ -706,9 +706,9 @@ namespace KadOzenka.Web.Controllers
 
         #region Support Methods
 
-        private OMModelingModel GetModel(long modelId)
+        private OMModel GetModel(long modelId)
         {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
                 throw new Exception($"Не найдена модель с Id='{modelId}'");
 

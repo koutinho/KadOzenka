@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        protected OMModelingModel Model { get; }
+        protected OMModel Model { get; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
         public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)

@@ -35,8 +35,8 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var query = new QSQuery
 			{
-				MainRegisterID = OMModelingModel.GetRegisterId(),
-				Condition = new QSConditionSimple(OMModelingModel.GetColumn(x => x.Id), QSConditionType.Equal, modelId),
+				MainRegisterID = OMModel.GetRegisterId(),
+				Condition = new QSConditionSimple(OMModel.GetColumn(x => x.Id), QSConditionType.Equal, modelId),
 				Joins = new List<QSJoin>
 				{
 					new QSJoin
@@ -45,10 +45,10 @@ namespace KadOzenka.Dal.Modeling
 						JoinCondition = new QSConditionSimple
 						{
 							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelingModel.GetColumn(x => x.TourId),
+							LeftOperand = OMModel.GetColumn(x => x.TourId),
 							RightOperand = OMTour.GetColumn(x => x.Id)
 						},
-						JoinType = QSJoinType.Inner
+						JoinType = QSJoinType.Left
 					},
                     new QSJoin
                     {
@@ -56,22 +56,22 @@ namespace KadOzenka.Dal.Modeling
                         JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMModelingModel.GetColumn(x => x.GroupId),
+                            LeftOperand = OMModel.GetColumn(x => x.GroupId),
                             RightOperand = OMGroup.GetColumn(x => x.Id)
                         },
-                        JoinType = QSJoinType.Inner
+                        JoinType = QSJoinType.Left
                     }
                 }
 			};
-			query.AddColumn(OMModelingModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.LinearTrainingResult, nameof(ModelingModelDto.LinearTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.ExponentialTrainingResult, nameof(ModelingModelDto.ExponentialTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.MultiplicativeTrainingResult, nameof(ModelingModelDto.MultiplicativeTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
+			query.AddColumn(OMModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
+            query.AddColumn(OMModel.GetColumn(x => x.LinearTrainingResult, nameof(ModelingModelDto.LinearTrainingResult)));
+            query.AddColumn(OMModel.GetColumn(x => x.ExponentialTrainingResult, nameof(ModelingModelDto.ExponentialTrainingResult)));
+            query.AddColumn(OMModel.GetColumn(x => x.MultiplicativeTrainingResult, nameof(ModelingModelDto.MultiplicativeTrainingResult)));
+            query.AddColumn(OMModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
             query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
-			query.AddColumn(OMModelingModel.GetColumn(x => x.GroupId, nameof(ModelingModelDto.GroupId)));
+			query.AddColumn(OMModel.GetColumn(x => x.GroupId, nameof(ModelingModelDto.GroupId)));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(ModelingModelDto.GroupName)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
+            query.AddColumn(OMModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
 
             var table = query.ExecuteQuery();
 			ModelingModelDto model = null;
@@ -212,7 +212,7 @@ namespace KadOzenka.Dal.Modeling
 
             using (var ts = new TransactionScope())
             {
-                var model = new OMModelingModel
+                var model = new OMModel
                 {
                     Name = modelDto.Name,
                     TourId = modelDto.TourId,
@@ -220,7 +220,6 @@ namespace KadOzenka.Dal.Modeling
                 };
 
                 var id = model.Save();
-                model.InternalName = $"model_{id}";
                 model.Save();
 
                 ts.Complete();
@@ -271,7 +270,7 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-        private bool IsModelChanged(OMModelingModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
         {
             var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
             var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
@@ -580,9 +579,9 @@ namespace KadOzenka.Dal.Modeling
 
         #region Support Methods
 
-        private OMModelingModel GetModelByIdInternal(long modelId)
+        private OMModel GetModelByIdInternal(long modelId)
         {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
                 throw new Exception($"Не найдена модель с Id='{modelId}'");
 

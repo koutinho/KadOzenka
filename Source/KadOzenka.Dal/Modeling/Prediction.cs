@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private PredictionRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        protected OMModelingModel Model { get; }
+        protected OMModel Model { get; }
         protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{Model.Name}'";
 
         public Prediction(string inputParametersXml, OMQueue processQueue, ILogger logger)

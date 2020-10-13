@@ -7406,6 +7406,106 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _tourid;
+        /// <summary>
+        /// 20601000 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601000)]
+        public long? TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
+
+
+        private string _lineartrainingresult;
+        /// <summary>
+        /// 20601100 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601100)]
+        public string LinearTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("LinearTrainingResult");
+                return _lineartrainingresult;
+            }
+            set
+            {
+                _lineartrainingresult = value;
+                NotifyPropertyChanged("LinearTrainingResult");
+            }
+        }
+
+
+        private string _exponentialtrainingresult;
+        /// <summary>
+        /// 20601200 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601200)]
+        public string ExponentialTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("ExponentialTrainingResult");
+                return _exponentialtrainingresult;
+            }
+            set
+            {
+                _exponentialtrainingresult = value;
+                NotifyPropertyChanged("ExponentialTrainingResult");
+            }
+        }
+
+
+        private string _multiplicativetrainingresult;
+        /// <summary>
+        /// 20601300 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601300)]
+        public string MultiplicativeTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("MultiplicativeTrainingResult");
+                return _multiplicativetrainingresult;
+            }
+            set
+            {
+                _multiplicativetrainingresult = value;
+                NotifyPropertyChanged("MultiplicativeTrainingResult");
+            }
+        }
+
+
+        private bool? _isoksobjecttype;
+        /// <summary>
+        /// 20601400 Тип объекта (IS_OKS_OBJECT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601400)]
+        public bool? IsOksObjectType
+        {
+            get
+            {
+                CheckPropertyInited("IsOksObjectType");
+                return _isoksobjecttype;
+            }
+            set
+            {
+                _isoksobjecttype = value;
+                NotifyPropertyChanged("IsOksObjectType");
+            }
+        }
+
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="700" DefaultLayoutId="1007001" LinkedRegistersList="700" 
+<RegisterView RegisterId="206" DefaultLayoutId="113" LinkedRegistersList="206" 
               AllowSearchPanelResize="false" Description="Моделирование" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Моделирование"
