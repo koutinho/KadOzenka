@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.Modeling
             ModelingService.DestroyModelMarketObjects(Model.Id);
             AddLog("Удалены предыдущие данные.");
 
-            var modelAttributes = ModelingService.GetModelAttributes(Model.Id);
+            var modelAttributes = ModelingService.GetModelFactors(Model.Id);
             AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
             var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
@@ -140,7 +140,7 @@ namespace KadOzenka.Dal.Modeling
         {
             RequestForService = new TrainingRequest();
 
-            var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
+            var allAttributes = ModelingService.GetModelFactors(InputParameters.ModelId);
             RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
             RequestForService.AttributeIds.AddRange(allAttributes.Select(x => x.AttributeId));
 

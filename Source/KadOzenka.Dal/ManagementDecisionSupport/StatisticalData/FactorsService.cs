@@ -6,7 +6,7 @@ using System.Text;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Model;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
@@ -14,11 +14,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class FactorsService
     {
-        private ModelService ModelService { get; set; }
+        private ModelingService ModelService { get; set; }
 
         public FactorsService()
         {
-            ModelService = new ModelService();
+            ModelService = new ModelingService(new DictionaryService());
         }
 
 
@@ -46,54 +46,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             }).ToList();
 
             return groupedFactors;
-        }
-
-        public Dictionary<long, List<Attribute>> GetPricingFactorsForUnits(List<long> unitIds, List<PricingFactors> unitFactors)
-        {
-            var attributes = new Dictionary<long, List<Attribute>>();
-            unitFactors.ForEach(factor =>
-            {
-                //улучшение производительности: не делаем join c юнитами, если можем найти атрибут с ID основного ключа
-                var cacheAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == factor.RegisterId && x.IsPrimaryKey);
-
-                var condition = cacheAttribute == null
-                    ? new QSConditionSimple(OMUnit.GetColumn(x => x.Id), QSConditionType.In, unitIds.Select(x => (double)x))
-                    : new QSConditionSimple
-                    {
-                        ConditionType = QSConditionType.In,
-                        LeftOperand = new QSColumnSimple(cacheAttribute.Id),
-                        RightOperand = new QSColumnConstant(unitIds)
-                    };
-
-                var query = new QSQuery
-                {
-                    MainRegisterID = (int) factor.RegisterId,
-                    Columns = factor.Attributes.Select(x => (QSColumn)new QSColumnSimple(x.Id, x.Id.ToString())).ToList(),
-                    Condition = condition
-                };
-
-                var table = query.ExecuteQuery();
-                foreach (DataRow row in table.Rows)
-                {
-                    factor.Attributes.ForEach(attribute =>
-                    {
-                        var unitId = row["ID"].ParseToLong();
-                        var value = row[attribute.Id.ToString()].ParseToStringNullable();
-
-                        if (!attributes.ContainsKey(unitId))
-                            attributes.Add(unitId, new List<Attribute>());
-
-                        attributes[unitId].Add(new Attribute
-                        {
-                            Id = attribute.Id,
-                            Name = attribute.Name,
-                            Value = value
-                        });
-                    });
-                }
-            });
-
-            return attributes;
         }
 
         public ModelFactorsSql GetSqlForModelFactors(long? modelId, List<PricingFactors> groupedFactors)

@@ -6,9 +6,10 @@ using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.Model.Dto;
 using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -34,8 +35,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupId = GetGroupIdFromFilter(query);
 
-            var model = ModelService.GetModelByGroupId(groupId);
-            var factors = ModelService.GetModelFactors(model.Id);
+            var model = ModelService.GetModelEntityByGroupId(groupId);
+
+            var factors = GetFactors(model.Id);
+
             var quantitativeFactors = GetQuantitativeFactors(factors, groupId);
             var qualityFactors = GetQualityFactors(factors, groupId);
 
@@ -70,7 +73,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return dataTable;
         }
 
-        private DataTable GetCoefficientsDataTable(List<ModelFactorDto> factors)
+        private DataTable GetCoefficientsDataTable(List<ModelFactor> factors)
         {
             var dataTable = new DataTable("Coefficients");
 
@@ -81,16 +84,28 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             for (var i = 0; i < factors.Count; i++)
             {
                 dataTable.Rows.Add(i + 1,
-                    factors[i].Factor,
+                    factors[i].FactorName,
                     factors[i].B0);
             }
 
             return dataTable;
         }
 
-        private List<QuantitativeFactor> GetQuantitativeFactors(List<ModelFactorDto> factors, long groupId)
+        private List<ModelFactor> GetFactors(long modelId)
+		{
+			var query = ModelService.GetModelFactorsQuery(modelId);
+
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactor.Type)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactor.FactorId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactor.FactorName)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelFactor.B0)));
+
+			return query.ExecuteQuery<ModelFactor>();
+        }
+
+        private List<QuantitativeFactor> GetQuantitativeFactors(List<ModelFactor> factors, long groupId)
         {
-            var quantitativeFactors = factors.Where(x => QuantitativeTypes.Contains(x.Type)).ToList();
+            var quantitativeFactors = factors.Where(x => QuantitativeTypes.Contains((RegisterAttributeType)x.Type)).ToList();
             var factorIds = quantitativeFactors.Select(x => x.FactorId).ToList();
             if (factorIds.Count <= 0)
                 return new List<QuantitativeFactor>();
@@ -115,7 +130,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 {
                     result.Add(new QuantitativeFactor
                     {
-                        Name = factor.Factor,
+                        Name = factor.FactorName,
                         MaxValue = factorMarks.MaxValue,
                         MinValue = factorMarks.MinValue
                     });
@@ -145,9 +160,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return dataTable;
         }
 
-        private List<QualityFactor> GetQualityFactors(List<ModelFactorDto> factors, long groupId)
+        private List<QualityFactor> GetQualityFactors(List<ModelFactor> factors, long groupId)
         {
-            var qualityFactors = factors.Where(x => !QuantitativeTypes.Contains(x.Type)).ToList();
+            var qualityFactors = factors.Where(x => !QuantitativeTypes.Contains((RegisterAttributeType)x.Type)).ToList();
             var factorIds = qualityFactors.Select(x => x.FactorId).ToList();
             if (factorIds.Count <= 0)
                 return new List<QualityFactor>();
@@ -163,7 +178,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 {
                     result.Add(new QualityFactor
                     {
-                        Name = factor.Factor,
+                        Name = factor.FactorName,
                         Value = x.ValueFactor,
                         Metka = x.MetkaFactor
                     });
@@ -197,6 +212,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
 
         #region Entities
+
+        public class ModelFactor
+        {
+	        public long Id { get; set; }
+	        public long FactorId { get; set; }
+	        public string FactorName { get; set; }
+	        public long Type { get; set; }
+	        public decimal B0 { get; set; }
+        }
 
         private class QuantitativeFactor
         {

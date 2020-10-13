@@ -1,6 +1,6 @@
 ﻿using Core.Register;
 
-namespace KadOzenka.Dal.Model.Dto
+namespace KadOzenka.Dal.Modeling.Dto
 {
     public class ModelFactorDto
     {
