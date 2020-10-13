@@ -18,6 +18,7 @@
 	
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="General\" />
     <Folder Include="Resources\" />
     <Folder Include="Services\Rsm\Dto\" />
     <Folder Include="wwwroot\" />

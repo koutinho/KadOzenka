@@ -255,12 +255,20 @@
     </div>
 </div>
 
+
+
 <script type="text/x-kendo-template" id="factorsGridToolbarTemplate">
     <div class="factorsGridToolbarContainer">
         <label class="factors-switch-label" for="factors-switch">Отображать факторы, используемые в рамках текущей модели</label>
         <input id="factors-switch" checked="checked" />
+        <div style="margin-top: 1%">
+            <input type="checkbox" id="factorsWithValueCheckBox" class="k-checkbox">
+            <label class="k-checkbox-label" for="factorsWithValueCheckBox">Заполненные</label>
+        </div>
     </div>
 </script>
+
+
 <script>
     $(document).ready(function () {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -326,7 +334,7 @@
                     field: 'Kc', title: 'КС', format: '{0:n}'
                 },
                 {
-                    field: 'NameAnalog', title: 'Аналог'
+                    field: 'Analog', title: 'Аналог'
                 }
             ],
 
@@ -345,7 +353,9 @@
             },
             columns: [
                 {
-                    field: 'FactorName', title: 'Фактор'
+                    field: 'FactorName',
+                    title: 'Фактор',
+                    filterable: false
                 },
                 {
                     field: 'FactorValue', title: 'Значение'
@@ -355,6 +365,16 @@
             pageable: {
                 pageSize: 10
             },
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    }
+                }
+            }
         });
 
         $("#factors-switch").kendoSwitch({
@@ -362,17 +382,30 @@
                 if ($('#factorsGrid .k-pager-first')) {
                     $('#factorsGrid .k-pager-first').click();
                 }
-                var grid = $('#factorsGrid').data("kendoGrid");
-                grid.dataSource.transport.options.read.data["showOnlyModelFactors"] = e.checked;
-                grid.dataSource.read();
+                getFactors();
             },
             messages: {
                 checked: "",
                 unchecked: ""
             }
         });
+
+        $('#factorsWithValueCheckBox').on('change', getFactors);
     });
+
+
+    function getFactors() {
+        var isShowOnlyModelFactorsChecked = $('#factors-switch').prop('checked');
+        var isFilledFactorsChecked = $('#factorsWithValueCheckBox').prop('checked');
+        var grid = $('#factorsGrid').data("kendoGrid");
+        grid.dataSource.transport.options.read.data["showOnlyModelFactors"] = isShowOnlyModelFactorsChecked;
+        grid.dataSource.transport.options.read.data["isShowOnlyFilledFactors"] = isFilledFactorsChecked;
+        grid.dataSource.read();
+    }
 </script>
+
+
+
 
 <style>
     .form-horizontal .control-label {

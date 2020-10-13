@@ -17368,6 +17368,26 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private bool? _isdecisionenteredintoforce;
+        /// <summary>
+        /// 31502300 Решение вступило в законную силу (IS_DECISION_ENTERED_INTO_FORCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31502300)]
+        public bool? IsDecisionEnteredIntoForce
+        {
+            get
+            {
+                CheckPropertyInited("IsDecisionEnteredIntoForce");
+                return _isdecisionenteredintoforce;
+            }
+            set
+            {
+                _isdecisionenteredintoforce = value;
+                NotifyPropertyChanged("IsDecisionEnteredIntoForce");
+            }
+        }
+
     }
 }
 
@@ -17592,6 +17612,26 @@ namespace ObjectModel.Sud
             {
                 _appealnumber = value;
                 NotifyPropertyChanged("AppealNumber");
+            }
+        }
+
+
+        private DateTime? _appealdate;
+        /// <summary>
+        /// 31601000 Дата определения (апелляция) (APPEAL_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31601000)]
+        public DateTime? AppealDate
+        {
+            get
+            {
+                CheckPropertyInited("AppealDate");
+                return _appealdate;
+            }
+            set
+            {
+                _appealdate = value;
+                NotifyPropertyChanged("AppealDate");
             }
         }
 

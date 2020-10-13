@@ -524,6 +524,9 @@ namespace ObjectModel.SRD
               // Работа со значениями справочников моделирования (654)
               public const string KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION = "KO.DICT.MODELS.DICTIONARIES.VALUES.MODIFICATION";
                 
+              // Редактирование статуса Решение вступило в законную силу (655)
+              public const string SUD_OBJECTS_EDIT_DECISION_ENTERED_INTO_FORCE = "SUD.OBJECTS.EDIT.DECISION_ENTERED_INTO_FORCE";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 

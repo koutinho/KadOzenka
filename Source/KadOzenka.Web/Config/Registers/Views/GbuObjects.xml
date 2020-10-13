@@ -20,7 +20,7 @@
 		    </Parameters>
 	    </Button>
 
-	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="400" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.UNLOADING_FROM_DICT" Icon="fas fa-book">
+	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="600" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.UNLOADING_FROM_DICT" Icon="fas fa-book">
 		    <Parameters>
 		    </Parameters>
 	    </Button>

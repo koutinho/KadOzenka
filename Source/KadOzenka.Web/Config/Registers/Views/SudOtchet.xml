@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="308" LinkedRegistersList="308,307" DefaultLayoutId="1003042" IsBasic="false" 
-              ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="true" 
               ShowSettingsPanel="true" UseMasterPage="true" ShowRowMenu="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
 	    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTAG="SUD.OTCHET.HISTORY">
@@ -37,7 +37,7 @@
           <Parameter Key="reportId" Value="[ObjectId]" />
         </Parameters>
       </Button>
-      <Button Caption="Единицы оценки" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
+      <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
         <Parameters>
           <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
           <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
@@ -45,4 +45,12 @@
         </Parameters>
       </Button>
     </RowMenuButtons>
+
+    <Tabs>
+        <Tab Caption="Связанные объекты" NavigateURL="/RegistersView/SudObjectsSimpleCard?Transition=1">
+            <Parameters>
+                <Parameter Key="30400300" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
 </RegisterView>

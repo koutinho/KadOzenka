@@ -11,6 +11,9 @@ namespace KadOzenka.WebServices.Domain.Model
 		[Column("group_id")]
 		public long? GroupId { get; set; }
 
+		[Column("object_id")]
+		public long ObjectId { get; set; }
+
 		[Column("tour_id")]
 		public long? TourId { get; set; }
 

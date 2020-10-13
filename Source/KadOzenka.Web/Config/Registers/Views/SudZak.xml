@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="300" LinkedRegistersList="300,312" DefaultLayoutId="1003001" 
-              IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="true" 
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" ShowRowMenu="true" SRDFunctionTag="">
     <Buttons>
 		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTAG="SUD.ZAK.HISTORY">
@@ -38,4 +38,12 @@
       </Parameters>
     </Button>
   </RowMenuButtons>
+
+    <Tabs>
+        <Tab Caption="Связанные объекты" NavigateURL="/RegistersView/SudObjectsSimpleCard?Transition=1">
+            <Parameters>
+                <Parameter Key="30200300" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
 </RegisterView>
