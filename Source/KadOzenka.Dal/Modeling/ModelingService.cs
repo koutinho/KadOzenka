@@ -572,7 +572,10 @@ namespace KadOzenka.Dal.Modeling
         public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
 	        List<ModelAttributeRelationDto> modelAttributes)
         {
-	        var query = new QSQuery
+            if(modelAttributes == null || modelAttributes.Count == 0)
+                return new Dictionary<long, List<CoefficientForObject>>();
+
+            var query = new QSQuery
 	        {
 		        MainRegisterID = OMCoreObject.GetRegisterId(),
 		        Condition = new QSConditionSimple

@@ -76,9 +76,7 @@ namespace KadOzenka.Dal.Modeling
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
-            var marketObjectToUnitsRelation = tourFactorsAttributes.Count == 0 
-	            ? new List<MarketObjectToUnitsRelation>() 
-	            : GetMarketObjectToUnitsRelation(marketObjects);
+            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count == 0);
             AddLog($"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
@@ -182,7 +180,7 @@ namespace KadOzenka.Dal.Modeling
 
             ResetPredictedPrice();
 
-            ResetCoefficientsForPredictedPrice();
+            SaveCoefficients(trainingResult.CoefficientsForAttributes);
 
             var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
             UpdateModelTrainingResult(jsonTrainingResult);
@@ -248,29 +246,33 @@ namespace KadOzenka.Dal.Modeling
             return relation;
         }
 
-        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects)
+        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
         {
 	        var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).ToList();
 	        if (cadastralNumbers.Count == 0)
 		        return new List<MarketObjectToUnitsRelation>();
 
-	        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
-		        .Select(x => new
-		        {
-			        x.CadastralNumber,
-                    x.PropertyType_Code,
-                    x.BuildingCadastralNumber
-                })
-		        .Execute();
-
-	        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-	        if (placementUnits.Count > 0)
+            var unitsDictionary = new Dictionary<string, List<long>>();
+            if (downloadUnits)
 	        {
-		        ProcessPlacemenUnits(placementUnits, units);
-	        }
+		        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+			        .Select(x => new
+			        {
+				        x.CadastralNumber,
+				        x.PropertyType_Code,
+				        x.BuildingCadastralNumber
+			        })
+			        .Execute();
 
-            var unitsDictionary = units.GroupBy(x => x.CadastralNumber)
-		        .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+		        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+		        if (placementUnits.Count > 0)
+		        {
+			        ProcessPlacemenUnits(placementUnits, units);
+		        }
+
+		        unitsDictionary = units.GroupBy(x => x.CadastralNumber)
+			        .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+            }
 
             var marketObjectToUnitsRelation = new List<MarketObjectToUnitsRelation>();
             marketObjects.ForEach(x =>
@@ -346,16 +348,19 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private void ResetCoefficientsForPredictedPrice()
+        private void SaveCoefficients(Dictionary<string, decimal> coefficients)
         {
-            var modelAttributeRelations = OMModelFactor.Where(x => x.ModelId == Model.Id && x.Weight != 0)
-                .SelectAll().Execute();
+	        var modelFactors = OMModelFactor.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
 
-            modelAttributeRelations.ForEach(x =>
-            {
-                x.Weight = 0;
-                x.Save();
-            });
+	        foreach (var coefficient in coefficients)
+	        {
+		        var modelFactor = modelFactors.FirstOrDefault(x => x.FactorId == coefficient.Key.ParseToLong());
+		        if (modelFactor == null)
+			        continue;
+
+		        modelFactor.Weight = coefficient.Value;
+		        modelFactor.Save();
+	        }
         }
 
         private void UpdateModelTrainingResult(string trainingResult)
