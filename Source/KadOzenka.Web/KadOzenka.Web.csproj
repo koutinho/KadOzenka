@@ -198,6 +198,7 @@
     <None Remove="Config\Registers\Views\SudDictSroSelect.xml" />
     <None Remove="Config\Registers\Views\SudObjects.xml" />
     <None Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
+    <None Remove="Config\Registers\Views\SudObjectsSimpleCard.xml" />
     <None Remove="Config\Registers\Views\SudOtchet.xml" />
     <None Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
     <None Remove="Config\Registers\Views\SudOtchetSelect.xml" />
@@ -493,6 +494,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DeclarationsSpdRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\SudObjectsSimpleCard.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudSpdRegister.xml">
@@ -1848,6 +1852,7 @@
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudObjectsSimpleCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx" />
