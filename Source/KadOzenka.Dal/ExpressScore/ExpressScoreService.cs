@@ -84,6 +84,39 @@ namespace KadOzenka.Dal.ExpressScore
 			return ScoreCommonService.GetParameters(new List<long> { objectId }, attributeId, registerId, qsGroup);
 		}
 
+		public List<ComplexCostFactorForCalculateDto> GetCostFactorsForCalculate(string targetKn, int? targetMarketObjectId, MarketSegment segment)
+		{
+			List<ComplexCostFactorForCalculateDto> complexCostFactorsForCalculatePage = new List<ComplexCostFactorForCalculateDto>();
+
+			var costFactors = GetCostFactorsBySegmentType(segment);
+
+			List<ComplexCostFactor> complexCostFactors = new List<ComplexCostFactor>();
+			if (costFactors != null)
+			{
+				complexCostFactors = costFactors.ComplexCostFactors != null
+					? costFactors.ComplexCostFactors.Where(x => x.ShowInCalculatePage).ToList()
+					: new List<ComplexCostFactor>();
+			}
+
+			var analogsFactors = GetAnalogCostFactors(costFactors, targetKn, targetMarketObjectId);
+			var koFactors = GetObjectAndCostFactorsByUnitIds(GetSetting(segment), costFactors,
+				OMUnit.Where(x => x.CadastralNumber == targetKn).Select(x => x.Id).Execute().Select(x => x.Id).ToList());
+			foreach (var complexCostFactor in complexCostFactors)
+			{
+				if (IsAnalogAttribute(complexCostFactor.AttributeId.GetValueOrDefault()))
+				{
+					var val = analogsFactors.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
+					complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, val));
+					continue;
+				}
+				
+				var koVal = koFactors.Attributes?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
+				complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, koVal));
+			}
+
+			return complexCostFactorsForCalculatePage;
+		}
+
 		/// <summary>
 		/// Получаем целевой объект вместе со всемми оценочными параметрами включая параметры из аналогов
 		/// </summary>
@@ -1110,8 +1143,10 @@ namespace KadOzenka.Dal.ExpressScore
 		/// <param name="unitIds"></param>
 		/// <returns></returns>
         private TargetObjectDto GetObjectAndCostFactorsByUnitIds(OMSettingsParams setting, CostFactorsDto costFactor, List<long> unitIds)
-        {
-	        var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
+		{
+			var results = new List<TargetObjectDto>();
+
+			var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
 		        .FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 
 	        var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)tourRegisterPrimaryKeyId.GetValueOrDefault(), unitIds);
@@ -1124,7 +1159,6 @@ namespace KadOzenka.Dal.ExpressScore
 	        }
 
 	        var table = query.ExecuteQuery();
-	        var results = new List<TargetObjectDto>();
 	        foreach (DataRow row in table.Rows)
 	        {
 		        var rowId = row["Id"].ParseToLong();
@@ -1423,7 +1457,7 @@ namespace KadOzenka.Dal.ExpressScore
 		#endregion
 
 
-		private CostFactorsDto GetCostFactorsBySegmentType(MarketSegment segmentType)
+		public CostFactorsDto GetCostFactorsBySegmentType(MarketSegment segmentType)
 		{
 			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
 

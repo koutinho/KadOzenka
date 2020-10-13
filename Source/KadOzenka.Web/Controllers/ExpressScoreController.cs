@@ -126,6 +126,11 @@ namespace KadOzenka.Web.Controllers
             } });
 		}
 
+		public ActionResult GetCostFactorsForCalculate(string targetKn, int? targetMarketObjectId, MarketSegment segment)
+		{
+			return PartialView("~/Views/ExpressScore/Partials/PartialComplexCostFactorsForCalculate.cshtml", _service.GetCostFactorsForCalculate(targetKn, targetMarketObjectId, segment));
+		}
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
         public ActionResult TargetObjectSubCard(string targetObjectStr)
@@ -603,6 +608,33 @@ namespace KadOzenka.Web.Controllers
 				x.Market_Code = resultObject.Market_Code;
 				x.PropertyTypesCIPJS_Code = resultObject.PropertyTypesCIPJS_Code;
 			});
+		}
+
+		public JsonResult GetEsDictionary(int? dictionaryId)
+		{
+			List<SelectListItem> res = new List<SelectListItem>();
+
+			res.Add(new SelectListItem
+			{
+				Text = "-",
+				Value = null
+			});
+
+			if (dictionaryId != null)
+			{
+				var dictionaries = OMEsReferenceItem.Where(x => x.ReferenceId == dictionaryId).SelectAll().Execute();
+				if (dictionaries != null)
+				{
+					res.AddRange(dictionaries.Select(x => new SelectListItem
+					{
+						Text = x.Value,
+						Value = x.Value
+					}));
+				}
+			}
+
+			return Json(res);
+
 		}
 
 		#endregion

@@ -1,0 +1,30 @@
+﻿@model List<KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactorForCalculateDto>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+	<div class="form-group flex-row">
+		<div class="col-sm-6">
+			<div>
+				@Html.CustomLabel(Model[i].Name)
+			</div>
+			<div class="flex-row">
+				@Html.KendoDropDownListFor(m => m[i].DefaultValue, "GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i].DictionaryId}, isReadonly: false)
+				@Html.Kendo().CheckBox().Name($"ch-{i}").Checked(true)
+			</div>
+		</div>
+		@if (i + 1 < Model.Count)
+		{
+	<div class="col-sm-6">
+		<div>
+			@Html.CustomLabel(Model[i + 1].Name)
+		</div>
+		<div class="flex-row">
+			@Html.KendoDropDownListFor(m => m[i + 1].DefaultValue,
+				"GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i + 1].DictionaryId }, isReadonly: false)
+			@Html.Kendo().CheckBox().Name($"ch-{i + 1}").Checked(true)
+		</div>
+	</div>
+			i++;
+		}
+	</div>
+}

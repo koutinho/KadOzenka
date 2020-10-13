@@ -20,6 +20,16 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		{
 		}
 
+		public ComplexCostFactor(ComplexCostFactor complexCostFactor)
+		{
+			Name = complexCostFactor.Name;
+			Coefficient = complexCostFactor.Coefficient;
+			AttributeId = complexCostFactor.AttributeId;
+			DictionaryId = complexCostFactor.DictionaryId;
+			ComplexCostFactorType = complexCostFactor.ComplexCostFactorType;
+			ShowInCalculatePage = complexCostFactor.ShowInCalculatePage;
+		}
+
 		public ComplexCostFactor(ComplexCostFactorSpecialization factorSpecialization)
 		{
 			ComplexCostFactorType = factorSpecialization;
