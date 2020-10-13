@@ -66,6 +66,14 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Description)
+                </div>
+                <div class="col-sm-9">
+                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
                     @Html.CustomLabelFor(x => x.GroupId)
                 </div>
                 <div class="col-sm-9">
@@ -100,7 +108,6 @@
                                         .Label(ObjectType.Oks.GetEnumDescription())
                                         .Value((int)ObjectType.Oks)
                                         .Checked(Model.ObjectType == ObjectType.Oks))
-
                     @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
                                         .Label(ObjectType.ZU.GetEnumDescription())
                                         .Value((int)ObjectType.ZU)

@@ -63,6 +63,7 @@ namespace KadOzenka.Dal.Modeling
                     }
                 }
 			};
+			query.AddColumn(OMModel.GetColumn(x => x.Description, nameof(ModelingModelDto.Description)));
 			query.AddColumn(OMModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
             query.AddColumn(OMModel.GetColumn(x => x.LinearTrainingResult, nameof(ModelingModelDto.LinearTrainingResult)));
             query.AddColumn(OMModel.GetColumn(x => x.ExponentialTrainingResult, nameof(ModelingModelDto.ExponentialTrainingResult)));
@@ -79,6 +80,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				var row = table.Rows[0];
 
+				var modelDescription = row[nameof(ModelingModelDto.Description)].ParseToString();
 				var modelName = row[nameof(ModelingModelDto.Name)].ParseToString();
 				var linearTrainingResult = row[nameof(ModelingModelDto.LinearTrainingResult)].ParseToString();
 				var exponentialTrainingResult = row[nameof(ModelingModelDto.ExponentialTrainingResult)].ParseToString();
@@ -93,6 +95,7 @@ namespace KadOzenka.Dal.Modeling
 				{
 					ModelId = modelId,
 					Name = modelName,
+                    Description = modelDescription,
                     LinearTrainingResult = linearTrainingResult,
                     ExponentialTrainingResult = exponentialTrainingResult,
                     MultiplicativeTrainingResult = multiplicativeTrainingResult,
@@ -210,23 +213,16 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ValidateModel(modelDto);
 
-            using (var ts = new TransactionScope())
-            {
-                var model = new OMModel
-                {
-                    Name = modelDto.Name,
-                    TourId = modelDto.TourId,
-                    GroupId = modelDto.GroupId
-                };
-
-                var id = model.Save();
-                model.Save();
-
-                ts.Complete();
-
-                return id;
-            }
-        }
+			return new OMModel
+			{
+				Name = modelDto.Name,
+                Description = modelDto.Description,
+				TourId = modelDto.TourId,
+				GroupId = modelDto.GroupId,
+				Formula = "-",
+                AlgoritmType_Code = KoAlgoritmType.None
+			}.Save();
+		}
 
 		public bool UpdateModel(ModelingModelDto modelDto)
 		{
@@ -242,6 +238,7 @@ namespace KadOzenka.Dal.Modeling
             using (var ts = new TransactionScope())
             {
                 existedModel.Name = modelDto.Name;
+                existedModel.Description = modelDto.Description;
                 existedModel.TourId = modelDto.TourId;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
@@ -607,7 +604,9 @@ namespace KadOzenka.Dal.Modeling
 			var message = new StringBuilder();
 
 			if (string.IsNullOrWhiteSpace(modelDto.Name))
-				message.AppendLine("У модели не заполнено имя");
+				message.AppendLine("У модели не заполнено Имя");
+			if (string.IsNullOrWhiteSpace(modelDto.Description))
+				message.AppendLine("У модели не заполнено Описание");
 
 			var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
 			if(!isTourExists)

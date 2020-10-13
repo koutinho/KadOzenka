@@ -9833,6 +9833,13 @@ namespace ObjectModel.Directory
     public enum KoAlgoritmType : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
 		/// Экспоненциальная (1)
 		/// </summary>
 		[Description("Экспоненциальная")]
