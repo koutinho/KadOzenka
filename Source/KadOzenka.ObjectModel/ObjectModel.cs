@@ -7790,6 +7790,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _dictionaryid;
+        /// <summary>
+        /// 21001000 Идентификатор словаря (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001000)]
+        public long? DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
     }
 }
 

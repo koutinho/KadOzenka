@@ -134,8 +134,8 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var query = new QSQuery
 			{
-				MainRegisterID = OMModelAttributesRelation.GetRegisterId(),
-				Condition = new QSConditionSimple(OMModelAttributesRelation.GetColumn(x => x.ModelId), QSConditionType.Equal, modelId),
+				MainRegisterID = OMModelFactor.GetRegisterId(),
+				Condition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.ModelId), QSConditionType.Equal, modelId),
 				Joins = new List<QSJoin>
 				{
 					new QSJoin
@@ -144,7 +144,7 @@ namespace KadOzenka.Dal.Modeling
 						JoinCondition = new QSConditionSimple
 						{
 							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelAttributesRelation.GetColumn(x => x.AttributeId),
+							LeftOperand = OMModelFactor.GetColumn(x => x.FactorId),
 							RightOperand = OMAttribute.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Inner
@@ -155,21 +155,21 @@ namespace KadOzenka.Dal.Modeling
 						JoinCondition = new QSConditionSimple
 						{
 							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelAttributesRelation.GetColumn(x => x.DictionaryId),
+							LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
 							RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Left
 					}
 				}
 			};
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
             query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
 
             var attributes = new List<ModelAttributeRelationDto>();
 			var table = query.ExecuteQuery();
@@ -235,7 +235,7 @@ namespace KadOzenka.Dal.Modeling
 			var existedModel = GetModelByIdInternal(modelDto.ModelId);
 
 			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
-			var existedModelAttributes = OMModelAttributesRelation.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
+			var existedModelAttributes = OMModelFactor.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
 
             var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
 
@@ -256,10 +256,10 @@ namespace KadOzenka.Dal.Modeling
                 existedModelAttributes.ForEach(x => x.Destroy());
                 newAttributes.ForEach(newAttribute =>
                 {
-                    new OMModelAttributesRelation
+                    new OMModelFactor
                     {
                         ModelId = modelDto.ModelId,
-                        AttributeId = newAttribute.AttributeId,
+                        FactorId = newAttribute.AttributeId,
                         DictionaryId = newAttribute.DictionaryId
                     }.Save();
                 });
@@ -270,10 +270,10 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelFactor> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
         {
-            var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
-            var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+            var oldAttributeIds = existedAttributes.Select(x => x.FactorId).OrderBy(x => x);
+            var newAttributeIds = newAttributes.Select(x => (long?)x.AttributeId).OrderBy(x => x);
             var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
 
             var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);

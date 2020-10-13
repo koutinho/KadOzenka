@@ -2252,6 +2252,12 @@ namespace ObjectModel.KO
 
 
         /// <summary>
+        /// Ссылка на (210 Факторы модели)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
+
+        /// <summary>
         /// Ссылка на (265 Моделирование. Значения справочников)
         /// </summary>
         [Reference]
@@ -2269,6 +2275,8 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 
             ModelingDictionariesValues = new List<ObjectModel.KO.OMModelingDictionariesValues>();
 

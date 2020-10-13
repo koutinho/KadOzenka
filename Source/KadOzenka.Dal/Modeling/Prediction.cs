@@ -135,15 +135,15 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveCoefficientsForPredictedPrice(Dictionary<string, decimal> coefficients)
         {
-            var modelAttributeRelations = OMModelAttributesRelation.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
+            var modelAttributeRelations = OMModelFactor.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
 
             foreach (var coefficient in coefficients)
             {
-                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.AttributeId == coefficient.Key.ParseToLong());
+                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.FactorId == coefficient.Key.ParseToLong());
                 if (modelAttributeRelation == null)
                     continue;
 
-                modelAttributeRelation.Coefficient = coefficient.Value;
+                modelAttributeRelation.Weight = coefficient.Value;
                 modelAttributeRelation.Save();
             }
         }

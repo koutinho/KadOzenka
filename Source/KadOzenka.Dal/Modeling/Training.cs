@@ -348,12 +348,12 @@ namespace KadOzenka.Dal.Modeling
 
         private void ResetCoefficientsForPredictedPrice()
         {
-            var modelAttributeRelations = OMModelAttributesRelation.Where(x => x.ModelId == Model.Id && x.Coefficient != null)
+            var modelAttributeRelations = OMModelFactor.Where(x => x.ModelId == Model.Id && x.Weight != 0)
                 .SelectAll().Execute();
 
             modelAttributeRelations.ForEach(x =>
             {
-                x.Coefficient = null;
+                x.Weight = 0;
                 x.Save();
             });
         }
