@@ -40,9 +40,8 @@ namespace KadOzenka.Dal.Modeling
             var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
-                //TODO CIPJSKO-526 заменить URL после правок сервиса моделирования
-                case ModelType.All:
-		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
+	            case ModelType.All:
+		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingAllTypesUrl}/{Model.InternalName}";
                 case ModelType.Linear:
                     return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
                 case ModelType.Exponential:
@@ -182,7 +181,11 @@ namespace KadOzenka.Dal.Modeling
         //TODO CIPJSKO-526 добавить обработку по всем
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
+	        //if (InputParameters.ModelType == ModelType.All)
+	        //{
+
+	        //}
+	        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
             PreprocessTrainingResult(trainingResult);
 
             ResetPredictedPrice();
@@ -226,7 +229,7 @@ namespace KadOzenka.Dal.Modeling
                 })
 				////TODO для тестирования
 				//.SetPackageIndex(0)
-				//.SetPackageSize(2000)
+				//.SetPackageSize(100)
                 .Execute()
                 .GroupBy(x => new
                 {
