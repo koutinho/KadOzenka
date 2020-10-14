@@ -1306,56 +1306,6 @@ namespace ObjectModel.ES
 }
 
 
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 700 Моделирование
-    /// </summary>
-    public partial class OMModelingModel
-    {
-        /// <summary>
-        /// Ссылка на (205 Группы/Подгруппы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 701 Связь модели с атрибутами
-    /// </summary>
-    public partial class OMModelAttributesRelation
-    {
-        /// <summary>
-        /// Ссылка на (264 Моделирование. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
-
-        /// <summary>
-        /// Ссылка на (700 Моделирование)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Modeling.OMModelingModel ParentModelingModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (931 Список показателей реестра)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.Common
 {
     /// <summary>

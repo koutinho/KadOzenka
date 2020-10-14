@@ -1490,12 +1490,6 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMAutoCalculationSettings> AutoCalculationSettings { get; set; }
-
-        /// <summary>
-        /// Ссылка на (700 Моделирование)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Modeling.OMModelingModel> ModelingModel { get; set; }
         public OMGroup()
         {
 
@@ -1515,8 +1509,6 @@ namespace ObjectModel.KO
             GroupToMarketSegmentRelation = new List<ObjectModel.Ko.OMGroupToMarketSegmentRelation>();
 
             AutoCalculationSettings = new List<ObjectModel.KO.OMAutoCalculationSettings>();
-
-            ModelingModel = new List<ObjectModel.Modeling.OMModelingModel>();
 
         }
         public OMGroup(bool trackPropertyChanging) : this()
@@ -2254,12 +2246,6 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelingDictionariesValues> ModelingDictionariesValues { get; set; }
-
-        /// <summary>
-        /// Ссылка на (701 Связь модели с атрибутами)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
         public OMModelingDictionary()
         {
 
@@ -2271,8 +2257,6 @@ namespace ObjectModel.KO
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 
             ModelingDictionariesValues = new List<ObjectModel.KO.OMModelingDictionariesValues>();
-
-            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
 
         }
         public OMModelingDictionary(bool trackPropertyChanging) : this()
@@ -3460,62 +3444,6 @@ namespace ObjectModel.ES
 
         }
         public OMTargetObjectValue(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 700 Моделирование
-    /// </summary>
-    public partial class OMModelingModel
-    {
-
-
-        /// <summary>
-        /// Ссылка на (701 Связь модели с атрибутами)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
-        public OMModelingModel()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
-
-        }
-        public OMModelingModel(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 701 Связь модели с атрибутами
-    /// </summary>
-    public partial class OMModelAttributesRelation
-    {
-
-        public OMModelAttributesRelation()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMModelAttributesRelation(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
