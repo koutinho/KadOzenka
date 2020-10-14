@@ -322,21 +322,38 @@
                 }
             }
         });
-        var groups = $('#groups').data("kendoDropDownList");
-        if (groups) {
-            groups.setDataSource(dataSource);
-            groups.value(-1);
-        }
-        else {
-            groups = $("#groups").kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource: dataSource,
-                filter: "contains"
-            }).data("kendoDropDownList");
-        }
-        if (groupId)
-            groups.value(groupId);
+        dataSource.fetch(function () {
+            var data = dataSource.data();
+            var groups = $('#groups').data("kendoDropDownList");
+            if (groups) {
+                groups.setDataSource(dataSource);
+                groups.value(-1);
+            }
+            else {
+                groups = $("#groups").kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    dataSource: { data: data },
+                    filter: "contains"
+                }).data("kendoDropDownList");
+            }
+            if (groupId) {
+                //костыль из-за интеграции с уже существующими моделями, т.к. для их групп
+                //может быть не проставлено соотношение
+                var isContainsGroup = data.some(function(item) {
+                    return item.Value === groupId;
+                });
+                if (!isContainsGroup) {
+                    var groupName = '@Html.Raw(Model.GroupName)';
+                    Common.ShowError("Не найдено соотношение группы '" + groupName + "' и сегмента.");
+                    dataSource.add({
+                        Text: groupName,
+                        Value: groupId
+                    });
+                }
+                groups.value(groupId);
+            }
+        });
         kendo.ui.progress($('body'), false);
     }
 
