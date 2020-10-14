@@ -20,7 +20,8 @@ namespace KadOzenka.Dal.Modeling
     {
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        protected OMModel Model { get; }
+        private OMModel Model { get; }
+        private List<OMModelToMarketObjects> MarketObjectsForTraining { get; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
         public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
@@ -28,6 +29,7 @@ namespace KadOzenka.Dal.Modeling
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             Model = GetModel(InputParameters.ModelId);
+            MarketObjectsForTraining = new List<OMModelToMarketObjects>();
         }
 
 
@@ -76,7 +78,7 @@ namespace KadOzenka.Dal.Modeling
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
-            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count == 0);
+            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
             AddLog($"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
@@ -105,7 +107,7 @@ namespace KadOzenka.Dal.Modeling
 
                     var isForTraining = i < marketObjects.Count / 2.0;
 	                i++;
-	                var modelObject = new OMModelToMarketObjects
+	                var modelToMarketObjectRelation = new OMModelToMarketObjects
 	                {
 		                ModelId = Model.Id,
 		                CadastralNumber = marketObject.CadastralNumber,
@@ -121,10 +123,14 @@ namespace KadOzenka.Dal.Modeling
 
                     currentMarketObjectCoefficients.AddRange(currentUnitsCoefficients);
 
-	                modelObject.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
-	                modelObject.Save();
+	                modelToMarketObjectRelation.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
+	                modelToMarketObjectRelation.Save();
 
-	                if (i % 100 == 0)
+                    //сразу сохраняем объект в список, чтобы не выкачивать их при обработке и отправке запроса на сервер
+                    if(isForTraining)
+	                    MarketObjectsForTraining.Add(modelToMarketObjectRelation);
+
+                    if (i % 100 == 0)
 		                AddLog($"{i}, ", false);
                 });
 
@@ -142,8 +148,7 @@ namespace KadOzenka.Dal.Modeling
             RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
             RequestForService.AttributeIds.AddRange(allAttributes.Select(x => x.AttributeId));
 
-            var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, true);
-            modelObjects.ForEach(modelObject =>
+            MarketObjectsForTraining.ForEach(modelObject =>
             {
                 var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
@@ -181,9 +186,11 @@ namespace KadOzenka.Dal.Modeling
             ResetPredictedPrice();
 
             SaveCoefficients(trainingResult.CoefficientsForAttributes);
+            AddLog("Закончено создание меток и сохранение коэффициентов.");
 
             var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
             UpdateModelTrainingResult(jsonTrainingResult);
+            AddLog("Сохранен результат обучения");
         }
 
         protected override void RollBackResult()
@@ -360,7 +367,36 @@ namespace KadOzenka.Dal.Modeling
 
 		        modelFactor.Weight = coefficient.Value;
 		        modelFactor.Save();
-	        }
+		        AddLog($"Сохранение коэффициента для фактора '{coefficient.Key}'");
+
+                CreateMarkCatalog(modelFactor.FactorId);
+                AddLog($"Сохранение меток для фактора '{coefficient.Key}'");
+            }
+        }
+
+        public void CreateMarkCatalog(long? factorId)
+        {
+            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == Model.GroupId && x.FactorId == factorId).SelectAll().Execute();
+            existedMarks.ForEach(x => x.Destroy());
+
+            MarketObjectsForTraining.ForEach(modelObject =>
+            {
+                var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
+                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+                    return;
+
+                var value = objectCoefficient.Value;
+                var metka = objectCoefficient.Coefficient;
+
+                new OMMarkCatalog
+                {
+                    GroupId = Model.GroupId,
+                    FactorId = factorId,
+                    ValueFactor = value,
+                    MetkaFactor = metka
+                }.Save();
+            });
         }
 
         private void UpdateModelTrainingResult(string trainingResult)

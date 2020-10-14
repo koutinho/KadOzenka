@@ -7,7 +7,6 @@ using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
@@ -102,17 +101,8 @@ namespace KadOzenka.Dal.Modeling
             if (predictionResult.Prices == null || predictionResult.Prices.Count != RequestForService.CadastralNumbers.Count)
                 throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
 
-            var trainingResultStr = GetTrainingResultStr();
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
-
             SavePredictedPrice(predictionResult.Prices);
             AddLog("Сохранены спрогнозированные цены");
-
-            SaveCoefficientsForPredictedPrice(trainingResult.CoefficientsForAttributes);
-            AddLog("Сохранены коэффициенты");
-
-            SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
-            AddLog("Сохранены данные в КО-часть");
         }
 
         #region Support Methods
@@ -133,152 +123,10 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        private void SaveCoefficientsForPredictedPrice(Dictionary<string, decimal> coefficients)
-        {
-            var modelAttributeRelations = OMModelFactor.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
-
-            foreach (var coefficient in coefficients)
-            {
-                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.FactorId == coefficient.Key.ParseToLong());
-                if (modelAttributeRelation == null)
-                    continue;
-
-                modelAttributeRelation.Weight = coefficient.Value;
-                modelAttributeRelation.Save();
-            }
-        }
-
-        private string GetTrainingResultStr()
-        {
-            var trainingResult = string.Empty;
-            switch (InputParameters.ModelType)
-            {
-                case ModelType.Linear:
-                    trainingResult = Model.LinearTrainingResult;
-                    break;
-                case ModelType.Exponential:
-                    trainingResult = Model.ExponentialTrainingResult;
-                    break;
-                case ModelType.Multiplicative:
-                    trainingResult = Model.MultiplicativeTrainingResult;
-                    break;
-            }
-            if (string.IsNullOrWhiteSpace(trainingResult))
-                throw new Exception($"Не найдено результатов обучения модели типа: '{InputParameters.ModelType.GetEnumDescription()}'");
-
-            return trainingResult;
-        }
-
         private string GetErrorMessage(ModelType type)
         {
             return $"{type.GetEnumDescription()} модель '{Model.Name}' не была обучена. Расчет невозможен.";
         }
-
-
-        #region Integration With KO SubSystem
-
-        private void SaveResultToCalculationSubSystem(Dictionary<string, decimal> coefficientsForAttributes)
-        {
-            var koModelAlgorithmType = GetModelAlgorithmType();
-
-            var koModel = CreateModel(koModelAlgorithmType);
-
-            CreateFactors(koModel.Id, coefficientsForAttributes);
-
-            koModel.Formula = koModel.GetFormulaFull(true);
-            koModel.Save();
-        }
-
-        private KoAlgoritmType GetModelAlgorithmType()
-        {
-            switch (InputParameters.ModelType)
-            {
-                case ModelType.Linear:
-                    return KoAlgoritmType.Line;
-                case ModelType.Exponential:
-                    return KoAlgoritmType.Exp;
-                case ModelType.Multiplicative:
-                    return KoAlgoritmType.Multi;
-            }
-
-            throw new Exception($"Неизвестный тип модели {InputParameters.ModelType}");
-        }
-
-        private OMModel CreateModel(KoAlgoritmType algorithmType)
-        {
-            var exitedModel = OMModel.Where(x => x.GroupId == Model.GroupId).SelectAll().ExecuteFirstOrDefault();
-            if (exitedModel == null)
-            {
-                exitedModel = new OMModel
-                {
-                    AlgoritmType_Code = algorithmType,
-                    Formula = string.Empty,
-                    Description = Model.Name,
-                    Name = Model.Name,
-                    GroupId = Model.GroupId
-                };
-            }
-            else
-            {
-                exitedModel.AlgoritmType_Code = algorithmType;
-                exitedModel.Formula = string.Empty;
-                exitedModel.Name = Model.Name;
-            }
-
-            return exitedModel;
-        }
-
-        public void CreateFactors(long koModelId, Dictionary<string, decimal> coefficientsForAttributes)
-        {
-            var modelObjects = ModelingService.GetIncludedModelObjects(Model.Id, false);
-
-            var existedFactors = OMModelFactor.Where(x => x.ModelId == koModelId).SelectAll().Execute();
-            existedFactors.ForEach(x => x.Destroy());
-
-            foreach (var entry in coefficientsForAttributes)
-            {
-                var factorId = entry.Key.ParseToLong();
-
-                new OMModelFactor
-                {
-                    ModelId = koModelId,
-                    FactorId = entry.Key.ParseToLong(),
-                    MarkerId = -1,
-                    Weight = entry.Value,
-                    B0 = 0 //TODO only for multiplicative
-                }.Save();
-
-                CreateMarkCatalog(factorId, modelObjects);
-            }
-        }
-
-        public void CreateMarkCatalog(long factorId, List<OMModelToMarketObjects> modelObjects)
-        {
-            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == Model.GroupId && x.FactorId == factorId).SelectAll().Execute();
-            existedMarks.ForEach(x => x.Destroy());
-
-            modelObjects.ForEach(modelObject =>
-            {
-                var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
-                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message) ||
-                    objectCoefficient.Value == null)
-                    return;
-
-                var value = objectCoefficient.Value;
-                var metka = objectCoefficient.Coefficient;
-
-                new OMMarkCatalog
-                {
-                    GroupId = Model.GroupId,
-                    FactorId = factorId,
-                    ValueFactor = value,
-                    MetkaFactor = metka
-                }.Save();
-            });
-        }
-
-        #endregion
 
         #endregion
     }

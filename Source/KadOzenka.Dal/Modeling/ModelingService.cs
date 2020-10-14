@@ -575,8 +575,8 @@ namespace KadOzenka.Dal.Modeling
         public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
 	        List<ModelAttributeRelationDto> modelAttributes)
         {
-            if(modelAttributes == null || modelAttributes.Count == 0)
-                return new Dictionary<long, List<CoefficientForObject>>();
+	        if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
+		        return new Dictionary<long, List<CoefficientForObject>>();
 
             var query = new QSQuery
 	        {
@@ -595,7 +595,10 @@ namespace KadOzenka.Dal.Modeling
         public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
 	        List<GroupedModelAttributes> modelAttributes)
         {
-	        var coefficients = new Dictionary<long, List<CoefficientForObject>>();
+	        if (modelAttributes == null || modelAttributes.Count == 0 || unitIds == null || unitIds.Count == 0)
+		        return new Dictionary<long, List<CoefficientForObject>>();
+
+            var coefficients = new Dictionary<long, List<CoefficientForObject>>();
 
 	        modelAttributes.ForEach(modelAttribute =>
 	        {
