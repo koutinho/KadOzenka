@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            Model = GetModel(InputParameters.ModelId);
+            Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
         }
 
 

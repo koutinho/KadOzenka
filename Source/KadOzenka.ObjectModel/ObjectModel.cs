@@ -7407,26 +7407,6 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _tourid;
-        /// <summary>
-        /// 20601000 Идентификатор тура (TOUR_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20601000)]
-        public long? TourId
-        {
-            get
-            {
-                CheckPropertyInited("TourId");
-                return _tourid;
-            }
-            set
-            {
-                _tourid = value;
-                NotifyPropertyChanged("TourId");
-            }
-        }
-
-
         private string _lineartrainingresult;
         /// <summary>
         /// 20601100 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)

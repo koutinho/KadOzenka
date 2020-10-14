@@ -2,16 +2,13 @@
 using System.Text.RegularExpressions;
 using Core.Register.LongProcessManagment;
 using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.ScoreCommon;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Modeling;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.LongProcess;
 using Newtonsoft.Json;
-using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.Dal.Modeling
@@ -92,16 +89,6 @@ namespace KadOzenka.Dal.Modeling
         {
             var message = $"Операция завершена с ошибкой: {exception.Message}.\nПодробнее в списке процессов.\nЖурнал: {errorId}";
             NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
-        }
-
-
-        protected OMModel GetModel(long modelId)
-        {
-            var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
-            if (model == null)
-                throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-            return model;
         }
 
         protected string PreProcessAttributeName(string name)

@@ -625,13 +625,6 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
         /// <summary>
-        /// Ссылка на (202 Тур оценки)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMTour ParentTour { get; set; }
-
-        /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>
         [ParentRegister]
@@ -706,6 +699,13 @@ namespace ObjectModel.KO
     /// </summary>
     public partial class OMTourGroup
     {
+        /// <summary>
+        /// Ссылка на (202 Тур оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMTour ParentTour { get; set; }
+
         /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>
@@ -1313,13 +1313,6 @@ namespace ObjectModel.Modeling
     /// </summary>
     public partial class OMModelingModel
     {
-        /// <summary>
-        /// Ссылка на (202 Тур оценки)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMTour ParentTour { get; set; }
-
         /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>

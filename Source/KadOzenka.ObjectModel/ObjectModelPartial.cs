@@ -1380,16 +1380,10 @@ namespace ObjectModel.KO
         public List<ObjectModel.KO.OMTask> Task { get; set; }
 
         /// <summary>
-        /// Ссылка на (206 Модель)
+        /// Ссылка на (212 Группы тура)
         /// </summary>
         [Reference]
-        public List<ObjectModel.KO.OMModel> Model { get; set; }
-
-        /// <summary>
-        /// Ссылка на (700 Моделирование)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Modeling.OMModelingModel> ModelingModel { get; set; }
+        public List<ObjectModel.KO.OMTourGroup> TourGroup { get; set; }
         public OMTour()
         {
 
@@ -1402,9 +1396,7 @@ namespace ObjectModel.KO
 
             Task = new List<ObjectModel.KO.OMTask>();
 
-            Model = new List<ObjectModel.KO.OMModel>();
-
-            ModelingModel = new List<ObjectModel.Modeling.OMModelingModel>();
+            TourGroup = new List<ObjectModel.KO.OMTourGroup>();
 
         }
         public OMTour(bool trackPropertyChanging) : this()

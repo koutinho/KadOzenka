@@ -56,86 +56,41 @@ namespace KadOzenka.Dal.Modeling
         }
 
         public ModelingModelDto GetModelById(long modelId)
-		{
-			var query = new QSQuery
-			{
-				MainRegisterID = OMModel.GetRegisterId(),
-				Condition = new QSConditionSimple(OMModel.GetColumn(x => x.Id), QSConditionType.Equal, modelId),
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMTour.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModel.GetColumn(x => x.TourId),
-							RightOperand = OMTour.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Left
-					},
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMModel.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Left
-                    }
-                }
-			};
-			query.AddColumn(OMModel.GetColumn(x => x.Description, nameof(ModelingModelDto.Description)));
-			query.AddColumn(OMModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
-            query.AddColumn(OMModel.GetColumn(x => x.LinearTrainingResult, nameof(ModelingModelDto.LinearTrainingResult)));
-            query.AddColumn(OMModel.GetColumn(x => x.ExponentialTrainingResult, nameof(ModelingModelDto.ExponentialTrainingResult)));
-            query.AddColumn(OMModel.GetColumn(x => x.MultiplicativeTrainingResult, nameof(ModelingModelDto.MultiplicativeTrainingResult)));
-            query.AddColumn(OMModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
-            query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
-			query.AddColumn(OMModel.GetColumn(x => x.GroupId, nameof(ModelingModelDto.GroupId)));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(ModelingModelDto.GroupName)));
-            query.AddColumn(OMModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
+        {
+	        var model = OMModel.Where(x => x.Id == modelId)
+		        .Select(x => new
+		        {
+			        x.Description,
+			        x.Name,
+			        x.LinearTrainingResult,
+			        x.ExponentialTrainingResult,
+			        x.MultiplicativeTrainingResult,
+                    x.GroupId,
+			        x.ParentGroup.Id,
+			        x.ParentGroup.GroupName,
+			        x.IsOksObjectType
+		        }).ExecuteFirstOrDefault();
 
-            var table = query.ExecuteQuery();
-			ModelingModelDto model = null;
-			if (table.Rows.Count != 0)
-			{
-				var row = table.Rows[0];
-
-				var modelDescription = row[nameof(ModelingModelDto.Description)].ParseToString();
-				var modelName = row[nameof(ModelingModelDto.Name)].ParseToString();
-				var linearTrainingResult = row[nameof(ModelingModelDto.LinearTrainingResult)].ParseToString();
-				var exponentialTrainingResult = row[nameof(ModelingModelDto.ExponentialTrainingResult)].ParseToString();
-				var multiplicativeTrainingResult = row[nameof(ModelingModelDto.MultiplicativeTrainingResult)].ParseToString();
-				var tourId = row[nameof(ModelingModelDto.TourId)].ParseToLong();
-				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
-				var groupId = row[nameof(ModelingModelDto.GroupId)].ParseToLong();
-                var groupName = row[nameof(ModelingModelDto.GroupName)].ParseToString();
-                var isOksObjectType = row[nameof(ModelingModelDto.IsOksObjectType)].ParseToBooleanNullable();
-
-                model = new ModelingModelDto
-				{
-					ModelId = modelId,
-					Name = modelName,
-                    Description = modelDescription,
-                    LinearTrainingResult = linearTrainingResult,
-                    ExponentialTrainingResult = exponentialTrainingResult,
-                    MultiplicativeTrainingResult = multiplicativeTrainingResult,
-					TourId = tourId,
-					TourYear = tourYear,
-                    GroupId = groupId,
-                    GroupName = groupName,
-                    IsOksObjectType = isOksObjectType.GetValueOrDefault()
-                };
-			}
-
-			if (model == null)
+	        if (model == null)
 				throw new Exception($"Не найдена модель с Id='{modelId}'");
 
-			return model;
-		}
+	        var tour = GetModelTour(model.GroupId);
+
+            return new ModelingModelDto
+	        {
+		        ModelId = model.Id,
+		        Name = model.Name,
+		        Description = model.Description,
+		        LinearTrainingResult = model.LinearTrainingResult,
+		        ExponentialTrainingResult = model.ExponentialTrainingResult,
+		        MultiplicativeTrainingResult = model.MultiplicativeTrainingResult,
+				TourId = tour.Id,
+				TourYear = tour.Year.GetValueOrDefault(),
+				GroupId = model.ParentGroup.Id,
+		        GroupName = model.ParentGroup.GroupName,
+		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault()
+	        };
+        }
 
         public List<GroupDto> GetGroups(long tourId)
         {
@@ -157,6 +112,19 @@ namespace KadOzenka.Dal.Modeling
             return groupsToMarketSegmentInTour;
         }
 
+        public OMTour GetModelTour(long? groupId)
+        {
+	        var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == groupId).Select(x => new
+	        {
+		        x.ParentTour.Id,
+		        x.ParentTour.Year
+	        }).ExecuteFirstOrDefault();
+	        if (tourToGroupRelation?.ParentTour == null)
+		        throw new Exception($"Для группы {groupId} не найдено Тура");
+
+	        return tourToGroupRelation.ParentTour;
+        }
+
         public int AddModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
@@ -165,7 +133,6 @@ namespace KadOzenka.Dal.Modeling
 			{
 				Name = modelDto.Name,
 				Description = modelDto.Description,
-				TourId = modelDto.TourId,
 				GroupId = modelDto.GroupId,
 				AlgoritmType_Code = KoAlgoritmType.None
 			};
@@ -189,7 +156,6 @@ namespace KadOzenka.Dal.Modeling
             {
                 existedModel.Name = modelDto.Name;
                 existedModel.Description = modelDto.Description;
-                existedModel.TourId = modelDto.TourId;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
                 existedModel.Formula = existedModel.GetFormulaFull(true);
@@ -229,8 +195,7 @@ namespace KadOzenka.Dal.Modeling
             var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
             var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
 
-            return !(existedModel.TourId == newModel.TourId &&
-                   existedModel.GroupId == newModel.GroupId &&
+            return !(existedModel.GroupId == newModel.GroupId &&
                    existedModel.IsOksObjectType == newModel.IsOksObjectType &&
                    areAttributeIdsEqual &&
                    areDictionaryIdsSequenceEqualEqual);

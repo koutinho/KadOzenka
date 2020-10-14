@@ -21,6 +21,7 @@ namespace KadOzenka.Dal.Modeling
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         private OMModel Model { get; }
+        private OMTour Tour { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
 
@@ -28,7 +29,8 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            Model = GetModel(InputParameters.ModelId);
+            Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            Tour = ModelingService.GetModelTour(Model.GroupId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
         }
 
@@ -262,7 +264,7 @@ namespace KadOzenka.Dal.Modeling
             var unitsDictionary = new Dictionary<string, List<long>>();
             if (downloadUnits)
 	        {
-		        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+		        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
 			        .Select(x => new
 			        {
 				        x.CadastralNumber,
@@ -304,7 +306,9 @@ namespace KadOzenka.Dal.Modeling
 		        .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
 		        .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
 	        var buildingUnits = buildingCadastralNumbers.Count > 0
-		        ? OMUnit.Where(x => buildingCadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId && x.PropertyType_Code == PropertyTypes.Building)
+		        ? OMUnit.Where(x =>
+				        buildingCadastralNumbers.Contains(x.CadastralNumber) &&
+				        x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
 			        .Select(x => x.CadastralNumber)
 			        .Execute()
 		        : new List<OMUnit>();
