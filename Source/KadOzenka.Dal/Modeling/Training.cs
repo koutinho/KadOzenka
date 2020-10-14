@@ -74,9 +74,7 @@ namespace KadOzenka.Dal.Modeling
             var dictionaries = ModelingService.GetDictionaries(modelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
-            var marketObjectToUnitsRelation = tourFactorsAttributes.Count == 0 
-	            ? new List<MarketObjectToUnitsRelation>() 
-	            : GetMarketObjectToUnitsRelation(marketObjects);
+            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
             AddLog($"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.");
 
             var i = 0;
@@ -245,43 +243,47 @@ namespace KadOzenka.Dal.Modeling
             return relation;
         }
 
-        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects)
+        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
         {
 	        var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).ToList();
 	        if (cadastralNumbers.Count == 0)
 		        return new List<MarketObjectToUnitsRelation>();
 
-	        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
-		        .Select(x => new
-		        {
-			        x.CadastralNumber,
-                    x.PropertyType_Code,
-                    x.BuildingCadastralNumber
-                })
-		        .Execute();
-
-	        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-	        if (placementUnits.Count > 0)
+	        var unitsDictionary = new Dictionary<string, List<long>>();
+	        if (downloadUnits)
 	        {
-		        ProcessPlacemenUnits(placementUnits, units);
+		        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Model.TourId)
+			        .Select(x => new
+			        {
+				        x.CadastralNumber,
+				        x.PropertyType_Code,
+				        x.BuildingCadastralNumber
+			        })
+			        .Execute();
+
+		        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+		        if (placementUnits.Count > 0)
+		        {
+			        ProcessPlacemenUnits(placementUnits, units);
+		        }
+
+		        unitsDictionary = units.GroupBy(x => x.CadastralNumber)
+			        .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
 	        }
 
-            var unitsDictionary = units.GroupBy(x => x.CadastralNumber)
-		        .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
+	        var marketObjectToUnitsRelation = new List<MarketObjectToUnitsRelation>();
+	        marketObjects.ForEach(x =>
+	        {
+		        var marketObjectUnits = unitsDictionary.TryGetValue(x.CadastralNumber, out var u) ? u : new List<long>();
 
-            var marketObjectToUnitsRelation = new List<MarketObjectToUnitsRelation>();
-            marketObjects.ForEach(x =>
-            {
-	            var marketObjectUnits = unitsDictionary.TryGetValue(x.CadastralNumber, out var u) ? u : new List<long>();
+		        marketObjectToUnitsRelation.Add(new MarketObjectToUnitsRelation
+		        {
+			        MarketObject = x,
+			        UnitIds = marketObjectUnits
+		        });
+	        });
 
-	            marketObjectToUnitsRelation.Add(new MarketObjectToUnitsRelation
-	            {
-                    MarketObject = x,
-                    UnitIds = marketObjectUnits
-	            });
-            });
-
-            return marketObjectToUnitsRelation;
+	        return marketObjectToUnitsRelation;
         }
 
         private void ProcessPlacemenUnits(List<OMUnit> placementUnits, List<OMUnit> units)
