@@ -614,26 +614,20 @@ namespace KadOzenka.Web.Controllers
 		{
 			List<SelectListItem> res = new List<SelectListItem>();
 
-			res.Add(new SelectListItem
-			{
-				Text = "-",
-				Value = null
-			});
-
 			if (dictionaryId != null)
 			{
 				var dictionaries = OMEsReferenceItem.Where(x => x.ReferenceId == dictionaryId).SelectAll().Execute();
 				if (dictionaries != null)
 				{
-					res.AddRange(dictionaries.Select(x => new SelectListItem
+					res.AddRange(dictionaries.Where(x => !x.CommonValue.IsNullOrEmpty()).Select(x => new SelectListItem
 					{
-						Text = x.Value,
-						Value = x.Value
+						Text = x.CommonValue,
+						Value = x.CommonValue
 					}));
 				}
 			}
 
-			return Json(res);
+			return Json(res.DistinctBy(x => x.Text));
 
 		}
 

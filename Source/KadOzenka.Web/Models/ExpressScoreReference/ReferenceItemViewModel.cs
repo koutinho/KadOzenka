@@ -20,6 +20,17 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         public ReferenceItemCodeType ReferenceValueType { get; set; }
 
         /// <summary>
+        /// Общий код справочника
+        /// </summary>
+        [Display(Name = "Общий код справочника")]
+
+        public string CommonValue { get; set; }
+
+        public decimal? CommonNumberValue { get; set; }
+
+        public DateTime? CommonDateTimeValue { get; set; }
+
+        /// <summary>
         /// Код справочника
         /// </summary>
         [Display(Name = "Код справочника")]
@@ -37,9 +48,9 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
 
         public bool IsEditItem { get; set; }
 
-        public static ReferenceItemViewModel ToModel(OMEsReferenceItem entity, OMEsReference reference)
+        public static ReferenceItemViewModel ToModel(OMEsReferenceItem referenceItem, OMEsReference reference)
         {
-            if (entity == null)
+            if (referenceItem == null)
             {
                 return new ReferenceItemViewModel
                 {
@@ -51,43 +62,52 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
             };
             }
 
-            var value = reference.ValueType_Code == ReferenceItemCodeType.String && entity.Value != null
-                ? entity.Value
-                : null;
-            var numberValue = reference.ValueType_Code == ReferenceItemCodeType.Number && entity.Value != null
-                ? decimal.Parse(entity.Value)
-                : (decimal?) null;
-            var dateValue = reference.ValueType_Code == ReferenceItemCodeType.Date && entity.Value != null
-                ? DateTime.Parse(entity.Value)
-                : (DateTime?)null;
-
-            return new ReferenceItemViewModel
+            var res = new ReferenceItemViewModel
             {
-                Id = entity.Id,
-                ReferenceId = entity.ReferenceId,
-                ReferenceName = reference.Name,
-                ReferenceValueType = reference.ValueType_Code,
-                Value = value,
-                NumberValue = numberValue,
-                DateTimeValue = dateValue,
-                CalcValue = entity.CalculationValue,
-                IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
+	            Id = referenceItem.Id,
+	            ReferenceId = referenceItem.ReferenceId,
+	            ReferenceName = reference.Name,
+	            ReferenceValueType = reference.ValueType_Code,
+	            CalcValue = referenceItem.CalculationValue,
+	            IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
             };
+
+            switch (reference.ValueType_Code)
+            {
+                case ReferenceItemCodeType.String:
+	                res.Value = referenceItem.Value;
+	                res.CommonValue = referenceItem.CommonValue;
+                    break;
+                case ReferenceItemCodeType.Number:
+	                res.NumberValue = decimal.TryParse(referenceItem.Value, out var dVal) ? dVal : (decimal?) null;
+                    res.CommonNumberValue = decimal.TryParse(referenceItem.CommonValue, out var dValCommon) ? dValCommon : (decimal?)null;
+                    break;
+                case ReferenceItemCodeType.Date:
+	                res.DateTimeValue = DateTime.TryParse(referenceItem.Value, out var date) ? date : (DateTime?) null;
+	                res.CommonDateTimeValue = DateTime.TryParse(referenceItem.CommonValue, out var commonDate) ? commonDate : (DateTime?) null;
+                    break;
+            }
+
+            return res;
         }
 
         public ReferenceItemDto ToDto()
         {
-            string value = null;
+            string value;
+            string commonValue;
             if (ReferenceValueType == ReferenceItemCodeType.Date)
             {
-                value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
+	            value = DateTimeValue?.Date.ToShortDateString();
+                commonValue = CommonDateTimeValue?.Date.ToShortDateString();
             } else if (ReferenceValueType == ReferenceItemCodeType.Number)
             {
                 value = NumberValue?.ToString();
+                commonValue = CommonNumberValue?.ToString();
             }
             else
             {
                 value = Value;
+                commonValue = CommonValue;
             }
 
             return new ReferenceItemDto
@@ -95,6 +115,7 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Id = Id,
                 ReferenceId = ReferenceId,
                 Value = value,
+                CommonValue = commonValue,
                 CalcValue = CalcValue
             };
         }

@@ -11,6 +11,13 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
     public class ImportDataViewModel
     {
         /// <summary>
+        /// Общий код справочника
+        /// </summary>
+        [Display(Name = "Общий код справочника")]
+        [Required(ErrorMessage = "Поле Общий код справочника обязательное")]
+        public string CommonValue { get; set; }
+
+        /// <summary>
         /// Код справочника
         /// </summary>
         [Display(Name = "Код справочника")]

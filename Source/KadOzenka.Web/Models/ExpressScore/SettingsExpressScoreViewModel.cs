@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Register;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
@@ -100,6 +101,7 @@ namespace KadOzenka.Web.Models.ExpressScore
             ValidateCorrectionByBargainCoef(errors);
             ValidateOperatingCostsCoef(errors);
             ValidateShowInCalculatePageParameter(errors);
+            ValidateDefaultComplexCostFactorValue(errors);
 
 
 			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
@@ -230,12 +232,26 @@ namespace KadOzenka.Web.Models.ExpressScore
 			        if (complexCostFactor.ShowInCalculatePage && complexCostFactor.DictionaryId == 0 ||
 			            complexCostFactor.DictionaryId == null)
 			        {
-						errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить словарь. Т.к выбрана возможность изменения параметра на странице расчетов"));
+						errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить словарь. Т.к выбрана возможность изменения параметра на странице расчетов."));
 			        }
 		        }
 	        }
 
         }
+
+        private void ValidateDefaultComplexCostFactorValue(List<ValidationResult> errors)
+        {
+	        if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count > 0)
+	        {
+		        foreach (var complexCostFactor in CostFactors.ComplexCostFactors)
+		        {
+			        if (complexCostFactor.ShowInCalculatePage && complexCostFactor.DefaultValue.IsNullOrEmpty())
+			        {
+				        errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить ""Значение по умолчанию"". Т.к выбрана возможность изменения параметра на странице расчетов."));
+			        }
+		        }
+	        }
+		}
 
 		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)
         {

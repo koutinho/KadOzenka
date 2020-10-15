@@ -9,7 +9,9 @@
 			</div>
 			<div class="flex-row">
 				@Html.KendoDropDownListFor(m => m[i].DefaultValue, "GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i].DictionaryId}, isReadonly: false)
-				@Html.Kendo().CheckBox().Name($"ch-{i}").Checked(true)
+				<div style="margin-left: 5px">
+					@Html.Kendo().CheckBox().Name($"ch-{i}").Checked(true)
+				</div>
 			</div>
 		</div>
 		@if (i + 1 < Model.Count)
@@ -21,7 +23,9 @@
 		<div class="flex-row">
 			@Html.KendoDropDownListFor(m => m[i + 1].DefaultValue,
 				"GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i + 1].DictionaryId }, isReadonly: false)
-			@Html.Kendo().CheckBox().Name($"ch-{i + 1}").Checked(true)
+			<div style="margin-left: 5px">
+				@Html.Kendo().CheckBox().Name($"ch-{i + 1}").Checked(true)
+			</div>
 		</div>
 	</div>
 			i++;

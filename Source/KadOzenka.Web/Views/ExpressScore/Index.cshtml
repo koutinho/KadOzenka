@@ -263,7 +263,11 @@
 		var url = "@Url.Action("GetCostFactorsForCalculate", "ExpressScore")" +
 			`?targetKn=${kn}&targetMarketObjectId=${targetMarketObjectId}&segment=${segment}`;
 		$containerCostFactors.load(url,
-			function() {
+			function (responseText, status) {
+				if (status === "error") {
+					Common.ShowError(responseText);
+					$containerCostFactors.empty();
+				}
 				kendo.ui.progress($('body'), false);
 				$containerCostFactors.show();
 			});

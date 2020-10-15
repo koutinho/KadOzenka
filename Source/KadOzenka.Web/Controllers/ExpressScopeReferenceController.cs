@@ -107,17 +107,10 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
             }
 
-            var id = viewModel.Id;
+            long id;
             try
             {
-                if (id == -1)
-                {
-                    id = ReferenceService.CreateReferenceItem(viewModel.ToDto());
-                }
-                else
-                {
-                    ReferenceService.UpdateReferenceItem(viewModel.ToDto());
-                }
+	            id = ReferenceService.SaveReferenceItem(viewModel.ToDto());
             }
             catch (Exception e)
             {
@@ -188,6 +181,7 @@ namespace KadOzenka.Web.Controllers
 		            var importInfo = new ImportReferenceFileInfoDto
 		            {
 			            FileName = file.FileName,
+                        CommonValueColumnName = viewModel.CommonValue,
 			            ValueColumnName = viewModel.Value,
 			            CalcValueColumnName = viewModel.CalcValue,
 			            ValueType = viewModel.ValueType

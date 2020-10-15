@@ -24107,6 +24107,26 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private string _commonvalue;
+        /// <summary>
+        /// 61000600 Общее значение (COMMON_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000600)]
+        public string CommonValue
+        {
+            get
+            {
+                CheckPropertyInited("CommonValue");
+                return _commonvalue;
+            }
+            set
+            {
+                _commonvalue = value;
+                NotifyPropertyChanged("CommonValue");
+            }
+        }
+
     }
 }
 

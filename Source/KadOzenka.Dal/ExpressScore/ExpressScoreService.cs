@@ -62,7 +62,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public OMSettingsParams GetSetting(MarketSegment segmentType)
 		{
-			return OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
+			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
+			if (setting == null)
+			{
+				_log.Error("ЭО. Не найдены настройки для сегмента {segmentType}", segmentType);
+			}
+
+			return setting;
 		}
 
 		public ParameterDataDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
@@ -89,14 +95,15 @@ namespace KadOzenka.Dal.ExpressScore
 			List<ComplexCostFactorForCalculateDto> complexCostFactorsForCalculatePage = new List<ComplexCostFactorForCalculateDto>();
 
 			var costFactors = GetCostFactorsBySegmentType(segment);
-
-			List<ComplexCostFactor> complexCostFactors = new List<ComplexCostFactor>();
-			if (costFactors != null)
+			if(costFactors == null)
 			{
-				complexCostFactors = costFactors.ComplexCostFactors != null
-					? costFactors.ComplexCostFactors.Where(x => x.ShowInCalculatePage).ToList()
-					: new List<ComplexCostFactor>();
+				throw new Exception($"Не найдены оценочные факторы для сегмента {segment.GetEnumDescription()}");
 			}
+
+			List<ComplexCostFactor> complexCostFactors;
+			complexCostFactors = costFactors.ComplexCostFactors != null
+				? costFactors.ComplexCostFactors.Where(x => x.ShowInCalculatePage).ToList()
+				: new List<ComplexCostFactor>();
 
 			var analogsFactors = GetAnalogCostFactors(costFactors, targetKn, targetMarketObjectId);
 			var koFactors = GetObjectAndCostFactorsByUnitIds(GetSetting(segment), costFactors,
@@ -105,13 +112,13 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				if (IsAnalogAttribute(complexCostFactor.AttributeId.GetValueOrDefault()))
 				{
-					var val = analogsFactors.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
-					complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, val));
+					var val = analogsFactors?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
+					complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, val ?? complexCostFactor.DefaultValue));
 					continue;
 				}
-				
-				var koVal = koFactors.Attributes?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
-				complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, koVal));
+
+				var koVal = koFactors?.Attributes?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
+				complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, koVal ?? complexCostFactor.DefaultValue));
 			}
 
 			return complexCostFactorsForCalculatePage;
@@ -129,9 +136,11 @@ namespace KadOzenka.Dal.ExpressScore
         {
 	        var targetObject = GetObjectAndCostFactorsByUnitIds(setting, costFactor, unitIds);
             targetObject?.Attributes.AddRange(GetAnalogCostFactors(costFactor, kn));
-			GetAttributeFromEsTargetValue(ref targetObject);
-
-			return targetObject;
+            if (targetObject != null)
+            {
+	            GetAttributeFromEsTargetValue(ref targetObject);
+			}
+            return targetObject;
         }
 
         public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType, decimal? lng, decimal? lat)
@@ -1144,36 +1153,52 @@ namespace KadOzenka.Dal.ExpressScore
 		/// <returns></returns>
         private TargetObjectDto GetObjectAndCostFactorsByUnitIds(OMSettingsParams setting, CostFactorsDto costFactor, List<long> unitIds)
 		{
+			if (setting == null || costFactor == null || unitIds.Count == 0)
+			{
+				_log.ForContext("setting", setting)
+					.ForContext("costFactor", costFactor)
+					.ForContext("unitIds", unitIds)
+					.Error("ЭО. Ошибка при получении оценочных факторов из Ко части");
+
+				throw new Exception("Не найдены настройки или оценочные факторы для выбранного сегмента.");
+			}
 			var results = new List<TargetObjectDto>();
+			try
+			{
+				var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
+					.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 
-			var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
-		        .FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
+				var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)tourRegisterPrimaryKeyId.GetValueOrDefault(), unitIds);
 
-	        var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)tourRegisterPrimaryKeyId.GetValueOrDefault(), unitIds);
+				query.AddColumn((long)costFactor.YearBuildId.GetValueOrDefault(), ((int)costFactor.YearBuildId.GetValueOrDefault()).ToString());
+				foreach (var factor in costFactor.ComplexCostFactors)
+				{
+					if (!IsAnalogAttribute(factor.AttributeId.GetValueOrDefault()))
+						query.AddColumn(factor.AttributeId.GetValueOrDefault(), factor.AttributeId.GetValueOrDefault().ToString());
+				}
 
-	        query.AddColumn((long)costFactor.YearBuildId.GetValueOrDefault(), ((int)costFactor.YearBuildId.GetValueOrDefault()).ToString());
-	        foreach (var factor in costFactor.ComplexCostFactors)
-	        {
-		        if (!IsAnalogAttribute(factor.AttributeId.GetValueOrDefault()))
-			        query.AddColumn(factor.AttributeId.GetValueOrDefault(), factor.AttributeId.GetValueOrDefault().ToString());
-	        }
-
-	        var table = query.ExecuteQuery();
-	        foreach (DataRow row in table.Rows)
-	        {
-		        var rowId = row["Id"].ParseToLong();
-		        var rowAttributes = new List<AttributePure>();
-		        foreach (var factor in costFactor.ComplexCostFactors.Where(x => !IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
-		        {
-			        rowAttributes.Add(new AttributePure
-			        {
-				        Id = factor.AttributeId.GetValueOrDefault(),
-				        Value = row[factor.AttributeId.ToString()].ParseToStringNullable()
-			        });
-		        }
-		        results.Add(new TargetObjectDto(rowId, rowAttributes));
-	        }
-
+				var table = query.ExecuteQuery();
+				foreach (DataRow row in table.Rows)
+				{
+					var rowId = row["Id"].ParseToLong();
+					var rowAttributes = new List<AttributePure>();
+					foreach (var factor in costFactor.ComplexCostFactors.Where(x => !IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
+					{
+						rowAttributes.Add(new AttributePure
+						{
+							Id = factor.AttributeId.GetValueOrDefault(),
+							Value = row[factor.AttributeId.ToString()].ParseToStringNullable()
+						});
+					}
+					results.Add(new TargetObjectDto(rowId, rowAttributes));
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				return null;
+			}
+			
 	        return results.OrderByDescending(x => x.UnitId).FirstOrDefault();
         }
 		/// <summary>
@@ -1185,62 +1210,77 @@ namespace KadOzenka.Dal.ExpressScore
 		/// <returns></returns>
 		private List<AttributePure> GetAnalogCostFactors(CostFactorsDto costFactors, string kn = null, int? id = null)
         {
-	       
-			List<AttributePure> analogCostFactors =  new List<AttributePure>();
+	        List<AttributePure> analogCostFactors = new List<AttributePure>();
+			try
+	        {
+		        if (costFactors == null || kn == null && id == null)
+		        {
+			        _log.ForContext("costFactors===>", costFactors).Error("ЭО.Получение оценочных факторов для аналогов");
+			        return analogCostFactors;
+		        }
 
-			if (kn.IsNullOrEmpty() && id == null)
-			{
-				return analogCostFactors;
+		        if (kn.IsNullOrEmpty() && id == null)
+		        {
+			        return analogCostFactors;
+		        }
+
+		        QSQuery coreObject = new QSQuery
+		        {
+			        MainRegisterID = OMCoreObject.GetRegisterId(),
+			        Condition = kn != null ? new QSConditionSimple
+			        {
+				        ConditionType = QSConditionType.Equal,
+				        LeftOperand = OMCoreObject.GetColumn(x => x.CadastralNumber),
+				        RightOperand = new QSColumnConstant(kn)
+			        } : new QSConditionSimple
+			        {
+				        ConditionType = QSConditionType.Equal,
+				        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
+				        RightOperand = new QSColumnConstant(id)
+			        }
+		        };
+
+		        foreach (var complexCostFactor in costFactors.ComplexCostFactors)
+		        {
+			        if (IsAnalogAttribute(complexCostFactor.AttributeId.GetValueOrDefault()))
+				        coreObject.AddColumn(complexCostFactor.AttributeId.GetValueOrDefault(), complexCostFactor.AttributeId.GetValueOrDefault().ToString());
+		        }
+
+		        var table = coreObject.ExecuteQuery();
+
+		        if (table.Rows.Count > 0)
+		        {
+			        foreach (var factor in costFactors.ComplexCostFactors.Where(x => IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
+			        {
+				        analogCostFactors.Add(new AttributePure
+				        {
+					        Id = factor.AttributeId.GetValueOrDefault(),
+					        Value = table.Rows[0][factor.AttributeId.ToString()].ParseToStringNullable()
+				        });
+			        }
+		        }
+		        else
+		        {
+			        foreach (var factor in costFactors.ComplexCostFactors.Where(x => IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
+			        {
+				        analogCostFactors.Add(new AttributePure
+				        {
+					        Id = factor.AttributeId.GetValueOrDefault(),
+					        Value = string.Empty
+				        });
+			        }
+		        }
+
+		        return analogCostFactors;
 			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e);
+				_log.Error("ЭО. Ошибки при получении оценочных факторов аналогов.");
+		        return analogCostFactors;
 
-			QSQuery coreObject = new QSQuery
-			{
-				MainRegisterID = OMCoreObject.GetRegisterId(),
-				Condition = kn != null ? new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.CadastralNumber),
-					RightOperand = new QSColumnConstant(kn)
-				} : new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-					RightOperand = new QSColumnConstant(id)
-				}
-			};
+	        }
 
-			foreach (var complexCostFactor in costFactors.ComplexCostFactors)
-			{
-				if(IsAnalogAttribute(complexCostFactor.AttributeId.GetValueOrDefault()))
-					coreObject.AddColumn(complexCostFactor.AttributeId.GetValueOrDefault(), complexCostFactor.AttributeId.GetValueOrDefault().ToString());
-			}
-
-			var table = coreObject.ExecuteQuery();
-
-			if (table.Rows.Count > 0)
-			{
-				foreach (var factor in costFactors.ComplexCostFactors.Where(x => IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
-				{
-					analogCostFactors.Add(new AttributePure
-					{
-						Id = factor.AttributeId.GetValueOrDefault(),
-						Value = table.Rows[0][factor.AttributeId.ToString()].ParseToStringNullable()
-					});
-				}
-			}
-			else
-			{
-				foreach (var factor in costFactors.ComplexCostFactors.Where(x => IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
-				{
-					analogCostFactors.Add(new AttributePure
-					{
-						Id = factor.AttributeId.GetValueOrDefault(),
-						Value = string.Empty
-					});
-				}
-			}
-
-			return analogCostFactors;
         }
 
 		/// <summary>
@@ -1463,6 +1503,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (setting == null || string.IsNullOrEmpty(setting.CostFacrors))
 			{
+				_log.Error("ЭО.Не найдены оценочные факторы для сегмента {segmentType}", segmentType);
 				return null;
 			}
 			return setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();

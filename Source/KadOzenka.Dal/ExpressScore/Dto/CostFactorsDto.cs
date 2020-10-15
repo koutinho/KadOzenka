@@ -49,6 +49,11 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Чекбокс указывающий что данный параемтр будет отображаться на странице расчетов
 		/// </summary>
 		public bool ShowInCalculatePage { get; set; }
+
+		/// <summary>
+		/// Значение по уболчанию на случай если выбран пункт показывать на старнице расчетов
+		/// </summary>
+		public string DefaultValue { get; set; }
 	}
 	public class CostFactorsDto
 	{

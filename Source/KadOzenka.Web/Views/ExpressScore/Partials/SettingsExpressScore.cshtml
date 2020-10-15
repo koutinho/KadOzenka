@@ -376,6 +376,7 @@
 					obj['DictionaryId'] = formObject[`DictionaryId-${i}`];
                     obj['ComplexCostFactorType'] = formObject[`ComplexCostFactorType-${i}`];
 					obj['ShowInCalculatePage'] = formObject[`ShowInCalculatePage-${i}`];
+					obj['DefaultValue'] = formObject[`DefaultValueCostFactor-${i}`];
 					complexCostFactors.push(obj);
 				}
 			}
@@ -574,16 +575,16 @@
 					}
 				});
 			});
-		$(".complex-factor").kendoSortable({
-			hint:function(element) {
-				return element.clone().addClass("hint")
-					.height(element.height())
-					.width(element.width());
-			},
-			placeholder:function(element) {
-				return element.clone().addClass("placeholder");
-			},
-			ignore: "input, span"
+
+		$('.complex-factor').on('change', '[id^=ShowInCalculatePage]', function () {
+			if ($(this).is(':checked')) {
+				$(this).closest('.form-group').find('.default-value').show();
+				$(this).closest('.form-group').find('.default-label').show();
+			} else {
+				$(this).closest('.form-group').find('.default-value').hide();
+				$(this).closest('.form-group').find('.default-label').hide();
+			}
+		
 		});
 	});
 
