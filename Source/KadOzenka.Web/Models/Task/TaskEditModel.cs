@@ -28,7 +28,8 @@ namespace KadOzenka.Web.Models.Task
                     {
                         RegNumber = IncomingDocumentRegNumber,
                         Description = IncomingDocumentDescription,
-                        CreationDate = IncomingDocumentDate
+                        CreationDate = IncomingDocumentDate,
+                        ApproveDate = IncomingDocumentApproveDate
                     },
                 NoteType = NoteType,
                 Tour = TourId.HasValue
@@ -50,6 +51,7 @@ namespace KadOzenka.Web.Models.Task
                 IncomingDocumentRegNumber = task.IncomingDocument?.RegNumber,
                 IncomingDocumentDescription = task.IncomingDocument?.Description,
                 IncomingDocumentDate = task.IncomingDocument?.CreationDate,
+                IncomingDocumentApproveDate = task.IncomingDocument?.ApproveDate,
                 NoteType = task.NoteType,
                 TourId = task.Tour?.Id,
                 TourYear = task.Tour?.Year,
