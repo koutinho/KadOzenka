@@ -33,7 +33,20 @@
                     type: 'POST',
                     dataType: 'json'
                 }
-            },             
+            },
+            requestStart: function(e) {
+                if (e.type == "read") {
+                    kendo.ui.progress($('body'), true);
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type == "read") {
+                    kendo.ui.progress($('body'), false);
+                }
+            },
+            error: function (e) {
+                Common.ShowError(e.xhr.responseText);
+            },
             schema: {
                 model: {
                     id: "Id",
@@ -42,10 +55,25 @@
                         GroupId: { editable: false},
                         FactorId: { editable: false },
                         ValueFactor: { validation: { required: true } },
-                        MetkaFactor: { validation: { required: true } }
+                        MetkaFactor: { type: "number", nullable: true  }
                     }
                 }
-            }, 
+            },
+            change: function (e) {
+                //если добавляем новое значение в грид, а к нему уже была применена фильтрация
+                //чтобы отобразить новую пустую строчку, нужна дополнительная фильтрация
+                if (e.action == "add") {
+                    var filter = this.filter();
+                    if (filter) {
+                        var noValueFilter = { field: "ValueFactor", operator: "eq", value: "" };
+                        var newFilter = {
+                            logic: "or",
+                            filters: [noValueFilter, filter]
+                        };
+                        this.filter(newFilter);
+                    }
+                }
+            },
             pageSize: 10
         });
 
@@ -63,6 +91,10 @@
                     title: 'Метка',
                     headerAttributes: {
                         style: "text-align: center;"
+                    },
+                    editor: function (container, options) {
+                        console.log('asdsdsd');
+                        $('<input />').appendTo(container).kendoNumericTextBox({ format: "n", decimals: 13 });
                     }
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
@@ -71,6 +103,21 @@
             scrollable: true,
             pageable: true,
             editable: "inline",
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    },
+                    number: {
+                        eq: "Равно",
+                        gte: "Больше",
+                        lte: "Меньше"
+                    }
+                }
+            },
             beforeEdit: function (e) {
                 if (e.model.isNew()) {
                     e.model.GroupId = '@ViewBag.GroupId';
