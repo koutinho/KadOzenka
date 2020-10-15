@@ -8069,6 +8069,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _generalmodelid;
+        /// <summary>
+        /// 21100600 ИД основной модели (206 реестр) (general_model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21100600)]
+        public long? GeneralModelId
+        {
+            get
+            {
+                CheckPropertyInited("GeneralModelId");
+                return _generalmodelid;
+            }
+            set
+            {
+                _generalmodelid = value;
+                NotifyPropertyChanged("GeneralModelId");
+            }
+        }
+
     }
 }
 
