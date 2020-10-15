@@ -234,9 +234,9 @@ namespace KadOzenka.Dal.DataExport
             {
 	            List<ObjectModel.KO.OMUnit> units = null;
                 if (settings.UnloadParcel)
-                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead && x.CadastralCost > 0).SelectAll().Execute();
+                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 else
-                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead && x.CadastralCost > 0).SelectAll().Execute();
+                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
 
                 var unitsCounter = 0;
                 if (units.Count > 0)
