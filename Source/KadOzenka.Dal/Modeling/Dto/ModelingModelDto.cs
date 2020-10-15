@@ -6,6 +6,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 	{
         public long ModelId { get; set; }
 		public string Name { get; set; }
+		public string Description { get; set; }
 		public long TourId { get; set; }
 		public long TourYear { get; set; }
         public long GroupId { get; set; }

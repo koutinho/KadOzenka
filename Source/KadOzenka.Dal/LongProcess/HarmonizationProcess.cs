@@ -5,15 +5,18 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
 	public class HarmonizationProcess : LongProcess
 	{
 		public const string LongProcessName = "HarmonizationProcess";
+		private readonly ILogger _log = Log.ForContext<HarmonizationProcess>();
 
-		public static long AddProcessToQueue(HarmonizationSettings settings)
+        public static long AddProcessToQueue(HarmonizationSettings settings)
 		{
 			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
@@ -24,9 +27,11 @@ namespace KadOzenka.Dal.LongProcess
 			var cancelToken = cancelSource.Token;
 			try
 			{
+				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description);
                 WorkerCommon.SetProgress(processQueue, 0);
 
                 var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
+                _log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
                 var harmonization = new Harmonization(settings);
 
                 var t = Task.Run(() =>
@@ -55,6 +60,7 @@ namespace KadOzenka.Dal.LongProcess
                 cancelSource.Dispose();
 
                 WorkerCommon.SetProgress(processQueue, 100);
+                _log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 
                 string message = "Операция успешно завершена." +
                                  $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";

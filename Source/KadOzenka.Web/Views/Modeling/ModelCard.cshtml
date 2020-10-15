@@ -25,21 +25,23 @@
 </div>
 
 <!-- Модальное окно для выбора типа модели -->
-<div id="modelTypeWindow" style="display: none; padding: 4% 2%;">
+<div id="modelTypeWindow" style="display: none; padding: 3% 0;">
     <div class="form-horizontal col-sm-12" style="width: 100%;">
         <div class="form-group">
-            <div class="col-sm-12" style="width: 100%;">
+            <div class="col-sm-12" style="width: 100%; padding: 1%;">
                 @(Html.Kendo().ButtonGroup()
                                     .Name("chooseModelType")
                                     .Selection("single")
                                     .Items(t =>
                                     {
                                         t.Add().Text(ModelType.Linear.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 100%;" });
+                                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 60%;" });
                                         t.Add().Text(ModelType.Exponential.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
+                                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
                                         t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 100%;" });
+                                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
+                                        //t.Add().Text(ModelType.All.GetEnumDescription())
+                                        //    .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
                                     })
                                     .HtmlAttributes(new { style = "width: 100%;" })
                                     .Events(ev => ev.Select("onModelTypeSelect")))
@@ -60,6 +62,14 @@
                 </div>
                 <div class="col-sm-9">
                     @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Description)
+                </div>
+                <div class="col-sm-9">
+                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
                 </div>
             </div>
             <div class="form-group">
@@ -98,7 +108,6 @@
                                         .Label(ObjectType.Oks.GetEnumDescription())
                                         .Value((int)ObjectType.Oks)
                                         .Checked(Model.ObjectType == ObjectType.Oks))
-
                     @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
                                         .Label(ObjectType.ZU.GetEnumDescription())
                                         .Value((int)ObjectType.ZU)
@@ -313,21 +322,38 @@
                 }
             }
         });
-        var groups = $('#groups').data("kendoDropDownList");
-        if (groups) {
-            groups.setDataSource(dataSource);
-            groups.value(-1);
-        }
-        else {
-            groups = $("#groups").kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource: dataSource,
-                filter: "contains"
-            }).data("kendoDropDownList");
-        }
-        if (groupId)
-            groups.value(groupId);
+        dataSource.fetch(function () {
+            var data = dataSource.data();
+            var groups = $('#groups').data("kendoDropDownList");
+            if (groups) {
+                groups.setDataSource(dataSource);
+                groups.value(-1);
+            }
+            else {
+                groups = $("#groups").kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    dataSource: { data: data },
+                    filter: "contains"
+                }).data("kendoDropDownList");
+            }
+            if (groupId) {
+                //костыль из-за интеграции с уже существующими моделями, т.к. для их групп
+                //может быть не проставлено соотношение
+                var isContainsGroup = data.some(function(item) {
+                    return item.Value === groupId;
+                });
+                if (!isContainsGroup) {
+                    var groupName = '@Html.Raw(Model.GroupName)';
+                    Common.ShowError("Не найдено соотношение группы '" + groupName + "' и сегмента.");
+                    dataSource.add({
+                        Text: groupName,
+                        Value: groupId
+                    });
+                }
+                groups.value(groupId);
+            }
+        });
         kendo.ui.progress($('body'), false);
     }
 
@@ -341,9 +367,14 @@
 
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
-        isTrainingMode = true;
-        setGroupButtonsState(true, true, true);
-        showModelTypeWindow();
+        //при первом обучении модели обучение должно идти по всем моделям
+        @*if ('@Model.IsModelWasTrained' === "False") {
+            trainModel('@ModelType.All');
+        } else {*@
+            isTrainingMode = true;
+            setGroupButtonsState(true, true, true);
+            showModelTypeWindow();
+        //}
     }
 
     function onPredictModelBtnClick() {
@@ -373,16 +404,16 @@
 
     function showModelTypeWindow() {
         var modal = $("#modelTypeWindow");
-        ShowModal(modal, '60%', '10%', "Выбор типа модели");
+        ShowModal(modal, '60%', '12%', "Выбор типа модели");
     }
 
     function onModelTypeSelect(e) {
         var modal = $('#modelTypeWindow');
         modal.data("kendoWindow").close();
         if (isTrainingMode)
-            trainModel(e);
+            trainModel(e.indices);
         else
-            predictModel(e);
+            predictModel(e.indices);
     }
 
 
@@ -433,12 +464,12 @@
     }
 
 
-    function trainModel(modelTypeButtons) {
+    function trainModel(modelType) {
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("TrainModel", "Modeling")',
-            data: { modelId: '@Model.Id', modelType: modelTypeButtons.indices },
+            data: { modelId: '@Model.Id', modelType: modelType },
             success: function(response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);

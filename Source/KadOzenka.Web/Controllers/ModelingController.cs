@@ -132,7 +132,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId)
 		{
-			var attributes = ModelingService.GetModelAttributes(modelId);
+			var attributes = ModelingService.GetModelFactors(modelId);
 
 			return Json(attributes);
 		}
@@ -187,7 +187,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
-            var attributes = ModelingService.GetModelAttributes(modelId);
+            var attributes = ModelingService.GetModelFactors(modelId);
             if (attributes == null || attributes.Count == 0)
                 throw new Exception("Для модели не найдено сохраненных атрибутов");
 
@@ -263,7 +263,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult LinearModelDetails(long modelId)
         {
-            var model = GetModel(modelId);
+            var model = ModelingService.GetModelEntityById(modelId);
 
             var trainingResult = GetDetails(model.LinearTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -275,7 +275,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ExponentialModelDetails(long modelId)
         {
-            var model = GetModel(modelId);
+            var model = ModelingService.GetModelEntityById(modelId);
 
             var trainingResult = GetDetails(model.ExponentialTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -287,7 +287,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MultiplicativeModelDetails(long modelId)
         {
-            var model = GetModel(modelId);
+            var model = ModelingService.GetModelEntityById(modelId);
 
             var trainingResult = GetDetails(model.MultiplicativeTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -305,7 +305,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelObjects(long modelId)
 		{
             var modelDto = ModelingService.GetModelById(modelId);
-            modelDto.Attributes = ModelingService.GetModelAttributes(modelId);
+            modelDto.Attributes = ModelingService.GetModelFactors(modelId);
 
             var model = ModelingModel.ToModel(modelDto);
 
@@ -705,15 +705,6 @@ namespace KadOzenka.Web.Controllers
 
 
         #region Support Methods
-
-        private OMModelingModel GetModel(long modelId)
-        {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
-            if (model == null)
-                throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-            return model;
-        }
 
         private TrainingResponse GetDetails(string trainingResult)
         {

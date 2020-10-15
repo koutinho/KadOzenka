@@ -625,13 +625,6 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
         /// <summary>
-        /// Ссылка на (202 Тур оценки)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMTour ParentTour { get; set; }
-
-        /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>
         [ParentRegister]
@@ -682,6 +675,13 @@ namespace ObjectModel.KO
         public ObjectModel.KO.OMMarkCatalog ParentMarkCatalog { get; set; }
 
         /// <summary>
+        /// Ссылка на (264 Моделирование. Справочники)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
+
+        /// <summary>
         /// Ссылка на (931 Список показателей реестра)
         /// </summary>
         [ParentRegister]
@@ -699,6 +699,13 @@ namespace ObjectModel.KO
     /// </summary>
     public partial class OMTourGroup
     {
+        /// <summary>
+        /// Ссылка на (202 Тур оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMTour ParentTour { get; set; }
+
         /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>
@@ -1294,63 +1301,6 @@ namespace ObjectModel.ES
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 700 Моделирование
-    /// </summary>
-    public partial class OMModelingModel
-    {
-        /// <summary>
-        /// Ссылка на (202 Тур оценки)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMTour ParentTour { get; set; }
-
-        /// <summary>
-        /// Ссылка на (205 Группы/Подгруппы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 701 Связь модели с атрибутами
-    /// </summary>
-    public partial class OMModelAttributesRelation
-    {
-        /// <summary>
-        /// Ссылка на (264 Моделирование. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
-
-        /// <summary>
-        /// Ссылка на (700 Моделирование)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Modeling.OMModelingModel ParentModelingModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (931 Список показателей реестра)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
 
     }
 }

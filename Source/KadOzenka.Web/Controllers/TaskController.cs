@@ -21,7 +21,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
-using KadOzenka.Dal.Model;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
@@ -50,7 +50,7 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly ILogger _log = Log.ForContext<TaskController>();
 		public TaskService TaskService { get; set; }
-		public ModelService ModelService { get; set; }
+		public ModelingService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
@@ -63,7 +63,7 @@ namespace KadOzenka.Web.Controllers
 		public TaskController(TemplateService templateService)
 		{
 			TaskService = new TaskService();
-			ModelService = new ModelService();
+			ModelService = new ModelingService(new DictionaryService());
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
@@ -436,7 +436,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Model(long groupId, bool isPartial)
 		{
-			var modelDto = ModelService.GetModelByGroupId(groupId);
+			var modelDto = ModelService.GetModelEntityByGroupId(groupId);
 			var model = ModelModel.ToModel(modelDto);
 
 			if (isPartial)
@@ -452,7 +452,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Model(ModelModel model)
 		{
-			var omModel = ModelService.GetModelById(model.Id);
+			var omModel = ModelService.GetModelEntityById(model.Id);
 
 			omModel.Name = model.Name;
 			omModel.Description = model.Description;
@@ -481,8 +481,22 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetModelFactors(long modelId)
         {
-            var factorDtos = ModelService.GetModelFactors(modelId);
-            var models = factorDtos.Select(ModelFactorDto.FromEntity).ToList();
+	        var query = ModelService.GetModelFactorsQuery(modelId);
+			query.AddColumn(OMModelFactor.GetColumn(x => x.ModelId, nameof(Dal.Modeling.Dto.ModelFactorDto.ModelId)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(Dal.Modeling.Dto.ModelFactorDto.FactorId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(Dal.Modeling.Dto.ModelFactorDto.Factor)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(Dal.Modeling.Dto.ModelFactorDto.Type)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(Dal.Modeling.Dto.ModelFactorDto.RegisterId)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkerId, nameof(Dal.Modeling.Dto.ModelFactorDto.MarkerId)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(Dal.Modeling.Dto.ModelFactorDto.Weight)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(Dal.Modeling.Dto.ModelFactorDto.B0)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(Dal.Modeling.Dto.ModelFactorDto.SignDiv)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(Dal.Modeling.Dto.ModelFactorDto.SignAdd)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(Dal.Modeling.Dto.ModelFactorDto.SignMarket)));
+
+			var factorDtos = query.ExecuteQuery<Dal.Modeling.Dto.ModelFactorDto>();
+
+			var models = factorDtos.Select(ModelFactorDto.FromEntity).ToList();
 
             return Json(models);
 		}
