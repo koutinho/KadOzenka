@@ -471,8 +471,7 @@ namespace ObjectModel.KO
         public void InheritedKOFactors(ILogger log)
         {
             List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(this);
-            log.ForContext("HistoryUnits", JsonConvert.SerializeObject(olds))
-	            .ForContext("UnitId", this.Id)
+            log.ForContext("UnitId", this.Id)
 	            .Verbose("Найдено {HistoryUnitsCount} HistoryUnit'ов для обновления {UnitCadastralNumber} ", olds.Count, this.CadastralNumber);
 
             ObjectModel.KO.OMUnit lastUnit = null;
