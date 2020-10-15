@@ -92,9 +92,16 @@
                     headerAttributes: {
                         style: "text-align: center;"
                     },
+                    //по умолчанию точность новой метки - 2 знака после запятой, 
+                    //переопределяем это
                     editor: function (container, options) {
-                        console.log('asdsdsd');
-                        $('<input />').appendTo(container).kendoNumericTextBox({ format: "n", decimals: 13 });
+                        $('<input name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoNumericTextBox({
+                                format: "{0:n14}",
+                                decimals: 14,
+                                step: 0.1
+                            });
                     }
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
