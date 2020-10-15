@@ -20,15 +20,23 @@
       </Parameters>
     </Button>
 
-    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
-    
-    <Button Caption="Конвертировать исходные данные в Excel" Icon="icon-excel" NavigateURL="/GknXmlToExcel/Configurator" WindowWidth="600" WindowHeight="800" OpenInRadWindow="true">
-      <Parameters>
-        <Parameter Key="TaskId" Value="{Get:20100400}"/>
-      </Parameters>
+    <Button Caption="Выгрузки" OpenInRadWindow="false" Type="DropDown">
+      <DropDownButtons>
+      <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+
+      <Button Caption="Конвертировать исходные данные в Excel" Icon="icon-excel" NavigateURL="/GknXmlToExcel/Configurator" WindowWidth="600" WindowHeight="800" OpenInRadWindow="true">
+        <Parameters>
+          <Parameter Key="TaskId" Value="{Get:20100400}"/>
+        </Parameters>
+      </Button>
+
+      <Button Caption="Выгрузка изменений в Excel" Icon="icon-excel" NavigateURL="/Task/DataMappingToExcelAlt" OpenInRadWindow="false">
+        <Parameters>
+          <Parameter Key="TaskId" Value="{Get:20100400}"/>
+        </Parameters>
+      </Button>
+      </DropDownButtons>
     </Button>
-    
-    
   </Buttons>
 
 </RegisterView>

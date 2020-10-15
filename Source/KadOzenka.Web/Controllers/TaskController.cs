@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,8 +13,11 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
+using GemBox.Spreadsheet;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -38,6 +42,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.KO;
@@ -1016,7 +1021,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult DataMapping(long taskId)
 		{
-			OMTask task = OMTask.Where(x => x.Id == taskId)				
+			OMTask task = OMTask.Where(x => x.Id == taskId)
 				.ExecuteFirstOrDefault();
 
 			if (task == null)
@@ -1046,7 +1051,56 @@ namespace KadOzenka.Web.Controllers
 			return View(model);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult DataMappingToExcel(long taskId)
+		{
+			OMTask task = OMTask.Where(x => x.Id == taskId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (task == null)
+			{
+				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+			}
+
+			var units = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
+			var list = new List<(string,List<DataMappingDto>)>();
+			foreach (var omUnit in units)
+			{
+				var dto = TaskService.FetchGbuData(omUnit.ObjectId.GetValueOrDefault(), task);
+				list.Add((omUnit.CadastralNumber,dto));
+			}
+
+			var excelFile = new ExcelFile();
+			excelFile.Worksheets.Add("Изменения");
+			var sheet = excelFile.Worksheets[0];
+
+			DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
+			var rowCounter = 1;
+
+			foreach (var item in list)
+			{
+				foreach (var dto in item.Item2)
+				{
+					DataExportCommon.AddRow(sheet,rowCounter,new object[]{item.Item1,dto.Attribute,dto.OldValue, dto.Value});
+					rowCounter++;
+				}
+			}
+
+			var ms = new MemoryStream();
+			excelFile.Save(ms,SaveOptions.XlsxDefault);
+			ms.Seek(0, SeekOrigin.Begin);
+			return File(ms,Consts.ExcelContentType);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DataMappingToExcelAlt(long taskId)
+		{
+			var ms = TaskService.DataMappingToExcelAlt(taskId);
+			return File(ms,Consts.ExcelContentType);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)
 		{
 			List<OMUnit> unitList = OMUnit.Where(x => x.TaskId == taskId)

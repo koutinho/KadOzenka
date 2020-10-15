@@ -8,11 +8,15 @@ using ObjectModel.Core.TD;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using System;
+using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.Register;
 using Core.Shared.Misc;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Documents;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Models.Task;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
@@ -150,6 +154,96 @@ namespace KadOzenka.Dal.Tasks
 
             return list;
         }
+
+        public Stream DataMappingToExcelAlt(long taskId)
+		{
+			var gbuObjectService = new GbuObjectService();
+			OMTask task = OMTask.Where(x => x.Id == taskId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (task == null)
+			{
+				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+			}
+
+			var units = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
+
+			var objectIdList = units.Where(x => x.ObjectId.HasValue).Select(x=>x.ObjectId.Value).ToList();
+			// список кадастровых номеров
+			var objectCadNumList = units.Select(x => new {x.ObjectId, x.CadastralNumber});
+			// список всех изменений атрибутов по списку объектов
+			var attributesList = gbuObjectService.GetAllAttributes(objectIdList);
+			// атрибуты с привязкой к КН
+			var res = objectCadNumList.Join(attributesList, x => x.ObjectId, y => y.ObjectId, (x, y) => new
+			{
+				x.CadastralNumber,
+				x.ObjectId,
+				Value = GetVal(y.NumValue, y.DtValue, y.StringValue),
+				y.AttributeId,
+				AttrName = y.AttributeData.Name,
+				y.Ot,
+				y.S,
+				y.ChangeDocId,
+				y.ChangeDate
+			});
+
+			// лист с данными по выбранному документу
+			var changeDoc = res.Where(x => x.ChangeDocId == task.DocumentId).ToList();
+
+			var doc = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+
+			// лист с данными по всем атрибутам, фильтр до даты документа
+			var allAttrib = res.Where(x => x.Ot < (doc.ApproveDate ?? doc.CreateDate))
+				.Where(x=>x.Value!=null)
+				.OrderByDescending(x=>x.Ot)
+				.GroupBy(x=>x.AttributeId)
+				.Select(x=>x.FirstOrDefault())
+				.ToList();
+
+			var history =
+				(from cDoc in changeDoc
+				join attr in allAttrib
+					on (cDoc.AttributeId, cDoc.ObjectId) equals (attr.AttributeId, attr.ObjectId)
+					into intermediateResult
+				from inRes in intermediateResult.DefaultIfEmpty()
+				select new
+				{
+					cDoc,
+					OldValue = inRes?.Value ?? String.Empty
+				}).ToList();
+
+			var excelFile = new ExcelFile();
+			excelFile.Worksheets.Add("Изменения");
+			var sheet = excelFile.Worksheets[0];
+
+			DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
+			var rowCounter = 1;
+
+			foreach (var attribute in history)
+			{
+				DataExportCommon.AddRow(sheet,rowCounter,new object[]
+				{
+					attribute.cDoc.CadastralNumber,
+					attribute.cDoc.AttrName,
+					attribute.OldValue,
+					attribute.cDoc.Value
+				});
+				rowCounter++;
+			}
+
+			var ms = new MemoryStream();
+			excelFile.Save(ms,SaveOptions.XlsxDefault);
+			ms.Seek(0, SeekOrigin.Begin);
+			return ms;
+
+			string GetVal(decimal? dec, DateTime? dt, string str)
+			{
+				if (dec.HasValue) return dec.ToString();
+				if (dt.HasValue) return dt.ToString();
+				return str;
+			}
+		}
 
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)
         {
