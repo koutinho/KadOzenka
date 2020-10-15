@@ -7,6 +7,8 @@ using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory;
+using ObjectModel.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
@@ -17,14 +19,14 @@ namespace KadOzenka.Dal.Modeling
     {
         private PredictionRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        protected OMModel Model { get; }
-        protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{Model.Name}'";
+        protected OMModel GeneralModel { get; }
+        protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{GeneralModel.Name}'";
 
         public Prediction(string inputParametersXml, OMQueue processQueue, ILogger logger)
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
         }
 
 
@@ -33,12 +35,12 @@ namespace KadOzenka.Dal.Modeling
             var baseUrl = ModelingProcessConfig.Current.PredictionBaseUrl;
             switch (InputParameters.ModelType)
             {
-                case ModelType.Linear:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionLinearTypeUrl}/{Model.InternalName}";
-                case ModelType.Exponential:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionExponentialTypeUrl}/{Model.InternalName}";
-                case ModelType.Multiplicative:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionMultiplicativeTypeUrl}/{Model.InternalName}";
+                case KoAlgoritmType.Line:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionLinearTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Exp:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionExponentialTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Multi:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }
@@ -46,16 +48,15 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            AddLog($"Начата работа с моделью '{Model.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
+            AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            if (InputParameters.ModelType == ModelType.Linear && string.IsNullOrWhiteSpace(Model.LinearTrainingResult))
-                throw new Exception(GetErrorMessage(ModelType.Linear));
+            var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
 
-            if (InputParameters.ModelType == ModelType.Exponential && string.IsNullOrWhiteSpace(Model.ExponentialTrainingResult))
-                throw new Exception(GetErrorMessage(ModelType.Exponential));
+            var isModelTrained = typifiedModels.Any(x =>
+	            x.AlgoritmType_Code == InputParameters.ModelType && !string.IsNullOrWhiteSpace(x.TrainingResult));
 
-            if (InputParameters.ModelType == ModelType.Multiplicative && string.IsNullOrWhiteSpace(Model.MultiplicativeTrainingResult))
-                throw new Exception(GetErrorMessage(ModelType.Multiplicative));
+            if (!isModelTrained)
+                throw new Exception(GetErrorMessage(InputParameters.ModelType));
         }
 
         protected override object GetRequestForService()
@@ -123,9 +124,9 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        private string GetErrorMessage(ModelType type)
+        private string GetErrorMessage(KoAlgoritmType type)
         {
-            return $"{type.GetEnumDescription()} модель '{Model.Name}' не была обучена. Расчет невозможен.";
+            return $"{type.GetEnumDescription()} модель '{GeneralModel.Name}' не была обучена. Расчет невозможен.";
         }
 
         #endregion

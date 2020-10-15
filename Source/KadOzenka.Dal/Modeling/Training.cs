@@ -20,17 +20,17 @@ namespace KadOzenka.Dal.Modeling
     {
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        private OMModel Model { get; }
+        private OMModel GeneralModel { get; }
         private OMTour Tour { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; }
-        protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
+        protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
 
         public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
-            Tour = ModelingService.GetModelTour(Model.GroupId);
+            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            Tour = ModelingService.GetModelTour(GeneralModel.GroupId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
         }
 
@@ -40,14 +40,14 @@ namespace KadOzenka.Dal.Modeling
             var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
-	            case ModelType.All:
-		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingAllTypesUrl}/{Model.InternalName}";
-                case ModelType.Linear:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
-                case ModelType.Exponential:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{Model.InternalName}";
-                case ModelType.Multiplicative:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{Model.InternalName}";
+	            case KoAlgoritmType.None:
+		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingAllTypesUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Line:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Exp:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Multi:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }
@@ -55,15 +55,15 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            AddLog($"Начата работа с моделью '{Model.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
+            AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
             var marketObjects = GetMarketObjects();
             AddLog($"Найдено {marketObjects.Count} объекта.");
 
-            ModelingService.DestroyModelMarketObjects(Model.Id);
+            ModelingService.DestroyModelMarketObjects(GeneralModel.Id);
             AddLog("Удалены предыдущие данные.");
 
-            var modelAttributes = ModelingService.GetModelFactors(Model.Id);
+            var modelAttributes = ModelingService.GetModelFactors(GeneralModel.Id);
             AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
             var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
@@ -110,7 +110,7 @@ namespace KadOzenka.Dal.Modeling
 	                i++;
 	                var modelToMarketObjectRelation = new OMModelToMarketObjects
 	                {
-		                ModelId = Model.Id,
+		                ModelId = GeneralModel.Id,
 		                CadastralNumber = marketObject.CadastralNumber,
 		                Price = marketObject.PricePerMeter,
 		                IsForTraining = isForTraining
@@ -181,26 +181,31 @@ namespace KadOzenka.Dal.Modeling
         //TODO CIPJSKO-526 добавить обработку по всем
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-	        //if (InputParameters.ModelType == ModelType.All)
-	        //{
-
-	        //}
 	        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
-            PreprocessTrainingResult(trainingResult);
+	        PreprocessTrainingResult(trainingResult);
 
-            ResetPredictedPrice();
+	        ResetPredictedPrice();
+	        AddLog("Закончен сброс спрогнозированной цены.");
 
-            SaveCoefficients(trainingResult.CoefficientsForAttributes);
-            AddLog("Закончено создание меток и сохранение коэффициентов.");
+            CreateMarkCatalog(trainingResult.CoefficientsForAttributes);
+            AddLog("Закончено создание меток.");
 
-            var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
-            UpdateModelTrainingResult(jsonTrainingResult);
-            AddLog("Сохранен результат обучения");
+            var typifiedModels = GetTypifiedModels(JsonConvert.SerializeObject(trainingResult));
+            typifiedModels.ForEach(typifiedModel =>
+	        {
+		        SaveCoefficients(trainingResult.CoefficientsForAttributes, typifiedModel);
+		        AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
+	        });
         }
 
         protected override void RollBackResult()
         {
-            UpdateModelTrainingResult(null);
+	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
+	        typifiedModels.ForEach(x =>
+	        {
+		        x.TrainingResult = null;
+		        x.Save();
+	        });
         }
 
 
@@ -247,13 +252,13 @@ namespace KadOzenka.Dal.Modeling
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
         {
             var relation = OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == Model.GroupId)
+                .Where(x => x.GroupId == GeneralModel.GroupId)
                 .Select(x => x.MarketSegment_Code)
                 .Select(x => x.TerritoryType_Code)
                 .ExecuteFirstOrDefault();
 
             if(relation == null)
-                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{Model.GroupId}'");
+                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{GeneralModel.GroupId}'");
 
             return relation;
         }
@@ -352,7 +357,7 @@ namespace KadOzenka.Dal.Modeling
 
         private void ResetPredictedPrice()
         {
-            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == Model.Id && x.PriceFromModel != null)
+            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == GeneralModel.Id && x.PriceFromModel != null)
                 .SelectAll().Execute();
 
             modelObjects.ForEach(x =>
@@ -362,9 +367,54 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private void SaveCoefficients(Dictionary<string, decimal> coefficients)
+        private List<OMModelTypified> GetTypifiedModels(string trainingResult)
         {
-	        var modelFactors = OMModelFactor.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
+	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
+	        AddLog($"Найдено {typifiedModels.Count} типизированных моделей");
+	        if (typifiedModels.Count == 0)
+	        {
+		        typifiedModels = CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType, trainingResult);
+		        AddLog($"Создано {typifiedModels.Count} типизированных моделей");
+	        }
+
+            return typifiedModels;
+        }
+
+        private List<OMModelTypified> CreateTypifiedModels(long generalModelId, KoAlgoritmType type, string trainingResult)
+        {
+	        var types = new List<KoAlgoritmType>();
+	        if (type == KoAlgoritmType.None)
+	        {
+		        types.Add(KoAlgoritmType.Line);
+		        types.Add(KoAlgoritmType.Exp);
+		        types.Add(KoAlgoritmType.Multi);
+
+            }
+	        else
+	        {
+		        types.Add(type);
+	        }
+
+	        var createdTypifiedModels = new List<OMModelTypified>();
+            types.ForEach(x =>
+            {
+	            var model = new OMModelTypified
+	            {
+		            ModelId = generalModelId,
+		            AlgoritmType_Code = x,
+		            TrainingResult = trainingResult
+	            };
+	            model.Save();
+
+	            createdTypifiedModels.Add(model);
+            });
+
+            return createdTypifiedModels;
+        }
+
+        private void SaveCoefficients(Dictionary<string, decimal> coefficients, OMModelTypified typifiedModelId)
+        {
+	        var modelFactors = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModelId.Id).SelectAll().Execute();
 
 	        foreach (var coefficient in coefficients)
 	        {
@@ -374,60 +424,38 @@ namespace KadOzenka.Dal.Modeling
 
 		        modelFactor.Weight = coefficient.Value;
 		        modelFactor.Save();
-		        AddLog($"Сохранение коэффициента для фактора '{coefficient.Key}'");
-
-                CreateMarkCatalog(modelFactor.FactorId);
-                AddLog($"Сохранение меток для фактора '{coefficient.Key}'");
-            }
+		        AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{typifiedModelId.AlgoritmType}'");
+	        }
         }
 
-        public void CreateMarkCatalog(long? factorId)
+        private void CreateMarkCatalog(Dictionary<string, decimal> coefficients)
         {
-            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == Model.GroupId && x.FactorId == factorId).SelectAll().Execute();
-            existedMarks.ForEach(x => x.Destroy());
+	        foreach (var coefficient in coefficients)
+	        {
+		        var factorId = coefficient.Key.ParseToLong();
+		        var existedMarks = OMMarkCatalog.Where(x => x.GeneralModelId == GeneralModel.Id && x.FactorId == factorId).Execute();
+		        existedMarks.ForEach(x => x.Destroy());
 
-            MarketObjectsForTraining.ForEach(modelObject =>
-            {
-                var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
-                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
-                    return;
+		        MarketObjectsForTraining.ForEach(modelObject =>
+		        {
+			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
+			        if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+				        return;
 
-                var value = objectCoefficient.Value;
-                var metka = objectCoefficient.Coefficient;
+			        var value = objectCoefficient.Value;
+			        var metka = objectCoefficient.Coefficient;
 
-                new OMMarkCatalog
-                {
-                    GroupId = Model.GroupId,
-                    FactorId = factorId,
-                    ValueFactor = value,
-                    MetkaFactor = metka
-                }.Save();
-            });
-        }
-
-        private void UpdateModelTrainingResult(string trainingResult)
-        {
-            switch (InputParameters.ModelType)
-            {
-                case ModelType.Linear:
-                    Model.LinearTrainingResult = trainingResult;
-                    break;
-                case ModelType.Exponential:
-                    Model.ExponentialTrainingResult = trainingResult;
-                    break;
-                case ModelType.Multiplicative:
-                    Model.MultiplicativeTrainingResult = trainingResult;
-                    break;
-                //TODO CIPJSKO-526
-                case ModelType.All:
-	                Model.LinearTrainingResult = trainingResult;
-                    break;
-                default:
-                    throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
-            }
-
-            Model.Save();
+			        new OMMarkCatalog
+			        {
+				        GroupId = GeneralModel.GroupId,
+				        FactorId = factorId,
+				        ValueFactor = value,
+				        MetkaFactor = metka
+			        }.Save();
+		        });
+                AddLog($"Сохранение меток для фактора '{factorId}'");
+	        }
         }
 
         #endregion

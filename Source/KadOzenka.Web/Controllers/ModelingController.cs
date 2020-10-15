@@ -37,7 +37,9 @@ using System.Threading;
 using KadOzenka.Dal.LongProcess.ExpressScore;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Ko;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -194,7 +196,7 @@ namespace KadOzenka.Web.Controllers
             var inputParameters = new GeneralModelingInputParameters
             {
                 ModelId = modelId,
-                ModelType = modelType
+                ModelType = ConvertModelType(modelType)
             };
             //////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
@@ -223,7 +225,7 @@ namespace KadOzenka.Web.Controllers
             var inputParameters = new GeneralModelingInputParameters
             {
                 ModelId = modelId,
-                ModelType = modelType
+                ModelType = ConvertModelType(modelType)
             };
             ////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
@@ -253,6 +255,28 @@ namespace KadOzenka.Web.Controllers
 
             return File(fileStream, Helpers.Consts.ExcelContentType, $"Логи для модели {modelId}" + ".xlsx");
         }
+
+
+        #region Support Methods
+
+        private KoAlgoritmType ConvertModelType(ModelType inputType)
+        {
+	        switch (inputType)
+	        {
+		        case ModelType.Linear:
+			        return KoAlgoritmType.Line;
+		        case ModelType.Exponential:
+			        return KoAlgoritmType.Exp;
+		        case ModelType.Multiplicative:
+			        return KoAlgoritmType.Multi;
+		        case ModelType.All:
+			        return KoAlgoritmType.None;
+		        default:
+			        throw new ArgumentOutOfRangeException($"Неизвестный тип модели {inputType.GetEnumDescription()}");
+	        }
+        }
+
+        #endregion
 
         #endregion
 

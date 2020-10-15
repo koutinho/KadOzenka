@@ -40,8 +40,8 @@
                                             .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
                                         t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
                                             .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
-                                        //t.Add().Text(ModelType.All.GetEnumDescription())
-                                        //    .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
+                                        t.Add().Text(ModelType.All.GetEnumDescription())
+                                            .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
                                     })
                                     .HtmlAttributes(new { style = "width: 100%;" })
                                     .Events(ev => ev.Select("onModelTypeSelect")))
@@ -367,14 +367,14 @@
 
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
-        //при первом обучении модели обучение должно идти по всем моделям
-        @*if ('@Model.IsModelWasTrained' === "False") {
+        //при первом обучении модели оно должно идти по всем моделям
+        if ('@Model.IsModelWasTrained' === "False") {
             trainModel('@ModelType.All');
-        } else {*@
+        } else {
             isTrainingMode = true;
-            setGroupButtonsState(true, true, true);
+            setGroupButtonsState(true, true, true, true);
             showModelTypeWindow();
-        //}
+        }
     }
 
     function onPredictModelBtnClick() {
@@ -382,11 +382,11 @@
         var hasLinearTrainingResult = '@Model.HasLinearTrainingResult' === "True";
         var hasExponentialTrainingResult = '@Model.HasExponentialTrainingResult' === "True";
         var hasMultiplicativeTrainingResult = '@Model.HasMultiplicativeTrainingResult' === "True";
-        setGroupButtonsState(hasLinearTrainingResult, hasExponentialTrainingResult, hasMultiplicativeTrainingResult);
+        setGroupButtonsState(hasLinearTrainingResult, hasExponentialTrainingResult, hasMultiplicativeTrainingResult, false);
         showModelTypeWindow();
     }
 
-    function setGroupButtonsState(enableLinerBtn, enableExponentialBtn, enableMultiplicativeBtn) {
+    function setGroupButtonsState(enableLinerBtn, enableExponentialBtn, enableMultiplicativeBtn, enableAllModelTypeBtn) {
         if (enableLinerBtn)
             $("#linearModelTypeBtn").removeClass('k-state-disabled');
         else
@@ -399,6 +399,10 @@
             $("#multiplicativeModelTypeBtn").removeClass('k-state-disabled');
         else
             $("#multiplicativeModelTypeBtn").addClass('k-state-disabled');
+        if (enableAllModelTypeBtn)
+            $("#allModelTypeBtn").removeClass('k-state-disabled');
+        else
+            $("#allModelTypeBtn").addClass('k-state-disabled');
     }
 
 

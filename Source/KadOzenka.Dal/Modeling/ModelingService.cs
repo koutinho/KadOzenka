@@ -16,6 +16,7 @@ using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using Kendo.Mvc.Extensions;
+using ObjectModel.Ko;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
@@ -29,7 +30,7 @@ namespace KadOzenka.Dal.Modeling
 			DictionaryService = dictionaryService;
 		}
 
-        #region CRUD Model
+        #region CRUD General Model
 
         public OMModel GetModelEntityByGroupId(long? groupId)
         {
@@ -202,6 +203,31 @@ namespace KadOzenka.Dal.Modeling
         }
 
         #endregion
+
+
+        #region Typified Model
+
+		public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId)
+		{
+			var maxCountOfTypifiedModels = 3;
+
+			return OMModelTypified.Where(x => x.ModelId == generalModelId).SelectAll()
+				.SetPackageIndex(0).SetPackageSize(maxCountOfTypifiedModels).Execute();
+		}
+
+		public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId, KoAlgoritmType type)
+		{
+			if (type == KoAlgoritmType.None)
+				return GetTypifiedModelsByGeneralModelId(generalModelId);
+
+			var typifiedModel = OMModelTypified.Where(x => x.ModelId == generalModelId && x.AlgoritmType_Code == type)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return new List<OMModelTypified>(1) {typifiedModel};
+		}
+
+		#endregion
 
 
         #region Model Attributes
