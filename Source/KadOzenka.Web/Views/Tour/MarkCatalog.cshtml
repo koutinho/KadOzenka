@@ -92,7 +92,20 @@
                     type: 'POST',
                     dataType: 'json'
                 }
-            },             
+            },
+            requestStart: function (e) {
+                if (e.type == "read") {
+                    kendo.ui.progress($('body'), true);
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type == "read") {
+                    kendo.ui.progress($('body'), false);
+                }
+            },
+            error: function (e) {
+                Common.ShowError(e.xhr.responseText);
+            },
             schema: {
                 model: {
                     id: "Id",
@@ -101,7 +114,22 @@
                         GroupId: { editable: false},
                         FactorId: { editable: false },
                         ValueFactor: { validation: { required: true } },
-                        MetkaFactor: { validation: { required: true } }
+                        MetkaFactor: { type: "number", nullable: true }
+                    }
+                }
+            },
+            change: function (e) {
+                //если добавляем новое значение в грид, а к нему уже была применена фильтрация
+                //чтобы отобразить новую пустую строчку, нужна дополнительная фильтрация
+                if (e.action == "add") {
+                    var filter = this.filter();
+                    if (filter) {
+                        var noValueFilter = { field: "ValueFactor", operator: "eq", value: "" };
+                        var newFilter = {
+                            logic: "or",
+                            filters: [noValueFilter, filter]
+                        };
+                        this.filter(newFilter);
                     }
                 }
             }
@@ -121,6 +149,17 @@
                     title: 'Метка',
                     headerAttributes: {
                         style: "text-align: center;"
+                    },
+                    //по умолчанию точность новой метки - 2 знака после запятой, 
+                    //переопределяем это
+                    editor: function (container, options) {
+                        $('<input name="' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoNumericTextBox({
+                                format: "{0:n14}",
+                                decimals: 14,
+                                step: 0.1
+                            });
                     }
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
@@ -129,6 +168,21 @@
             height: 240,
             scrollable: true,
             editable: "inline",
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    },
+                    number: {
+                        eq: "Равно",
+                        gte: "Больше",
+                        lte: "Меньше"
+                    }
+                }
+            },
             beforeEdit: function (e) {
                 if (e.model.isNew()) {
                     e.model.GroupId = $('#Subgroup').val();

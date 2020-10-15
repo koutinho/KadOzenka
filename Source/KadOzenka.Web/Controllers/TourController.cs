@@ -851,8 +851,13 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
 		public ActionResult CreateMark(OMMarkCatalog markCatalog)
 		{
-			markCatalog.Save();
-			return Json(markCatalog);
+			var id = markCatalog.Save();
+
+			//хот-фикс, чтобы работало обновление ранее созданной метки
+			//TODO нужно переписать, чтобы view работало со своей моделью, а не с моделью ОРМ
+			var newMark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+
+			return Json(newMark);
 		}
 
 		[HttpPost]
