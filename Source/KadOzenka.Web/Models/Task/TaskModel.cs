@@ -25,9 +25,13 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Наименование документа")]
         public string IncomingDocumentDescription { get; set; }
 
-        [Display(Name = "Дата документа")]
-        [Required(ErrorMessage = "Поле Дата документа обязательное")]
+        [Display(Name = "Дата создания документа")]
+        [Required(ErrorMessage = "Поле Дата создания документа обязательное")]
         public DateTime? IncomingDocumentDate { get; set; }
+
+        [Display(Name = "Дата выпуска документа")]
+        [Required(ErrorMessage = "Поле Дата выпуска документа обязательное")]
+        public DateTime? IncomingDocumentApproveDate { get; set; }
 
         [Display(Name = "Тип статьи")]
         [Required(ErrorMessage = "Поле Тип статьи обязательное")]
