@@ -136,8 +136,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					unit.CadastralBlock = currentCadastralQuarter;
 					unit.BuildingCadastralNumber = currentBuildingCadastralNumber;
 					unit.Save();
-					unit.InheritedKOFactors(_log);
 				}
+			});
+
+			_log.Debug("Сохранение наследуемых атрибутов");
+			Parallel.ForEach(units, options, unit =>
+			{
+				unit.InheritedKOFactors(_log);
 			});
 
 			_log.Debug("Настройка стилей отчета");
