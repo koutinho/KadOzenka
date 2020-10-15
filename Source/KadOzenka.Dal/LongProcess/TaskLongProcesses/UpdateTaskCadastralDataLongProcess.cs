@@ -9,12 +9,15 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
 	public class UpdateTaskCadastralDataLongProcess : LongProcess
 	{
 		public const string LongProcessName = "UpdateTaskCadastralData";
+
+		private readonly ILogger _log = Log.ForContext<HarmonizationProcess>();
 
 		public static long AddProcessToQueue(long taskId)
 		{
@@ -39,10 +42,12 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			_log.Information("Старт фонового процесса: {ProcessType}", processType.Description);
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			if (!processQueue.ObjectId.HasValue)
 			{
+				_log.Warning("В фоновый процесс {ProcessType} не передан ObjectId (ИД задания на оценку)", processType.Description);
 				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				NotificationSender.SendNotification(processQueue, "Актуализация кадастровых данных",
@@ -52,9 +57,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			try
 			{
+				_log.Information("Начато обновление кадастровых данных для задания на оценку {TaskId}", processQueue.ObjectId.Value);
 				var reportId = UpdateTaskCadastralData(processQueue.ObjectId.Value);
 				NotificationSender.SendNotification(processQueue, "Результат Операции Актуализации кадастровых данных", GetEmailMessage(reportId));
 				WorkerCommon.SetProgress(processQueue, 100);
+				_log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 			}
 			catch(Exception ex)
 			{
@@ -69,6 +76,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			SetupInitialSettings(taskId);
 			var units = GetUnits(taskId);
+			_log.ForContext("TaskId", taskId)
+				.Debug($"Загружено {units.Count} единиц оценки для обработки");
 
 			var reportService = new GbuReportService();
 			reportService.AddHeaders(0,
@@ -115,19 +124,31 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 							reportService);
 					}
 
+					_log.ForContext("ObjectId", unit.ObjectId.Value)
+						.ForContext("UnitId", unit.Id)
+						.ForContext("PrevCadastralQuarter", unit.CadastralBlock)
+						.ForContext("CurrentCadastralQuarter", currentCadastralQuarter)
+						.ForContext("PrevBuildingCadastralNumber", unit.BuildingCadastralNumber)
+						.ForContext("CurrentBuildingCadastralNumber", currentBuildingCadastralNumber)
+						.Verbose("Выполнение обновления единицы оценки {UnitCadastralNumber}",
+							unit.CadastralNumber);
+
 					unit.CadastralBlock = currentCadastralQuarter;
 					unit.BuildingCadastralNumber = currentBuildingCadastralNumber;
 					unit.Save();
-					unit.InheritedKOFactors();
+					unit.InheritedKOFactors(_log);
 				}
 			});
 
+			_log.Debug("Настройка стилей отчета");
 			reportService.SetStyle();
 			reportService.SetIndividualWidth(0, 4);
 			reportService.SetIndividualWidth(1, 4);
 			reportService.SetIndividualWidth(2, 4);
 			reportService.SetIndividualWidth(3, 4);
 			reportService.SetIndividualWidth(4, 4);
+
+			_log.Debug("Сохранение отчета");
 			var reportId = reportService.SaveReport("Отчет актуализация кадастровых данных", OMTask.GetRegisterId(), "KoTasks");
 
 			return reportId;
@@ -140,6 +161,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var buildingCadastralNumberAttrId = UpdateCadastralDataService.GetCadastralDataBuildingCadastralNumberAttributeId();
 			_buildingCadastralNumberAttrId = buildingCadastralNumberAttrId;
 			_taskName = TaskService.GetTemplateForTaskName(taskId);
+
+			_log.ForContext("CadastralQuarterAttrId", _cadastralQuarterAttrId)
+				.ForContext("BuildingCadastralNumberAttrId", _buildingCadastralNumberAttrId)
+				.ForContext("TaskName", _taskName)
+				.Debug("Установлены начальные настройки для выполнения процесса");
 		}
 
 		private List<OMUnit> GetUnits(long taskId)
