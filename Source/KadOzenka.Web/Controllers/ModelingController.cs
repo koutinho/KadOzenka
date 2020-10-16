@@ -68,8 +68,9 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelCard(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
+			var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(modelId);
 
-            var model = ModelingModel.ToModel(modelDto);
+            var model = ModelingModel.ToModel(modelDto, typifiedModels);
 
             return View(model);
 		}
@@ -132,9 +133,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public JsonResult GetModelAttributes(long modelId)
+		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
-			var attributes = ModelingService.GetModelFactors(modelId);
+			var attributes = ModelingService.GetModelFactors(modelId, type);
 
 			return Json(attributes);
 		}
@@ -189,8 +190,8 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
-            var attributes = ModelingService.GetModelFactors(modelId);
-            if (attributes == null || attributes.Count == 0)
+            var areAttributesExist = OMModelAttribute.Where(x => x.GeneralModelId == modelId).ExecuteExists();
+            if (!areAttributesExist)
                 throw new Exception("Для модели не найдено сохраненных атрибутов");
 
             var inputParameters = new GeneralModelingInputParameters
@@ -329,9 +330,9 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelObjects(long modelId)
 		{
             var modelDto = ModelingService.GetModelById(modelId);
-            modelDto.Attributes = ModelingService.GetModelFactors(modelId);
+            modelDto.Attributes = ModelingService.GetGeneralModelAttributes(modelId);
 
-            var model = ModelingModel.ToModel(modelDto);
+            var model = ModelingModel.ToModel(modelDto, null);
 
             return View(model);
 		}

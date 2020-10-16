@@ -6,7 +6,9 @@ using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
+using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
+using ObjectModel.Ko;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -25,6 +27,9 @@ namespace KadOzenka.Web.Models.Modeling
 
 		[Display(Name = "Описание")]
 		public string Description { get; set; }
+
+		[Display(Name = "Тип")]
+		public KoAlgoritmType Type { get; set; }
 
         [Display(Name = "Тур")]
 		[Required(ErrorMessage = "Не выбран Тур")]
@@ -46,9 +51,9 @@ namespace KadOzenka.Web.Models.Modeling
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
 
-		public static ModelingModel ToModel(ModelingModelDto entity)
-        {
-            return new ModelingModel
+		public static ModelingModel ToModel(ModelingModelDto entity, List<OMModelTypified> typifiedModels)
+		{
+			return new ModelingModel
             {
                 Id = entity.ModelId,
                 GroupId = entity.GroupId,
@@ -59,12 +64,10 @@ namespace KadOzenka.Web.Models.Modeling
                 Description = entity.Description,
                 Attributes = entity.Attributes,
                 ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
-                IsModelWasTrained = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult) ||
-                                    !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult) ||
-                                    !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
-                HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
-                HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
-                HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult)
+                IsModelWasTrained = typifiedModels?.Any(x => !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false,
+                HasLinearTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Line),
+                HasExponentialTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Exp),
+                HasMultiplicativeTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Multi)
             };
         }
 
@@ -135,9 +138,19 @@ namespace KadOzenka.Web.Models.Modeling
             return errors;
         }
 
+
+        #region Support Methods
+
         private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
         {
             return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
         }
+
+        private static bool HasTrainingResult(List<OMModelTypified> typifiedModels, KoAlgoritmType type)
+        {
+            return typifiedModels?.Any(x => x.AlgoritmType_Code == type && !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false;
+        }
+
+        #endregion
     }
 }

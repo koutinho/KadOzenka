@@ -7596,7 +7596,7 @@ namespace ObjectModel.Ko
 
         private string _formula;
         /// <summary>
-        /// 20700400 Формула ()
+        /// 20700400 Формула (formula)
         /// </summary>
         [RegisterAttribute(AttributeID = 20700400)]
         public string Formula
@@ -7731,7 +7731,99 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 210 Факторы модели (KO_MODEL_FACTOR)
+    /// 209 Атрибуты модели (KO_MODEL_ATTRIBUTES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 209)]
+    [Serializable]
+    public partial class OMModelAttribute : OMBaseClass<OMModelAttribute>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20900100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _generalmodelid;
+        /// <summary>
+        /// 20900200 ИД основной модели (206 реестр) (general_model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20900200)]
+        public long GeneralModelId
+        {
+            get
+            {
+                CheckPropertyInited("GeneralModelId");
+                return _generalmodelid;
+            }
+            set
+            {
+                _generalmodelid = value;
+                NotifyPropertyChanged("GeneralModelId");
+            }
+        }
+
+
+        private long _attributeid;
+        /// <summary>
+        /// 20900300 ИД атрибута (attribute_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20900300)]
+        public long AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
+            }
+        }
+
+
+        private long? _dictionaryid;
+        /// <summary>
+        /// 20900400 ИД словаря для моделирования (dictionary_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20900400)]
+        public long? DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 210 Значение факторов модели (KO_MODEL_FACTOR)
     /// </summary>
     [RegisterInfo(RegisterID = 210)]
     [Serializable]
@@ -7760,7 +7852,7 @@ namespace ObjectModel.KO
         //TODO CIPJSKO-526: удалить колонку и связь select * from core_register_relation where id=209
         private long? _modelid;
         /// <summary>
-        /// 21000200 Идентификатор модели (MODEL_ID)
+        /// 21000200 УДАЛИТЬ Идентификатор модели (MODEL_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000200)]
         public long? ModelId
@@ -7917,10 +8009,10 @@ namespace ObjectModel.KO
             }
         }
 
-
+        //TODO CIPJSKO-526 удалить
         private long? _dictionaryid;
         /// <summary>
-        /// 21001000 Идентификатор словаря (DICTIONARY_ID)
+        /// 21001000 УДАЛИТЬ Идентификатор словаря (DICTIONARY_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21001000)]
         public long? DictionaryId
@@ -7990,9 +8082,10 @@ namespace ObjectModel.KO
         }
 
 
+        //TODO CIPJSKO-526 удалить
         private long? _groupid;
         /// <summary>
-        /// 21100200 Идентификатор группы (GROUP_ID)
+        /// 21100200 УДАЛИТЬ Идентификатор группы (GROUP_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21100200)]
         public long? GroupId

@@ -23,6 +23,7 @@ namespace KadOzenka.Dal.Modeling
         private OMModel GeneralModel { get; }
         private OMTour Tour { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; }
+        private List<ModelAttributeRelationDto> ModelAttributes { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
 
         public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
@@ -32,6 +33,7 @@ namespace KadOzenka.Dal.Modeling
             GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
             Tour = ModelingService.GetModelTour(GeneralModel.GroupId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
+            ModelAttributes = new List<ModelAttributeRelationDto>();
         }
 
 
@@ -63,9 +65,9 @@ namespace KadOzenka.Dal.Modeling
             ModelingService.DestroyModelMarketObjects(GeneralModel.Id);
             AddLog("Удалены предыдущие данные.");
 
-            var modelAttributes = ModelingService.GetModelFactors(GeneralModel.Id);
-            AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
-            var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
+            ModelAttributes = ModelingService.GetGeneralModelAttributes(GeneralModel.Id);
+            AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
+            var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
 	            RegisterId = (int)k,
 	            Attributes = g.ToList()
@@ -76,7 +78,7 @@ namespace KadOzenka.Dal.Modeling
             var tourFactorsAttributes = groupedModelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
             AddLog($"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.");
 
-            var dictionaries = ModelingService.GetDictionaries(modelAttributes);
+            var dictionaries = ModelingService.GetDictionaries(ModelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
             var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
@@ -145,9 +147,8 @@ namespace KadOzenka.Dal.Modeling
         {
             RequestForService = new TrainingRequest();
 
-            var allAttributes = ModelingService.GetModelFactors(InputParameters.ModelId);
-            RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
-            RequestForService.AttributeIds.AddRange(allAttributes.Select(x => x.AttributeId));
+            RequestForService.AttributeNames.AddRange(ModelAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
+            RequestForService.AttributeIds.AddRange(ModelAttributes.Select(x => x.AttributeId));
 
             MarketObjectsForTraining.ForEach(modelObject =>
             {
@@ -156,7 +157,7 @@ namespace KadOzenka.Dal.Modeling
                     return;
 
                 var coefficients = new List<decimal?>();
-                allAttributes.ForEach(modelAttribute =>
+                ModelAttributes.ForEach(modelAttribute =>
                 {
 	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
 		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
@@ -190,22 +191,22 @@ namespace KadOzenka.Dal.Modeling
             CreateMarkCatalog(trainingResult.CoefficientsForAttributes);
             AddLog("Закончено создание меток.");
 
-            var typifiedModels = GetTypifiedModels(JsonConvert.SerializeObject(trainingResult));
+            var trainingResultJson = JsonConvert.SerializeObject(trainingResult);
+            var typifiedModels = GetTypifiedModels(trainingResultJson);
             typifiedModels.ForEach(typifiedModel =>
 	        {
 		        SaveCoefficients(trainingResult.CoefficientsForAttributes, typifiedModel);
-		        AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
+
+		        typifiedModel.TrainingResult = trainingResultJson;
+		        typifiedModel.Save();
+
+                AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
 	        });
         }
 
         protected override void RollBackResult()
         {
-	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
-	        typifiedModels.ForEach(x =>
-	        {
-		        x.TrainingResult = null;
-		        x.Save();
-	        });
+            ModelingService.ResetTrainingResults(GeneralModel.Id, InputParameters.ModelType);
         }
 
 
@@ -373,58 +374,31 @@ namespace KadOzenka.Dal.Modeling
 	        AddLog($"Найдено {typifiedModels.Count} типизированных моделей");
 	        if (typifiedModels.Count == 0)
 	        {
-		        typifiedModels = CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType, trainingResult);
+		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType, trainingResult);
 		        AddLog($"Создано {typifiedModels.Count} типизированных моделей");
 	        }
 
             return typifiedModels;
         }
 
-        private List<OMModelTypified> CreateTypifiedModels(long generalModelId, KoAlgoritmType type, string trainingResult)
-        {
-	        var types = new List<KoAlgoritmType>();
-	        if (type == KoAlgoritmType.None)
-	        {
-		        types.Add(KoAlgoritmType.Line);
-		        types.Add(KoAlgoritmType.Exp);
-		        types.Add(KoAlgoritmType.Multi);
-
-            }
-	        else
-	        {
-		        types.Add(type);
-	        }
-
-	        var createdTypifiedModels = new List<OMModelTypified>();
-            types.ForEach(x =>
-            {
-	            var model = new OMModelTypified
-	            {
-		            ModelId = generalModelId,
-		            AlgoritmType_Code = x,
-		            TrainingResult = trainingResult
-	            };
-	            model.Save();
-
-	            createdTypifiedModels.Add(model);
-            });
-
-            return createdTypifiedModels;
-        }
-
         private void SaveCoefficients(Dictionary<string, decimal> coefficients, OMModelTypified typifiedModelId)
         {
-	        var modelFactors = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModelId.Id).SelectAll().Execute();
+	        ModelingService.DeleteFactors(typifiedModelId);
+            AddLog("Удалены предыдущие значения для коэффициентов");
 
-	        foreach (var coefficient in coefficients)
-	        {
-		        var modelFactor = modelFactors.FirstOrDefault(x => x.FactorId == coefficient.Key.ParseToLong());
-		        if (modelFactor == null)
-			        continue;
+            foreach (var coefficient in coefficients)
+            {
+	            var attributeId = coefficient.Key.ParseToLong();
+	            new OMModelFactor
+	            {
+                    ModelId = typifiedModelId.Id,
+		            TypifiedModelId = typifiedModelId.Id,
+		            FactorId = attributeId,
+		            Weight = coefficient.Value,
+		            MarkerId = -1
+	            }.Save();
 
-		        modelFactor.Weight = coefficient.Value;
-		        modelFactor.Save();
-		        AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{typifiedModelId.AlgoritmType}'");
+                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{typifiedModelId.AlgoritmType}'");
 	        }
         }
 
@@ -451,7 +425,8 @@ namespace KadOzenka.Dal.Modeling
 				        GroupId = GeneralModel.GroupId,
 				        FactorId = factorId,
 				        ValueFactor = value,
-				        MetkaFactor = metka
+				        MetkaFactor = metka,
+                        GeneralModelId = GeneralModel.Id
 			        }.Save();
 		        });
                 AddLog($"Сохранение меток для фактора '{factorId}'");

@@ -1,5 +1,6 @@
 ﻿@using KadOzenka.Dal.Modeling.Entities
 @using KadOzenka.Dal.Oks
+@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ModelingModel
 
 <!-- Модальное окно для добавления атрибута -->
@@ -70,6 +71,14 @@
                 </div>
                 <div class="col-sm-9">
                     @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Type)
+                </div>
+                <div class="col-sm-9">
+                    @{ @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: false, withoutNull: true) }
                 </div>
             </div>
             <div class="form-group">
@@ -204,7 +213,8 @@
             dataSource: {
                 transport: {
                     read: {
-                        url: '@Url.Action("GetModelAttributes", "Modeling", new { modelId = Model.Id })',
+                        url: '@Url.Action("GetModelAttributes", "Modeling")',
+                        data: getDataForModelAttributesDownloader,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json'
                     }
@@ -263,6 +273,8 @@
 
         $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
         $('[name="ObjectType"]').on('change', onObjectTypeChange);
+        $('#@nameof(Model.Type)').data('kendoDropDownList').bind('change', onTypeChange);
+
         initGroups('@Model.GroupId');
     });
 
@@ -368,13 +380,13 @@
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
         //при первом обучении модели оно должно идти по всем моделям
-        if ('@Model.IsModelWasTrained' === "False") {
+        @*if ('@Model.IsModelWasTrained' === "False") {
             trainModel('@ModelType.All');
-        } else {
+        } else {*@
             isTrainingMode = true;
             setGroupButtonsState(true, true, true, true);
             showModelTypeWindow();
-        }
+        //}
     }
 
     function onPredictModelBtnClick() {
@@ -715,5 +727,17 @@
     function downloadLogs() {
         window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
     }
+
+
+    function onTypeChange() {
+        $('#grid').data('kendoGrid').dataSource.read();
+    }
+
+
+    function getDataForModelAttributesDownloader() {
+        var modelType = $('#@nameof(Model.Type)').data('kendoDropDownList').value();
+        return { modelId: '@Model.Id', type: modelType }
+    }
+
 
 </script>
