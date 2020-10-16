@@ -6,6 +6,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.MapModeling;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
@@ -61,6 +62,13 @@ where TourId={tourId} and PropertyType={(int)objectType} and MapDivisionType={(i
 		public Stream GetHeatMapTile(int x, int y, int z)
 		{
 			return _heatMap.GetHeatMapTile(x, y, z);
+		}
+
+		public void UpdateHeatMapData()
+		{
+			var sql = "REFRESH MATERIALIZED VIEW CONCURRENTLY average_cadastral_cost_data_for_heatmap;";
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			DBMngr.Main.ExecuteNonQuery(command);
 		}
 	}
 }
