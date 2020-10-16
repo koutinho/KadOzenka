@@ -382,7 +382,7 @@ namespace KadOzenka.Dal.Modeling
             }
 
             var modelAttributeIds = attributes.Select(x => (long?)x.AttributeId).ToList();
-            var typifiedModel = OMModelTypified.Where(x => x.ModelId == modelId && x.AlgoritmType_Code == type).ExecuteFirstOrDefault();
+            var typifiedModel = GetTypifiedModelsByGeneralModelId(modelId, type)?.FirstOrDefault();
             if (typifiedModel != null && modelAttributeIds.Count > 0)
             {
 	            var weights = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModel.Id && modelAttributeIds.Contains(x.FactorId))

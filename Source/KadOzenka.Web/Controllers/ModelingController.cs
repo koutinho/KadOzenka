@@ -288,22 +288,16 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult LinearModelDetails(long modelId)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
+	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Line);
 
-            var trainingResult = GetDetails(model.LinearTrainingResult);
-            var details = TrainingDetailsModel.ToModel(trainingResult);
-
-            return View("ModelTrainingResult", details);
+	        return View("ModelTrainingResult", details);
         }
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ExponentialModelDetails(long modelId)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
-
-            var trainingResult = GetDetails(model.ExponentialTrainingResult);
-            var details = TrainingDetailsModel.ToModel(trainingResult);
+	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Exp);
 
             return View("ModelTrainingResult", details);
         }
@@ -312,13 +306,25 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MultiplicativeModelDetails(long modelId)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
+	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Multi);
 
-            var trainingResult = GetDetails(model.MultiplicativeTrainingResult);
-            var details = TrainingDetailsModel.ToModel(trainingResult);
-
-            return View("ModelTrainingResult", details);
+	        return View("ModelTrainingResult", details);
         }
+
+        #region Support Methods
+
+        private TrainingDetailsModel GetTrainingDetails(long generalModelId, KoAlgoritmType type)
+        {
+	        var typifiedModel = ModelingService.GetTypifiedModelsByGeneralModelId(generalModelId, type)?.FirstOrDefault();
+
+	        var trainingResult = string.IsNullOrWhiteSpace(typifiedModel?.TrainingResult)
+		        ? null
+		        : JsonConvert.DeserializeObject<TrainingResponse>(typifiedModel.TrainingResult);
+
+	        return TrainingDetailsModel.ToModel(trainingResult);
+        }
+
+        #endregion
 
         #endregion
 
@@ -730,13 +736,6 @@ namespace KadOzenka.Web.Controllers
 
 
         #region Support Methods
-
-        private TrainingResponse GetDetails(string trainingResult)
-        {
-            return string.IsNullOrWhiteSpace(trainingResult)
-                ? null
-                : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
-        }
 
         private QSQuery GetQueryFromLayout()
         {
