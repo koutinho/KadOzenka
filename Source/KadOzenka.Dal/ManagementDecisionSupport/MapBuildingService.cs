@@ -1,132 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.MapModeling;
 using ObjectModel.Directory;
-using ObjectModel.KO;
-using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
 	public class MapBuildingService
 	{
+		private ManagementDecisionSupportHeatMap _heatMap;
+		public MapBuildingService()
+		{
+			_heatMap = new ManagementDecisionSupportHeatMap();
+		}
+
+		public int GetMapMinZoom()
+		{
+			return _heatMap.MapMinZoom;
+		}
+
+		public int GetMapMaxZoom()
+		{
+			return _heatMap.MapMaxZoom;
+		}
+
 		public IEnumerable<ColoredDataDto> GetHeatMapData(long tourId, PropertyTypes objectType, MapDivisionType divisionType, string[] colors)
 		{
-			var data = GetUnitCadastralCostData(tourId, objectType, divisionType);
+			var unitAverageDtos = GetUnitCadastralCostData(tourId, objectType, divisionType)
+				.Where(x => x.AverageCadastralCost.HasValue).ToList();
 
-			var unitAverageDtos = data.Where(x => x.CadastralCost.HasValue).GroupBy(x => new { x.DivisionField })
-				.Select(
-					group => new UnitAverageCadastralCostDto
-					{
-						DivisionField = group.Key.DivisionField,
-						AverageCadastralCost = group.ToList().DefaultIfEmpty().Average(x => x.CadastralCost),
-					}).Where(x => x.AverageCadastralCost.HasValue).ToList();
-
-			IEnumerable<ColoredDataDto> result = null;
+			List<ColoredDataDto> result = null;
 			if (!unitAverageDtos.IsEmpty())
 			{
-				result = SetColors(unitAverageDtos, colors).Where(x => !x.name.IsEmpty());
+				result = _heatMap.SetColors(unitAverageDtos, colors).Where(x => !x.name.IsEmpty()).ToList();
+			}
+
+			if (divisionType == MapDivisionType.Quarters)
+			{
+				_heatMap.GenerateHeatMapQuartalInitialImages(result?.ToDictionary(x => x.name, x => x.color));
 			}
 
 			return result;
 		}
 
-		private List<UnitCadastralCostDto> GetUnitCadastralCostData(long tourId, PropertyTypes objectType, MapDivisionType divisionType)
+		private List<UnitAverageCadastralCostDto> GetUnitCadastralCostData(long tourId, PropertyTypes objectType, MapDivisionType divisionType)
 		{
-			var tourCondition =
-				new QSConditionSimple(OMTour.GetColumn(x => x.Id), QSConditionType.Equal, tourId);
-			var propertyCondition =
-				new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (int) objectType);
-			var query = new QSQuery
-			{
-				MainRegisterID = OMUnit.GetRegisterId(),
-				Condition = new QSConditionGroup
-				{
-					Type = QSConditionGroupType.And,
-					Conditions = new List<QSCondition> {tourCondition, propertyCondition}
-				},
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMTour.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.TourId),
-							RightOperand = OMTour.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					},
-					new QSJoin
-					{
-						RegisterId = OMQuartalDictionary.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-							RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-						},
-						JoinType = QSJoinType.Inner
-					}
-				}
-			};
-
-			query.AddColumn(OMUnit.GetColumn(x => x.Id, "Id"));
-			query.AddColumn(OMUnit.GetColumn(x => x.CadastralCost, "CadastralCost"));
-			switch (divisionType)
-			{
-				case MapDivisionType.Districts:
-					query.AddColumn(OMQuartalDictionary.GetColumn(x => x.District, "DivisionField"));
-					break;
-				case MapDivisionType.Regions:
-					query.AddColumn(OMQuartalDictionary.GetColumn(x => x.Region, "DivisionField"));
-					break;
-				case MapDivisionType.Zones:
-					query.AddColumn(OMQuartalDictionary.GetColumn(x => x.ZoneRegion, "DivisionField"));
-					break;
-				case MapDivisionType.Quarters:
-					query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "DivisionField"));
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(divisionType), divisionType, null);
-			}
-
-			var data = query.ExecuteQuery<UnitCadastralCostDto>();
+			var sql = @$"select MapDivisionName as DivisionField,
+AverageCadastralCost as AverageCadastralCost
+from average_cadastral_cost_data_for_heatmap
+where TourId={tourId} and PropertyType={(int)objectType} and MapDivisionType={(int)divisionType}";
+			var data = QSQuery.ExecuteSql<UnitAverageCadastralCostDto>(sql);
 
 			return data;
 		}
 
-		private List<ColoredDataDto> SetColors(List<UnitAverageCadastralCostDto> initials, string[] colorsArray)
+		public Stream GetHeatMapTile(int x, int y, int z)
 		{
-			decimal min = initials.Min(x => x.AverageCadastralCost.Value), max = initials.Max(x => x.AverageCadastralCost.Value), step = (max - min) / colorsArray.Length;
-			int size = colorsArray.Length;
-			decimal? next = null;
-			List<Tuple<decimal, decimal, string>> deltas = new List<Tuple<decimal, decimal, string>>();
-			List<ColoredDataDto> result = new List<ColoredDataDto>();
-			for (int i = 0, j = 1; i < size; i++, j++)
-			{
-				decimal start = next != null ? (decimal)next : Math.Floor(min + step * i);
-				decimal end = Math.Ceiling(min + step * j);
-				deltas.Add(new Tuple<decimal, decimal, string>(start, end, colorsArray[i]));
-				next = end + 1;
-			}
-			foreach (UnitAverageCadastralCostDto pnt in initials)
-			{
-				foreach (Tuple<decimal, decimal, string> col in deltas)
-				{
-					if (pnt.AverageCadastralCost < col.Item2 && pnt.AverageCadastralCost > col.Item1)
-					{
-						result.Add(new ColoredDataDto { name = pnt.DivisionField, color = col.Item3 });
-						break;
-					}
-				}
-			}
-
-			return result;
+			return _heatMap.GetHeatMapTile(x, y, z);
 		}
 	}
 }
