@@ -1,7 +1,7 @@
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
-@model KadOzenka.Web.Models.Task.TaskModel
+@model KadOzenka.Web.Models.Task.TaskCreationModel
 
 <div id="toolbar"></div>
 
@@ -139,14 +139,14 @@
                             formData.set('EstimationDate', estdate.toDateString());
                         }
                         var documentObject = Common.Functions.FormToObject($('#partialDocument'));
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentApproveDate)", documentObject.NewDocumentApproveDate);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
-                        formData.append("@nameof(TaskModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentApproveDate)", documentObject.NewDocumentApproveDate);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
+                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
                         kendo.ui.progress($('body'), true);
                         $.ajax({
                             type: 'POST',
