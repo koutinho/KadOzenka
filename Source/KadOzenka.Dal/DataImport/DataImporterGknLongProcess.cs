@@ -19,12 +19,14 @@ using Ionic.Zip;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using ObjectModel.KO;
+using Serilog;
 using SharpCompress.Archives.Rar;
 
 namespace KadOzenka.Dal.DataImport
 {
     public class DataImporterGknLongProcess : ILongProcess
 	{
+		private static readonly ILogger Log = Log.ForContext<DataImporterGknLongProcess>();
 		public const string LongProcessName = "DataImporterGkn";
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, long registerId, long objectId)
@@ -101,6 +103,8 @@ namespace KadOzenka.Dal.DataImport
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			Log.Information("Старт фонового процесса: {Description}.", processType.Description);
+
 			if (!processQueue.ObjectId.HasValue)
 			{
                 WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
@@ -131,7 +135,10 @@ namespace KadOzenka.Dal.DataImport
 			try
 			{
                 ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
-                if (omTask != null && omTask.NoteType_Code == KoNoteType.Petition)
+				Log.Information("Начата обработка задачи с Id {TaskId}, типа '{type}', расширение файла {FileExtension}.",
+					omTask?.Id, omTask?.NoteType_Code.GetEnumDescription(), import.FileExtension);
+
+				if (omTask != null && omTask.NoteType_Code == KoNoteType.Petition)
                 {
                     if (import.FileExtension == "zip")
                     {
@@ -193,6 +200,8 @@ namespace KadOzenka.Dal.DataImport
 
 			// Отправка уведомления о завершении загрузки
 			SendResultNotification(import);
+
+			Log.Information("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
 	    public bool Test()
@@ -202,6 +211,8 @@ namespace KadOzenka.Dal.DataImport
 
 		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
 		{
+			Log.Information("Начат импорт из xml для задачи с Id {TaskId}", objectId);
+
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
@@ -224,14 +235,19 @@ namespace KadOzenka.Dal.DataImport
             }
 		    catch (Exception ex)
 		    {
-		        cancelSource.Cancel();
+			    Log.Information(ex, "Импорт из xml завершен с ошибкой");
+				cancelSource.Cancel();
 		        throw;
 		    }
-        }
+
+            Log.Information("Импорт из xml завершен");
+		}
 
         public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
         {
-            ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+	        Log.Information("Начат импорт из xlsx для задачи с Id {TaskId}", objectId);
+
+	        ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
             string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
             var cancelSource = new CancellationTokenSource();
@@ -254,19 +270,26 @@ namespace KadOzenka.Dal.DataImport
             }
             catch (Exception ex)
             {
-                cancelSource.Cancel();
+	            Log.Information(ex, "Импорт из xlsx завершен с ошибкой");
+				cancelSource.Cancel();
                 throw;
             }
-        }
+
+            Log.Information("Импорт из xlsx завершен");
+		}
 
         private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
         {
-            using (var filesFromZip = Ionic.Zip.ZipFile.Read(templateFileStream, new ReadOptions { Encoding = Encoding.GetEncoding("cp866") }))
+	        Log.Information("Начат импорт из zip, новое расширение {UsedFileExtension}.", usedFileExtension);
+
+			using (var filesFromZip = Ionic.Zip.ZipFile.Read(templateFileStream, new ReadOptions { Encoding = Encoding.GetEncoding("cp866") }))
             {
                 if (filesFromZip.Count == 0)
                     throw new Exception("Передан пустой zip-файл");
 
-                foreach (var file in filesFromZip)
+                Log.Information($"Внутри zip архива {filesFromZip.Count} файлов.");
+
+				foreach (var file in filesFromZip)
                 {
                     if (file.Attributes == FileAttributes.Directory)
                         continue;
@@ -280,19 +303,27 @@ namespace KadOzenka.Dal.DataImport
                     file.Extract(stream);
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), import.ObjectId.Value);
+                    Log.Information("Файл {InsideFileName} поставлен в очередь на обработку.", file.FileName);
+
+					DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), import.ObjectId.Value);
                 }
             }
         }
 
         private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
 	    {
-            using (var archive = RarArchive.Open(templateFileStream))
+		    Log.Information("Начат импорт из rar, новое расширение {UsedFileExtension}.", usedFileExtension);
+
+			using (var archive = RarArchive.Open(templateFileStream))
 	        {
 	            var entries = archive.Entries.Where(entry => entry.Key.EndsWith(usedFileExtension)).ToList();
-                foreach (var entry in entries)
+	            Log.Information($"Внутри rar архива {entries.Count} файлов.");
+
+				foreach (var entry in entries)
 	            {
-	                DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", entry.Key, entry.OpenEntryStream(), OMTask.GetRegisterId(), import.ObjectId.Value);
+		            Log.Information("Файл {InsideFileName} поставлен в очередь на обработку.", entry.Key);
+
+					DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", entry.Key, entry.OpenEntryStream(), OMTask.GetRegisterId(), import.ObjectId.Value);
 	            }
 	        }
 	    }
