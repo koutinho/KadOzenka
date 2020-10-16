@@ -10,9 +10,9 @@ using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    public class TaskAttributeChangesToExcel : LongProcess
+    public class TaskAttributeChangesToExcelProcess : LongProcess
     {
-        public const string LongProcessName = nameof(TaskAttributeChangesToExcel);
+        public const string LongProcessName = nameof(TaskAttributeChangesToExcelProcess);
 
         public static void AddProcessToQueue(TaskAttributeChangesParams taskParams)
         {
@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.LongProcess
             var taskParams = processQueue.Parameters.DeserializeFromXml<TaskAttributeChangesParams>();
 
             var svc = new TaskService();
-            var stream = svc.DataMappingToExcelAlt(taskParams.KOTaskId);
+            var stream = svc.TaskAttributeChangesToExcel(taskParams.KOTaskId);
             stream.Seek(0, SeekOrigin.Begin);
             var fsName = "DataExporterByTemplate";
             var dt = DateTime.Today;
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     Addressers = new MessageAddressersDto {UserIds = new long[] {taskParams.UserId.Value}},
                     Subject = $"Выгрузка изменений атрибутов по задаче с идентификатором {taskParams.KOTaskId}",
-                    //Message = $@"Процесс формирования отчета завершен. <a href="">Скачать результаты</a>",
+                    Message = $@"Процесс формирования отчета завершен. <a href=""/Task/DownloadTaskAttributeChanges?dt={dt}&taskId={taskParams.KOTaskId}"">Скачать результаты</a>",
                     IsUrgent = true,
                     IsEmail = false,
                     ExpireDate = DateTime.Now.AddHours(2)

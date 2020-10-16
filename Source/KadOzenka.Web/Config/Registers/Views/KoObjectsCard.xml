@@ -30,7 +30,7 @@
         </Parameters>
       </Button>
 
-      <Button Caption="Выгрузка изменений в Excel" Icon="icon-excel" NavigateURL="/Task/DataMappingToExcelAlt" OpenInRadWindow="false">
+      <Button Caption="Выгрузка изменений в Excel" Icon="icon-excel" NavigateURL="/Task/TaskAttributeChangesToExcelModal" WindowHeight="100" WindowWidth="400" OpenInRadWindow="true">
         <Parameters>
           <Parameter Key="TaskId" Value="{Get:20100400}"/>
         </Parameters>

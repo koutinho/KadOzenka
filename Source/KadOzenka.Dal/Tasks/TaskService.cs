@@ -19,7 +19,7 @@ using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Models.Task;
 using ObjectModel.Common;
-using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Tasks
 {
@@ -155,7 +155,7 @@ namespace KadOzenka.Dal.Tasks
             return list;
         }
 
-        public Stream DataMappingToExcelAlt(long taskId)
+        public Stream TaskAttributeChangesToExcel(long taskId)
 		{
 			var gbuObjectService = new GbuObjectService();
 			OMTask task = OMTask.Where(x => x.Id == taskId)
@@ -244,6 +244,12 @@ namespace KadOzenka.Dal.Tasks
 				return str;
 			}
 		}
+
+        public bool CheckIfInitial(long taskId)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        return task.NoteType_Code == KoNoteType.Initial;
+        }
 
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)
         {
