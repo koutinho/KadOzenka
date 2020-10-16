@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Tasks.Dto;
-using KadOzenka.Web.Models.GbuObject;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -39,12 +38,6 @@ namespace KadOzenka.Web.Models.Task
 
         [Display(Name = "Тур")]
         public long? TourYear { get; set; }
-
-        /// <summary>
-        /// Частичное представление документа (для создания еденицы оценки)
-        /// </summary>
-        [Display(Name = "Документ")]
-        public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
 
 
         public static TaskModel ToModel(TaskDto task)
