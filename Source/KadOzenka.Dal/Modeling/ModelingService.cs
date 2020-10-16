@@ -29,86 +29,68 @@ namespace KadOzenka.Dal.Modeling
 			DictionaryService = dictionaryService;
 		}
 
-		#region CRUD Model
+        #region CRUD Model
 
-		public ModelingModelDto GetModelById(long modelId)
-		{
-			var query = new QSQuery
-			{
-				MainRegisterID = OMModelingModel.GetRegisterId(),
-				Condition = new QSConditionSimple(OMModelingModel.GetColumn(x => x.Id), QSConditionType.Equal, modelId),
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMTour.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelingModel.GetColumn(x => x.TourId),
-							RightOperand = OMTour.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					},
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMModelingModel.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    }
-                }
-			};
-			query.AddColumn(OMModelingModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.LinearTrainingResult, nameof(ModelingModelDto.LinearTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.ExponentialTrainingResult, nameof(ModelingModelDto.ExponentialTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.MultiplicativeTrainingResult, nameof(ModelingModelDto.MultiplicativeTrainingResult)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
-            query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
-			query.AddColumn(OMModelingModel.GetColumn(x => x.GroupId, nameof(ModelingModelDto.GroupId)));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(ModelingModelDto.GroupName)));
-            query.AddColumn(OMModelingModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
+        public OMModel GetModelEntityByGroupId(long? groupId)
+        {
+	        if (groupId == null)
+		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-            var table = query.ExecuteQuery();
-			ModelingModelDto model = null;
-			if (table.Rows.Count != 0)
-			{
-				var row = table.Rows[0];
+	        var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена модель для Группы с id='{groupId}'");
 
-				var modelName = row[nameof(ModelingModelDto.Name)].ParseToString();
-				var linearTrainingResult = row[nameof(ModelingModelDto.LinearTrainingResult)].ParseToString();
-				var exponentialTrainingResult = row[nameof(ModelingModelDto.ExponentialTrainingResult)].ParseToString();
-				var multiplicativeTrainingResult = row[nameof(ModelingModelDto.MultiplicativeTrainingResult)].ParseToString();
-				var tourId = row[nameof(ModelingModelDto.TourId)].ParseToLong();
-				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
-				var groupId = row[nameof(ModelingModelDto.GroupId)].ParseToLong();
-                var groupName = row[nameof(ModelingModelDto.GroupName)].ParseToString();
-                var isOksObjectType = row[nameof(ModelingModelDto.IsOksObjectType)].ParseToBooleanNullable();
+	        return model;
+        }
 
-                model = new ModelingModelDto
-				{
-					ModelId = modelId,
-					Name = modelName,
-                    LinearTrainingResult = linearTrainingResult,
-                    ExponentialTrainingResult = exponentialTrainingResult,
-                    MultiplicativeTrainingResult = multiplicativeTrainingResult,
-					TourId = tourId,
-					TourYear = tourYear,
-                    GroupId = groupId,
-                    GroupName = groupName,
-                    IsOksObjectType = isOksObjectType.GetValueOrDefault()
-                };
-			}
+        public OMModel GetModelEntityById(long? modelId)
+        {
+	        if (modelId == null)
+		        throw new Exception("Не передан идентификатор Модели для поиска");
 
-			if (model == null)
+	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена Модель с id='{modelId}'");
+
+	        return model;
+        }
+
+        public ModelingModelDto GetModelById(long modelId)
+        {
+	        var model = OMModel.Where(x => x.Id == modelId)
+		        .Select(x => new
+		        {
+			        x.Description,
+			        x.Name,
+			        x.LinearTrainingResult,
+			        x.ExponentialTrainingResult,
+			        x.MultiplicativeTrainingResult,
+                    x.GroupId,
+			        x.ParentGroup.Id,
+			        x.ParentGroup.GroupName,
+			        x.IsOksObjectType
+		        }).ExecuteFirstOrDefault();
+
+	        if (model == null)
 				throw new Exception($"Не найдена модель с Id='{modelId}'");
 
-			return model;
-		}
+	        var tour = GetModelTour(model.GroupId);
+
+            return new ModelingModelDto
+	        {
+		        ModelId = model.Id,
+		        Name = model.Name,
+		        Description = model.Description,
+		        LinearTrainingResult = model.LinearTrainingResult,
+		        ExponentialTrainingResult = model.ExponentialTrainingResult,
+		        MultiplicativeTrainingResult = model.MultiplicativeTrainingResult,
+				TourId = tour.Id,
+				TourYear = tour.Year.GetValueOrDefault(),
+				GroupId = model.ParentGroup.Id,
+		        GroupName = model.ParentGroup.GroupName,
+		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault()
+	        };
+        }
 
         public List<GroupDto> GetGroups(long tourId)
         {
@@ -130,122 +112,53 @@ namespace KadOzenka.Dal.Modeling
             return groupsToMarketSegmentInTour;
         }
 
-        public List<ModelAttributeRelationDto> GetModelAttributes(long modelId)
-		{
-			var query = new QSQuery
-			{
-				MainRegisterID = OMModelAttributesRelation.GetRegisterId(),
-				Condition = new QSConditionSimple(OMModelAttributesRelation.GetColumn(x => x.ModelId), QSConditionType.Equal, modelId),
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMAttribute.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelAttributesRelation.GetColumn(x => x.AttributeId),
-							RightOperand = OMAttribute.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					},
-					new QSJoin
-					{
-						RegisterId = OMModelingDictionary.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMModelAttributesRelation.GetColumn(x => x.DictionaryId),
-							RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Left
-					}
-				}
-			};
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
-            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
+        public OMTour GetModelTour(long? groupId)
+        {
+	        var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == groupId).Select(x => new
+	        {
+		        x.ParentTour.Id,
+		        x.ParentTour.Year
+	        }).ExecuteFirstOrDefault();
+	        if (tourToGroupRelation?.ParentTour == null)
+		        throw new Exception($"Для группы {groupId} не найдено Тура");
 
-            var attributes = new List<ModelAttributeRelationDto>();
-			var table = query.ExecuteQuery();
-			for (var i = 0; i < table.Rows.Count; i++)
-			{
-				var row = table.Rows[i];
+	        return tourToGroupRelation.ParentTour;
+        }
 
-                var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
-
-                var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
-
-				var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
-				var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
-				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
-
-				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
-
-                var coefficientFromModel = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
-
-                attributes.Add(new ModelAttributeRelationDto
-				{
-                    Id = id,
-					RegisterId = registerId,
-					AttributeId = attributeId,
-					AttributeName = attributeName,
-					AttributeType = attributeType,
-                    DictionaryId = dictionaryId,
-					DictionaryName = dictionaryName,
-                    Coefficient = coefficientFromModel
-                });
-			}
-
-			return attributes;
-		}
-
-		public int AddModel(ModelingModelDto modelDto)
+        public int AddModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
 
-            using (var ts = new TransactionScope())
-            {
-                var model = new OMModelingModel
-                {
-                    Name = modelDto.Name,
-                    TourId = modelDto.TourId,
-                    GroupId = modelDto.GroupId
-                };
+			var model = new OMModel
+			{
+				Name = modelDto.Name,
+				Description = modelDto.Description,
+				GroupId = modelDto.GroupId,
+				AlgoritmType_Code = KoAlgoritmType.None
+			};
+			model.Formula = model.GetFormulaFull(true);
 
-                var id = model.Save();
-                model.InternalName = $"model_{id}";
-                model.Save();
-
-                ts.Complete();
-
-                return id;
-            }
-        }
+            return model.Save();
+		}
 
 		public bool UpdateModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
 
-			var existedModel = GetModelByIdInternal(modelDto.ModelId);
+			var existedModel = GetModelEntityById(modelDto.ModelId);
 
 			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
-			var existedModelAttributes = OMModelAttributesRelation.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
+			var existedModelAttributes = OMModelFactor.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
 
             var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
 
             using (var ts = new TransactionScope())
             {
                 existedModel.Name = modelDto.Name;
-                existedModel.TourId = modelDto.TourId;
+                existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
+                existedModel.Formula = existedModel.GetFormulaFull(true);
                 if (isModelChanged)
                 {
                     existedModel.LinearTrainingResult = null;
@@ -257,11 +170,12 @@ namespace KadOzenka.Dal.Modeling
                 existedModelAttributes.ForEach(x => x.Destroy());
                 newAttributes.ForEach(newAttribute =>
                 {
-                    new OMModelAttributesRelation
+                    new OMModelFactor
                     {
                         ModelId = modelDto.ModelId,
-                        AttributeId = newAttribute.AttributeId,
-                        DictionaryId = newAttribute.DictionaryId
+                        FactorId = newAttribute.AttributeId,
+                        DictionaryId = newAttribute.DictionaryId,
+                        MarkerId = -1
                     }.Save();
                 });
 
@@ -271,29 +185,135 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-        private bool IsModelChanged(OMModelingModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelFactor> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
         {
-            var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
-            var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+            var oldAttributeIds = existedAttributes.Select(x => x.FactorId).OrderBy(x => x);
+            var newAttributeIds = newAttributes.Select(x => (long?)x.AttributeId).OrderBy(x => x);
             var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
 
             var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
             var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
             var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
 
-            return !(existedModel.TourId == newModel.TourId &&
-                   existedModel.GroupId == newModel.GroupId &&
+            return !(existedModel.GroupId == newModel.GroupId &&
                    existedModel.IsOksObjectType == newModel.IsOksObjectType &&
                    areAttributeIdsEqual &&
                    areDictionaryIdsSequenceEqualEqual);
         }
 
-		#endregion
+        #endregion
 
 
-		#region Model Object Relations
+        #region Model Attributes
 
-		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
+        public List<ModelAttributeRelationDto> GetModelFactors(long modelId)
+        {
+	        var dictionaryJoin = new QSJoin
+	        {
+		        RegisterId = OMModelingDictionary.GetRegisterId(),
+		        JoinCondition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.Equal,
+			        LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
+			        RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
+		        },
+		        JoinType = QSJoinType.Left
+	        };
+	        var query = GetModelFactorsQuery(modelId, dictionaryJoin);
+            
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
+            query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+            query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+
+            var attributes = new List<ModelAttributeRelationDto>();
+            var table = query.ExecuteQuery();
+            for (var i = 0; i < table.Rows.Count; i++)
+            {
+                var row = table.Rows[i];
+
+                var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
+
+                var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
+
+                var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
+                var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
+                var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
+
+                var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+                var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
+
+                var coefficientFromModel = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+
+                attributes.Add(new ModelAttributeRelationDto
+                {
+                    Id = id,
+                    RegisterId = registerId,
+                    AttributeId = attributeId,
+                    AttributeName = attributeName,
+                    AttributeType = attributeType,
+                    DictionaryId = dictionaryId,
+                    DictionaryName = dictionaryName,
+                    Coefficient = coefficientFromModel
+                });
+            }
+
+            return attributes;
+        }
+
+        public QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null)
+        {
+	        var query = new QSQuery
+	        {
+		        MainRegisterID = OMModelFactor.GetRegisterId(),
+		        Condition = new QSConditionGroup
+		        {
+			        Type = QSConditionGroupType.And,
+			        Conditions = new List<QSCondition>
+			        {
+				        new QSConditionSimple(OMModelFactor.GetColumn(x => x.ModelId), QSConditionType.Equal, modelId)
+			        }
+		        },
+		        Joins = new List<QSJoin>
+		        {
+			        new QSJoin
+			        {
+				        RegisterId = OMAttribute.GetRegisterId(),
+				        JoinCondition = new QSConditionSimple
+				        {
+					        ConditionType = QSConditionType.Equal,
+					        LeftOperand = OMModelFactor.GetColumn(x => x.FactorId),
+					        RightOperand = OMAttribute.GetColumn(x => x.Id)
+				        },
+				        JoinType = QSJoinType.Inner
+			        }
+		        },
+		        OrderBy = new List<QSOrder>
+		        {
+			        new QSOrder
+			        {
+				        Column = OMAttribute.GetColumn(x => x.Name),
+				        Order = QSOrderType.ASC
+			        }
+		        }
+	        };
+
+            if(additionalJoin != null)
+                query.Joins.Add(additionalJoin);
+
+	        return query;
+        }
+
+        #endregion
+
+
+        #region Model Object Relations
+
+        public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
 		{
 			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
                 .OrderBy(x => x.CadastralNumber)
@@ -324,7 +344,7 @@ namespace KadOzenka.Dal.Modeling
 
         public Stream GetLogs(long modelId)
         {
-            var modelAttributes = GetModelAttributes(modelId);
+            var modelAttributes = GetModelFactors(modelId);
 
             var modelMarketObjects = OMModelToMarketObjects
                 .Where(x => x.ModelId == modelId && x.Coefficients != null && x.IsExcluded.Coalesce(false) == false)
@@ -366,7 +386,7 @@ namespace KadOzenka.Dal.Modeling
 
         public Stream ExportMarketObjectsToExcel(List<long> marketObjectIds, long modelId)
         {
-            var modelAttributes = GetModelAttributes(modelId);
+            var modelAttributes = GetModelFactors(modelId);
 
             var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
@@ -520,7 +540,10 @@ namespace KadOzenka.Dal.Modeling
         public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
 	        List<ModelAttributeRelationDto> modelAttributes)
         {
-	        var query = new QSQuery
+	        if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
+		        return new Dictionary<long, List<CoefficientForObject>>();
+
+            var query = new QSQuery
 	        {
 		        MainRegisterID = OMCoreObject.GetRegisterId(),
 		        Condition = new QSConditionSimple
@@ -537,7 +560,10 @@ namespace KadOzenka.Dal.Modeling
         public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
 	        List<GroupedModelAttributes> modelAttributes)
         {
-	        var coefficients = new Dictionary<long, List<CoefficientForObject>>();
+	        if (modelAttributes == null || modelAttributes.Count == 0 || unitIds == null || unitIds.Count == 0)
+		        return new Dictionary<long, List<CoefficientForObject>>();
+
+            var coefficients = new Dictionary<long, List<CoefficientForObject>>();
 
 	        modelAttributes.ForEach(modelAttribute =>
 	        {
@@ -580,15 +606,6 @@ namespace KadOzenka.Dal.Modeling
 
         #region Support Methods
 
-        private OMModelingModel GetModelByIdInternal(long modelId)
-        {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
-            if (model == null)
-                throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-            return model;
-        }
-
         private ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
 		{
 			return new ModelMarketObjectRelationDto
@@ -608,7 +625,9 @@ namespace KadOzenka.Dal.Modeling
 			var message = new StringBuilder();
 
 			if (string.IsNullOrWhiteSpace(modelDto.Name))
-				message.AppendLine("У модели не заполнено имя");
+				message.AppendLine("У модели не заполнено Имя");
+			if (string.IsNullOrWhiteSpace(modelDto.Description))
+				message.AppendLine("У модели не заполнено Описание");
 
 			var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
 			if(!isTourExists)

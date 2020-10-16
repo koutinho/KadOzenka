@@ -9,6 +9,8 @@ namespace KadOzenka.Dal.Modeling.Entities
         [Description("Экспоненциальная")]
         Exponential,
         [Description("Мультипликативная")]
-        Multiplicative
+        Multiplicative,
+        [Description("По всем")]
+        All
     }
 }

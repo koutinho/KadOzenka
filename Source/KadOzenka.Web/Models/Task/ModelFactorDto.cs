@@ -14,7 +14,7 @@
 		public bool SignMarket { get; set; }
 
 
-        public static ModelFactorDto FromEntity(KadOzenka.Dal.Model.Dto.ModelFactorDto entity)
+        public static ModelFactorDto FromEntity(Dal.Modeling.Dto.ModelFactorDto entity)
         {
             return new ModelFactorDto
             {

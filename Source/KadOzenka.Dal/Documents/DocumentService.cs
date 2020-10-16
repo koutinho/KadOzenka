@@ -89,12 +89,15 @@ namespace KadOzenka.Dal.Documents
             if (documentDto.ApproveDate != null && documentDto.ApproveDate > DateTime.Today)
                 throw new Exception("Дата выпуска документа не должна быть в будущем.");
 
-            var createDate = documentDto.CreateDate ?? _defaultCreateDate;
+            var approveDate = documentDto.ApproveDate ?? _defaultCreateDate;
             var isTheSameDocumentExists = OMInstance
-                .Where(x => x.RegNumber == documentDto.RegNumber && x.CreateDate == createDate && x.Id != documentDto.Id).ExecuteExists();
+                .Where(x => x.RegNumber == documentDto.RegNumber
+                            && x.ApproveDate == approveDate
+                            && x.Description == documentDto.Description
+                            && x.Id != documentDto.Id).ExecuteExists();
             if (isTheSameDocumentExists)
                 throw new Exception(
-                    $"Документ с номером '{documentDto.RegNumber}' и датой создания '{createDate.ToShortDateString()}' уже существует");
+                    $"Документ с именем '{documentDto.Description}' номером '{documentDto.RegNumber}' и датой выпуска '{approveDate.ToShortDateString()}' уже существует");
         }
 
         #endregion

@@ -23,6 +23,9 @@ namespace KadOzenka.Web.Models.Modeling
 		[Required(ErrorMessage = "Не заполнено Имя")]
 		public string Name { get; set; }
 
+		[Display(Name = "Описание")]
+		public string Description { get; set; }
+
         [Display(Name = "Тур")]
 		[Required(ErrorMessage = "Не выбран Тур")]
 		public long TourId { get; set; }
@@ -53,6 +56,7 @@ namespace KadOzenka.Web.Models.Modeling
                 TourId = entity.TourId,
                 TourYear = entity.TourYear,
                 Name = entity.Name,
+                Description = entity.Description,
                 Attributes = entity.Attributes,
                 ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
                 IsModelWasTrained = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult) ||
@@ -73,6 +77,7 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				ModelId =  model.Id,
 				Name = model.Name,
+                Description = string.IsNullOrWhiteSpace(model.Description) ? "-" : model.Description,
 				TourId = model.TourId,
                 GroupId = model.GroupId.Value,
 				Attributes = model.Attributes,

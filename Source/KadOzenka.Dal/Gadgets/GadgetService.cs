@@ -270,7 +270,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/GknDataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
             data.Rows.Add("/Task/CalculateCadastralPrice", "Произвести расчет кадастровой стоимости", _moveToPageSymbol);
             data.Rows.Add("ObjectCard?RegisterViewId=KoTours&amp;isVertical=true&amp;useMasterPage=true", "Перейти к справочнику туров", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/ModelingModels", "Перейти к справочнику моделей", string.Empty);
+            data.Rows.Add("/RegistersView/KoModels", "Перейти к справочнику моделей", string.Empty);
             data.Rows.Add("/RegistersView/ModelingDictionaries", "Перейти к справочникам для моделирования", string.Empty);
             data.Rows.Add("/Task/TransferAttributes", "Перенос атрибутов", _moveToPageSymbol);
             data.Rows.Add("/Task/CreateAndTransferAttributes", "Перенос и создание атрибутов", _moveToPageSymbol);

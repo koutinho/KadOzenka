@@ -7406,6 +7406,233 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _lineartrainingresult;
+        /// <summary>
+        /// 20601100 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601100)]
+        public string LinearTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("LinearTrainingResult");
+                return _lineartrainingresult;
+            }
+            set
+            {
+                _lineartrainingresult = value;
+                NotifyPropertyChanged("LinearTrainingResult");
+            }
+        }
+
+
+        private string _exponentialtrainingresult;
+        /// <summary>
+        /// 20601200 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601200)]
+        public string ExponentialTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("ExponentialTrainingResult");
+                return _exponentialtrainingresult;
+            }
+            set
+            {
+                _exponentialtrainingresult = value;
+                NotifyPropertyChanged("ExponentialTrainingResult");
+            }
+        }
+
+
+        private string _multiplicativetrainingresult;
+        /// <summary>
+        /// 20601300 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601300)]
+        public string MultiplicativeTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("MultiplicativeTrainingResult");
+                return _multiplicativetrainingresult;
+            }
+            set
+            {
+                _multiplicativetrainingresult = value;
+                NotifyPropertyChanged("MultiplicativeTrainingResult");
+            }
+        }
+
+
+        private bool? _isoksobjecttype;
+        /// <summary>
+        /// 20601400 Тип объекта (IS_OKS_OBJECT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601400)]
+        public bool? IsOksObjectType
+        {
+            get
+            {
+                CheckPropertyInited("IsOksObjectType");
+                return _isoksobjecttype;
+            }
+            set
+            {
+                _isoksobjecttype = value;
+                NotifyPropertyChanged("IsOksObjectType");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Ko
+{
+    /// <summary>
+    /// 207 Модель типизированная (ko_model_typified)
+    /// </summary>
+    [RegisterInfo(RegisterID = 207)]
+    [Serializable]
+    public partial class OMModelTypified : OMBaseClass<OMModelTypified>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _modelid;
+        /// <summary>
+        /// 20700200 ИД модели (model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20700200)]
+        public long ModelId
+        {
+            get
+            {
+                CheckPropertyInited("ModelId");
+                return _modelid;
+            }
+            set
+            {
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
+            }
+        }
+
+
+        private string _algoritmtype;
+        /// <summary>
+        /// 20700300 Алгоритм расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20700300)]
+        public string AlgoritmType
+        {
+            get
+            {
+                CheckPropertyInited("AlgoritmType");
+                return _algoritmtype;
+            }
+            set
+            {
+                _algoritmtype = value;
+                NotifyPropertyChanged("AlgoritmType");
+            }
+        }
+
+
+        private KoAlgoritmType _algoritmtype_Code;
+        /// <summary>
+        /// 20700300 Алгоритм расчета (справочный код) (ALGORITM_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20700300)]
+        public KoAlgoritmType AlgoritmType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AlgoritmType_Code");
+                return this._algoritmtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algoritmtype))
+                    {
+                         _algoritmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algoritmtype = descr;
+                }
+
+                this._algoritmtype_Code = value;
+                NotifyPropertyChanged("AlgoritmType");
+                NotifyPropertyChanged("AlgoritmType_Code");
+            }
+        }
+
+
+        private string _formula;
+        /// <summary>
+        /// 20700400 Формула (formula)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20700400)]
+        public string Formula
+        {
+            get
+            {
+                CheckPropertyInited("Formula");
+                return _formula;
+            }
+            set
+            {
+                _formula = value;
+                NotifyPropertyChanged("Formula");
+            }
+        }
+
+
+        private string _trainingresult;
+        /// <summary>
+        /// 20700500 Результаты обучения (коэффициенты от сервиса Моделирования) (training_result)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20700500)]
+        public string TrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("TrainingResult");
+                return _trainingresult;
+            }
+            set
+            {
+                _trainingresult = value;
+                NotifyPropertyChanged("TrainingResult");
+            }
+        }
+
     }
 }
 
@@ -7690,6 +7917,46 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _dictionaryid;
+        /// <summary>
+        /// 21001000 Идентификатор словаря (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001000)]
+        public long? DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private long? _typifiedmodelid;
+        /// <summary>
+        /// 21001100 Идентификатор типизированной модели (typified_model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001100)]
+        public long? TypifiedModelId
+        {
+            get
+            {
+                CheckPropertyInited("TypifiedModelId");
+                return _typifiedmodelid;
+            }
+            set
+            {
+                _typifiedmodelid = value;
+                NotifyPropertyChanged("TypifiedModelId");
+            }
+        }
+
     }
 }
 
@@ -7799,6 +8066,26 @@ namespace ObjectModel.KO
             {
                 _metkafactor = value;
                 NotifyPropertyChanged("MetkaFactor");
+            }
+        }
+
+
+        private long? _generalmodelid;
+        /// <summary>
+        /// 21100600 ИД основной модели (206 реестр) (general_model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21100600)]
+        public long? GeneralModelId
+        {
+            get
+            {
+                CheckPropertyInited("GeneralModelId");
+                return _generalmodelid;
+            }
+            set
+            {
+                _generalmodelid = value;
+                NotifyPropertyChanged("GeneralModelId");
             }
         }
 
@@ -24343,310 +24630,6 @@ namespace ObjectModel.ES
             {
                 _attributevalue = value;
                 NotifyPropertyChanged("AttributeValue");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 700 Моделирование (MODELING_MODEL)
-    /// </summary>
-    [RegisterInfo(RegisterID = 700)]
-    [Serializable]
-    public partial class OMModelingModel : OMBaseClass<OMModelingModel>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 70000100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 70000100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private string _name;
-        /// <summary>
-        /// 70000200 Имя (NAME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000200)]
-        public string Name
-        {
-            get
-            {
-                CheckPropertyInited("Name");
-                return _name;
-            }
-            set
-            {
-                _name = value;
-                NotifyPropertyChanged("Name");
-            }
-        }
-
-
-        private long _tourid;
-        /// <summary>
-        /// 70000300 Идентификатор тура (TOUR_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000300)]
-        public long TourId
-        {
-            get
-            {
-                CheckPropertyInited("TourId");
-                return _tourid;
-            }
-            set
-            {
-                _tourid = value;
-                NotifyPropertyChanged("TourId");
-            }
-        }
-
-
-        private long _groupid;
-        /// <summary>
-        /// 70000400 ИД группы (GROUP_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000400)]
-        public long GroupId
-        {
-            get
-            {
-                CheckPropertyInited("GroupId");
-                return _groupid;
-            }
-            set
-            {
-                _groupid = value;
-                NotifyPropertyChanged("GroupId");
-            }
-        }
-
-
-        private string _internalname;
-        /// <summary>
-        /// 70000600 Внутреннее имя (для сервиса) (INTERNAL_NAME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000600)]
-        public string InternalName
-        {
-            get
-            {
-                CheckPropertyInited("InternalName");
-                return _internalname;
-            }
-            set
-            {
-                _internalname = value;
-                NotifyPropertyChanged("InternalName");
-            }
-        }
-
-
-        private string _lineartrainingresult;
-        /// <summary>
-        /// 70000700 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000700)]
-        public string LinearTrainingResult
-        {
-            get
-            {
-                CheckPropertyInited("LinearTrainingResult");
-                return _lineartrainingresult;
-            }
-            set
-            {
-                _lineartrainingresult = value;
-                NotifyPropertyChanged("LinearTrainingResult");
-            }
-        }
-
-
-        private string _exponentialtrainingresult;
-        /// <summary>
-        /// 70000800 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000800)]
-        public string ExponentialTrainingResult
-        {
-            get
-            {
-                CheckPropertyInited("ExponentialTrainingResult");
-                return _exponentialtrainingresult;
-            }
-            set
-            {
-                _exponentialtrainingresult = value;
-                NotifyPropertyChanged("ExponentialTrainingResult");
-            }
-        }
-
-
-        private string _multiplicativetrainingresult;
-        /// <summary>
-        /// 70000900 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000900)]
-        public string MultiplicativeTrainingResult
-        {
-            get
-            {
-                CheckPropertyInited("MultiplicativeTrainingResult");
-                return _multiplicativetrainingresult;
-            }
-            set
-            {
-                _multiplicativetrainingresult = value;
-                NotifyPropertyChanged("MultiplicativeTrainingResult");
-            }
-        }
-
-
-        private bool? _isoksobjecttype;
-        /// <summary>
-        /// 70001000 Тип объекта (IS_OKS_OBJECT_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70001000)]
-        public bool? IsOksObjectType
-        {
-            get
-            {
-                CheckPropertyInited("IsOksObjectType");
-                return _isoksobjecttype;
-            }
-            set
-            {
-                _isoksobjecttype = value;
-                NotifyPropertyChanged("IsOksObjectType");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.Modeling
-{
-    /// <summary>
-    /// 701 Связь модели с атрибутами (MODELING_MODEL_ATTRIBUTE_RELATION)
-    /// </summary>
-    [RegisterInfo(RegisterID = 701)]
-    [Serializable]
-    public partial class OMModelAttributesRelation : OMBaseClass<OMModelAttributesRelation>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 70100100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 70100100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long _modelid;
-        /// <summary>
-        /// 70100200 Идентификатор модели (MODEL_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70100200)]
-        public long ModelId
-        {
-            get
-            {
-                CheckPropertyInited("ModelId");
-                return _modelid;
-            }
-            set
-            {
-                _modelid = value;
-                NotifyPropertyChanged("ModelId");
-            }
-        }
-
-
-        private long _attributeid;
-        /// <summary>
-        /// 70100300 Идентификатор атрибута (ATTRIBUTE_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70100300)]
-        public long AttributeId
-        {
-            get
-            {
-                CheckPropertyInited("AttributeId");
-                return _attributeid;
-            }
-            set
-            {
-                _attributeid = value;
-                NotifyPropertyChanged("AttributeId");
-            }
-        }
-
-
-        private long? _dictionaryid;
-        /// <summary>
-        /// 70100400 Идентификатор словаря (DICTIONARY_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70100400)]
-        public long? DictionaryId
-        {
-            get
-            {
-                CheckPropertyInited("DictionaryId");
-                return _dictionaryid;
-            }
-            set
-            {
-                _dictionaryid = value;
-                NotifyPropertyChanged("DictionaryId");
-            }
-        }
-
-
-        private decimal? _coefficient;
-        /// <summary>
-        /// 70100500 Коэффициент после обучения модели (COEFFICIENT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70100500)]
-        public decimal? Coefficient
-        {
-            get
-            {
-                CheckPropertyInited("Coefficient");
-                return _coefficient;
-            }
-            set
-            {
-                _coefficient = value;
-                NotifyPropertyChanged("Coefficient");
             }
         }
 
