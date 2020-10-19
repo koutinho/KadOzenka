@@ -149,6 +149,7 @@
         var isPanelShown = true;
         var SOM = null;
         var heatMapData = null;
+        var quartalsImgLayer = null;
         var sliderMinValue = 4;
         var sliderMaxValue = 30;
         var initialColorPicker;
@@ -182,7 +183,8 @@
                             zoom: ManagementDecisionSupportMapSettings.zoom,
                             controls: ['fullscreenControl', 'zoomControl']
                         });
-
+                    map.options.set({ minZoom: @((int) ViewBag.MinZoom) });
+                    map.options.set({ maxZoom: @((int)ViewBag.MaxZoom) });
                     createSettingsFormWidget();
                     map.controls.get("zoomControl").options.set({ position: { bottom: 45, right: 10 } });
                 });
@@ -314,7 +316,7 @@
                             { text: "Округа"},
                             { text: "Районы"},
                             { text: "Зоны"},
-                            { text: "Кварталы", enabled: false }
+                            { text: "Кварталы" }
                         ]
                     });
                     $("#splicedDeltaController").kendoSlider({
@@ -453,12 +455,13 @@
                 },
                 error: function (response) {
                     Common.ShowError(response.responseText);
-                    kendo.ui.progress($('#importForm'), false);
+                    kendo.ui.progress($('body'), false);
                 }
             });
         }
 
         function changeLayer(type) {
+            if (quartalsImgLayer != null) map.layers.remove(quartalsImgLayer);
             map.geoObjects.remove(SOM);
             switch (type) {
             case DivisionType.DISTRINCS:
@@ -471,11 +474,16 @@
                 setCurrentLayer('/MapJSONData/zones.min.json');
                 break;
                 case DivisionType.QUARTAL:
-                //setQuartalTiles();
-                //setCurrentLayer('/MapJSONData/quartal.min.json');
+                setQuartalTiles();
                 break;
             }
         }
+
+        function setQuartalTiles() {
+            quartalsImgLayer = new ymaps.Layer('CadastralHeatMapTiles?x=%x&y=%y&z=%z', { tileTransparent: true });
+            map.layers.add(quartalsImgLayer);
+            kendo.ui.progress($('body'), false);
+        };
 
         function setCurrentLayer(url) {
             SOM = new ymaps.GeoObjectCollection();
@@ -510,6 +518,7 @@
 
         function resetHeatmap() {
             heatMapData = null;
+            if (quartalsImgLayer != null) map.layers.remove(quartalsImgLayer);
             map.geoObjects.remove(SOM);
         }
     </script>

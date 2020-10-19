@@ -9,6 +9,7 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.MapModeling;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
@@ -54,6 +55,8 @@ namespace KadOzenka.Web.Controllers
 			var exceptions = new List<long> { (long)PropertyTypes.None };
 			var segments = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypes), exceptions: exceptions);
 			ViewBag.Segments = segments;
+			ViewBag.MinZoom = _mapBuildingService.GetMapMinZoom();
+			ViewBag.MaxZoom = _mapBuildingService.GetMapMaxZoom();
 
 			return View();
 		}
@@ -63,6 +66,16 @@ namespace KadOzenka.Web.Controllers
 		{
 			var result = _mapBuildingService.GetHeatMapData(tourId, objectType, divisionType, colors.Split(","));
 			return Json(result);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_THEME_MAPS)]
+		public ActionResult CadastralHeatMapTiles(int x, int y, int z)
+		{
+			var file = _mapBuildingService.GetHeatMapTile(x, y, z);
+			if (file == null)
+				return EmptyResponse();
+
+			return File(file, "image/png");
 		}
 
 		#endregion MapBuilding
