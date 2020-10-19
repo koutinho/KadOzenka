@@ -823,7 +823,7 @@ namespace KadOzenka.Dal.DataImport
                     {
                         2
                     };
-                        //TODO ждем ответа от заказчиков - что сохранять в качестве ЗУ
+                        //TODO CIPJSKO-526 ждем ответа от заказчиков - что сохранять в качестве ЗУ
                         List<long> attribIds = new List<long>
                     {
                         //ParcelAttributeId,
@@ -1118,7 +1118,7 @@ namespace KadOzenka.Dal.DataImport
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
                         var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
 
-                        //TODO площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
                         var changedProperties = new UnitChangedProperties
                         {
 	                        IsNameChanged = !prNameObjectCheck,
@@ -1417,14 +1417,34 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var readinessPercentageDidNotChange = CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !nameDidNotChange,
+	                        //IsPurposeOksChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        //IsBuildYearChanged = !prYearBuiltObjectCheck,
+	                        //IsCommissioningYearChanged = !prYearUsedObjectCheck,
+	                        //IsFloorsCountChanged = !floorsCountDidNotChange,
+	                        //IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+	                        //IsWallMaterialChanged = !wallMaterialDidNotChange,
+	                        IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange,
+	                        IsReadinessPercentageChanged = !readinessPercentageDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
                     }
+
                     #endregion
                 }
                 //Если данные о прошлой оценке не найдены
@@ -1460,6 +1480,7 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
