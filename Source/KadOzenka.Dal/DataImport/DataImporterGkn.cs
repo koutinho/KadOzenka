@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -77,6 +78,35 @@ namespace KadOzenka.Dal.DataImport
         /// Колличество загруженных машиномест из Xml
         /// </summary>
         public Int32 CountImportCarPlaces { get; private set; }
+        
+        private AbstractHandler _unitStatusHandler { get; set; }
+        /// <summary>
+        /// Обработчик статусов Юнита (паттерн Цепочка обязанностей)
+        /// </summary>
+        private AbstractHandler UnitStatusHandler
+        {
+	        get
+	        {
+		        if (_unitStatusHandler != null)
+			        return _unitStatusHandler;
+
+		        var groupAndFsAndCharacteristicHandler = new GroupAndFsAndCharacteristicChangesHandler();
+		        var groupAndFsCharacteristicHandler = new GroupAndFsChangesHandler();
+		        var groupHandler = new GroupChangesHandler();
+		        var egrnHandler = new EgrnChangesHandler();
+		        var fsHandler = new FsChangesHandler();
+
+		        groupAndFsAndCharacteristicHandler
+			        .SetNext(groupAndFsCharacteristicHandler)
+			        .SetNext(groupHandler)
+			        .SetNext(egrnHandler)
+			        .SetNext(fsHandler);
+
+		        _unitStatusHandler = groupAndFsAndCharacteristicHandler;
+
+		        return _unitStatusHandler;
+	        }
+        }
 
         public bool AreCountersInitialized { get; private set; }
 
@@ -141,8 +171,8 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-
         }
+        
         private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
@@ -463,18 +493,35 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
                         bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
                         bool prWallObjectCheck = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+                            IsPurposeOksChanged = !prAssignationObjectCheck,
+                            IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !prYearBuiltObjectCheck,
+                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !prWallObjectCheck,
+                            IsZuNumberChanged = !zuNumberDidNotChange,
+                            IsAddressChanged = !addressDidNotChange,
+                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+                            IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -520,7 +567,6 @@ namespace KadOzenka.Dal.DataImport
                         #endregion
                     }
                     #endregion
-
                 }
                 else
                 {
@@ -553,6 +599,8 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                     #endregion
+
+                    SetNewUnitUpdateStatus(koUnit);
 
                     #region Заполнение фактора Материал стен на основании данных ГКН
                     ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
@@ -2006,6 +2054,19 @@ namespace KadOzenka.Dal.DataImport
             }
 
             return koUnit;
+        }
+
+        private void CalculateUnitUpdateStatus(UnitChangedProperties changedProperties, OMUnit unit)
+        {
+	        var unitUpdateStatus = UnitStatusHandler.Handle(changedProperties);
+	        unit.UpdateStatus_Code = unitUpdateStatus;
+	        unit.Save();
+        }
+
+        private void SetNewUnitUpdateStatus(OMUnit unit)
+        {
+	        unit.UpdateStatus_Code = UnitUpdateStatus.New;
+	        unit.Save();
         }
     }
 }

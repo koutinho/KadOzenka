@@ -10653,6 +10653,73 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статусы обновления Единииц оценки (221)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 221)]
+    public enum UnitUpdateStatus : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Новый (1)
+		/// </summary>
+		[Description("Новый")]
+        [EnumCode("1")]
+        [ShortTitle("Новый")]
+        New = 1,
+		/// <summary>
+		/// Без изменений (2)
+		/// </summary>
+		[Description("Без изменений")]
+        [EnumCode("2")]
+        [ShortTitle("Без изменений")]
+        WithoutChanges = 2,
+		/// <summary>
+		/// Изменение группы (3)
+		/// </summary>
+		[Description("Изменение группы")]
+        [EnumCode("3")]
+        [ShortTitle("Изменение группы")]
+        GroupChange = 3,
+		/// <summary>
+		/// Изменение характеристик ЕГРН (4)
+		/// </summary>
+		[Description("Изменение характеристик ЕГРН")]
+        [EnumCode("4")]
+        [ShortTitle("Изменение характеристик ЕГРН")]
+        EgrnChanges = 4,
+		/// <summary>
+		/// Изменение ФС (5)
+		/// </summary>
+		[Description("Изменение ФС")]
+        [EnumCode("5")]
+        [ShortTitle("Изменение ФС")]
+        FsChange = 5,
+		/// <summary>
+		/// Изменение группы, Изменение ФС (6)
+		/// </summary>
+		[Description("Изменение группы, Изменение ФС")]
+        [EnumCode("6")]
+        [ShortTitle("Изменение группы, Изменение ФС")]
+        GroupAndFsChange = 6,
+		/// <summary>
+		/// Изменение группы, Изменение ФС, Изменение характеристик ЕГРН (7)
+		/// </summary>
+		[Description("Изменение группы, Изменение ФС, Изменение характеристик ЕГРН")]
+        [EnumCode("7")]
+        [ShortTitle("Изменение группы, Изменение ФС, Изменение характеристик ЕГРН")]
+        GroupAndFsAndEgrnChanges = 7,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
