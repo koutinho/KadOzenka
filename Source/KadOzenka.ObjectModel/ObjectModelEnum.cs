@@ -10711,12 +10711,19 @@ namespace ObjectModel.Directory
         [ShortTitle("Изменение группы, Изменение ФС")]
         GroupAndFsChange = 6,
 		/// <summary>
-		/// Изменение группы, Изменение ФС, Изменение характеристик ЕГРН (7)
+		/// Изменение группы, Изменение ЕГРН (7)
+		/// </summary>
+		[Description("Изменение группы, Изменение ЕГРН")]
+        [EnumCode("7")]
+        [ShortTitle("Изменение группы, Изменение ЕГРН")]
+        GroupAndEgrnChange = 7,
+		/// <summary>
+		/// Изменение группы, Изменение ФС, Изменение характеристик ЕГРН (8)
 		/// </summary>
 		[Description("Изменение группы, Изменение ФС, Изменение характеристик ЕГРН")]
-        [EnumCode("7")]
+        [EnumCode("8")]
         [ShortTitle("Изменение группы, Изменение ФС, Изменение характеристик ЕГРН")]
-        GroupAndFsAndEgrnChanges = 7,
+        GroupAndFsAndEgrnChanges = 8,
     }
 }
 

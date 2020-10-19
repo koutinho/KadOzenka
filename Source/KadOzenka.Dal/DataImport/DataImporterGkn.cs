@@ -92,12 +92,15 @@ namespace KadOzenka.Dal.DataImport
 
 		        var groupAndFsAndCharacteristicHandler = new GroupAndFsAndCharacteristicChangesHandler();
 		        var groupAndFsCharacteristicHandler = new GroupAndFsChangesHandler();
-		        var groupHandler = new GroupChangesHandler();
+		        var groupAndEgrnChangesHandler = new GroupAndEgrnChangesHandler();
+
+                var groupHandler = new GroupChangesHandler();
 		        var egrnHandler = new EgrnChangesHandler();
 		        var fsHandler = new FsChangesHandler();
 
 		        groupAndFsAndCharacteristicHandler
 			        .SetNext(groupAndFsCharacteristicHandler)
+			        .SetNext(groupAndEgrnChangesHandler)
 			        .SetNext(groupHandler)
 			        .SetNext(egrnHandler)
 			        .SetNext(fsHandler);

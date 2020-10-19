@@ -84,6 +84,17 @@ namespace KadOzenka.Dal.DataImport
 		}
 	}
 
+	public class GroupAndEgrnChangesHandler : AbstractHandler
+	{
+		public override UnitUpdateStatus Handle(UnitChangedProperties properties)
+		{
+			if (IsGroupChanged(properties) && IsEgrnChanged(properties))
+				return UnitUpdateStatus.GroupAndEgrnChange;
+
+			return base.Handle(properties);
+		}
+	}
+
 	public class GroupAndFsChangesHandler : AbstractHandler
 	{
 		public override UnitUpdateStatus Handle(UnitChangedProperties properties)
