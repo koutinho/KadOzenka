@@ -103,15 +103,16 @@ namespace KadOzenka.Web.Controllers
             List<IGrouping<string, OMCoreObject>> quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
-                new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray);
+                new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allDistricts, districtList), colorsArray);
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) regionsData =
-                new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray);
+                new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allRegions, regionList), colorsArray);
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) zonesData =
-                new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray);
+                new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allZones, zoneList), colorsArray);
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) quartalsData =
-	            new HeatMap().SetColors(new HeatMap().GroupList(allQuartals, quartalList), colorsArray);
+	            new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allQuartals, quartalList), colorsArray);
 
-            new HeatMap().GenerateHeatMapQuartalInitialImages(quartalsData.ColoredData);
+            new MarketHeatMap().GenerateHeatMapQuartalInitialImages(quartalsData.ColoredData.Where(x => !x.name.IsEmpty())
+	            ?.ToDictionary(x => x.name, x => x.color));
 
             return Json(new
             {
@@ -360,7 +361,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult CadastralHeatMapTiles(int x, int y, int z)
         {
-	        var file = new HeatMap().GetHeatMapTile(x, y, z);
+	        var file = new MarketHeatMap().GetHeatMapTile(x, y, z);
 	        if (file == null)
 		        return EmptyResponse();
 
