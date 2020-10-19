@@ -110,6 +110,16 @@ namespace KadOzenka.Dal.DataImport
 
         public bool AreCountersInitialized { get; private set; }
 
+        #region Attributes Ids
+
+        /// <summary>
+        /// Аттрибут "Земельный участок"
+        /// </summary>
+        private const long ParcelAttributeId = 602;
+
+        #endregion
+
+
         public DataImporterGkn()
         {
             Id_Factor_Wall = -1;
@@ -814,6 +824,7 @@ namespace KadOzenka.Dal.DataImport
                     };
                         List<long> attribIds = new List<long>
                     {
+                        ParcelAttributeId,
                         1,   //Наименование участка
                         2,   //Площадь 
                         3,   //Категория земель 
@@ -827,12 +838,25 @@ namespace KadOzenka.Dal.DataImport
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
                         bool prNameObjectCheck = CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         CheckChange(koUnit, 3, KoChangeStatus.Category, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, ParcelAttributeId, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+	                        IsTypeOfUserByDocumentsChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -885,6 +909,8 @@ namespace KadOzenka.Dal.DataImport
                     SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
@@ -920,6 +946,8 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(4, current.Utilization.ByDoc, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Вид использования по классификатору
             SetAttributeValue_String(5, current.Utilization.Utilization.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Земельный участок
+            SetAttributeValue_String(ParcelAttributeId, xmlCodeName.GetNames(current.InnerCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
         }
         private static ObjectModel.KO.OMUnit SaveUnitParcel(xmlObjectParcel current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
