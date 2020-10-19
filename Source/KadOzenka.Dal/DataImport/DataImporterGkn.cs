@@ -116,6 +116,7 @@ namespace KadOzenka.Dal.DataImport
         /// Аттрибут "Земельный участок"
         /// </summary>
         private const long ParcelAttributeId = 602;
+        private const long WallMaterialAttributeId = 21;
 
         #endregion
 
@@ -1086,6 +1087,7 @@ namespace KadOzenka.Dal.DataImport
                          };
                         List<long> attribIds = new List<long>
                          {
+	                         WallMaterialAttributeId,
                              44,  //Площадь 
                              22,  //Назначение
                              15,  //Год постройки 
@@ -1101,17 +1103,37 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
                         bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
+
+                        //TODO площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+                            IsPurposeOksChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !prYearBuiltObjectCheck,
+                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !wallMaterialDidNotChange,
+                            IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange,
+                            IsCharacteristicChanged = !squareDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -1142,9 +1164,6 @@ namespace KadOzenka.Dal.DataImport
                             }
                         }
                         #endregion
-
-
-
                     }
                     #endregion
                 }
@@ -1181,6 +1200,8 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
 
                     #region Заполнение фактора Год постройки
@@ -1244,6 +1265,8 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
             SetAttributeValue_String(602, xmlCodeName.GetNames(current.ParentCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Материал стен
+            SetAttributeValue_String(WallMaterialAttributeId, xmlCodeName.GetNames(current.Walls), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
         }
         private static ObjectModel.KO.OMUnit SaveUnitConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
