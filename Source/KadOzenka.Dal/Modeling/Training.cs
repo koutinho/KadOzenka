@@ -179,29 +179,43 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        //TODO CIPJSKO-526 добавить обработку по всем
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-	        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
-	        PreprocessTrainingResult(trainingResult);
+	        var trainingResults = new List<TrainingResponse>();
 
-	        ResetPredictedPrice();
-	        AddLog("Закончен сброс спрогнозированной цены.");
+            if (InputParameters.ModelType == KoAlgoritmType.None)
+	        {
+		        trainingResults = JsonConvert.DeserializeObject<List<TrainingResponse>>(generalResponse.Data.ToString());
+            }
+	        else
+	        {
+		        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
+		        trainingResults.Add(trainingResult);
+            }
 
-            CreateMarkCatalog(trainingResult.CoefficientsForAttributes);
+            var typifiedModels = GetTypifiedModels();
+            ResetPredictedPrice();
+            AddLog("Закончен сброс спрогнозированной цены.");
+
+            CreateMarkCatalog();
             AddLog("Закончено создание меток.");
 
-            var trainingResultJson = JsonConvert.SerializeObject(trainingResult);
-            var typifiedModels = GetTypifiedModels(trainingResultJson);
-            typifiedModels.ForEach(typifiedModel =>
-	        {
-		        SaveCoefficients(trainingResult.CoefficientsForAttributes, typifiedModel);
+            trainingResults.ForEach(trainingResult =>
+            {
+	            PreprocessTrainingResult(trainingResult);
 
-		        typifiedModel.TrainingResult = trainingResultJson;
-		        typifiedModel.Save();
+	            var trainingType = GetTrainingType(trainingResult.Type);
+	            var typifiedModel = typifiedModels.FirstOrDefault(x => x.AlgoritmType_Code == trainingType);
+                if(typifiedModel == null)
+                    throw new Exception($"Не найдена типизированная модель '{trainingType.GetEnumDescription()}' для основной модели '{GeneralModel.Name}, (ИД {GeneralModel.Id})'");
+	            
+	            SaveCoefficients(trainingResult.CoefficientsForAttributes, typifiedModel);
 
-                AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
-	        });
+	            typifiedModel.TrainingResult = JsonConvert.SerializeObject(trainingResult);
+	            typifiedModel.Save();
+
+	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
+            });
         }
 
         protected override void RollBackResult()
@@ -368,13 +382,13 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private List<OMModelTypified> GetTypifiedModels(string trainingResult)
+        private List<OMModelTypified> GetTypifiedModels()
         {
 	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
 	        AddLog($"Найдено {typifiedModels.Count} типизированных моделей");
 	        if (typifiedModels.Count == 0)
 	        {
-		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType, trainingResult);
+		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType);
 		        AddLog($"Создано {typifiedModels.Count} типизированных моделей");
 	        }
 
@@ -402,18 +416,17 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        private void CreateMarkCatalog(Dictionary<string, decimal> coefficients)
+        private void CreateMarkCatalog()
         {
-	        foreach (var coefficient in coefficients)
+	        foreach (var attribute in ModelAttributes)
 	        {
-		        var factorId = coefficient.Key.ParseToLong();
-		        var existedMarks = OMMarkCatalog.Where(x => x.GeneralModelId == GeneralModel.Id && x.FactorId == factorId).Execute();
+		        var existedMarks = OMMarkCatalog.Where(x => x.GeneralModelId == GeneralModel.Id && x.FactorId == attribute.AttributeId).Execute();
 		        existedMarks.ForEach(x => x.Destroy());
 
 		        MarketObjectsForTraining.ForEach(modelObject =>
 		        {
 			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
+			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
 			        if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
 				        return;
 
@@ -423,13 +436,29 @@ namespace KadOzenka.Dal.Modeling
 			        new OMMarkCatalog
 			        {
 				        GroupId = GeneralModel.GroupId,
-				        FactorId = factorId,
+				        FactorId = attribute.AttributeId,
 				        ValueFactor = value,
 				        MetkaFactor = metka,
                         GeneralModelId = GeneralModel.Id
 			        }.Save();
 		        });
-                AddLog($"Сохранение меток для фактора '{factorId}'");
+
+                AddLog($"Сохранение меток для фактора '{attribute.AttributeName}', ИД ({attribute.AttributeId})");
+	        }
+        }
+
+        private KoAlgoritmType GetTrainingType(string type)
+        {
+	        switch (type)
+	        {
+		        case "linear":
+			        return KoAlgoritmType.Line;
+		        case "exponential":
+			        return KoAlgoritmType.Exp;
+		        case "multiplicative":
+			        return KoAlgoritmType.Multi;
+		        default:
+			        return InputParameters.ModelType;
 	        }
         }
 

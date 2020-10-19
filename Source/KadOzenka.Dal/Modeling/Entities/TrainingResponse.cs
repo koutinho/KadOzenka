@@ -17,6 +17,9 @@ namespace KadOzenka.Dal.Modeling.Entities
         [JsonProperty("model")]
         public string Model { get; set; }
 
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
         [JsonProperty("images")]
         public Images Images { get; set; }
     }

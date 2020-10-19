@@ -141,7 +141,7 @@ namespace KadOzenka.Dal.Modeling
 
 			var modelId = model.Save();
 
-			CreateTypifiedModels(modelId, KoAlgoritmType.None, null);
+			CreateTypifiedModels(modelId, KoAlgoritmType.None);
 
             return modelId;
 		}
@@ -231,7 +231,7 @@ namespace KadOzenka.Dal.Modeling
             return new List<OMModelTypified>();
 		}
 
-		public List<OMModelTypified> CreateTypifiedModels(long generalModelId, KoAlgoritmType type, string trainingResult)
+		public List<OMModelTypified> CreateTypifiedModels(long generalModelId, KoAlgoritmType type)
 		{
 			var types = new List<KoAlgoritmType>();
 			if (type == KoAlgoritmType.None)
@@ -252,8 +252,7 @@ namespace KadOzenka.Dal.Modeling
 					ModelId = generalModelId,
 					AlgoritmType_Code = x,
                     //TODO CIPJSKO-526 перенастроить
-                    Formula = "-",
-					TrainingResult = trainingResult
+                    Formula = "-"
 				}.Save();
 			});
 
