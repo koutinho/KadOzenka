@@ -823,9 +823,10 @@ namespace KadOzenka.Dal.DataImport
                     {
                         2
                     };
+                        //TODO ждем ответа от заказчиков - что сохранять в качестве ЗУ
                         List<long> attribIds = new List<long>
                     {
-                        ParcelAttributeId,
+                        //ParcelAttributeId,
                         1,   //Наименование участка
                         2,   //Площадь 
                         3,   //Категория земель 
@@ -845,14 +846,14 @@ namespace KadOzenka.Dal.DataImport
                         var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
                         var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        var zuNumberDidNotChange = CheckChange(koUnit, ParcelAttributeId, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        //var zuNumberDidNotChange = CheckChange(koUnit, ParcelAttributeId, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
                         var changedProperties = new UnitChangedProperties
                         {
 	                        IsNameChanged = !prNameObjectCheck,
 	                        IsTypeOfUserByDocumentsChanged = !prAssignationObjectCheck,
 	                        IsSquareChanged = !squareDidNotChange,
-	                        IsZuNumberChanged = !zuNumberDidNotChange,
+	                        //IsZuNumberChanged = !zuNumberDidNotChange,
 	                        IsAddressChanged = !addressDidNotChange,
 	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
 	                        IsLocationChanged = !locationDidNotChange
@@ -947,8 +948,9 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(4, current.Utilization.ByDoc, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Вид использования по классификатору
             SetAttributeValue_String(5, current.Utilization.Utilization.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //TODO ждем ответа от заказчиков - что сохранять в качестве ЗУ
             //Земельный участок
-            SetAttributeValue_String(ParcelAttributeId, xmlCodeName.GetNames(current.InnerCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //SetAttributeValue_String(ParcelAttributeId, xmlCodeName.GetNames(current.InnerCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
         }
         private static ObjectModel.KO.OMUnit SaveUnitParcel(xmlObjectParcel current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
