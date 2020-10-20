@@ -652,8 +652,10 @@ namespace ObjectModel.KO
             }
             return (upks ? "УПКС=" : string.Empty) + value + res;
         }
-        private string GetFormulaPart(string val, string znak, double empty)
+        private string GetFormulaPart(string valInput, string znak, double empty)
         {
+	        var val = string.IsNullOrWhiteSpace(valInput) ? null : valInput;
+
             string res = Convert.ToDouble(val).ToString() + " " + znak + " ";
             double rval = Convert.ToDouble(val);
             if (rval == empty)

@@ -55,7 +55,7 @@
 					@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
+					@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false, withoutNull: true)
 				</div>
 			</div>
 			<div class="form-group">
@@ -178,13 +178,13 @@
         });
 
 
-        
+
         var gridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetModelFactors", "Task")',
+                    url: '@Url.Action("GetModelAttributes", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { modelId: @Model.Id },
+                    data: getDataForModelAttributesDownloader,
                     dataType: 'json'
                 }
             }
@@ -193,7 +193,7 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'Factor', title: 'Фактор', width: "40%"
+                    field: 'AttributeName', title: 'Фактор', width: "40%"
                 }, {
                     field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#"
                 }, {
@@ -203,12 +203,12 @@
                 }, {
                     field: 'B0', title: 'Коэф.'
                 }, {
-                    field: 'Weight', title: 'Вес'
+                    field: 'Coefficient', title: 'Вес'
                 }
             ],
             width: '100%',
             scrollable: true,
-            selectable: true,
+            selectable: true
         });
 
         $('#grid').data("kendoGrid").tbody.kendoTooltip({
@@ -235,6 +235,7 @@
                     Common.ShowError(e.responseText);
                 }
             });
+            $('#grid').data('kendoGrid').dataSource.read();
 		}
 
         CalculationTypeChanged();
@@ -333,7 +334,7 @@
             if (row.length > 0) {
                 var data = grid.dataItem(row);
                 var groupId = '@Model.GroupId';
-                var factorId = data.FactorId;
+                var factorId = data.AttributeId;
                 Common.UI.ShowWindow('Метки',
 	                '@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
 	                'editFactorWindow',
@@ -359,7 +360,7 @@
             if (row.length > 0) {
                 var data = grid.dataItem(row);
                 var groupId = '@Model.GroupId';
-                var factorId = data.FactorId;
+                var factorId = data.AttributeId;
                 window.open('@Url.Action("DownloadMarksCatalog", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
             }
         });
@@ -398,7 +399,7 @@
                         return;
                     }
                     var groupId = '@Model.GroupId';
-                    var factorId = data.FactorId;
+                    var factorId = data.AttributeId;
                     var isDeleteOld = $("#isDeleteAllCheckBox").is(":checked");
                     var formData = new FormData();
                     formData.append('file', files[0].rawFile);
@@ -485,7 +486,13 @@
 				Common.ShowError(e.responseText);
 			}
 		});
-	}
+    }
+
+
+    function getDataForModelAttributesDownloader() {
+        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
+        return { modelId: '@Model.Id', type: modelType }
+    }
 </script>
 
 

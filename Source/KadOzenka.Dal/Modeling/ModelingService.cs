@@ -384,18 +384,29 @@ namespace KadOzenka.Dal.Modeling
             var typifiedModel = GetTypifiedModelsByGeneralModelId(modelId, type)?.FirstOrDefault();
             if (typifiedModel != null && modelAttributeIds.Count > 0)
             {
-	            var weights = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModel.Id && modelAttributeIds.Contains(x.FactorId))
+	            var factors = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModel.Id && modelAttributeIds.Contains(x.FactorId))
 		            .Select(x => new
 		            {
 			            x.FactorId,
-			            x.Weight
+                        x.B0,
+                        x.SignAdd,
+                        x.SignDiv,
+                        x.SignMarket,
+                        x.Weight
 		            })
 		            .Execute();
 
 	            attributes.ForEach(attribute =>
 	            {
-		            var weight = weights.FirstOrDefault(x => x.FactorId == attribute.AttributeId)?.Weight;
-		            attribute.Coefficient = weight;
+		            var factor = factors.FirstOrDefault(x => x.FactorId == attribute.AttributeId);
+		            if (factor != null)
+		            {
+			            attribute.B0 = factor.B0;
+			            attribute.SignAdd = factor.SignAdd;
+			            attribute.SignDiv = factor.SignDiv;
+			            attribute.SignMarket = factor.SignMarket;
+			            attribute.Coefficient = factor.Weight;
+                    }
 	            });
             }
 

@@ -478,30 +478,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { formula });
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetModelFactors(long modelId)
-        {
-	        var query = ModelService.GetModelFactorsQuery(modelId);
-			query.AddColumn(OMModelFactor.GetColumn(x => x.ModelId, nameof(Dal.Modeling.Dto.ModelFactorDto.ModelId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(Dal.Modeling.Dto.ModelFactorDto.FactorId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(Dal.Modeling.Dto.ModelFactorDto.Factor)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(Dal.Modeling.Dto.ModelFactorDto.Type)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(Dal.Modeling.Dto.ModelFactorDto.RegisterId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkerId, nameof(Dal.Modeling.Dto.ModelFactorDto.MarkerId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(Dal.Modeling.Dto.ModelFactorDto.Weight)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(Dal.Modeling.Dto.ModelFactorDto.B0)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(Dal.Modeling.Dto.ModelFactorDto.SignDiv)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(Dal.Modeling.Dto.ModelFactorDto.SignAdd)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(Dal.Modeling.Dto.ModelFactorDto.SignMarket)));
-
-			var factorDtos = query.ExecuteQuery<Dal.Modeling.Dto.ModelFactorDto>();
-
-			var models = factorDtos.Select(ModelFactorDto.FromEntity).ToList();
-
-            return Json(models);
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetFactors(long? tourId)
 		{
 			List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId)
