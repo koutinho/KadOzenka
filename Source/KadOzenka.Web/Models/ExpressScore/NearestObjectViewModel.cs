@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design.Serialization;
+using DevExpress.CodeParser;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.ExpressScore.Dto;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
+using RestSharp.Deserializers;
 
 namespace CIPJS.Models.ExpressScore
 {
-	public class NearestObjectViewModel: IValidatableObject
+
+	public class NearestObjectViewModel
 	{
 		/// <summary>
 		/// Площадь
 		/// </summary>
-		public decimal? Square { get; set; }
+		//public decimal? Square { get; set; }
 
 		/// <summary>
 		/// Сегмент рынка
@@ -80,19 +86,22 @@ namespace CIPJS.Models.ExpressScore
 		/// <summary>
 		/// Учитывать или нет год постройки для поиска объектов
 		/// </summary>
-		public bool UseYearBuild { get; set; }
+		//public bool UseYearBuild { get; set; }
 
 		/// <summary>
 		/// Учитывать или нет площадь для поиска объектов
 		/// </summary>
-		public bool UseSquare { get; set; }
+		//public bool UseSquare { get; set; }
 
-		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-		{
-			if (UseSquare && (Square == null || Square == 0))
-			{
-				yield return new ValidationResult("Заполните площадь");
-			}
-		}
+		/// <summary>
+		/// Сериализованный список объектов SearchParameter для поиска
+		/// </summary>
+		public string SearchParameters { get; set; }
+
+		/// <summary>
+		/// Десерилизованный список параметров для поиска
+		/// </summary>
+		public List<SearchAttribute> DeserializeSearchParameters => JsonConvert.DeserializeObject<List<SearchAttribute>>(SearchParameters ?? string.Empty);
+
 	}
 }

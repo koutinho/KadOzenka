@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -170,28 +171,20 @@ namespace KadOzenka.Web.Controllers
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds, param.Kn);
             if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
-            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
-	            return Json(new { updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new { targetObjectStr = JsonConvert.SerializeObject(targetObject) }) });
+            List<OMCoreObject> analogs = new List<OMCoreObject>();
 
-			var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
-            var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo).SelectAll().ExecuteFirstOrDefault();
-
-            var square = param.Square.GetValueOrDefault();
-            var squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll().ExecuteFirstOrDefault();
-
-            if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild) return SendErrorMessage("Не найден диапазон даты постройки или площади.");
-
-			var condition = 
-				_service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
+			var conditionAnalog = 
+				_service.GetSearchConditionForAnalogs(param.DeserializeSearchParameters,param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
 			var actualDateCondition = _service.GetActualDateCondition(param.ActualDate.Value);
 
-			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(condition.And(actualDateCondition)).SetJoins(_service.JoinPriceHistory()).Select(x => new { x.Id, x.Lat, x.Lng });
+			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(conditionAnalog.And(actualDateCondition))
+				.SetJoins(_service.JoinPriceHistory())
+				.Select(x => new { x.Id, x.Lat, x.Lng, x.CadastralNumber });
 
-			var objects = qSQuery
-				.Execute()
-				.Select(x => new CoordinatesDto { Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault() })
-				.ToList();
+			analogs = qSQuery.Execute().ToList();
 
+			List<CoordinatesDto> objects = _service.CheckAnalogsByKoFactors(analogs, setting, param.DeserializeSearchParameters);
+			//objects = analogs.Select(x => new CoordinatesDto{ Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault() }).ToList();
 			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
 
 			var coordinatesInput = objects.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });

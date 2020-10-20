@@ -7,27 +7,40 @@
 			<div>
 				@Html.CustomLabel(Model[i].Name)
 			</div>
-			<div class="flex-row">
-				@Html.KendoDropDownListFor(m => m[i].DefaultValue, "GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i].DictionaryId}, isReadonly: false)
+			<div class="flex-row wrapper-factor">
+				@(Html.Kendo()
+					.DropDownListFor(m => m[i].DefaultValue)
+					.DataTextField("Text")
+					.DataValueField("Value")
+					.DataSource(source =>
+						source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
+							new { dictionaryId = Model[i].DictionaryId }))
+					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId }))
 				<div style="margin-left: 5px">
-					@Html.Kendo().CheckBox().Name($"ch-{i}").Checked(true)
+					@Html.Kendo().CheckBox().Name($"chFactor-{i}").Checked(true)
 				</div>
 			</div>
 		</div>
 		@if (i + 1 < Model.Count)
 		{
-	<div class="col-sm-6">
-		<div>
-			@Html.CustomLabel(Model[i + 1].Name)
-		</div>
-		<div class="flex-row">
-			@Html.KendoDropDownListFor(m => m[i + 1].DefaultValue,
-				"GetEsDictionary", "ExpressScore", new { dictionaryId = Model[i + 1].DictionaryId }, isReadonly: false)
-			<div style="margin-left: 5px">
-				@Html.Kendo().CheckBox().Name($"ch-{i + 1}").Checked(true)
+			<div class="col-sm-6">
+				<div>
+					@Html.CustomLabel(Model[i + 1].Name)
+				</div>
+				<div class="flex-row wrapper-factor">
+					@(Html.Kendo()
+				.DropDownListFor(m => m[i + 1].DefaultValue)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.DataSource(source =>
+					source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
+						new { dictionaryId = Model[i + 1].DictionaryId }))
+				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId }))
+					<div style="margin-left: 5px">
+						@Html.Kendo().CheckBox().Name($"chFactor-{i + 1}").Checked(true)
+					</div>
+				</div>
 			</div>
-		</div>
-	</div>
 			i++;
 		}
 	</div>

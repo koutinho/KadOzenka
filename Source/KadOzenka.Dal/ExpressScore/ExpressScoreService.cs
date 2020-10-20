@@ -143,9 +143,10 @@ namespace KadOzenka.Dal.ExpressScore
             return targetObject;
         }
 
-        public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType, decimal? lng, decimal? lat)
+		#region SearchAnalogs
+		public QSCondition GetSearchConditionForAnalogs(List<SearchAttribute> searchAttributes, MarketSegment marketSegment, List<DealType> dealType, decimal? lng, decimal? lat)
 		{
-            var condition = new QSConditionSimple
+			var condition = new QSConditionSimple
 			{
 				ConditionType = QSConditionType.NotEqual,
 				LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
@@ -186,49 +187,26 @@ namespace KadOzenka.Dal.ExpressScore
 				RightOperand = OMCoreObject.GetColumn(x => x.Lat)
 			});
 
-			if (useYearBuild)
+			foreach (var searchAttribute in searchAttributes.Where(x => IsAnalogAttribute(x.IdAttribute)))
 			{
 				condition.Add(new QSConditionSimple
 				{
-					ConditionType = QSConditionType.IsNotNull,
-					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
-				}.And(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.LessOrEqual,
-					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
-					RightOperand = new QSColumnConstant(yearRange?.YearTo)
-				}).And(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.GreaterOrEqual,
-					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
-					RightOperand = new QSColumnConstant(yearRange?.YearFrom)
-				}));
-			}
+					ConditionType = QSConditionType.EqualNonCaseSensitive,
+					LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
+					RightOperand = new QSColumnConstant(searchAttribute.Value)
+				});
 
-			if (useSquare)
-			{
-				condition.Add(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.LessOrEqual,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Area),
-					RightOperand = new QSColumnConstant(squareRange?.SquareTo)
-				}.And(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.GreaterOrEqual,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Area),
-					RightOperand = new QSColumnConstant(squareRange?.SquareFrom)
-				}));
 			}
 
 			return condition;
 		}
 
-        public QSCondition GetActualDateCondition(DateTime actualDate)
-        {
+		public QSCondition GetActualDateCondition(DateTime actualDate)
+		{
 
 			actualDate = actualDate + new TimeSpan(23, 59, 59);
 
-			DateTime minSearchDate  = new DateTime(actualDate.Year - 1, actualDate.Month, actualDate.Day);
+			DateTime minSearchDate = new DateTime(actualDate.Year - 1, actualDate.Month, actualDate.Day);
 
 
 			var actualDateCondition = new QSConditionSimple
@@ -264,10 +242,9 @@ namespace KadOzenka.Dal.ExpressScore
 			}));
 
 			return actualDateCondition;
-        }
-
-        public List<QSJoin> JoinPriceHistory()
-        {
+		}
+		public List<QSJoin> JoinPriceHistory()
+		{
 			return new List<QSJoin>()
 			{
 				new QSJoin
@@ -277,7 +254,48 @@ namespace KadOzenka.Dal.ExpressScore
 					RegisterId = OMPriceHistory.GetRegisterId()
 				}
 			};
-        }
+		}
+
+		public List<CoordinatesDto> CheckAnalogsByKoFactors(List<OMCoreObject> analogs, OMSettingsParams settings, List<SearchAttribute> searchAttributes)
+		{
+			List<CoordinatesDto> res = new List<CoordinatesDto>();
+			long primaryKeyAttributeId = RegisterCache.RegisterAttributes.Values
+				.FirstOrDefault(x => x.RegisterId == settings.Registerid && x.IsPrimaryKey)?.Id ?? 0;
+
+			var qsConGroup = new QSConditionGroup(QSConditionGroupType.And);
+			qsConGroup.Add(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.In,
+				LeftOperand = OMUnit.GetColumn(x => x.CadastralNumber),
+				RightOperand = new QSColumnConstant(analogs.Select(x => x.CadastralNumber))
+			});
+			qsConGroup.Add(GetConditionsBySearchAttributes(searchAttributes));
+
+			var query = new QSQuery
+			{
+				MainRegisterID = (int) settings.Registerid,
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMUnit.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = new QSColumnSimple(primaryKeyAttributeId),
+							RightOperand = new QSColumnSimple(OMUnit.GetColumnAttributeId(x => x.Id))
+						},
+						JoinType = QSJoinType.Inner
+					}
+				},
+				Condition = qsConGroup
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber));
+
+			var resQuery = query.ExecuteQuery();
+			return res;
+		}
+
 		public List<CoordinatesDto> GetNearestCoordinates(Dictionary<long, CoordinatesDto> coordinates, Dictionary<long, double> distances, int quantity)
 		{
 			List<KeyValuePair<long, double>> myList = distances.ToList();
@@ -312,10 +330,10 @@ namespace KadOzenka.Dal.ExpressScore
 				var sLat = (double)selectedLat * 0.0174533;
 				var sLng = (double)selectedLng * 0.0174533;
 
-				var delLng = Math.Pow(Math.Sin((lng - sLng) / 2),2);
-				var delLat = Math.Pow(Math.Sin((lat - sLat) / 2),2);
+				var delLng = Math.Pow(Math.Sin((lng - sLng) / 2), 2);
+				var delLat = Math.Pow(Math.Sin((lat - sLat) / 2), 2);
 
-				var d1 = 2 *r * Math.Asin(Math.Sqrt(delLat + Math.Cos(lat)* Math.Cos(sLat)* delLng)); // км - расстояние от исходной точки до одного из найденных объектов
+				var d1 = 2 * r * Math.Asin(Math.Sqrt(delLat + Math.Cos(lat) * Math.Cos(sLat) * delLng)); // км - расстояние от исходной точки до одного из найденных объектов
 
 				distances.Add(item.Key, d1);
 				if (d1 <= searchRad) selectedCoordinates.Add(item.Key, item.Value);
@@ -323,12 +341,15 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (selectedCoordinates.Count > 0 && selectedCoordinates.Count <= quantity) return selectedCoordinates.Values.ToList();
 
-			if (selectedCoordinates.Count == 0) return  GetNearestCoordinates(coordinates, distances, reservedCount);
+			if (selectedCoordinates.Count == 0) return GetNearestCoordinates(coordinates, distances, reservedCount);
 
 			if (selectedCoordinates.Count > quantity) return GetNearestCoordinates(coordinates, distances, quantity);
 
 			return new List<CoordinatesDto>();
 		}
+		#endregion
+
+
 
 		public List<AnalogDto> GetAnalogsByIds(List<int> ids)
 		{
@@ -1140,6 +1161,11 @@ namespace KadOzenka.Dal.ExpressScore
 
         private bool IsAnalogAttribute(long idAttribute)
         {
+	        if (idAttribute == 0)
+	        {
+				_log.Error("ЭО. Ошибка проверки атрибута на принодлежность к аналогам idAttribute = {idAttribute}", idAttribute);
+				throw new Exception("Ид атрибута равен 0");
+	        }
 			bool res = RegisterCache.GetAttributeData(idAttribute)?.RegisterId == OMCoreObject.GetRegisterId();
 			return res;
         }
@@ -1196,6 +1222,7 @@ namespace KadOzenka.Dal.ExpressScore
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
+				ErrorManager.LogError(e);
 				return null;
 			}
 			
@@ -1680,6 +1707,31 @@ namespace KadOzenka.Dal.ExpressScore
 				targetObjectValue.Save();
 			}
 		}
+		#endregion
+
+		#region Support For Search
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>
+		/// Возвращает условия для поиска юнитов по Ко факторам
+		/// </returns>
+		private QSCondition GetConditionsBySearchAttributes(List<SearchAttribute> searchAttributes)
+		{
+			var condiotions = new QSConditionGroup(QSConditionGroupType.And);
+			foreach (var searchAttribute in searchAttributes)
+			{
+				condiotions.Add(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.EqualNonCaseSensitive,
+					LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
+					RightOperand = new QSColumnConstant(searchAttribute.Value)
+				});
+			}
+			return condiotions;
+		}
+		
+
 		#endregion
 	}
 }

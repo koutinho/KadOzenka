@@ -240,19 +240,19 @@ $(document).ready(function () {
             }
         });
 
+    /**
+     * Поиск аналогов (обработка жмака по кнопке поиск)
+     */
     $('.analogs').on('click',
         function () {
             removeFindPoints();
             var point = myPlacemark || myMarker;
             var coordinates = (point && point.geometry.getCoordinates()) || null;
-            var floor = $('#floor').val();
-            var square = $('#square').val();
             var segment = $('#segment').val();
             var quality = $("#slider").getKendoSlider() && $("#slider").getKendoSlider().value() || 0;
             var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
             var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
-            var useYearBuild = $("input[name='UseYearBuild']:checked").val();
-            var useSquare = $("input[name='UseSquare']:checked").val();
+            var complexSearchParameters = "";
             var kn = $('#Kn').val();
             if (quality === 0) {
                 Common.ShowError('Выберите количество аналогов');
@@ -266,20 +266,19 @@ $(document).ready(function () {
                 Common.ShowError('Выберите или заполните целевой объект');
                 return;
             }
+
+            complexSearchParameters = getComplexSearchParameters();
             kendo.ui.progress($('body'), true);
 
             var data = {
-                floor,
-                square,
                 segment,
                 kn,
                 dealTypeShort,
                 actualDate,
-                useYearBuild,
-                useSquare,
                 quality,
                 SelectedLat: coordinates[0],
-                SelectedLng: coordinates[1]
+                SelectedLng: coordinates[1],
+                SearchParameters: complexSearchParameters
             }
             var url = "/ExpressScore/GetNearestObjects" + helper.objectToQuerystring(data);// "@Url.Action("GetNearestObjects", "ExpressScore")" +;
 
@@ -407,6 +406,26 @@ $(document).ready(function () {
         });
 });
 
+/**
+ * Получаем значения комплексных факторов для поиска
+ * @return {string} сереализованный Json
+ */
+function getComplexSearchParameters() {
+    var res = [];
+    $.each($('#costFactors').find('[id^="chFactor"]:checked'), function() {
+        var $wrapperFactor = $(this).closest('.wrapper-factor');
+        var $control = $wrapperFactor.find('[id*="DefaultValue"]');
+        if ($control) {
+            var attributeId = $control.attr('DataAttributeId');
+            var value = $control.data('kendoDropDownList') && $control.data('kendoDropDownList').value();
+            res.push({
+                IdAttribute: attributeId,
+                Value: value
+            });
+        }
+    });
+    return JSON.stringify(res);
+}
 
 // инициализация карты и евенты
 function initMap(src) {
