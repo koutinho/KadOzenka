@@ -364,7 +364,7 @@ namespace KadOzenka.Dal.ExpressScore
 					Address = x.Address,
 					DealType = x.DealType_Code,
                     Vat = x.Vat_Code,
-                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded
+                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded.GetValueOrDefault()
                 }).ToList();
 		}
 
@@ -806,7 +806,7 @@ namespace KadOzenka.Dal.ExpressScore
 						break;
 					}
 
-					if(analogFactor.Value == null || analogFactor.Value == string.Empty)
+					if(analogFactor.Value == null)
 					{
 						_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора", analog.Id);
 					}
