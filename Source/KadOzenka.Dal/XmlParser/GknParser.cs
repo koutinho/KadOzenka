@@ -759,6 +759,10 @@ namespace KadOzenka.Dal.XmlParser
         /// Основные характеристики и их значения
         /// </summary>
         public List<xmlCodeNameValue> KeyParameters;
+        /// <summary>
+        /// Материал стен
+        /// </summary>
+        public List<xmlCodeName> Walls;
 
         public xmlObjectConstruction(xmlObject obj)
         {
@@ -775,6 +779,7 @@ namespace KadOzenka.Dal.XmlParser
             Years = obj.Years;
             Name = obj.NameObject;
             KeyParameters = obj.KeyParameters;
+            Walls = obj.Walls;
         }
         public override string ToString()
         {

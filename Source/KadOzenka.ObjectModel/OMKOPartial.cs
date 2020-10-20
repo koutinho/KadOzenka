@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace ObjectModel.KO
 {
@@ -389,7 +391,7 @@ namespace ObjectModel.KO
             registerObject.SetAttributeValue(factorId, value, referenceItemId);
             RegisterStorage.Save(registerObject);
         }
-        public void InheritedKOFactor(long factorId, OMUnit prev)
+        public void InheritedKOFactor(long factorId, OMUnit prev, ILogger log)
         {
             if (prev != null)
             {
@@ -436,27 +438,75 @@ namespace ObjectModel.KO
                             RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
                             registerObject.SetAttributeValue(factorId, value, referenceItemId);
                             RegisterStorage.Save(registerObject);
+
+                            log.ForContext("UnitId", this.Id)
+	                            .ForContext("PrevUnitId", prev.Id)
+	                            .ForContext("FactorId", factorId)
+                                .ForContext("FactorValue", value)
+	                            .Verbose("Выполнено сохранение атрибута '{FactorName}' для текущей единицы оценки {UnitCadastralNumber}", attributeData.Description, this.CadastralNumber);
+                        }
+                        else
+                        {
+	                        log.ForContext("UnitId", this.Id)
+		                        .ForContext("FactorId", factorId)
+                                .Verbose("Значение атрибута '{FactorName}' для предыдущей единицы оценки {PrevUnitId} равно null, сохранение не выполнено", attributeData.Description, prev.Id);
                         }
 
                     }
+                    else
+                    {
+	                    log.ForContext("UnitId", this.Id)
+		                    .ForContext("FactorId", factorId)
+		                    .Verbose("Не установлено значение CalcItem атрибута '{FactorName}' для предыдущей единицы оценки {PrevUnitId}", attributeData.Description, prev.Id);
+                    }
+                }
+                else
+                {
+	                log.ForContext("UnitId", this.Id)
+		                .ForContext("FactorId", factorId)
+		                .Verbose("Не найдены данные атрибута '{FactorName}' для предыдущей единицы оценки {PrevUnitId}", attributeData.Description, prev.Id);
                 }
             }
         }
-        public void InheritedKOFactors()
+        public void InheritedKOFactors(ILogger log)
         {
             List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(this);
+            log.ForContext("UnitId", this.Id)
+	            .Verbose("Найдено {HistoryUnitsCount} HistoryUnit'ов для обновления {UnitCadastralNumber} ", olds.Count, this.CadastralNumber);
+
             ObjectModel.KO.OMUnit lastUnit = null;
             if (olds.Count > 0) lastUnit = ObjectModel.KO.HistoryUnit.GetPrevUnit(olds).Unit;
             if (lastUnit != null)
             {
+	            log.ForContext("UnitId", this.Id)
+		            .ForContext("PrevUnitId", lastUnit.Id)
+		            .Verbose("Найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
                 if (lastUnit.CadastralBlock == this.CadastralBlock)
                 {
                     List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
-                    foreach (ObjectModel.KO.OMFactorSettings oldfactor in oldfactors)
+                    log.ForContext("UnitId", this.Id)
+	                    .ForContext("FactorIds", oldfactors.Select(x => x.FactorId).ToArray())
+	                    .Verbose("Найдено {OldfactorsCount} наследуемых факторов для обновления {UnitCadastralNumber} ",
+		                    oldfactors.Count, this.CadastralNumber);
+
+	                foreach (ObjectModel.KO.OMFactorSettings oldfactor in oldfactors)
                     {
-                        InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit);
+                        InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit, log);
                     }
                 }
+                else
+                {
+	                log.ForContext("UnitId", this.Id)
+		                .ForContext("UnitCadastralQuarter", this.CadastralBlock)
+                        .ForContext("PrevUnitId", lastUnit.Id)
+                        .ForContext("PrevUnitCadastralQuarter", lastUnit.CadastralBlock)
+		                .Verbose("Кадастровый квартал у предыдущей единицы оценки не совпадает с текущим для {UnitCadastralNumber}", this.CadastralNumber);
+				}
+            }
+            else
+            {
+	            log.ForContext("UnitId", this.Id)
+	                    .Verbose("Не найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
             }
         }
 

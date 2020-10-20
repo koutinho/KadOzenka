@@ -6408,6 +6408,61 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _updatestatus;
+        /// <summary>
+        /// 20102500 Статус после обновления ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102500)]
+        public string UpdateStatus
+        {
+            get
+            {
+                CheckPropertyInited("UpdateStatus");
+                return _updatestatus;
+            }
+            set
+            {
+                _updatestatus = value;
+                NotifyPropertyChanged("UpdateStatus");
+            }
+        }
+
+
+        private UnitUpdateStatus _updatestatus_Code;
+        /// <summary>
+        /// 20102500 Статус после обновления (справочный код) (update_status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102500)]
+        public UnitUpdateStatus UpdateStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("UpdateStatus_Code");
+                return this._updatestatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_updatestatus))
+                    {
+                         _updatestatus = descr;
+                    }
+                }
+                else
+                {
+                     _updatestatus = descr;
+                }
+
+                this._updatestatus_Code = value;
+                NotifyPropertyChanged("UpdateStatus");
+                NotifyPropertyChanged("UpdateStatus_Code");
+            }
+        }
+
     }
 }
 
@@ -24484,6 +24539,26 @@ namespace ObjectModel.ES
             {
                 _calculationvalue = value;
                 NotifyPropertyChanged("CalculationValue");
+            }
+        }
+
+
+        private string _commonvalue;
+        /// <summary>
+        /// 61000600 Общее значение (COMMON_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000600)]
+        public string CommonValue
+        {
+            get
+            {
+                CheckPropertyInited("CommonValue");
+                return _commonvalue;
+            }
+            set
+            {
+                _commonvalue = value;
+                NotifyPropertyChanged("CommonValue");
             }
         }
 

@@ -37,7 +37,15 @@
                         @Html.CustomLabelFor(m => m.IncomingDocumentDate)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoDatePickerFor(m => m.IncomingDocumentDate, isReadonly: false)
+                        @Html.KendoDatePickerFor(m => m.IncomingDocumentDate)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.IncomingDocumentApproveDate)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoDatePickerFor(m => m.IncomingDocumentApproveDate, isReadonly: false)
                     </div>
                 </div>
                 <div class="form-group">

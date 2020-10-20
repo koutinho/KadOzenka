@@ -926,6 +926,9 @@
     <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Registers\SearchPanels\KoToursFactorsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Registers\SearchPanels\ModelingDictionaryValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1829,6 +1832,7 @@
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />

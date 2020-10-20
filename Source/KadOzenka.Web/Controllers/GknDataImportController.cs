@@ -39,17 +39,17 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "")]
 		public ActionResult ImportGkn()
 		{
-			TaskModel dto = new TaskModel();
+			var model = new TaskCreationModel();
 
             ViewData["Documents"] = GetDocumentsForPartialView();
 
-            return View(dto);
+            return View(model);
 		}
 
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
-		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto, List<IFormFile> images)
+		public ActionResult ImportGkn(List<IFormFile> files, TaskCreationModel dto, List<IFormFile> images)
         {
             dto.Document.ProcessDocument();
 

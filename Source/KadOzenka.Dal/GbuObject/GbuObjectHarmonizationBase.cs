@@ -13,16 +13,19 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
+using Serilog;
+using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
 {
     public abstract class GbuObjectHarmonizationBase
     {
         #region Fields
-
+        protected static readonly ILogger _log = Log.ForContext<GbuObjectHarmonizationBase>();
         protected object Locked;
         public int MaxObjectsCount;
         public int CurrentCount;
+        public int LogCount;
 
         private const int KnColumnNumber = 0;
         private const int ResultColumnNumber = 1;
@@ -66,14 +69,22 @@ namespace KadOzenka.Dal.GbuObject
 
         public long Run()
         {
+	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
 
             ReportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
-
+            _log.Debug("Получение объектов для обработки");
             var objects = GetObjects();
+            _log.Debug( "Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);
 
             var levelsAttributesIds = GetLevelsAttributesIds();
+            _log.Debug("Получен список атрибутов-уровней: {LevelsAttributesIds}", levelsAttributesIds);
             MaxObjectsCount = objects.Count;
+            LogCount = MaxObjectsCount < 100
+	            ? MaxObjectsCount
+	            : Math.Round(MaxObjectsCount * 0.1) > 100
+		            ? 100
+		            : (int)Math.Round(MaxObjectsCount * 0.1);
 
             Locked = new object();
             var cancelTokenSource = new CancellationTokenSource();
@@ -82,12 +93,14 @@ namespace KadOzenka.Dal.GbuObject
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 20
             };
-
+            _log.Debug("Обработка объектов");
             Parallel.ForEach(objects, options, obj =>
             {
                 ProcessOneObject(obj, levelsAttributesIds);
             });
+            _log.Debug("Обработка объектов завершена");
 
+            _log.Debug("Настройка стилей отчета");
             ReportService.SetStyle();
             ReportService.SetIndividualWidth(KnColumnNumber, 4);
             ReportService.SetIndividualWidth(ResultColumnNumber, 6);
@@ -95,6 +108,7 @@ namespace KadOzenka.Dal.GbuObject
             ReportService.SetIndividualWidth(SourceColumnNUmber, 6);
             ReportService.SetIndividualWidth(ErrorColumnNumber, 5);
 
+            _log.Debug("Сохранение отчета");
             var reportId = ReportService.SaveReport(ReportName);
 
             //TODO для тестирования
@@ -180,7 +194,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private static void ValidateInputParameters()
         {
-            if(BaseSetting.DateActual != null && BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0)
+	        if (BaseSetting.DateActual != null && BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0)
                 throw new Exception("Выбрана только дата актуальности, но не выбрана характеристика");
         }
 
@@ -215,6 +229,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private List<Item> GetObjectsByTasks(PropertyTypes objectType)
         {
+	        _log.Debug("Получение объектов по списку заданий на оценку");
             if (BaseSetting.TaskFilter == null || BaseSetting.TaskFilter.Count == 0)
                 throw new Exception("Была выбрана фильтрация по Заданиям на оценку, но не были выбраны задания.");
 
@@ -227,7 +242,7 @@ namespace KadOzenka.Dal.GbuObject
                     .Select(x => x.CadastralNumber)
                     .Select(x => x.CreationDate)
                     .Execute();
-
+                _log.Debug($"Загружено {units.Count} юнитов для задания на оценку {taskId}");
                 objects.AddRange(units.Select(x => new Item
                 {
                     CadastralNumber = x.CadastralNumber,
@@ -235,12 +250,14 @@ namespace KadOzenka.Dal.GbuObject
                     Date = x.CreationDate ?? DateTime.Now
                 }));
             });
+            _log.Debug($"Общее количество загруженных объектов: {objects.Count}");
 
             return FilterObjects(objects);
         }
 
         private List<Item> GetObjectsWithoutTasks(PropertyTypes objectType)
         {
+	        _log.Debug("Получение объектов");
             var allObjects = OMMainObject.Where(x => x.ObjectType_Code == objectType && x.IsActive == true)
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
@@ -251,6 +268,7 @@ namespace KadOzenka.Dal.GbuObject
                     ObjectId = x.Id,
                     Date = DateTime.Now
                 }).ToList();
+            _log.Debug($"Общее количество загруженных объектов: {allObjects.Count}");
 
             if (BaseSetting.SelectAllObject)
                 return allObjects;
@@ -260,119 +278,146 @@ namespace KadOzenka.Dal.GbuObject
 
         private List<Item> FilterObjects(List<Item> allObjects)
         {
-            if (BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0 || allObjects.Count == 0)
-                return allObjects;
+	        List<Item> result;
 
-            if (BaseSetting.ValuesFilter == null || BaseSetting.ValuesFilter.Count == 0)
-                throw new Exception("Была выбрана фильтрация по Значению, но не были выбраны значения.");
-
-            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
-            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
-                allObjects.Select(x => x.ObjectId).Distinct().ToList(),
-                null,
-                new List<long> { BaseSetting.IdAttributeFilter.Value},
-                date);
-
-            var resultObjectIds = new List<long?>();
-            var lowerFilterValues = BaseSetting.ValuesFilter.Select(x => x.ToLower()).ToList();
-            allObjectsAttributes.ForEach(x =>
+	        if (BaseSetting.IdAttributeFilter.GetValueOrDefault() == 0 || allObjects.Count == 0)
+	        {
+		        result = allObjects;
+	        }
+            else
             {
-                var lowerAttributeValue = x.GetValueInString()?.ToLower();
-                if (lowerAttributeValue != null && lowerFilterValues.Contains(lowerAttributeValue))
-                {
-                    resultObjectIds.Add(x.ObjectId);
-                }
-            });
+	            if (BaseSetting.ValuesFilter == null || BaseSetting.ValuesFilter.Count == 0)
+		            throw new Exception("Была выбрана фильтрация по Значению, но не были выбраны значения.");
 
-            return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+	            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
+	            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
+		            allObjects.Select(x => x.ObjectId).Distinct().ToList(),
+		            null,
+		            new List<long> { BaseSetting.IdAttributeFilter.Value },
+		            date);
+
+	            var resultObjectIds = new List<long?>();
+	            var lowerFilterValues = BaseSetting.ValuesFilter.Select(x => x.ToLower()).ToList();
+	            allObjectsAttributes.ForEach(x =>
+	            {
+		            var lowerAttributeValue = x.GetValueInString()?.ToLower();
+		            if (lowerAttributeValue != null && lowerFilterValues.Contains(lowerAttributeValue))
+		            {
+			            resultObjectIds.Add(x.ObjectId);
+		            }
+	            });
+
+	            result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+            }
+	        _log.Debug($"Выбрано {result.Count} объектов после фильтрации по Значению");
+
+            return result;
         }
 
         private List<Item> FilterBuildingObjects(List<Item> allObjects)
         {
-            if (BaseSetting.PropertyType != PropertyTypes.Building ||
-                BaseSetting.BuildingPurpose == BuildingPurpose.None)
-                return allObjects;
+	        List<Item> result;
 
-            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
+	        if (BaseSetting.PropertyType != PropertyTypes.Building ||
+	            BaseSetting.BuildingPurpose == BuildingPurpose.None)
+	        {
+		        result = allObjects;
+	        }
+	        else
+	        {
+		        var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
 
-            var buildingPurposeAttribute = RosreestrRegisterService.GetBuildingPurposeAttribute();
+		        var buildingPurposeAttribute = RosreestrRegisterService.GetBuildingPurposeAttribute();
 
-            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
-                allObjects.Select(x => x.ObjectId).Distinct().ToList(),
-                new List<long>{ buildingPurposeAttribute.RegisterId },
-                new List<long> { buildingPurposeAttribute.Id },
-                date);
+		        var allObjectsAttributes = GbuObjectService.GetAllAttributes(
+			        allObjects.Select(x => x.ObjectId).Distinct().ToList(),
+			        new List<long> { buildingPurposeAttribute.RegisterId },
+			        new List<long> { buildingPurposeAttribute.Id },
+			        date);
 
-            var possibleValues = new List<string>();
-            switch (BaseSetting.BuildingPurpose)
-            {
-                case BuildingPurpose.Live:
-                    possibleValues.Add("Жилое");
-                    break;
-                case BuildingPurpose.NotLive:
-                    possibleValues.Add("Нежилое");
-                    break;
-                case BuildingPurpose.ApartmentHouse:
-                    possibleValues.Add("Многоквартирный дом");
-                    break;
-                case BuildingPurpose.LiveAndApartmentHouse:
-                    possibleValues.Add("Жилое");
-                    possibleValues.Add("Многоквартирный дом");
-                    break;
+		        var possibleValues = new List<string>();
+		        switch (BaseSetting.BuildingPurpose)
+		        {
+			        case BuildingPurpose.Live:
+				        possibleValues.Add("Жилое");
+				        break;
+			        case BuildingPurpose.NotLive:
+				        possibleValues.Add("Нежилое");
+				        break;
+			        case BuildingPurpose.ApartmentHouse:
+				        possibleValues.Add("Многоквартирный дом");
+				        break;
+			        case BuildingPurpose.LiveAndApartmentHouse:
+				        possibleValues.Add("Жилое");
+				        possibleValues.Add("Многоквартирный дом");
+				        break;
+		        }
+
+		        var resultObjectIds = new List<long?>();
+		        allObjectsAttributes.ForEach(x =>
+		        {
+			        var buildingPurpose = x.GetValueInString();
+			        if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
+			        {
+				        resultObjectIds.Add(x.ObjectId);
+			        }
+		        });
+
+		        result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
+	        _log.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту Назначение здания");
 
-            var resultObjectIds = new List<long?>();
-            allObjectsAttributes.ForEach(x =>
-            {
-                var buildingPurpose = x.GetValueInString();
-                if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
-                {
-                    resultObjectIds.Add(x.ObjectId);
-                }
-            });
-
-            return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+            return result;
         }
 
         private List<Item> FilterPlacementObjects(List<Item> allObjects)
         {
-            if (BaseSetting.PropertyType != PropertyTypes.Pllacement ||
-                BaseSetting.PlacementPurpose == PlacementPurpose.None || 
-                BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
-                return allObjects;
+	        List<Item> result;
 
-            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
-
-            var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
-
-            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
-                allObjects.Select(x => x.ObjectId).Distinct().ToList(),
-                new List<long> { placementPurposeAttribute.RegisterId },
-                new List<long> { placementPurposeAttribute.Id },
-                date);
-
-            var possibleValues = new List<string>();
-            switch (BaseSetting.PlacementPurpose)
+	        if (BaseSetting.PropertyType != PropertyTypes.Pllacement ||
+	            BaseSetting.PlacementPurpose == PlacementPurpose.None ||
+	            BaseSetting.PlacementPurpose == PlacementPurpose.ParkingPlace)
+	        {
+		        result = allObjects;
+	        }
+            else
             {
-                case PlacementPurpose.Live:
-                    possibleValues.Add("Жилое");
-                    break;
-                case PlacementPurpose.NotLive:
-                    possibleValues.Add("Нежилое");
-                    break;
+	            var date = BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay();
+
+	            var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
+
+	            var allObjectsAttributes = GbuObjectService.GetAllAttributes(
+		            allObjects.Select(x => x.ObjectId).Distinct().ToList(),
+		            new List<long> { placementPurposeAttribute.RegisterId },
+		            new List<long> { placementPurposeAttribute.Id },
+		            date);
+
+	            var possibleValues = new List<string>();
+	            switch (BaseSetting.PlacementPurpose)
+	            {
+		            case PlacementPurpose.Live:
+			            possibleValues.Add("Жилое");
+			            break;
+		            case PlacementPurpose.NotLive:
+			            possibleValues.Add("Нежилое");
+			            break;
+	            }
+
+	            var resultObjectIds = new List<long?>();
+	            allObjectsAttributes.ForEach(x =>
+	            {
+		            var buildingPurpose = x.GetValueInString();
+		            if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
+		            {
+			            resultObjectIds.Add(x.ObjectId);
+		            }
+	            });
+
+	            result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
+	        _log.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту Назначение помещения");
 
-            var resultObjectIds = new List<long?>();
-            allObjectsAttributes.ForEach(x =>
-            {
-                var buildingPurpose = x.GetValueInString();
-                if (!string.IsNullOrWhiteSpace(buildingPurpose) && possibleValues.Contains(buildingPurpose))
-                {
-                    resultObjectIds.Add(x.ObjectId);
-                }
-            });
-
-            return allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+            return result;
         }
 
         private static List<long> GetLevelsAttributesIds()
@@ -400,7 +445,13 @@ namespace KadOzenka.Dal.GbuObject
         {
             lock (Locked)
             {
-                CurrentCount++;
+	            CurrentCount++;
+                if (CurrentCount <= LogCount)
+                {
+	                _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
+		                .ForContext("ItemDate", item.Date)
+                        .Verbose("Обработка объекта {ItemObjectId}", item.ObjectId);
+                }
             }
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
@@ -410,9 +461,44 @@ namespace KadOzenka.Dal.GbuObject
                 if (sourceAttribute == null)
                     continue;
 
+                lock (Locked)
+                {
+	                if (CurrentCount <= LogCount)
+		                _log.ForContext("SourceAttributeId", sourceAttributeId)
+                            .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
+                            .ForContext("ItemCadastralNumber", item.CadastralNumber)
+                            .ForContext("ItemDate", item.Date)
+                            .Verbose(
+                            "Обработка значения левел атрибута '{SourceAttributeName}' для объекта {ItemObjectId}",
+                            sourceAttribute.AttributeData.Name, item.ObjectId);
+                }
+
                 var isDataSaved = CopyLevelData(item, sourceAttribute);
                 if (isDataSaved)
-                    return;
+                {
+	                lock (Locked)
+	                {
+		                if (CurrentCount <= LogCount)
+			                _log.ForContext("SourceAttributeId", sourceAttributeId)
+				                .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
+				                .ForContext("ItemCadastralNumber", item.CadastralNumber)
+				                .ForContext("ItemDate", item.Date)
+				                .Verbose(
+                                    "Для объекта {ItemObjectId} взяты данные левел атрибута '{SourceAttributeName}'",
+					                item.ObjectId, sourceAttribute.AttributeData.Name);
+	                }
+
+	                return;
+                }
+            }
+
+            lock (Locked)
+            {
+	            if (CurrentCount <= LogCount)
+		            _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
+			            .ForContext("ItemDate", item.Date)
+			            .Verbose(
+                            "Для объекта {ItemObjectId} не найдено значение в левел атрибутах", item.ObjectId);
             }
 
             SaveFailResult(item);

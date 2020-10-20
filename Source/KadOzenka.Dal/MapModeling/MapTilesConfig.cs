@@ -16,6 +16,7 @@ namespace KadOzenka.Dal.MapModeling
 		public string PixelCoordinatesJsonConfigFilePrefix { get; set; }
 
 		public string MarketMapHeatMapLayerFolder { get; set; }
+		public string ManagementDecisionSupportHeatMapLayerFolder { get; set; }
 
 		public int MCMinZoom { get; set; }
 		public int MCMaxZoom { get; set; }
@@ -49,6 +50,18 @@ namespace KadOzenka.Dal.MapModeling
 
 			return
 				$"{Current.MarketMapHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages\\{currentZoom}.png";
+		}
+
+		public static string GetManagementDecisionSupportHeatMapInitialImageFileName(int currentZoom)
+		{
+			if (!Directory.Exists(
+				$"{Current.ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages"))
+			{
+				Directory.CreateDirectory($"{Current.ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages");
+			}
+
+			return
+				$"{Current.ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages\\{currentZoom}.png";
 		}
 
 		private static void InitPixelCoordinatesCache(int currentZoom)
