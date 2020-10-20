@@ -60,8 +60,9 @@ namespace KadOzenka.Web.Controllers
 		public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
+		public ModelFactorsService ModelFactorsService { get; set; }
 
-		public TaskController(TemplateService templateService)
+		public TaskController(TemplateService templateService, ModelFactorsService modelFactorsService)
 		{
 			TaskService = new TaskService();
 			ModelService = new ModelingService(new DictionaryService());
@@ -73,7 +74,8 @@ namespace KadOzenka.Web.Controllers
 			RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
-        }
+            ModelFactorsService = modelFactorsService;
+		}
 
 		#region Карточка задачи
 
@@ -504,7 +506,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long generalModelId)
 		{
-			ModelFactorDto factorDto;
+			FactorModel factorDto;
 
 			if (id.HasValue)
 			{
@@ -512,7 +514,7 @@ namespace KadOzenka.Web.Controllers
 				if (factor == null)
 					throw new Exception($"Не найден фактор с ИД '{id}' для модели с ИД '{generalModelId}'");
 
-				factorDto = new ModelFactorDto
+				factorDto = new FactorModel
 				{
 					Id = factor.Id,
 					GeneralModelId = generalModelId,
@@ -528,7 +530,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			else
 			{
-				factorDto = new ModelFactorDto
+				factorDto = new FactorModel
 				{
 					Id = -1,
 					GeneralModelId = generalModelId,
@@ -602,11 +604,20 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult EditModelFactor(OMModelFactor factor)
+		public ActionResult EditModelFactor(FactorModel factorModel)
 		{
-			factor.Save();
+			var dto = factorModel.ToDto();
+			if (factorModel.Id == -1)
+			{
+				ModelFactorsService.AddFactor(dto);
+			}
+			else
+			{
+				ModelFactorsService.UpdateFactor(dto);
+			}
 
-			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
+			//TODO CIPJSKO-526
+			var model = OMModel.Where(x => x.Id == factorModel.GeneralModelId).SelectAll().ExecuteFirstOrDefault();
 			model.Formula = model.GetFormulaFull(true);
 			model.Save();
 

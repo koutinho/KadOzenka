@@ -24,10 +24,12 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelingService
 	{
 		public DictionaryService DictionaryService { get; set; }
+		public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService(DictionaryService dictionaryService)
 		{
 			DictionaryService = dictionaryService;
+			ModelFactorsService = new ModelFactorsService();
 		}
 
         #region CRUD General Model
@@ -171,15 +173,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Save();
 
                 existedModelAttributes.ForEach(x => x.Destroy());
-                newAttributes.ForEach(newAttribute =>
-                {
-                    new OMModelAttribute
-                    {
-                        GeneralModelId = modelDto.ModelId,
-                        AttributeId = newAttribute.AttributeId,
-                        DictionaryId = newAttribute.DictionaryId
-                    }.Save();
-                });
+                ModelFactorsService.AddModelAttributes(existedModel.Id, newAttributes);
 
                 ts.Complete();
             }
