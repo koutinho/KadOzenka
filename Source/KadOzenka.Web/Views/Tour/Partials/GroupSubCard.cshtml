@@ -226,7 +226,7 @@
 		kendo.ui.progress($('#modelContent'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("Model", "Task")',
+            url: '@Url.Action("Model", "Modeling")',
 			data: { 'groupId': '@Model.Id', isPartial : true },
             success: function (response) {
                 $('#modelContent').html(response);

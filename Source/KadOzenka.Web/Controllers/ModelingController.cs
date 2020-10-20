@@ -3,7 +3,6 @@ using System.Linq;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Modeling;
 using System.Collections.Generic;
 using System.Reflection;
 using Core.ErrorManagment;
@@ -33,13 +32,11 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using System.IO;
-using System.Threading;
-using KadOzenka.Dal.LongProcess.ExpressScore;
 using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Ko;
+using System.Data;
+using System.Data.Common;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -49,19 +46,22 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
+        public ModelFactorsService ModelFactorsService { get; set; }
 
 
         public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService)
+            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+            ModelFactorsService modelFactorsService)
         {
             ModelingService = modelingService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
             DictionaryService = dictionaryService;
+            ModelFactorsService = modelFactorsService;
         }
 
 
-        #region Model Card
+        #region Карточка модели (из справочника моделей)
 
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
@@ -291,7 +291,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Models Training Results
+        #region Результаты обучения модели (из раскладки)
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
@@ -338,7 +338,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Market Objects For Model
+        #region Список объектов, подобранных для процесса моделирования
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
@@ -425,7 +425,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Correlation
+        #region Корреляция
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
@@ -508,7 +508,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Dictionaries
+        #region Словари моделирования
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
@@ -743,6 +743,175 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+
+        #region Карточка модели из Тура
+
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public ActionResult Model(long groupId, bool isPartial)
+        {
+	        var modelDto = ModelingService.GetModelEntityByGroupId(groupId);
+	        var model = ModelFromTourCardModel.ToModel(modelDto);
+
+	        if (isPartial)
+	        {
+		        model.IsPartial = true;
+		        return PartialView("TourCard/Model", model);
+	        }
+
+	        return View("TourCard/Model", model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public ActionResult Model(ModelFromTourCardModel model)
+        {
+	        var omModel = ModelingService.GetModelEntityById(model.GeneralModelId);
+
+	        omModel.Name = model.Name;
+	        omModel.Description = model.Description;
+	        omModel.AlgoritmType_Code = model.AlgorithmTypeCode;
+	        omModel.A0 = model.A0;
+
+	        omModel.CalculationMethod_Code = model.CalculationTypeCode == KoCalculationType.Comparative
+		        ? model.CalculationMethodCode
+		        : KoCalculationMethod.None;
+
+	        omModel.CalculationType_Code = model.CalculationTypeCode;
+	        omModel.Formula = omModel.GetFormulaFull(true);
+	        omModel.Save();
+
+	        return Ok();
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult GetFormula(long modelId, long algType)
+        {
+	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+
+	        model.AlgoritmType_Code = (KoAlgoritmType)algType;
+	        var formula = model.GetFormulaFull(true);
+
+	        return Json(new { formula });
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult GetFactors(long? tourId)
+        {
+	        var tourFactorRegisterIds = OMTourFactorRegister.Where(x => x.TourId == tourId)
+		        .Select(x => x.RegisterId)
+		        .Execute()
+		        .Select(x => x.RegisterId).ToList();
+
+	        if (tourFactorRegisterIds.Count == 0)
+	        {
+		        return Json(new List<SelectListItem>());
+	        }
+
+	        var registersData = RegisterCache.Registers.Values.Where(x => tourFactorRegisterIds.Contains(x.Id))
+		        .ToList();
+
+	        var result = registersData.Select(x => new SelectListItem
+	        {
+		        Value = x.Id.ToString(),
+		        Text = x.Description
+	        });
+
+	        return Json(result);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public ActionResult EditModelFactor(long? id, long generalModelId, KoAlgoritmType type)
+        {
+	        FactorModel factorDto;
+
+	        if (id.HasValue)
+	        {
+		        var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+		        if (factor == null)
+			        throw new Exception($"Не найден фактор с ИД '{id}' для модели с ИД '{generalModelId}'");
+
+		        var dictionary = OMModelAttribute
+			        .Where(x => x.GeneralModelId == generalModelId && x.AttributeId == factor.FactorId)
+			        .Select(x => x.DictionaryId).ExecuteFirstOrDefault();
+
+		        factorDto = new FactorModel
+		        {
+			        Id = factor.Id,
+			        GeneralModelId = generalModelId,
+			        FactorId = factor.FactorId,
+			        DictionaryId = dictionary?.DictionaryId,
+			        Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
+			        MarkerId = factor.MarkerId,
+			        Weight = factor.Weight,
+			        B0 = factor.B0,
+			        SignDiv = factor.SignDiv,
+			        SignAdd = factor.SignAdd,
+			        SignMarket = factor.SignMarket
+		        };
+	        }
+	        else
+	        {
+		        factorDto = new FactorModel
+		        {
+			        Id = -1,
+			        GeneralModelId = generalModelId,
+			        Type = type,
+			        FactorId = -1,
+			        MarkerId = -1
+		        };
+	        }
+
+	        return View("TourCard/EditModelFactor", factorDto);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public ActionResult EditModelFactor(FactorModel factorModel)
+        {
+	        var dto = factorModel.ToDto();
+	        if (factorModel.Id == -1)
+	        {
+		        if (dto.GeneralModelId == null)
+			        throw new Exception("Не передан ИД основной модели");
+		        if (factorModel.Type == KoAlgoritmType.None)
+			        throw new Exception("Не передан тип модели для создания фактора");
+
+		        var typifiedModel = ModelingService.GetTypifiedModelsByGeneralModelId(dto.GeneralModelId.Value, dto.Type)?.FirstOrDefault();
+		        if (typifiedModel == null)
+			        typifiedModel = ModelingService.CreateTypifiedModels(dto.GeneralModelId.Value, dto.Type).First();
+
+		        ModelFactorsService.AddFactor(dto, typifiedModel.Id);
+	        }
+	        else
+	        {
+		        ModelFactorsService.UpdateFactor(dto);
+	        }
+
+	        //TODO CIPJSKO-526
+	        var model = OMModel.Where(x => x.Id == factorModel.GeneralModelId).SelectAll().ExecuteFirstOrDefault();
+	        model.Formula = model.GetFormulaFull(true);
+	        model.Save();
+
+	        return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public ActionResult DeleteModelFactor(long? id)
+        {
+	        var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+	        factor.Destroy();
+
+	        var model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
+	        model.Formula = model.GetFormulaFull(true);
+	        model.Save();
+
+	        return Json(new { Success = "Удаление выполненно" });
+        }
+
+        #endregion
 
         #region Support Methods
 

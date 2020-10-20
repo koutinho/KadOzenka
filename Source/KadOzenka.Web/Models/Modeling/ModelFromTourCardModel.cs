@@ -2,9 +2,9 @@
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Web.Models.Task
+namespace KadOzenka.Web.Models.Modeling
 {
-    public class ModelModel
+    public class ModelFromTourCardModel
     {
         public long GeneralModelId { get; set; }
         public long? GroupId { get; set; }
@@ -37,9 +37,9 @@ namespace KadOzenka.Web.Models.Task
 		[Display(Name = "Свободный член")]
         public decimal? A0 { get; set; }
 
-        public static ModelModel ToModel(OMModel model)
+        public static ModelFromTourCardModel ToModel(OMModel model)
         {
-            return new ModelModel
+            return new ModelFromTourCardModel
             {
 	            GeneralModelId = model.Id,
                 GroupId = model.GroupId,

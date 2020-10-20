@@ -1,7 +1,7 @@
 ﻿using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Web.Models.Task
+namespace KadOzenka.Web.Models.Modeling
 {
 	public class FactorModel
 	{

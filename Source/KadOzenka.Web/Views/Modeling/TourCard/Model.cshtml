@@ -1,5 +1,5 @@
 ﻿@using ObjectModel.Directory
-@model KadOzenka.Web.Models.Task.ModelModel
+@model KadOzenka.Web.Models.Modeling.ModelFromTourCardModel
 
 <!-- Модальное окно для загрузки справочника меток -->
 @using (Html.BeginForm("UploadMarksCatalog", "Tour", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
@@ -27,7 +27,7 @@
 }
 
 <!--Основное окно с информацией о модели -->
-@using (Html.BeginForm("Model", "Task", FormMethod.Post, new {id = "saveModelForm", enctype = "multipart/form-data"}))
+@using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new {id = "saveModelForm", enctype = "multipart/form-data"}))
 {
 	@Html.HiddenFor(x => x.GeneralModelId)
 	@Html.HiddenFor(x => x.GroupId)
@@ -226,7 +226,7 @@
         function AlgTypeChanged() {
             var algType = this.value();
             $.ajax({
-                url: '@Url.Action("GetFormula", "Task")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
+                url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
                 type: 'POST',
                 success: function (e) {
                     $('#Formula').val(e.formula);
@@ -270,7 +270,7 @@
         $('#add-factor').on('click', function () {
             var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Task")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
+                '@Url.Action("EditModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
                 'editFactorWindow',
                 function (e, param) {
                         if (param == true) {
@@ -286,7 +286,7 @@
             if (row.length > 0) {
                 var data = grid.dataItem(row);
                 Common.UI.ShowWindow('Редактирование фактора',
-                    '@Url.Action("EditModelFactor", "Task")' + '?id=' + data.FactorId + '&generalModelId=@Model.GeneralModelId',
+                    '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + data.FactorId + '&generalModelId=@Model.GeneralModelId',
                     'editFactorWindow',
                     function (e, param) {
                         if (param == true) {
@@ -309,9 +309,9 @@
                     onSuccess: function () {
                         kendo.ui.progress($('body'), true);
                         $.ajax({
-                            url: '@Url.Action("DeleteModelFactor","Task")',
+                            url: '@Url.Action("DeleteModelFactor", "Modeling")',
                             type: 'POST',
-                            data: { id: data.FactorId },
+                            data: { id: data.Id },
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
                                 if (response.Success) {
