@@ -5,6 +5,9 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using Core.Main.FileStorages;
+using Core.ErrorManagment;
+using Core.Register.DAL;
+using Core.Register.Enums;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +16,8 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Core.UI.Registers.Configuration;
+using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
@@ -38,8 +43,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Directory.KO;
+using Platform.Register.DAL.Dto;
+using Platform.Web.Models.Dashboard;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
+using DownloadManagerForm = KadOzenka.Web.Models.Task.DownloadManagerForm;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -1119,5 +1129,81 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(list);
 		}
-	}	
+
+		/// <summary>
+		/// Форма создания выгрузки
+		/// </summary>
+		/// <param name="layoutId">Ид раскладки, если редактирование</param>
+		/// <param name="registerViewId">Имя представления реестра</param>
+		/// <returns></returns>
+		[HttpGet]
+		public ActionResult DownloadForm(long? layoutId, string registerViewId, bool isPartialView = false)
+		{
+			var model = new DownloadManagerForm();
+			int? registerId = Cache.RegisterViews?.Values.FirstOrDefault(x => x.Id == registerViewId)?.RegisterId;
+			model.RegisterViewId = registerViewId;
+			model.RegisterId = registerId.GetValueOrDefault(0);
+			if (layoutId.HasValue)
+			{
+				OMLayout layout = OMLayout.Where(x => x.LayoutId == layoutId).SelectAll().ExecuteFirstOrDefault();
+
+				if (layout == null)
+				{
+					throw new Exception($"Раскладки с ИД {layoutId} не существует");
+				}
+				LayoutEditorDAL.GetLayoutForDownloadManager(layoutId.GetValueOrDefault(), out List<long> filterIds, out string exportType);
+				model.RegisterId = (int)layout.RegisterId.GetValueOrDefault();
+				model.RegisterViewId = layout.RegisterViewId;
+				model.Filters = filterIds;
+				model.LayoutId = layoutId;
+				model.Name = layout.LayoutName;
+				model.Type = exportType;
+			}
+
+			if (model.RegisterViewId == null)
+			{
+				throw new Exception($"В раскладке {layoutId} не найдено RegisterViewId");
+			}
+			ViewBag.isPartialView = isPartialView;
+
+			return View("~/Views/Task/DownloadManagerForm.cshtml", model);
+		}
+
+		[HttpPost]
+		public JsonResult DownloadForm(DownloadManagerForm model)
+		{
+			string msg;
+			try
+			{
+				var layoutColumnSettings = model.ColumnSettings != null
+					? model.ColumnSettings.Select(x => new LayoutColumnSettingDto
+						{ AttributeId = x.AttributeId, HeaderName = x.HeaderName, Ordinal = x.Ordinal }).ToList()
+					: new List<LayoutColumnSettingDto>();
+
+				long layoutId = LayoutEditorDAL.SaveLayoutForDownloadManager(model.LayoutId, model.Name, model.RegisterId.GetValueOrDefault(),
+					model.RegisterViewId, layoutColumnSettings, model.Filters ?? new List<long>());
+
+				RegistersExportType dataType;
+
+				if (!Enum.TryParse(model.Type, true, out dataType))
+				{
+					throw new Exception("Передан некорректный тип данных выгрузки: " + model.Type);
+				}
+
+				OMLayout layout = OMLayout.Where(x => x.LayoutId == layoutId).Select(x => x.LayoutName).ExecuteFirstOrDefault();
+
+				RegistersExport.StartExport(layoutId, dataType, model.RegisterViewId);
+				msg =
+					$"Выгрузка данных для раскладки \"{layout.LayoutName}\" запущена. Результат будет доступен для скачивания после завершения.";
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				throw new Exception(e.Message);
+			}
+
+			return Json(new { message = msg });
+		}
+	}
 }
