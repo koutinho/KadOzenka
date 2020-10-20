@@ -39,7 +39,7 @@ var MapWithDefinedObjectSettings = {
 var ManagementDecisionSupportMapSettings = {
     containerId: "map",
     center: [55.76, 37.64],
-    zoom: 13
+    zoom: 11
 };
 
 var SelectedClusterSettings = {

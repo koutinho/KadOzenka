@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Documents.Dto;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
-	public class PartialDocumentViewModel
+	public class PartialDocumentViewModel : IValidatableObject
     {
         public string ModelPrefix { get; set; }
         private DocumentService DocumentService { get; }
@@ -23,7 +24,6 @@ namespace KadOzenka.Web.Models.GbuObject
         public DateTime? NewDocumentDate { get; set; }
         
         [Display(Name = "Дата выпуска")]
-        [Required(ErrorMessage = "'Дата выпуска документа' - обязательное поле")]
         public DateTime? NewDocumentApproveDate { get; set; }
 
         [Display(Name = "Дата изменения")]
@@ -39,6 +39,15 @@ namespace KadOzenka.Web.Models.GbuObject
         {
 	        NewDocumentDate = DateTime.Today;
 	        DocumentService = new DocumentService();
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+	        if (IsNewDocument && NewDocumentApproveDate == null)
+	        {
+		        yield return
+			        new ValidationResult("'Дата выпуска документа' - обязательное поле");
+	        }
         }
 
 
