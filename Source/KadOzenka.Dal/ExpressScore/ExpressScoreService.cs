@@ -75,6 +75,11 @@ namespace KadOzenka.Dal.ExpressScore
 		{
 			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
 			var qsGroup = GetQsConditionForCostFactors(segmentType);
+
+			if (unitsIds.Count == 0)
+			{
+				_log.Error("ЭО. Не надины юниты по кадастровому номеру для указанного тура");
+			}
 			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId, qsGroup) : null;
 		}
 
@@ -797,7 +802,13 @@ namespace KadOzenka.Dal.ExpressScore
 					if (analogFactor == null)
 					{
 						isBreak = true;
+						_log.Error("ЭО.Не найден юнит по кад номеру {kn} или аналог с ид {id}", analog.Kn, analog.Id);
 						break;
+					}
+
+					if(analogFactor.Value == null || analogFactor.Value == string.Empty)
+					{
+						_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора", analog.Id);
 					}
 
 					string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor.Value?.ToString();
@@ -970,6 +981,7 @@ namespace KadOzenka.Dal.ExpressScore
 						}
 						default:
 						{
+							_log.Warning("ЭО. Дефолная обработка оценочного фактора, т.к не был найден фактор в Ко части или в аналогах");
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
 								AddReportDictValue(ref costFactorsDataForReport,
