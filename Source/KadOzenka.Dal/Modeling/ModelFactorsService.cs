@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Modeling
 			return factor;
 		}
 
-		public int AddFactor(ModelFactorDto dto)
+		public int AddFactor(ModelFactorDto dto, long typifiedModelId)
 		{
 			if (dto.FactorId == null)
 				throw new Exception("Не передан ИД фактора");
@@ -41,9 +41,7 @@ namespace KadOzenka.Dal.Modeling
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
 				SignMarket = dto.SignMarket,
-				DictionaryId = null,
-				//TODO CIPJSKO-526 доделать для карточки тура
-				TypifiedModelId = null
+				TypifiedModelId = typifiedModelId
 			}.Save();
 		}
 
@@ -86,7 +84,7 @@ namespace KadOzenka.Dal.Modeling
 			if (tour.Year == 2016)
 				return;
 
-			ValidateAttributes(attributes, tour.Id);
+			ValidateAttributes(attributes, model.Id);
 
 			attributes.ForEach(x =>
 			{
@@ -102,7 +100,7 @@ namespace KadOzenka.Dal.Modeling
 		
 		#region Support Methods
 
-		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long tourId)
+		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId)
 		{
 			var errors = new List<string>();
 
@@ -115,6 +113,10 @@ namespace KadOzenka.Dal.Modeling
 			foreach (var modelAttribute in attributes)
 			{
 				var attribute = omAttributes.FirstOrDefault(y => y.Id == modelAttribute.AttributeId);
+				
+				var isTheSameAttributeExists = OMModelAttribute.Where(x => x.AttributeId == attribute.Id && x.GeneralModelId == generalModelId).ExecuteExists();
+				if (isTheSameAttributeExists)
+					throw new Exception($"Атрибут '{attribute?.Name}' уже был добавлен");
 
 				if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
 				    modelAttribute.DictionaryId.GetValueOrDefault() == 0)

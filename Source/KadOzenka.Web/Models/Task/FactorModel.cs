@@ -1,4 +1,5 @@
 ﻿using KadOzenka.Dal.Modeling.Dto.Factors;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Task
 {
@@ -6,6 +7,7 @@ namespace KadOzenka.Web.Models.Task
 	{
 		public long Id { get; set; }
 		public long? GeneralModelId { get; set; }
+		public KoAlgoritmType Type { get; set; }
 		public long? FactorId { get; set; }
 		public long? DictionaryId { get; set; }
 		public string Factor { get; set; }
@@ -24,6 +26,7 @@ namespace KadOzenka.Web.Models.Task
 				Id = Id,
 				GeneralModelId = GeneralModelId,
 				DictionaryId = DictionaryId,
+				Type = Type,
 				FactorId = FactorId,
 				Weight = Weight,
 				B0 = B0,

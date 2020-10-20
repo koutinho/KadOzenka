@@ -61,8 +61,9 @@ namespace KadOzenka.Web.Controllers
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
 		public ModelFactorsService ModelFactorsService { get; set; }
+		public ModelingService ModelingService { get; set; }
 
-		public TaskController(TemplateService templateService, ModelFactorsService modelFactorsService)
+		public TaskController(TemplateService templateService, ModelFactorsService modelFactorsService, ModelingService modelingService)
 		{
 			TaskService = new TaskService();
 			ModelService = new ModelingService(new DictionaryService());
@@ -75,7 +76,9 @@ namespace KadOzenka.Web.Controllers
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
             ModelFactorsService = modelFactorsService;
+            ModelingService = modelingService;
 		}
+
 
 		#region Карточка задачи
 
@@ -505,7 +508,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult EditModelFactor(long? id, long generalModelId)
+		public ActionResult EditModelFactor(long? id, long generalModelId, KoAlgoritmType type)
 		{
 			FactorModel factorDto;
 
@@ -535,10 +538,12 @@ namespace KadOzenka.Web.Controllers
 				{
 					Id = -1,
 					GeneralModelId = generalModelId,
+					Type = type,
 					FactorId = -1,
 					MarkerId = -1
 				};
 			}
+
 			return View(factorDto);
 		}
 
@@ -610,7 +615,16 @@ namespace KadOzenka.Web.Controllers
 			var dto = factorModel.ToDto();
 			if (factorModel.Id == -1)
 			{
-				ModelFactorsService.AddFactor(dto);
+				if (dto.GeneralModelId == null)
+					throw new Exception("Не передан ИД основной модели");
+				if(factorModel.Type == KoAlgoritmType.None)
+					throw new Exception("Не передан тип модели для создания фактора");
+
+				var typifiedModel = ModelingService.GetTypifiedModelsByGeneralModelId(dto.GeneralModelId.Value, dto.Type)?.FirstOrDefault();
+				if (typifiedModel == null)
+					typifiedModel = ModelingService.CreateTypifiedModels(dto.GeneralModelId.Value, dto.Type).First();
+
+				ModelFactorsService.AddFactor(dto, typifiedModel.Id);
 			}
 			else
 			{

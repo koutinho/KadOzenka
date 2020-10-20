@@ -268,8 +268,9 @@
         $('#upload-marks-catalog').addClass('k-state-disabled');
 
         $('#add-factor').on('click', function () {
+            var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Task")' + '?generalModelId=@Model.GeneralModelId',
+                '@Url.Action("EditModelFactor", "Task")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
                 'editFactorWindow',
                 function (e, param) {
                         if (param == true) {
