@@ -1971,19 +1971,35 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        var purposeOksDidNotChange = CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        var buildYearDidNotChange = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        var commissioningYearDidNotChange = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var wallMaterialDidNotChange = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
                         CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !nameDidNotChange,
+	                        IsPurposeOksChanged = !purposeOksDidNotChange,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        IsBuildYearChanged = !buildYearDidNotChange,
+	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
+	                        IsFloorsCountChanged = !floorsCountDidNotChange,
+	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
                     }
                     #endregion
                 }
@@ -2019,6 +2035,8 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
