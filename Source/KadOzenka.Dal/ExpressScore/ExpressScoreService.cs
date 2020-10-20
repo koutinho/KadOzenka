@@ -390,7 +390,7 @@ namespace KadOzenka.Dal.ExpressScore
                     Address = x.Address,
                     DealType = x.DealType_Code,
                     Vat = x.Vat_Code,
-                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded
+                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded.GetValueOrDefault()
                 }).ToList();
         }
 
