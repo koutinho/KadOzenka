@@ -518,11 +518,16 @@ namespace KadOzenka.Web.Controllers
 				if (factor == null)
 					throw new Exception($"Не найден фактор с ИД '{id}' для модели с ИД '{generalModelId}'");
 
+				var dictionary = OMModelAttribute
+					.Where(x => x.GeneralModelId == generalModelId && x.AttributeId == factor.FactorId)
+					.Select(x => x.DictionaryId).ExecuteFirstOrDefault();
+
 				factorDto = new FactorModel
 				{
 					Id = factor.Id,
 					GeneralModelId = generalModelId,
 					FactorId = factor.FactorId,
+					DictionaryId = dictionary?.DictionaryId,
 					Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
 					MarkerId = factor.MarkerId,
 					Weight = factor.Weight,
