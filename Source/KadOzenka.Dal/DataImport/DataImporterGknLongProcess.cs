@@ -18,6 +18,7 @@ using GemBox.Spreadsheet;
 using Ionic.Zip;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
 using SharpCompress.Archives.Rar;
@@ -26,7 +27,7 @@ namespace KadOzenka.Dal.DataImport
 {
     public class DataImporterGknLongProcess : ILongProcess
 	{
-		private static readonly ILogger Log = Log.ForContext<DataImporterGknLongProcess>();
+		private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGknLongProcess>();
 		public const string LongProcessName = "DataImporterGkn";
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, long registerId, long objectId)
@@ -49,8 +50,20 @@ namespace KadOzenka.Dal.DataImport
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			import.Save();
 
-            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
-        }
+			////TODO код для отладки
+			//new DataImporterGknLongProcess().StartProcess(new OMProcessType
+			//	{
+			//		Description = "debug test"
+			//	},
+			//	new OMQueue
+			//	{
+			//		Status_Code = Status.Added,
+			//		UserId = SRDSession.GetCurrentUserId(),
+			//		ObjectId = import.Id
+			//	}, new CancellationToken());
+
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
+		}
 
 	    public static void RestartImport(long? importId)
 	    {

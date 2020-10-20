@@ -1429,6 +1429,7 @@ namespace KadOzenka.Dal.DataImport
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
                         //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //параметры закомментированы по согласованию с аналитиком
                         var changedProperties = new UnitChangedProperties
                         {
 	                        IsNameChanged = !nameDidNotChange,
