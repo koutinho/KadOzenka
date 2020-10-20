@@ -5,7 +5,7 @@ namespace KadOzenka.Dal.Modeling.Dto
     public class ModelFactorDto
     {
         public long Id { get; set; }
-        public long? ModelId { get; set; }
+        public long? TypifiedModelId { get; set; }
         public long FactorId { get; set; }
         public string Factor { get; set; }
         public RegisterAttributeType Type { get; set; }

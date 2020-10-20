@@ -401,6 +401,7 @@ namespace KadOzenka.Dal.Modeling
 		            var factor = factors.FirstOrDefault(x => x.FactorId == attribute.AttributeId);
 		            if (factor != null)
 		            {
+			            attribute.FactorId = factor.Id;
 			            attribute.B0 = factor.B0;
 			            attribute.SignAdd = factor.SignAdd;
 			            attribute.SignDiv = factor.SignDiv;

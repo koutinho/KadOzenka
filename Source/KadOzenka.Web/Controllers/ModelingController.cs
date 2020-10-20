@@ -131,6 +131,15 @@ namespace KadOzenka.Web.Controllers
             return Json(fullTree);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public JsonResult GetAllAttributesByModel(long generalModelId)
+        {
+	        var generalModel = ModelingService.GetModelById(generalModelId);
+	        var objectType = generalModel.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU;
+
+	        return GetAllAttributes(generalModel.TourId, (int) objectType, null);
+        }
+
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)

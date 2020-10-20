@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Core.Register;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -452,7 +453,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult Model(ModelModel model)
 		{
-			var omModel = ModelService.GetModelEntityById(model.Id);
+			var omModel = ModelService.GetModelEntityById(model.GeneralModelId);
 
 			omModel.Name = model.Name;
 			omModel.Description = model.Description;
@@ -501,35 +502,36 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult EditModelFactor(long? id, long modelId)
+		public ActionResult EditModelFactor(long? id, long generalModelId)
 		{
 			ModelFactorDto factorDto;
 
 			if (id.HasValue)
 			{
-				OMModelFactor factor = OMModelFactor.Where(x => x.Id == id)
-					.SelectAll().ExecuteFirstOrDefault();
+				var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+				if (factor == null)
+					throw new Exception($"Не найден фактор с ИД '{id}' для модели с ИД '{generalModelId}'");
 
-				factorDto = new ModelFactorDto();
-				factorDto.Id = factor.Id;
-				factorDto.ModelId = factor.ModelId;
-				factorDto.FactorId = factor.FactorId;
-				factorDto.MarkerId = factor.MarkerId;
-				factorDto.Weight = factor.Weight;
-				factorDto.B0 = factor.B0;
-				factorDto.SignDiv = factor.SignDiv;
-				factorDto.SignAdd = factor.SignAdd;
-				factorDto.SignMarket = factor.SignMarket;
-
-				var sqlResult = GetModelFactorNameSql(new List<long?> { factorDto.FactorId });
-				factorDto.Factor = sqlResult[factorDto.FactorId];
+				factorDto = new ModelFactorDto
+				{
+					Id = factor.Id,
+					GeneralModelId = generalModelId,
+					FactorId = factor.FactorId,
+					Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
+					MarkerId = factor.MarkerId,
+					Weight = factor.Weight,
+					B0 = factor.B0,
+					SignDiv = factor.SignDiv,
+					SignAdd = factor.SignAdd,
+					SignMarket = factor.SignMarket
+				};
 			}
 			else
 			{
-				factorDto = new ModelFactorDto()
+				factorDto = new ModelFactorDto
 				{
 					Id = -1,
-					ModelId = modelId,
+					GeneralModelId = generalModelId,
 					FactorId = -1,
 					MarkerId = -1
 				};

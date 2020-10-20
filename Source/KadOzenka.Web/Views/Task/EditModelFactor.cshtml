@@ -6,11 +6,7 @@
             @Html.CustomLabel("Фактор")
         </div>
         <div class="col-sm-9">
-            @(Html.Kendo().DropDownList()
-                                                            .Name("Factor")
-                                                            .DataTextField("Text")
-                                                            .DataValueField("Value")
-            )
+            @Html.Kendo().DropDownListFor(x => x.FactorId).HtmlAttributes(new { style = "width: 100%;" })
         </div>
     </div>
     <div class="form-group">
@@ -76,12 +72,11 @@
                 SignDiv: $('#SignDiv').prop('checked'),
                 SignAdd: $('#SignAdd').prop('checked'),
                 SignMarket: $('#SignMarket').prop('checked'),
-                ModelId: '@Model.ModelId',
+                ModelId: '@Model.GeneralModelId',
                 MarkerId: '@Model.MarkerId',
-                FactorId: $('[name="Factor"]').data("kendoDropDownList").value()
-            };            
-                        
-            $.ajax({                
+                FactorId: $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value()
+            };
+            $.ajax({
                 type: 'POST',
                 data: dto,
                 success: function (response) {                    
@@ -100,33 +95,65 @@
             Common.UI.CloseWindow('editFactorWindow', window.parent);
         });
 
-        $('[name="Factor"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetModelFactorName", "Task")',
-                            data: {
-                                modelId: '@Model.ModelId'
-                            },
-                            dataType: 'json'
-                        }
-                    }
-                }
-            });
-
-        @if (Model.Id != -1)
-        {
-        <Text>
-        $('[name="Factor"]').data("kendoDropDownList").bind("dataBound", function () {
-            $('[name="Factor"]').data("kendoDropDownList").select(function (dataItem) {
-                return dataItem.Value == '@Model.FactorId.Value';
-            });
-        });
-        </Text>
-        }
+        initAttributes();
     });
+
+
+
+
+
+    function initAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetAllAttributesByModel", "Modeling")',
+            data: { generalModelId: '@Model.GeneralModelId' },
+            dataType: "json",
+            traditional: true,
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.Text,
+                        Value: item.Value,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.Text,
+                                Value: i.Value
+                            }
+
+                        })
+                    }
+                });
+                var attribute = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
+                if (attribute) {
+                    attribute.setDataSource(data);
+                    attribute.value('');
+                } else {
+                    attribute = $('#@nameof(Model.FactorId)').kendoDropDownTree({
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data,
+                        filter: "contains"
+                    }).data("kendoDropDownTree");
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var attributeTableTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    attribute.treeview.bind("select", attributeTableTreeSelect);
+                    if('@Model.FactorId')
+                        attribute.value('@Model.FactorId');
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
 </script>

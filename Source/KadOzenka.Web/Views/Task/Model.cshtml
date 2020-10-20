@@ -29,7 +29,7 @@
 <!--Основное окно с информацией о модели -->
 @using (Html.BeginForm("Model", "Task", FormMethod.Post, new {id = "saveModelForm", enctype = "multipart/form-data"}))
 {
-	@Html.HiddenFor(x => x.Id)
+	@Html.HiddenFor(x => x.GeneralModelId)
 	@Html.HiddenFor(x => x.GroupId)
 	<div id="toolbar"></div>
 	<div class="form-horizontal col-sm-12" style="margin-top: 10px">
@@ -226,7 +226,7 @@
         function AlgTypeChanged() {
             var algType = this.value();
             $.ajax({
-                url: '@Url.Action("GetFormula", "Task")' + '?modelId=@Model.Id&algType=' + algType,
+                url: '@Url.Action("GetFormula", "Task")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
                 type: 'POST',
                 success: function (e) {
                     $('#Formula').val(e.formula);
@@ -269,7 +269,7 @@
 
         $('#add-factor').on('click', function () {
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Task")' + '?modelId=@Model.Id',
+                '@Url.Action("EditModelFactor", "Task")' + '?generalModelId=@Model.GeneralModelId',
                 'editFactorWindow',
                 function (e, param) {
                         if (param == true) {
@@ -285,7 +285,7 @@
             if (row.length > 0) {
                 var data = grid.dataItem(row);
                 Common.UI.ShowWindow('Редактирование фактора',
-                    '@Url.Action("EditModelFactor", "Task")' + '?id=' + data.Id + '&modelId=@Model.Id',
+                    '@Url.Action("EditModelFactor", "Task")' + '?id=' + data.FactorId + '&generalModelId=@Model.GeneralModelId',
                     'editFactorWindow',
                     function (e, param) {
                         if (param == true) {
@@ -310,7 +310,7 @@
                         $.ajax({
                             url: '@Url.Action("DeleteModelFactor","Task")',
                             type: 'POST',
-                            data: { id: data.Id },
+                            data: { id: data.FactorId },
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
                                 if (response.Success) {
@@ -491,7 +491,7 @@
 
     function getDataForModelAttributesDownloader() {
         var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
-        return { modelId: '@Model.Id', type: modelType }
+        return { modelId: '@Model.GeneralModelId', type: modelType }
     }
 </script>
 

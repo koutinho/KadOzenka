@@ -6,7 +6,7 @@ namespace KadOzenka.Web.Models.Task
 {
     public class ModelModel
     {
-        public long Id { get; set; }
+        public long GeneralModelId { get; set; }
         public long? GroupId { get; set; }
         public bool IsPartial { get; set; }
 
@@ -41,7 +41,7 @@ namespace KadOzenka.Web.Models.Task
         {
             return new ModelModel
             {
-                Id = model.Id,
+	            GeneralModelId = model.Id,
                 GroupId = model.GroupId,
                 Name = model.Name,
                 Description = model.Description,
