@@ -674,6 +674,31 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 209 Атрибуты модели
+    /// </summary>
+    public partial class OMModelAttribute
+    {
+        /// <summary>
+        /// Ссылка на (264 Моделирование. Справочники)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
+
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 210 Значение факторов модели
     /// </summary>
     public partial class OMModelFactor

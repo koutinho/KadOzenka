@@ -15,6 +15,14 @@
         </div>
         <div class="form-group">
             <div class="col-sm-3">
+                @Html.CustomLabel("Словарь")
+            </div>
+            <div class="col-sm-9">
+                <div id="@nameof(Model.DictionaryId)"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
                 @Html.CustomLabel("Коэффициент")
             </div>
             <div class="col-sm-9">
@@ -75,25 +83,30 @@
         });
 
         initAttributes();
+        initDictionaries();
     });
 
 
 
-    function saveFactor() {
-        //FactorId: $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value()
+    function saveFactor(e) {
+        e.preventDefault();
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
+        formObject.DictionaryId = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList").value();
         $.ajax({
+            type: form.attr('method'),
             url: form.attr('action'),
             data: formObject,
             success: function (response) {
-                kendo.ui.progress($('body'), false);
                 Common.ShowMessage('Сохранение выполнено');
                 Common.UI.CloseWindow('editFactorWindow', window.parent, true);
             },
             error: function (response) {
-                kendo.ui.progress($('body'), false);
                 Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
             }
         });
     }
@@ -150,6 +163,34 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+
+    function initDictionaries() {
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetDictionaries", "Modeling")',
+                    dataType: 'json'
+                }
+            }
+        });
+        
+        var dictionary = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList");
+        if (dictionary) {
+            dictionary.setDataSource(dataSource);
+            dictionary.value(-1);
+        }
+        else {
+            dictionary = $("#@nameof(Model.DictionaryId)").kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource: dataSource,
+                filter: "contains"
+            }).data("kendoDropDownList");
+        }
+        if('@Model.DictionaryId')
+            dictionary.value('@Model.DictionaryId');
     }
 
 

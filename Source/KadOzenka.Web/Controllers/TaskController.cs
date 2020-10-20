@@ -503,6 +503,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
+		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long generalModelId)
 		{

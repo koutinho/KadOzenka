@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -107,8 +106,8 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var errors = new List<string>();
 
-			var attributeIds = attributes.Select(x => x.AttributeId);
-			var dictionaryIds = attributes.Select(x => x.DictionaryId);
+			var attributeIds = attributes.Select(x => x.AttributeId).ToList();
+			var dictionaryIds = attributes.Select(x => x.DictionaryId).ToList();
 
 			var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
 			var omDictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute();
