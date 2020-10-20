@@ -5617,6 +5617,208 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 118 Таблица, содержащая коэффициенты для проверки на выбросы (MARKET_COEFF_FOR_OUTLIERS_CHECKING)
+    /// </summary>
+    [RegisterInfo(RegisterID = 118)]
+    [Serializable]
+    public partial class OMCoefficientsOutliersChecking : OMBaseClass<OMCoefficientsOutliersChecking>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _zone;
+        /// <summary>
+        /// 11800200 Зона (ZONE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800200)]
+        public long Zone
+        {
+            get
+            {
+                CheckPropertyInited("Zone");
+                return _zone;
+            }
+            set
+            {
+                _zone = value;
+                NotifyPropertyChanged("Zone");
+            }
+        }
+
+
+        private string _district;
+        /// <summary>
+        /// 11800300 Округ (DISTRICT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800300)]
+        public string District
+        {
+            get
+            {
+                CheckPropertyInited("District");
+                return _district;
+            }
+            set
+            {
+                _district = value;
+                NotifyPropertyChanged("District");
+            }
+        }
+
+
+        private Hunteds _district_Code;
+        /// <summary>
+        /// 11800300 Округ (справочный код) (DISTRICT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800300)]
+        public Hunteds District_Code
+        {
+            get
+            {
+                CheckPropertyInited("District_Code");
+                return this._district_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_district))
+                    {
+                         _district = descr;
+                    }
+                }
+                else
+                {
+                     _district = descr;
+                }
+
+                this._district_Code = value;
+                NotifyPropertyChanged("District");
+                NotifyPropertyChanged("District_Code");
+            }
+        }
+
+
+        private string _region;
+        /// <summary>
+        /// 11800400 Район (REGION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800400)]
+        public string Region
+        {
+            get
+            {
+                CheckPropertyInited("Region");
+                return _region;
+            }
+            set
+            {
+                _region = value;
+                NotifyPropertyChanged("Region");
+            }
+        }
+
+
+        private Districts _region_Code;
+        /// <summary>
+        /// 11800400 Район (справочный код) (REGION_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800400)]
+        public Districts Region_Code
+        {
+            get
+            {
+                CheckPropertyInited("Region_Code");
+                return this._region_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_region))
+                    {
+                         _region = descr;
+                    }
+                }
+                else
+                {
+                     _region = descr;
+                }
+
+                this._region_Code = value;
+                NotifyPropertyChanged("Region");
+                NotifyPropertyChanged("Region_Code");
+            }
+        }
+
+
+        private decimal? _mindeltacoef;
+        /// <summary>
+        /// 11800500 Коэффициент разности минимального значения (MIN_DELTA_COEF)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800500)]
+        public decimal? MinDeltaCoef
+        {
+            get
+            {
+                CheckPropertyInited("MinDeltaCoef");
+                return _mindeltacoef;
+            }
+            set
+            {
+                _mindeltacoef = value;
+                NotifyPropertyChanged("MinDeltaCoef");
+            }
+        }
+
+
+        private decimal? _maxdeltacoef;
+        /// <summary>
+        /// 11800600 Коэффициент разности максимального значения (MAX_DELTA_COEF)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11800600)]
+        public decimal? MaxDeltaCoef
+        {
+            get
+            {
+                CheckPropertyInited("MaxDeltaCoef");
+                return _maxdeltacoef;
+            }
+            set
+            {
+                _maxdeltacoef = value;
+                NotifyPropertyChanged("MaxDeltaCoef");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>

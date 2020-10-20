@@ -13,6 +13,7 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
@@ -29,14 +30,16 @@ namespace KadOzenka.Web.Controllers
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
+        public OutliersCheckingService OutliersCheckingService { get; set; }
 
-		public MarketObjectsController()
+        public MarketObjectsController()
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
 			CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
+            OutliersCheckingService = new OutliersCheckingService();
         }
 
         [HttpGet]
@@ -541,5 +544,33 @@ namespace KadOzenka.Web.Controllers
 
         #endregion Correction Settings
 
+        #region Outliers Checking
+
+        [HttpGet]
+        public ActionResult OutliersSettings(bool isPartialView = false)
+        {
+	        ViewBag.isPartialView = isPartialView;
+            return View("~/Views/MarketObjects/OutliersCheckingSettings.cshtml");
+        }
+
+        [HttpGet]
+        public JsonResult GetOutliersSettingsCoefficients()
+        {
+	        var settingsDto = OutliersCheckingService.GetOutliersCheckingSettings();
+	        var models = OutliersSettingsModel.FromDto(settingsDto);
+
+            return Json(models);
+        }
+
+  
+        public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
+        {
+	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
+	        OutliersCheckingService.UpdateOutliersCheckingSettings(model.ToDto());
+
+	        return Json(new[] { model });
+        }
+
+        #endregion Outliers Checking
     }
 }

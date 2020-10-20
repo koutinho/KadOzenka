@@ -1,0 +1,38 @@
+﻿
+
+<div class="form-horizontal col-sm-12">
+    <div class="col-sm-12">
+        <button class="k-button outliers-settings-button">Настройка коэффициентов</button>
+    </div>
+</div>
+<div class="outliers-settings-window"></div>
+
+
+<style>
+</style>
+
+<script src="~/js/custom-validation.js" charset="utf-8"></script>
+<script type="text/javascript">
+    var settingsWindow = $(".outliers-settings-window");
+    var wnd = settingsWindow.kendoWindow({
+        width: '1300px',
+        title: "Настройка коэффициентов для проверки на выбросы",
+        visible: false,
+        resizable: true,
+        modal: true,
+        appendTo: 'body',
+        height: "700px"
+    }).data('kendoWindow');
+    wnd.wrapper.addClass("scrollable");
+
+    $(function () {
+        $('.outliers-settings-button').click(() => {
+            $(".outliers-settings-window").html("");
+            var wnd = settingsWindow.data("kendoWindow");
+
+            wnd.refresh(
+                "@Url.Action("OutliersSettings", "MarketObjects", new { isPartialView = true })");
+            wnd.center().open();
+        });
+    });
+</script>
