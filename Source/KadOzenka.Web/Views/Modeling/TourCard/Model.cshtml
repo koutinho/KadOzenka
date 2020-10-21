@@ -178,7 +178,6 @@
         });
 
 
-
         var gridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -210,7 +209,6 @@
             scrollable: true,
             selectable: true
         });
-
         $('#grid').data("kendoGrid").tbody.kendoTooltip({
             filter: "td",
             content: function (e) {
@@ -222,126 +220,21 @@
         });
 
 
-        $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);
-        function AlgTypeChanged() {
-            var algType = this.value();
-            $.ajax({
-                url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
-                type: 'POST',
-                success: function (e) {
-                    $('#Formula').val(e.formula);
-                },
-                error: function (e) {
-                    Common.ShowError(e.responseText);
-                }
-            });
-            $('#grid').data('kendoGrid').dataSource.read();
-		}
+        $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', onTypeChanged);
 
-        CalculationTypeChanged();
-        $('#CalculationTypeCode').data('kendoDropDownList').bind('change', CalculationTypeChanged);
+        $('#CalculationTypeCode').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
+        onCalculationTypeChanged();
 
-        $("#grid").data("kendoGrid").bind('change', GridChanged);
-        function GridChanged() {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length == 0) {
-                $('#edit-factor').addClass('k-state-disabled');
-                $('#remove-factor').addClass('k-state-disabled');
-                $('#show-marks').addClass('k-state-disabled');
-                $('#download-marks-catalog').addClass('k-state-disabled');
-                $('#upload-marks-catalog').addClass('k-state-disabled');
-            }
-            else {
-                $('#edit-factor').removeClass('k-state-disabled');
-                $('#remove-factor').removeClass('k-state-disabled');
-                $('#show-marks').removeClass('k-state-disabled');
-                $('#download-marks-catalog').removeClass('k-state-disabled');
-                $('#upload-marks-catalog').removeClass('k-state-disabled');
-            }
-        }
-
-        $('#edit-factor').addClass('k-state-disabled');
-        $('#remove-factor').addClass('k-state-disabled');
-        $('#show-marks').addClass('k-state-disabled');
-        $('#download-marks-catalog').addClass('k-state-disabled');
-        $('#upload-marks-catalog').addClass('k-state-disabled');
-
-        $('#add-factor').on('click', function () {
-            var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
-            Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
-                'editFactorWindow',
-                function (e, param) {
-                        if (param == true) {
-                            UpdateView();
-                        }
-                    },
-                800, 400);
-        });
-
-        $('#edit-factor').on('click', function () {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length > 0) {
-                var data = grid.dataItem(row);
-                Common.UI.ShowWindow('Редактирование фактора',
-                    '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + data.FactorId + '&generalModelId=@Model.GeneralModelId',
-                    'editFactorWindow',
-                    function (e, param) {
-                        if (param == true) {
-                            UpdateView();
-                        }
-                    },
-                    800, 400
-                );
-            }
-        });
-
-        $('#remove-factor').on('click', function () {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length > 0) {
-                var data = grid.dataItem(row);
-                Common.UI.ShowConfirm({
-                    title: '',
-                    content: 'Удалить фактор?',
-                    onSuccess: function () {
-                        kendo.ui.progress($('body'), true);
-                        $.ajax({
-                            url: '@Url.Action("DeleteModelFactor", "Modeling")',
-                            type: 'POST',
-                            data: { id: data.Id },
-                            success: function (response) {
-                                kendo.ui.progress($('body'), false);
-                                if (response.Success) {
-                                    Common.ShowMessage(response.Success);
-                                    UpdateView();
-                                }
-                            },
-                            error: function (response) {
-                                kendo.ui.progress($('body'), false);
-                                Common.ShowError(response.responseText);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        $('#show-marks').on('click', function () {
-            var selectedRowData = getSelectedRowInFactorsGrid();
-            if (selectedRowData) {
-                var factorId = selectedRowData.AttributeId;
-                Common.UI.ShowWindow('Метки',
-	                '@Url.Action("MarksGrid", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' + '&factorId=' + factorId,
-	                'editFactorWindow',
-	                function (e) {},
-	                800, 400);
-            }
-        });
+        $("#grid").data("kendoGrid").bind('change', onGridChanged);
+        $("#grid").data("kendoGrid").bind('dataBound', onGridChanged);
 
 
+        $('#add-factor').on('click', addFactor);
+        $('#edit-factor').on('click', editFactor);
+        $('#remove-factor').on('click', deleteFactor);
+
+
+        $('#show-marks').on('click', showMarks);
         $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
         $('#download-marks-catalog').on('click', downloadMarksCatalog);
 
@@ -377,8 +270,8 @@
 
 
 
-	function CalculationTypeChanged() {
-		var dropdownList = $('#CalculationTypeCode').data('kendoDropDownList');
+    function onCalculationTypeChanged() {
+        var dropdownList = $('#CalculationTypeCode').data('kendoDropDownList');
 		if (!dropdownList)
 			return;
 		var calculationType = dropdownList.value();
@@ -444,6 +337,116 @@
     }
 
 
+    function onTypeChanged() {
+        var algType = this.value();
+        $.ajax({
+            url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
+            type: 'POST',
+            success: function (e) {
+                $('#Formula').val(e.formula);
+            },
+            error: function (e) {
+                Common.ShowError(e.responseText);
+            }
+        });
+        $('#grid').data('kendoGrid').dataSource.read();
+    }
+
+
+    function onGridChanged() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length == 0) {
+            $('#edit-factor').addClass('k-state-disabled');
+            $('#remove-factor').addClass('k-state-disabled');
+            $('#show-marks').addClass('k-state-disabled');
+            $('#download-marks-catalog').addClass('k-state-disabled');
+            $('#upload-marks-catalog').addClass('k-state-disabled');
+        }
+        else {
+            $('#edit-factor').removeClass('k-state-disabled');
+            $('#remove-factor').removeClass('k-state-disabled');
+            $('#show-marks').removeClass('k-state-disabled');
+            $('#download-marks-catalog').removeClass('k-state-disabled');
+            $('#upload-marks-catalog').removeClass('k-state-disabled');
+        }
+    }
+
+
+    function addFactor() {
+        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
+        Common.UI.ShowWindow('Редактирование фактора',
+            '@Url.Action("EditModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
+            'editFactorWindow',
+            function (e, param) {
+                if (param == true) {
+                    UpdateView();
+                }
+            },
+            800, 400);
+    }
+
+
+    function editFactor() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            Common.UI.ShowWindow('Редактирование фактора',
+                '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + selectedRowData.FactorId + '&generalModelId=@Model.GeneralModelId',
+                'editFactorWindow',
+                function (e, param) {
+                    if (param == true) {
+                        UpdateView();
+                    }
+                },
+                800, 400
+            );
+        }
+    }
+
+
+    function deleteFactor() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            Common.UI.ShowConfirm({
+                title: '',
+                content: 'Удалить фактор?',
+                onSuccess: function () {
+                    kendo.ui.progress($('body'), true);
+                    $.ajax({
+                        url: '@Url.Action("DeleteModelFactor", "Modeling")',
+                        type: 'POST',
+                        data: { id: selectedRowData.Id },
+                        success: function (response) {
+                            kendo.ui.progress($('body'), false);
+                            if (response.Success) {
+                                Common.ShowMessage(response.Success);
+                                UpdateView();
+                            }
+                        },
+                        error: function (response) {
+                            kendo.ui.progress($('body'), false);
+                            Common.ShowError(response.responseText);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+
+    function showMarks() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var factorId = selectedRowData.AttributeId;
+            Common.UI.ShowWindow('Метки',
+                '@Url.Action("MarksGrid", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' + '&factorId=' + factorId,
+                'editFactorWindow',
+                function (e) {},
+                800, 400);
+        }
+    }
+
+
     function downloadMarksCatalog() {
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
@@ -487,7 +490,6 @@
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    console.log(response);
                     if (response.success) {
                         window.location = '@Url.Action("DownloadExcelFile", "Modeling")' +
                             "?fileName=" +
