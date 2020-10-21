@@ -897,12 +897,6 @@ namespace KadOzenka.Web.Controllers
         #region Метки
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult MarkCatalog()
-        {
-	        return View("TourCard/MarkCatalog");
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetMarkCatalog(long? groupId, long? factorId)
         {
 	        var markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
@@ -958,7 +952,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
 
-	        return File(fileStream, Helpers.Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
+	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]

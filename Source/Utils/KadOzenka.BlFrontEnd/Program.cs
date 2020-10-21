@@ -45,6 +45,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
 
@@ -334,7 +335,7 @@ namespace KadOzenka.BlFrontEnd
                 var trainingInputParameters = new GeneralModelingInputParameters
                 {
                     ModelId = 46847140,
-                    ModelType = ModelType.Linear
+                    ModelType = KoAlgoritmType.Line
                 };
                 var inputRequest = new ModelingInputParameters
                 {
