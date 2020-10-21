@@ -1,10 +1,11 @@
-﻿@model KadOzenka.Web.Models.Tour.TourModel
-
+﻿
 <div class="form-horizontal col-sm-12">
     <div style="display: flex;">
         <div id="markGrid"></div>
     </div>
 </div>
+
+
 
 <script>
     $(document).ready(function () {
@@ -14,8 +15,7 @@
                 read: {
                     url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: {
-                        groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
+                    data: { generalModelId: '@ViewBag.GeneralModelId', factorId: '@ViewBag.FactorId' },
                     dataType: 'json'
                 },
                 create: {
@@ -52,10 +52,9 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        GroupId: { editable: false},
-                        FactorId: { editable: false },
-                        ValueFactor: { validation: { required: true } },
-                        MetkaFactor: { type: "number", nullable: true  }
+                        GeneralModelId: { editable: false},
+                        Value: { validation: { required: true } },
+                        Metka: { type: "number", nullable: true  }
                     }
                 }
             },
@@ -81,17 +80,14 @@
             dataSource: markGridDataSource,
             columns: [
                 {
-                    field: 'ValueFactor',
+                    field: 'Value',
                     title: 'Значение',
-                    headerAttributes: {                            
-                        style: "text-align: center;"
-                    }
-                }, {
-                    field: 'MetkaFactor',
+                    headerAttributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'Metka',
                     title: 'Метка',
-                    headerAttributes: {
-                        style: "text-align: center;"
-                    },
+                    headerAttributes: { style: "text-align: center;" },
                     //по умолчанию точность новой метки - 2 знака после запятой, 
                     //переопределяем это
                     editor: function (container, options) {
@@ -127,12 +123,11 @@
             },
             beforeEdit: function (e) {
                 if (e.model.isNew()) {
-                    e.model.GroupId = '@ViewBag.GroupId';
+                    e.model.GeneralModelId = '@ViewBag.GeneralModelId';
                     e.model.FactorId = '@ViewBag.FactorId';
                 }
             }
         });
-
     });
 
 </script>

@@ -334,10 +334,9 @@
             var row = grid.select();
             if (row.length > 0) {
                 var data = grid.dataItem(row);
-                var groupId = '@Model.GroupId';
                 var factorId = data.AttributeId;
                 Common.UI.ShowWindow('Метки',
-	                '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId,
+	                '@Url.Action("MarksGrid", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' + '&factorId=' + factorId,
 	                'editFactorWindow',
 	                function (e) {},
 	                800, 400);

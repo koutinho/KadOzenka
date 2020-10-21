@@ -896,55 +896,52 @@ namespace KadOzenka.Web.Controllers
 
         #region Метки
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public JsonResult GetMarkCatalog(long? groupId, long? factorId)
-        {
-	        var markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
-		        .SelectAll().Execute();
-
-	        return Json(markCatalog);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult CreateMark(OMMarkCatalog markCatalog)
-        {
-	        var id = markCatalog.Save();
-
-	        //хот-фикс, чтобы работало обновление ранее созданной метки
-	        //TODO нужно переписать, чтобы view работало со своей моделью, а не с моделью ОРМ
-	        var newMark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-
-	        return Json(newMark);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UpdateMark(OMMarkCatalog markCatalog)
-        {
-	        markCatalog.Save();
-
-	        return Json(markCatalog);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark(OMMarkCatalog markCatalog)
-        {
-	        markCatalog.Destroy();
-
-	        return Json(markCatalog);
-        }
-
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public ActionResult MarksGrid(long groupId, long factorId)
+        public ActionResult MarksGrid(long generalModelId, long factorId)
         {
-	        //TODO переделать на модель
-	        ViewBag.GroupId = groupId;
+	        ViewBag.GeneralModelId = generalModelId;
 	        ViewBag.FactorId = factorId;
 
 	        return View("TourCard/MarksGrid");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public JsonResult GetMarkCatalog(long generalModelId, long factorId)
+        {
+	        var marks = ModelFactorsService.GetMarks(generalModelId, factorId);
+
+	        var markModels = marks.Select(MarkModel.ToModel).ToList();
+
+	        return Json(markModels);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult CreateMark(MarkModel markCatalog)
+        {
+	        var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GeneralModelId);
+	        markCatalog.Id = id;
+
+	        return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UpdateMark(MarkModel markCatalog)
+        {
+	        ModelFactorsService.UpdateMark(markCatalog.Id, markCatalog.Value, markCatalog.Metka);
+
+	        return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult DeleteMark(MarkModel markCatalog)
+        {
+	        ModelFactorsService.DeleteMark(markCatalog.Id);
+
+	        return Json(markCatalog);
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]

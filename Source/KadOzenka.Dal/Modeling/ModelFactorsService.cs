@@ -12,6 +12,8 @@ namespace KadOzenka.Dal.Modeling
 {
 	public class ModelFactorsService
 	{
+		#region Факторы
+
 		public OMModelFactor GetFactorById(long id)
 		{
 			var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -97,7 +99,60 @@ namespace KadOzenka.Dal.Modeling
 			});
 		}
 
-		
+		#endregion
+
+		#region Метки
+
+		public List<OMMarkCatalog> GetMarks(long generalModelId, long factorId)
+		{
+			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GeneralModelId == generalModelId).SelectAll().Execute();
+		}
+
+		public OMMarkCatalog GetMarkById(long id)
+		{
+			var mark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			if (mark == null)
+				throw new Exception($"Не найдена метка с ИД {id}");
+
+			return mark;
+		}
+
+		public int CreateMark(string value, decimal? metka, long? factorId, long? generalModelId)
+		{
+			if (generalModelId == null)
+				throw new Exception("Не переден ИД основной модели");
+
+			var id = new OMMarkCatalog
+			{
+				GroupId = -1,
+				FactorId = factorId,
+				MetkaFactor = metka,
+				ValueFactor = value,
+				GeneralModelId = generalModelId,
+			}.Save();
+
+			return id;
+		}
+
+		public void UpdateMark(long id, string value, decimal? metka)
+		{
+			var mark = GetMarkById(id);
+
+			mark.ValueFactor = value;
+			mark.MetkaFactor = metka;
+
+			mark.Save();
+		}
+
+		public void DeleteMark(long id)
+		{
+			var mark = GetMarkById(id);
+
+			mark.Destroy();
+		}
+
+		#endregion
+
 		#region Support Methods
 
 		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId)
