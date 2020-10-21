@@ -16,6 +16,7 @@ using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using Kendo.Mvc.Extensions;
+using ObjectModel.Directory.ES;
 using ObjectModel.Ko;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
@@ -24,12 +25,10 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelingService
 	{
 		public DictionaryService DictionaryService { get; set; }
-		public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService(DictionaryService dictionaryService)
 		{
 			DictionaryService = dictionaryService;
-			ModelFactorsService = new ModelFactorsService();
 		}
 
         #region CRUD General Model
@@ -71,7 +70,8 @@ namespace KadOzenka.Dal.Modeling
                     x.GroupId,
 			        x.ParentGroup.Id,
 			        x.ParentGroup.GroupName,
-			        x.IsOksObjectType
+			        x.IsOksObjectType,
+                    x.Type_Code
 		        }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -91,7 +91,8 @@ namespace KadOzenka.Dal.Modeling
 				TourYear = tour.Year.GetValueOrDefault(),
 				GroupId = model.ParentGroup.Id,
 		        GroupName = model.ParentGroup.GroupName,
-		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault()
+		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
+                Type = model.Type_Code
 	        };
         }
 
@@ -137,14 +138,19 @@ namespace KadOzenka.Dal.Modeling
 				Name = modelDto.Name,
 				Description = modelDto.Description,
 				GroupId = modelDto.GroupId,
-				AlgoritmType_Code = KoAlgoritmType.None
+                CalculationType_Code = KoCalculationType.Comparative, 
+				AlgoritmType_Code = KoAlgoritmType.None,
+                Type_Code = modelDto.Type,
+                Formula = "-"
 			};
-			model.Formula = model.GetFormulaFull(true);
 
 			var modelId = model.Save();
 
-			CreateTypifiedModels(modelId, KoAlgoritmType.None);
-
+			if (modelDto.Type == KoModelType.Automatic)
+			{
+				CreateTypifiedModels(modelId, KoAlgoritmType.None);
+            }
+			
             return modelId;
 		}
 
@@ -161,6 +167,7 @@ namespace KadOzenka.Dal.Modeling
 
             using (var ts = new TransactionScope())
             {
+                existedModel.Type_Code = modelDto.Type;
                 existedModel.Name = modelDto.Name;
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
@@ -173,7 +180,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Save();
 
                 existedModelAttributes.ForEach(x => x.Destroy());
-                ModelFactorsService.AddModelAttributes(existedModel.Id, newAttributes);
+                AddModelAttributes(existedModel.Id, newAttributes);
 
                 ts.Complete();
             }
@@ -181,28 +188,124 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelAttribute> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
-        {
-            var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
-            var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
-            var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
 
-            var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
-            var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
-            var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
+		#region Support
 
-            return !(existedModel.GroupId == newModel.GroupId &&
-                   existedModel.IsOksObjectType == newModel.IsOksObjectType &&
-                   areAttributeIdsEqual &&
-                   areDictionaryIdsSequenceEqualEqual);
-        }
+		private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelAttribute> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+		{
+			var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+			var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+			var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
+
+			var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
+			var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
+			var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
+
+			return !(existedModel.GroupId == newModel.GroupId &&
+			         existedModel.IsOksObjectType == newModel.IsOksObjectType &&
+			         areAttributeIdsEqual && areDictionaryIdsSequenceEqualEqual &&
+			         existedModel.Type_Code == newModel.Type);
+		}
+
+		public void AddModelAttributes(long? generalModelId, List<ModelAttributeRelationDto> attributes)
+		{
+			if (attributes == null || attributes.Count == 0)
+				return;
+
+			var model = OMModel.Where(x => x.Id == generalModelId).Select(x => new
+			{
+				x.ParentGroup.Id,
+				x.ParentGroup.GroupName
+			}).ExecuteFirstOrDefault();
+			if (model == null)
+				throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
+			if (model.ParentGroup == null)
+				throw new Exception($"Для модели '{model.Name}' (ИД='{generalModelId}') не найдена группа");
+
+			var tour = OMTourGroup.Where(x => x.GroupId == model.ParentGroup.Id).Select(x => new
+			{
+				x.ParentTour.Id,
+				x.ParentTour.Year
+			}).ExecuteFirstOrDefault()?.ParentTour;
+			if (tour == null)
+				throw new Exception($"Не найден тур для группы '{model.ParentGroup?.GroupName}' (ИД='{model.ParentGroup.Id}')");
+			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
+			if (tour.Year == 2016)
+				return;
+
+			ValidateAttributes(attributes, model.Id);
+
+			attributes.ForEach(x =>
+			{
+				new OMModelAttribute
+				{
+					GeneralModelId = generalModelId.GetValueOrDefault(),
+					AttributeId = x.AttributeId,
+					DictionaryId = x.DictionaryId
+				}.Save();
+			});
+		}
+		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId)
+		{
+			var errors = new List<string>();
+
+			var attributeIds = attributes.Select(x => x.AttributeId).ToList();
+			var dictionaryIds = attributes.Select(x => x.DictionaryId).ToList();
+
+			var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
+			var omDictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute();
+
+			foreach (var modelAttribute in attributes)
+			{
+				var attribute = omAttributes.FirstOrDefault(y => y.Id == modelAttribute.AttributeId);
+
+				var isTheSameAttributeExists = OMModelAttribute.Where(x => x.AttributeId == attribute.Id && x.GeneralModelId == generalModelId).ExecuteExists();
+				if (isTheSameAttributeExists)
+					throw new Exception($"Атрибут '{attribute?.Name}' уже был добавлен");
+
+				if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
+				    modelAttribute.DictionaryId.GetValueOrDefault() == 0)
+				{
+					errors.Add($"Для атрибута '{attribute.Name}' нужно выбрать словарь");
+				}
+				if (modelAttribute.DictionaryId.GetValueOrDefault() != 0)
+				{
+					var dictionaryType = omDictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId)?.Type_Code;
+					switch (attribute?.Type)
+					{
+						case RegisterAttributeType.STRING:
+						{
+							if (dictionaryType != ReferenceItemCodeType.String)
+								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
+							break;
+						}
+						case RegisterAttributeType.DATE:
+						{
+							if (dictionaryType != ReferenceItemCodeType.Date)
+								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
+							break;
+						}
+					}
+				}
+			}
+
+			if (errors.Count > 0)
+				throw new Exception(string.Join("<br>", errors));
+		}
+
+		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
+		{
+			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
+		}
+
+		#endregion
 
         #endregion
 
 
         #region Typified Model
 
-		public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId)
+        public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId)
 		{
 			var maxCountOfTypifiedModels = 3;
 
@@ -321,7 +424,7 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        public List<ModelAttributeRelationDto> GetModelFactors(long modelId, KoAlgoritmType type)
+        public List<ModelAttributeRelationDto> GetAttributesForAutomaticModel(long modelId, KoAlgoritmType type)
         {
 	        var dictionaryJoin = new QSJoin
 	        {
@@ -403,6 +506,76 @@ namespace KadOzenka.Dal.Modeling
 			            attribute.Coefficient = factor.Weight;
                     }
 	            });
+            }
+
+            return attributes;
+        }
+
+        public List<ModelAttributeRelationDto> GetAttributesForManualModel(long modelId)
+        {
+	        var factorsJoin = new QSJoin
+	        {
+		        RegisterId = OMModelFactor.GetRegisterId(),
+		        JoinCondition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.Equal,
+			        LeftOperand = OMModelAttribute.GetColumn(x => x.AttributeId),
+			        RightOperand = OMModelFactor.GetColumn(x => x.FactorId)
+		        },
+		        JoinType = QSJoinType.Left
+	        };
+
+	        var query = GetModelFactorsQuery(modelId, factorsJoin);
+
+            query.AddColumn(OMModelAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.FactorId)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(ModelAttributeRelationDto.SignAdd)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+
+            var sql = query.GetSql();
+
+            var attributes = new List<ModelAttributeRelationDto>();
+            var table = query.ExecuteQuery();
+            for (var i = 0; i < table.Rows.Count; i++)
+            {
+                var row = table.Rows[i];
+
+                var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
+
+                var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
+
+                var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
+                var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
+                var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
+
+                var factorId = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToLongNullable();
+                var b0 = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToDecimalNullable();
+                var signAdd = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToBooleanNullable();
+                var signDiv = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToBooleanNullable();
+                var signMarket = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToBooleanNullable();
+                var coefficient = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToDecimalNullable();
+
+                attributes.Add(new ModelAttributeRelationDto
+                {
+                    Id = id,
+                    RegisterId = registerId,
+                    AttributeId = attributeId,
+                    AttributeName = attributeName,
+                    AttributeType = attributeType,
+                    FactorId = factorId.GetValueOrDefault(),
+                    B0 = b0.GetValueOrDefault(),
+                    SignAdd = signAdd.GetValueOrDefault(),
+                    SignDiv = signDiv.GetValueOrDefault(),
+                    SignMarket = signMarket.GetValueOrDefault(),
+                    Coefficient = coefficient
+                });
             }
 
             return attributes;
@@ -782,6 +955,10 @@ namespace KadOzenka.Dal.Modeling
             var isGroupBelongToTour = OMTourGroup.Where(x => x.TourId == modelDto.TourId && x.GroupId == modelDto.GroupId).ExecuteExists();
             if (!isGroupBelongToTour)
                 message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
+
+            var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
+            if (isModelExists)
+	            message.AppendLine("Модель для данной группы уже существует");
 
             if (message.Length != 0)
 				throw new Exception(message.ToString());

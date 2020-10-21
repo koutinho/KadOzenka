@@ -147,10 +147,20 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
-			var attributes = ModelingService.GetModelFactors(modelId, type);
+			List<ModelAttributeRelationDto> attributes;
+
+            var model = ModelingService.GetModelEntityById(modelId);
+			if (model.Type_Code == KoModelType.Automatic)
+			{
+				attributes = ModelingService.GetAttributesForAutomaticModel(modelId, type);
+			}
+			else
+			{
+				attributes = ModelingService.GetAttributesForManualModel(modelId);
+			}
 
 			return Json(attributes);
-		}
+        }
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups(long tourId)
@@ -770,6 +780,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult Model(ModelFromTourCardModel model)
         {
 	        var omModel = ModelingService.GetModelEntityById(model.GeneralModelId);
+	        if (omModel.Type_Code == KoModelType.Automatic)
+		        throw new Exception($"Нельзя обновить модель с типом '{KoModelType.Automatic.GetEnumDescription()}'");
 
 	        omModel.Name = model.Name;
 	        omModel.Description = model.Description;
@@ -790,9 +802,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingService.GetModelEntityById(modelId);
 
-	        model.AlgoritmType_Code = (KoAlgoritmType)algType;
+            model.AlgoritmType_Code = (KoAlgoritmType)algType;
 	        var formula = model.GetFormulaFull(true);
 
 	        return Json(new { formula });
@@ -802,26 +814,19 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public ActionResult EditModelFactor(long? id, long generalModelId, KoAlgoritmType type)
+        public ActionResult EditModelFactor(long? id, long generalModelId)
         {
 	        FactorModel factorDto;
 
 	        if (id.HasValue)
 	        {
-		        var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-		        if (factor == null)
-			        throw new Exception($"Не найден фактор с ИД '{id}' для модели с ИД '{generalModelId}'");
-
-		        var dictionary = OMModelAttribute
-			        .Where(x => x.GeneralModelId == generalModelId && x.AttributeId == factor.FactorId)
-			        .Select(x => x.DictionaryId).ExecuteFirstOrDefault();
+		        var factor = ModelFactorsService.GetFactorById(id);
 
 		        factorDto = new FactorModel
 		        {
 			        Id = factor.Id,
 			        GeneralModelId = generalModelId,
 			        FactorId = factor.FactorId,
-			        DictionaryId = dictionary?.DictionaryId,
 			        Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
 			        MarkerId = factor.MarkerId,
 			        Weight = factor.Weight,
@@ -837,7 +842,6 @@ namespace KadOzenka.Web.Controllers
 		        {
 			        Id = -1,
 			        GeneralModelId = generalModelId,
-			        Type = type,
 			        FactorId = -1,
 			        MarkerId = -1
 		        };
@@ -853,26 +857,12 @@ namespace KadOzenka.Web.Controllers
 	        var dto = factorModel.ToDto();
 	        if (factorModel.Id == -1)
 	        {
-		        if (dto.GeneralModelId == null)
-			        throw new Exception("Не передан ИД основной модели");
-		        if (factorModel.Type == KoAlgoritmType.None)
-			        throw new Exception("Не передан тип модели для создания фактора");
-
-		        var typifiedModel = ModelingService.GetTypifiedModelsByGeneralModelId(dto.GeneralModelId.Value, dto.Type)?.FirstOrDefault();
-		        if (typifiedModel == null)
-			        typifiedModel = ModelingService.CreateTypifiedModels(dto.GeneralModelId.Value, dto.Type).First();
-
-		        ModelFactorsService.AddFactor(dto, typifiedModel.Id);
+		        ModelFactorsService.AddFactor(dto);
 	        }
 	        else
 	        {
 		        ModelFactorsService.UpdateFactor(dto);
 	        }
-
-	        //TODO CIPJSKO-526
-	        var model = OMModel.Where(x => x.Id == factorModel.GeneralModelId).SelectAll().ExecuteFirstOrDefault();
-	        model.Formula = model.GetFormulaFull(true);
-	        model.Save();
 
 	        return Ok();
         }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Modeling.Dto
 {
 	public class ModelingModelDto
 	{
         public long ModelId { get; set; }
+        public KoModelType Type { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public long TourId { get; set; }

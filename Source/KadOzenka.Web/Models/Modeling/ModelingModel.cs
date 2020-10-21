@@ -25,7 +25,10 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Description { get; set; }
 
 		[Display(Name = "Тип")]
-		public KoAlgoritmType Type { get; set; }
+		public KoModelType Type { get; set; }
+
+        [Display(Name = "Алгоритм расчета")]
+		public KoAlgoritmType AlgorithmType { get; set; }
 
         [Display(Name = "Тур")]
 		[Required(ErrorMessage = "Не выбран Тур")]
@@ -63,7 +66,8 @@ namespace KadOzenka.Web.Models.Modeling
                 IsModelWasTrained = typifiedModels?.Any(x => !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false,
                 HasLinearTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Line),
                 HasExponentialTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Exp),
-                HasMultiplicativeTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Multi)
+                HasMultiplicativeTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Multi),
+                Type = entity.Type
             };
         }
 
@@ -80,8 +84,9 @@ namespace KadOzenka.Web.Models.Modeling
 				TourId = model.TourId,
                 GroupId = model.GroupId.Value,
 				Attributes = model.Attributes,
-                IsOksObjectType = model.ObjectType == ObjectType.Oks
-			};
+                IsOksObjectType = model.ObjectType == ObjectType.Oks,
+                Type = model.Type
+            };
 		}
 
 

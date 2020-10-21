@@ -7541,6 +7541,61 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _type;
+        /// <summary>
+        /// 20601500 Тип модели ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601500)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private KoModelType _type_Code;
+        /// <summary>
+        /// 20601500 Тип модели (справочный код) (type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601500)]
+        public KoModelType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
     }
 }
 
@@ -7904,10 +7959,10 @@ namespace ObjectModel.KO
             }
         }
 
-        //TODO CIPJSKO-526: удалить колонку и связь select * from core_register_relation where id=209
+        //TODO CIPJSKO-526: удалить связь select * from core_register_relation where id=209 (тут может быть ручная или автоматическая модель)
         private long? _modelid;
         /// <summary>
-        /// 21000200 УДАЛИТЬ Идентификатор модели (MODEL_ID)
+        /// 21000200 УДАЛИТЬ СВЯЗЬ Идентификатор модели (MODEL_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000200)]
         public long? ModelId

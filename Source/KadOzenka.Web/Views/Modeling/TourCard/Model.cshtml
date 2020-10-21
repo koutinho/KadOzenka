@@ -39,17 +39,25 @@
 					@Html.CustomLabelFor(x => x.Name)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+					@Html.KendoTextBoxFor(x => x.Name, isReadonly: Model.IsReadonly)
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.Description)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
-				</div>
-			</div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Description)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: Model.IsReadonly)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Type)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: true, withoutNull: true)
+                </div>
+            </div>
 			<div class="form-group">
 				<div class="col-sm-2">
 					@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
@@ -63,7 +71,7 @@
 					@Html.CustomLabelFor(x => x.CalculationTypeCode, true)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
+					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: Model.IsReadonly)
 				</div>
 			</div>
 			<div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -71,7 +79,7 @@
 					@Html.CustomLabelFor(x => x.CalculationMethodCode, true)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsReadonly)
 				</div>
 			</div>
 		</div>
@@ -90,7 +98,7 @@
 					@Html.CustomLabelFor(x => x.A0)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+					@Html.KendoTextBoxFor(x => x.A0, isReadonly: Model.IsReadonly)
 				</div>
 			</div>
 
@@ -108,6 +116,7 @@
 
 <script>
     $(document).ready(function () {
+        var isReadOnly = '@Model.IsReadonly' == "True";
 
         $('#toolbar').kendoToolBar({
             items: [
@@ -123,7 +132,8 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    click: UpdateModel
+                    click: UpdateModel,
+                    enable: isReadOnly
                 }
             ]
         });
@@ -134,21 +144,24 @@
                     id: 'add-factor',
                     text: '',
                     attributes: { title: "Добавить" },
-                    icon: 'add'
+                    icon: 'add',
+                    enable: isReadOnly
                 },
                 {
                     type: 'button',
                     id: 'edit-factor',
                     text: '',
                     attributes: { title: "Изменить" },
-                    icon: 'edit'
+                    icon: 'edit',
+                    enable: isReadOnly
                 },
                 {
                     type: 'button',
                     id: 'remove-factor',
                     text: '',
                     attributes: { title: "Удалить" },
-                    icon: 'delete'
+                    icon: 'delete',
+                    enable: isReadOnly
                 },
                 {
                     type: 'button',
@@ -162,7 +175,8 @@
                     id: 'upload-marks-catalog',
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
-                    icon: 'upload'
+                    icon: 'upload',
+                    enable: isReadOnly
                 },
                 {
                     type: 'button',
@@ -192,17 +206,32 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'AttributeName', title: 'Фактор', width: "40%"
-                }, {
-                    field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#"
-                }, {
-                    field: 'SignAdd', title: 'Сумма', template: "#=SignAdd ? 'Да' : 'Нет'#"
-                }, {
-                    field: 'SignMarket', title: 'Метка', template: "#=SignMarket ? 'Да' : 'Нет'#"
-                }, {
-                    field: 'B0', title: 'Коэф.'
-                }, {
-                    field: 'Coefficient', title: 'Вес'
+                    field: 'AttributeName',
+                    title: 'Фактор',
+                    width: "40%"
+                },
+                {
+                    field: 'SignDiv',
+                    title: 'Деление',
+                    template: "#=SignDiv ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'SignAdd',
+                    title: 'Сумма',
+                    template: "#=SignAdd ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'SignMarket',
+                    title: 'Метка',
+                    template: "#=SignMarket ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'B0',
+                    title: 'Коэф.'
+                },
+                {
+                    field: 'Coefficient',
+                    title: 'Вес'
                 }
             ],
             width: '100%',
@@ -363,7 +392,7 @@
             $('#download-marks-catalog').addClass('k-state-disabled');
             $('#upload-marks-catalog').addClass('k-state-disabled');
         }
-        else {
+        else if(!isReadOnly) {
             $('#edit-factor').removeClass('k-state-disabled');
             $('#remove-factor').removeClass('k-state-disabled');
             $('#show-marks').removeClass('k-state-disabled');

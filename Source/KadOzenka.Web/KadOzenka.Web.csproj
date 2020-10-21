@@ -1218,6 +1218,7 @@
     <Folder Include="Config\MapTilesConfigFiles\" />
 	  <Folder Include="Views\GknDataImport\" />
 	  <Folder Include="Views\DataImportByTemplate\" />
+	  <Folder Include="Views\Modeling\TourCard\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
     <Folder Include="wwwroot\images\Cursors\" />
     <Folder Include="wwwroot\MapImageLayer\QuartalLayer\" />

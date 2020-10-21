@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Core.Register;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Dto.Factors;
-using ObjectModel.Directory.ES;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
@@ -14,7 +10,7 @@ namespace KadOzenka.Dal.Modeling
 	{
 		#region Факторы
 
-		public OMModelFactor GetFactorById(long id)
+		public OMModelFactor GetFactorById(long? id)
 		{
 			var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
 			if (factor == null)
@@ -23,17 +19,17 @@ namespace KadOzenka.Dal.Modeling
 			return factor;
 		}
 
-		public int AddFactor(ModelFactorDto dto, long typifiedModelId)
+		public int AddFactor(ModelFactorDto dto)
 		{
-			if (dto.FactorId == null)
-				throw new Exception("Не передан ИД фактора");
+			ValidateFactor(dto);
 
-			AddModelAttributes(dto.GeneralModelId, new List<ModelAttributeRelationDto>
+			new OMModelAttribute
 			{
-				new ModelAttributeRelationDto {AttributeId = dto.FactorId.Value, DictionaryId = dto.DictionaryId}
-			});
+				GeneralModelId = dto.GeneralModelId.Value,
+				AttributeId = dto.FactorId.Value
+			}.Save();
 
-			return new OMModelFactor
+			var id = new OMModelFactor
 			{
 				ModelId = dto.GeneralModelId,
 				FactorId = dto.FactorId,
@@ -42,14 +38,19 @@ namespace KadOzenka.Dal.Modeling
 				B0 = dto.Weight,
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
-				SignMarket = dto.SignMarket,
-				TypifiedModelId = typifiedModelId
+				SignMarket = dto.SignMarket
 			}.Save();
+
+			RecalculateFormula(dto.GeneralModelId);
+
+			return id;
 		}
 
 		public void UpdateFactor(ModelFactorDto dto)
 		{
 			var factor = GetFactorById(dto.Id);
+
+			ValidateFactor(dto);
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -58,46 +59,37 @@ namespace KadOzenka.Dal.Modeling
 			factor.SignMarket = dto.SignMarket;
 
 			factor.Save();
+
+			RecalculateFormula(dto.GeneralModelId);
 		}
 
-		public void AddModelAttributes(long? generalModelId, List<ModelAttributeRelationDto> attributes)
+
+		#region Support Methods
+
+		private void ValidateFactor(ModelFactorDto factorDto)
 		{
-			if (attributes == null || attributes.Count == 0)
-				return;
+			if (factorDto.GeneralModelId == null)
+				throw new Exception("Не передан ИД основной модели");
 
-			var model = OMModel.Where(x => x.Id == generalModelId).Select(x => new
-			{
-				x.ParentGroup.Id,
-				x.ParentGroup.GroupName
-			}).ExecuteFirstOrDefault();
-			if (model == null)
-				throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
-			if (model.ParentGroup == null)
-				throw new Exception($"Для модели '{model.Name}' (ИД='{generalModelId}') не найдена группа");
+			if (factorDto.FactorId == null)
+				throw new Exception("Не передан ИД фактора");
 
-			var tour = OMTourGroup.Where(x => x.GroupId == model.ParentGroup.Id).Select(x => new
-			{
-				x.ParentTour.Id, 
-				x.ParentTour.Year
-			}).ExecuteFirstOrDefault()?.ParentTour;
-			if (tour == null)
-				throw new Exception($"Не найден тур для группы '{model.ParentGroup?.GroupName}' (ИД='{model.ParentGroup.Id}')");
-			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
-			if (tour.Year == 2016)
-				return;
-
-			ValidateAttributes(attributes, model.Id);
-
-			attributes.ForEach(x =>
-			{
-				new OMModelAttribute
-				{
-					GeneralModelId = generalModelId.GetValueOrDefault(),
-					AttributeId = x.AttributeId,
-					DictionaryId = x.DictionaryId
-				}.Save();
-			});
+			var model = OMModel.Where(x => x.Id == factorDto.GeneralModelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+			if (model?.Type_Code == KoModelType.Automatic)
+				throw new Exception($"Нельзя вручную работать с факторами для модели типа '{KoModelType.Automatic}'");
 		}
+
+		private void RecalculateFormula(long? generalModelId)
+		{
+			var model = OMModel.Where(x => x.Id == generalModelId).SelectAll().ExecuteFirstOrDefault();
+			if(model == null)
+				throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
+
+			model.Formula = model.GetFormulaFull(true);
+			model.Save();
+		}
+
+		#endregion
 
 		#endregion
 
@@ -149,63 +141,6 @@ namespace KadOzenka.Dal.Modeling
 			var mark = GetMarkById(id);
 
 			mark.Destroy();
-		}
-
-		#endregion
-
-		#region Support Methods
-
-		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId)
-		{
-			var errors = new List<string>();
-
-			var attributeIds = attributes.Select(x => x.AttributeId).ToList();
-			var dictionaryIds = attributes.Select(x => x.DictionaryId).ToList();
-
-			var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
-			var omDictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute();
-
-			foreach (var modelAttribute in attributes)
-			{
-				var attribute = omAttributes.FirstOrDefault(y => y.Id == modelAttribute.AttributeId);
-				
-				var isTheSameAttributeExists = OMModelAttribute.Where(x => x.AttributeId == attribute.Id && x.GeneralModelId == generalModelId).ExecuteExists();
-				if (isTheSameAttributeExists)
-					throw new Exception($"Атрибут '{attribute?.Name}' уже был добавлен");
-
-				if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
-				    modelAttribute.DictionaryId.GetValueOrDefault() == 0)
-				{
-					errors.Add($"Для атрибута '{attribute.Name}' нужно выбрать словарь");
-				}
-				if (modelAttribute.DictionaryId.GetValueOrDefault() != 0)
-				{
-					var dictionaryType = omDictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId)?.Type_Code;
-					switch (attribute?.Type)
-					{
-						case RegisterAttributeType.STRING:
-						{
-							if (dictionaryType != ReferenceItemCodeType.String)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
-							break;
-						}
-						case RegisterAttributeType.DATE:
-						{
-							if (dictionaryType != ReferenceItemCodeType.Date)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
-							break;
-						}
-					}
-				}
-			}
-
-			if(errors.Count > 0)
-				throw new Exception(string.Join("<br>", errors));
-		}
-
-		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
-		{
-			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
 		#endregion

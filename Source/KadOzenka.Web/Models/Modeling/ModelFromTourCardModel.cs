@@ -9,12 +9,16 @@ namespace KadOzenka.Web.Models.Modeling
         public long GeneralModelId { get; set; }
         public long? GroupId { get; set; }
         public bool IsPartial { get; set; }
+        public bool IsReadonly => Type == KoModelType.Automatic;
 
         [Display(Name= "Наименование")]
         public string Name { get; set; }
 
         [Display(Name = "Описание")]
         public string Description { get; set; }
+
+        [Display(Name = "Тип")]
+        public KoModelType Type { get; set; }
 
         [Display(Name = "Формула")]
         public string Formula { get; set; }
@@ -52,7 +56,8 @@ namespace KadOzenka.Web.Models.Modeling
 				CalculationType = model.CalculationType,
 				CalculationTypeCode = model.CalculationType_Code,
 				CalculationMethod = model.CalculationMethod,
-				CalculationMethodCode = model.CalculationMethod_Code
+				CalculationMethodCode = model.CalculationMethod_Code,
+                Type = model.Type_Code
             };
         }
     }
