@@ -1,8 +1,29 @@
 ﻿
 
 <div class="form-horizontal col-sm-12">
-    <div class="col-sm-12">
-        <button class="k-button outliers-settings-button">Настройка коэффициентов</button>
+    <div class="form-group">
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @(Html.Kendo().Button()
+                .Name("OutliersSettingsBtn")
+                .IconClass("k-icon k-i-gear outliers-settings-button")
+                .HtmlAttributes(new {type = "button"}))
+            @(Html.Kendo().Tooltip()
+                .For("#OutliersSettingsBtn")
+                .Position(TooltipPosition.Top)
+                .Content("Настройка коэффициентов"))
+
+        </div>
+        <div class="col-sm-1">
+            @Html.CustomLabel("Сегмент")
+        </div>
+        <div class="col-sm-4">
+            <input id="outliers-settings-segment-dropdown" style="width: 100%;" />
+        </div>
+        <div class="col-sm-4">
+            <button class="k-button perform-checking-button">Выполнить проверку на вылеты</button>
+        </div>
     </div>
 </div>
 <div class="outliers-settings-window"></div>
@@ -26,13 +47,50 @@
     wnd.wrapper.addClass("scrollable");
 
     $(function () {
-        $('.outliers-settings-button').click(() => {
-            $(".outliers-settings-window").html("");
-            var wnd = settingsWindow.data("kendoWindow");
+        $('#OutliersSettingsBtn').click(openOutliersSettingsWindow);
 
-            wnd.refresh(
-                "@Url.Action("OutliersSettings", "MarketObjects", new { isPartialView = true })");
-            wnd.center().open();
+        $("#outliers-settings-segment-dropdown").kendoDropDownList({
+            dataTextField: 'Text',
+            dataValueField: 'Value',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Html.Raw(Url.Action("GetMarketSegmentList", "MarketObjects"))',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            optionLabel: " "
+        });
+
+        $('.perform-checking-button').click(() => {
+            kendo.ui.progress($('body'), true);
+            var segment = $("#outliers-settings-segment-dropdown").data('kendoDropDownList').value();
+
+            $.ajax({
+                type: 'POST',
+                url:  '@Url.Action("PerformOutliersChecking", "MarketObjects")',
+                data: { segment },
+                success: function (response) {
+                    Common.ShowMessage(response.Message);
+                },
+                error: function(response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
         });
     });
+
+    function openOutliersSettingsWindow() {
+        $(".outliers-settings-window").html("");
+        var wnd = settingsWindow.data("kendoWindow");
+
+        wnd.refresh(
+            "@Url.Action("OutliersSettings", "MarketObjects", new { isPartialView = true })");
+        wnd.center().open();
+    }
 </script>

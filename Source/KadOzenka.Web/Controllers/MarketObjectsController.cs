@@ -31,6 +31,7 @@ namespace KadOzenka.Web.Controllers
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
         public OutliersCheckingService OutliersCheckingService { get; set; }
+        public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
 
         public MarketObjectsController()
         {
@@ -40,6 +41,7 @@ namespace KadOzenka.Web.Controllers
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
             OutliersCheckingService = new OutliersCheckingService();
+            OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
         }
 
         [HttpGet]
@@ -546,6 +548,15 @@ namespace KadOzenka.Web.Controllers
 
         #region Outliers Checking
 
+
+        public ActionResult GetMarketSegmentList()
+        {
+	        var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
+	        var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+
+	        return Content(JsonConvert.SerializeObject(segments), "application/json");
+        }
+
         [HttpGet]
         public ActionResult OutliersSettings(bool isPartialView = false)
         {
@@ -556,19 +567,24 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetOutliersSettingsCoefficients()
         {
-	        var settingsDto = OutliersCheckingService.GetOutliersCheckingSettings();
+	        var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
 	        var models = OutliersSettingsModel.FromDto(settingsDto);
 
             return Json(models);
         }
 
-  
         public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
         {
 	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
-	        OutliersCheckingService.UpdateOutliersCheckingSettings(model.ToDto());
+	        OutliersCheckingSettingsService.UpdateOutliersCheckingSettings(model.ToDto());
 
 	        return Json(new[] { model });
+        }
+
+        public JsonResult PerformOutliersChecking(MarketSegment? segment)
+        {
+	        OutliersCheckingService.PerformOutliersChecking(segment);
+	        return Json(new { Message = "Данные успешно обновлены" });
         }
 
         #endregion Outliers Checking
