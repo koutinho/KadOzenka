@@ -4913,20 +4913,17 @@ namespace KadOzenka.Dal.DataExport
                         var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
                             .Invoke(null, new object[] { unloadResultQueue, setting, setProgress });
 
-                        _log.ForContext("Result_0", JsonConvert.SerializeObject(unloadResult[0])).Verbose("Выгружено {ResultCount} результатов", unloadResult.Count);
-
                         result.AddRange(unloadResult);
                     }
                 }
                 catch (Exception ex) {
                     _log.ForContext("UnloadCurrentCount", unloadCurrentCount)
-                        .Warning(ex, "Ошибка в процессе выгрузки {CurrentUnloadType_Code}", unloadResultQueue.CurrentUnloadType_Code);
+                        .Warning(ex, "Ошибка в процессе выгрузки {CurrentUnloadTypeCode}", unloadResultQueue.CurrentUnloadType_Code);
                 }
                 
                 unloadCurrentCount++;
             }
-            _log.ForContext("result_0", JsonConvert.SerializeObject(result[0]))
-                .Debug("Выгрузка результатов {resultCount} из {unloadCurrentCount}", result.Count, unloadCurrentCount);
+            _log.Debug("Выгрузка результатов {ResultCount} из {UnloadCurrentCount}", result.Count, unloadCurrentCount);
             return result;
         }
 
@@ -4955,6 +4952,7 @@ namespace KadOzenka.Dal.DataExport
             currentExportList.Add(resultKoUnloadSettings);
             unloadResultQueue.ExportFilesInfo = JsonConvert.SerializeObject(currentExportList);
             unloadResultQueue.Save();
+            _log.ForContext("ExportFilesInfo", unloadResultQueue.ExportFilesInfo).Debug("Добавление файла в реестр выгрузок результатов оценки");
 	    }
 
         public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
