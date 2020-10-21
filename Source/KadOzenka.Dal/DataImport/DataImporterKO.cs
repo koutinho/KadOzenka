@@ -30,7 +30,8 @@ namespace KadOzenka.Dal.DataImport
         /// factorId - Идентификатор фактора
         /// deleteOld - Признак удаления старых данных
         /// </summary>
-        public static Stream ImportDataMarkerFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, long groupId, long factorId, bool deleteOld)
+        public static Stream ImportDataMarkerFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, 
+	        long generalModelId, long factorId, bool deleteOld)
         {
 			var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 			MemoryStream streamResult = new MemoryStream();
@@ -56,8 +57,7 @@ namespace KadOzenka.Dal.DataImport
 		        mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 			        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 
-		        List<ObjectModel.KO.OMMarkCatalog> objs = ObjectModel.KO.OMMarkCatalog
-			        .Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
+		        var objs = OMMarkCatalog.Where(x => x.GeneralModelId == generalModelId && x.FactorId == factorId).SelectAll().Execute();
 		        if (deleteOld)
 		        {
 			        Parallel.ForEach(objs, options, obj => { obj.Destroy(); });
@@ -82,7 +82,8 @@ namespace KadOzenka.Dal.DataImport
 						        {
 							        Id = -1,
 							        FactorId = factorId,
-							        GroupId = groupId,
+									GeneralModelId = generalModelId,
+									GroupId = -1,
 							        ValueFactor = value.ToUpper(),
 							        MetkaFactor = metka.ParseToDecimalNullable()
 						        };

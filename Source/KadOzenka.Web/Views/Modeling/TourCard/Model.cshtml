@@ -330,11 +330,9 @@
         });
 
         $('#show-marks').on('click', function () {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length > 0) {
-                var data = grid.dataItem(row);
-                var factorId = data.AttributeId;
+            var selectedRowData = getSelectedRowInFactorsGrid();
+            if (selectedRowData) {
+                var factorId = selectedRowData.AttributeId;
                 Common.UI.ShowWindow('Метки',
 	                '@Url.Action("MarksGrid", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' + '&factorId=' + factorId,
 	                'editFactorWindow',
@@ -344,26 +342,9 @@
         });
 
 
-        $('#upload-marks-catalog').on('click', function () {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length > 0) {
-                $("#marksCatalogFiles").getKendoUpload().removeAllFiles();
-                var modal = $("#uploadMarksCatalogModal");
-                ShowModal(modal, '50%', '30%');
-            }
-        });
+        $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
+        $('#download-marks-catalog').on('click', downloadMarksCatalog);
 
-        $('#download-marks-catalog').on('click', function () {
-            var grid = $("#grid").data("kendoGrid");
-            var row = grid.select();
-            if (row.length > 0) {
-                var data = grid.dataItem(row);
-                var groupId = '@Model.GroupId';
-                var factorId = data.AttributeId;
-                window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId);
-            }
-        });
 
         $('#marksCatalogFiles').kendoUpload({
             multiple: false,
@@ -388,53 +369,11 @@
         }).data('kendoUpload');
 
         $("#loadMarksCatalogFilesButton").kendoButton({
-            click: function (e) {
-                var grid = $("#grid").data("kendoGrid");
-                var row = grid.select();
-                if (row.length > 0) {
-                    var data = grid.dataItem(row);
-                    var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
-                    if (files.length === 0) {
-                        Common.ShowError("Файл не выбран");
-                        return;
-                    }
-                    var groupId = '@Model.GroupId';
-                    var factorId = data.AttributeId;
-                    var isDeleteOld = $("#isDeleteAllCheckBox").is(":checked");
-                    var formData = new FormData();
-                    formData.append('file', files[0].rawFile);
-                    formData.append('groupId', groupId);
-                    formData.append('factorId', factorId);
-                    formData.append('isDeleteOld', isDeleteOld);
-
-                    kendo.ui.progress($('#uploadMarksCatalogModal'), true);
-                    $.ajax({
-                        url: '@Url.Action("UploadMarksCatalog", "Modeling")',
-                        type: 'POST',
-                        data: formData,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (response) {
-                            console.log(response);
-                            if (response.success) {
-                                window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
-                            } else {
-                                Common.ShowError("Не удалось загрузить выбранный файл");
-                            }
-                        },
-                        error: function (e) {
-                            Common.ShowError(e.responseText);
-                        },
-                        complete: function(e) {
-                            kendo.ui.progress($('#uploadMarksCatalogModal'), false);
-                            $("#uploadMarksCatalogModal").data("kendoWindow").close();
-                        }
-                    });
-                }
-            }
+            click: uploadMarksCatalog
         });
     });
+
+
 
 
 
@@ -492,6 +431,80 @@
     function getDataForModelAttributesDownloader() {
         var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
         return { modelId: '@Model.GeneralModelId', type: modelType }
+    }
+
+
+    function getSelectedRowInFactorsGrid() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
+    }
+
+
+    function downloadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var factorId = selectedRowData.AttributeId;
+            window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' +
+                '&factorId=' +
+                factorId);
+        }
+    }
+
+
+    function showModalToUploadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            $("#marksCatalogFiles").getKendoUpload().removeAllFiles();
+            var modal = $("#uploadMarksCatalogModal");
+            ShowModal(modal, '50%', '30%');
+        }
+    }
+
+
+    function uploadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
+            if (files.length === 0) {
+                Common.ShowError("Файл не выбран");
+                return;
+            }
+            var formData = new FormData();
+            formData.append('file', files[0].rawFile);
+            formData.append('generalModelId', '@Model.GeneralModelId');
+            formData.append('factorId', selectedRowData.AttributeId);
+            formData.append('isDeleteOld', $("#isDeleteAllCheckBox").is(":checked"));
+            kendo.ui.progress($('#uploadMarksCatalogModal'), true);
+            $.ajax({
+                url: '@Url.Action("UploadMarksCatalog", "Modeling")',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response.success) {
+                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' +
+                            "?fileName=" +
+                            response.fileName;
+                    } else {
+                        Common.ShowError("Не удалось загрузить выбранный файл");
+                    }
+                },
+                error: function(e) {
+                    Common.ShowError(e.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('#uploadMarksCatalogModal'), false);
+                    $("#uploadMarksCatalogModal").data("kendoWindow").close();
+                }
+            });
+        }
     }
 </script>
 

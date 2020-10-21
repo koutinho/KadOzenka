@@ -29,6 +29,7 @@ using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using SaveOptions = GemBox.Document.SaveOptions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Modeling;
 using Serilog;
 
 namespace KadOzenka.Dal.DataExport
@@ -128,7 +129,7 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Выгрузка списка значений по фактору и группе в формате Excel
         /// </summary>
-        public static Stream ExportMarkerListToExcel(long groupId, long factorId)
+        public static Stream ExportMarkerListToExcel(long generalModelId, long factorId)
         {
             ExcelFile excelTemplate = new ExcelFile();
 
@@ -195,13 +196,7 @@ namespace KadOzenka.Dal.DataExport
             //}
 
             var row = 1;
-            var markers = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
-	            .Select(x => new
-	            {
-                    x.MetkaFactor,
-                    x.ValueFactor
-	            })
-	            .Execute();
+            var markers = new ModelFactorsService().GetMarks(generalModelId, factorId);
 
             foreach (var marker in markers)
             {

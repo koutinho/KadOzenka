@@ -945,15 +945,15 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public FileResult DownloadMarksCatalog(long groupId, long factorId)
+        public FileResult DownloadMarksCatalog(long generalModelId, long factorId)
         {
-	        var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
+	        var fileStream = DataExporterKO.ExportMarkerListToExcel(generalModelId, factorId);
 
 	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
+        public ActionResult UploadMarksCatalog(IFormFile file, long generalModelId, long factorId, bool isDeleteOld)
         {
 	        if (file == null)
 		        throw new Exception("Не выбран файл для загрузки");
@@ -966,7 +966,7 @@ namespace KadOzenka.Web.Controllers
 		        excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
 
 		        var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
-			        OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
+			        OMMarkCatalog.GetRegisterId(), generalModelId, factorId, isDeleteOld);
 
 		        var fileName = "Справочник меток (загрузка) " + file.FileName;
 		        HttpContext.Session.Set(fileName, fileStream.ToByteArray());
