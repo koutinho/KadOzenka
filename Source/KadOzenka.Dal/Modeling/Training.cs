@@ -382,20 +382,20 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private List<OMModelTypified> GetTypifiedModels()
+        private List<OMModel> GetTypifiedModels()
         {
-	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
+	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.GroupId, InputParameters.ModelType);
 	        AddLog($"Найдено {typifiedModels.Count} типизированных моделей");
 	        if (typifiedModels.Count == 0)
 	        {
-		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel.Id, InputParameters.ModelType);
+		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel, InputParameters.ModelType);
 		        AddLog($"Создано {typifiedModels.Count} типизированных моделей");
 	        }
 
             return typifiedModels;
         }
 
-        private void SaveCoefficients(Dictionary<string, decimal> coefficients, OMModelTypified typifiedModelId)
+        private void SaveCoefficients(Dictionary<string, decimal> coefficients, OMModel typifiedModelId)
         {
 	        ModelingService.DeleteFactors(typifiedModelId);
             AddLog("Удалены предыдущие значения для коэффициентов");
@@ -406,8 +406,7 @@ namespace KadOzenka.Dal.Modeling
 	            new OMModelFactor
 	            {
                     ModelId = typifiedModelId.Id,
-		            TypifiedModelId = typifiedModelId.Id,
-		            FactorId = attributeId,
+                    FactorId = attributeId,
 		            Weight = coefficient.Value,
 		            MarkerId = -1
 	            }.Save();

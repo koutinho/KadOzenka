@@ -6,6 +6,7 @@ using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -50,7 +51,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
 
-		public static ModelingModel ToModel(ModelingModelDto entity, List<OMModelTypified> typifiedModels)
+		public static ModelingModel ToModel(ModelingModelDto entity, List<OMModel> typifiedModels)
 		{
 			return new ModelingModel
             {
@@ -67,7 +68,8 @@ namespace KadOzenka.Web.Models.Modeling
                 HasLinearTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Line),
                 HasExponentialTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Exp),
                 HasMultiplicativeTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Multi),
-                Type = entity.Type
+                Type = entity.Type,
+                AlgorithmType = entity.AlgorithmType
             };
         }
 
@@ -85,14 +87,15 @@ namespace KadOzenka.Web.Models.Modeling
                 GroupId = model.GroupId.Value,
 				Attributes = model.Attributes,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks,
-                Type = model.Type
+                Type = model.Type,
+                AlgorithmType = model.AlgorithmType
             };
 		}
 
 
 		#region Support Methods
 
-		private static bool HasTrainingResult(List<OMModelTypified> typifiedModels, KoAlgoritmType type)
+		private static bool HasTrainingResult(List<OMModel> typifiedModels, KoAlgoritmType type)
         {
             return typifiedModels?.Any(x => x.AlgoritmType_Code == type && !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false;
         }

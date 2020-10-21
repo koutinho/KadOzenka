@@ -7462,6 +7462,7 @@ namespace ObjectModel.KO
         }
 
 
+        //TODO CIPJSKO-526 удалить
         private string _lineartrainingresult;
         /// <summary>
         /// 20601100 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
@@ -7481,7 +7482,7 @@ namespace ObjectModel.KO
             }
         }
 
-
+        //TODO CIPJSKO-526 удалить
         private string _exponentialtrainingresult;
         /// <summary>
         /// 20601200 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
@@ -7501,7 +7502,7 @@ namespace ObjectModel.KO
             }
         }
 
-
+        //TODO CIPJSKO-526 удалить
         private string _multiplicativetrainingresult;
         /// <summary>
         /// 20601300 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
@@ -7596,139 +7597,12 @@ namespace ObjectModel.KO
             }
         }
 
-    }
-}
-
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная (ko_model_typified)
-    /// </summary>
-    [RegisterInfo(RegisterID = 207)]
-    [Serializable]
-    public partial class OMModelTypified : OMBaseClass<OMModelTypified>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 20700100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 20700100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long _modelid;
-        /// <summary>
-        /// 20700200 ИД модели (model_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700200)]
-        public long ModelId
-        {
-            get
-            {
-                CheckPropertyInited("ModelId");
-                return _modelid;
-            }
-            set
-            {
-                _modelid = value;
-                NotifyPropertyChanged("ModelId");
-            }
-        }
-
-
-        private string _algoritmtype;
-        /// <summary>
-        /// 20700300 Алгоритм расчета ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700300)]
-        public string AlgoritmType
-        {
-            get
-            {
-                CheckPropertyInited("AlgoritmType");
-                return _algoritmtype;
-            }
-            set
-            {
-                _algoritmtype = value;
-                NotifyPropertyChanged("AlgoritmType");
-            }
-        }
-
-
-        private KoAlgoritmType _algoritmtype_Code;
-        /// <summary>
-        /// 20700300 Алгоритм расчета (справочный код) (ALGORITM_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700300)]
-        public KoAlgoritmType AlgoritmType_Code
-        {
-            get
-            {
-                CheckPropertyInited("AlgoritmType_Code");
-                return this._algoritmtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_algoritmtype))
-                    {
-                         _algoritmtype = descr;
-                    }
-                }
-                else
-                {
-                     _algoritmtype = descr;
-                }
-
-                this._algoritmtype_Code = value;
-                NotifyPropertyChanged("AlgoritmType");
-                NotifyPropertyChanged("AlgoritmType_Code");
-            }
-        }
-
-
-        private string _formula;
-        /// <summary>
-        /// 20700400 Формула (formula)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700400)]
-        public string Formula
-        {
-            get
-            {
-                CheckPropertyInited("Formula");
-                return _formula;
-            }
-            set
-            {
-                _formula = value;
-                NotifyPropertyChanged("Formula");
-            }
-        }
-
 
         private string _trainingresult;
         /// <summary>
-        /// 20700500 Результаты обучения (коэффициенты от сервиса Моделирования) (training_result)
+        /// 20601600 Результат обучения (training_result)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20700500)]
+        [RegisterAttribute(AttributeID = 20601600)]
         public string TrainingResult
         {
             get
@@ -7959,10 +7833,10 @@ namespace ObjectModel.KO
             }
         }
 
-        //TODO CIPJSKO-526: удалить связь select * from core_register_relation where id=209 (тут может быть ручная или автоматическая модель)
+
         private long? _modelid;
         /// <summary>
-        /// 21000200 УДАЛИТЬ СВЯЗЬ Идентификатор модели (MODEL_ID)
+        /// 21000200 Идентификатор модели (MODEL_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000200)]
         public long? ModelId
@@ -8136,26 +8010,6 @@ namespace ObjectModel.KO
             {
                 _dictionaryid = value;
                 NotifyPropertyChanged("DictionaryId");
-            }
-        }
-
-
-        private long? _typifiedmodelid;
-        /// <summary>
-        /// 21001100 Идентификатор типизированной модели (typified_model_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001100)]
-        public long? TypifiedModelId
-        {
-            get
-            {
-                CheckPropertyInited("TypifiedModelId");
-                return _typifiedmodelid;
-            }
-            set
-            {
-                _typifiedmodelid = value;
-                NotifyPropertyChanged("TypifiedModelId");
             }
         }
 

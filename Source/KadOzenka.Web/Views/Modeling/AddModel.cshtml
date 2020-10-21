@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Modeling.ModelingModel
 
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
@@ -34,6 +35,14 @@
                 @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: false, withoutNull: true)
             </div>
         </div>
+        <div class="form-group" id="algorithmType" style="display: none">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.AlgorithmType)
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-2">
                 @Html.CustomLabelFor(x => x.TourId)
@@ -63,7 +72,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("SaveModel", "Сохранить")
+                @Html.KendoButton("saveModel", "Сохранить")
             </div>
         </div>
     </div>
@@ -73,7 +82,11 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
-        $("#SaveModel").on('click', SaveModel);
+        onModelTypeChanged();
+
+        $('#@nameof(Model.Type)').data('kendoDropDownList').bind('change', onModelTypeChanged);
+
+        $("#saveModel").on('click', saveModel);
 	});
 
 
@@ -107,7 +120,7 @@
     }
 
 
-    function SaveModel() {
+    function saveModel() {
 		kendo.ui.progress($('body'), true);
 		var form = $('#saveModelForm');
         var formObject = Common.Functions.FormToObject(form);
@@ -133,7 +146,17 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-	}
+    }
+
+
+    function onModelTypeChanged() {
+        var modelType = $('#@nameof(Model.Type)').data('kendoDropDownList').value();
+        if (modelType == '@((int)KoModelType.Manual)') {
+            $("#algorithmType").show();
+        } else {
+            $("#algorithmType").hide();
+        }
+    }
 
 
 	function CloseMainWindow() {

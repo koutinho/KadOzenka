@@ -34,12 +34,9 @@ using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using System.IO;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
-using System.Data;
-using System.Data.Common;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Dto;
-using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace KadOzenka.Web.Controllers
 {

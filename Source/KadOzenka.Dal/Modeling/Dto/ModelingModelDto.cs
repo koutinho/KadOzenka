@@ -7,6 +7,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 	{
         public long ModelId { get; set; }
         public KoModelType Type { get; set; }
+        public KoAlgoritmType AlgorithmType { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public long TourId { get; set; }

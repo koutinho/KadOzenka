@@ -635,24 +635,6 @@ namespace ObjectModel.KO
 }
 
 
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная
-    /// </summary>
-    public partial class OMModelTypified
-    {
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -709,13 +691,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (207 Модель типизированная)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Ko.OMModelTypified ParentModelTypified { get; set; }
 
         /// <summary>
         /// Ссылка на (211 Справочник меток)

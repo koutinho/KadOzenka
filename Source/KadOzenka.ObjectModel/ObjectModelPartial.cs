@@ -1528,12 +1528,6 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (207 Модель типизированная)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Ko.OMModelTypified> ModelTypified { get; set; }
-
-        /// <summary>
         /// Ссылка на (210 Значение факторов модели)
         /// </summary>
         [Reference]
@@ -1546,44 +1540,10 @@ namespace ObjectModel.KO
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
-            ModelTypified = new List<ObjectModel.Ko.OMModelTypified>();
-
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 
         }
         public OMModel(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная
-    /// </summary>
-    public partial class OMModelTypified
-    {
-
-
-        /// <summary>
-        /// Ссылка на (210 Значение факторов модели)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
-        public OMModelTypified()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
-
-        }
-        public OMModelTypified(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

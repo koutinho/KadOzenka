@@ -71,7 +71,8 @@ namespace KadOzenka.Dal.Modeling
 			        x.ParentGroup.Id,
 			        x.ParentGroup.GroupName,
 			        x.IsOksObjectType,
-                    x.Type_Code
+                    x.Type_Code,
+                    x.AlgoritmType_Code
 		        }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -92,7 +93,8 @@ namespace KadOzenka.Dal.Modeling
 				GroupId = model.ParentGroup.Id,
 		        GroupName = model.ParentGroup.GroupName,
 		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
-                Type = model.Type_Code
+                Type = model.Type_Code,
+                AlgorithmType = model.AlgoritmType_Code
 	        };
         }
 
@@ -129,7 +131,7 @@ namespace KadOzenka.Dal.Modeling
 	        return tourToGroupRelation.ParentTour;
         }
 
-        public int AddModel(ModelingModelDto modelDto)
+        public void AddModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
 
@@ -139,19 +141,22 @@ namespace KadOzenka.Dal.Modeling
 				Description = modelDto.Description,
 				GroupId = modelDto.GroupId,
                 CalculationType_Code = KoCalculationType.Comparative, 
-				AlgoritmType_Code = KoAlgoritmType.None,
-                Type_Code = modelDto.Type,
-                Formula = "-"
+				AlgoritmType_Code = modelDto.AlgorithmType,
+                Type_Code = modelDto.Type
 			};
+			model.Formula = model.GetFormulaFull(true);
 
-			var modelId = model.Save();
-
-			if (modelDto.Type == KoModelType.Automatic)
+			using (var ts = new TransactionScope())
 			{
-				CreateTypifiedModels(modelId, KoAlgoritmType.None);
-            }
-			
-            return modelId;
+				if (modelDto.Type == KoModelType.Automatic)
+				{
+					CreateTypifiedModels(model, KoAlgoritmType.None);
+				}
+
+				model.Save();
+
+                ts.Complete();
+			}
 		}
 
 		public bool UpdateModel(ModelingModelDto modelDto)
@@ -167,8 +172,7 @@ namespace KadOzenka.Dal.Modeling
 
             using (var ts = new TransactionScope())
             {
-                existedModel.Type_Code = modelDto.Type;
-                existedModel.Name = modelDto.Name;
+	            existedModel.Name = modelDto.Name;
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
@@ -245,6 +249,7 @@ namespace KadOzenka.Dal.Modeling
 				}.Save();
 			});
 		}
+
 		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId)
 		{
 			var errors = new List<string>();
@@ -298,37 +303,37 @@ namespace KadOzenka.Dal.Modeling
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
-		#endregion
+        #endregion
 
         #endregion
 
 
         #region Typified Model
 
-        public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId)
-		{
-			var maxCountOfTypifiedModels = 3;
+        public List<OMModel> GetTypifiedModelsByGeneralModelId(long? groupId)
+        {
+	        var maxCountOfTypifiedModels = 3;
 
-			return OMModelTypified.Where(x => x.ModelId == generalModelId).SelectAll()
-				.SetPackageIndex(0).SetPackageSize(maxCountOfTypifiedModels).Execute();
-		}
+	        return OMModel.Where(x => x.GroupId == groupId).SelectAll()
+		        .SetPackageIndex(0).SetPackageSize(maxCountOfTypifiedModels).Execute();
+        }
 
-		public List<OMModelTypified> GetTypifiedModelsByGeneralModelId(long generalModelId, KoAlgoritmType type)
-		{
-			if (type == KoAlgoritmType.None)
-				return GetTypifiedModelsByGeneralModelId(generalModelId);
+        public List<OMModel> GetTypifiedModelsByGeneralModelId(long? groupId, KoAlgoritmType type)
+        {
+	        if (type == KoAlgoritmType.None)
+		        return GetTypifiedModelsByGeneralModelId(groupId);
 
-			var typifiedModel = OMModelTypified.Where(x => x.ModelId == generalModelId && x.AlgoritmType_Code == type)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+	        var typifiedModel = OMModel.Where(x => x.GroupId == groupId && x.AlgoritmType_Code == type)
+		        .SelectAll()
+		        .ExecuteFirstOrDefault();
 
-            if(typifiedModel != null)
-                return new List<OMModelTypified>(1) { typifiedModel };
+	        if (typifiedModel != null)
+		        return new List<OMModel>(1) { typifiedModel };
 
-            return new List<OMModelTypified>();
-		}
+	        return new List<OMModel>();
+        }
 
-		public List<OMModelTypified> CreateTypifiedModels(long generalModelId, KoAlgoritmType type)
+        public List<OMModel> CreateTypifiedModels(OMModel generalModel, KoAlgoritmType type)
 		{
 			var types = new List<KoAlgoritmType>();
 			if (type == KoAlgoritmType.None)
@@ -342,18 +347,20 @@ namespace KadOzenka.Dal.Modeling
 				types.Add(type);
 			}
 
+			types.Remove(generalModel.AlgoritmType_Code);
+
+			var typifiedModelIds = new List<long> {generalModel.Id};
 			types.ForEach(x =>
 			{
-				new OMModelTypified
-				{
-					ModelId = generalModelId,
-					AlgoritmType_Code = x,
-                    //TODO CIPJSKO-526 перенастроить
-                    Formula = "-"
-				}.Save();
-			});
+				var copy = generalModel.Copy();
+				copy.AlgoritmType_Code = x;
+				copy.Formula = copy.GetFormulaFull(true);
+				var id = copy.Save();
+				typifiedModelIds.Add(id);
 
-			return OMModelTypified.Where(x => x.ModelId == generalModelId && types.Contains(x.AlgoritmType_Code)).SelectAll().Execute();
+            });
+
+			return OMModel.Where(x => typifiedModelIds.Contains(x.Id)).SelectAll().Execute();
 		}
 
 		public void ResetTrainingResults(long generalModelId, KoAlgoritmType type)
@@ -368,12 +375,12 @@ namespace KadOzenka.Dal.Modeling
 			});
         }
 
-		public void DeleteFactors(OMModelTypified typifiedModelId)
+		public void DeleteFactors(OMModel model)
 		{
-            if(typifiedModelId == null)
+            if(model == null)
                 return;
             
-			var modelFactors = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModelId.Id).Execute();
+			var modelFactors = OMModelFactor.Where(x => x.ModelId == model.Id).Execute();
 			modelFactors.ForEach(x => x.Destroy());
         }
 
@@ -477,11 +484,11 @@ namespace KadOzenka.Dal.Modeling
                 });
             }
 
+            //TODO CIPJSKO-526 в один запрос
             var modelAttributeIds = attributes.Select(x => (long?)x.AttributeId).ToList();
-            var typifiedModel = GetTypifiedModelsByGeneralModelId(modelId, type)?.FirstOrDefault();
-            if (typifiedModel != null && modelAttributeIds.Count > 0)
+            if (modelAttributeIds.Count > 0)
             {
-	            var factors = OMModelFactor.Where(x => x.TypifiedModelId == typifiedModel.Id && modelAttributeIds.Contains(x.FactorId))
+	            var factors = OMModelFactor.Where(x => x.ModelId == modelId && modelAttributeIds.Contains(x.FactorId))
 		            .Select(x => new
 		            {
 			            x.FactorId,

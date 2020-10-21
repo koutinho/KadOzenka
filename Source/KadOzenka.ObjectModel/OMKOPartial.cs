@@ -517,6 +517,20 @@ namespace ObjectModel.KO
     {
 	    public string InternalName => $"model_{Id}";
 
+	    public OMModel Copy()
+	    {
+            return new OMModel
+            {
+                AlgoritmType_Code = AlgoritmType_Code,
+                Formula = Formula,
+                Description = Description,
+                Name = Name,
+                GroupId = GroupId,
+                IsOksObjectType = IsOksObjectType,
+                Type_Code = Type_Code
+            };
+	    }
+
         public string GetFormulaFull(bool upks)
         {
             string str_koeff = GetFormulaKoeff(false, string.Empty);
