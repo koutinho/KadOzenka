@@ -394,16 +394,7 @@ namespace KadOzenka.Web.Controllers
 
         private List<OMAttribute> GetOmAttributesForKo(long tourId, ObjectTypeExtended objectType, List<long> exceptedAttributes)
         {
-            List<OMAttribute> koAttributes;
-            if (objectType == ObjectTypeExtended.Both)
-            {
-                koAttributes = TourFactorService.GetTourAttributes(tourId, ObjectType.Oks);
-                koAttributes.AddRange(TourFactorService.GetTourAttributes(tourId, ObjectType.ZU));
-            }
-            else
-            {
-                koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
-            }
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType);
 
             if (exceptedAttributes != null && exceptedAttributes.Count > 0)
             {

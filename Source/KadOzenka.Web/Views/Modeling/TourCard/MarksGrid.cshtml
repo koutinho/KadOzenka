@@ -12,24 +12,24 @@
         var markGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Tour")',
+                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
                     data: {
                         groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Tour")',                         
+                    url: '@Url.Action("CreateMark", "Modeling")',                         
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Tour")',                    
+                    url: '@Url.Action("UpdateMark", "Modeling")',                    
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark", "Tour")',                        
+                    url: '@Url.Action("DeleteMark", "Modeling")',                        
                     type: 'POST',
                     dataType: 'json'
                 }

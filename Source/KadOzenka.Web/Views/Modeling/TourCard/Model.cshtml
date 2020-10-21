@@ -2,7 +2,7 @@
 @model KadOzenka.Web.Models.Modeling.ModelFromTourCardModel
 
 <!-- Модальное окно для загрузки справочника меток -->
-@using (Html.BeginForm("UploadMarksCatalog", "Tour", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
 { 
     <div id="uploadMarksCatalogModal" style="display: none;  padding: 2%;">
         <div class="form-horizontal col-sm-12">
@@ -337,7 +337,7 @@
                 var groupId = '@Model.GroupId';
                 var factorId = data.AttributeId;
                 Common.UI.ShowWindow('Метки',
-	                '@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
+	                '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId,
 	                'editFactorWindow',
 	                function (e) {},
 	                800, 400);
@@ -362,7 +362,7 @@
                 var data = grid.dataItem(row);
                 var groupId = '@Model.GroupId';
                 var factorId = data.AttributeId;
-                window.open('@Url.Action("DownloadMarksCatalog", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+                window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId);
             }
         });
 
@@ -410,7 +410,7 @@
 
                     kendo.ui.progress($('#uploadMarksCatalogModal'), true);
                     $.ajax({
-                        url: '@Url.Action("UploadMarksCatalog", "Tour")',
+                        url: '@Url.Action("UploadMarksCatalog", "Modeling")',
                         type: 'POST',
                         data: formData,
                         cache: false,
@@ -419,7 +419,7 @@
                         success: function (response) {
                             console.log(response);
                             if (response.success) {
-                                window.location = '@Url.Action("DownloadExcelFile", "Tour")' + "?fileName=" + response.fileName;
+                                window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
                             } else {
                                 Common.ShowError("Не удалось загрузить выбранный файл");
                             }

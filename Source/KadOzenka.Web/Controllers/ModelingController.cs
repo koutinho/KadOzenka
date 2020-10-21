@@ -36,6 +36,9 @@ using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using System.Data;
 using System.Data.Common;
+using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject.Dto;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace KadOzenka.Web.Controllers
@@ -78,7 +81,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetAllAttributes(long tourId, int objectType, List<long> exceptedAttributes)
         {
-            var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectTypeExtended)objectType);
 
             var availableAttributeTypes = new[]
             {
@@ -795,30 +798,7 @@ namespace KadOzenka.Web.Controllers
 	        return Json(new { formula });
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetFactors(long? tourId)
-        {
-	        var tourFactorRegisterIds = OMTourFactorRegister.Where(x => x.TourId == tourId)
-		        .Select(x => x.RegisterId)
-		        .Execute()
-		        .Select(x => x.RegisterId).ToList();
-
-	        if (tourFactorRegisterIds.Count == 0)
-	        {
-		        return Json(new List<SelectListItem>());
-	        }
-
-	        var registersData = RegisterCache.Registers.Values.Where(x => tourFactorRegisterIds.Contains(x.Id))
-		        .ToList();
-
-	        var result = registersData.Select(x => new SelectListItem
-	        {
-		        Value = x.Id.ToString(),
-		        Text = x.Description
-	        });
-
-	        return Json(result);
-        }
+        #region Факторы
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
@@ -910,6 +890,117 @@ namespace KadOzenka.Web.Controllers
 
 	        return Json(new { Success = "Удаление выполненно" });
         }
+
+        #endregion
+
+
+        #region Метки
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult MarkCatalog()
+        {
+	        return View("TourCard/MarkCatalog");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public JsonResult GetMarkCatalog(long? groupId, long? factorId)
+        {
+	        var markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
+		        .SelectAll().Execute();
+
+	        return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult CreateMark(OMMarkCatalog markCatalog)
+        {
+	        var id = markCatalog.Save();
+
+	        //хот-фикс, чтобы работало обновление ранее созданной метки
+	        //TODO нужно переписать, чтобы view работало со своей моделью, а не с моделью ОРМ
+	        var newMark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+
+	        return Json(newMark);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UpdateMark(OMMarkCatalog markCatalog)
+        {
+	        markCatalog.Save();
+
+	        return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult DeleteMark(OMMarkCatalog markCatalog)
+        {
+	        markCatalog.Destroy();
+
+	        return Json(markCatalog);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+        public ActionResult MarksGrid(long groupId, long factorId)
+        {
+	        //TODO переделать на модель
+	        ViewBag.GroupId = groupId;
+	        ViewBag.FactorId = factorId;
+
+	        return View("TourCard/MarksGrid");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public FileResult DownloadMarksCatalog(long groupId, long factorId)
+        {
+	        var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
+
+	        return File(fileStream, Helpers.Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
+        {
+	        if (file == null)
+		        throw new Exception("Не выбран файл для загрузки");
+	        if (!(file.FileName.EndsWith(".xlsx") || file.FileName.EndsWith(".xls")))
+		        throw new Exception("Загружен файл неправильного формата. Допустимые форматы: .xlsx и .xls");
+
+	        using (var stream = file.OpenReadStream())
+	        {
+		        var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+		        excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
+
+		        var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
+			        OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
+
+		        var fileName = "Справочник меток (загрузка) " + file.FileName;
+		        HttpContext.Session.Set(fileName, fileStream.ToByteArray());
+
+		        return Content(JsonConvert.SerializeObject(new { success = true, fileName = fileName }), "application/json");
+	        }
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult DownloadExcelFile(string fileName)
+        {
+	        var fileContent = HttpContext.Session.Get(fileName);
+	        if (fileContent == null)
+	        {
+		        return new EmptyResult();
+	        }
+
+	        HttpContext.Session.Remove(fileName);
+	        StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
+
+	        return File(fileContent, contentType, fileName);
+        }
+
+        #endregion
 
         #endregion
 

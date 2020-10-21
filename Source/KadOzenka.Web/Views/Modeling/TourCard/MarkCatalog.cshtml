@@ -1,4 +1,5 @@
-﻿<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+﻿@using KadOzenka.Dal.GbuObject.Dto
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
         <div class="col-sm-3">
             @Html.CustomLabel("Тур оценки")
@@ -64,46 +65,46 @@
 </div>
 
 <script>
-    $(document).ready(function () {        
-        
+    $(document).ready(function() {
+
         var groupId = $('#Subgroup').val();
-        var factorId = $('#Factor').val();            
+        var factorId = $('#Factor').val();
 
         var gridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Tour")',
+                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
                     data: { groupId, factorId },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Tour")',                         
+                    url: '@Url.Action("CreateMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Tour")',                    
+                    url: '@Url.Action("UpdateMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark", "Tour")',                        
+                    url: '@Url.Action("DeleteMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 }
             },
-            requestStart: function (e) {
+            requestStart: function(e) {
                 if (e.type == "read") {
                     kendo.ui.progress($('body'), true);
                 }
             },
-            requestEnd: function (e) {
+            requestEnd: function(e) {
                 if (e.type == "read") {
                     kendo.ui.progress($('body'), false);
                 }
             },
-            error: function (e) {
+            error: function(e) {
                 Common.ShowError(e.xhr.responseText);
             },
             schema: {
@@ -111,14 +112,14 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        GroupId: { editable: false},
+                        GroupId: { editable: false },
                         FactorId: { editable: false },
                         ValueFactor: { validation: { required: true } },
                         MetkaFactor: { type: "number", nullable: true }
                     }
                 }
             },
-            change: function (e) {
+            change: function(e) {
                 //если добавляем новое значение в грид, а к нему уже была применена фильтрация
                 //чтобы отобразить новую пустую строчку, нужна дополнительная фильтрация
                 if (e.action == "add") {
@@ -141,7 +142,7 @@
                 {
                     field: 'ValueFactor',
                     title: 'Значение',
-                    headerAttributes: {                            
+                    headerAttributes: {
                         style: "text-align: center;"
                     }
                 }, {
@@ -150,9 +151,9 @@
                     headerAttributes: {
                         style: "text-align: center;"
                     },
-                    //по умолчанию точность новой метки - 2 знака после запятой, 
+                    //по умолчанию точность новой метки - 2 знака после запятой,
                     //переопределяем это
-                    editor: function (container, options) {
+                    editor: function(container, options) {
                         $('<input name="' + options.field + '"/>')
                             .appendTo(container)
                             .kendoNumericTextBox({
@@ -183,7 +184,7 @@
                     }
                 }
             },
-            beforeEdit: function (e) {
+            beforeEdit: function(e) {
                 if (e.model.isNew()) {
                     e.model.GroupId = $('#Subgroup').val();
                     e.model.FactorId = $('#Factor').val();
@@ -191,9 +192,9 @@
             }
         });
 
-        function GridInit() {            
+        function GridInit() {
             var groupId = $('#Subgroup').val();
-            var factorId = $('#Factor').val();  
+            var factorId = $('#Factor').val();
 
             var data = { groupId, factorId };
             $("#grid").data("kendoGrid").dataSource.read(data);
@@ -214,126 +215,167 @@
                 }
             });
 
-        function GroupDropDownInit() {   
+        function GroupDropDownInit() {
             if ($('input[name="ObjType"]:checked').length == 0)
                 return;
             var parentType = $('input[name="ObjType"]:checked')[0].id;
 
             $('[name="Group"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: "--Выберите группу--",
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetParentGroup", "Tour")',
-                            data: { type: parentType, id: '' },
-                            dataType: 'json'
+                .kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    optionLabel: "--Выберите группу--",
+                    dataSource:
+                    {
+                        transport: {
+                            read: {
+                                url: '@Url.Action("GetParentGroup", "Tour")',
+                                data: { type: parentType, id: '' },
+                                dataType: 'json'
+                            }
                         }
                     }
-                }
-            });
+                });
         }
 
-        function SubgroupDropDownInit() {  
+        function SubgroupDropDownInit() {
             var groupId = $('#Group').val();
 
             $('[name="Subgroup"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: "--Выберите подгруппу--",
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetSubgroup", "Tour")',
-                            data: { groupId },
-                            dataType: 'json'
+                .kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    optionLabel: "--Выберите подгруппу--",
+                    dataSource:
+                    {
+                        transport: {
+                            read: {
+                                url: '@Url.Action("GetSubgroup", "Tour")',
+                                data: { groupId },
+                                dataType: 'json'
+                            }
                         }
                     }
-                }
-            });
-        }
-
-        function FactorDropDownInit() {
-            var tourId = $('#RatingTour').val();
-                    
-            $('[name="Factor"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: "--Выберите фактор--",
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetFactors", "Modeling")',
-                            data: { tourId },
-                            dataType: 'json'
-                        }
-                    }
-                }
-            });
+                });
         }
 
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', RatingTourChanged);
-        function RatingTourChanged() {           
-            FactorDropDownInit();
 
-            $('[name="Factor"]').data('kendoDropDownList').bind('dataBound', FactorChanged);            
-        }     
+        function RatingTourChanged() {
+            initAttributes();
 
-        $('[name="ObjType"]').on('change', function () {
-            GroupDropDownInit();
+            $('[name="Factor"]').data('kendoDropDownList').bind('dataBound', FactorChanged);
+        }
 
-            $('[name="Group"]').data("kendoDropDownList").bind('dataBound', function () {
-                SubgroupDropDownInit();
+        $('[name="ObjType"]').on('change',
+            function() {
+                GroupDropDownInit();
+                initAttributes();
 
-                $('[name="Subgroup"]').data('kendoDropDownList').bind('dataBound', SubgroupChanged);                
-            });            
-        });  
+                $('[name="Group"]').data("kendoDropDownList").bind('dataBound',
+                    function() {
+                        SubgroupDropDownInit();
+
+                        $('[name="Subgroup"]').data('kendoDropDownList').bind('dataBound', SubgroupChanged);
+                    });
+            });
 
         $('[name="Group"]').data('kendoDropDownList').bind('change', GroupChanged);
+
         function GroupChanged() {
             SubgroupDropDownInit();
         }
 
         $('[name="Subgroup"]').data('kendoDropDownList').bind('change', SubgroupChanged);
-        function SubgroupChanged() {            
+
+        function SubgroupChanged() {
             GridInit();
             SetAddButtonEnabled();
         }
 
         $('[name="Factor"]').data('kendoDropDownList').bind('change', FactorChanged);
+
         function FactorChanged() {
             GridInit();
             SetAddButtonEnabled();
-        }   
-        
+        }
+
         function SetAddButtonEnabled() {
             var groupId = $('#Subgroup').val();
             var factorId = $('#Factor').val();
-            
+
             if (groupId == '' || factorId == '') {
-                $('.k-grid-add').addClass('k-state-disabled'); 
-            }
-            else {
+                $('.k-grid-add').addClass('k-state-disabled');
+            } else {
                 $('.k-grid-add').removeClass('k-state-disabled');
             }
         }
 
         GroupDropDownInit();
         SubgroupDropDownInit();
-        FactorDropDownInit();
-        GridInit(); 
+        initAttributes();
+        GridInit();
 
         $('#grid').data("kendoGrid").bind('dataBound', GridDataBound);
+
         function GridDataBound() {
             SetAddButtonEnabled();
         }
 
     });
+
+
+    function initAttributes() {
+        var objectType = $('input[name="ObjType"]:checked').val();
+        console.log('objectType', objectType);
+        var tourId = $('#RatingTour').val();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetAllAttributes", "Modeling")',
+            data: { tourId: tourId, objectType: objectType },
+            dataType: "json",
+            traditional: true,
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.Text,
+                        Value: item.Value,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.Text,
+                                Value: i.Value
+                            }
+
+                        })
+                    }
+                });
+                var attribute = $('#Factor').data("kendoDropDownTree");
+                if (attribute) {
+                    attribute.setDataSource(data);
+                    attribute.value('');
+                } else {
+                    attribute = $("#Factor").kendoDropDownTree({
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data,
+                        filter: "contains"
+                    }).data("kendoDropDownTree");
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var attributeTableTreeSelect = function(e) {
+                        if (e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    attribute.treeview.bind("select", attributeTableTreeSelect);
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 </script>
