@@ -24285,6 +24285,26 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private bool? _useinterval;
+        /// <summary>
+        /// 60900400 Признак интервального справочника (USE_INTERVAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60900400)]
+        public bool? UseInterval
+        {
+            get
+            {
+                CheckPropertyInited("UseInterval");
+                return _useinterval;
+            }
+            set
+            {
+                _useinterval = value;
+                NotifyPropertyChanged("UseInterval");
+            }
+        }
+
     }
 }
 
@@ -24394,6 +24414,46 @@ namespace ObjectModel.ES
             {
                 _commonvalue = value;
                 NotifyPropertyChanged("CommonValue");
+            }
+        }
+
+
+        private string _valuefrom;
+        /// <summary>
+        /// 61000700 Значение от (VALUE_FROM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000700)]
+        public string ValueFrom
+        {
+            get
+            {
+                CheckPropertyInited("ValueFrom");
+                return _valuefrom;
+            }
+            set
+            {
+                _valuefrom = value;
+                NotifyPropertyChanged("ValueFrom");
+            }
+        }
+
+
+        private string _valueto;
+        /// <summary>
+        /// 61000800 Значение до (VALUE_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000800)]
+        public string ValueTo
+        {
+            get
+            {
+                CheckPropertyInited("ValueTo");
+                return _valueto;
+            }
+            set
+            {
+                _valueto = value;
+                NotifyPropertyChanged("ValueTo");
             }
         }
 
