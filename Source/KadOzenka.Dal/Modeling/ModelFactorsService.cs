@@ -47,7 +47,19 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type)
 		{
-			return OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).SelectAll().Execute();
+			var types = new List<KoAlgoritmType>();
+			if (type == KoAlgoritmType.None)
+			{
+				types.Add(KoAlgoritmType.Line);
+				types.Add(KoAlgoritmType.Exp);
+				types.Add(KoAlgoritmType.Multi);
+			}
+			else
+			{
+				types.Add(type);
+			}
+
+			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
 		}
 
 		public List<ModelAttributeRelationDto> GetGeneralModelAttributes(long modelId)

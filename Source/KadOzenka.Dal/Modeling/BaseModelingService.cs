@@ -23,12 +23,12 @@ using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService
+	public class BaseModelingService
 	{
 		public DictionaryService DictionaryService { get; set; }
 		public ModelFactorsService ModelFactorsService { get; set; }
 
-		public ModelingService(DictionaryService dictionaryService)
+		public BaseModelingService(DictionaryService dictionaryService)
 		{
 			DictionaryService = dictionaryService;
 			ModelFactorsService = new ModelFactorsService();
@@ -148,14 +148,15 @@ namespace KadOzenka.Dal.Modeling
 				AlgoritmType_Code = modelDto.AlgorithmType,
                 Type_Code = modelDto.Type
 			};
-			model.Formula = model.GetFormulaFull(true);
 
 			if (modelDto.Type == KoModelType.Automatic)
 			{
 				model.AlgoritmType_Code = KoAlgoritmType.None;
 			}
 
-			model.Save();
+			model.Formula = model.GetFormulaFull(true);
+
+            model.Save();
         }
 
 		public bool UpdateModel(ModelingModelDto modelDto)
@@ -175,14 +176,18 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
-                existedModel.Formula = existedModel.GetFormulaFull(true);
+                if (existedModel.Type_Code == KoModelType.Manual)
+                {
+	                existedModel.AlgoritmType_Code = modelDto.AlgorithmType;
+                }
                 if (isModelChanged)
                 {
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
                 }
+
+                existedModel.Formula = existedModel.GetFormulaFull(true);
                 existedModel.Save();
 
-                existedModelAttributes.ForEach(x => x.Destroy());
                 AddModelAttributes(existedModel.Id, existedModel.AlgoritmType_Code, newAttributes);
 
                 ts.Complete();
@@ -193,7 +198,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
 		{
-			switch (generalModel.AlgoritmType_Code)
+			switch (type)
 			{
 				case KoAlgoritmType.None:
 					generalModel.LinearTrainingResult = null;
@@ -681,6 +686,9 @@ namespace KadOzenka.Dal.Modeling
             var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
             if (isModelExists)
 	            message.AppendLine("Модель для данной группы уже существует");
+
+            if(modelDto.Type == KoModelType.Manual && modelDto.AlgorithmType == KoAlgoritmType.None)
+	            message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
             if (message.Length != 0)
 				throw new Exception(message.ToString());

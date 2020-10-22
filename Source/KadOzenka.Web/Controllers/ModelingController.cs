@@ -42,14 +42,14 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ModelingController : KoBaseController
 	{
-		public ModelingService ModelingService { get; set; }
+		public BaseModelingService ModelingService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
 
 
-        public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
+        public ModelingController(BaseModelingService modelingService, TourFactorService tourFactorService,
             RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
             ModelFactorsService modelFactorsService)
         {
