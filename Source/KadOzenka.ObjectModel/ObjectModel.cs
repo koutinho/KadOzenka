@@ -7462,7 +7462,6 @@ namespace ObjectModel.KO
         }
 
 
-        //TODO CIPJSKO-526 удалить
         private string _lineartrainingresult;
         /// <summary>
         /// 20601100 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
@@ -7482,7 +7481,7 @@ namespace ObjectModel.KO
             }
         }
 
-        //TODO CIPJSKO-526 удалить
+
         private string _exponentialtrainingresult;
         /// <summary>
         /// 20601200 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
@@ -7502,7 +7501,7 @@ namespace ObjectModel.KO
             }
         }
 
-        //TODO CIPJSKO-526 удалить
+
         private string _multiplicativetrainingresult;
         /// <summary>
         /// 20601300 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
@@ -7597,26 +7596,6 @@ namespace ObjectModel.KO
             }
         }
 
-
-        private string _trainingresult;
-        /// <summary>
-        /// 20601600 Результат обучения (training_result)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20601600)]
-        public string TrainingResult
-        {
-            get
-            {
-                CheckPropertyInited("TrainingResult");
-                return _trainingresult;
-            }
-            set
-            {
-                _trainingresult = value;
-                NotifyPropertyChanged("TrainingResult");
-            }
-        }
-
     }
 }
 
@@ -7706,98 +7685,6 @@ namespace ObjectModel.KO
             {
                 _signmarket = value;
                 NotifyPropertyChanged("SignMarket");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 209 Атрибуты модели (KO_MODEL_ATTRIBUTES)
-    /// </summary>
-    [RegisterInfo(RegisterID = 209)]
-    [Serializable]
-    public partial class OMModelAttribute : OMBaseClass<OMModelAttribute>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 20900100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 20900100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long _generalmodelid;
-        /// <summary>
-        /// 20900200 ИД основной модели (206 реестр) (general_model_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20900200)]
-        public long GeneralModelId
-        {
-            get
-            {
-                CheckPropertyInited("GeneralModelId");
-                return _generalmodelid;
-            }
-            set
-            {
-                _generalmodelid = value;
-                NotifyPropertyChanged("GeneralModelId");
-            }
-        }
-
-
-        private long _attributeid;
-        /// <summary>
-        /// 20900300 ИД атрибута (attribute_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20900300)]
-        public long AttributeId
-        {
-            get
-            {
-                CheckPropertyInited("AttributeId");
-                return _attributeid;
-            }
-            set
-            {
-                _attributeid = value;
-                NotifyPropertyChanged("AttributeId");
-            }
-        }
-
-
-        private long? _dictionaryid;
-        /// <summary>
-        /// 20900400 ИД словаря для моделирования (dictionary_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20900400)]
-        public long? DictionaryId
-        {
-            get
-            {
-                CheckPropertyInited("DictionaryId");
-                return _dictionaryid;
-            }
-            set
-            {
-                _dictionaryid = value;
-                NotifyPropertyChanged("DictionaryId");
             }
         }
 
@@ -7993,10 +7880,10 @@ namespace ObjectModel.KO
             }
         }
 
-        //TODO CIPJSKO-526 удалить
+
         private long? _dictionaryid;
         /// <summary>
-        /// 21001000 УДАЛИТЬ Идентификатор словаря (DICTIONARY_ID)
+        /// 21001000 Идентификатор словаря (DICTIONARY_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21001000)]
         public long? DictionaryId
@@ -8010,6 +7897,61 @@ namespace ObjectModel.KO
             {
                 _dictionaryid = value;
                 NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _algorithmtype;
+        /// <summary>
+        /// 21001100  Алгоритм рассчёта ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001100)]
+        public string AlgorithmType
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType");
+                return _algorithmtype;
+            }
+            set
+            {
+                _algorithmtype = value;
+                NotifyPropertyChanged("AlgorithmType");
+            }
+        }
+
+
+        private KoAlgoritmType _algorithmtype_Code;
+        /// <summary>
+        /// 21001100  Алгоритм рассчёта (справочный код) (algorithm_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001100)]
+        public KoAlgoritmType AlgorithmType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType_Code");
+                return this._algorithmtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algorithmtype))
+                    {
+                         _algorithmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algorithmtype = descr;
+                }
+
+                this._algorithmtype_Code = value;
+                NotifyPropertyChanged("AlgorithmType");
+                NotifyPropertyChanged("AlgorithmType_Code");
             }
         }
 

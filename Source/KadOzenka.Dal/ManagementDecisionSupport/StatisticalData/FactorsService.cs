@@ -15,16 +15,18 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
     public class FactorsService
     {
         private ModelingService ModelService { get; set; }
+        private ModelFactorsService ModelFactorsService { get; set; }
 
         public FactorsService()
         {
             ModelService = new ModelingService(new DictionaryService());
+            ModelFactorsService = new ModelFactorsService();
         }
 
 
         public List<PricingFactors> GetGroupedModelFactors(long modelId)
         {
-            var query = ModelService.GetModelFactorsQuery(modelId);
+            var query = ModelFactorsService.GetModelFactorsQuery(modelId);
 
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorPure.FactorId)));
             query.AddColumn(OMAttribute.GetColumn(x => x.ValueField, nameof(ModelFactorPure.ValueField)));

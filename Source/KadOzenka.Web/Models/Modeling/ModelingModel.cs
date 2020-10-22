@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
-using ObjectModel.Ko;
-using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
 	public class ModelingModel
     {
 		public long Id { get; set; }
-        public bool IsModelWasTrained { get; set; }
+        public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
         public bool HasLinearTrainingResult { get; set; }
         public bool HasExponentialTrainingResult { get; set; }
         public bool HasMultiplicativeTrainingResult { get; set; }
@@ -51,7 +48,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
 
-		public static ModelingModel ToModel(ModelingModelDto entity, List<OMModel> typifiedModels)
+		public static ModelingModel ToModel(ModelingModelDto entity)
 		{
 			return new ModelingModel
             {
@@ -64,10 +61,9 @@ namespace KadOzenka.Web.Models.Modeling
                 Description = entity.Description,
                 Attributes = entity.Attributes,
                 ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
-                IsModelWasTrained = typifiedModels?.Any(x => !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false,
-                HasLinearTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Line),
-                HasExponentialTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Exp),
-                HasMultiplicativeTrainingResult = HasTrainingResult(typifiedModels, KoAlgoritmType.Multi),
+                HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
+                HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
+                HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
                 Type = entity.Type,
                 AlgorithmType = entity.AlgorithmType
             };
@@ -91,15 +87,5 @@ namespace KadOzenka.Web.Models.Modeling
                 AlgorithmType = model.AlgorithmType
             };
 		}
-
-
-		#region Support Methods
-
-		private static bool HasTrainingResult(List<OMModel> typifiedModels, KoAlgoritmType type)
-        {
-            return typifiedModels?.Any(x => x.AlgoritmType_Code == type && !string.IsNullOrWhiteSpace(x.TrainingResult)) ?? false;
-        }
-
-        #endregion
     }
 }

@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         private List<ModelFactor> GetFactors(long modelId)
 		{
-			var query = ModelService.GetModelFactorsQuery(modelId);
+			var query = ModelFactorsService.GetModelFactorsQuery(modelId);
 
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactor.Type)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactor.FactorId)));

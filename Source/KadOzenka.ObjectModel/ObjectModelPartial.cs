@@ -1577,30 +1577,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 209 Атрибуты модели
-    /// </summary>
-    public partial class OMModelAttribute
-    {
-
-        public OMModelAttribute()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMModelAttribute(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 210 Значение факторов модели
     /// </summary>
     public partial class OMModelFactor
@@ -2260,12 +2236,6 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (209 Атрибуты модели)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMModelAttribute> ModelAttribute { get; set; }
-
-        /// <summary>
         /// Ссылка на (210 Значение факторов модели)
         /// </summary>
         [Reference]
@@ -2283,8 +2253,6 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
-
-            ModelAttribute = new List<ObjectModel.KO.OMModelAttribute>();
 
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 

@@ -50,20 +50,21 @@ namespace KadOzenka.Dal.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.Id, InputParameters.ModelType);
+            if (InputParameters.ModelType == KoAlgoritmType.Line && string.IsNullOrWhiteSpace(GeneralModel.LinearTrainingResult))
+	            throw new Exception(GetErrorMessage(KoAlgoritmType.Line));
 
-            var isModelTrained = typifiedModels.Any(x =>
-	            x.AlgoritmType_Code == InputParameters.ModelType && !string.IsNullOrWhiteSpace(x.TrainingResult));
+            if (InputParameters.ModelType == KoAlgoritmType.Exp && string.IsNullOrWhiteSpace(GeneralModel.ExponentialTrainingResult))
+	            throw new Exception(GetErrorMessage(KoAlgoritmType.Exp));
 
-            if (!isModelTrained)
-                throw new Exception(GetErrorMessage(InputParameters.ModelType));
+            if (InputParameters.ModelType == KoAlgoritmType.Multi && string.IsNullOrWhiteSpace(GeneralModel.MultiplicativeTrainingResult))
+	            throw new Exception(GetErrorMessage(KoAlgoritmType.Multi));
         }
 
         protected override object GetRequestForService()
         {
             RequestForService = new PredictionRequest();
 
-            var allAttributes = ModelingService.GetGeneralModelAttributes(InputParameters.ModelId);
+            var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId);
 
             var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
             modelObjects.ForEach(modelObject =>

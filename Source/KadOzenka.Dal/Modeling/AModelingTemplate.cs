@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private static HttpClient _httpClient;
         protected ModelingService ModelingService { get; set; }
+        protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
         protected ILogger Logger { get; set; }
 
@@ -24,6 +25,7 @@ namespace KadOzenka.Dal.Modeling
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
             ModelingService = new ModelingService(new DictionaryService());
+            ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
             Logger = logger;
         }

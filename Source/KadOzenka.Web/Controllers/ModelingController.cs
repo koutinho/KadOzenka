@@ -68,9 +68,8 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelCard(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
-			var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(modelId);
 
-            var model = ModelingModel.ToModel(modelDto, typifiedModels);
+			var model = ModelingModel.ToModel(modelDto);
 
             return View(model);
 		}
@@ -144,20 +143,10 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
-			List<ModelAttributeRelationDto> attributes;
-
-            var model = ModelingService.GetModelEntityById(modelId);
-			if (model.Type_Code == KoModelType.Automatic)
-			{
-				attributes = ModelingService.GetAttributesForAutomaticModel(modelId, type);
-			}
-			else
-			{
-				attributes = ModelingService.GetAttributesForManualModel(modelId);
-			}
+			var attributes = ModelFactorsService.GetModelAttributes(modelId, type);
 
 			return Json(attributes);
-        }
+		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups(long tourId)
@@ -209,14 +198,15 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
-            var areAttributesExist = OMModelAttribute.Where(x => x.GeneralModelId == modelId).ExecuteExists();
+	        var type = ConvertModelType(modelType);
+            var areAttributesExist = OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).ExecuteExists();
             if (!areAttributesExist)
                 throw new Exception("Для модели не найдено сохраненных атрибутов");
 
             var inputParameters = new GeneralModelingInputParameters
             {
                 ModelId = modelId,
-                ModelType = ConvertModelType(modelType)
+                ModelType = type
             };
             //////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
@@ -304,43 +294,48 @@ namespace KadOzenka.Web.Controllers
         #region Результаты обучения модели (из раскладки)
 
         [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult LinearModelDetails(long modelId)
         {
-	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Line);
+	        var model = ModelingService.GetModelEntityById(modelId);
+
+	        var trainingResult = GetTrainingDetails(model.LinearTrainingResult);
+	        var details = TrainingDetailsModel.ToModel(trainingResult);
 
 	        return View("ModelTrainingResult", details);
         }
 
         [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ExponentialModelDetails(long modelId)
         {
-	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Exp);
+	        var model = ModelingService.GetModelEntityById(modelId);
 
-            return View("ModelTrainingResult", details);
+	        var trainingResult = GetTrainingDetails(model.ExponentialTrainingResult);
+	        var details = TrainingDetailsModel.ToModel(trainingResult);
+
+	        return View("ModelTrainingResult", details);
         }
 
         [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MultiplicativeModelDetails(long modelId)
         {
-	        var details = GetTrainingDetails(modelId, KoAlgoritmType.Multi);
+	        var model = ModelingService.GetModelEntityById(modelId);
+
+	        var trainingResult = GetTrainingDetails(model.MultiplicativeTrainingResult);
+	        var details = TrainingDetailsModel.ToModel(trainingResult);
 
 	        return View("ModelTrainingResult", details);
         }
 
         #region Support Methods
 
-        private TrainingDetailsModel GetTrainingDetails(long generalModelId, KoAlgoritmType type)
+        private TrainingResponse GetTrainingDetails(string trainingResult)
         {
-	        var typifiedModel = ModelingService.GetTypifiedModelsByGeneralModelId(generalModelId, type)?.FirstOrDefault();
-
-	        var trainingResult = string.IsNullOrWhiteSpace(typifiedModel?.TrainingResult)
+	        return string.IsNullOrWhiteSpace(trainingResult)
 		        ? null
-		        : JsonConvert.DeserializeObject<TrainingResponse>(typifiedModel.TrainingResult);
-
-	        return TrainingDetailsModel.ToModel(trainingResult);
+		        : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
         }
 
         #endregion
@@ -355,9 +350,9 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelObjects(long modelId)
 		{
             var modelDto = ModelingService.GetModelById(modelId);
-            modelDto.Attributes = ModelingService.GetGeneralModelAttributes(modelId);
+            modelDto.Attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
-            var model = ModelingModel.ToModel(modelDto, null);
+            var model = ModelingModel.ToModel(modelDto);
 
             return View(model);
 		}

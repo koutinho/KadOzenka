@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.Modeling
             ModelingService.DestroyModelMarketObjects(GeneralModel.Id);
             AddLog("Удалены предыдущие данные.");
 
-            ModelAttributes = ModelingService.GetGeneralModelAttributes(GeneralModel.Id);
+            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
             AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
             var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
@@ -193,7 +193,6 @@ namespace KadOzenka.Dal.Modeling
 		        trainingResults.Add(trainingResult);
             }
 
-            var typifiedModels = GetTypifiedModels();
             ResetPredictedPrice();
             AddLog("Закончен сброс спрогнозированной цены.");
 
@@ -205,22 +204,17 @@ namespace KadOzenka.Dal.Modeling
 	            PreprocessTrainingResult(trainingResult);
 
 	            var trainingType = GetTrainingType(trainingResult.Type);
-	            var typifiedModel = typifiedModels.FirstOrDefault(x => x.AlgoritmType_Code == trainingType);
-                if(typifiedModel == null)
-                    throw new Exception($"Не найдена типизированная модель '{trainingType.GetEnumDescription()}' для основной модели '{GeneralModel.Name}, (ИД {GeneralModel.Id})'");
 	            
-	            SaveCoefficients(trainingResult.CoefficientsForAttributes, typifiedModel);
+	            SaveCoefficients(trainingResult.CoefficientsForAttributes, trainingType);
+	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult));
 
-	            typifiedModel.TrainingResult = JsonConvert.SerializeObject(trainingResult);
-	            typifiedModel.Save();
-
-	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{typifiedModel.AlgoritmType}' с ИД '{typifiedModel.Id}'.");
+	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
             });
         }
 
         protected override void RollBackResult()
         {
-            ModelingService.ResetTrainingResults(GeneralModel.Id, InputParameters.ModelType);
+            ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
 
@@ -382,22 +376,9 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private List<OMModel> GetTypifiedModels()
+        private void SaveCoefficients(Dictionary<string, decimal> coefficients, KoAlgoritmType type)
         {
-	        var typifiedModels = ModelingService.GetTypifiedModelsByGeneralModelId(GeneralModel.GroupId, InputParameters.ModelType);
-	        AddLog($"Найдено {typifiedModels.Count} типизированных моделей");
-	        if (typifiedModels.Count == 0)
-	        {
-		        typifiedModels = ModelingService.CreateTypifiedModels(GeneralModel, InputParameters.ModelType);
-		        AddLog($"Создано {typifiedModels.Count} типизированных моделей");
-	        }
-
-            return typifiedModels;
-        }
-
-        private void SaveCoefficients(Dictionary<string, decimal> coefficients, OMModel typifiedModelId)
-        {
-	        ModelingService.DeleteFactors(typifiedModelId);
+	        ModelingService.DeleteFactors(GeneralModel, type);
             AddLog("Удалены предыдущие значения для коэффициентов");
 
             foreach (var coefficient in coefficients)
@@ -405,13 +386,13 @@ namespace KadOzenka.Dal.Modeling
 	            var attributeId = coefficient.Key.ParseToLong();
 	            new OMModelFactor
 	            {
-                    ModelId = typifiedModelId.Id,
+                    ModelId = GeneralModel.Id,
                     FactorId = attributeId,
 		            Weight = coefficient.Value,
 		            MarkerId = -1
 	            }.Save();
 
-                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{typifiedModelId.AlgoritmType}'");
+                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{type.GetEnumDescription()}'");
 	        }
         }
 
@@ -460,6 +441,24 @@ namespace KadOzenka.Dal.Modeling
 			        return InputParameters.ModelType;
 	        }
         }
+
+        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					GeneralModel.ExponentialTrainingResult = trainingResult;
+					break;
+				case KoAlgoritmType.Line:
+					GeneralModel.LinearTrainingResult = trainingResult;
+                    break;
+				case KoAlgoritmType.Multi:
+					GeneralModel.MultiplicativeTrainingResult = trainingResult;
+                    break;
+			}
+
+			GeneralModel.Save();
+		}
 
         #endregion
 

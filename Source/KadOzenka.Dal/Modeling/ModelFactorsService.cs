@@ -1,8 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Core.Register;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.KO;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Transactions;
+using Core.Register;
+using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Core.Register;
+using ObjectModel.Directory;
+using ObjectModel.KO;
+using ObjectModel.Market;
+using ObjectModel.Modeling;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.Modeling.Dto.Factors;
+using Kendo.Mvc.Extensions;
+using ObjectModel.Directory.ES;
+using ObjectModel.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -19,15 +45,179 @@ namespace KadOzenka.Dal.Modeling
 			return factor;
 		}
 
+		public List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type)
+		{
+			return OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).SelectAll().Execute();
+		}
+
+		public List<ModelAttributeRelationDto> GetGeneralModelAttributes(long modelId)
+		{
+			var query = GetModelFactorsQuery(modelId);
+
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelAttributeRelationDto.Type)));
+
+			var attributes = new List<ModelAttributeRelationDto>();
+			var table = query.ExecuteQuery();
+			for (var i = 0; i < table.Rows.Count; i++)
+			{
+				var row = table.Rows[i];
+
+				var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
+
+				var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
+
+				var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
+				var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
+				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
+
+				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+
+				attributes.Add(new ModelAttributeRelationDto
+				{
+					Id = id,
+					RegisterId = registerId,
+					AttributeId = attributeId,
+					AttributeName = attributeName,
+					AttributeType = attributeType,
+					DictionaryId = dictionaryId
+				});
+			}
+
+			var a = attributes.GroupBy(x => x.Type).ToList();
+
+			return attributes.GroupBy(x => x.Type).Select(x => x.FirstOrDefault()).ToList();
+		}
+
+		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
+		{
+			var dictionaryJoin = new QSJoin
+			{
+				RegisterId = OMModelingDictionary.GetRegisterId(),
+				JoinCondition = new QSConditionSimple
+				{
+					ConditionType = QSConditionType.Equal,
+					LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
+					RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
+				},
+				JoinType = QSJoinType.Left
+			};
+
+			var typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
+
+			var query = GetModelFactorsQuery(modelId, dictionaryJoin, typeCondition);
+
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(ModelAttributeRelationDto.SignAdd)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+
+			var sql = query.GetSql();
+
+			var attributes = new List<ModelAttributeRelationDto>();
+			var table = query.ExecuteQuery();
+			for (var i = 0; i < table.Rows.Count; i++)
+			{
+				var row = table.Rows[i];
+
+				var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
+
+				var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
+
+				var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
+				var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
+				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
+
+				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
+
+				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
+				var signAdd = row[nameof(ModelAttributeRelationDto.SignAdd)].ParseToBooleanNullable();
+				var signDiv = row[nameof(ModelAttributeRelationDto.SignDiv)].ParseToBooleanNullable();
+				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
+				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+
+				attributes.Add(new ModelAttributeRelationDto
+				{
+					Id = id,
+					RegisterId = registerId,
+					AttributeId = attributeId,
+					AttributeName = attributeName,
+					AttributeType = attributeType,
+					DictionaryId = dictionaryId,
+					DictionaryName = dictionaryName,
+					B0 = b0.GetValueOrDefault(),
+					SignAdd = signAdd.GetValueOrDefault(),
+					SignDiv = signDiv.GetValueOrDefault(),
+					SignMarket = signMarket.GetValueOrDefault(),
+					Coefficient = weight
+				});
+			}
+
+			return attributes;
+		}
+
+		public QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null, QSCondition additionalCondition = null)
+		{
+			var conditions = new List<QSCondition>
+			{
+				new QSConditionSimple(OMModelFactor.GetColumn(x => x.ModelId), QSConditionType.Equal, modelId)
+			};
+			if (additionalCondition != null)
+				conditions.Add(additionalCondition);
+
+			var query = new QSQuery
+			{
+				MainRegisterID = OMModelFactor.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = conditions
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMAttribute.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMModelFactor.GetColumn(x => x.FactorId),
+							RightOperand = OMAttribute.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				},
+				OrderBy = new List<QSOrder>
+				{
+					new QSOrder
+					{
+						Column = OMAttribute.GetColumn(x => x.Name),
+						Order = QSOrderType.ASC
+					}
+				}
+			};
+
+			if (additionalJoin != null)
+				query.Joins.Add(additionalJoin);
+
+			return query;
+		}
+
 		public int AddFactor(ModelFactorDto dto)
 		{
 			ValidateFactor(dto);
-
-			new OMModelAttribute
-			{
-				GeneralModelId = dto.GeneralModelId.Value,
-				AttributeId = dto.FactorId.Value
-			}.Save();
 
 			var id = new OMModelFactor
 			{
@@ -63,7 +253,6 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(dto.GeneralModelId);
 		}
 
-
 		#region Support Methods
 
 		private void ValidateFactor(ModelFactorDto factorDto)
@@ -73,6 +262,9 @@ namespace KadOzenka.Dal.Modeling
 
 			if (factorDto.FactorId == null)
 				throw new Exception("Не передан ИД фактора");
+
+			if (factorDto.Type == KoAlgoritmType.None)
+				throw new Exception("Не передан тип алгоритма для фактора");
 
 			var model = OMModel.Where(x => x.Id == factorDto.GeneralModelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 			if (model?.Type_Code == KoModelType.Automatic)
