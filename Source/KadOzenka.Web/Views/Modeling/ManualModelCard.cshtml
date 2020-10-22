@@ -414,7 +414,7 @@
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + selectedRowData.FactorId + '&generalModelId=@Model.GeneralModelId',
+                '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.GeneralModelId',
                 'editFactorWindow',
                 function (e, param) {
                     if (param == true) {
@@ -438,7 +438,7 @@
                     $.ajax({
                         url: '@Url.Action("DeleteModelFactor", "Modeling")',
                         type: 'POST',
-                        data: { id: selectedRowData.FactorId },
+                        data: { id: selectedRowData.Id },
                         success: function (response) {
                             kendo.ui.progress($('body'), false);
                             if (response.Success) {

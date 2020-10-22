@@ -157,15 +157,6 @@ namespace KadOzenka.Web.Controllers
             return Json(fullTree);
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetAllAttributesByModel(long generalModelId)
-        {
-	        var generalModel = ModelingService.GetModelById(generalModelId);
-	        var objectType = generalModel.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU;
-
-	        return GetAllAttributes(generalModel.TourId, (int) objectType, null);
-        }
-
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
@@ -343,6 +334,27 @@ namespace KadOzenka.Web.Controllers
             return View(model);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public JsonResult GetFactorsForManualModel(long modelId)
+        {
+	        var model = ModelingService.GetModelEntityById(modelId);
+
+	        var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == model.GroupId).Select(x => x.TourId)
+		        .ExecuteFirstOrDefault();
+	        if (tourToGroupRelation == null)
+		        throw new Exception("Для группы не найдено соответсвие с туром");
+
+	        var tourAttributes = TourFactorService.GetTourAttributes(tourToGroupRelation.TourId, ObjectTypeExtended.Both);
+
+	        var result = tourAttributes.Select(x => new
+	        {
+		        Text = x.Name,
+		        Value = (int)x.Id
+	        }).ToList();
+
+	        return Json(result);
+        }
+
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult Model(ManualModelingModel model)
@@ -423,6 +435,10 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditModelFactor(FactorModel factorModel)
         {
             var dto = factorModel.ToDto();
+            
+            var model = ModelingService.GetModelEntityById(factorModel.GeneralModelId);
+            dto.Type = model.AlgoritmType_Code;
+
             if (factorModel.Id == -1)
             {
                 ModelFactorsService.AddFactor(dto);
@@ -439,12 +455,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult DeleteModelFactor(long? id)
         {
-            var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            factor.Destroy();
-
-            var model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
-            model.Formula = model.GetFormulaFull(true);
-            model.Save();
+            ModelFactorsService.DeleteFactor(id);
 
             return Json(new { Success = "Удаление выполненно" });
         }

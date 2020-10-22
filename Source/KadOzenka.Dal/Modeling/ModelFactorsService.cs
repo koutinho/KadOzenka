@@ -274,6 +274,15 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(dto.GeneralModelId);
 		}
 
+		public void DeleteFactor(long? id)
+		{
+			var factor = GetFactorById(id);
+
+			factor.Destroy();
+
+			RecalculateFormula(factor.ModelId);
+		}
+
 		#region Support Methods
 
 		private void ValidateFactor(ModelFactorDto factorDto)
@@ -287,7 +296,7 @@ namespace KadOzenka.Dal.Modeling
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма для фактора");
 
-			var isTheSameAttributeExists = OMModelFactor.Where(x =>
+			var isTheSameAttributeExists = OMModelFactor.Where(x => x.Id != factorDto.Id &&
 					x.FactorId == factorDto.FactorId && x.ModelId == factorDto.GeneralModelId && x.AlgorithmType_Code == factorDto.Type)
 				.ExecuteExists();
 			if (isTheSameAttributeExists)

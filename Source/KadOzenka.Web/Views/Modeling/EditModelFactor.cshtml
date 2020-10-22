@@ -4,7 +4,6 @@
 {
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.GeneralModelId)
-    @Html.HiddenFor(x => x.Type)
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
         <div class="form-group">
             <div class="col-sm-3">
@@ -83,7 +82,7 @@
         e.preventDefault();
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
-        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
@@ -106,45 +105,19 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetAllAttributesByModel", "Modeling")',
-            data: { generalModelId: '@Model.GeneralModelId' },
+            url: '@Url.Action("GetFactorsForManualModel", "Modeling")',
+            data: { modelId: '@Model.GeneralModelId' },
             dataType: "json",
             traditional: true,
-            success: function(response) {
-                var data = response.map(function(item) {
-                    return {
-                        Text: item.Text,
-                        Value: item.Value,
-                        items: item.Items.map(function(i) {
-                            return {
-                                Text: i.Text,
-                                Value: i.Value
-                            }
-
-                        })
-                    }
-                });
-                var attribute = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
-                if (attribute) {
-                    attribute.setDataSource(data);
-                    attribute.value('');
-                } else {
-                    attribute = $('#@nameof(Model.FactorId)').kendoDropDownTree({
-                        dataTextField: 'Text',
-                        dataValueField: 'Value',
-                        dataSource: data,
-                        filter: "contains"
-                    }).data("kendoDropDownTree");
-                    //нельзя выбирать корневой элемент дерева (таблицу)
-                    var attributeTableTreeSelect = function(e){
-                        if(e.sender.dataItem(e.node).hasChildren) {
-                            e.preventDefault();
-                        }
-                    };
-                    attribute.treeview.bind("select", attributeTableTreeSelect);
-                    if('@Model.FactorId')
-                        attribute.value('@Model.FactorId');
-                }
+            success: function (data) {
+                var attribute = $('#@nameof(Model.FactorId)').kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    dataSource: data,
+                    filter: "contains"
+                }).data("kendoDropDownList");
+                if('@Model.FactorId')
+                    attribute.value('@Model.FactorId');
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
