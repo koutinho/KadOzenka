@@ -215,6 +215,13 @@ namespace KadOzenka.Dal.Modeling
         protected override void RollBackResult()
         {
             ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+
+            var factors = ModelFactorsService.GetFactors(GeneralModel.Id, InputParameters.ModelType);
+            factors.ForEach(x =>
+            {
+	            x.Weight = 0;
+	            x.Save();
+            });
         }
 
 
@@ -378,21 +385,18 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveCoefficients(Dictionary<string, decimal> coefficients, KoAlgoritmType type)
         {
-	        ModelingService.DeleteFactors(GeneralModel, type);
-            AddLog("Удалены предыдущие значения для коэффициентов");
+	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
 
-            foreach (var coefficient in coefficients)
+	        foreach (var coefficient in coefficients)
             {
 	            var attributeId = coefficient.Key.ParseToLong();
-	            new OMModelFactor
-	            {
-                    ModelId = GeneralModel.Id,
-                    FactorId = attributeId,
-		            Weight = coefficient.Value,
-		            MarkerId = -1
-	            }.Save();
+	            var factor = factors.FirstOrDefault(x => x.FactorId == attributeId);
+	            if (factor == null)
+		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{type.GetEnumDescription()}'");
+                factor.Weight = coefficient.Value;
+
+                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{attributeId}' модели '{type.GetEnumDescription()}'");
 	        }
         }
 

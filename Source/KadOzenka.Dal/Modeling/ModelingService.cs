@@ -173,11 +173,12 @@ namespace KadOzenka.Dal.Modeling
 
         public bool UpdateModel(ModelingModelDto modelDto)
 		{
-			ValidateModel(modelDto);
+			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
+
+            ValidateModel(modelDto);
+            ValidateAttributes(newAttributes);
 
 			var existedModel = GetModelEntityById(modelDto.ModelId);
-
-			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
 			var existedModelAttributes = ModelFactorsService.GetFactors(existedModel.Id, existedModel.AlgoritmType_Code);
 
             var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
@@ -188,19 +189,16 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
-                if (existedModel.Type_Code == KoModelType.Manual)
-                {
-	                existedModel.AlgoritmType_Code = modelDto.AlgorithmType;
-                }
                 if (isModelChanged)
                 {
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
+	                existedModelAttributes.ForEach(x => x.Destroy());
+	                existedModelAttributes = new List<OMModelFactor>();
                 }
 
-                existedModel.Formula = existedModel.GetFormulaFull(true);
                 existedModel.Save();
 
-                AddModelAttributes(existedModel.Id, existedModel.AlgoritmType_Code, newAttributes);
+                AddModelAttributes(existedModel.Id, modelDto.TourId, newAttributes, existedModelAttributes);
 
                 ts.Complete();
             }
@@ -228,27 +226,11 @@ namespace KadOzenka.Dal.Modeling
 					break;
 			}
 
-			using (var ts = new TransactionScope())
-			{
-				DeleteFactors(generalModel, type);
-
-				generalModel.Save();
-
-				ts.Complete();
-			}
-		}
-
-		public void DeleteFactors(OMModel model, KoAlgoritmType type)
-		{
-			if (model == null)
-				return;
-
-			var modelFactors = ModelFactorsService.GetFactors(model.Id, type);
-			modelFactors.ForEach(x => x.Weight = 0);
+			generalModel.Save();
 		}
 
 
-        #region Support
+		#region Support
 
         private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelFactor> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
 		{
@@ -262,69 +244,54 @@ namespace KadOzenka.Dal.Modeling
 
 			return !(existedModel.GroupId == newModel.GroupId &&
 			         existedModel.IsOksObjectType == newModel.IsOksObjectType &&
-			         areAttributeIdsEqual && areDictionaryIdsSequenceEqualEqual &&
-			         existedModel.Type_Code == newModel.Type);
+			         areAttributeIdsEqual && areDictionaryIdsSequenceEqualEqual);
 		}
 
-		public void AddModelAttributes(long? generalModelId, KoAlgoritmType type, List<ModelAttributeRelationDto> attributes)
+		public void AddModelAttributes(long? generalModelId, long tourId, List<ModelAttributeRelationDto> attributes,
+			List<OMModelFactor> existedAttributes)
 		{
 			if (attributes == null || attributes.Count == 0)
 				return;
 
-			var model = OMModel.Where(x => x.Id == generalModelId).Select(x => new
-			{
-				x.ParentGroup.Id,
-				x.ParentGroup.GroupName
-			}).ExecuteFirstOrDefault();
-			if (model == null)
-				throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
-			if (model.ParentGroup == null)
-				throw new Exception($"Для модели '{model.Name}' (ИД='{generalModelId}') не найдена группа");
-
-			var tour = OMTourGroup.Where(x => x.GroupId == model.ParentGroup.Id).Select(x => new
-			{
-				x.ParentTour.Id,
-				x.ParentTour.Year
-			}).ExecuteFirstOrDefault()?.ParentTour;
-			if (tour == null)
-				throw new Exception($"Не найден тур для группы '{model.ParentGroup?.GroupName}' (ИД='{model.ParentGroup.Id}')");
+			var tour = OMTour.Where(x => x.Id == tourId).Select(x => x.Year).ExecuteFirstOrDefault();
 			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
-			if (tour.Year == 2016)
+			if (tour?.Year == 2016)
 				return;
 
-			ValidateAttributes(attributes, model.Id, type);
+			var existedAttributeIds = existedAttributes.Select(x => x.FactorId);
+			var newAttributes = attributes.Where(x => !existedAttributeIds.Contains(x.AttributeId)).ToList();
+			var types = ModelFactorsService.GetPossibleTypes(KoAlgoritmType.None);
 
-			attributes.ForEach(x =>
+			newAttributes.ForEach(attribute =>
 			{
-				ModelFactorsService.AddFactor(new ModelFactorDto
+				types.ForEach(type =>
 				{
-					GeneralModelId = generalModelId,
-					FactorId = x.AttributeId,
-					DictionaryId = x.DictionaryId,
-					Type = x.Type
+					ModelFactorsService.AddFactor(new ModelFactorDto
+					{
+						GeneralModelId = generalModelId,
+						FactorId = attribute.AttributeId,
+						DictionaryId = attribute.DictionaryId,
+						Type = type
+					});
                 });
 			});
 		}
 
-		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes, long generalModelId, KoAlgoritmType type)
+		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes)
 		{
 			var errors = new List<string>();
 
 			var attributeIds = attributes.Select(x => x.AttributeId).ToList();
-			var dictionaryIds = attributes.Select(x => x.DictionaryId).ToList();
+			var dictionaryIds = attributes.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId).ToList();
 
 			var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
-			var omDictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute();
+			var omDictionaries = dictionaryIds.Count > 0
+				? OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute()
+				: new List<OMModelingDictionary>();
 
 			foreach (var modelAttribute in attributes)
 			{
 				var attribute = omAttributes.FirstOrDefault(y => y.Id == modelAttribute.AttributeId);
-
-				var isTheSameAttributeExists = OMModelFactor.Where(x =>
-						x.FactorId == attribute.Id && x.ModelId == generalModelId && x.AlgorithmType_Code == type)
-					.ExecuteExists();
-				if (isTheSameAttributeExists)
-					throw new Exception($"Атрибут '{attribute?.Name}' уже был добавлен");
 
 				if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
 				    modelAttribute.DictionaryId.GetValueOrDefault() == 0)

@@ -47,6 +47,13 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type)
 		{
+			var types = GetPossibleTypes(type);
+
+			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
+		}
+
+		public List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
+		{
 			var types = new List<KoAlgoritmType>();
 			if (type == KoAlgoritmType.None)
 			{
@@ -59,7 +66,7 @@ namespace KadOzenka.Dal.Modeling
 				types.Add(type);
 			}
 
-			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
+			return types;
 		}
 
 		public List<ModelAttributeRelationDto> GetGeneralModelAttributes(long modelId)
@@ -235,12 +242,14 @@ namespace KadOzenka.Dal.Modeling
 			{
 				ModelId = dto.GeneralModelId,
 				FactorId = dto.FactorId,
+				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
 				Weight = dto.Weight,
 				B0 = dto.Weight,
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
-				SignMarket = dto.SignMarket
+				SignMarket = dto.SignMarket,
+				AlgorithmType_Code = dto.Type
 			}.Save();
 
 			RecalculateFormula(dto.GeneralModelId);
@@ -278,9 +287,11 @@ namespace KadOzenka.Dal.Modeling
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма для фактора");
 
-			var model = OMModel.Where(x => x.Id == factorDto.GeneralModelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
-			if (model?.Type_Code == KoModelType.Automatic)
-				throw new Exception($"Нельзя вручную работать с факторами для модели типа '{KoModelType.Automatic}'");
+			var isTheSameAttributeExists = OMModelFactor.Where(x =>
+					x.FactorId == factorDto.FactorId && x.ModelId == factorDto.GeneralModelId && x.AlgorithmType_Code == factorDto.Type)
+				.ExecuteExists();
+			if (isTheSameAttributeExists)
+				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData((int)factorDto.FactorId).Name}' уже был добавлен");
 		}
 
 		private void RecalculateFormula(long? generalModelId)

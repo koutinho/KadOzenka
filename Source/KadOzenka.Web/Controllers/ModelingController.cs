@@ -1003,8 +1003,6 @@ namespace KadOzenka.Web.Controllers
 		        Value = (int)x.Id
 	        }).ToList();
 
-	        dictionaries.Insert(0, new { Text = string.Empty, Value = 0 });
-
 	        return Json(dictionaries);
         }
 
