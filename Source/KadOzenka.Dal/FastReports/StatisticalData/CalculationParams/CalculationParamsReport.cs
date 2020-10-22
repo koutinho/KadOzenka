@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupId = GetGroupIdFromFilter(query);
 
-            var model = ModelService.GetModelEntityByGroupId(groupId);
+            var model = GetModelEntityByGroupId(groupId);
 
             var factors = GetFactors(model.Id);
 
@@ -59,6 +60,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
 
         #region Support Methods
+
+        public OMModel GetModelEntityByGroupId(long? groupId)
+        {
+	        if (groupId == null)
+		        throw new Exception("Не передан идентификатор Группы для поиска модели");
+
+	        var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена модель для Группы с id='{groupId}'");
+
+	        return model;
+        }
 
         private DataTable GetModelDataTable(OMModel model)
         {

@@ -42,18 +42,23 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ModelingController : KoBaseController
 	{
-		public BaseModelingService ModelingService { get; set; }
+		public AutomaticModelingService AutomaticModelingService { get; set; }
+		public ManualModelingService ManualModelingService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
 
 
-        public ModelingController(BaseModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+        public ModelingController(AutomaticModelingService automaticModelingService,
+	        ManualModelingService manualModelingService,
+            TourFactorService tourFactorService,
+            RegisterAttributeService registerAttributeService, 
+	        DictionaryService dictionaryService,
             ModelFactorsService modelFactorsService)
         {
-            ModelingService = modelingService;
+            AutomaticModelingService = automaticModelingService;
+            ManualModelingService = manualModelingService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
             DictionaryService = dictionaryService;
@@ -67,7 +72,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult ModelCard(long modelId)
 		{
-			var modelDto = ModelingService.GetModelById(modelId);
+			var modelDto = AutomaticModelingService.GetModelById(modelId);
 
 			var model = ModelingModel.ToModel(modelDto);
 
@@ -133,7 +138,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetAllAttributesByModel(long generalModelId)
         {
-	        var generalModel = ModelingService.GetModelById(generalModelId);
+	        var generalModel = AutomaticModelingService.GetModelById(generalModelId);
 	        var objectType = generalModel.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU;
 
 	        return GetAllAttributes(generalModel.TourId, (int) objectType, null);
@@ -151,7 +156,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups(long tourId)
         {
-            var groups = ModelingService.GetGroups(tourId)
+            var groups = AutomaticModelingService.GetGroups(tourId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.GroupId.ToString(),
@@ -176,7 +181,8 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 
 			var modelDto = ModelingModel.FromModel(modelingModel);
-			ModelingService.AddModel(modelDto);
+			
+			GetService(modelDto.Type).AddModel(modelDto);
 
 			return Json(new {Message = "Сохранение выполнено"});
 		}
@@ -189,9 +195,10 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 
 			var modelDto = ModelingModel.FromModel(modelingModel);
-			var isModelChanged = ModelingService.UpdateModel(modelDto);
 
-            return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
+			var isModelChanged = GetService(modelDto.Type).UpdateModel(modelDto);
+
+			return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
 		}
 
         [HttpPost]
@@ -261,7 +268,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public FileResult DownloadLogs(long modelId)
         {
-            var fileStream = ModelingService.GetLogs(modelId);
+            var fileStream = AutomaticModelingService.GetLogs(modelId);
 
             return File(fileStream, Helpers.Consts.ExcelContentType, $"Логи для модели {modelId}" + ".xlsx");
         }
@@ -297,7 +304,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult LinearModelDetails(long modelId)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var model = AutomaticModelingService.GetModelEntityById(modelId);
 
 	        var trainingResult = GetTrainingDetails(model.LinearTrainingResult);
 	        var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -309,7 +316,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ExponentialModelDetails(long modelId)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var model = AutomaticModelingService.GetModelEntityById(modelId);
 
 	        var trainingResult = GetTrainingDetails(model.ExponentialTrainingResult);
 	        var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -321,7 +328,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MultiplicativeModelDetails(long modelId)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var model = AutomaticModelingService.GetModelEntityById(modelId);
 
 	        var trainingResult = GetTrainingDetails(model.MultiplicativeTrainingResult);
 	        var details = TrainingDetailsModel.ToModel(trainingResult);
@@ -349,7 +356,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public ActionResult ModelObjects(long modelId)
 		{
-            var modelDto = ModelingService.GetModelById(modelId);
+            var modelDto = AutomaticModelingService.GetModelById(modelId);
             modelDto.Attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
             var model = ModelingModel.ToModel(modelDto);
@@ -361,7 +368,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
-			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
+			var objectsDto = AutomaticModelingService.GetMarketObjectsForModel(modelId);
 
 			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
 
@@ -378,7 +385,7 @@ namespace KadOzenka.Web.Controllers
 			var changedModels = allModels.Where(x => x.IsDirty).ToList();
 			var objectsDtos = changedModels.Select(ModelMarketObjectRelationModel.FromModel).ToList();
 			
-			ModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
+			AutomaticModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
 
 			return Json(new { Message = "Данные успешно обновлены" });
 		}
@@ -390,7 +397,7 @@ namespace KadOzenka.Web.Controllers
             var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
             var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
 
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(objectIds, modelId);
+            var fileStream = AutomaticModelingService.ExportMarketObjectsToExcel(objectIds, modelId);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
@@ -422,7 +429,7 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            ModelingService.ImportModelObjectsFromExcel(excelFile);
+            AutomaticModelingService.ImportModelObjectsFromExcel(excelFile);
 
             return new JsonResult(new { Message = "Данные сохранены."});
         }
@@ -755,7 +762,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult Model(long groupId, bool isPartial)
         {
-	        var modelDto = ModelingService.GetModelEntityByGroupId(groupId);
+	        var modelDto = AutomaticModelingService.GetModelEntityByGroupId(groupId);
 	        var model = ModelFromTourCardModel.ToModel(modelDto);
 
 	        if (isPartial)
@@ -771,7 +778,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult Model(ModelFromTourCardModel model)
         {
-	        var omModel = ModelingService.GetModelEntityById(model.GeneralModelId);
+	        var omModel = AutomaticModelingService.GetModelEntityById(model.GeneralModelId);
 	        if (omModel.Type_Code == KoModelType.Automatic)
 		        throw new Exception($"Нельзя обновить модель с типом '{KoModelType.Automatic.GetEnumDescription()}'");
 
@@ -794,7 +801,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var model = AutomaticModelingService.GetModelEntityById(modelId);
 
             model.AlgoritmType_Code = (KoAlgoritmType)algType;
 	        var formula = model.GetFormulaFull(true);
@@ -978,6 +985,16 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
         #region Support Methods
+
+        private BaseModelingService GetService(KoModelType type)
+        {
+	        if (type == KoModelType.Automatic)
+	        {
+		        return AutomaticModelingService;
+	        }
+
+	        return ManualModelingService;
+        }
 
         private QSQuery GetQueryFromLayout()
         {

@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            GeneralModel = AutomaticModelingService.GetModelEntityById(InputParameters.ModelId);
         }
 
 
@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.Modeling
 
             var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId);
 
-            var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
+            var modelObjects = AutomaticModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
             modelObjects.ForEach(modelObject =>
             {
                 var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();

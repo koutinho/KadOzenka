@@ -52,7 +52,6 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly ILogger _log = Log.ForContext<TaskController>();
 		public TaskService TaskService { get; set; }
-		public BaseModelingService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
@@ -67,7 +66,6 @@ namespace KadOzenka.Web.Controllers
 		public TaskController(TemplateService templateService, ModelFactorsService modelFactorsService, BaseModelingService modelingService)
 		{
 			TaskService = new TaskService();
-			ModelService = new BaseModelingService(new DictionaryService());
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();

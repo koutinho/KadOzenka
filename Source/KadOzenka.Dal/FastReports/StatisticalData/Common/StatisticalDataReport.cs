@@ -27,7 +27,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 		protected readonly StatisticalDataService StatisticalDataService;
         protected readonly RosreestrRegisterService RosreestrRegisterService;
         protected readonly GbuCodRegisterService GbuCodRegisterService;
-        protected readonly BaseModelingService ModelService;
         protected readonly ModelFactorsService ModelFactorsService;
 		protected readonly GroupService GroupService;
 		protected readonly FactorsService FactorsService;
@@ -38,7 +37,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             GbuCodRegisterService = new GbuCodRegisterService();
-            ModelService = new BaseModelingService(new DictionaryService());
             ModelFactorsService = new ModelFactorsService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();
