@@ -1,0 +1,45 @@
+﻿@model KadOzenka.Web.Models.Task.TaskAttributeChangesToExcelModalModel
+
+<div class="form-group center">
+    <div class="col-sm12">
+    <p>@Model.Message</p>
+        @if (Model.ButtonEnabled)
+        {
+            <button class="col-sm-12" id='exportButton'>Выгрузить</button>
+        }
+    </div>
+</div>
+
+<style>
+    .k-grid td {
+        white-space: normal;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+
+    });
+
+    $("#exportButton").kendoButton({
+            enable: true,
+            click: function (e) {
+                var button = $(e.event.target).data('kendoButton');
+                button.enable(false);
+                $.ajax({
+                    type: 'POST',
+                    url: '/Task/TaskAttributeChangesToExcel',
+                    data: { taskId: @Model.TaskId },
+                    success: function () {
+                        Common.ShowMessage('Задача поставлена в очередь обработки');
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function () {
+                        button.enable(true);
+                    }
+                });
+            }
+        });
+</script>
