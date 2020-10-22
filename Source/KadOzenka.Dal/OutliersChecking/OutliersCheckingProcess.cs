@@ -10,19 +10,24 @@ using Serilog;
 
 namespace KadOzenka.Dal.OutliersChecking
 {
-	public class OutliersCheckingService
+	public class OutliersCheckingProcess
 	{
-		private static readonly ILogger Log = Serilog.Log.ForContext<OutliersCheckingService>();
+		private static readonly ILogger Log = Serilog.Log.ForContext<OutliersCheckingProcess>();
 		private readonly OutliersCheckingSettingsService _outliersCheckingSettingsService;
+		private readonly OutliersCheckingReport _outliersCheckingReport;
 		private Dictionary<string, OutliersCheckingSettingDto> _outliersCheckingSettings;
 		protected object Locked;
 
-		public OutliersCheckingService()
+		public int TotalObjectsCount { get; private set; }
+		public int CurrentHandledObjectsCount { get; private set; }
+
+		public OutliersCheckingProcess()
 		{
 			_outliersCheckingSettingsService = new OutliersCheckingSettingsService();
+			_outliersCheckingReport = new OutliersCheckingReport();
 		}
 
-		public void PerformOutliersChecking(MarketSegment? segment)
+		public long PerformOutliersChecking(MarketSegment? segment)
 		{
 			Log.Debug($"Старт процедуры Проверки на выбросы {(segment.HasValue ? $"для сегмента {segment.GetEnumDescription()}" : "для всех сегментов")}");
 			Log.Debug("Получение настроек коэффициентов");
@@ -31,14 +36,17 @@ namespace KadOzenka.Dal.OutliersChecking
 
 			Log.Debug("Получение объектов по сегментам");
 			var objectsBySegments = GetObjectsBySegments(segment);
+			SetTotalObjectsCount(objectsBySegments);
 
 			Locked = new object();
 			foreach (var objectsBySegment in objectsBySegments)
 			{
-				Log.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Начата обработка сегмента '{MarketSegment}'", objectsBySegment.Key.GetEnumDescription());
-
+				_outliersCheckingReport.AddNewWorksheetForSegment(objectsBySegment.Key);
 				var objectsByLocationSliceList = ObjectsByLocationSliceDto.FromEntityList(objectsBySegment.Value);
+				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
+					.Debug("Получено '{LocationSliceCount}'локаций для сегмента '{MarketSegment}'", objectsByLocationSliceList.Count, objectsBySegment.Key.GetEnumDescription());
 
 				var cancelTokenSource = new CancellationTokenSource();
 				var options = new ParallelOptions
@@ -48,9 +56,25 @@ namespace KadOzenka.Dal.OutliersChecking
 				};
 				Parallel.ForEach(objectsByLocationSliceList, options, ProcessObjectsByLocation);
 
-				Log.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
+				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
 					.Debug("Обработка сегмента '{MarketSegment}' завершена", objectsBySegment.Key.GetEnumDescription());
 			}
+
+			_outliersCheckingReport.SetStyle();
+			return _outliersCheckingReport.SaveReport();
+		}
+
+		private void SetTotalObjectsCount(Dictionary<MarketSegment, List<OMCoreObject>> objectsBySegments)
+		{
+			var maxObjectsCount = 0;
+			foreach (var objectsBySegment in objectsBySegments)
+			{
+				maxObjectsCount += objectsBySegment.Value.Count;
+			}
+
+			TotalObjectsCount = maxObjectsCount;
 		}
 
 		private Dictionary<MarketSegment, List<OMCoreObject>> GetObjectsBySegments(MarketSegment? segment)
@@ -58,6 +82,7 @@ namespace KadOzenka.Dal.OutliersChecking
 			return OMCoreObject.Where(x =>
 					(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
 					&& x.PropertyMarketSegment != null
+					&& x.PricePerMeter != null
 					&& x.Zone != null
 					&& x.District != null
 					&& x.Neighborhood != null
@@ -83,12 +108,22 @@ namespace KadOzenka.Dal.OutliersChecking
 
 		private void ProcessObjectsByLocation(ObjectsByLocationSliceDto objectsByLocation)
 		{
-			if(objectsByLocation.MarketObjects.Count == 1)
+			if (objectsByLocation.MarketObjects.Count == 1)
+			{
+				lock (Locked)
+				{
+					CurrentHandledObjectsCount++;
+				}
 				return;
+			}
 
+			var reportRow = new OutliersCheckingReportRow(objectsByLocation.LocationName);
 			var orderedObjects = objectsByLocation.MarketObjects.OrderBy(x => x.PricePerMeter).ToList();
-			var lowerRangeLimit = GetMedianPricePerMeter(orderedObjects.Take(orderedObjects.Count / 2).ToList());
-			var upperRangeLimit = GetMedianPricePerMeter(orderedObjects.Take(orderedObjects.Count - orderedObjects.Count / 2).ToList());
+			var lowerRangeMedian = GetMedianPricePerMeter(orderedObjects.Take(orderedObjects.Count / 2).ToList());
+			var upperRangeMedian = GetMedianPricePerMeter(orderedObjects.Take(orderedObjects.Count - orderedObjects.Count / 2).ToList());
+			reportRow.SetMedians(lowerRangeMedian, upperRangeMedian);
+
+			decimal lowerRangeLimit = lowerRangeMedian, upperRangeLimit = upperRangeMedian;
 			if (_outliersCheckingSettings.TryGetValue(objectsByLocation.LocationName, out var setting))
 			{
 				if (setting.MinDeltaCoef.HasValue)
@@ -100,10 +135,16 @@ namespace KadOzenka.Dal.OutliersChecking
 				{
 					upperRangeLimit *= setting.MaxDeltaCoef.Value;
 				}
+
+				reportRow.SetDeltaCoefs(setting.MinDeltaCoef, setting.MaxDeltaCoef);
 			}
+			reportRow.SetLimits(lowerRangeLimit, upperRangeLimit);
 
 			foreach (var omCoreObject in orderedObjects)
 			{
+				reportRow.SetMarketInfo(omCoreObject.Id, omCoreObject.CadastralNumber, omCoreObject.PricePerMeter.Value,
+					omCoreObject.ProcessType_Code);
+
 				if (omCoreObject.ProcessType_Code == ProcessStep.InProcess
 				    && (omCoreObject.PricePerMeter < lowerRangeLimit || omCoreObject.PricePerMeter > upperRangeLimit))
 				{
@@ -111,20 +152,27 @@ namespace KadOzenka.Dal.OutliersChecking
 					omCoreObject.ExclusionStatus_Code = ExclusionStatus.UnacceptablePrice;
 					omCoreObject.Save();
 				}
+				reportRow.SetExcludedStatus(omCoreObject.ProcessType_Code == ProcessStep.Excluded);
+
+				lock (Locked)
+				{
+					_outliersCheckingReport.AddRow(reportRow);
+					CurrentHandledObjectsCount++;
+				}
 			}
 		}
 
-		private decimal? GetMedianPricePerMeter(List<OMCoreObject> orderedMarketObjects)
+		private decimal GetMedianPricePerMeter(List<OMCoreObject> orderedMarketObjects)
 		{
-			decimal? medianPricePerMeter;
+			decimal medianPricePerMeter;
 			if (orderedMarketObjects.Count % 2 == 0)
 			{
-				medianPricePerMeter = orderedMarketObjects[orderedMarketObjects.Count / 2].PricePerMeter;
+				medianPricePerMeter = orderedMarketObjects[orderedMarketObjects.Count / 2].PricePerMeter.Value;
 			}
 			else
 			{
-				medianPricePerMeter = (orderedMarketObjects[orderedMarketObjects.Count / 2].PricePerMeter +
-				                       orderedMarketObjects[orderedMarketObjects.Count / 2 + 1].PricePerMeter) / 2;
+				medianPricePerMeter = (orderedMarketObjects[orderedMarketObjects.Count / 2].PricePerMeter.Value +
+				                       orderedMarketObjects[orderedMarketObjects.Count / 2 + 1].PricePerMeter.Value) / 2;
 			}
 
 			return medianPricePerMeter;

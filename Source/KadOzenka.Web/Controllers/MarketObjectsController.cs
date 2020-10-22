@@ -30,7 +30,6 @@ namespace KadOzenka.Web.Controllers
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
-        public OutliersCheckingService OutliersCheckingService { get; set; }
         public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
 
         public MarketObjectsController()
@@ -40,7 +39,6 @@ namespace KadOzenka.Web.Controllers
 			CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
-            OutliersCheckingService = new OutliersCheckingService();
             OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
         }
 
@@ -583,7 +581,7 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult PerformOutliersChecking(MarketSegment? segment)
         {
-	        OutliersCheckingService.PerformOutliersChecking(segment);
+	        new OutliersCheckingProcess().PerformOutliersChecking(segment);
 	        return Json(new { Message = "Данные успешно обновлены" });
         }
 
