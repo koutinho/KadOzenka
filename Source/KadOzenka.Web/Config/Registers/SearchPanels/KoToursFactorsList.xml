@@ -1,0 +1,4 @@
+﻿<RootElement>
+    <ControlElement Caption="Наименование показателя" ID="value" OwnType="Text" AttributeNumber="93100200" QueryOperation="Like" />
+    <ControlElement Caption="Наименование показателя (по точному совпадению)" ID="value_exact" OwnType="Text" AttributeNumber="93100200" QueryOperation="Equal" />
+</RootElement>

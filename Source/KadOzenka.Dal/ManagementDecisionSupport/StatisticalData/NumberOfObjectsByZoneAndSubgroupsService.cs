@@ -63,6 +63,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				secondTourTaskId = GetTourTaskId(secondTourId, KoNoteType.Day, isOksReportType);
 			}
 
+			if (!firstTourTaskId.HasValue)
+			{
+				ThrowNotDataException(firstTourId, reportDataType, isOksReportType);
+			}
+			if (!secondTourTaskId.HasValue)
+			{
+				ThrowNotDataException(secondTourId, reportDataType, isOksReportType);
+			}
+
 			conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, new List<double> { firstTourTaskId.GetValueOrDefault(), secondTourTaskId.GetValueOrDefault() }));
 
 			/*TODO: при переделке отчета учесть, что теперь кадастровый квартал сначала юнита ищется в гбу части по атрибуту "Кадастровый квартал итоговый"
@@ -194,6 +203,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			return result;
+		}
+
+		private void ThrowNotDataException(long tourId, NumberOfObjectsByZoneAndSubgroupsReportDataType reportDataType, bool isOksReportType)
+		{
+			var tour = OMTour.Where(x => x.Id == tourId).Select(x => x.Year).ExecuteFirstOrDefault();
+			var reportDataTypeName =
+				reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial
+					? KoNoteType.Initial.GetEnumDescription()
+					: KoNoteType.Day.GetEnumDescription();
+			throw new Exception(
+				$"Тур {tour?.Year} не содержит задания на оценку типа '{reportDataTypeName}' с единицами оценки {(isOksReportType ? "ОКС" : "ЗУ")}");
 		}
 
 		private long? GetTourTaskId(long tourId, KoNoteType koNoteType, bool isOks)

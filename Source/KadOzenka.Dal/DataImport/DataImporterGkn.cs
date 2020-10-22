@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -77,8 +78,51 @@ namespace KadOzenka.Dal.DataImport
         /// Колличество загруженных машиномест из Xml
         /// </summary>
         public Int32 CountImportCarPlaces { get; private set; }
+        
+        private AbstractHandler _unitStatusHandler { get; set; }
+        /// <summary>
+        /// Обработчик статусов Юнита (паттерн Цепочка обязанностей)
+        /// </summary>
+        private AbstractHandler UnitStatusHandler
+        {
+	        get
+	        {
+		        if (_unitStatusHandler != null)
+			        return _unitStatusHandler;
+
+		        var groupAndFsAndCharacteristicHandler = new GroupAndFsAndCharacteristicChangesHandler();
+		        var groupAndFsCharacteristicHandler = new GroupAndFsChangesHandler();
+		        var groupAndEgrnChangesHandler = new GroupAndEgrnChangesHandler();
+
+                var groupHandler = new GroupChangesHandler();
+		        var egrnHandler = new EgrnChangesHandler();
+		        var fsHandler = new FsChangesHandler();
+
+		        groupAndFsAndCharacteristicHandler
+			        .SetNext(groupAndFsCharacteristicHandler)
+			        .SetNext(groupAndEgrnChangesHandler)
+			        .SetNext(groupHandler)
+			        .SetNext(egrnHandler)
+			        .SetNext(fsHandler);
+
+		        _unitStatusHandler = groupAndFsAndCharacteristicHandler;
+
+		        return _unitStatusHandler;
+	        }
+        }
 
         public bool AreCountersInitialized { get; private set; }
+
+        #region Attributes Ids
+
+        /// <summary>
+        /// Аттрибут "Земельный участок"
+        /// </summary>
+        private const long ParcelAttributeId = 602;
+        private const long WallMaterialAttributeId = 21;
+
+        #endregion
+
 
         public DataImporterGkn()
         {
@@ -141,8 +185,8 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-
         }
+        
         private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
@@ -389,7 +433,6 @@ namespace KadOzenka.Dal.DataImport
                 }
 
 
-
                 #region Получение данных о прошлой оценке данного объекта
                 List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
                 #endregion
@@ -464,18 +507,35 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
                         bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
                         bool prWallObjectCheck = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+                            IsPurposeOksChanged = !prAssignationObjectCheck,
+                            IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !prYearBuiltObjectCheck,
+                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !prWallObjectCheck,
+                            IsZuNumberChanged = !zuNumberDidNotChange,
+                            IsAddressChanged = !addressDidNotChange,
+                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+                            IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -519,11 +579,8 @@ namespace KadOzenka.Dal.DataImport
                             }
                         }
                         #endregion
-
-
                     }
                     #endregion
-
                 }
                 else
                 {
@@ -556,6 +613,8 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                     #endregion
+
+                    SetNewUnitUpdateStatus(koUnit);
 
                     #region Заполнение фактора Материал стен на основании данных ГКН
                     ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
@@ -592,10 +651,10 @@ namespace KadOzenka.Dal.DataImport
                 CountImportBuildings++;
             }
         }
+
         private static void SaveGknDataBuilding(xmlObjectBuild current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Площадь
+	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -632,12 +691,11 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
             SetAttributeValue_String(602, xmlCodeName.GetNames(current.ParentCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-            #endregion
         }
+
         private static ObjectModel.KO.OMUnit SaveUnitBuilding(xmlObjectBuild current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -686,9 +744,7 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
         }
 
         public void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
@@ -770,8 +826,10 @@ namespace KadOzenka.Dal.DataImport
                     {
                         2
                     };
+                        //TODO CIPJSKO-526 ждем ответа от заказчиков - что сохранять в качестве ЗУ
                         List<long> attribIds = new List<long>
                     {
+                        //ParcelAttributeId,
                         1,   //Наименование участка
                         2,   //Площадь 
                         3,   //Категория земель 
@@ -785,12 +843,25 @@ namespace KadOzenka.Dal.DataImport
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
                         bool prNameObjectCheck = CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         CheckChange(koUnit, 3, KoChangeStatus.Category, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        //var zuNumberDidNotChange = CheckChange(koUnit, ParcelAttributeId, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+	                        IsTypeOfUserByDocumentsChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        //IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -843,10 +914,10 @@ namespace KadOzenka.Dal.DataImport
                     SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
-
                 }
-
 
                 ts.Complete();
             }
@@ -855,12 +926,10 @@ namespace KadOzenka.Dal.DataImport
             {
                 CountImportParcels++;
             }
-
         }
         private static void SaveGknDataParcel(xmlObjectParcel current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Наименование участка
+	        //Наименование участка
             SetAttributeValue_String(1, current.Name.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -882,12 +951,13 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(4, current.Utilization.ByDoc, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Вид использования по классификатору
             SetAttributeValue_String(5, current.Utilization.Utilization.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-            #endregion
+            //TODO ждем ответа от заказчиков - что сохранять в качестве ЗУ
+            //Земельный участок
+            //SetAttributeValue_String(ParcelAttributeId, xmlCodeName.GetNames(current.InnerCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
         }
         private static ObjectModel.KO.OMUnit SaveUnitParcel(xmlObjectParcel current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -936,9 +1006,7 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
         }
 
 
@@ -1024,6 +1092,7 @@ namespace KadOzenka.Dal.DataImport
                          };
                         List<long> attribIds = new List<long>
                          {
+	                         WallMaterialAttributeId,
                              44,  //Площадь 
                              22,  //Назначение
                              15,  //Год постройки 
@@ -1039,17 +1108,37 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
                         bool prAssignationObjectCheck = CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         bool prYearBuiltObjectCheck = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         bool prYearUsedObjectCheck = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
                         bool prNameObjectCheck = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
+
+                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !prNameObjectCheck,
+                            IsPurposeOksChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !prYearBuiltObjectCheck,
+                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !wallMaterialDidNotChange,
+                            IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange,
+                            IsCharacteristicChanged = !squareDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -1080,9 +1169,6 @@ namespace KadOzenka.Dal.DataImport
                             }
                         }
                         #endregion
-
-
-
                     }
                     #endregion
                 }
@@ -1119,6 +1205,8 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
 
                     #region Заполнение фактора Год постройки
@@ -1147,8 +1235,7 @@ namespace KadOzenka.Dal.DataImport
         }
         private static void SaveGknDataConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Площадь
+	        //Площадь
             SetAttributeValue_String(44, xmlCodeNameValue.GetNames(current.KeyParameters), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1183,12 +1270,12 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
             SetAttributeValue_String(602, xmlCodeName.GetNames(current.ParentCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-            #endregion
+            //Материал стен
+            SetAttributeValue_String(WallMaterialAttributeId, xmlCodeName.GetNames(current.Walls), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
         }
         private static ObjectModel.KO.OMUnit SaveUnitConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -1236,9 +1323,7 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
         }
 
 
@@ -1335,14 +1420,35 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        var readinessPercentageDidNotChange = CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+
+                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //параметры закомментированы по согласованию с аналитиком
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !nameDidNotChange,
+	                        //IsPurposeOksChanged = !prAssignationObjectCheck,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        //IsBuildYearChanged = !prYearBuiltObjectCheck,
+	                        //IsCommissioningYearChanged = !prYearUsedObjectCheck,
+	                        //IsFloorsCountChanged = !floorsCountDidNotChange,
+	                        //IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+	                        //IsWallMaterialChanged = !wallMaterialDidNotChange,
+	                        IsZuNumberChanged = !zuNumberDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange,
+	                        IsReadinessPercentageChanged = !readinessPercentageDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
                     }
+
                     #endregion
                 }
                 //Если данные о прошлой оценке не найдены
@@ -1378,6 +1484,7 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
@@ -1393,8 +1500,7 @@ namespace KadOzenka.Dal.DataImport
 
         private static void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Процент готовности
+	        //Процент готовности
             SetAttributeValue_Numeric(46, (current.DegreeReadiness == string.Empty || current.DegreeReadiness == null) ? (decimal?)null : current.DegreeReadiness.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Площадь
             SetAttributeValue_String(44, xmlCodeNameValue.GetNames(current.KeyParameters), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1415,13 +1521,11 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
             SetAttributeValue_String(602, xmlCodeName.GetNames(current.ParentCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-            #endregion
         }
 
         private static ObjectModel.KO.OMUnit SaveUnitUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -1471,10 +1575,9 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
         }
+
         public void ImportObjectFlat(xmlObjectFlat current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
@@ -1574,23 +1677,39 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var purposeOksDidNotChange = CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
                         CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var buildYearDidNotChange = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        var commissioningYearDidNotChange = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var wallMaterialDidNotChange = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
                         CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
-                    }
-                    #endregion
 
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !nameDidNotChange,
+	                        IsPurposeOksChanged = !purposeOksDidNotChange,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        IsBuildYearChanged = !buildYearDidNotChange,
+	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
+	                        IsFloorsCountChanged = !floorsCountDidNotChange,
+	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
+                    }
+
+                    #endregion
                 }
                 //Если данные о прошлой оценке не найдены
                 else
@@ -1624,23 +1743,22 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
                 ts.Complete();
             }
 
-
             lock (locked)
             {
                 CountImportFlats++;
             }
-
         }
+
         private static void SaveGknDataFlat(xmlObjectFlat current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Площадь
+	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1684,7 +1802,6 @@ namespace KadOzenka.Dal.DataImport
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
 
-
             //Тип помещения
             if (current.AssignationFlatType != null) SetAttributeValue_String(603, current.AssignationFlatType.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый номер здания или сооружения, в котором расположено помещение
@@ -1701,15 +1818,10 @@ namespace KadOzenka.Dal.DataImport
                 //Номер этажа
                 SetAttributeValue_String(24, current.PositionsInObject[0].Position.Value, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             }
-
-
-
-            #endregion
         }
         private static ObjectModel.KO.OMUnit SaveUnitFlat(xmlObjectFlat current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -1758,9 +1870,7 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
         }
 
 
@@ -1862,22 +1972,37 @@ namespace KadOzenka.Dal.DataImport
 
                         List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
                         List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        var purposeOksDidNotChange = CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        var buildYearDidNotChange = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        var commissioningYearDidNotChange = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        var undergroundFloorsCountDidNotChange = CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        var wallMaterialDidNotChange = CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        var locationDidNotChange = CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        var addressDidNotChange = CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
                         CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
+
+                        var changedProperties = new UnitChangedProperties
+                        {
+	                        IsNameChanged = !nameDidNotChange,
+	                        IsPurposeOksChanged = !purposeOksDidNotChange,
+	                        IsSquareChanged = !squareDidNotChange,
+	                        IsBuildYearChanged = !buildYearDidNotChange,
+	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
+	                        IsFloorsCountChanged = !floorsCountDidNotChange,
+	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
+	                        IsAddressChanged = !addressDidNotChange,
+	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+	                        IsLocationChanged = !locationDidNotChange
+                        };
+                        CalculateUnitUpdateStatus(changedProperties, koUnit);
                     }
                     #endregion
-
                 }
                 //Если данные о прошлой оценке не найдены
                 else
@@ -1911,12 +2036,13 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+
+                    SetNewUnitUpdateStatus(koUnit);
                     #endregion
                 }
 
                 ts.Complete();
             }
-
 
             lock (locked)
             {
@@ -1926,8 +2052,7 @@ namespace KadOzenka.Dal.DataImport
 
         private static void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
-            #region Сохранение данных ГКН
-            //Площадь
+	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1988,16 +2113,11 @@ namespace KadOzenka.Dal.DataImport
                 //Номер этажа
                 SetAttributeValue_String(24, current.PositionsInObject[0].Position.Value, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             }
-
-
-
-            #endregion
         }
 
         private static ObjectModel.KO.OMUnit SaveUnitCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
-            #region Задание на оценку
-            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+	        ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
             if (koUnit == null)
             {
                 koUnit = new ObjectModel.KO.OMUnit
@@ -2046,9 +2166,20 @@ namespace KadOzenka.Dal.DataImport
                 }
             }
 
-
             return koUnit;
-            #endregion
+        }
+
+        private void CalculateUnitUpdateStatus(UnitChangedProperties changedProperties, OMUnit unit)
+        {
+	        var unitUpdateStatus = UnitStatusHandler.Handle(changedProperties);
+	        unit.UpdateStatus_Code = unitUpdateStatus;
+	        unit.Save();
+        }
+
+        private void SetNewUnitUpdateStatus(OMUnit unit)
+        {
+	        unit.UpdateStatus_Code = UnitUpdateStatus.New;
+	        unit.Save();
         }
     }
 }
