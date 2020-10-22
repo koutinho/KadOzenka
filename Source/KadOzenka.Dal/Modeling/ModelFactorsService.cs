@@ -6,29 +6,9 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
-using ObjectModel.Directory.ES;
 using ObjectModel.KO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Transactions;
-using Core.Register;
 using Core.Register.QuerySubsystem;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.Register;
-using ObjectModel.Directory;
-using ObjectModel.KO;
-using ObjectModel.Market;
-using ObjectModel.Modeling;
-using GemBox.Spreadsheet;
-using KadOzenka.Dal.Modeling.Dto.Factors;
-using Kendo.Mvc.Extensions;
-using ObjectModel.Directory.ES;
-using ObjectModel.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -319,9 +299,9 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Метки
 
-		public List<OMMarkCatalog> GetMarks(long generalModelId, long factorId)
+		public List<OMMarkCatalog> GetMarks(long groupId, long factorId)
 		{
-			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GeneralModelId == generalModelId).SelectAll().Execute();
+			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GroupId == groupId).SelectAll().Execute();
 		}
 
 		public OMMarkCatalog GetMarkById(long id)
@@ -333,21 +313,22 @@ namespace KadOzenka.Dal.Modeling
 			return mark;
 		}
 
-		public int CreateMark(string value, decimal? metka, long? factorId, long? generalModelId)
+		public int CreateMark(string value, decimal? metka, long? factorId, long? groupId)
 		{
-			if (generalModelId == null)
-				throw new Exception("Не переден ИД основной модели");
+			if (groupId == null)
+				throw new Exception("Не переден ИД группы");
+			if(string.IsNullOrWhiteSpace(value))
+				throw new Exception("Передано пустое значение");
+			if (metka == null)
+				throw new Exception("Передана пустая метка");
 
-			var id = new OMMarkCatalog
+			return new OMMarkCatalog
 			{
-				GroupId = -1,
+				GroupId = groupId,
 				FactorId = factorId,
 				MetkaFactor = metka,
-				ValueFactor = value,
-				GeneralModelId = generalModelId,
+				ValueFactor = value
 			}.Save();
-
-			return id;
 		}
 
 		public void UpdateMark(long id, string value, decimal? metka)

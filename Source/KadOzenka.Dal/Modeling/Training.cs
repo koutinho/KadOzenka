@@ -404,7 +404,7 @@ namespace KadOzenka.Dal.Modeling
         {
 	        foreach (var attribute in ModelAttributes)
 	        {
-		        var existedMarks = OMMarkCatalog.Where(x => x.GeneralModelId == GeneralModel.Id && x.FactorId == attribute.AttributeId).Execute();
+		        var existedMarks = OMMarkCatalog.Where(x => x.GroupId == GeneralModel.GroupId && x.FactorId == attribute.AttributeId).Execute();
 		        existedMarks.ForEach(x => x.Destroy());
 
 		        MarketObjectsForTraining.ForEach(modelObject =>
@@ -422,8 +422,7 @@ namespace KadOzenka.Dal.Modeling
 				        GroupId = GeneralModel.GroupId,
 				        FactorId = attribute.AttributeId,
 				        ValueFactor = value,
-				        MetkaFactor = metka,
-                        GeneralModelId = GeneralModel.Id
+				        MetkaFactor = metka
 			        }.Save();
 		        });
 

@@ -1,9 +1,8 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ManualModelingModel
-
 <!-- Модальное окно для загрузки справочника меток -->
 @using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
-{ 
+{
     <div id="uploadMarksCatalogModal" style="display: none;  padding: 2%;">
         <div class="form-horizontal col-sm-12">
             <div class="form-group">
@@ -27,21 +26,21 @@
 }
 
 <!--Основное окно с информацией о модели -->
-@using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new {id = "saveModelForm", enctype = "multipart/form-data"}))
+@using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
 {
-	@Html.HiddenFor(x => x.GeneralModelId)
-	@Html.HiddenFor(x => x.GroupId)
-	<div id="toolbar"></div>
-	<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-		<div style="margin: 1%;">
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.Name)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-				</div>
-			</div>
+    @Html.HiddenFor(x => x.GeneralModelId)
+    @Html.HiddenFor(x => x.GroupId)
+    <div id="toolbar"></div>
+    <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+        <div style="margin: 1%;">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Name)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                </div>
+            </div>
             <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabelFor(x => x.Description)
@@ -58,62 +57,65 @@
                     @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: true, withoutNull: true)
                 </div>
             </div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false, withoutNull: true)
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.CalculationTypeCode, true)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
-				</div>
-			</div>
-			<div class="form-group" id="modelCalculationMethod" style="display: none;">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.CalculationMethodCode, true)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
-				</div>
-			</div>
-		</div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false, withoutNull: true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.CalculationTypeCode, true)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group" id="modelCalculationMethod" style="display: none;">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.CalculationMethodCode, true)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+                </div>
+            </div>
+        </div>
 
-		<div style="border: 1px solid #cccdcf; padding: 1%;">
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.Formula)
-				</div>
-				<div class="col-sm-10">
-					@Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-2">
-					@Html.CustomLabelFor(x => x.A0)
-				</div>
-				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
-				</div>
-			</div>
+        <div style="border: 1px solid #cccdcf; padding: 1%;">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Formula)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.A0)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+                </div>
+            </div>
 
-			<div style="padding-top: 2%;">
-				<div id="factorToolbar"></div>
-			</div>
-			<div style="display: flex;">
-				<div style="align-items: stretch">
-					<div id="grid"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+            <div style="padding-top: 2%;">
+                <div id="factorToolbar"></div>
+            </div>
+            <div style="display: flex;">
+                <div style="align-items: stretch">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
 
@@ -440,15 +442,16 @@
                         type: 'POST',
                         data: { id: selectedRowData.Id },
                         success: function (response) {
-                            kendo.ui.progress($('body'), false);
                             if (response.Success) {
                                 Common.ShowMessage(response.Success);
                                 UpdateView();
                             }
                         },
                         error: function (response) {
-                            kendo.ui.progress($('body'), false);
                             Common.ShowError(response.responseText);
+                        },
+                        complete: function() {
+                            kendo.ui.progress($('body'), false);
                         }
                     });
                 }
@@ -462,7 +465,7 @@
         if (selectedRowData) {
             var factorId = selectedRowData.AttributeId;
             Common.UI.ShowWindow('Метки',
-                '@Url.Action("MarksGrid", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' + '&factorId=' + factorId,
+                '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId,
                 'editFactorWindow',
                 function (e) {},
                 800, 400);
@@ -474,9 +477,7 @@
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
             var factorId = selectedRowData.AttributeId;
-            window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?generalModelId=' + '@Model.GeneralModelId' +
-                '&factorId=' +
-                factorId);
+            window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId);
         }
     }
 
@@ -501,7 +502,7 @@
             }
             var formData = new FormData();
             formData.append('file', files[0].rawFile);
-            formData.append('generalModelId', '@Model.GeneralModelId');
+            formData.append('groupId', '@Model.GroupId');
             formData.append('factorId', selectedRowData.AttributeId);
             formData.append('isDeleteOld', $("#isDeleteAllCheckBox").is(":checked"));
             kendo.ui.progress($('#uploadMarksCatalogModal'), true);
@@ -514,9 +515,7 @@
                 processData: false,
                 success: function(response) {
                     if (response.success) {
-                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' +
-                            "?fileName=" +
-                            response.fileName;
+                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
                     } else {
                         Common.ShowError("Не удалось загрузить выбранный файл");
                     }

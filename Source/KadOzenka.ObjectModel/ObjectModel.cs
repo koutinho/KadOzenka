@@ -7988,10 +7988,9 @@ namespace ObjectModel.KO
         }
 
 
-        //TODO CIPJSKO-526 удалить
         private long? _groupid;
         /// <summary>
-        /// 21100200 УДАЛИТЬ Идентификатор группы (GROUP_ID)
+        /// 21100200 Идентификатор группы (GROUP_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21100200)]
         public long? GroupId
@@ -8065,26 +8064,6 @@ namespace ObjectModel.KO
             {
                 _metkafactor = value;
                 NotifyPropertyChanged("MetkaFactor");
-            }
-        }
-
-
-        private long? _generalmodelid;
-        /// <summary>
-        /// 21100600 ИД основной модели (206 реестр) (general_model_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100600)]
-        public long? GeneralModelId
-        {
-            get
-            {
-                CheckPropertyInited("GeneralModelId");
-                return _generalmodelid;
-            }
-            set
-            {
-                _generalmodelid = value;
-                NotifyPropertyChanged("GeneralModelId");
             }
         }
 

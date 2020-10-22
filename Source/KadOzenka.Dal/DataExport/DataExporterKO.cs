@@ -129,7 +129,7 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Выгрузка списка значений по фактору и группе в формате Excel
         /// </summary>
-        public static Stream ExportMarkerListToExcel(long generalModelId, long factorId)
+        public static Stream ExportMarkerListToExcel(long groupId, long factorId)
         {
             ExcelFile excelTemplate = new ExcelFile();
 
@@ -196,7 +196,7 @@ namespace KadOzenka.Dal.DataExport
             //}
 
             var row = 1;
-            var markers = new ModelFactorsService().GetMarks(generalModelId, factorId);
+            var markers = new ModelFactorsService().GetMarks(groupId, factorId);
 
             foreach (var marker in markers)
             {

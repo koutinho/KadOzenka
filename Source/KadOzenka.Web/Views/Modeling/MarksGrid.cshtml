@@ -15,7 +15,7 @@
                 read: {
                     url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { generalModelId: '@ViewBag.GeneralModelId', factorId: '@ViewBag.FactorId' },
+                    data: { groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
                     dataType: 'json'
                 },
                 create: {
@@ -52,7 +52,7 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        GeneralModelId: { editable: false},
+                        GroupId: { editable: false},
                         Value: { validation: { required: true } },
                         Metka: { type: "number", nullable: true  }
                     }
@@ -123,7 +123,7 @@
             },
             beforeEdit: function (e) {
                 if (e.model.isNew()) {
-                    e.model.GeneralModelId = '@ViewBag.GeneralModelId';
+                    e.model.GroupId = '@ViewBag.GroupId';
                     e.model.FactorId = '@ViewBag.FactorId';
                 }
             }
