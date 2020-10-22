@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Ionic.Zip;
 using KadOzenka.Dal.DataExport;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -148,7 +151,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			if (withLink && result != null)
 			{
 				msgResult += "<br>";
-				msgResult += GetLinks(result.Where(x => x.FileId != 0).ToList());
+				msgResult += GetFinalZipLink(result.Where(x => x.FileId != 0).ToList());
 				msgResult += "<br>";
 				msgResult += GetFaultReportMessage(result.Where(x => x.FileId == 0).ToList());
 			}
@@ -156,15 +159,28 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			return msgResult;
 		}
 
-		public string GetLinks(List<ResultKoUnloadSettings> result)
+		public string GetFinalZipLink(List<ResultKoUnloadSettings> result)
 		{
-			string msg = "";
-			foreach (var item in result)
+			long fileId;
+			using (ZipFile zipFile = new ZipFile())
 			{
-				msg += $"<a href='/DataExport/DownloadExportResult?exportId={item.FileId}'>{item.FileName}</a>" + "<br>";
+				zipFile.AlternateEncoding = Encoding.UTF8;
+				zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+
+				foreach (var entry in result)
+				{
+					var entryStream = DataExporterCommon.GetExportResultFileStream(entry.FileId);
+					zipFile.AddEntry(DataExporterCommon.GetDownloadResultFileName(entry.FileId), entryStream);
+				}
+
+				MemoryStream stream = new MemoryStream();
+				zipFile.Save(stream);
+				stream.Seek(0, SeekOrigin.Begin);
+				var fileName = "Результаты оценки";
+				fileId = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
 			}
 
-			return msg;
+			return $"<a href='/DataExport/DownloadExportResult?exportId={fileId}'>Результаты оценки</a>" + "<br>";
 		}
 
 		public string GetFaultReportMessage(List<ResultKoUnloadSettings> faultResult)
