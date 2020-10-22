@@ -30,8 +30,8 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, logger)
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            GeneralModel = AutomaticModelingService.GetModelEntityById(InputParameters.ModelId);
-            Tour = AutomaticModelingService.GetModelTour(GeneralModel.GroupId);
+            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            Tour = ModelingService.GetModelTour(GeneralModel.GroupId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
             ModelAttributes = new List<ModelAttributeRelationDto>();
         }
@@ -62,12 +62,12 @@ namespace KadOzenka.Dal.Modeling
             var marketObjects = GetMarketObjects();
             AddLog($"Найдено {marketObjects.Count} объекта.");
 
-            AutomaticModelingService.DestroyModelMarketObjects(GeneralModel.Id);
+            ModelingService.DestroyModelMarketObjects(GeneralModel.Id);
             AddLog("Удалены предыдущие данные.");
 
             ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
             AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
-            var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new AutomaticModelingService.GroupedModelAttributes
+            var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new BaseModelingService.GroupedModelAttributes
             {
 	            RegisterId = (int)k,
 	            Attributes = g.ToList()
@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.Modeling
             var tourFactorsAttributes = groupedModelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
             AddLog($"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.");
 
-            var dictionaries = GetDictionaries(ModelAttributes);
+            var dictionaries = ModelingService.GetDictionaries(ModelAttributes);
             AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
 
             var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
@@ -98,10 +98,10 @@ namespace KadOzenka.Dal.Modeling
                 var unitIds = marketObjectToUnitsPage.SelectMany(x => x.UnitIds).ToList();
 
                 var marketObjectCoefficients =
-	                AutomaticModelingService.GetCoefficientsFromMarketObject(marketObjectIds, dictionaries,
+	                ModelingService.GetCoefficientsFromMarketObject(marketObjectIds, dictionaries,
 		                marketObjectAttributes);
                 var unitsCoefficients =
-	                AutomaticModelingService.GetCoefficientsFromTourFactors(unitIds, dictionaries, tourFactorsAttributes);
+	                ModelingService.GetCoefficientsFromTourFactors(unitIds, dictionaries, tourFactorsAttributes);
 
                 marketObjectToUnitsPage.ForEach(marketObjectToUnitRelation =>
                 {
@@ -214,7 +214,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void RollBackResult()
         {
-            AutomaticModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+            ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
 
@@ -315,14 +315,6 @@ namespace KadOzenka.Dal.Modeling
             return marketObjectToUnitsRelation;
         }
 
-        public List<OMModelingDictionary> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
-        {
-	        var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value)
-		        .Distinct().ToList();
-
-	        return DictionaryService.GetDictionaries(dictionaryIds);
-        }
-
         private void ProcessPlacemenUnits(List<OMUnit> placementUnits, List<OMUnit> units)
         {
 	        AddLog($"Найдено {placementUnits.Count} Единиц оценки с типом '{PropertyTypes.Pllacement.GetEnumDescription()}'");
@@ -386,21 +378,21 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveCoefficients(Dictionary<string, decimal> coefficients, KoAlgoritmType type)
         {
-	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
+	        ModelingService.DeleteFactors(GeneralModel, type);
             AddLog("Удалены предыдущие значения для коэффициентов");
 
             foreach (var coefficient in coefficients)
             {
 	            var attributeId = coefficient.Key.ParseToLong();
+	            new OMModelFactor
+	            {
+                    ModelId = GeneralModel.Id,
+                    FactorId = attributeId,
+		            Weight = coefficient.Value,
+		            MarkerId = -1
+	            }.Save();
 
-	            var factor = factors.FirstOrDefault(x => x.FactorId == attributeId);
-	            if (factor == null)
-		            throw new Exception($"Не найден фактор с ИД '{attributeId}'");
-
-	            factor.Weight = coefficient.Value;
-	            factor.Save();
-
-	            AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{type.GetEnumDescription()}'");
+                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{coefficient.Key}' модели '{type.GetEnumDescription()}'");
 	        }
         }
 

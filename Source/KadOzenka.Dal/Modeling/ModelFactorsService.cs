@@ -278,11 +278,9 @@ namespace KadOzenka.Dal.Modeling
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма для фактора");
 
-			var isTheSameFactorExist = OMModelFactor.Where(x =>
-				x.ModelId == factorDto.GeneralModelId && x.FactorId == factorDto.FactorId &&
-				x.AlgorithmType_Code == factorDto.Type).ExecuteExists();
-			if(isTheSameFactorExist)
-				throw new Exception($"Фактор {factorDto.FactorId} уже был добавлен для модели {factorDto.GeneralModelId} типа '{factorDto.Type.GetEnumDescription()}'");
+			var model = OMModel.Where(x => x.Id == factorDto.GeneralModelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+			if (model?.Type_Code == KoModelType.Automatic)
+				throw new Exception($"Нельзя вручную работать с факторами для модели типа '{KoModelType.Automatic}'");
 		}
 
 		private void RecalculateFormula(long? generalModelId)
