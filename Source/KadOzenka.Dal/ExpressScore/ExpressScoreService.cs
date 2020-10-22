@@ -192,16 +192,8 @@ namespace KadOzenka.Dal.ExpressScore
 				RightOperand = OMCoreObject.GetColumn(x => x.Lat)
 			});
 
-			foreach (var searchAttribute in searchAttributes.Where(x => IsAnalogAttribute(x.IdAttribute)))
-			{
-				condition.Add(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.EqualNonCaseSensitive,
-					LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
-					RightOperand = new QSColumnConstant(searchAttribute.Value)
-				});
-
-			}
+			var searchAnalogAttributes = searchAttributes.Where(x => IsAnalogAttribute(x.IdAttribute)).ToList();
+			condition.Add(GetConditionsBySearchAttributes(searchAnalogAttributes));
 
 			return condition;
 		}
@@ -264,6 +256,8 @@ namespace KadOzenka.Dal.ExpressScore
 		public List<CoordinatesDto> CheckAnalogsByKoFactors(List<OMCoreObject> analogs, OMSettingsParams settings, List<SearchAttribute> searchAttributes)
 		{
 			List<CoordinatesDto> res = new List<CoordinatesDto>();
+			if (analogs == null || analogs.Count == 0) return res;
+
 			long primaryKeyAttributeId = RegisterCache.RegisterAttributes.Values
 				.FirstOrDefault(x => x.RegisterId == settings.Registerid && x.IsPrimaryKey)?.Id ?? 0;
 
@@ -274,7 +268,8 @@ namespace KadOzenka.Dal.ExpressScore
 				LeftOperand = OMUnit.GetColumn(x => x.CadastralNumber),
 				RightOperand = new QSColumnConstant(analogs.Select(x => x.CadastralNumber))
 			});
-			qsConGroup.Add(GetConditionsBySearchAttributes(searchAttributes));
+			var searchKoAttributes = searchAttributes.Where(x => !IsAnalogAttribute(x.IdAttribute)).ToList();
+			qsConGroup.Add(GetConditionsBySearchAttributes(searchKoAttributes));
 
 			var query = new QSQuery
 			{
@@ -295,9 +290,13 @@ namespace KadOzenka.Dal.ExpressScore
 				},
 				Condition = qsConGroup
 			};
-			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber));
+			query.AddColumn(primaryKeyAttributeId, nameof(CheckKoFactorDto.Id));
+			query.AddColumn(OMUnit.GetColumnAttributeId(x => x.CadastralNumber), nameof(CheckKoFactorDto.Kn));
 
-			var resQuery = query.ExecuteQuery();
+			var resQuery = query.ExecuteQuery<CheckKoFactorDto>();
+			List<string> knNumbers = resQuery.Select(x => x.Kn).ToList();
+			var successAnalogs = analogs.Where(x => knNumbers.Contains(x.CadastralNumber));
+			res.AddRange(successAnalogs.Select(x => new CoordinatesDto{Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault()}));
 			return res;
 		}
 
@@ -1726,21 +1725,21 @@ namespace KadOzenka.Dal.ExpressScore
 		/// 
 		/// </summary>
 		/// <returns>
-		/// Возвращает условия для поиска юнитов по Ко факторам
+		/// Возвращает условия для поиска юнитов по оценочным факторам
 		/// </returns>
 		private QSCondition GetConditionsBySearchAttributes(List<SearchAttribute> searchAttributes)
 		{
-			var condiotions = new QSConditionGroup(QSConditionGroupType.And);
+			var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
 			foreach (var searchAttribute in searchAttributes)
 			{
-				condiotions.Add(new QSConditionSimple
+				qsConditionGroup.Add(new QSConditionSimple
 				{
 					ConditionType = QSConditionType.EqualNonCaseSensitive,
 					LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
 					RightOperand = new QSColumnConstant(searchAttribute.Value)
 				});
 			}
-			return condiotions;
+			return qsConditionGroup;
 		}
 		
 

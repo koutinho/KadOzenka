@@ -135,12 +135,6 @@ namespace KadOzenka.Dal.ExpressScore
 		        throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
 	        }
 
-	        if (dto.CommonValue != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.CommonValue, out var commonDecimalResult)
-	                                        || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.CommonValue, out var commonDateResult)))
-	        {
-		        throw new Exception($"Общее значение '{dto.CommonValue}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
-	        }
-
 	        var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.Value == dto.Value && x.Id != dto.Id).ExecuteExists();
 	        if (isExistsTheSameReferenceItem)
 	        {
@@ -213,7 +207,7 @@ namespace KadOzenka.Dal.ExpressScore
 
             var resFileStream = ImportReferenceItemsFromExcel(dataFileStream, reference, settings.FileInfo);
             SaveResultFile(import, resFileStream);
-            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id);
+            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id, true);
 		}
 
         public void UpdateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, long referenceId, bool deleteOldValues)
@@ -356,21 +350,17 @@ namespace KadOzenka.Dal.ExpressScore
                     }
 
                     string valueString = null;
-                    string commonValueString = null;
                     switch (fileImportInfo.ValueType)
                     {
                         case ReferenceItemCodeType.Number:
 	                        valueString = GetDecimalValue(cellValue.Value).ToString(CultureInfo.InvariantCulture);
-	                        commonValueString = GetDecimalValue(cellCommonValue.Value).ToString(CultureInfo.InvariantCulture);
-                            break;
+	                        break;
                         case ReferenceItemCodeType.String:
                             valueString = cellValue.Value.ToString();
-                            commonValueString = cellCommonValue.Value.ToString();
                             break;
                         case ReferenceItemCodeType.Date:
 	                        valueString = GetDateValue(cellValue.Value).ToString(CultureInfo.CurrentCulture);
-                            commonValueString = GetDateValue(cellCommonValue.Value).ToString(CultureInfo.CurrentCulture);
-                            break;
+	                        break;
                     }
 
                     OMEsReferenceItem obj;
@@ -382,7 +372,7 @@ namespace KadOzenka.Dal.ExpressScore
 					if (obj != null)
                     {
                         obj.CalculationValue = calcValue;
-                        obj.CommonValue = commonValueString;
+                        obj.CommonValue = cellCommonValue?.Value?.ToString();
                         //lock (locked)
                         {
                             obj.Save();
@@ -394,13 +384,13 @@ namespace KadOzenka.Dal.ExpressScore
 						//lock (locked)
 						{
                             new OMEsReferenceItem
-                            {
-                                ReferenceId = reference.Id,
-                                Value = valueString,
-                                CommonValue = commonValueString,
-                                CalculationValue = calcValue
-                            }.Save();
-                        }
+							{
+								ReferenceId = reference.Id,
+								Value = valueString,
+								CommonValue = cellCommonValue?.Value?.ToString(),
+								CalculationValue = calcValue
+							}.Save();
+						}
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
                     }
 					lock(locked)
@@ -457,8 +447,13 @@ namespace KadOzenka.Dal.ExpressScore
 	        import.Save();
         }
 
-        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId)
+        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId, bool setExpireDate = false)
         {
+	        DateTime? expDate = null;
+	        if (setExpireDate)
+	        {
+		        expDate = DateTime.Now.AddHours(2);
+	        }
             new MessageService().SendMessages(new MessageDto
             {
                 Addressers =
@@ -469,7 +464,7 @@ namespace KadOzenka.Dal.ExpressScore
 <a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
                 IsUrgent = true,
                 IsEmail = true,
-                ExpireDate = DateTime.Now.AddHours(2)
+                ExpireDate = expDate
             });
         }
 

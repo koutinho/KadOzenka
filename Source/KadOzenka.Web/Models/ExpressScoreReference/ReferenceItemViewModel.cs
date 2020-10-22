@@ -23,12 +23,7 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         /// Общий код справочника
         /// </summary>
         [Display(Name = "Общий код справочника")]
-
         public string CommonValue { get; set; }
-
-        public decimal? CommonNumberValue { get; set; }
-
-        public DateTime? CommonDateTimeValue { get; set; }
 
         /// <summary>
         /// Код справочника
@@ -69,6 +64,7 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
 	            ReferenceName = reference.Name,
 	            ReferenceValueType = reference.ValueType_Code,
 	            CalcValue = referenceItem.CalculationValue,
+                CommonValue = referenceItem.CommonValue,
 	            IsEditItem = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
             };
 
@@ -76,15 +72,12 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
             {
                 case ReferenceItemCodeType.String:
 	                res.Value = referenceItem.Value;
-	                res.CommonValue = referenceItem.CommonValue;
-                    break;
+	                break;
                 case ReferenceItemCodeType.Number:
 	                res.NumberValue = decimal.TryParse(referenceItem.Value, out var dVal) ? dVal : (decimal?) null;
-                    res.CommonNumberValue = decimal.TryParse(referenceItem.CommonValue, out var dValCommon) ? dValCommon : (decimal?)null;
-                    break;
+	                break;
                 case ReferenceItemCodeType.Date:
 	                res.DateTimeValue = DateTime.TryParse(referenceItem.Value, out var date) ? date : (DateTime?) null;
-	                res.CommonDateTimeValue = DateTime.TryParse(referenceItem.CommonValue, out var commonDate) ? commonDate : (DateTime?) null;
                     break;
             }
 
@@ -94,20 +87,17 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         public ReferenceItemDto ToDto()
         {
             string value;
-            string commonValue;
+
             if (ReferenceValueType == ReferenceItemCodeType.Date)
             {
 	            value = DateTimeValue?.Date.ToShortDateString();
-                commonValue = CommonDateTimeValue?.Date.ToShortDateString();
             } else if (ReferenceValueType == ReferenceItemCodeType.Number)
             {
                 value = NumberValue?.ToString();
-                commonValue = CommonNumberValue?.ToString();
             }
             else
             {
                 value = Value;
-                commonValue = CommonValue;
             }
 
             return new ReferenceItemDto
@@ -115,7 +105,7 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Id = Id,
                 ReferenceId = ReferenceId,
                 Value = value,
-                CommonValue = commonValue,
+                CommonValue = CommonValue,
                 CalcValue = CalcValue
             };
         }
