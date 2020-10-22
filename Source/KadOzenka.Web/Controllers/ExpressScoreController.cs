@@ -205,42 +205,6 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { response = new { coordinates, targetObjectId = targetObject.UnitId } });
 		}
 
-		#region WallMaterial
-
-		[HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
-		public ActionResult WallMaterial(long id)
-		{
-			var wallMaterial = OMWallMaterial.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			return View(WallMaterialViewModel.FromEntity(wallMaterial));
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE)]
-		public ActionResult WallMaterial(WallMaterialViewModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
-
-			long id;
-			try
-			{
-				id = model.Id == -1
-					? _service.AddWallMaterial(model.WallMaterial, model.Mark.Value)
-					: _service.UpdateEWallMaterial(model.Id, model.WallMaterial, model.Mark.Value);
-			}
-			catch (Exception e)
-			{
-				return SendErrorMessage(e.Message);
-			}
-
-			return Json(new { Success = "Сохранено успешно", Id = id });
-		}
-
-		#endregion
-
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult CalculateCostTargetObject(CalculateCostTargetObjectViewModel viewModel)
