@@ -14,12 +14,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class FactorsService
     {
-        private BaseModelingService ModelService { get; set; }
+        private ModelingService ModelService { get; set; }
         private ModelFactorsService ModelFactorsService { get; set; }
 
         public FactorsService()
         {
-            ModelService = new BaseModelingService(new DictionaryService());
+            ModelService = new ModelingService(new DictionaryService());
             ModelFactorsService = new ModelFactorsService();
         }
 

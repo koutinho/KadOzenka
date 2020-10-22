@@ -84,7 +84,7 @@ namespace CIPJS
 			services.AddTransient<ExpressScoreService>();
 	        services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
-	        services.AddTransient<BaseModelingService>();
+	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
 	        services.AddTransient<DashboardWidgetService>();
 	        services.AddTransient<StatisticsReportsService>();

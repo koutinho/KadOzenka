@@ -23,12 +23,12 @@ using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class BaseModelingService
+	public class ModelingService
 	{
 		public DictionaryService DictionaryService { get; set; }
 		public ModelFactorsService ModelFactorsService { get; set; }
 
-		public BaseModelingService(DictionaryService dictionaryService)
+		public ModelingService(DictionaryService dictionaryService)
 		{
 			DictionaryService = dictionaryService;
 			ModelFactorsService = new ModelFactorsService();

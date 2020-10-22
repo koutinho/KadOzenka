@@ -67,7 +67,7 @@ namespace KadOzenka.Dal.Modeling
 
             ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
             AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
-            var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new BaseModelingService.GroupedModelAttributes
+            var groupedModelAttributes = ModelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
             {
 	            RegisterId = (int)k,
 	            Attributes = g.ToList()
