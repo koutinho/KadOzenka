@@ -9,7 +9,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -135,31 +134,44 @@ namespace KadOzenka.Dal.Modeling
 	        return tourToGroupRelation.ParentTour;
         }
 
-        public void AddModel(ModelingModelDto modelDto)
-		{
-			ValidateModel(modelDto);
+        public void AddAutomaticModel(ModelingModelDto modelDto)
+        {
+	        ValidateModel(modelDto);
 
-			var model = new OMModel
-			{
-				Name = modelDto.Name,
-				Description = modelDto.Description,
-				GroupId = modelDto.GroupId,
-                CalculationType_Code = KoCalculationType.Comparative, 
-				AlgoritmType_Code = modelDto.AlgorithmType,
-                Type_Code = modelDto.Type
-			};
+	        var model = new OMModel
+	        {
+		        Name = modelDto.Name,
+		        Description = modelDto.Description,
+		        GroupId = modelDto.GroupId,
+		        CalculationType_Code = KoCalculationType.Comparative,
+		        AlgoritmType_Code = KoAlgoritmType.None,
+		        Type_Code = KoModelType.Automatic
+	        };
 
-			if (modelDto.Type == KoModelType.Automatic)
-			{
-				model.AlgoritmType_Code = KoAlgoritmType.None;
-			}
+	        model.Formula = model.GetFormulaFull(true);
 
-			model.Formula = model.GetFormulaFull(true);
-
-            model.Save();
+	        model.Save();
         }
 
-		public bool UpdateModel(ModelingModelDto modelDto)
+        public void AddManualModel(ModelingModelDto modelDto)
+        {
+	        ValidateModel(modelDto);
+
+	        var model = new OMModel
+	        {
+		        Name = modelDto.Name,
+		        Description = modelDto.Description,
+		        GroupId = modelDto.GroupId,
+		        AlgoritmType_Code = modelDto.AlgorithmType,
+		        Type_Code = KoModelType.Manual
+	        };
+
+	        model.Formula = model.GetFormulaFull(true);
+
+	        model.Save();
+        }
+
+        public bool UpdateModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
 

@@ -18,6 +18,7 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Attributes;
@@ -43,16 +44,17 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
 		public TourComplianceImportService TourComplianceImportService { get; set; }
+		public ModelingService ModelingService { get; set; }
 
-		public TourController()
+		public TourController(ModelingService modelingService)
         {
             TourFactorService = new TourFactorService();
             TourService = new TourService(TourFactorService);
             GroupService = new GroupService();
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
-
-		}
+            ModelingService = modelingService;
+        }
 
         #region Карточка тура
 
@@ -127,6 +129,9 @@ namespace KadOzenka.Web.Controllers
             groupDto.RatingTourId = tourId;
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
+
+            var model = ModelingService.GetModelEntityByGroupId(groupId);
+            groupModel.ModelId = model?.Id;
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }

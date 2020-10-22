@@ -31,7 +31,7 @@
         <div class="form-group">
             <div class="col-sm-12" style="width: 100%; padding: 1%;">
                 @(Html.Kendo().ButtonGroup()
-                                    .Name("chooseModelType")
+                                    .Name("chooseModelTypeButtons")
                                     .Selection("single")
                                     .Items(t =>
                                     {
@@ -44,8 +44,7 @@
                                         t.Add().Text(ModelType.All.GetEnumDescription())
                                             .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
                                     })
-                                    .HtmlAttributes(new { style = "width: 100%;" })
-                                    .Events(ev => ev.Select("onModelTypeSelect")))
+                                    .HtmlAttributes(new { style = "width: 100%;" }))
             </div>
         </div>
     </div>
@@ -109,11 +108,7 @@
                                                 .DataSource(source =>
                                                 {
                                                     source.Read("GetRatingTours", "Tour");
-                                                })
-                                            .Events(e =>
-                                            {
-                                                e.Change("onTourChange");
-                                            }))
+                                                }))
                 </div>
             </div>
             <div class="form-group">
@@ -281,6 +276,8 @@
 
         $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
         $('[name="ObjectType"]').on('change', onObjectTypeChange);
+        $('[name="chooseModelTypeButtons"]').on('change', onModelTypeSelect);
+        $('#@nameof(Model.TourId)').on('change', onTourChange);
         $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onTypeChange);
 
         initGroups('@Model.GroupId');

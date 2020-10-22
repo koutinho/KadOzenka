@@ -226,8 +226,8 @@
 		kendo.ui.progress($('#modelContent'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("Model", "Modeling")',
-			data: { 'groupId': '@Model.Id', isPartial : true },
+            url: '@Url.Action("ModelCard", "Modeling")',
+			data: { 'modelId': '@Model.ModelId', isPartial : true },
             success: function (response) {
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);
