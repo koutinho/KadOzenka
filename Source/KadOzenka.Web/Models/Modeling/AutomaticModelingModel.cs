@@ -7,7 +7,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-	public class ModelingModel
+	public class AutomaticModelingModel
     {
 		public long Id { get; set; }
         public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
@@ -48,9 +48,9 @@ namespace KadOzenka.Web.Models.Modeling
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
 
-		public static ModelingModel ToModel(ModelingModelDto entity)
+		public static AutomaticModelingModel ToModel(ModelingModelDto entity)
 		{
-			return new ModelingModel
+			return new AutomaticModelingModel
             {
                 Id = entity.ModelId,
                 GroupId = entity.GroupId,
@@ -69,7 +69,7 @@ namespace KadOzenka.Web.Models.Modeling
             };
         }
 
-		public static ModelingModelDto FromModel(ModelingModel model)
+		public static ModelingModelDto FromModel(AutomaticModelingModel model)
         {
             if (model.GroupId == null)
                 throw new Exception("Не выбрана Группа");

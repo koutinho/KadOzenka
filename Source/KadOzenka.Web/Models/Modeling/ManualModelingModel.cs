@@ -4,12 +4,11 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-    public class ModelFromTourCardModel
+    public class ManualModelingModel
     {
         public long GeneralModelId { get; set; }
         public long? GroupId { get; set; }
         public bool IsPartial { get; set; }
-        public bool IsReadonly => Type == KoModelType.Automatic;
 
         [Display(Name= "Наименование")]
         public string Name { get; set; }
@@ -41,9 +40,9 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Свободный член")]
         public decimal? A0 { get; set; }
 
-        public static ModelFromTourCardModel ToModel(OMModel model)
+        public static ManualModelingModel ToModel(OMModel model)
         {
-            return new ModelFromTourCardModel
+            return new ManualModelingModel
             {
 	            GeneralModelId = model.Id,
                 GroupId = model.GroupId,

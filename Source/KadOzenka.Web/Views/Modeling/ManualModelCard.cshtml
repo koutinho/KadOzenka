@@ -1,5 +1,5 @@
 ﻿@using ObjectModel.Directory
-@model KadOzenka.Web.Models.Modeling.ModelFromTourCardModel
+@model KadOzenka.Web.Models.Modeling.ManualModelingModel
 
 <!-- Модальное окно для загрузки справочника меток -->
 @using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
@@ -39,7 +39,7 @@
 					@Html.CustomLabelFor(x => x.Name)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.Name, isReadonly: Model.IsReadonly)
+					@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
 				</div>
 			</div>
             <div class="form-group">
@@ -47,7 +47,7 @@
                     @Html.CustomLabelFor(x => x.Description)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: Model.IsReadonly)
+                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
                 </div>
             </div>
             <div class="form-group">
@@ -71,7 +71,7 @@
 					@Html.CustomLabelFor(x => x.CalculationTypeCode, true)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: Model.IsReadonly)
+					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
 				</div>
 			</div>
 			<div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -79,7 +79,7 @@
 					@Html.CustomLabelFor(x => x.CalculationMethodCode, true)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsReadonly)
+					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
 				</div>
 			</div>
 		</div>
@@ -98,7 +98,7 @@
 					@Html.CustomLabelFor(x => x.A0)
 				</div>
 				<div class="col-sm-10">
-					@Html.KendoTextBoxFor(x => x.A0, isReadonly: Model.IsReadonly)
+					@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
 				</div>
 			</div>
 
@@ -116,7 +116,6 @@
 
 <script>
     $(document).ready(function () {
-        var isReadOnly = '@Model.IsReadonly' == "True";
 
         $('#toolbar').kendoToolBar({
             items: [
@@ -132,8 +131,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    click: UpdateModel,
-                    enable: isReadOnly
+                    click: UpdateModel
                 }
             ]
         });
@@ -144,24 +142,21 @@
                     id: 'add-factor',
                     text: '',
                     attributes: { title: "Добавить" },
-                    icon: 'add',
-                    enable: isReadOnly
+                    icon: 'add'
                 },
                 {
                     type: 'button',
                     id: 'edit-factor',
                     text: '',
                     attributes: { title: "Изменить" },
-                    icon: 'edit',
-                    enable: isReadOnly
+                    icon: 'edit'
                 },
                 {
                     type: 'button',
                     id: 'remove-factor',
                     text: '',
                     attributes: { title: "Удалить" },
-                    icon: 'delete',
-                    enable: isReadOnly
+                    icon: 'delete'
                 },
                 {
                     type: 'button',
@@ -175,8 +170,7 @@
                     id: 'upload-marks-catalog',
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
-                    icon: 'upload',
-                    enable: isReadOnly
+                    icon: 'upload'
                 },
                 {
                     type: 'button',
@@ -392,7 +386,7 @@
             $('#download-marks-catalog').addClass('k-state-disabled');
             $('#upload-marks-catalog').addClass('k-state-disabled');
         }
-        else if(!isReadOnly) {
+        else {
             $('#edit-factor').removeClass('k-state-disabled');
             $('#remove-factor').removeClass('k-state-disabled');
             $('#show-marks').removeClass('k-state-disabled');

@@ -91,7 +91,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
-			var model = ModelingModel.ToModel(modelDto);
+			var model = AutomaticModelingModel.ToModel(modelDto);
 
 			if (isPartial)
 			{
@@ -197,12 +197,12 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
-		public JsonResult AddModel(ModelingModel modelingModel)
+		public JsonResult AddModel(AutomaticModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
-			var modelDto = ModelingModel.FromModel(modelingModel);
+			var modelDto = AutomaticModelingModel.FromModel(modelingModel);
 			if (modelDto.Type == KoModelType.Automatic)
 			{
 				ModelingService.AddAutomaticModel(modelDto);
@@ -217,12 +217,12 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public JsonResult UpdateModel(ModelingModel modelingModel)
+		public JsonResult UpdateModel(AutomaticModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
-			var modelDto = ModelingModel.FromModel(modelingModel);
+			var modelDto = AutomaticModelingModel.FromModel(modelingModel);
 			var isModelChanged = ModelingService.UpdateModel(modelDto);
 
             return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
@@ -332,7 +332,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult ManualModelCard(long groupId, bool isPartial)
         {
             var modelDto = ModelingService.GetModelEntityByGroupId(groupId);
-            var model = ModelFromTourCardModel.ToModel(modelDto);
+            var model = ManualModelingModel.ToModel(modelDto);
 
             if (isPartial)
             {
@@ -345,7 +345,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public ActionResult Model(ModelFromTourCardModel model)
+        public ActionResult Model(ManualModelingModel model)
         {
             var omModel = ModelingService.GetModelEntityById(model.GeneralModelId);
             if (omModel.Type_Code == KoModelType.Automatic)
@@ -614,7 +614,7 @@ namespace KadOzenka.Web.Controllers
             var modelDto = ModelingService.GetModelById(modelId);
             modelDto.Attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
-            var model = ModelingModel.ToModel(modelDto);
+            var model = AutomaticModelingModel.ToModel(modelDto);
 
             return View(model);
 		}
