@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             GbuCodRegisterService = new GbuCodRegisterService();
-            ModelService = new ModelingService(new DictionaryService());
+            ModelService = new ModelingService();
             ModelFactorsService = new ModelFactorsService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();

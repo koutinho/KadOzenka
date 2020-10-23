@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
-            ModelingService = new ModelingService(new DictionaryService());
+            ModelingService = new ModelingService();
             ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
             Logger = logger;

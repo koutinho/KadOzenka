@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using Core.Register;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
@@ -14,13 +13,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class FactorsService
     {
-        private ModelingService ModelService { get; set; }
-        private ModelFactorsService ModelFactorsService { get; set; }
+	    private ModelFactorsService ModelFactorsService { get; set; }
 
         public FactorsService()
         {
-            ModelService = new ModelingService(new DictionaryService());
-            ModelFactorsService = new ModelFactorsService();
+	        ModelFactorsService = new ModelFactorsService();
         }
 
 

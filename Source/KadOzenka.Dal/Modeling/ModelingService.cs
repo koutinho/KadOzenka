@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.Modeling
 	{
 		public ModelFactorsService ModelFactorsService { get; set; }
 
-		public ModelingService(DictionaryService dictionaryService)
+		public ModelingService()
 		{
 			ModelFactorsService = new ModelFactorsService();
 		}
