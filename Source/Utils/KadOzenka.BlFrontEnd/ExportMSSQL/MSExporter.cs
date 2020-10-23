@@ -2402,16 +2402,16 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         public static void GetCalcGroup()
         {
             ObjectModel.KO.KOCalcSettings ks = new ObjectModel.KO.KOCalcSettings();
-            ks.CalcParcel = false;
+            ks.CalcParcel = true;
             ks.CalcStage1 = true;
             ks.CalcStage2 = true;
             ks.CalcStage3 = true;
             ks.IdTour = 2018;
             ks.CalcAllGroups = false;
             ks.CalcGroups = new List<long>();
-            ks.CalcGroups.Add(100009);
+            ks.CalcGroups.Add(200003);
             ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(36741743);//36741743   15349237
+            ks.TaskFilter.Add(36661332);//36741743   15349237
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }

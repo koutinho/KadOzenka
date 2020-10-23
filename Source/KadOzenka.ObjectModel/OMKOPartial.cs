@@ -2135,8 +2135,8 @@ namespace ObjectModel.KO
                                 if (t6 != string.Empty && t6 != null)
                                 {
                                     OMMarkCatalog mc = null;
-                                    mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper().Replace('.',','));
-                                    if (mc==null)
+                                    mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper().Replace('.', ','));
+                                    if (mc == null)
                                         mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == t6.ToUpper().Replace(',', '.'));
 
                                     if (mc != null)
@@ -2162,14 +2162,29 @@ namespace ObjectModel.KO
                             }
                             else
                             {
+                                string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
                                 string t6 = row.ItemArray[6].ParseToString();
                                 if (t6 != string.Empty && t6 != null)
-                                    koeff = t6.ParseToDecimal();
+                                {
+                                    bool dok = decimal.TryParse(t6.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d);
+                                    if (!dok)
+                                    {
+                                        d = 0;
+                                    }
+                                    koeff = d;
+                                }
                                 else
                                 {
                                     string t7 = row.ItemArray[7].ParseToString();
                                     if (t7 != string.Empty && t7 != null)
-                                        koeff = t7.ParseToDecimal();
+                                    {
+                                        bool dok = decimal.TryParse(t7.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d);
+                                        if (!dok)
+                                        {
+                                            d = 0;
+                                        }
+                                        koeff = d;
+                                    }
                                 }
                             }
                         }
@@ -2265,7 +2280,8 @@ namespace ObjectModel.KO
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                         foreach (long taskId in setting.TaskFilter)
                         {
-                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            PropertyTypes curTypes = (setting.CalcParcel ? PropertyTypes.Stead : PropertyTypes.Stead);
+                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == curTypes && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                         }
 
                         if (Units.Count > 0)

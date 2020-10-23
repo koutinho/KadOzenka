@@ -13536,22 +13536,22 @@ namespace ObjectModel.KO
         }
 
 
-        private string _exportfilesinfo;
+        private long? _finalarchiveexportid;
         /// <summary>
-        /// 26201300 Список выгруженных файлов (EXPORT_FILES_INFO)
+        /// 26201400 ИД экспорта архива с результатом (FINAL_ARCHIVE_EXPORT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 26201300)]
-        public string ExportFilesInfo
+        [RegisterAttribute(AttributeID = 26201400)]
+        public long? FinalArchiveExportId
         {
             get
             {
-                CheckPropertyInited("ExportFilesInfo");
-                return _exportfilesinfo;
+                CheckPropertyInited("FinalArchiveExportId");
+                return _finalarchiveexportid;
             }
             set
             {
-                _exportfilesinfo = value;
-                NotifyPropertyChanged("ExportFilesInfo");
+                _finalarchiveexportid = value;
+                NotifyPropertyChanged("FinalArchiveExportId");
             }
         }
 
