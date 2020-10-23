@@ -49,7 +49,6 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly ILogger _log = Log.ForContext<TaskController>();
 		public TaskService TaskService { get; set; }
-		public ModelingService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
@@ -58,13 +57,10 @@ namespace KadOzenka.Web.Controllers
 		public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
-		public ModelFactorsService ModelFactorsService { get; set; }
-		public ModelingService ModelingService { get; set; }
 
-		public TaskController(TemplateService templateService, ModelFactorsService modelFactorsService, ModelingService modelingService)
+		public TaskController(TemplateService templateService)
 		{
 			TaskService = new TaskService();
-			ModelService = new ModelingService(new DictionaryService());
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
@@ -73,8 +69,6 @@ namespace KadOzenka.Web.Controllers
 			RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
-            ModelFactorsService = modelFactorsService;
-            ModelingService = modelingService;
 		}
 
 
