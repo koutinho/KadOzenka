@@ -29,7 +29,6 @@
 @using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(x => x.GeneralModelId)
-    @Html.HiddenFor(x => x.GroupId)
     <div id="toolbar"></div>
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
         <div style="margin: 1%;">
@@ -58,6 +57,14 @@
                         .DataTextField("Name")
                         .DataValueField("Name")
                         .Enable(false))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.GroupId)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(x => x.GroupId, "GetAllGroups", "Tour", isReadonly: false)
                 </div>
             </div>
             <div class="form-group">

@@ -137,7 +137,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void AddAutomaticModel(ModelingModelDto modelDto)
         {
-	        ValidateModel(modelDto);
+	        ValidateAutomaticModel(modelDto);
 
 	        var model = new OMModel
 	        {
@@ -156,7 +156,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void AddManualModel(ModelingModelDto modelDto)
         {
-	        ValidateModel(modelDto);
+	        ValidateBaseModel(modelDto);
 
 	        var model = new OMModel
 	        {
@@ -172,11 +172,11 @@ namespace KadOzenka.Dal.Modeling
 	        model.Save();
         }
 
-        public bool UpdateModel(ModelingModelDto modelDto)
+        public bool UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
 			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
 
-            ValidateModel(modelDto);
+            ValidateAutomaticModel(modelDto);
             ValidateAttributes(newAttributes);
 
 			var existedModel = GetModelEntityById(modelDto.ModelId);
@@ -209,7 +209,29 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-		public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
+        public void UpdateManualModel(ModelingModelDto modelDto)
+        {
+	        ValidateBaseModel(modelDto);
+
+            var omModel = GetModelEntityById(modelDto.ModelId);
+
+            omModel.Name = modelDto.Name;
+	        omModel.Description = modelDto.Description;
+	        omModel.GroupId = modelDto.GroupId;
+	        omModel.AlgoritmType_Code = modelDto.AlgorithmType;
+	        omModel.A0 = modelDto.A0;
+
+	        omModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
+		        ? modelDto.CalculationMethod
+                : KoCalculationMethod.None;
+
+	        omModel.CalculationType_Code = modelDto.CalculationType;
+	        omModel.Formula = omModel.GetFormulaFull(true);
+
+	        omModel.Save();
+        }
+
+        public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
 		{
 			switch (type)
 			{
@@ -567,14 +589,31 @@ namespace KadOzenka.Dal.Modeling
             };
 		}
 
-		private void ValidateModel(ModelingModelDto modelDto)
-		{
-			var message = new StringBuilder();
+        private void ValidateBaseModel(ModelingModelDto modelDto)
+        {
+	        var message = new StringBuilder();
 
-			if (string.IsNullOrWhiteSpace(modelDto.Name))
-				message.AppendLine("У модели не заполнено Имя");
-			if (string.IsNullOrWhiteSpace(modelDto.Description))
-				message.AppendLine("У модели не заполнено Описание");
+	        if (string.IsNullOrWhiteSpace(modelDto.Name))
+		        message.AppendLine("У модели не заполнено Имя");
+	        if (string.IsNullOrWhiteSpace(modelDto.Description))
+		        message.AppendLine("У модели не заполнено Описание");
+
+	        var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
+	        if (isModelExists)
+		        message.AppendLine("Модель для данной группы уже существует");
+
+	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmType == KoAlgoritmType.None)
+		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
+
+	        if (message.Length != 0)
+		        throw new Exception(message.ToString());
+        }
+
+        private void ValidateAutomaticModel(ModelingModelDto modelDto)
+        {
+	        ValidateBaseModel(modelDto);
+
+            var message = new StringBuilder();
 
 			var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
 			if(!isTourExists)
@@ -586,13 +625,6 @@ namespace KadOzenka.Dal.Modeling
             var isGroupBelongToTour = OMTourGroup.Where(x => x.TourId == modelDto.TourId && x.GroupId == modelDto.GroupId).ExecuteExists();
             if (!isGroupBelongToTour)
                 message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
-
-            var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
-            if (isModelExists)
-	            message.AppendLine("Модель для данной группы уже существует");
-
-            if(modelDto.Type == KoModelType.Manual && modelDto.AlgorithmType == KoAlgoritmType.None)
-	            message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
             if (message.Length != 0)
 				throw new Exception(message.ToString());

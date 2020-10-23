@@ -217,7 +217,7 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 
 			var modelDto = AutomaticModelingModel.FromModel(modelingModel);
-			var isModelChanged = ModelingService.UpdateModel(modelDto);
+			var isModelChanged = ModelingService.UpdateAutomaticModel(modelDto);
 
             return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
 		}
@@ -361,22 +361,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult Model(ManualModelingModel model)
         {
-            var omModel = ModelingService.GetModelEntityById(model.GeneralModelId);
-            if (omModel.Type_Code == KoModelType.Automatic)
-                throw new Exception($"Нельзя обновить модель с типом '{KoModelType.Automatic.GetEnumDescription()}'");
+	        var dto = model.ToDto();
 
-            omModel.Name = model.Name;
-            omModel.Description = model.Description;
-            omModel.AlgoritmType_Code = model.AlgorithmTypeCode;
-            omModel.A0 = model.A0;
-
-            omModel.CalculationMethod_Code = model.CalculationTypeCode == KoCalculationType.Comparative
-                ? model.CalculationMethodCode
-                : KoCalculationMethod.None;
-
-            omModel.CalculationType_Code = model.CalculationTypeCode;
-            omModel.Formula = omModel.GetFormulaFull(true);
-            omModel.Save();
+            ModelingService.UpdateManualModel(dto);
 
             return Ok();
         }

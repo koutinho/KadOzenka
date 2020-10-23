@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -8,7 +9,6 @@ namespace KadOzenka.Web.Models.Modeling
     public class ManualModelingModel
     {
         public long GeneralModelId { get; set; }
-        public long? GroupId { get; set; }
         public bool IsPartial { get; set; }
 
         [Display(Name= "Наименование")]
@@ -19,6 +19,9 @@ namespace KadOzenka.Web.Models.Modeling
 
         [Display(Name = "Тип")]
         public string Type { get; set; }
+
+        [Display(Name = "Группа")]
+        public long? GroupId { get; set; }
 
         [Display(Name = "Формула")]
         public string Formula { get; set; }
@@ -58,6 +61,21 @@ namespace KadOzenka.Web.Models.Modeling
 				CalculationMethod = model.CalculationMethod,
 				CalculationMethodCode = model.CalculationMethod_Code,
                 Type = model.Type_Code.GetEnumDescription()
+            };
+        }
+
+        public ModelingModelDto ToDto()
+        {
+	        return new ModelingModelDto
+            {
+		        ModelId = GeneralModelId,
+		        GroupId = GroupId,
+		        Name = Name,
+		        Description = Description,
+		        AlgorithmType = AlgorithmTypeCode,
+		        A0 = A0,
+		        CalculationType = CalculationTypeCode,
+		        CalculationMethod = CalculationMethodCode
             };
         }
     }
