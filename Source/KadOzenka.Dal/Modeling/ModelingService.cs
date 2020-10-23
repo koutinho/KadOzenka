@@ -72,7 +72,9 @@ namespace KadOzenka.Dal.Modeling
 			        x.ParentGroup.GroupName,
 			        x.IsOksObjectType,
                     x.Type_Code,
-                    x.AlgoritmType_Code
+                    x.AlgoritmType_Code,
+                    x.CalculationType_Code,
+                    x.A0
 		        }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -94,7 +96,9 @@ namespace KadOzenka.Dal.Modeling
 		        GroupName = model.ParentGroup.GroupName,
 		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
                 Type = model.Type_Code,
-                AlgorithmType = model.AlgoritmType_Code
+                AlgorithmType = model.AlgoritmType_Code,
+                CalculationType = model.CalculationType_Code,
+                A0 = model.A0
 	        };
         }
 
@@ -176,7 +180,7 @@ namespace KadOzenka.Dal.Modeling
             ValidateAttributes(newAttributes);
 
 			var existedModel = GetModelEntityById(modelDto.ModelId);
-			var existedModelAttributes = ModelFactorsService.GetFactors(existedModel.Id, existedModel.AlgoritmType_Code);
+			var existedModelAttributes = ModelFactorsService.GetGeneralModelAttributes(existedModel.Id);
 
             var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
 
@@ -186,11 +190,13 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
+                existedModel.A0 = modelDto.A0;
                 if (isModelChanged)
                 {
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
-	                existedModelAttributes.ForEach(x => x.Destroy());
-	                existedModelAttributes = new List<OMModelFactor>();
+	                var factors = ModelFactorsService.GetFactors(existedModel.Id, KoAlgoritmType.None);
+	                factors.ForEach(x => x.Destroy());
+	                existedModelAttributes = new List<ModelAttributeRelationDto>();
                 }
 
                 existedModel.Save();
@@ -229,14 +235,14 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support
 
-        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<OMModelFactor> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<ModelAttributeRelationDto> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
 		{
-			var oldAttributeIds = existedAttributes.Select(x => x.FactorId).OrderBy(x => x);
-			var newAttributeIds = newAttributes.Select(x => (long?)x.AttributeId).OrderBy(x => x);
+			var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x).ToList();
+			var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x).ToList();
 			var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
 
-			var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
-			var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
+			var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x).ToList();
+			var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x).ToList();
 			var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
 
 			return !(existedModel.GroupId == newModel.GroupId &&
@@ -245,7 +251,7 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 		public void AddModelAttributes(long? generalModelId, long tourId, List<ModelAttributeRelationDto> attributes,
-			List<OMModelFactor> existedAttributes)
+			List<ModelAttributeRelationDto> existedAttributes)
 		{
 			if (attributes == null || attributes.Count == 0)
 				return;
@@ -255,7 +261,7 @@ namespace KadOzenka.Dal.Modeling
 			if (tour?.Year == 2016)
 				return;
 
-			var existedAttributeIds = existedAttributes.Select(x => x.FactorId);
+			var existedAttributeIds = existedAttributes.Select(x => x.AttributeId);
 			var newAttributes = attributes.Where(x => !existedAttributeIds.Contains(x.AttributeId)).ToList();
 			var types = ModelFactorsService.GetPossibleTypes(KoAlgoritmType.None);
 

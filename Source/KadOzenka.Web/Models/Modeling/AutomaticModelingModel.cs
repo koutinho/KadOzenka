@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
@@ -23,10 +24,16 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Description { get; set; }
 
 		[Display(Name = "Тип")]
-		public KoModelType Type { get; set; }
+		public string Type { get; set; }
 
         [Display(Name = "Алгоритм расчета")]
 		public KoAlgoritmType AlgorithmType { get; set; }
+
+		[Display(Name = "Тип расчета")]
+		public string CalculationType { get; set; }
+
+		[Display(Name = "Свободный член")]
+		public decimal? A0 { get; set; }
 
         [Display(Name = "Тур")]
 		[Required(ErrorMessage = "Не выбран Тур")]
@@ -64,8 +71,10 @@ namespace KadOzenka.Web.Models.Modeling
                 HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
                 HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
                 HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
-                Type = entity.Type,
-                AlgorithmType = entity.AlgorithmType
+                Type = entity.Type.GetEnumDescription(),
+                AlgorithmType = entity.AlgorithmType,
+                CalculationType = entity.CalculationType.GetEnumDescription(),
+                A0 = entity.A0
             };
         }
 
@@ -83,8 +92,8 @@ namespace KadOzenka.Web.Models.Modeling
                 GroupId = model.GroupId.Value,
 				Attributes = model.Attributes,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks,
-                Type = model.Type,
-                AlgorithmType = model.AlgorithmType
+                AlgorithmType = model.AlgorithmType,
+                A0 = model.A0
             };
 		}
     }
