@@ -8,6 +8,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
+using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -30,7 +31,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorPure.Name)));
             query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorPure.RegisterId)));
 
-            var factors = query.ExecuteQuery<ModelFactorPure>();
+            //если модель автоматическая, её факторы дублируются для лин/экс/мульт типов
+            var factors = query.ExecuteQuery<ModelFactorPure>()
+	            .GroupBy(x => x.FactorId).Select(x => x.FirstOrDefault()).ToList();
 
             var groupedFactors = factors.GroupBy(x => x.RegisterId, (key, group) => new PricingFactors
             {
@@ -66,7 +69,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                     columns.Append($" factorsTable{counter}.{attribute.ValueField} as \"{attribute.Id}\",");
                 });
 
-                tables.Append($" left join {register.QuantTable} factorsTable{counter} on unit.id = factorsTable{counter}.Id");
+                var tableAlias = $"factorsTable{counter}";
+                //в качестве факторов модели могут быть факторы из таблиц с ценообразующими факторами тура и таблицы с аналогами
+                if (register.Id == OMCoreObject.GetRegisterId())
+                {
+	                tables.Append($" left join MARKET_CORE_OBJECT {tableAlias} on unit.cadastral_number = {tableAlias}.cadastral_number");
+                }
+                else
+                {
+	                tables.Append($" left join {register.QuantTable} {tableAlias} on unit.id = {tableAlias}.Id");
+                }
+
                 counter++;
             });
             //удаляем ',' в селекте для последнего столбца

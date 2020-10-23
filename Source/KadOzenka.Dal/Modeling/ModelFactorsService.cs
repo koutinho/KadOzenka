@@ -86,6 +86,8 @@ namespace KadOzenka.Dal.Modeling
 				});
 			}
 
+			//если модель автоматическая, её факторы дублируются для лин/экс/мульт типов, поэтому группируем по AttributeId
+
 			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
