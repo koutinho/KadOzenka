@@ -80,7 +80,7 @@
         border: none;
     }
 
-    .mainInfo > .form-group, .exportFiles > .form-group {
+    .mainInfo > .form-group, .exportFile > .form-group {
         padding: 5px;
     }
 </style>
@@ -123,7 +123,7 @@
                                 Основная информация
                             </li>
                             <li>
-                                Выгруженные файлы
+                                Результат оценки
                             </li>
                         </ul>
                         <div>
@@ -151,16 +151,13 @@
                             </div>
                         </div>
                         <div>
-                            <div class='exportFiles exportFiles-#: id #'>
+                            <div class='exportFile'>
                                 <div class="form-group">
                                 </div>
-                                <div class="form-group">
-                                    <p class="unloadItemSubtitle col-sm-12">Список выгруженных файлов</p>
-                                    <ul>
-                                        # for (var i = 0; i < data.exportFiles.length; i++) { #
-                                        <li class="exportFile-#: data.exportFiles[i].fileId #"><a href="#: data.exportFiles[i].downloadUrl #">#= data.exportFiles[i].fileName #</a></li>
-                                        # } #
-                                    </ul>
+                                <div class="form-group exportLinkContainer" style="padding-left: 25px;">
+                                    # if (data.exportFile) { #
+                                        <a href="#: data.exportFile.downloadUrl #">#= data.exportFile.fileName #</a>
+                                    # } #
                                 </div>
                             </div>
                         </div>
@@ -354,14 +351,9 @@
         }
 
         var dataSourceElement = unloadsListDataSource.find(x => x.id === dataItem.id);
-        if (dataSourceElement.exportFiles.length != dataItem.exportFiles.length) {
-            for (var i = 0; i < dataItem.exportFiles.length; i++) {
-                var existedFilesElement = dataSourceElement.exportFiles.find(x => x.fileId === dataItem.exportFiles[i].fileId);
-                if (existedFilesElement === undefined) {
-                    $(`.exportFiles-${dataItem.id} ul`).append(`<li class="exportFile-${dataItem.exportFiles[i].fileId}"><a href="${dataItem.exportFiles[i].downloadUrl}">${dataItem.exportFiles[i].fileName}</a></li>`);
-                    dataSourceElement.exportFiles.push(dataItem.exportFiles[i]);
-                }
-            }
+        if (!dataSourceElement.exportFile && dataItem.exportFile) {
+            $(`.exportFile .exportLinkContainer`).append(`<a href="${dataItem.exportFile.downloadUrl}">${dataItem.exportFile.fileName}</a>`);
+            dataSourceElement.exportFile = dataItem.exportFile;
         }
     }
 
