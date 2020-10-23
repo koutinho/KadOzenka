@@ -584,7 +584,11 @@ namespace KadOzenka.Dal.Modeling
 	            if (factor == null)
 		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-                factor.Weight = coefficient.Value;
+	            if (factor.Weight != coefficient.Value)
+	            {
+		            factor.Weight = coefficient.Value;
+		            factor.Save();
+	            }
 
                 AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{attributeId}' модели '{type.GetEnumDescription()}'");
 	        }
@@ -607,13 +611,7 @@ namespace KadOzenka.Dal.Modeling
 			        var value = objectCoefficient.Value;
 			        var metka = objectCoefficient.Coefficient;
 
-			        new OMMarkCatalog
-			        {
-				        GroupId = GeneralModel.GroupId,
-				        FactorId = attribute.AttributeId,
-				        ValueFactor = value,
-				        MetkaFactor = metka
-			        }.Save();
+			        ModelFactorsService.CreateMark(value, metka, attribute.Id, GeneralModel.GroupId);
 		        });
 
                 AddLog($"Сохранение меток для фактора '{attribute.AttributeName}', ИД ({attribute.AttributeId})");
@@ -624,14 +622,14 @@ namespace KadOzenka.Dal.Modeling
         {
 	        switch (type)
 	        {
-		        case "linear":
+		        case "line":
 			        return KoAlgoritmType.Line;
 		        case "exponential":
 			        return KoAlgoritmType.Exp;
 		        case "multiplicative":
 			        return KoAlgoritmType.Multi;
 		        default:
-			        return InputParameters.ModelType;
+			        throw new Exception("Невозможно конвертировать тип модели, присланной из сервиса");
 	        }
         }
 
@@ -648,6 +646,8 @@ namespace KadOzenka.Dal.Modeling
 				case KoAlgoritmType.Multi:
 					GeneralModel.MultiplicativeTrainingResult = trainingResult;
                     break;
+                case KoAlgoritmType.None:
+	                throw new Exception("Невозможно обновить результаты обучения модели, т.к. не указан её тип");
 			}
 
 			GeneralModel.Save();

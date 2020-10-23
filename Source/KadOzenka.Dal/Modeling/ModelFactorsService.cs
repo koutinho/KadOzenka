@@ -58,7 +58,6 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelAttributeRelationDto.Type)));
 
 			var attributes = new List<ModelAttributeRelationDto>();
 			var table = query.ExecuteQuery();
@@ -76,8 +75,6 @@ namespace KadOzenka.Dal.Modeling
 
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
 
-				var factorType = row[nameof(ModelAttributeRelationDto.Type)].ParseToLongNullable();
-
 				attributes.Add(new ModelAttributeRelationDto
 				{
 					Id = id,
@@ -85,14 +82,11 @@ namespace KadOzenka.Dal.Modeling
 					AttributeId = attributeId,
 					AttributeName = attributeName,
 					AttributeType = attributeType,
-					DictionaryId = dictionaryId,
-					Type = factorType == null ? KoAlgoritmType.None : (KoAlgoritmType)factorType
+					DictionaryId = dictionaryId
 				});
 			}
 
-			var a = attributes.GroupBy(x => x.Type).ToList();
-
-			return attributes.GroupBy(x => x.Type).Select(x => x.FirstOrDefault()).ToList();
+			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)

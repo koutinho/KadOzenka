@@ -276,7 +276,11 @@
 
         $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
         $('[name="ObjectType"]').on('change', onObjectTypeChange);
-        $('[name="chooseModelTypeButtons"]').on('change', onModelTypeSelect);
+        $("#chooseModelTypeButtons").kendoButtonGroup({
+            select: function(e) {
+                onModelTypeSelect(e);
+            }
+        });
         $('#@nameof(Model.TourId)').on('change', onTourChange);
         $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onTypeChange);
 
