@@ -96,7 +96,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Attributes = model.Attributes,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks,
                 AlgorithmType = model.AlgorithmType,
-                A0 = model.A0
+                A0 = model.A0,
+                Type = model.Type
             };
 		}
     }

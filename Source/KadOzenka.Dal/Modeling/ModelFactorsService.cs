@@ -296,7 +296,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Метки
 
-		public List<OMMarkCatalog> GetMarks(long groupId, long factorId)
+		public List<OMMarkCatalog> GetMarks(long? groupId, long? factorId)
 		{
 			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GroupId == groupId).SelectAll().Execute();
 		}
@@ -343,6 +343,13 @@ namespace KadOzenka.Dal.Modeling
 			var mark = GetMarkById(id);
 
 			mark.Destroy();
+		}
+
+		public void DeleteMarks(long? groupId, long? factorId)
+		{
+			var marks = GetMarks(groupId, factorId);
+
+			marks.ForEach(x => x.Destroy());
 		}
 
 		#endregion

@@ -598,10 +598,10 @@ namespace KadOzenka.Dal.Modeling
         {
 	        foreach (var attribute in ModelAttributes)
 	        {
-		        var existedMarks = OMMarkCatalog.Where(x => x.GroupId == GeneralModel.GroupId && x.FactorId == attribute.AttributeId).Execute();
-		        existedMarks.ForEach(x => x.Destroy());
+		        ModelFactorsService.DeleteMarks(GeneralModel.GroupId, attribute.AttributeId);
+		        AddLog("Удалены предыдущие метки");
 
-		        MarketObjectsForTraining.ForEach(modelObject =>
+                MarketObjectsForTraining.ForEach(modelObject =>
 		        {
 			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
 			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
@@ -611,7 +611,7 @@ namespace KadOzenka.Dal.Modeling
 			        var value = objectCoefficient.Value;
 			        var metka = objectCoefficient.Coefficient;
 
-			        ModelFactorsService.CreateMark(value, metka, attribute.Id, GeneralModel.GroupId);
+			        ModelFactorsService.CreateMark(value, metka, attribute.AttributeId, GeneralModel.GroupId);
 		        });
 
                 AddLog($"Сохранение меток для фактора '{attribute.AttributeName}', ИД ({attribute.AttributeId})");

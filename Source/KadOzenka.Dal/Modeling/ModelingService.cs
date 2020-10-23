@@ -231,6 +231,32 @@ namespace KadOzenka.Dal.Modeling
 	        omModel.Save();
         }
 
+        public void DeleteModel(long modelId)
+        {
+	        using (var ts = new TransactionScope())
+	        {
+		        var model = GetModelEntityById(modelId);
+
+		        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+		        factors.ForEach(factor =>
+		        {
+                    ModelFactorsService.DeleteMarks(model.GroupId, factor.FactorId);
+
+                    factor.Destroy();
+		        });
+
+		        if (model.Type_Code == KoModelType.Automatic)
+		        {
+			        var modelToObjectsRelation = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+			        modelToObjectsRelation.ForEach(x => x.Destroy());
+		        }
+
+		        model.Destroy();
+
+                ts.Complete();
+	        }
+        }
+
         public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
 		{
 			switch (type)

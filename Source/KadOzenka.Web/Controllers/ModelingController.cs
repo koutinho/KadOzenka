@@ -321,7 +321,7 @@ namespace KadOzenka.Web.Controllers
 
         #region Карточка ручной модели
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ManualModelCard(long groupId, bool isPartial)
         {
             var modelDto = ModelingService.GetModelEntityByGroupId(groupId);
@@ -358,7 +358,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult Model(ManualModelingModel model)
         {
 	        var dto = model.ToDto();
@@ -368,7 +368,7 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
             var model = ModelingService.GetModelEntityById(modelId);
@@ -382,7 +382,7 @@ namespace KadOzenka.Web.Controllers
         #region Факторы
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult EditModelFactor(long? id, long generalModelId)
         {
             FactorModel factorDto;
@@ -420,7 +420,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult EditModelFactor(FactorModel factorModel)
         {
             var dto = factorModel.ToDto();
@@ -441,7 +441,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult DeleteModelFactor(long? id)
         {
             ModelFactorsService.DeleteFactor(id);
@@ -550,6 +550,38 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
+
+        #endregion
+
+        #region Удаление модели
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult ModelDelete(long modelId)
+        {
+	        try
+	        {
+		        var model = ModelingService.GetModelEntityById(modelId);
+
+		        ViewBag.ModelName = model.Name;
+		        ViewBag.ModelId = model.Id;
+
+		        return View();
+	        }
+	        catch (Exception ex)
+	        {
+		        return SendErrorMessage(ex.Message);
+	        }
+        }
+
+        [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult DeleteModel(long modelId)
+        {
+	        ModelingService.DeleteModel(modelId);
+
+            return Json(new { Success = true });
+        }
 
         #endregion
 
