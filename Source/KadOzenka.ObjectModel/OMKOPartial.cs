@@ -2083,7 +2083,7 @@ namespace ObjectModel.KO
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
+                MaxDegreeOfParallelism = 1
             };
             int? factorReestrId = GetFactorReestrId(this);
             if (factorReestrId != null)
@@ -2262,8 +2262,7 @@ namespace ObjectModel.KO
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                         foreach (long taskId in setting.TaskFilter)
                         {
-                            PropertyTypes curTypes = (setting.CalcParcel ? PropertyTypes.Stead : PropertyTypes.Stead);
-                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == curTypes && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel?(x.PropertyType_Code == PropertyTypes.Stead) :(x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                         }
 
                         if (Units.Count > 0)
