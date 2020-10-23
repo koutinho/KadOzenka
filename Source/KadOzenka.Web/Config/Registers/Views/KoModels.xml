@@ -22,6 +22,13 @@
     </Button>
 
     <Button Caption="Просмотр объектов" NavigateURL="/Modeling/ModelObjects" OpenInNewWindow="true" SRDFunctionTag="KO.DICT.MODELS.MODEL_OBJECTS" Icon="fas fa-eye">
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="[20601500]" Operation="Equal" Value="1" ByRef="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
       <Parameters>
         <Parameter Key="ModelId" Value="[ObjectId]" />
       </Parameters>
