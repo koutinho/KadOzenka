@@ -83,7 +83,11 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					.Debug("{ProcessType}: Найдено объектов {ResCount}.", processType.Description, res.Count);
 
 				var correctRes = res.Where(x => !x.NoResult).ToList();
-				string msg = GetMessage("Результат операции:", correctRes, true);
+				var zipExportId = GetFinalZipExportId(correctRes.Where(x => x.FileId != 0).ToList());
+				unloadResultQueue.FinalArchiveExportId = zipExportId;
+				unloadResultQueue.Save();
+
+				string msg = GetMessage("Результат операции:", correctRes, true, zipExportId);
 
 				_log.ForContext("SendResultToReon", settings.SendResultToReon)
 					.Information("{ProcessType}: Объектов с результатом {CorrectResCount} из {ResCount}.", processType.Description, correctRes.Count, res.Count);
@@ -144,14 +148,14 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			}
 		}
 
-		public string GetMessage(string message, List<ResultKoUnloadSettings> result = null, bool withLink = false)
+		public string GetMessage(string message, List<ResultKoUnloadSettings> result = null, bool withLink = false, long? finalZipId = null)
 		{
 			string msgResult = message;
 
 			if (withLink && result != null)
 			{
 				msgResult += "<br>";
-				msgResult += GetFinalZipLink(result.Where(x => x.FileId != 0).ToList());
+				msgResult += GetFinalZipLink(finalZipId);
 				msgResult += "<br>";
 				msgResult += GetFaultReportMessage(result.Where(x => x.FileId == 0).ToList());
 			}
@@ -159,7 +163,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			return msgResult;
 		}
 
-		public string GetFinalZipLink(List<ResultKoUnloadSettings> result)
+		public long GetFinalZipExportId(List<ResultKoUnloadSettings> result)
 		{
 			long fileId;
 			using (ZipFile zipFile = new ZipFile())
@@ -180,7 +184,12 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				fileId = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
 			}
 
-			return $"<a href='/DataExport/DownloadExportResult?exportId={fileId}'>Результаты оценки</a>" + "<br>";
+			return fileId;
+		}
+
+		public string GetFinalZipLink(long? finalZipId)
+		{
+			return $"<a href='/DataExport/DownloadExportResult?exportId={finalZipId}'>Результаты оценки</a>" + "<br>";
 		}
 
 		public string GetFaultReportMessage(List<ResultKoUnloadSettings> faultResult)

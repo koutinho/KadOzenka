@@ -105,9 +105,6 @@ namespace KadOzenka.Web.SignalR
 			foreach (var unloadResultQueue in omUnloadResultQueues)
 			{
 				var omQueue = OMQueue.Where(x => x.ObjectId == unloadResultQueue.Id).ExecuteFirstOrDefault();
-				var exportFilesList = unloadResultQueue.ExportFilesInfo != null 
-					? JsonConvert.DeserializeObject<List<ResultKoUnloadSettings>>(unloadResultQueue.ExportFilesInfo)
-					: new List<ResultKoUnloadSettings>();
 				result.Add(
 					new UnloadSettingsQueueModel
 					{
@@ -120,15 +117,15 @@ namespace KadOzenka.Web.SignalR
 						UnloadTotalCount = unloadResultQueue.UnloadTotalCount,
 						CurrentUnloadType = unloadResultQueue.CurrentUnloadType,
 						CurrentUnloadProgress = unloadResultQueue.CurrentUnloadProgress,
-						UnloadTypes = (JsonConvert.DeserializeObject<List<KoUnloadResultType>>(unloadResultQueue.UnloadTypesMapping))
+						UnloadTypes =
+							(JsonConvert.DeserializeObject<List<KoUnloadResultType>>(unloadResultQueue
+								.UnloadTypesMapping))
 							.Select(y => y.GetEnumDescription()).ToList(),
 						LongProcessUrl = $"/RegistersView/CoreLongProcessQueue?Transition=1&97500100={omQueue?.Id}",
-						ExportFiles = exportFilesList.Where(x => !x.NoResult).Select(x => new UnloadSettingsQueueExportFileModel
-						{
-							FileId = x.FileId,
-							FileName = x.FileName,
-							DownloadUrl = $"/DataExport/DownloadExportResult?exportId={x.FileId}"
-						})
+						ExportFile = unloadResultQueue.FinalArchiveExportId.HasValue
+							? new UnloadSettingsQueueExportFileModel {FileId = unloadResultQueue.FinalArchiveExportId.Value, FileName = "Результаты оценки",
+								DownloadUrl = $"/DataExport/DownloadExportResult?exportId={unloadResultQueue.FinalArchiveExportId}"}
+							: null
 					});
 			}
 
