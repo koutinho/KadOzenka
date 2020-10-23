@@ -24,15 +24,12 @@ namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
-		public DictionaryService DictionaryService { get; set; }
 		public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService(DictionaryService dictionaryService)
 		{
-			DictionaryService = dictionaryService;
 			ModelFactorsService = new ModelFactorsService();
-
-        }
+		}
 
         #region CRUD General Model
 
@@ -532,84 +529,6 @@ namespace KadOzenka.Dal.Modeling
 
         #region Modeling Process
 
-        public Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
-        {
-            switch (territoryType)
-            {
-                case TerritoryType.Main:
-                    Expression<Func<OMCoreObject, bool>> mainTerritoryCondition = x => x.Address == "Main";
-                    return mainTerritoryCondition;
-                case TerritoryType.Additional:
-                    Expression<Func<OMCoreObject, bool>> additionalTerritoryCondition = x => x.Address == "Additional";
-                    return additionalTerritoryCondition;
-                case TerritoryType.MainAndAdditional:
-                    Expression<Func<OMCoreObject, bool>> bothTerritoryCondition = x => x.Address == "MainAndAdditional";
-                    return bothTerritoryCondition;
-                default:
-                    Expression<Func<OMCoreObject, bool>> unknownTerritoryCondition = x => x.Address == "default";
-                    return unknownTerritoryCondition;
-            }
-        }
-
-        public List<OMModelingDictionary> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
-        {
-	        var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value)
-		        .Distinct().ToList();
-           
-            return DictionaryService.GetDictionaries(dictionaryIds);
-        }
-
-        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
-	        List<ModelAttributeRelationDto> modelAttributes)
-        {
-	        if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
-		        return new Dictionary<long, List<CoefficientForObject>>();
-
-            var query = new QSQuery
-	        {
-		        MainRegisterID = OMCoreObject.GetRegisterId(),
-		        Condition = new QSConditionSimple
-		        {
-			        ConditionType = QSConditionType.In,
-			        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-			        RightOperand = new QSColumnConstant(objectIds)
-		        }
-	        };
-
-	        return GetCoefficients(query, dictionaries, modelAttributes);
-        }
-
-        public Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
-	        List<GroupedModelAttributes> modelAttributes)
-        {
-	        if (modelAttributes == null || modelAttributes.Count == 0 || unitIds == null || unitIds.Count == 0)
-		        return new Dictionary<long, List<CoefficientForObject>>();
-
-            var coefficients = new Dictionary<long, List<CoefficientForObject>>();
-
-	        modelAttributes.ForEach(modelAttribute =>
-	        {
-		        var idAttribute = RegisterCache.RegisterAttributes.Values
-			        .FirstOrDefault(x => x.RegisterId == modelAttribute.RegisterId && x.IsPrimaryKey)?.Id;
-
-		        var query = new QSQuery
-		        {
-			        MainRegisterID = modelAttribute.RegisterId,
-			        Condition = new QSConditionSimple
-			        {
-				        ConditionType = QSConditionType.In,
-				        LeftOperand = new QSColumnSimple((int)idAttribute),
-				        RightOperand = new QSColumnConstant(unitIds)
-			        }
-		        };
-
-		        var currentCoefficients = GetCoefficients(query, dictionaries, modelAttribute.Attributes);
-		        coefficients.AddRange(currentCoefficients);
-	        });
-
-            return coefficients;
-        }
-
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
         {
             return OMModelToMarketObjects
@@ -673,130 +592,6 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(QSQuery query, List<OMModelingDictionary> dictionaries, List<ModelAttributeRelationDto> attributes)
-        {
-	        attributes.ForEach(attribute =>
-            {
-	            query.AddColumn(attribute.AttributeId, attribute.AttributeId.ToString());
-            });
-
-            var sql = query.GetSql();
-
-            var coefficients = new Dictionary<long, List<CoefficientForObject>>();
-            var table = query.ExecuteQuery();
-            for (var i = 0; i < table.Rows.Count; i++)
-            {
-	            var row = table.Rows[i];
-	            var id = row["id"].ParseToLong();
-	            var currentCoefficients = new List<CoefficientForObject>();
-	            attributes.ForEach(attribute =>
-	            {
-		            var value = row[attribute.AttributeId.ToString()].ParseToStringNullable();
-
-		            CoefficientForObject coefficient;
-		            if (string.IsNullOrWhiteSpace(value))
-		            {
-			            coefficient = new CoefficientForObject(attribute.AttributeId)
-			            {
-				            Message = "Не найдено значение."
-			            };
-		            }
-		            else
-		            {
-			            var dictionary = attribute.DictionaryId == null
-				            ? null
-				            : dictionaries.FirstOrDefault(x => x.Id == attribute.DictionaryId);
-
-			            coefficient = CalculateCoefficientViaDictionary(value, attribute, dictionary);
-		            }
-		            currentCoefficients.Add(coefficient);
-	            });
-
-	            coefficients[id] = currentCoefficients;
-            }
-
-            return coefficients;
-        }
-
-        private CoefficientForObject CalculateCoefficientViaDictionary(object value, ModelAttributeRelationDto modelAttribute, OMModelingDictionary dictionary)
-        {
-            var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
-
-            switch (modelAttribute.AttributeTypeCode)
-            {
-	            case RegisterAttributeType.STRING:
-                {
-                    if (dictionary == null)
-                    {
-                        coefficient.Message = GetErrorMessage("строка");
-                    }
-                    else
-                    {
-                        var stringValue = value?.ParseToString();
-                        coefficient.Value = stringValue;
-                        coefficient.Coefficient = DictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
-                    }
-
-                    break;
-                }
-	            case RegisterAttributeType.DATE:
-                {
-                    if (dictionary == null)
-                    {
-                        coefficient.Message = GetErrorMessage("дата");
-                    }
-                    else
-                    {
-                        var dateValue = value?.ParseToDateTimeNullable();
-                        coefficient.Value = dateValue?.ToShortDateString();
-                        coefficient.Coefficient = DictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
-                    }
-
-                    break;
-                }
-                //число
-                case RegisterAttributeType.INTEGER:
-                case RegisterAttributeType.DECIMAL:
-                {
-                    var numberValue = value?.ParseToDecimalNullable();
-
-                    var number = DictionaryService.GetCoefficientFromNumberFactor(numberValue, dictionary);
-
-                    coefficient.Value = number.ToString();
-                    coefficient.Coefficient = number;
-                    break;
-                }
-                default:
-                {
-                    coefficient.Message = "Ошибка: атрибут относится к типу 'неизвестный тип'.";
-                    break;
-                }
-            }
-
-            return coefficient;
-        }
-
-        private string GetErrorMessage(string type)
-		{
-			return $"Ошибка: нет справочника. Атрибут относится к типу '{type}', но к нему не выбран справочник.";
-		}
-
-        #endregion
-
-
-        #region Entities
-
-        public class GroupedModelAttributes
-        {
-	        public int RegisterId { get; set; }
-	        public List<ModelAttributeRelationDto> Attributes { get; set; }
-
-	        public GroupedModelAttributes()
-	        {
-		        Attributes = new List<ModelAttributeRelationDto>();
-	        }
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

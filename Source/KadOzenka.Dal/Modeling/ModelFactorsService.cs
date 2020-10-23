@@ -76,6 +76,8 @@ namespace KadOzenka.Dal.Modeling
 
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
 
+				var factorType = row[nameof(ModelAttributeRelationDto.Type)].ParseToLongNullable();
+
 				attributes.Add(new ModelAttributeRelationDto
 				{
 					Id = id,
@@ -83,7 +85,8 @@ namespace KadOzenka.Dal.Modeling
 					AttributeId = attributeId,
 					AttributeName = attributeName,
 					AttributeType = attributeType,
-					DictionaryId = dictionaryId
+					DictionaryId = dictionaryId,
+					Type = factorType == null ? KoAlgoritmType.None : (KoAlgoritmType)factorType
 				});
 			}
 
