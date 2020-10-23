@@ -74,10 +74,10 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.Type)
+                    @Html.CustomLabelFor(x => x.TypeStr)
                 </div>
                 <div class="col-sm-9">
-                    @(Html.Kendo().DropDownListFor(m => m.Type)
+                    @(Html.Kendo().DropDownListFor(m => m.TypeStr)
                         .DataTextField("Name")
                         .DataValueField("Name")
                         .Enable(false))

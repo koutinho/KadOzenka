@@ -24,9 +24,12 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Description { get; set; }
 
 		[Display(Name = "Тип")]
-		public string Type { get; set; }
+		public string TypeStr { get; set; }
 
-        [Display(Name = "Алгоритм расчета")]
+		[Display(Name = "Тип")]
+		public KoModelType Type { get; set; }
+
+		[Display(Name = "Алгоритм расчета")]
 		public KoAlgoritmType AlgorithmType { get; set; }
 
 		[Display(Name = "Тип расчета")]
@@ -71,7 +74,7 @@ namespace KadOzenka.Web.Models.Modeling
                 HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
                 HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
                 HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
-                Type = entity.Type.GetEnumDescription(),
+                TypeStr = entity.Type.GetEnumDescription(),
                 AlgorithmType = entity.AlgorithmType,
                 CalculationType = entity.CalculationType.GetEnumDescription(),
                 A0 = entity.A0
