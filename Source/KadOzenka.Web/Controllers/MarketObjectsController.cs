@@ -3,23 +3,29 @@ using System.IO;
 using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Market;
 using KadOzenka.Web.Models.MarketObject;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
+using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.MarketObjects;
+using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.MarketObjects;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -579,10 +585,29 @@ namespace KadOzenka.Web.Controllers
 	        return Json(new[] { model });
         }
 
-        public JsonResult PerformOutliersChecking(MarketSegment? segment)
+        public ActionResult PerformOutliersChecking(MarketSegment? segment)
         {
-	        new OutliersCheckingProcess().PerformOutliersChecking(segment);
-	        return Json(new { Message = "Данные успешно обновлены" });
+            ////For testing
+            //var settings = new OutliersCheckingProcessSettings { Segment = segment };
+            //var history = new OMOutliersCheckingHistory
+            //{
+            //    DateCreated = DateTime.Now,
+            //    Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+            //};
+            //if (settings.Segment.HasValue)
+            //    history.MarketSegment_Code = settings.Segment.Value;
+            //history.Save();
+            //new OutliersCheckingLongProcess().StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    Status_Code = Status.Added,
+            //    UserId = SRDSession.GetCurrentUserId(),
+            //    Parameters = settings.SerializeToXml(),
+            //    ObjectId = history.Id
+            //}, new CancellationToken());
+
+            OutliersCheckingLongProcess.AddProcessToQueue(new OutliersCheckingProcessSettings {Segment = segment});
+
+            return Ok();
         }
 
         #endregion Outliers Checking

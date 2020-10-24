@@ -97,7 +97,8 @@ namespace CIPJS
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
-	        services.AddSingleton<DictionaryService>();
+	        services.AddSingleton<OutliersCheckingListenerService>();
+            services.AddSingleton<DictionaryService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -185,6 +186,7 @@ namespace CIPJS
             {
 	            routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
 	            routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
+	            routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
             });
 
             app.UseMvc(routes =>

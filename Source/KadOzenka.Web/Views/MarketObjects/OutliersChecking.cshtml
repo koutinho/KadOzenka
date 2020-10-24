@@ -2,9 +2,19 @@
 
 <div class="form-horizontal col-sm-12">
     <div class="form-group">
+        <div class="col-sm-12" style="text-align: center">
+            <label class="title-label">Проверка на вылеты</label>
+        </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-3">
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div class="outliersCheckingProgressBar"></div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 0px;">
+        <div class="col-sm-offset-3 col-sm-1">
             @(Html.Kendo().Button()
                 .Name("OutliersSettingsBtn")
                 .IconClass("k-icon k-i-gear outliers-settings-button")
@@ -15,23 +25,137 @@
                 .Content("Настройка коэффициентов"))
 
         </div>
-        <div class="col-sm-1">
-            @Html.CustomLabel("Сегмент")
+        <div class="col-sm-4" style="display: flex;">
+            <label for="outliers-settings-segment-dropdown" style="align-self: center; padding-right: 10px;">Сегмент</label>
+            <input id="outliers-settings-segment-dropdown" />
         </div>
         <div class="col-sm-4">
-            <input id="outliers-settings-segment-dropdown" style="width: 100%;" />
-        </div>
-        <div class="col-sm-4">
-            <button class="k-button perform-checking-button">Выполнить проверку на вылеты</button>
+            <button class="k-button perform-checking-button" style="display: none">Выполнить проверку на вылеты</button>
+            <div class="outliers-settings-loading" style="display: none">
+                <label class="outliers-settings-loading-label"></label>
+                <div class="outliers-settings-loading-img"></div>
+            </div>
         </div>
     </div>
+    <div class="form-group last-outliers-checking-section" style="display: none">
+        <fieldset class="last-outliers-checking-fieldset">
+            <legend>Последняя проверка</legend>
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Сегмент: <label class="last-outliers-checking-value last-outliers-checking-segment"></label></p>
+                </div>
+                <div class="col-sm-8">
+                    <p class="last-outliers-checking">Статус: <label class="last-outliers-checking-value last-outliers-checking-status"></label></p>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Дата создания: <label class="last-outliers-checking-value last-outliers-checking-date-created"></label></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Дата запуска: <label class="last-outliers-checking-value last-outliers-checking-date-started"></label></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Дата завершения: <label class="last-outliers-checking-value last-outliers-checking-date-finished"></label></p>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Обработано объектов: <label class="last-outliers-checking-value last-outliers-checking-total-objects-count"></label></p>
+                </div>
+                <div class="col-sm-4">
+                    <p class="last-outliers-checking">Исключенных объектов: <label class="last-outliers-checking-value last-outliers-checking-excluded-objects-count"></label></p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="last-outliers-checking-value last-outliers-checking-report"></div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="outliers-settings-window"></div>
 </div>
-<div class="outliers-settings-window"></div>
 
 
 <style>
+    .title-label {
+        font-size: large;
+        font-weight: bold !important;
+    }
+
+    .perform-checking-button, .perform-checking-button:hover {
+        border-color: #6fd0d0;
+        border-width: medium;
+        color: #6fd0d0;
+        font-size: 17px;
+        font-weight: bold;
+        background: white;
+    }
+
+    .outliers-settings-loading {
+        border-color: #6fd0d0;
+        border-width: medium;
+        color: white;
+        font-size: 17px;
+        font-weight: bold;
+        background: #6fd0d0;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-radius: 5px;
+        padding-left: 7px;
+        padding-right: 5px;
+        text-align: center;
+        display: inline-flex;
+    }
+
+    .outliers-settings-loading-label {
+        align-self: center;
+    }
+
+    .outliers-settings-loading-img {
+        background-image: url('../MapIcons/preloaderWhite.svg');
+        width: 22px;
+        height: 22px;
+        background-size: 22px;
+        margin-left: 10px;
+    }
+
+    fieldset.last-outliers-checking-fieldset {
+        border: 1px solid #c8c6cc;
+        border-radius: 10px;
+    }
+
+    fieldset.last-outliers-checking-fieldset legend {
+        font-size: initial;
+        margin: 10px;
+        color: #9a9a9a;
+    }
+
+    .last-outliers-checking-section {
+        color: #9a9a9a
+    }
+
+    .last-outliers-checking {
+        font-family: 'Roboto', sans-serif;
+        font-style: normal;
+    }
+
+    .outliersCheckingProgressBar {
+        font-weight: bold !important;
+        font-size: large;
+        width: 100%;
+    }
+
+    .outliersCheckingProgressBar .k-state-selected {
+        background: #6fd0d0;
+    }
+
+    .last-outliers-checking-report a {
+        font-weight: bold;
+    }
 </style>
 
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/custom-validation.js" charset="utf-8"></script>
 <script type="text/javascript">
     var settingsWindow = $(".outliers-settings-window");
@@ -72,17 +196,23 @@
                 type: 'POST',
                 url:  '@Url.Action("PerformOutliersChecking", "MarketObjects")',
                 data: { segment },
-                success: function (response) {
-                    Common.ShowMessage(response.Message);
-                },
-                error: function(response) {
+                error: function (response) {
                     Common.ShowError(response.responseText);
                 },
-                complete: function() {
+                complete: function () {
                     kendo.ui.progress($('body'), false);
                 }
             });
         });
+
+        $('.outliersCheckingProgressBar').kendoProgressBar({
+            type: "percent",
+            showStatus: true,
+            min: 0,
+            max: 100
+        });
+
+        initSignalRConnection();
     });
 
     function openOutliersSettingsWindow() {
@@ -92,5 +222,83 @@
         wnd.refresh(
             "@Url.Action("OutliersSettings", "MarketObjects", new { isPartialView = true })");
         wnd.center().open();
+    }
+
+    function initSignalRConnection() {
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/marketOutliersCheckingProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('ReceiveMessage', function (message) {
+            var encodedMsg = JSON.parse(message);
+            updateWidgetState(encodedMsg);
+        });
+
+        connection.start()
+            .then(function () {
+                connection.invoke('SendMessage');
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+    }
+
+    function updateWidgetState(data) {
+        if (data.HasCurrentAddedProcess || data.HasCurrentRunningProcess) {
+            $('.perform-checking-button').hide();
+            $('.outliers-settings-loading').show();
+            if (data.HasCurrentAddedProcess) {
+                $('.outliers-settings-loading-label').text('Ожидает выполнения');
+            } else {
+                $('.outliers-settings-loading-label').text('Выполняется проверка');
+            }
+        } else {
+            $('.outliers-settings-loading').hide();
+            $('.perform-checking-button').show();
+        }
+
+        $('.outliersCheckingProgressBar').data("kendoProgressBar").value(data.CurrentProgress);
+
+        if (data.HasHistory) {
+            $('.last-outliers-checking-section').show();
+
+            processLabelValue($('.last-outliers-checking-segment'), data.LastMarketSegment, 'Для всех сегментов');
+            processLabelValue($('.last-outliers-checking-status'), data.LastStatus);
+            processLabelDateValue($('.last-outliers-checking-date-created'), data.LastDateCreated);
+            processLabelDateValue($('.last-outliers-checking-date-started'), data.LastDateStarted);
+            processLabelDateValue($('.last-outliers-checking-date-finished'), data.LastDateFinished);
+            processLabelValue($('.last-outliers-checking-total-objects-count'), data.LastTotalObjectsCount, '0');
+            processLabelValue($('.last-outliers-checking-excluded-objects-count'), data.LastExcludedObjectsCount, '0');
+
+            if (data.LastReportDownloadLink) {
+                $('.last-outliers-checking-report')
+                    .html(`<a href="${data.LastReportDownloadLink}">Скачать результат</a>`);
+            } else {
+                $('.last-outliers-checking-report').html('');
+            }
+        } else {
+            $('.last-outliers-checking-section').hide();
+        }
+    }
+
+    function processLabelValue(element, value, defaultValue) {
+        if (value) {
+            element.text(value);
+        } else {
+            if (defaultValue) {
+                element.text(defaultValue);
+            } else {
+                element.text('');
+            }
+        }
+    }
+
+    function processLabelDateValue(element, value) {
+        if (value) {
+            element.text(kendo.toString(kendo.parseDate(value), "dd-MM-yyyy HH:mm:ss"));
+        } else {
+            element.text('');
+        }
     }
 </script>

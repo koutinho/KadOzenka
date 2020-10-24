@@ -5819,6 +5819,288 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 119 Таблица, содержащая информацию о проведённых проверках на выбросы (MARKET_OUTLIERS_CHECKING_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 119)]
+    [Serializable]
+    public partial class OMOutliersCheckingHistory : OMBaseClass<OMOutliersCheckingHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11900100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime _datecreated;
+        /// <summary>
+        /// 11900200 Дата создания (DATE_CREATED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900200)]
+        public DateTime DateCreated
+        {
+            get
+            {
+                CheckPropertyInited("DateCreated");
+                return _datecreated;
+            }
+            set
+            {
+                _datecreated = value;
+                NotifyPropertyChanged("DateCreated");
+            }
+        }
+
+
+        private DateTime? _datestarted;
+        /// <summary>
+        /// 11900300 Дата запуска (DATE_STARTED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900300)]
+        public DateTime? DateStarted
+        {
+            get
+            {
+                CheckPropertyInited("DateStarted");
+                return _datestarted;
+            }
+            set
+            {
+                _datestarted = value;
+                NotifyPropertyChanged("DateStarted");
+            }
+        }
+
+
+        private DateTime? _datefinished;
+        /// <summary>
+        /// 11900400 Дата завершения (DATE_FINISHED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900400)]
+        public DateTime? DateFinished
+        {
+            get
+            {
+                CheckPropertyInited("DateFinished");
+                return _datefinished;
+            }
+            set
+            {
+                _datefinished = value;
+                NotifyPropertyChanged("DateFinished");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 11900500 Статус (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900500)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ImportStatus _status_Code;
+        /// <summary>
+        /// 11900500 Статус (справочный код) (STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900500)]
+        public ObjectModel.Directory.Common.ImportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 11900600 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900600)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 11900600 Сегмент рынка (справочный код) (MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900600)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
+            }
+        }
+
+
+        private long? _totalobjectscount;
+        /// <summary>
+        /// 11900700 Общее количество объектов (TOTAL_OBJECTS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900700)]
+        public long? TotalObjectsCount
+        {
+            get
+            {
+                CheckPropertyInited("TotalObjectsCount");
+                return _totalobjectscount;
+            }
+            set
+            {
+                _totalobjectscount = value;
+                NotifyPropertyChanged("TotalObjectsCount");
+            }
+        }
+
+
+        private long? _currenthandledobjectscount;
+        /// <summary>
+        /// 11900800 Количество обработанных объектов (CURRENT_HANDLED_OBJECTS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900800)]
+        public long? CurrentHandledObjectsCount
+        {
+            get
+            {
+                CheckPropertyInited("CurrentHandledObjectsCount");
+                return _currenthandledobjectscount;
+            }
+            set
+            {
+                _currenthandledobjectscount = value;
+                NotifyPropertyChanged("CurrentHandledObjectsCount");
+            }
+        }
+
+
+        private long? _excludedobjectscount;
+        /// <summary>
+        /// 11900900 Количество исключенных объектов (EXCLUDED_OBJECTS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11900900)]
+        public long? ExcludedObjectsCount
+        {
+            get
+            {
+                CheckPropertyInited("ExcludedObjectsCount");
+                return _excludedobjectscount;
+            }
+            set
+            {
+                _excludedobjectscount = value;
+                NotifyPropertyChanged("ExcludedObjectsCount");
+            }
+        }
+
+
+        private long? _exportid;
+        /// <summary>
+        /// 11901000 ИД экспорта с результатом  (EXPORT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11901000)]
+        public long? ExportId
+        {
+            get
+            {
+                CheckPropertyInited("ExportId");
+                return _exportid;
+            }
+            set
+            {
+                _exportid = value;
+                NotifyPropertyChanged("ExportId");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>

@@ -82,14 +82,18 @@ namespace KadOzenka.Dal.OutliersChecking
 
 		private Dictionary<MarketSegment, List<OMCoreObject>> GetObjectsBySegments(MarketSegment? segment)
 		{
-			return OMCoreObject.Where(x =>
-					(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
-					&& x.PropertyMarketSegment != null
-					&& x.PricePerMeter != null
-					&& x.Zone != null
-					&& x.District != null
-					&& x.Neighborhood != null
-					&& (!segment.HasValue || x.PropertyMarketSegment_Code == segment))
+			var query = OMCoreObject.Where(x =>
+				(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
+				&& x.PropertyMarketSegment != null
+				&& x.PricePerMeter != null
+				&& x.Zone != null
+				&& x.District != null
+				&& x.Neighborhood != null);
+
+			if (segment.HasValue)
+				query.And(x => x.PropertyMarketSegment_Code == segment.Value);
+
+			return query
 				.Select(x => new
 				{
 					x.Id,
@@ -100,6 +104,7 @@ namespace KadOzenka.Dal.OutliersChecking
 					x.Neighborhood,
 					x.Neighborhood_Code,
 					x.PricePerMeter,
+					x.PropertyMarketSegment,
 					x.PropertyMarketSegment_Code,
 					x.ProcessType_Code,
 					x.ExclusionStatus_Code

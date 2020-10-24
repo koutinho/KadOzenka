@@ -32,6 +32,8 @@ namespace KadOzenka.Dal.OutliersChecking
 		private const int UpperLimitColumnNumber = 10;
 		private const int IsExcludedColumnNumber = 11;
 
+		private const int MaxWorksheetNameLength = 31;
+
 		private ExcelFile _excelFile;
 		private ExcelWorksheet _currentWorksheet;
 		private int _currentRow;
@@ -61,10 +63,17 @@ namespace KadOzenka.Dal.OutliersChecking
 			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}", segment.GetEnumDescription());
 
 			_currentRow = 0;
-			_currentWorksheet = _excelFile.Worksheets.Add(segment.GetEnumDescription());
+			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName(segment.GetEnumDescription()));
 			_currentWorksheet.Cells.Style.Font.Name = "Times New Roman";
 			AddHeaders();
 			SetWidth();
+		}
+
+		private static string GetWorksheetName(string worksheetName)
+		{
+			return worksheetName.Length > MaxWorksheetNameLength
+				? $"{worksheetName.Substring(0, MaxWorksheetNameLength - 4)}..."
+				: worksheetName;
 		}
 
 		public void AddRow(OutliersCheckingReportRow row)
