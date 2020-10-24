@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using Core.Main.FileStorages;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -37,10 +37,7 @@ using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
 
@@ -1013,10 +1010,12 @@ namespace KadOzenka.Web.Controllers
 		#endregion Актуализация кадастровых данных
 
 
+		#region Изменения в атрибутах
+
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult DataMapping(long taskId)
 		{
-			OMTask task = OMTask.Where(x => x.Id == taskId)				
+			OMTask task = OMTask.Where(x => x.Id == taskId)
 				.ExecuteFirstOrDefault();
 
 			if (task == null)
@@ -1028,7 +1027,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult DataMappingModal(long taskId, long objectId)
+		public ActionResult TaskAttributeChangesModal(long taskId, long objectId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)
 				.ExecuteFirstOrDefault();
@@ -1038,10 +1037,62 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
 			}
 
-			return View((taskId,objectId));
+			var model = new TaskAttributeChangesModalModel
+			{
+				TaskId = taskId,
+				ObjectId = objectId
+			};
+			return View(model);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult TaskAttributeChangesToExcelModal(long taskId)
+		{
+			var isInitial = TaskService.CheckIfInitial(taskId);
+			var model = new TaskAttributeChangesToExcelModalModel();
+			model.TaskId = taskId;
+			model.ButtonEnabled = !isInitial;
+			model.Message = isInitial
+				? "Выгрузка изменений недоступна для исходного перечня"
+				: $"Выгрузка изменений для задачи с идентификатором {taskId}";
+			return View(model);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public IActionResult TaskAttributeChangesToExcel(long taskId)
+		{
+			try
+			{
+				TaskAttributeChangesToExcelProcess.AddProcessToQueue(
+					new TaskAttributeChangesToExcelProcess.TaskAttributeChangesParams
+					{
+						KOTaskId = taskId,
+						UserId = SRDSession.GetCurrentUserId()
+					});
+				return Ok();
+			}
+			catch (Exception e)
+			{
+				return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
+			}
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DownloadTaskAttributeChanges(long taskId, string dt)
+		{
+			var FileStorage = "DataExporterByTemplate";
+			var dateTime = DateTime.Parse(dt);
+			var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_TaskAttributeChanges.xlsx");
+			return File(st, Consts.ExcelContentType,
+				$"{taskId}_{dt:ddMMyyyy}_TaskAttributeChanges.xlsx");
+		}
+
+		#endregion
+
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)
 		{
 			List<OMUnit> unitList = OMUnit.Where(x => x.TaskId == taskId)

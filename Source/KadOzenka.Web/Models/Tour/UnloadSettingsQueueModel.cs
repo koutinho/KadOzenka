@@ -16,6 +16,6 @@ namespace KadOzenka.Web.Models.Tour
 		public List<string> UnloadTypes { get; set; }
 		public long? CurrentUnloadProgress { get; set; }
 		public string LongProcessUrl { get; set; }
-		public IEnumerable<UnloadSettingsQueueExportFileModel> ExportFiles { get; set; }
+		public UnloadSettingsQueueExportFileModel ExportFile { get; set; }
 	}
 }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Ionic.Zip;
 using KadOzenka.Dal.DataExport;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -80,7 +83,11 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					.Debug("{ProcessType}: Найдено объектов {ResCount}.", processType.Description, res.Count);
 
 				var correctRes = res.Where(x => !x.NoResult).ToList();
-				string msg = GetMessage("Результат операции:", correctRes, true);
+				var zipExportId = GetFinalZipExportId(correctRes.Where(x => x.FileId != 0).ToList());
+				unloadResultQueue.FinalArchiveExportId = zipExportId;
+				unloadResultQueue.Save();
+
+				string msg = GetMessage("Результат операции:", correctRes, true, zipExportId);
 
 				_log.ForContext("SendResultToReon", settings.SendResultToReon)
 					.Information("{ProcessType}: Объектов с результатом {CorrectResCount} из {ResCount}.", processType.Description, correctRes.Count, res.Count);
@@ -141,14 +148,14 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			}
 		}
 
-		public string GetMessage(string message, List<ResultKoUnloadSettings> result = null, bool withLink = false)
+		public string GetMessage(string message, List<ResultKoUnloadSettings> result = null, bool withLink = false, long? finalZipId = null)
 		{
 			string msgResult = message;
 
 			if (withLink && result != null)
 			{
 				msgResult += "<br>";
-				msgResult += GetLinks(result.Where(x => x.FileId != 0).ToList());
+				msgResult += GetFinalZipLink(finalZipId);
 				msgResult += "<br>";
 				msgResult += GetFaultReportMessage(result.Where(x => x.FileId == 0).ToList());
 			}
@@ -156,15 +163,33 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			return msgResult;
 		}
 
-		public string GetLinks(List<ResultKoUnloadSettings> result)
+		public long GetFinalZipExportId(List<ResultKoUnloadSettings> result)
 		{
-			string msg = "";
-			foreach (var item in result)
+			long fileId;
+			using (ZipFile zipFile = new ZipFile())
 			{
-				msg += $"<a href='/DataExport/DownloadExportResult?exportId={item.FileId}'>{item.FileName}</a>" + "<br>";
+				zipFile.AlternateEncoding = Encoding.UTF8;
+				zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+
+				foreach (var entry in result)
+				{
+					var entryStream = DataExporterCommon.GetExportResultFileStream(entry.FileId);
+					zipFile.AddEntry(DataExporterCommon.GetDownloadResultFileName(entry.FileId), entryStream);
+				}
+
+				MemoryStream stream = new MemoryStream();
+				zipFile.Save(stream);
+				stream.Seek(0, SeekOrigin.Begin);
+				var fileName = "Результаты оценки";
+				fileId = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
 			}
 
-			return msg;
+			return fileId;
+		}
+
+		public string GetFinalZipLink(long? finalZipId)
+		{
+			return $"<a href='/DataExport/DownloadExportResult?exportId={finalZipId}'>Результаты оценки</a>" + "<br>";
 		}
 
 		public string GetFaultReportMessage(List<ResultKoUnloadSettings> faultResult)

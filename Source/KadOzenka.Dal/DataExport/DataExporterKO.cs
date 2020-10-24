@@ -290,7 +290,6 @@ namespace KadOzenka.Dal.DataExport
 	            TaskId = settings.TaskFilter.FirstOrDefault()
             };
             result.Add(resultFile);
-            KOUnloadResult.AddResultFile(unloadResultQueue, resultFile);
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, progressMessage);
 
@@ -343,7 +342,6 @@ namespace KadOzenka.Dal.DataExport
                             TaskId = taskId
                         };
                         res.Add(resFile);
-                        KOUnloadResult.AddResultFile(unloadResultQueue, resFile);
 
                         units_curr.Clear();
                         count_curr = 0;
@@ -367,9 +365,8 @@ namespace KadOzenka.Dal.DataExport
 					TaskId = taskId
 				};
 				res.Add(koResultFile);
-				KOUnloadResult.AddResultFile(unloadResultQueue, koResultFile);
 
-                taskCounter++;
+				taskCounter++;
             }
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, progressMessage);
@@ -592,7 +589,6 @@ namespace KadOzenka.Dal.DataExport
 	                        TaskId = taskId
                         };
                         res.Add(fileResult);
-                        KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
                     }
                     taskCounter++;
                     progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr-1) * 100) / countCurr;
@@ -1313,7 +1309,6 @@ namespace KadOzenka.Dal.DataExport
 		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
 	            };
 	            result.Add(fileResult);
-                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
             }
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, progressMessage);
@@ -1924,7 +1919,6 @@ namespace KadOzenka.Dal.DataExport
 	                TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
                 };
                 result.Add(fileResult);
-                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
             }
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100,true, progressMessage);
@@ -2251,10 +2245,6 @@ namespace KadOzenka.Dal.DataExport
                         var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                        }
                         units_curr.Clear();
                         cad_num = cad_num_curr;
                     }
@@ -2270,10 +2260,6 @@ namespace KadOzenka.Dal.DataExport
                     count_file++;
                     var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
                     res.Add(fileResult);
-                    if (!fileResult.NoResult)
-                    {
-	                    KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                    }
                 }
 
                 taskCounter++;
@@ -2427,19 +2413,11 @@ namespace KadOzenka.Dal.DataExport
                         {
 	                        var fileResult = SaveExcel5Model(units, subgroup, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
-                            if (!fileResult.NoResult)
-                            {
-	                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                            }
                         }
                         else
                         {
 	                        var fileResult = SaveExcel5Upksz(units, subgroup, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
-                            if (!fileResult.NoResult)
-                            {
-	                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                            }
                         }
                         taskCounter++;
                         progress = ((taskCounter*100/setting.TaskFilter.Count + num_subgroup * 100 )
@@ -2841,11 +2819,7 @@ namespace KadOzenka.Dal.DataExport
             var fileResult = SaveExcel7(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
 	            setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
-            if (!fileResult.NoResult)
-            {
-                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-            }
-			KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
 			setProgress(100, true, "Обобщенные показатели по кадастровым районам - Формирование отчета");
 
             return result;
@@ -3042,10 +3016,6 @@ namespace KadOzenka.Dal.DataExport
             var fileResult = SaveExcel8(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
 	            setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
-            if (!fileResult.NoResult)
-            {
-                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-            }
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, "Минимальные, максимальные, средние УПКС по кадастровым кварталам - Формирование отчета");
 
@@ -3169,10 +3139,6 @@ namespace KadOzenka.Dal.DataExport
                         var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                        }
                         units_curr.Clear();
                         cad_num = cad_num_curr;
                     }
@@ -3189,10 +3155,6 @@ namespace KadOzenka.Dal.DataExport
                     var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName,
 	                    taskId, message);
                     res.Add(fileResult);
-                    if (!fileResult.NoResult)
-                    {
-	                    KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                    }
                 }
 
                 taskCounter++;
@@ -3325,10 +3287,6 @@ namespace KadOzenka.Dal.DataExport
                         var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-                            KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                        }
                         units_curr.Clear();
                         cad_num = cad_num_curr;
                     }
@@ -3345,10 +3303,6 @@ namespace KadOzenka.Dal.DataExport
                     var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num_curr,
 	                    setting.DirectoryName, taskId, message);
                     res.Add(fileResult);
-                    if (!fileResult.NoResult)
-                    {
-	                    KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                    }
                 }
                 taskCounter++;
             }
@@ -3523,10 +3477,6 @@ namespace KadOzenka.Dal.DataExport
                             var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num,
                                 setting.DirectoryName, taskId, message1);
                             res.Add(fileResult);
-                            if (!fileResult.NoResult)
-                            {
-                                KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                            }
                             units_curr.Clear();
                             cad_num = cad_num_curr;
                         }
@@ -3543,10 +3493,6 @@ namespace KadOzenka.Dal.DataExport
                         var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num_curr,
 	                        setting.DirectoryName, taskId, message1);
                         res.Add(fileResult);
-                        if (!fileResult.NoResult)
-                        {
-	                        KOUnloadResult.AddResultFile(unloadResultQueue, fileResult);
-                        }
                     }
                 }
                 taskCounter++;
@@ -4913,20 +4859,17 @@ namespace KadOzenka.Dal.DataExport
                         var unloadResult = (List<ResultKoUnloadSettings>)unloadResultMethodInfoDictionary[koUnloadResultType]
                             .Invoke(null, new object[] { unloadResultQueue, setting, setProgress });
 
-                        _log.ForContext("Result_0", JsonConvert.SerializeObject(unloadResult[0])).Verbose("Выгружено {ResultCount} результатов", unloadResult.Count);
-
                         result.AddRange(unloadResult);
                     }
                 }
                 catch (Exception ex) {
                     _log.ForContext("UnloadCurrentCount", unloadCurrentCount)
-                        .Warning(ex, "Ошибка в процессе выгрузки {CurrentUnloadType_Code}", unloadResultQueue.CurrentUnloadType_Code);
+                        .Warning(ex, "Ошибка в процессе выгрузки {CurrentUnloadTypeCode}", unloadResultQueue.CurrentUnloadType_Code);
                 }
                 
                 unloadCurrentCount++;
             }
-            _log.ForContext("result_0", JsonConvert.SerializeObject(result[0]))
-                .Debug("Выгрузка результатов {resultCount} из {unloadCurrentCount}", result.Count, unloadCurrentCount);
+            _log.Debug("Выгрузка результатов {ResultCount} из {UnloadCurrentCount}", result.Count, unloadCurrentCount);
             return result;
         }
 
@@ -4946,18 +4889,7 @@ namespace KadOzenka.Dal.DataExport
 		    return methods;
 	    }
 
-	    public static void AddResultFile(OMUnloadResultQueue unloadResultQueue, ResultKoUnloadSettings resultKoUnloadSettings)
-	    {
-		    var currentExportList =
-			    unloadResultQueue.ExportFilesInfo != null
-				    ? JsonConvert.DeserializeObject<List<ResultKoUnloadSettings>>(unloadResultQueue.ExportFilesInfo)
-				    : new List<ResultKoUnloadSettings>(); ;
-            currentExportList.Add(resultKoUnloadSettings);
-            unloadResultQueue.ExportFilesInfo = JsonConvert.SerializeObject(currentExportList);
-            unloadResultQueue.Save();
-	    }
-
-        public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
+	    public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
 	    {
 		    unloadResultQueue.CurrentUnloadProgress = progress;
 		    unloadResultQueue.Save();

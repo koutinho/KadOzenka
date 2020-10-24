@@ -41,6 +41,17 @@ namespace KadOzenka.Dal.DataExport
 			return FileStorageManager.GetFileStream(FileStorageName, export.DateFinished.Value, export.ResultFileName);
 		}
 
+		public static string GetDownloadResultFileName(long exportId)
+		{
+			var export = OMExportByTemplates
+				.Where(x => x.Id == exportId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			return GetDownloadResultFileName(export);
+		}
+
 		public static void SendResultNotification(OMExportByTemplates export)
 		{
 			new MessageService().SendMessages(new MessageDto

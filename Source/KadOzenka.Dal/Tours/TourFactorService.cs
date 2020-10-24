@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.Tours
             using (var ts = new TransactionScope())
             {
                 var registerName = $"KO.Tour{(isStead ? "Zu" : "Oks")}Factors{tourId}";
-                var registerDescription = $"Факторы {(isStead ? "Земельных участков" : "ОКС")} Тура {tourId}";
+                var registerDescription = $"Факторы {(isStead ? "Земельных участков" : "ОКС")} Тура {tour.Year}";
                 var quantTable = registerName.Replace(".", "_");
                 omRegister = RegisterService.CreateRegister(registerName, registerDescription, quantTable);
                 var registerId = omRegister.RegisterId;

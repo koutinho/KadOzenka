@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
+using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
@@ -27,11 +29,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -1206,6 +1210,27 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			KOUnloadSettings settingsUnload = UnloadSettingsDto.Map(settings);
+
+			//For testing
+			//var koUnloadResults = KOUnloadResult.GetKoUnloadResultTypes(settingsUnload);
+			//var unloadResultQueue = new OMUnloadResultQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId().Value,
+			//	DateCreated = DateTime.Now,
+			//	Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+			//	UnloadTypesMapping = JsonConvert.SerializeObject(koUnloadResults),
+			//	UnloadCurrentCount = 0,
+			//	UnloadTotalCount = koUnloadResults.Count
+			//};
+			//unloadResultQueue.Save();
+			//new KoDownloadResultProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = settingsUnload.SerializeToXml(),
+			//	ObjectId = unloadResultQueue.Id
+			//}, new CancellationToken());
+
 			KoDownloadResultProcess.AddImportToQueue(settingsUnload);
 
 			return Ok();
