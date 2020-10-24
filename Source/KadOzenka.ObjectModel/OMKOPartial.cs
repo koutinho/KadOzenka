@@ -2166,6 +2166,13 @@ namespace ObjectModel.KO
                                         }
 
                                     }
+                                    else
+                                    {
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName});
+                                        }
+                                    }
                                 }
                             }
                             else
@@ -2201,6 +2208,14 @@ namespace ObjectModel.KO
                                         }
                                         koeff = d;
                                     }
+                                    else
+                                    {
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -2211,13 +2226,6 @@ namespace ObjectModel.KO
                         lock (res)
                         {
                             res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Значение коэффициента для фактора " + factorName + " равно 0" });
-                        }
-                    }
-                    else
-                    {
-                        lock (res)
-                        {
-                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Значение коэффициента для фактора " + factorName + " равно "+ koeff.ToString() });
                         }
                     }
                 }
@@ -2235,11 +2243,6 @@ namespace ObjectModel.KO
             decimal cost = Math.Round(upks.Value * square.Value, 2, MidpointRounding.AwayFromZero);
             unit.Upks = upks;
             unit.CadastralCost = cost;
-            lock (res)
-            {
-                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Рассчитанное значение УПКС = " + upks.ToString() });
-            }
-
             unit.Save();
             return res;
         }
