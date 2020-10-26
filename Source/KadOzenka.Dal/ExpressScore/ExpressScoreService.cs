@@ -1516,7 +1516,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (setting == null || string.IsNullOrEmpty(setting.CostFacrors))
 			{
-				_log.Error("ЭО.Не найдены оценочные факторы для сегмента {segmentType}", segmentType);
+				_log.Error("ЭО.Не найдены настройки или оценочные факторы для сегмента {segmentType}", segmentType);
 				return null;
 			}
 			return setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();

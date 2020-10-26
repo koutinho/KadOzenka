@@ -1,12 +1,25 @@
-﻿@using ObjectModel.Directory.ES
+﻿@using Microsoft.Extensions.Logging
+@using ObjectModel.Directory.ES
 @using ObjectModel.ES
 @model KadOzenka.Web.Models.ExpressScoreReference.ReferenceItemViewModel
+
+<style>
+	.flex-row {
+		display: flex;
+		align-items: baseline;
+	}
+
+	.margin-diapason-text {
+		margin-right: 10px;
+	}
+</style>
 
 @using (Html.BeginForm("ReferenceItemCard", "ExpressScopeReference", FormMethod.Post))
 {
 @Html.HiddenFor(m => m.Id)
 @Html.HiddenFor(m => m.ReferenceId)
 @Html.HiddenFor(m => m.ReferenceValueType)
+@Html.HiddenFor(m => m.UseInterval)
 <div class="form-horizontal col-sm-12">
     <div class="form-group"></div>
 	<div class="form-group">
@@ -25,31 +38,66 @@
 			@Html.KendoTextBoxFor(m => m.CommonValue, isReadonly: false)
 		</div>
 	</div>
-    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.Number ? "" :"display: none")">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(m => m.Value)
-        </div>
-        <div class="col-sm-10">
-            @Html.Kendo().NumericTextBoxFor(m => m.NumberValue).Spinners(false).Format($"N{2}").HtmlAttributes(new { style = "width: 100%;" })
-        </div>
-    </div>
-    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.Date ? "" : "display: none")">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(m => m.Value)
-        </div>
-        <div class="col-sm-6">
-            @Html.KendoDatePickerFor(x => x.DateTimeValue, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.String ? "" :"display: none")">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(m => m.Value)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoTextBoxFor(m => m.Value, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group">
+	@if (Model.UseInterval)
+	    {
+		    <div class="form-group">
+			    <div class="col-sm-2">
+				    @Html.CustomLabelFor(m => m.Value)
+			    </div>
+			    <div style="@(Model.ReferenceValueType == ReferenceItemCodeType.Number ? "" : "display: none")">
+				    <div class="col-sm-5">
+					    <div class="flex-row">
+						    <span class="margin-diapason-text">От</span>
+						    @Html.Kendo().NumericTextBoxFor(m => m.NumberValueFrom).Spinners(false).Format($"N{2}").HtmlAttributes(new {style = "width: 100%;"})
+					    </div>
+				    </div>
+				    <div class="col-sm-5">
+					    <div class="flex-row">
+						    <span class="margin-diapason-text">До</span>
+						    @Html.Kendo().NumericTextBoxFor(m => m.NumberValueTo).Spinners(false).Format($"N{2}").HtmlAttributes(new {style = "width: 100%;"})
+					    </div>
+				    </div>
+			    </div>
+			    <div style="@(Model.ReferenceValueType == ReferenceItemCodeType.Date ? "" : "display: none")">
+				    <div class="col-sm-5">
+					    <span>От</span>
+					    @Html.KendoDatePickerFor(x => x.DateTimeValueFrom, isReadonly: false)
+				    </div>
+				    <div class="col-sm-5">
+					    <span>До</span>
+					    @Html.KendoDatePickerFor(x => x.DateTimeValueTo, isReadonly: false)
+				    </div>
+			    </div>
+		    </div>
+	    }
+	    else
+	    {
+		    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.Number ? "" :"display: none")">
+			    <div class="col-sm-2">
+				    @Html.CustomLabelFor(m => m.Value)
+			    </div>
+			    <div class="col-sm-10">
+				    @Html.Kendo().NumericTextBoxFor(m => m.NumberValue).Spinners(false).Format($"N{2}").HtmlAttributes(new { style = "width: 100%;" })
+			    </div>
+		    </div>
+		    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.Date ? "" : "display: none")">
+			    <div class="col-sm-2">
+				    @Html.CustomLabelFor(m => m.Value)
+			    </div>
+			    <div class="col-sm-6">
+				    @Html.KendoDatePickerFor(x => x.DateTimeValue, isReadonly: false)
+			    </div>
+		    </div>
+		    <div class="form-group" style="@(Model.ReferenceValueType == ReferenceItemCodeType.String ? "" :"display: none")">
+			    <div class="col-sm-2">
+				    @Html.CustomLabelFor(m => m.Value)
+			    </div>
+			    <div class="col-sm-10">
+				    @Html.KendoTextBoxFor(m => m.Value, isReadonly: false)
+			    </div>
+		    </div>
+	    }
+	<div class="form-group">
         <div class="col-sm-2">
             @Html.CustomLabelFor(m => m.CalcValue)
         </div>

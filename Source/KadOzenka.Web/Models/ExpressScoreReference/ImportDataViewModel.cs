@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
 using KadOzenka.Web.Models.GbuObject;
 using ObjectModel.Directory.ES;
 
 namespace KadOzenka.Web.Models.ExpressScoreReference
 {
-    public class ImportDataViewModel
+    public class ImportDataViewModel: IValidatableObject
     {
         /// <summary>
         /// Общий код справочника
@@ -21,7 +22,6 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         /// Код справочника
         /// </summary>
         [Display(Name = "Код справочника")]
-        [Required(ErrorMessage = "Поле Код справочника обязательное")]
         public string Value { get; set; }
 
         /// <summary>
@@ -43,5 +43,41 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         /// </summary>
         [Display(Name = "Справочник")]
         public PartialReferenceViewModel Reference { get; set; } = new PartialReferenceViewModel();
+
+        /// <summary>
+        /// Признак что загружаем интервальный справочник
+        /// </summary>
+        [Display(Name = "Интервальный справочник")]
+        public bool UseInterval { get; set; }
+
+        /// <summary>
+        /// Значение от
+        /// </summary>
+        [Display(Name = "Код справочника от")]
+        public string ValueFrom { get; set; }
+
+        /// <summary>
+        /// Значение До
+        /// </summary>
+        [Display(Name = "Код справочника до")]
+        public string ValueTo { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+	        if (UseInterval && (ValueFrom.IsNullOrEmpty() || ValueTo.IsNullOrEmpty()))
+	        {
+                yield return new ValidationResult(@"Нобходимо выбрать ""Код справочника от"" и ""Код справочника до""");
+	        }
+
+	        if (!UseInterval && Value.IsNullOrEmpty())
+	        {
+		        yield return new ValidationResult(@"Нобходимо выбрать ""Код справочника""");
+            }
+
+	        if (UseInterval && ValueType == ReferenceItemCodeType.String)
+	        {
+		        yield return new ValidationResult(@"Интервальный справочник не может быть типа ""Строка""");
+	        }
+        }
     }
 }

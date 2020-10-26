@@ -18,7 +18,6 @@ function disableSegmentControl() {
 }
 
 function loadCostFactorsForSegment() {
-    debugger;
     if (!$('#Kn').val() && !$('#targetMarketObjectId').val()) {
         return;
     }
@@ -28,8 +27,7 @@ function loadCostFactorsForSegment() {
     var kn = $('#Kn').val();
     var targetMarketObjectId = $('#targetMarketObjectId').val();
     var segment = $('#segment').data('kendoDropDownList') && $('#segment').data('kendoDropDownList').value();
-    var url = "/ExpressScore/GetCostFactorsForCalculate" + // "@Url.Action("GetCostFactorsForCalculate", "ExpressScore")" +
-        `?targetKn=${kn}&targetMarketObjectId=${targetMarketObjectId}&segment=${segment}`;
+    var url = "/ExpressScore/GetCostFactorsForCalculate" + helper.objectToQuerystring({ targetKn: kn, targetMarketObjectId, segment }); // "@Url.Action("GetCostFactorsForCalculate", "ExpressScore")"
     $containerCostFactors.load(url,
         function (responseText, status) {
             if (status === "error") {
