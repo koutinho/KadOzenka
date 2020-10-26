@@ -10228,6 +10228,13 @@ namespace ObjectModel.Directory
         [EnumCode("20")]
         [ShortTitle("Обращение")]
         Appeal = 20,
+		/// <summary>
+		/// Добавление нового объекта (21)
+		/// </summary>
+		[Description("Добавление нового объекта")]
+        [EnumCode("21")]
+        [ShortTitle("Добавление нового объекта")]
+        NewObjectAddition = 21,
     }
 }
 
