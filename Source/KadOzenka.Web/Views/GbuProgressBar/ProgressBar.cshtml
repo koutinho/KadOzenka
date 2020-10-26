@@ -136,19 +136,20 @@
 
     function initSignalRConnection()
     {
-        var connection = new signalR.HubConnectionBuilder().withUrl("/gbuLongProcessesProgressBar").build();
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/gbuLongProcessesProgressBar", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+            .withAutomaticReconnect()
+            .build();
+
         connection.on('ReceiveMessage', function (message) {
 
             var encodedMsg = JSON.parse(message);
             // Add the message to the page.
-            console.log(encodedMsg);
             updateGrid(encodedMsg);
         });
 
         connection.start()
             .then(function () {
-
-                console.log('connection started');
                 connection.invoke('SendMessage');
             })
             .catch(error => {
@@ -157,7 +158,6 @@
     }
 
     function updateGrid(newData) {
-        //debugger;
         for (var i = 0; i < newData.length; i++) {
             var elem = gridDataSource.find(x => x.Id === newData[i].Id);
             if (elem === undefined) {

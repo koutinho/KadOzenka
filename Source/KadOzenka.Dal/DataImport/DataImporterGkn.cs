@@ -615,6 +615,7 @@ namespace KadOzenka.Dal.DataImport
                     #endregion
 
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
 
                     #region Заполнение фактора Материал стен на основании данных ГКН
                     ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
@@ -826,7 +827,7 @@ namespace KadOzenka.Dal.DataImport
                     {
                         2
                     };
-                        //TODO CIPJSKO-526 ждем ответа от заказчиков - что сохранять в качестве ЗУ
+                        //TODO CIPJSKO-535 ждем ответа от заказчиков - что сохранять в качестве ЗУ
                         List<long> attribIds = new List<long>
                     {
                         //ParcelAttributeId,
@@ -916,6 +917,7 @@ namespace KadOzenka.Dal.DataImport
                     ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                     
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
                     #endregion
                 }
 
@@ -1121,7 +1123,7 @@ namespace KadOzenka.Dal.DataImport
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
                         var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
 
-                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
                         var changedProperties = new UnitChangedProperties
                         {
 	                        IsNameChanged = !prNameObjectCheck,
@@ -1207,6 +1209,7 @@ namespace KadOzenka.Dal.DataImport
                     ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
                     #endregion
 
                     #region Заполнение фактора Год постройки
@@ -1428,7 +1431,7 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
-                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
                         //параметры закомментированы по согласованию с аналитиком
                         var changedProperties = new UnitChangedProperties
                         {
@@ -1485,6 +1488,7 @@ namespace KadOzenka.Dal.DataImport
                     ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
                     #endregion
                 }
 
@@ -1743,7 +1747,9 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
                     #endregion
                 }
 
@@ -2038,6 +2044,7 @@ namespace KadOzenka.Dal.DataImport
                     ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
                     SetNewUnitUpdateStatus(koUnit);
+                    SaveHistoryForNewObject(koUnit);
                     #endregion
                 }
 
@@ -2095,7 +2102,6 @@ namespace KadOzenka.Dal.DataImport
             if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-
 
             ////Тип помещения
             //if (current.AssignationFlatType != null) SetAttributeValue_String(603, current.AssignationFlatType.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -2180,6 +2186,16 @@ namespace KadOzenka.Dal.DataImport
         {
 	        unit.UpdateStatus_Code = UnitUpdateStatus.New;
 	        unit.Save();
+        }
+
+        public static void SaveHistoryForNewObject(OMUnit unit)
+        {
+	        new OMUnitChange
+	        {
+		        Id = -1,
+		        ChangeStatus_Code = KoChangeStatus.NewObjectAddition,
+		        UnitId = unit.Id
+	        }.Save();
         }
     }
 }

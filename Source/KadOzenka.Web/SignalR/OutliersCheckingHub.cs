@@ -4,12 +4,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace KadOzenka.Web.SignalR
 {
-	public class GbuLongProcessesProgressBarHub : Hub
+	public class OutliersCheckingHub : Hub
 	{
 		private readonly IMemoryCache _cache;
-		private readonly GbuCurrentLongProcessesListenerService _listenerService;
+		private readonly OutliersCheckingListenerService _listenerService;
 
-		public GbuLongProcessesProgressBarHub(IMemoryCache cache, GbuCurrentLongProcessesListenerService listenerService)
+		public OutliersCheckingHub(IMemoryCache cache, OutliersCheckingListenerService listenerService)
 		{
 			_cache = cache;
 			_listenerService = listenerService;
@@ -17,7 +17,7 @@ namespace KadOzenka.Web.SignalR
 
 		public async Task SendMessage()
 		{
-			if (!_cache.TryGetValue("CurrentProcessesList", out string response))
+			if (!_cache.TryGetValue("OutliersCheckingCurrentState", out string response))
 			{
 				if (!_listenerService.IsListening)
 				{
@@ -28,7 +28,7 @@ namespace KadOzenka.Web.SignalR
 			}
 			else
 			{
-				await Clients.All.SendAsync("ReceiveMessage", _cache.Get("CurrentProcessesList").ToString());
+				await Clients.All.SendAsync("ReceiveMessage", _cache.Get("OutliersCheckingCurrentState").ToString());
 			}
 		}
 	}

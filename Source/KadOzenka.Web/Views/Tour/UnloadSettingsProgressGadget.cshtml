@@ -178,7 +178,7 @@
     $(document).ready(function () {
         if (!hub) {
             hub = new signalR.HubConnectionBuilder()
-                .withUrl("/koUnloadResultsProgress", { transport: signalR.HttpTransportType.LongPolling })
+                .withUrl("/koUnloadResultsProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
                 .withAutomaticReconnect()
                 .build();
 

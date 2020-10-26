@@ -2094,23 +2094,31 @@ namespace ObjectModel.KO
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Pllacement), CalcParentGroup, PropertyTypes.Pllacement));
             return res;
         }
-        public void CalculateResult(List<ObjectModel.KO.OMUnit> units)
+        public List<CalcErrorItem> CalculateResult(List<ObjectModel.KO.OMUnit> units)
         {
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
-            int? factorReestrId = GetFactorReestrId(this);
+            List<CalcErrorItem> res = new List<CalcErrorItem>();
+            //CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            //ParallelOptions options = new ParallelOptions
+            //{
+            //    CancellationToken = cancelTokenSource.Token,
+            //    MaxDegreeOfParallelism = 1
+            //};
+            int ? factorReestrId = GetFactorReestrId(this);
             if (factorReestrId != null)
             {
-                Parallel.ForEach(units, options, item => CalculateResult(item, factorReestrId.Value));
+                foreach(ObjectModel.KO.OMUnit unit in units)
+                {
+                   res.AddRange(CalculateResult(unit, factorReestrId.Value));
+                }
+                //Parallel.ForEach(units, options, item => CalculateResult(item, factorReestrId.Value));
             }
+
+            return res;
         }
-        private void CalculateResult(ObjectModel.KO.OMUnit unit, int factorReestrId)
+        private List<CalcErrorItem> CalculateResult(ObjectModel.KO.OMUnit unit, int factorReestrId)
         {
-            decimal? upks = unit.UpksPre;
+            List<CalcErrorItem> res = new List<CalcErrorItem>();
+            decimal ? upks = unit.UpksPre;
             decimal? square = unit.Square;
             if (square == null) square = 1;
             if (upks != null)
@@ -2118,6 +2126,8 @@ namespace ObjectModel.KO
                 List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
                 foreach (ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
                 {
+                    string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == groupFactor.FactorId)?.Name;
+
                     List<CalcItem> FactorValues = new List<CalcItem>();
                     decimal koeff = 0;
                     DataTable data = RegisterStorage.GetAttribute((int)unit.Id, factorReestrId, (int)groupFactor.FactorId);
@@ -2142,6 +2152,14 @@ namespace ObjectModel.KO
                                     {
                                         koeff = mc.MetkaFactor.ParseToDecimal();
                                     }
+                                    else
+                                    {
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t6 });
+                                        }
+
+                                    }
                                 }
                                 else
                                 {
@@ -2156,6 +2174,21 @@ namespace ObjectModel.KO
                                         {
                                             koeff = mc.MetkaFactor.ParseToDecimal();
                                         }
+                                        else
+                                        {
+                                            lock (res)
+                                            {
+                                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t7 });
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName});
+                                        }
                                     }
                                 }
                             }
@@ -2169,6 +2202,10 @@ namespace ObjectModel.KO
                                     if (!dok)
                                     {
                                         d = 0;
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
+                                        }
                                     }
                                     koeff = d;
                                 }
@@ -2181,25 +2218,50 @@ namespace ObjectModel.KO
                                         if (!dok)
                                         {
                                             d = 0;
+                                            lock (res)
+                                            {
+                                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
+                                            }
                                         }
                                         koeff = d;
                                     }
+                                    else
+                                    {
+                                        lock (res)
+                                        {
+                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                        }
+                                    }
+
                                 }
                             }
                         }
                     }
                     upks *= koeff;
+                    if (koeff==0)
+                    {
+                        lock (res)
+                        {
+                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Значение коэффициента для фактора " + factorName + " равно 0" });
+                        }
+                    }
                 }
                 upks = Math.Round(upks.Value, 2, MidpointRounding.AwayFromZero);
             }
             else
             {
                 upks = 0;
+                lock (res)
+                {
+                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение УПКС" });
+                }
+
             }
             decimal cost = Math.Round(upks.Value * square.Value, 2, MidpointRounding.AwayFromZero);
             unit.Upks = upks;
             unit.CadastralCost = cost;
             unit.Save();
+            return res;
         }
         private void CalculateChildForEtalon(ObjectModel.KO.OMUnit unit)
         {
@@ -2257,7 +2319,10 @@ namespace ObjectModel.KO
 	                                result.AddRange(calculationResult);
                                 }
                                 if (AutoCalcGroup.CalcStage3)
-                                    CalcGroup.CalculateResult(Units);
+                                {
+                                    var calculationResult = CalcGroup.CalculateResult(Units);
+                                    result.AddRange(calculationResult);
+                                }
                             }
                         }
                     }
@@ -2279,8 +2344,7 @@ namespace ObjectModel.KO
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                         foreach (long taskId in setting.TaskFilter)
                         {
-                            PropertyTypes curTypes = (setting.CalcParcel ? PropertyTypes.Stead : PropertyTypes.Stead);
-                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == curTypes && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel?(x.PropertyType_Code == PropertyTypes.Stead) :(x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                         }
 
                         if (Units.Count > 0)
@@ -2300,7 +2364,10 @@ namespace ObjectModel.KO
                             }
 
                             if (setting.CalcStage3)
-                                CalcGroup.CalculateResult(Units);
+                            {
+                                var calculationResult = CalcGroup.CalculateResult(Units);
+                                result.AddRange(calculationResult);
+                            }
                         }
                     }
                 }
