@@ -38,6 +38,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
 
@@ -56,6 +57,7 @@ namespace KadOzenka.Web.Controllers
 		public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
+		public FactorSettingsService FactorSettingsService { get; set; }
 
 		public TaskController(TemplateService templateService)
 		{
@@ -69,7 +71,8 @@ namespace KadOzenka.Web.Controllers
 			RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
-        }
+            FactorSettingsService = new FactorSettingsService();
+		}
 
 		#region Карточка задачи
 
@@ -1119,5 +1122,31 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(list);
 		}
-	}	
+
+		#region Просмотр настроек факторов
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult FactorSettings()
+		{
+			return View();
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorSettings()
+		{
+			var factorSettings = FactorSettingsService.GetFactorSettings()
+				.Select(FactorSettingsModel.FromDto).ToList();
+
+			return Json(factorSettings);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorInheritanceTypes()
+		{
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(FactorInheritance));
+			return Json(types);
+		}
+
+		#endregion Просмотр настроек факторов
+	}
 }

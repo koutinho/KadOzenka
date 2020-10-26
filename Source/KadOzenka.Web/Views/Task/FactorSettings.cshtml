@@ -1,0 +1,130 @@
+﻿<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div id="factorSettingsGrid"></div>
+</div>
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Html.Raw(Url.Action("GetFactorSettings", "Task"))',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    },
+                },
+                error: function(response) {
+                    if (response.xhr && response.xhr.responseText) {
+                        Common.ShowError(response.xhr.responseText);
+                    } else {
+                        Common.ShowError();
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false },
+                            FactorName: { editable: false },
+                            FactorInheritanceType: { editable: false },
+                            Source: { editable: false },
+                            CorrectFactorName: { editable: false }
+                        }
+                    }
+                }
+            });
+
+            $("#factorSettingsGrid").kendoGrid({
+                columns: [
+                    {
+                        title: "Фактор",
+                        field: "FactorName",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Тип наследования",
+                        field: "FactorInheritanceType",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "eq",
+                                template: function (args) {
+                                    var inheritanceTypeDataSource = new kendo.data.DataSource({
+                                        transport: {
+                                            read: {
+                                                url: '@Html.Raw(Url.Action("GetFactorInheritanceTypes", "Task"))',
+                                                dataType: "json"
+                                            }
+                                        }
+                                    });
+                                    args.element.kendoDropDownList({
+                                        dataSource: inheritanceTypeDataSource,
+                                        optionLabel: " ",
+                                        dataTextField: "Text",
+                                        dataValueField: "Text",
+                                        valuePrimitive: true
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Источник для факторов отсутствующих в данных ГБУ",
+                        field: "Source",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function (args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Корректируемый фактор",
+                        field: "CorrectFactorName",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function (args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                ],
+                filterable: {
+                    mode: "row"
+                },
+                dataSource: dataSource,
+                pageable: true,
+                sortable: true,
+                resizable: true
+            });
+
+            $("#factorSettingsGrid").data("kendoGrid").tbody.kendoTooltip({
+                filter: "td",
+                content: function (e) {
+                    return e.target.text();
+                },
+                position: "top",
+                autoHide: true,
+                showAfter: 500
+            });
+        });
+</script>
