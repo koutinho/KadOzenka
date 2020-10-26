@@ -112,7 +112,7 @@ namespace KadOzenka.Dal.LongProcess
 
 			var headers = copiedColumns.Select(x => x.Header).ToList();
 			headers.Insert(0, cadastralNumberColumn.Header);
-			ReportService.AddHeaders(0, headers);
+			ReportService.AddHeaders(headers);
 
 			var copiedColumnsStartIndex = cadastralNumberColumn.Index + 1;
 			exportResults.ForEach(exportResult =>

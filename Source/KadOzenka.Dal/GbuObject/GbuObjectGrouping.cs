@@ -1214,7 +1214,7 @@ namespace KadOzenka.Dal.GbuObject
           
             _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
  
-            reportService.AddHeaders(0, dataHeaderAndColumnNumber.Headers);
+            reportService.AddHeaders(dataHeaderAndColumnNumber.Headers);
 			long reportId = 0;
 
 	        ErrorMessages = new List<string>();

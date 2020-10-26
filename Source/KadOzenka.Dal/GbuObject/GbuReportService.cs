@@ -17,17 +17,24 @@ namespace KadOzenka.Dal.GbuObject
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={_reportId}";
 
 		private ExcelFile _excelTemplate;
-		private ExcelWorksheet _mainWorkSheet;
+		private ExcelWorksheet currentSheet;
+		private List<ExcelWorksheet> workSheets;
+		private List<string> _headers;
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		private int _currentRow { get; set; }
 		private long _reportId { get; set; }
+		private int _listCounter;
+
 
 		public GbuReportService()
 		{
+			_listCounter = 1;
 			_excelTemplate = new ExcelFile();
-			_mainWorkSheet = _excelTemplate.Worksheets.Add("Отчет");
-			_mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
+			currentSheet = CreateWorkSheet();
+			workSheets = new List<ExcelWorksheet> { currentSheet };
+			_headers = new List<string>();
 		}
+
 
 		/// <summary>
 		/// Отдает текущий номер строки и инкрементирует значение для следующего обращения 
@@ -61,28 +68,29 @@ namespace KadOzenka.Dal.GbuObject
 			return res;
 		}
 
-		public void AddHeaders(int rowNumber, List<string> values)
+		public void AddHeaders(List<string> values)
 		{
-			int col = 0;
+			var rowIndex = 0;
+			int columnIndex = 0;
 			foreach (string value in values)
 			{
-				_mainWorkSheet.Rows[rowNumber].Cells[col].SetValue(value);
-				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-				_mainWorkSheet.Rows[rowNumber].Cells[col].Style.WrapText = true;
-				col++;
+				currentSheet.Rows[rowIndex].Cells[columnIndex].SetValue(value);
+				currentSheet.Rows[rowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+				currentSheet.Rows[rowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+				currentSheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				currentSheet.Rows[rowIndex].Cells[columnIndex].Style.WrapText = true;
+				columnIndex++;
 			}
 
+			_headers = values;
 			_currentRow++;
-
 		}
 
 		public void AddValue(string value, int column, int row, CellStyle cellStyle = null)
 		{
 			try
 			{
-				var cell = _mainWorkSheet.Rows[row].Cells[column];
+				var cell = currentSheet.Rows[row].Cells[column];
 
 				cell.SetValue(value);
 
@@ -102,7 +110,7 @@ namespace KadOzenka.Dal.GbuObject
         {
             for (var i = 0; i < values.Count; i++)
             {
-                _mainWorkSheet.Rows[_currentRow].Cells[i].SetValue(values[i]);
+	            currentSheet.Rows[_currentRow].Cells[i].SetValue(values[i]);
             }
 
             _currentRow++;
@@ -110,44 +118,51 @@ namespace KadOzenka.Dal.GbuObject
 
         public void SetStyle()
 		{
-			int countRows = _mainWorkSheet.Rows.Count;
-			int countColumns = _mainWorkSheet.CalculateMaxUsedColumns();
-			int errCount = 0;
-			int successCount = 0;
-			_log.Debug("Установка стилей в Excel таблице {countRows} x {countColumns}", countRows, countColumns);
-			for (int i = 0; i < countRows; i++)
-            {
-                for (int j = 0; j < countColumns; j++)
-                {
-                    if (_mainWorkSheet.Rows[i] != null && _mainWorkSheet.Rows[i].Cells[j] != null)
-                    {
-                        try
-                        {
-                            _mainWorkSheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-                            _mainWorkSheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-                            _mainWorkSheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-                            _mainWorkSheet.Rows[i].Cells[j].Style.WrapText = true;
-							
-							if (successCount < 5)
-								_log.Verbose("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
-							successCount++;
+			for (var sheetCounter = 0; sheetCounter < workSheets.Count; sheetCounter++)
+			{
+				var sheet = workSheets[sheetCounter];
+
+				int countRows = sheet.Rows.Count;
+				int countColumns = sheet.CalculateMaxUsedColumns();
+				int errCount = 0;
+				int successCount = 0;
+				_log.Debug("Установка стилей в Excel таблице {countRows} x {countColumns}", countRows, countColumns);
+				for (int i = 0; i < countRows; i++)
+				{
+					for (int j = 0; j < countColumns; j++)
+					{
+						if (sheet.Rows[i] != null && sheet.Rows[i].Cells[j] != null)
+						{
+							try
+							{
+								sheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+								sheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+								sheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+								sheet.Rows[i].Cells[j].Style.WrapText = true;
+
+								if (successCount < 5)
+									_log.Verbose("Применение стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								successCount++;
+							}
+							catch (Exception ex)
+							{
+								if (errCount < 5)
+									_log.Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+								errCount++;
+							}
 						}
-                        catch (Exception ex)
-                        {
-							if (errCount < 5)
-								_log.Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
-							errCount++;
-						}
-                    }
-                }
-            }
-			_log.Debug("Применение стилей в Excel завершено. Успешно {successCount}, с ошибкой {errCount}", successCount, errCount);
+					}
+				}
+
+				_log.Debug("Применение стилей в Excel для страницы {SheetNumber} завершено. Успешно {successCount}, с ошибкой {errCount}", sheetCounter, successCount, errCount);
+			}
 		}
 
 		public void SetIndividualWidth(int column, int width)
 		{
 			_log.Verbose("Установка ширины {width} для столбца {column}", width, column);
-			_mainWorkSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
+
+			currentSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
 		public long SaveReport(string fileName, long? mainRegisterId = null, string registerViewId = null)
@@ -192,6 +207,21 @@ namespace KadOzenka.Dal.GbuObject
 				throw;
 			}
 		}
+
+		#region Support Methods
+
+		private ExcelWorksheet CreateWorkSheet()
+		{
+			var workSheet = _excelTemplate.Worksheets.Add($"Лист {_listCounter}");
+			workSheet.Cells.Style.Font.Name = "Times New Roman";
+
+			_listCounter++;
+			_currentRow = 0;
+
+			return workSheet;
+		}
+
+		#endregion
 
 		#region Entities
 

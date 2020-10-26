@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				.Debug($"Загружено {units.Count} единиц оценки для обработки");
 
 			var reportService = new GbuReportService();
-			reportService.AddHeaders(0,
+			reportService.AddHeaders(
 				new List<string>
 				{
 					"Кадастровый номер", "Кадастровый квартал старый", "Кадастровый квартал новый",

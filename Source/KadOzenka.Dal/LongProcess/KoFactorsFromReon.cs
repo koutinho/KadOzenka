@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.LongProcess
             long success = 0;
             long errors = 0;
 
-            GbuReportService.AddHeaders(0, new List<string> { "Кадастровый номер", "Успешно", "Ошибка" });
+            GbuReportService.AddHeaders(new List<string> { "Кадастровый номер", "Успешно", "Ошибка" });
 
             units.ForEach(unit =>
             {

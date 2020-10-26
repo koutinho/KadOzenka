@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.GbuObject
         {
             _reportService = new GbuReportService();
 
-            _reportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            _reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();

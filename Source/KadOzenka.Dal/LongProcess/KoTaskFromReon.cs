@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.LongProcess
         {
             WorkerCommon.SetProgress(processQueue, 0);
             
-            GbuReportService.AddHeaders(0, new List<string> { "Номер задания", "Дата задания", "Год тура", "Количество файлов", "Ошибка" });
+            GbuReportService.AddHeaders(new List<string> { "Номер задания", "Дата задания", "Год тура", "Количество файлов", "Ошибка" });
 
             var request = GetRequest(processType);
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);

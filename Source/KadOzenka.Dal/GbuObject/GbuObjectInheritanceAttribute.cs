@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.GbuObject
         public static long Run(GbuInheritanceAttributeSettings setting)
         {
 			var reportService = new GbuReportService();
-			reportService.AddHeaders(0, new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
+			reportService.AddHeaders(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();

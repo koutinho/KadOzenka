@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
 
-            ReportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            ReportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
             _log.Debug("Получение объектов для обработки");
             var objects = GetObjects();
             _log.Debug( "Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);

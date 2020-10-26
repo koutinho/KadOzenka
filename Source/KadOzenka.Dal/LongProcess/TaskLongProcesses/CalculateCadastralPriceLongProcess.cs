@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private long PerformProc(KOCalcSettings settings)
 		{
 			var reportService = new GbuReportService();
-			reportService.AddHeaders(0, new List<string> {"КН", "Ошибка"});
+			reportService.AddHeaders(new List<string> {"КН", "Ошибка"});
 
 			var result = OMGroup.CalculateSelectGroup(settings);
 
