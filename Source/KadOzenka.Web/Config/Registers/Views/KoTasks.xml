@@ -40,7 +40,7 @@
                 <Button Caption="Настройка атрибутов" NavigateURL="~/Task/UpdateCadastralDataAttributeSettings" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="400" WindowWidth="1000" Icon="fas fa-wrench" />
             </DropDownButtons>
         </Button>
-        <Button Caption="Просмотр настроек факторов" NavigateURL="/Task/FactorSettings" OpenInRadWindow="true" WindowHeight="800" WindowWidth="1200" SRDFunctionTag="KO.TASKS" Icon="fas fa-eye" />
+        <Button Caption="Просмотр настроек факторов" NavigateURL="/Task/FactorSettings" OpenInRadWindow="true" WindowHeight="750" WindowWidth="1200" SRDFunctionTag="KO.TASKS" Icon="fas fa-eye" />
     </Buttons>
 
     <Tabs>
