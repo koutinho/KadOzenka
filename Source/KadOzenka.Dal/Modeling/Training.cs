@@ -205,6 +205,9 @@ namespace KadOzenka.Dal.Modeling
 
             trainingResults.ForEach(trainingResult =>
             {
+	            if (trainingResult == null)
+		            throw new Exception("Сервис моделирования не вернул результат обучения");
+
 	            PreprocessTrainingResult(trainingResult);
 
 	            var trainingType = GetTrainingType(trainingResult.Type);

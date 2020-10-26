@@ -411,13 +411,13 @@
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
         //при первом обучении модели оно должно идти по всем моделям
-        @*if ('@Model.IsModelWasTrained' === "False") {
+        if ('@Model.IsModelWasTrained' === "False") {
             trainModel('@ModelType.All');
-        } else {*@
+        } else {
             isTrainingMode = true;
             setGroupButtonsState(true, true, true, true);
             showModelTypeWindow();
-        //}
+        }
     }
 
     function onPredictModelBtnClick() {

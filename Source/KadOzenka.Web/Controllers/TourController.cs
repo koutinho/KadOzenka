@@ -48,16 +48,14 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
 		public TourComplianceImportService TourComplianceImportService { get; set; }
-		public ModelingService ModelingService { get; set; }
 
-		public TourController(ModelingService modelingService)
+		public TourController()
         {
             TourFactorService = new TourFactorService();
             TourService = new TourService(TourFactorService);
             GroupService = new GroupService();
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
-            ModelingService = modelingService;
         }
 
         #region Карточка тура
@@ -134,7 +132,7 @@ namespace KadOzenka.Web.Controllers
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            var model = ModelingService.GetModelEntityByGroupId(groupId);
+            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
             groupModel.ModelId = model?.Id;
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
