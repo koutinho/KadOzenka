@@ -105,7 +105,13 @@ namespace KadOzenka.Dal.Modeling
 				JoinType = QSJoinType.Left
 			};
 
-			var typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
+			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
+			QSConditionSimple typeCondition = null;
+			var isFactorsWithSpecificTypeExist = OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).ExecuteExists();
+			if (isFactorsWithSpecificTypeExist)
+			{
+				typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
+			}
 
 			var query = GetModelFactorsQuery(modelId, dictionaryJoin, typeCondition);
 
