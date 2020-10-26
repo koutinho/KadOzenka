@@ -826,7 +826,7 @@ namespace KadOzenka.Dal.DataImport
                     {
                         2
                     };
-                        //TODO CIPJSKO-526 ждем ответа от заказчиков - что сохранять в качестве ЗУ
+                        //TODO CIPJSKO-535 ждем ответа от заказчиков - что сохранять в качестве ЗУ
                         List<long> attribIds = new List<long>
                     {
                         //ParcelAttributeId,
@@ -1121,7 +1121,7 @@ namespace KadOzenka.Dal.DataImport
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
                         var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
 
-                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
                         var changedProperties = new UnitChangedProperties
                         {
 	                        IsNameChanged = !prNameObjectCheck,
@@ -1428,7 +1428,7 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
-                        //TODO CIPJSKO-526 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
+                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
                         //параметры закомментированы по согласованию с аналитиком
                         var changedProperties = new UnitChangedProperties
                         {
