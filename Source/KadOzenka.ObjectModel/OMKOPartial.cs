@@ -512,7 +512,6 @@ namespace ObjectModel.KO
 
     }
 
-    //TODO CIPJSKO-526 удалить часть с формулой
     public partial class OMModel
     {
 	    public string InternalName => $"model_{Id}";
