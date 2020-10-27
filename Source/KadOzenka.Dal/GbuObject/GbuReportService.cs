@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
@@ -15,24 +16,29 @@ namespace KadOzenka.Dal.GbuObject
 	public class GbuReportService
 	{
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={_reportId}";
-
+		
 		private ExcelFile _excelTemplate;
 		private ExcelWorksheet currentSheet;
 		private List<ExcelWorksheet> workSheets;
 		private List<string> _headers;
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		private int _currentRow { get; set; }
+		private Row _currentRow2 { get; set; }
 		private long _reportId { get; set; }
 		private int _listCounter;
+		private const int MaxRowsCount = 40;
+		private List<Column> _columnsWidth;
 
 
 		public GbuReportService()
 		{
 			_listCounter = 1;
 			_excelTemplate = new ExcelFile();
-			currentSheet = CreateWorkSheet();
-			workSheets = new List<ExcelWorksheet> { currentSheet };
 			_headers = new List<string>();
+			workSheets = new List<ExcelWorksheet>();
+			_columnsWidth = new List<Column>();
+
+			CreateWorkSheet();
 		}
 
 
@@ -45,6 +51,15 @@ namespace KadOzenka.Dal.GbuObject
 			int tmp = _currentRow;
 			_currentRow++;
 			return tmp;
+		}
+
+		public Row GetCurrentRowNew()
+		{
+			ValidateRowsCountInSheet();
+
+			_currentRow2.Index++;
+
+			return _currentRow2.Copy();
 		}
 
 		/// <summary>
@@ -86,6 +101,24 @@ namespace KadOzenka.Dal.GbuObject
 			_currentRow++;
 		}
 
+		public void AddHeadersNew(List<string> values)
+		{
+			var rowIndex = 0;
+			int columnIndex = 0;
+			foreach (string value in values)
+			{
+				_currentRow2.Sheet.Rows[rowIndex].Cells[columnIndex].SetValue(value);
+				_currentRow2.Sheet.Rows[rowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+				_currentRow2.Sheet.Rows[rowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+				_currentRow2.Sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				_currentRow2.Sheet.Rows[rowIndex].Cells[columnIndex].Style.WrapText = true;
+				columnIndex++;
+			}
+
+			_headers = values;
+			_currentRow2.Index++;
+		}
+
 		public void AddValue(string value, int column, int row, CellStyle cellStyle = null)
 		{
 			try
@@ -106,7 +139,28 @@ namespace KadOzenka.Dal.GbuObject
             }
 		}
 
-        public void AddRow(List<string> values)
+		public void AddValue(string value, int column, Row row, CellStyle cellStyle = null)
+		{
+			try
+			{
+				var cell = row.Sheet.Rows[row.Index].Cells[column];
+
+				cell.SetValue(value);
+
+				if (cellStyle != null)
+					cell.Style = cellStyle;
+
+				if (new Random().Next(0, 10000) > 9950)
+					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
+			}
+			catch (Exception ex)
+			{
+				if (new Random().Next(0, 100) > 80)
+					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
+			}
+		}
+
+		public void AddRow(List<string> values)
         {
             for (var i = 0; i < values.Count; i++)
             {
@@ -158,11 +212,16 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		public void SetIndividualWidth(int column, int width)
+		public void SetIndividualWidth(int column, int width, bool saveWidth = true)
 		{
 			_log.Verbose("Установка ширины {width} для столбца {column}", width, column);
 
-			currentSheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
+			workSheets.ForEach(x => x.Columns[column].SetWidth(width, LengthUnit.Centimeter));
+
+			if (saveWidth)
+			{
+				_columnsWidth.Add(new Column { Index = column, Width = width });
+			}
 		}
 
 		public long SaveReport(string fileName, long? mainRegisterId = null, string registerViewId = null)
@@ -210,15 +269,32 @@ namespace KadOzenka.Dal.GbuObject
 
 		#region Support Methods
 
-		private ExcelWorksheet CreateWorkSheet()
+		private void CreateWorkSheet()
 		{
-			var workSheet = _excelTemplate.Worksheets.Add($"Лист {_listCounter}");
-			workSheet.Cells.Style.Font.Name = "Times New Roman";
+			currentSheet = _excelTemplate.Worksheets.Add($"Лист {_listCounter}");
+			currentSheet.Cells.Style.Font.Name = "Times New Roman";
+			workSheets.Add(currentSheet);
 
 			_listCounter++;
-			_currentRow = 0;
 
-			return workSheet;
+			_currentRow2 = new Row
+			{
+				Sheet = currentSheet
+			};
+		}
+
+		private void ValidateRowsCountInSheet()
+		{
+			if (_currentRow2.Index >= MaxRowsCount)
+			{
+				CreateWorkSheet();
+
+				_currentRow2.Index++;
+
+				AddHeaders(_headers);
+
+				_columnsWidth.ForEach(x => SetIndividualWidth(x.Index, x.Width, false));
+			}
 		}
 
 		#endregion
@@ -230,6 +306,26 @@ namespace KadOzenka.Dal.GbuObject
 			public int Index { get; set; }
 			public string Header { get; set; }
 			public int Width { get; set; }
+		}
+
+		public class Row
+		{
+			public int Index;
+			public ExcelWorksheet Sheet;
+
+			public Row()
+			{
+				Index = -1;
+			}
+
+			public Row Copy()
+			{
+				return new Row
+				{
+					Index = Index,
+					Sheet = Sheet
+				};
+			}
 		}
 
 		#endregion

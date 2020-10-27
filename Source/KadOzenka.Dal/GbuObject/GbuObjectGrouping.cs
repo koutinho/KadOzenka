@@ -630,16 +630,15 @@ namespace KadOzenka.Dal.GbuObject
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, 
 	        DateTime dateActual, GbuReportService reportService, Dictionary<long, long> dicColumns)
         {
-	        int currentRow;
+	        GbuReportService.Row currentRow;
 	        lock (PriorityGrouping.locked)
 	        {
-		        currentRow = reportService.GetCurrentRow();
+		        currentRow = reportService.GetCurrentRowNew();
 		        PriorityGrouping.CurrentCount++;
-	        }
+		        reportService.AddValue(obj.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
+            }
 
-	        reportService.AddValue(obj.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
-
-			Code_Source_01 = string.Empty;
+	        Code_Source_01 = string.Empty;
             Code_Source_02 = string.Empty;
             Code_Source_03 = string.Empty;
             Code_Source_04 = string.Empty;
@@ -702,13 +701,14 @@ namespace KadOzenka.Dal.GbuObject
                 Level11 = GetDataLevel(setting.Level11, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                 try {
-                    var levelsData = new List<DataLevel>
+	                lock (PriorityGrouping.locked)
                     {
-	                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
-	                    dataLevel9, dataLevel10, dataLevel11
-                    };
-                    lock (PriorityGrouping.locked)
-                    {
+	                    var levelsData = new List<DataLevel>
+	                    {
+		                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
+		                    dataLevel9, dataLevel10, dataLevel11
+	                    };
+
                         PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
                     }
               
@@ -744,10 +744,13 @@ namespace KadOzenka.Dal.GbuObject
 
                             AddValueFactor(obj.Id, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-						    reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
-						    reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            lock (PriorityGrouping.locked)
+                            {
+	                            reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
+	                            reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            }
 
-						    {
+                            {
 							    string[] arrsource = source.Split(';');
 							    string strsource = string.Empty;
 							    foreach (string item in arrsource)
@@ -809,7 +812,11 @@ namespace KadOzenka.Dal.GbuObject
 							    }
 
 							    strsource = strsource.Trim().TrimEnd(';');
-							    reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
+
+							    lock (PriorityGrouping.locked)
+							    {
+								    reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
+                                }
 
 							    if (setting.IdAttributeSource != null)
 							    {
@@ -870,8 +877,12 @@ namespace KadOzenka.Dal.GbuObject
                                 strsource = strsource.Trim().TrimEnd(';');
                                 AddValueFactor(obj.Id, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
-                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
-					    }
+
+						    lock (PriorityGrouping.locked)
+						    {
+							    reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
+                            }
+                        }
                     }
                     else
                     {
@@ -880,7 +891,7 @@ namespace KadOzenka.Dal.GbuObject
                             reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                         }
                     }
-                        #endregion
+	                #endregion
                 }
                 catch (Exception ex)
                 {
@@ -893,15 +904,15 @@ namespace KadOzenka.Dal.GbuObject
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual,
 	        GbuReportService reportService, Dictionary<long, long> dicColumns)
         {
-	        int currentRow;
+	        GbuReportService.Row currentRow;
 	        lock (PriorityGrouping.locked)
 	        {
 		        PriorityGrouping.CurrentCount++;
-		        currentRow = reportService.GetCurrentRow();
-	        }
+		        currentRow = reportService.GetCurrentRowNew();
+		        reportService.AddValue(unit.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
+            }
 
-			reportService.AddValue(unit.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
-			if (unit.ObjectId != null)
+	        if (unit.ObjectId != null)
             {
                 #region Поля
                 Code_Source_01 = string.Empty;
@@ -968,14 +979,15 @@ namespace KadOzenka.Dal.GbuObject
                     Level10 = GetDataLevel(setting.Level10, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
                     Level11 = GetDataLevel(setting.Level11, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
-                    var levelsData = new List<DataLevel>
-                    {
-	                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
-	                    dataLevel9, dataLevel10, dataLevel11
-                    };
                     lock (PriorityGrouping.locked)
                     {
-						PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
+	                    var levelsData = new List<DataLevel>
+	                    {
+		                    dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
+		                    dataLevel9, dataLevel10, dataLevel11
+	                    };
+
+                        PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
 					}
                     
                     string resGroup = GetGroupCode(out string source);
@@ -1010,8 +1022,12 @@ namespace KadOzenka.Dal.GbuObject
 
                             AddValueFactor(unit.ObjectId.Value, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-							reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
-							reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            lock (PriorityGrouping.locked)
+                            {
+	                            reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
+	                            reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            }
+
 							{
                                 string[] arrsource = source.Split(';');
                                 string strsource = string.Empty;
@@ -1063,8 +1079,13 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-								reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
-								if (setting.IdAttributeSource != null)
+
+                                lock (PriorityGrouping.locked)
+                                {
+	                                reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
+                                }
+
+                                if (setting.IdAttributeSource != null)
 								{
 									AddValueFactor(unit.ObjectId.Value, setting.IdAttributeSource, null, dateActual, strsource);
 								}
@@ -1123,14 +1144,12 @@ namespace KadOzenka.Dal.GbuObject
                                 strsource = strsource.Trim().TrimEnd(';');
                                 AddValueFactor(unit.ObjectId.Value, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
-                            lock (PriorityGrouping.locked)
-                            {
-                                reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
-                            }
-
+                           
 							lock (PriorityGrouping.locked)
                             {
-	                            PriorityGrouping.SuccessCount++;
+	                            reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
+
+                                PriorityGrouping.SuccessCount++;
                             }
 						}
                     }
@@ -1214,7 +1233,7 @@ namespace KadOzenka.Dal.GbuObject
           
             _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
  
-            reportService.AddHeaders(dataHeaderAndColumnNumber.Headers);
+            reportService.AddHeadersNew(dataHeaderAndColumnNumber.Headers);
 			long reportId = 0;
 
 	        ErrorMessages = new List<string>();
@@ -1312,7 +1331,7 @@ namespace KadOzenka.Dal.GbuObject
                     reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
                     reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
                 }
-                reportId = reportService.SaveReport("Отчет нормолизации");
+                reportId = reportService.SaveReport("Отчет нормализации");
                 return reportId;
             }
             catch (Exception ex)
@@ -1357,18 +1376,21 @@ namespace KadOzenka.Dal.GbuObject
 	        return res;
         }
 
-        public static void AddInfoToReport(List<DataLevel> dataLevels, int rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
+        public static void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
-            foreach (var dataLevel in dataLevels)
+	        lock (locked)
 	        {
-		        if (!dataLevel.Code.IsNullOrEmpty())
+		        foreach (var dataLevel in dataLevels)
 		        {
-                    string registerName = GbuObjectService.GetRegisterNameByAttributeId(dataLevel.FactorId);
-                    long column = dictionaryColumns.FirstOrDefault(x => x.Key == dataLevel.FactorId).Value;
-			        reportService.AddValue(dataLevel.Code, (int)column, rowNumber);
-			        reportService.AddValue(registerName, (int)column +1, rowNumber);
+			        if (!dataLevel.Code.IsNullOrEmpty())
+			        {
+				        string registerName = GbuObjectService.GetRegisterNameByAttributeId(dataLevel.FactorId);
+				        long column = dictionaryColumns.FirstOrDefault(x => x.Key == dataLevel.FactorId).Value;
+				        reportService.AddValue(dataLevel.Code, (int)column, rowNumber);
+				        reportService.AddValue(registerName, (int)column + 1, rowNumber);
+			        }
 		        }
-	        }
+            }
         }
     }
 }
