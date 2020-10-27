@@ -5,9 +5,6 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using Core.Main.FileStorages;
-using Core.ErrorManagment;
-using Core.Register.DAL;
-using Core.Register.Enums;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,8 +13,6 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using Core.SRD;
-using Core.UI.Registers.Configuration;
-using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
@@ -43,13 +38,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Directory.KO;
-using Platform.Register.DAL.Dto;
-using Platform.Web.Models.Dashboard;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
-using DownloadManagerForm = KadOzenka.Web.Models.Task.DownloadManagerForm;
 
 namespace KadOzenka.Web.Controllers
 {
