@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
 
-            ReportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            ReportService.AddHeadersNew(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
             _log.Debug("Получение объектов для обработки");
             var objects = GetObjects();
             _log.Debug( "Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);
@@ -180,7 +180,7 @@ namespace KadOzenka.Dal.GbuObject
 
             lock (Locked)
             {
-                var row = ReportService.GetCurrentRow();
+                var row = ReportService.GetCurrentRowNew();
                 var savedValue = string.IsNullOrWhiteSpace(convertingErrorMessage) ? value : string.Empty;
                 var resultErrorMessage = $"{convertingErrorMessage} {errorMessageForReport}";
 
@@ -509,7 +509,7 @@ namespace KadOzenka.Dal.GbuObject
             return $"Не удалось преобразовать значение '{value}' к типу '{type.GetEnumDescription()}'.Cохранено пустое значение.";
         }
 
-        private static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        private static void AddRowToReport(GbuReportService.Row rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
         {
             var sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
             var resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
