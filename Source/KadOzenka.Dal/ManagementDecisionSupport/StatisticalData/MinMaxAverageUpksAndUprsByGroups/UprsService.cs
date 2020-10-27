@@ -68,15 +68,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             var subGroupSelectionFromGrouping = string.Empty;
             var subGroupSelectionFromQuery = string.Empty;
             var subGroupForGrouping = string.Empty;
+            var subGroupForSorting = string.Empty;
             if (withSubGroups)
             {
-                subGroupSelectionFromGrouping = @"temp.""SubGroup"",";
-                subGroupSelectionFromQuery = @"(COALESCE(L1_R205.NUMBER, '') || '. ' || L1_R205.GROUP_NAME) as ""SubGroup"",";
+                subGroupSelectionFromGrouping = @"temp.""SubGroup"", ";
+                subGroupSelectionFromQuery = @"case when L1_R205.NUMBER is null then L1_R205.GROUP_NAME else CONCAT(L1_R205.NUMBER, '. ', L1_R205.GROUP_NAME) end as ""SubGroup"", L1_R205.NUMBER as SubGroupNumber, ";
                 subGroupForGrouping = @", temp.""SubGroup""";
+                subGroupForSorting = @", min(nullif(split_part(temp.SubGroupNumber, '.', 2), '')::numeric)";
             }
 
             return string.Format(contents, subGroupSelectionFromGrouping, subGroupSelectionFromQuery,
-                string.Join(",", taskIdList), subGroupForGrouping);
+                string.Join(",", taskIdList), subGroupForGrouping, subGroupForSorting);
         }
 
         #endregion
@@ -112,22 +114,24 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
             var placementPurposeAttr = _rosreestrRegisterService.GetPlacementPurposeAttribute();
 
             string subGroupSelectionFromQuery = string.Empty,
-                subGroupForGrouping = string.Empty,
-                subGroupForResultData = string.Empty,
-                subGroupForResult = string.Empty,
-                subGroupForSorting = string.Empty;
+	            subGroupForGrouping = string.Empty,
+	            subGroupNumberForGrouping = string.Empty,
+	            subGroupForResultData = string.Empty,
+	            subGroupForSorting = string.Empty,
+	            subGroupForResultGrouping = string.Empty;
             if (withSubGroups)
             {
-                subGroupSelectionFromQuery = @"(COALESCE(L1_R205.NUMBER, '') || '. ' || L1_R205.GROUP_NAME) SubGroup, ";
+                subGroupSelectionFromQuery = @"(case when L1_R205.NUMBER is null then L1_R205.GROUP_NAME else CONCAT(L1_R205.NUMBER, '. ', L1_R205.GROUP_NAME) end) SubGroup, L1_R205.NUMBER AS SubGroupNumber, ";
                 subGroupForGrouping = @"d.SubGroup, ";
-                subGroupForResultData = @"dg.SubGroup, ";
-                subGroupForResult = @"rd.SubGroup, ";
-                subGroupForSorting = @"SubGroup, ";
+                subGroupNumberForGrouping = @"min(nullif(split_part(d.SubGroupNumber, '.', 2), '')::numeric) as SubGroupNumber, ";
+                subGroupForResultData = @"dg.SubGroup, dg.SubGroupNumber, ";
+                subGroupForSorting = @"SubGroupNumber, ";
+                subGroupForResultGrouping = @"SubGroup, ";
             }
 
             return string.Format(contents, string.Join(",", taskIdList), buildingPurposeAttr.Id,
-                placementPurposeAttr.Id, subGroupSelectionFromQuery, subGroupForGrouping, subGroupForResultData,
-                subGroupForResult, subGroupForSorting);
+                placementPurposeAttr.Id, subGroupSelectionFromQuery, subGroupForGrouping, subGroupNumberForGrouping, subGroupForResultData,
+                 subGroupForSorting, subGroupForResultGrouping);
         }
 
         #endregion

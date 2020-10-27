@@ -26,7 +26,10 @@ placementAttrValues as (
 initialData as (
 	select * from (
 		SELECT 
-        	(SELECT (COALESCE(L2_R205.NUMBER, '') || '. ' || L2_R205.GROUP_NAME) AS "20500300" FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) ParentGroup,
+        	(SELECT case when L2_R205.NUMBER is null then L2_R205.GROUP_NAME 
+                else CONCAT(L2_R205.NUMBER, '. ', L2_R205.GROUP_NAME) end AS "20500300" FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) ParentGroup,
+			(SELECT L2_R205.NUMBER 
+			FROM KO_GROUP L2_R205 WHERE (L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroupNumber,
             {3}
 			L1_R201.ID,
 			L1_R201.PROPERTY_TYPE,
@@ -59,7 +62,9 @@ initialData as (
 dataGroupedByPropertyType as (
 	select 
     	d.ParentGroup,
+		min(d.ParentGroupNumber::int) as ParentGroupNumber,
         {4}
+		{5}
 		d.PROPERTY_TYPE,
 		d.PROPERTY_TYPE_CODE,
 		d.HAS_PURPOSE,
@@ -79,7 +84,8 @@ result_data as (
 		td.PropertyTypeCode as PROPERTY_TYPE_CODE,
 		td.PropertyType as PROPERTY_TYPE,
         dg.ParentGroup,
-        {5}
+		dg.ParentGroupNumber,
+        {6}
 		dg.HAS_PURPOSE,
 		dg.PURPOSE,
 		COALESCE(OBJECTS_COUNT, 0) AS OBJECTS_COUNT,
@@ -93,7 +99,7 @@ result_data as (
 
 select
     	rd.ParentGroup, 
-        {6}
+        {7}
     	CAST(rd.OBJECTS_COUNT as int) as ObjectsCount,
 		rd.PROPERTY_TYPE as PropertyType,
 		rd.PROPERTY_TYPE_CODE as PropertyTypeCode,
@@ -105,4 +111,4 @@ select
         rd.MAX_UPKS as Max
 	from result_data rd
 
-order by ParentGroup, {7} PropertyTypeCode, Purpose
+order by ParentGroupNumber, {8} ParentGroup, {9} PropertyTypeCode, Purpose
