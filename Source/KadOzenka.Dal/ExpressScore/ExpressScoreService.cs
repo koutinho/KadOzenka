@@ -9,6 +9,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using DevExpress.CodeParser;
 using DevExpress.XtraPrinting.Native.WebClientUIControl;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
@@ -390,7 +391,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
 		{
-			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
+			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
 
 
 			CalculateSquareCostDto calculateSquareCost = new CalculateSquareCostDto
@@ -1551,59 +1552,67 @@ namespace KadOzenka.Dal.ExpressScore
 			return new QSConditionGroup();
 		}
 
-		private void SetRequiredReportParameter(int targetObjectId, decimal targetSquare, List<AnalogDto> analogs, MarketSegment marketSegment, string address, string kn, DealTypeShort dealType)
+		private void SetRequiredReportParameter(int targetObjectId, List<AnalogDto> analogs, MarketSegment marketSegment, string address, string kn, DealTypeShort dealType)
 		{
-			ReportService.InitRequiredMatrix(7, analogs.Count + 1);
-
-			var exSettingsCostFactors = OMSettingsParams.Where(x => x.SegmentType_Code == marketSegment).SelectAll()
-				.ExecuteFirstOrDefault();
-
-			var costFactor = GetCostFactorsBySegmentType(marketSegment);
-
-			var targetObjectYear = GetEstimateParametersById(targetObjectId,
-				(int)costFactor.YearBuildId.GetValueOrDefault(), (int)exSettingsCostFactors.Registerid, marketSegment);
-			//Заполняем данные целевого объекта
-			ReportService.AddNameCharacteristicRequiredParam("Сегмент");
-			ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
-
-			ReportService.AddNameCharacteristicRequiredParam("Год постройки");
-			ReportService.AddValueRequiredParam(targetObjectYear?.NumberValue.ToString(CultureInfo.InvariantCulture));
-
-			ReportService.AddNameCharacteristicRequiredParam("Площадь, кв.м");
-			ReportService.AddValueRequiredParam(targetSquare.ToString(CultureInfo.InvariantCulture));
-
-			ReportService.AddNameCharacteristicRequiredParam("Адрес");
-			ReportService.AddValueRequiredParam(address);
-
-			ReportService.AddNameCharacteristicRequiredParam("КН");
-			ReportService.AddValueRequiredParam(kn);
-			ReportService.KnTargetObject = kn;
-
-			ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/год" : "Стоимость объекта-аналога, руб");
-			ReportService.AddValueRequiredParam("-");
-
-			ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/кв.м/год" : "Стоимость объекта-аналога, руб/кв.м");
-			ReportService.AddValueRequiredParam("-");
-
-			foreach (AnalogDto analog in analogs)
+			try
 			{
-				ReportService.SetNextColumnRequiredParam();
+				ReportService.InitRequiredMatrix(6, analogs.Count + 1);
+
+				var exSettingsCostFactors = OMSettingsParams.Where(x => x.SegmentType_Code == marketSegment).SelectAll()
+					.ExecuteFirstOrDefault();
+
+				var costFactor = GetCostFactorsBySegmentType(marketSegment);
+
+				var targetObjectYear = GetEstimateParametersById(targetObjectId,
+					(int)costFactor.YearBuildId.GetValueOrDefault(), (int)exSettingsCostFactors.Registerid, marketSegment);
+				//Заполняем данные целевого объекта
+				ReportService.AddNameCharacteristicRequiredParam("Сегмент");
 				ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
-				ReportService.AddValueRequiredParam(analog.YearBuild.ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam(analog.Square.ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam(analog.Address.ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam(analog.Kn.ToString(CultureInfo.InvariantCulture));
-				if (dealType == DealTypeShort.Rent)
+
+				ReportService.AddNameCharacteristicRequiredParam("Год постройки");
+				ReportService.AddValueRequiredParam(targetObjectYear?.NumberValue.ToString(CultureInfo.InvariantCulture));
+
+				//ReportService.AddNameCharacteristicRequiredParam("Площадь, кв.м");
+				//ReportService.AddValueRequiredParam(targetSquare.ToString(CultureInfo.InvariantCulture));
+
+				ReportService.AddNameCharacteristicRequiredParam("Адрес");
+				ReportService.AddValueRequiredParam(address);
+
+				ReportService.AddNameCharacteristicRequiredParam("КН");
+				ReportService.AddValueRequiredParam(kn);
+				ReportService.KnTargetObject = kn;
+
+				ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/год" : "Стоимость объекта-аналога, руб");
+				ReportService.AddValueRequiredParam("-");
+
+				ReportService.AddNameCharacteristicRequiredParam(dealType == DealTypeShort.Rent ? "Стоимость объекта-аналога, руб/кв.м/год" : "Стоимость объекта-аналога, руб/кв.м");
+				ReportService.AddValueRequiredParam("-");
+
+				foreach (AnalogDto analog in analogs)
 				{
-					ReportService.AddValueRequiredParam((analog.Price * 12).ToString("N"));
-					ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
+					ReportService.SetNextColumnRequiredParam();
+					ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
+					ReportService.AddValueRequiredParam(analog.YearBuild.ToString(CultureInfo.InvariantCulture));
+					//ReportService.AddValueRequiredParam(analog.Square.ToString(CultureInfo.InvariantCulture));
+					ReportService.AddValueRequiredParam(analog.Address?.ToString(CultureInfo.InvariantCulture));
+					ReportService.AddValueRequiredParam(analog.Kn?.ToString(CultureInfo.InvariantCulture));
+					if (dealType == DealTypeShort.Rent)
+					{
+						ReportService.AddValueRequiredParam((analog.Price * 12).ToString("N"));
+						ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
+					}
+					else
+					{
+						ReportService.AddValueRequiredParam((analog.Price).ToString("N"));
+						ReportService.AddValueRequiredParam(Math.Round(analog.Price / analog.Square, 2).ToString("N"));
+					}
 				}
-				else
-				{
-					ReportService.AddValueRequiredParam((analog.Price).ToString("N"));
-					ReportService.AddValueRequiredParam(Math.Round(analog.Price / analog.Square, 2).ToString("N"));
-				}
+			} catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				_log.Error("ЭО. Ошибки при заполнении обязательных параметров для отчета.");
 			}
+
 		}
 
 		private void AddReportDictValue(ref List<Tuple<string, string>> list, KeyValuePair<string, string> value)
@@ -1697,26 +1706,155 @@ namespace KadOzenka.Dal.ExpressScore
 
 		#region Support For Search
 		/// <summary>
-		/// 
+		/// Создания условия для поиска
 		/// </summary>
 		/// <returns>
 		/// Возвращает условия для поиска юнитов по оценочным факторам
 		/// </returns>
 		private QSCondition GetConditionsBySearchAttributes(List<SearchAttribute> searchAttributes)
 		{
+
+			#region localFunctions
+
+			QSConditionSimple GetConditionSimpleForSearchAttribute(QSConditionType conditionType, long attributeId, string value, ReferenceItemCodeType referenceType)
+			{
+				QSConditionSimple res = new QSConditionSimple
+				{
+					ConditionType = conditionType,
+					LeftOperand = new QSColumnSimple(attributeId)
+				};
+
+				switch (referenceType)
+				{
+					case ReferenceItemCodeType.Date:
+					{
+						if (DateTime.TryParse(value, out DateTime date))
+						{
+							res.RightOperand = new QSColumnConstant(date);
+							break;
+						}
+
+						res = null;
+						break;
+					}
+
+					case ReferenceItemCodeType.Number:
+					{
+						if (decimal.TryParse(value, out decimal decimalValue))
+						{
+							res.RightOperand = new QSColumnConstant(decimalValue);
+							break;
+						}
+
+						res = null;
+						break;
+					}
+
+					case ReferenceItemCodeType.String:
+					{
+						res.RightOperand = new QSColumnConstant(value);
+						break;
+					}
+					default: res = null; break;
+				}
+
+				if (res == null)
+				{
+					_log.ForContext("value ==>", value)
+						.ForContext("referenceType ==>", referenceType)
+						.Warning("ЭО. Для атрибута с ИД {attributeId}, не было создано условие {conditionType}.", attributeId, conditionType.GetEnumDescription());
+				}
+				return res;
+			}
+
+			List<object> StrListToListObjects(List<string> strList, ReferenceItemCodeType referenceType)
+			{
+				List<object> res = new List<object>();
+
+				switch (referenceType)
+				{
+					case ReferenceItemCodeType.Number:
+					{
+						res.AddRange(strList.Where(x => decimal.TryParse(x, out var dRes)).Select(x =>
+						{
+							decimal.TryParse(x, out var dRes);
+							return (object)dRes;
+
+						}).ToList());
+						break;
+					}
+					case ReferenceItemCodeType.Date:
+					{
+						res.AddRange(strList.Where(x => DateTime.TryParse(x, out var dRes)).Select(x =>
+						{
+							DateTime.TryParse(x, out var dRes);
+							return (object)dRes;
+
+						}).ToList());
+						break;
+					}
+					case ReferenceItemCodeType.String:
+					{
+						res.AddRange(strList);
+						break;
+					}
+				}
+
+				return res;
+			}
+			#endregion
+
 			var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
 			foreach (var searchAttribute in searchAttributes)
 			{
-				qsConditionGroup.Add(new QSConditionSimple
+				OMEsReference reference = OMEsReference.Where(x => x.Id == searchAttribute.ReferenceId)
+					.Select(x => new {x.UseInterval, x.ValueType_Code}).ExecuteFirstOrDefault();
+
+				if (reference != null && reference.UseInterval.GetValueOrDefault())
 				{
-					ConditionType = QSConditionType.EqualNonCaseSensitive,
-					LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
-					RightOperand = new QSColumnConstant(searchAttribute.Value)
-				});
+					OMEsReferenceItem itemInterval = OMEsReferenceItem
+						.Where(x => x.ReferenceId == searchAttribute.ReferenceId && x.CommonValue == searchAttribute.Value).SelectAll().ExecuteFirstOrDefault();
+
+					if (itemInterval != null)
+					{
+						if (!itemInterval.ValueTo.IsNullOrEmpty())
+						{
+							qsConditionGroup.Add(GetConditionSimpleForSearchAttribute(QSConditionType.LessOrEqual,
+								searchAttribute.IdAttribute, itemInterval.ValueTo, reference.ValueType_Code));
+						}
+						if(!itemInterval.ValueFrom.IsNullOrEmpty())
+						{
+							qsConditionGroup.Add(GetConditionSimpleForSearchAttribute(QSConditionType.GreaterOrEqual,
+								searchAttribute.IdAttribute, itemInterval.ValueFrom, reference.ValueType_Code));
+						}
+					}
+				} else if (reference != null)
+				{
+					List<OMEsReferenceItem> items = OMEsReferenceItem
+						.Where(x => x.ReferenceId == searchAttribute.ReferenceId &&
+						            x.CommonValue == searchAttribute.Value).Select(x => x.Value).Execute();
+
+					List<string> valueList = items.Select(x => x.Value).ToList();
+
+					var objList = StrListToListObjects(valueList, reference.ValueType_Code);
+
+					if (objList.Count > 0)
+					{
+						qsConditionGroup.Add(new QSConditionSimple
+						{
+							ConditionType = QSConditionType.In,
+							LeftOperand = new QSColumnSimple(searchAttribute.IdAttribute),
+							RightOperand = new QSColumnConstant(objList)
+						});
+					}
+
+				}
+
 			}
+
 			return qsConditionGroup;
 		}
-		
+
 
 		#endregion
 	}

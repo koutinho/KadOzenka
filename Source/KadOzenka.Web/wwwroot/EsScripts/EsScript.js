@@ -415,12 +415,31 @@ function getComplexSearchParameters() {
         var $control = $wrapperFactor.find('[id*="DefaultValue"]');
         if ($control) {
             var attributeId = $control.attr('DataAttributeId');
+            var referenceId = $control.attr('DataReferenceId');
             var value = $control.data('kendoDropDownList') && $control.data('kendoDropDownList').value();
             res.push({
                 IdAttribute: attributeId,
-                Value: value
+                Value: value,
+                referenceId
             });
         }
+    });
+    return JSON.stringify(res);
+}
+
+/**
+ * Получаем значения комплексных факторов для расчета
+ *@return {string} сереализованный Json
+ */
+function getComplexCalculateParameters() {
+    var res = [];
+    $.each($('#costFactors').find('[id*="DefaultValue"]'), function () {
+        var attributeId = $control.attr('DataAttributeId');
+        var value = $(this).data('kendoDropDownList') && $control.data('kendoDropDownList').value();
+        res.push({
+            IdAttribute: attributeId,
+            Value: value
+        });
     });
     return JSON.stringify(res);
 }
@@ -521,39 +540,35 @@ $(document).ready(function () {
     initDialog();
     $('.calculate').on('click',
         function () {
-            if (!$('#floor').val()) {
-                Common.ShowError("Заполните поле этаж");
-                return;
-            }
-            if (!$('#square').val()) {
-                Common.ShowError("Заполните поле площадь");
-                return;
-            }
             showDialog();
         });
 });
 
 
+/**
+ * Выполнение расчетов
+ * @param {number} scenarioType тип сценария расчета
+ */
 function executeCalculate(scenarioType = null) {
-    if (scenarioType == null || scenarioType === 0) {
+    if (scenarioType === null || scenarioType === 0) {
         Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
         return;
     }
+    var complexCalculateParameters = getComplexCalculateParameters();
     var data = {
         selectedPoints: findPointsIds,
         targetObjectId,
         scenarioType,
-        floor: $('#floor').val(),
-        square: $('#square').val(),
         segment: $('#segment').val(),
         address: $('#address').val(),
         kn: $('#Kn').val(),
         dealType: $("input[name='DealTypeShort']:checked").val(),
-        targetMarketObjectId: $('#targetMarketObjectId').val()
+        targetMarketObjectId: $('#targetMarketObjectId').val(),
+        complexCalculateParameters
     }
     var topBody = window.top.document.body;
     kendo.ui.progress($(topBody), true);
-    var url = "/ExpressScore/CalculateCostTargetObject";// "@Url.Action("CalculateCostTargetObject", "ExpressScore")";
+    var url = "/ExpressScore/CalculateCostTargetObject";
     $.post(url, data).done(function (data) {
         if (data.Errors) {
             var errors = getErrors(data.Errors);
@@ -578,9 +593,7 @@ function initDialog() {
         title: "Выберите сценарий расчета",
         closable: false,
         modal: true,
-        content: '<div class="wrapper-scenario">' +
-            '@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioType))).NoDataTemplate("Ничего не найдено!").Value("1").ToClientTemplate()' +
-            '</div>',
+        content: '<div class="wrapper-scenario">' + '<div id="scenario"></div>' + '</div>',
         visible: false,
         buttonLayout: "normal",
         actions: [
@@ -599,6 +612,18 @@ function initDialog() {
                 }
             }
         ]
+    });
+
+    $('#scenario').kendoDropDownList({
+        dataTextField: "Text",
+        dataValueField: "Value",
+        value: 1,
+        dataSource: {
+            type: "json",
+            transport: {
+                read: "/ExpressScore/GetScenarioCalculate"
+            }
+        }
     });
 
     $('#successDialog').kendoDialog({

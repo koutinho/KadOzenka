@@ -84,16 +84,6 @@ namespace CIPJS.Models.ExpressScore
 		public DateTime? ActualDate { get; set; }
 
 		/// <summary>
-		/// Учитывать или нет год постройки для поиска объектов
-		/// </summary>
-		//public bool UseYearBuild { get; set; }
-
-		/// <summary>
-		/// Учитывать или нет площадь для поиска объектов
-		/// </summary>
-		//public bool UseSquare { get; set; }
-
-		/// <summary>
 		/// Сериализованный список объектов SearchParameter для поиска
 		/// </summary>
 		public string SearchParameters { get; set; }

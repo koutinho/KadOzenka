@@ -15,7 +15,7 @@
 					.DataSource(source =>
 						source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
 							new { dictionaryId = Model[i].DictionaryId }))
-					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId }))
+					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId, DataReferenceId = Model[i].DictionaryId}))
 				<div style="margin-left: 5px">
 					@Html.Kendo().CheckBox().Name($"chFactor-{i}").Checked(true)
 				</div>
@@ -35,7 +35,7 @@
 				.DataSource(source =>
 					source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
 						new { dictionaryId = Model[i + 1].DictionaryId }))
-				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId }))
+				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId, DataReferenceId = Model[i + 1].DictionaryId }))
 					<div style="margin-left: 5px">
 						@Html.Kendo().CheckBox().Name($"chFactor-{i + 1}").Checked(true)
 					</div>

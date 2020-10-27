@@ -8,6 +8,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Helpers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
@@ -24,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.Gbu;
@@ -171,9 +173,7 @@ namespace KadOzenka.Web.Controllers
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds, param.Kn);
             if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
-            List<OMCoreObject> analogs = new List<OMCoreObject>();
-
-			var conditionAnalog = 
+            var conditionAnalog = 
 				_service.GetSearchConditionForAnalogs(param.DeserializeSearchParameters,param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
 			var actualDateCondition = _service.GetActualDateCondition(param.ActualDate.Value);
 
@@ -181,10 +181,9 @@ namespace KadOzenka.Web.Controllers
 				.SetJoins(_service.JoinPriceHistory())
 				.Select(x => new { x.Id, x.Lat, x.Lng, x.CadastralNumber });
 
-			analogs = qSQuery.Execute().ToList();
+			var analogs = qSQuery.Execute().ToList();
 
 			List<CoordinatesDto> objects = _service.CheckAnalogsByKoFactors(analogs, setting, param.DeserializeSearchParameters);
-			//objects = analogs.Select(x => new CoordinatesDto{ Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault() }).ToList();
 			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
 
 			var coordinatesInput = objects.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });
@@ -218,8 +217,9 @@ namespace KadOzenka.Web.Controllers
 				Square = viewModel.Square.GetValueOrDefault(),
 				Segment = viewModel.Segment,
 				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),
-                TargetMarketObjectId = viewModel.TargetMarketObjectId
-            };
+                TargetMarketObjectId = viewModel.TargetMarketObjectId,
+                ComplexCalculateParameters = viewModel.DeserializeComplexParameters
+			};
 
 			string resMsg = _service.CalculateExpressScore(inputParam, out ResultCalculateDto resultCalculate);
 
@@ -586,6 +586,13 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(res.DistinctBy(x => x.Text));
 
+		}
+
+		public JsonResult GetScenarioCalculate()
+		{
+			List<SelectListItem> res = new List<SelectListItem>();
+			res.AddRange(ComboBoxHelper.GetSelectList(typeof(ScenarioType)));
+			return Json(res);
 		}
 
 		#endregion
