@@ -1093,92 +1093,90 @@ namespace KadOzenka.Web.Controllers
 
 		#region Выгрузка факторов
 
-	        [HttpGet]
-	        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-            public IActionResult GetRegistersForFactorDownload(long taskId, bool isOks)
-            {
-                var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-                if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult GetRegistersForFactorDownload(long taskId, bool isOks)
+        {
+            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+            if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
 
-                var ras = new RegisterAttributeService();
-                var taskAttr = ras.GetActiveRegisterAttributes(201)
-                    .Select(x => new {x.Id, x.Name, x.ValueField, x.CodeField, x.Type});
-                var taskAttrTree =
-                    new DropDownTreeItemModel
-                    {
-                        Value = "201",
-                        Text = "Еденица оценки",
-                        Items = taskAttr.Select(x => new DropDownTreeItemModel
-                        {
-                            Value = x.Id.ToString(),
-                            Text = x.Name
-                        }).ToList()
-                    };
-
-                var tfs = new TourFactorService();
-                var tourAttributes = tfs.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
-                if (tourAttributes.Count == 0)
-	                return StatusCode(500,$"Для {(isOks?"ОКС":"ЗУ")} тура оценки {task.TourId} не найдены факторы");
-
-	            var tourRegister = tfs.GetTourRegister(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
-                var paramsRegisterId = tourRegister.RegisterId;
-                var paramsTree = new DropDownTreeItemModel
+            var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201)
+                .Select(x => new {x.Id, x.Name, x.ValueField, x.CodeField, x.Type});
+            var taskAttrTree =
+                new DropDownTreeItemModel
                 {
-                    Value = paramsRegisterId.ToString(),
-                    Text = "Факторы",
-                    Items = tourAttributes.Select(x => new DropDownTreeItemModel
+                    Value = "201",
+                    Text = "Еденица оценки",
+                    Items = taskAttr.Select(x => new DropDownTreeItemModel
                     {
                         Value = x.Id.ToString(),
                         Text = x.Name
                     }).ToList()
                 };
-                var treeModel = new List<DropDownTreeItemModel>
+
+            var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
+            if (tourAttributes.Count == 0)
+                return StatusCode(500,$"Для {(isOks?"ОКС":"ЗУ")} тура оценки {task.TourId} не найдены факторы");
+
+            var tourRegister = TourFactorService.GetTourRegister(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
+            var paramsRegisterId = tourRegister.RegisterId;
+            var paramsTree = new DropDownTreeItemModel
+            {
+                Value = paramsRegisterId.ToString(),
+                Text = "Факторы",
+                Items = tourAttributes.Select(x => new DropDownTreeItemModel
                 {
-                    taskAttrTree,
-                    paramsTree
-                };
-                return new JsonResult(treeModel);
-            }
-
-            [HttpGet]
-            [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-            public IActionResult FactorDownloadForm(long taskId)
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList()
+            };
+            var treeModel = new List<DropDownTreeItemModel>
             {
-                return View("~/Views/Task/FactorDownloadForm.cshtml", taskId);
-            }
+                taskAttrTree,
+                paramsTree
+            };
+            return new JsonResult(treeModel);
+        }
 
-            [HttpPost]
-            [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-            public IActionResult QueueFactorDownload(long taskId, long[] attributes, bool isOks)
-            {
-	            try
-	            {
-		            FactorsExportLongProcess.AddProcessToQueue(
-			            new FactorsExportLongProcess.FactorsDownloadParams
-			            {
-				            Attributes = attributes,
-				            TaskId = taskId,
-				            IsOks = isOks,
-				            UserId = SRDSession.GetCurrentUserId()
-			            });
-		            return Ok();
-	            }
-	            catch
-	            {
-		            return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
-	            }
-            }
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult FactorDownloadForm(long taskId)
+        {
+            return View("~/Views/Task/FactorDownloadForm.cshtml", taskId);
+        }
 
-            [HttpGet]
-            [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-            public FileResult DownloadFactorExportResult(long taskId, string dt)
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult QueueFactorDownload(long taskId, long[] attributes, bool isOks)
+        {
+            try
             {
-	            var FileStorage = "DataExporterByTemplate";
-	            var dateTime = DateTime.Parse(dt);
-	            var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
-	            return File(st, Consts.ExcelContentType,
-		            $"{taskId}_{dt:ddMMyyyy}_FactorsExport.xlsx");
+	            FactorsExportLongProcess.AddProcessToQueue(
+		            new FactorsExportLongProcess.FactorsDownloadParams
+		            {
+			            Attributes = attributes,
+			            TaskId = taskId,
+			            IsOks = isOks,
+			            UserId = SRDSession.GetCurrentUserId()
+		            });
+	            return Ok();
             }
+            catch
+            {
+	            return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
+            }
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public FileResult DownloadFactorExportResult(long taskId, string dt)
+        {
+            var FileStorage = "DataExporterByTemplate";
+            var dateTime = DateTime.Parse(dt);
+            var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
+            return File(st, Consts.ExcelContentType,
+	            $"{taskId}_{dt:ddMMyyyy}_FactorsExport.xlsx");
+        }
 
 		#endregion
 
