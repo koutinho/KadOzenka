@@ -104,6 +104,16 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     List<GbuObjectAttribute> pattribs = new GbuObjectService().GetAllAttributes(parent.Id, null, lstPIds, unit.CreationDate);
 
+                    var rowsReport = new List<GbuReportService.Row>();
+                    if (pattribs.Count > 0)
+                    {
+	                    lock (locked)
+	                    {
+		                    rowsReport = reportService.GetRangeRowsNew(pattribs.Count);
+	                    }
+                    }
+
+                    int counter = 0;
                     foreach (GbuObjectAttribute pattrib in pattribs)
                     {
                         var attributeValue = new GbuObjectAttribute
@@ -123,9 +133,12 @@ namespace KadOzenka.Dal.GbuObject
 
                         lock (locked)
                         {
-	                        var row = reportService.GetCurrentRowNew();
-	                        AddRowToReport(row, unit.CadastralNumber, attribs[0].StringValue,
-		                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
+	                        if (rowsReport != null && rowsReport.Count >= counter)
+	                        {
+		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, attribs[0].StringValue,
+			                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
+		                        counter++;
+	                        }
                         }
                     }
                 }

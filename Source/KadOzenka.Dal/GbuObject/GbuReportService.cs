@@ -57,9 +57,11 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			ValidateRowsCountInSheet();
 
+			var tmpRow = _currentRow2.Copy();
+
 			_currentRow2.Index++;
 
-			return _currentRow2.Copy();
+			return tmpRow;
 		}
 
 		/// <summary>
@@ -80,6 +82,20 @@ namespace KadOzenka.Dal.GbuObject
 			}
 
 			_currentRow += rangeRows +1;// перводим указатель на следующую пустую строку
+			return res;
+		}
+
+		public List<Row> GetRangeRowsNew(int rangeRows)
+		{
+			var res = new List<Row>();
+			var tmpRangeRows = rangeRows;
+			while (_currentRow2.Index + tmpRangeRows >= _currentRow2.Index)
+			{
+				res.Add(_currentRow2.Copy());
+				_currentRow2.Index++;
+				tmpRangeRows--;
+			}
+
 			return res;
 		}
 
@@ -285,13 +301,11 @@ namespace KadOzenka.Dal.GbuObject
 
 		private void ValidateRowsCountInSheet()
 		{
-			if (_currentRow2.Index >= MaxRowsCount)
+			if (_currentRow2.Index > MaxRowsCount)
 			{
 				CreateWorkSheet();
 
-				_currentRow2.Index++;
-
-				AddHeaders(_headers);
+				AddHeadersNew(_headers);
 
 				_columnsWidth.ForEach(x => SetIndividualWidth(x.Index, x.Width, false));
 			}
@@ -312,11 +326,6 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			public int Index;
 			public ExcelWorksheet Sheet;
-
-			public Row()
-			{
-				Index = -1;
-			}
 
 			public Row Copy()
 			{
