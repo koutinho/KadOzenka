@@ -3,22 +3,29 @@ using System.IO;
 using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Market;
 using KadOzenka.Web.Models.MarketObject;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
+using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.MarketObjects;
+using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
+using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.MarketObjects;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -29,14 +36,16 @@ namespace KadOzenka.Web.Controllers
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
+        public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
 
-		public MarketObjectsController()
+        public MarketObjectsController()
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
 			CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
+            OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
         }
 
         [HttpGet]
@@ -541,5 +550,66 @@ namespace KadOzenka.Web.Controllers
 
         #endregion Correction Settings
 
+        #region Outliers Checking
+
+
+        public ActionResult GetMarketSegmentList()
+        {
+	        var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
+	        var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+
+	        return Content(JsonConvert.SerializeObject(segments), "application/json");
+        }
+
+        [HttpGet]
+        public ActionResult OutliersSettings(bool isPartialView = false)
+        {
+	        ViewBag.isPartialView = isPartialView;
+            return View("~/Views/MarketObjects/OutliersCheckingSettings.cshtml");
+        }
+
+        [HttpGet]
+        public JsonResult GetOutliersSettingsCoefficients()
+        {
+	        var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
+	        var models = OutliersSettingsModel.FromDto(settingsDto);
+
+            return Json(models);
+        }
+
+        public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
+        {
+	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
+	        OutliersCheckingSettingsService.UpdateOutliersCheckingSettings(model.ToDto());
+
+	        return Json(new[] { model });
+        }
+
+        public ActionResult PerformOutliersChecking(MarketSegment? segment)
+        {
+            ////For testing
+            //var settings = new OutliersCheckingProcessSettings { Segment = segment };
+            //var history = new OMOutliersCheckingHistory
+            //{
+            //    DateCreated = DateTime.Now,
+            //    Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+            //};
+            //if (settings.Segment.HasValue)
+            //    history.MarketSegment_Code = settings.Segment.Value;
+            //history.Save();
+            //new OutliersCheckingLongProcess().StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    Status_Code = Status.Added,
+            //    UserId = SRDSession.GetCurrentUserId(),
+            //    Parameters = settings.SerializeToXml(),
+            //    ObjectId = history.Id
+            //}, new CancellationToken());
+
+            OutliersCheckingLongProcess.AddProcessToQueue(new OutliersCheckingProcessSettings {Segment = segment});
+
+            return Ok();
+        }
+
+        #endregion Outliers Checking
     }
 }

@@ -80,6 +80,7 @@ namespace CIPJS
 			services.AddTransient<TaskService>();
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
+	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
 	        services.AddTransient<ScoreCommonService>();
 			services.AddTransient<ExpressScoreService>();
 	        services.AddTransient<ExpressScoreReferenceService>();
@@ -96,7 +97,8 @@ namespace CIPJS
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
-	        services.AddSingleton<DictionaryService>();
+	        services.AddSingleton<OutliersCheckingListenerService>();
+            services.AddSingleton<DictionaryService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -179,6 +181,14 @@ namespace CIPJS
 
             app.UseSession();
             app.UseAuthentication();
+            //Should be defined before UseMvc for working WebSockets signalR transport type
+            app.UseSignalR(routes =>
+            {
+	            routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
+	            routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
+	            routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
+            });
+
             app.UseMvc(routes =>
             {
 				routes.MapRoute(
@@ -208,13 +218,7 @@ namespace CIPJS
                 else await next();
             });
 
-            app.UseSignalR(routes =>
-	        {
-		        routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
-		        routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
-	        });
-
-			HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+            HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             HttpContextHelper.WebRootPath = env.ContentRootPath;
         }
     }

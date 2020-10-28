@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.GbuProgressBar;
 using Microsoft.AspNetCore.SignalR;
@@ -18,6 +20,8 @@ namespace KadOzenka.Web.SignalR
 		private readonly IMemoryCache _cache;
 		private readonly GbuLongProcessesService _service;
 
+		public bool IsListening { get; private set; }
+
 		public GbuCurrentLongProcessesListenerService(IHubContext<GbuLongProcessesProgressBarHub> hubContext, IMemoryCache cache, GbuLongProcessesService service)
 		{
 			_hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
@@ -27,23 +31,35 @@ namespace KadOzenka.Web.SignalR
 
 		public void ListenForAlarmNotifications()
 		{
-			NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
-			conn.StateChange += conn_StateChange;
-			conn.Open();
-			var listenCommand = conn.CreateCommand();
-			listenCommand.CommandText = $"listen notify_gbu_long_proc_updating;";
-			listenCommand.ExecuteNonQuery();
-			conn.Notification += PostgresNotificationReceived;
-			_hubContext.Clients.All.SendAsync(this.CurrentProcessesList());
-			while (true)
+			IsListening = true;
+			var cancelSource = new CancellationTokenSource();
+			Task.Run(() =>
 			{
-				conn.Wait();
-			}
+				try
+				{
+					NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
+					conn.Open();
+					var listenCommand = conn.CreateCommand();
+					listenCommand.CommandText = "listen notify_gbu_long_proc_updating;";
+					listenCommand.ExecuteNonQuery();
+					conn.Notification += PostgresNotificationReceived;
+					while (true)
+					{
+						conn.Wait();
+					}
+				}
+				catch (Exception)
+				{
+					IsListening = false;
+					_cache.Remove("CurrentProcessesList");
+				}
+
+			}, cancelSource.Token);
 		}
 
 		private void PostgresNotificationReceived(object sender, NpgsqlNotificationEventArgs e)
 		{
-			_hubContext.Clients.All.SendAsync("ReceiveMessage", this.CurrentProcessesList());
+			_hubContext.Clients.All.SendAsync("ReceiveMessage", CurrentProcessesList());
 		}
 
 		public string CurrentProcessesList()
@@ -65,12 +81,6 @@ namespace KadOzenka.Web.SignalR
 			_cache.Set("CurrentProcessesList", serializedObject);
 
 			return _cache.Get("CurrentProcessesList").ToString();
-		}
-
-		private void conn_StateChange(object sender, System.Data.StateChangeEventArgs e)
-		{
-
-			//_hubContext.Clients.All.SendAsync("Current State: " + e.CurrentState.ToString() + " Original State: " + e.OriginalState.ToString(), "connection state changed");
 		}
 	}
 }

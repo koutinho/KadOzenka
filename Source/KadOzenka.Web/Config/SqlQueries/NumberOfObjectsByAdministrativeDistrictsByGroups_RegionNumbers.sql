@@ -5,7 +5,9 @@ SELECT
 		L1_R201.CADASTRAL_BLOCK AS CadastralQuartal,
         (SELECT case when L2_R205.NUMBER is null then L2_R205.GROUP_NAME 
                 else CONCAT(L2_R205.NUMBER, '. ', L2_R205.GROUP_NAME) end AS "20500300" 
-        FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroup
+        FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroup,
+		(SELECT L2_R205.NUMBER
+            FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroupNumber
 FROM KO_UNIT L1_R201
 LEFT JOIN KO_GROUP L1_R205 ON (L1_R201.GROUP_ID = L1_R205.ID)
 WHERE (L1_R201.TASK_ID IN ({0})
@@ -21,11 +23,12 @@ cadastralQuartalAttrValues as (
 data as(
 	select u.id,
 	substring(L1_R107.CADASTRAL_QUARTAL from 1 for 5) AS cadastralQuartal ,
-    u.ParentGroup
+    u.ParentGroup, u.ParentGroupNumber
 	from unit_data u
     left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.ObjectId=cadastralQuartalGbu.objectId
 	JOIN MARKET_REGION_DICTIONATY L1_R107 
 		ON COALESCE(cadastralQuartalGbu.attributeValue, u.CadastralQuartal)=L1_R107.CADASTRAL_QUARTAL
 )
 SELECT cadastralQuartal, ParentGroup, count(id) AS objectsCount FROM data 
-GROUP BY (data.cadastralQuartal, data.ParentGroup);
+GROUP BY (data.cadastralQuartal, data.ParentGroup)
+order by min(ParentGroupNumber::int);

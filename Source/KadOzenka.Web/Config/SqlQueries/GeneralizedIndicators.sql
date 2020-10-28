@@ -14,6 +14,10 @@ initialData as(
 			FROM KO_GROUP parentGroup
 			WHERE parentGroup.ID = subgroup.PARENT_ID
 		) AS ParentGroup,
+		(SELECT parentGroup.NUMBER
+			FROM KO_GROUP parentGroup
+			WHERE parentGroup.ID = subgroup.PARENT_ID
+		) AS ParentGroupNumber,
 		u.CADASTRAL_COST AS ObjectCost,
 		u.SQUARE AS ObjectSquare,
 		u.UPKS AS ObjectUpks
@@ -31,7 +35,7 @@ cadastralQuartalAttrValues as (
 ),
 
 unit_data as (
-	select u.ParentGroup, u.ObjectCost, u.ObjectSquare, u.ObjectUpks,
+	select u.ParentGroup, u.ParentGroupNumber, u.ObjectCost, u.ObjectSquare, u.ObjectUpks,
 	case 
 			when '{0}'='Districts' then districtsDict.ShortTitle
 			when '{0}'='Regions' then marketDict.REGION
@@ -72,6 +76,7 @@ result_data as (
 		d.AdditionalName,
 		0 as IsTotal,
 		COALESCE(d.ParentGroup, 'Без группы') as GroupName,
+		min(d.ParentGroupNumber::int) as GroupNumber,
 		case when d.ParentGroup is null then 1 else 0 end as HasGroup,
 		c.OBJECTS_COUNT ObjectsCount,
 		min(d.ObjectUpks) as MIN_UPKS,
@@ -88,6 +93,7 @@ result_data as (
 	'Итого' as AdditionalName, 
 	 1 as IsTotal,
 	 dg.GroupName,
+	 dg.GroupNumber,
 	 dg.HasGroup,
 	 c.OBJECTS_COUNT as ObjectsCount,
 	 dg.MIN_UPKS,
@@ -95,6 +101,7 @@ result_data as (
 	 dg.MAX_UPKS
 	 from ( select
 		COALESCE(d.ParentGroup, 'Без группы') as GroupName,
+		min(d.ParentGroupNumber::int) as GroupNumber,
 		case when d.ParentGroup is null then 1 else 0 end as HasGroup,
 		min(d.ObjectUpks) as MIN_UPKS,
 		sum(d.ObjectCost) / nullif(sum(d.ObjectSquare), 0) as AVG_WEIGHT_UPKS,
@@ -116,6 +123,7 @@ select * from (
 		rd.IsTotal,
 		CAST(rd.ObjectsCount as int) as ObjectsCount,
 		rd.GroupName as GroupName,
+		rd.GroupNumber,
 		rd.HasGroup,
 		calcTypes.minCalcType as UpksCalcType,
 		rd.MIN_UPKS as UpksCalcValue
@@ -126,6 +134,7 @@ select * from (
 		rd.IsTotal,
 		CAST(rd.ObjectsCount as int) as ObjectsCount,
 		rd.GroupName as GroupName,
+		rd.GroupNumber,
 		rd.HasGroup,
 		calcTypes.avgWeightCalcType as UpksCalcType,
 		rd.AVG_WEIGHT_UPKS as UpksCalcValue
@@ -136,10 +145,11 @@ select * from (
 		rd.IsTotal,
 		CAST(rd.ObjectsCount as int) as ObjectsCount,
 		rd.GroupName as GroupName,
+		rd.GroupNumber,
 		rd.HasGroup,
 		calcTypes.maxCalcType as UpksCalcType,
 		rd.MAX_UPKS as UpksCalcValue
 	from result_data rd, upksCalcTypes calcTypes
 ) res
-order by IsTotal, HasGroup desc, UpksCalcType
+order by IsTotal, HasGroup desc, GroupNumber, UpksCalcType
 	

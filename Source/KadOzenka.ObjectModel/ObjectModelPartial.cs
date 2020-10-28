@@ -1046,6 +1046,54 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 118 Таблица, содержащая коэффициенты для проверки на выбросы
+    /// </summary>
+    public partial class OMCoefficientsOutliersChecking
+    {
+
+        public OMCoefficientsOutliersChecking()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCoefficientsOutliersChecking(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 119 Таблица, содержащая информацию о проведённых проверках на выбросы
+    /// </summary>
+    public partial class OMOutliersCheckingHistory
+    {
+
+        public OMOutliersCheckingHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMOutliersCheckingHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
+using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
@@ -77,7 +78,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			SetupInitialSettings(taskId);
 			var units = GetUnits(taskId);
 			_log.ForContext("TaskId", taskId)
-				.Debug($"Загружено {units.Count} единиц оценки для обработки");
+				.Debug("Загружено {UnitsCount} единиц оценки для обработки", units.Count);
 
 			var reportService = new GbuReportService();
 			reportService.AddHeaders(0,
@@ -139,8 +140,12 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				}
 			});
 
+			_log.Debug("Получение информации о наличии предыдущих единиц оценки у обновляемых юнитов");
+			var unitWithHistoryIds = GetUnitIdWithHistory(taskId);
+			_log.Debug("Найдена информация о наличии предыдущих единиц оценки у {UnitsWithHistoryCount} из {UnitsCount} обновляемых юнитов", unitWithHistoryIds.Count, units.Count);
 			_log.Debug("Сохранение наследуемых атрибутов");
-			Parallel.ForEach(units, options, unit =>
+			var unitsWithHistory = units.Where(x => unitWithHistoryIds.Contains(x.Id)).ToList();
+			Parallel.ForEach(unitsWithHistory, options, unit =>
 			{
 				unit.InheritedKOFactors(_log);
 			});
@@ -186,6 +191,48 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					x.TourId
 				})
 				.Execute();
+		}
+
+		private HashSet<long> GetUnitIdWithHistory(long taskId)
+		{
+			var query = OMUnit.Where(x => x.TaskId == taskId);
+
+			var subQuery = new QSQuery(OMUnit.GetRegisterId())
+			{
+				Columns = new List<QSColumn>
+				{
+					new QSColumnConstant(1)
+				},
+				Condition = new QSConditionGroup(QSConditionGroupType.And)
+				{
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(
+							OMUnit.GetColumn(x => x.TourId),
+							QSConditionType.Equal,
+							OMUnit.GetColumn(x => x.TourId)){
+							RightOperandLevel = 1
+						},
+						new QSConditionSimple(
+							OMUnit.GetColumn(x => x.CadastralNumber),
+							QSConditionType.Equal,
+							OMUnit.GetColumn(x => x.CadastralNumber)){
+							RightOperandLevel = 1
+						},
+						new QSConditionSimple(
+							OMUnit.GetColumn(x => x.Id),
+							QSConditionType.NotEqual,
+							OMUnit.GetColumn(x => x.Id)){
+							RightOperandLevel = 1
+						}
+					}
+				}
+			};
+			var historyUnitsCondition = new QSConditionSimple(new QSColumnQuery(subQuery, "historyUnits"), QSConditionType.Exists);
+			query = query.And(historyUnitsCondition);
+			var unitIds = query.Select(x => x.Id).Execute().Select(x => x.Id);
+
+			return new HashSet<long>(unitIds);
 		}
 
 		private void AddRowToReport(int rowNumber, string kn, string cadastralQuarterOld, string cadastralQuarterNew, string buildingKnOld, string buildingKnNew, GbuReportService reportService)
