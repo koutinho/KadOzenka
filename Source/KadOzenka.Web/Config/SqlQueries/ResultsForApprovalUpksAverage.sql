@@ -14,6 +14,10 @@ initialData as(
 			FROM KO_GROUP parentGroup
 			WHERE parentGroup.ID = subgroup.PARENT_ID
 		) AS ParentGroup,
+		(SELECT parentGroup.NUMBER
+			FROM KO_GROUP parentGroup
+			WHERE parentGroup.ID = subgroup.PARENT_ID
+		) AS ParentGroupNumber,
 		u.CADASTRAL_COST AS ObjectCost,
 		u.SQUARE AS ObjectSquare
 	FROM ko_unit u
@@ -29,7 +33,7 @@ cadastralQuartalAttrValues as (
 ),
 
 unit_data as (
-select u.ParentGroup, u.ObjectCost, u.ObjectSquare,
+select u.ParentGroup, u.ParentGroupNumber, u.ObjectCost, u.ObjectSquare,
 	case 
 		when '{0}'='Districts' then districtsDict.ShortTitle
 		when '{0}'='RegionNumbers' then left(marketDict.CADASTRAL_QUARTAL, 5)
@@ -46,6 +50,7 @@ select * from (
 	(select d.Name as Name, 
 	 0 as IsTotal,
 	COALESCE(d.ParentGroup, 'Без группы') as GroupName,
+	min(d.ParentGroupNumber::int) as GroupNumber,
 	case when d.ParentGroup is null then 1 else 0 end as HasGroup,
 	sum(d.ObjectCost)/ nullif(sum(d.ObjectSquare), 0) as UpksAverageWeight
 	from unit_data d
@@ -54,15 +59,17 @@ union all
 	(select 'Итого' as Name, 
 	 1 as IsTotal,
 	 dg.GroupName,
+	 dg.GroupNumber,
 	 dg.HasGroup,
 	 dg.UpksAverageWeight
 	 from ( select
 		COALESCE(d.ParentGroup, 'Без группы') as GroupName,
+		min(d.ParentGroupNumber::int) as GroupNumber,
 		case when d.ParentGroup is null then 1 else 0 end as HasGroup,
 		sum(d.ObjectCost)/ nullif(sum(d.ObjectSquare), 0) as UpksAverageWeight
 		from unit_data d
 		group by GroupName, HasGroup
 	 ) dg)
 ) res
-	order by IsTotal, HasGroup desc, Name, GroupName
+	order by IsTotal, HasGroup desc, GroupNumber, Name
 	
