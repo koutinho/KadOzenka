@@ -43,15 +43,11 @@ namespace KadOzenka.Dal.ExpressScore
 		/// <summary>
 		/// Индекс дата словарь
 		/// </summary>
-		private List<DateReference> dateDict;
+		private List<DateReference> _dateDict;
 		/// <summary>
 		/// Словарь доля ЗУ
 		/// </summary>
-		private List<NumberReference> dateNumb;
-		/// <summary>
-		/// Словарь этаж расположения
-		/// </summary>
-		private List<NumberReference> floorDict;
+		private List<NumberReference> _dateNumb;
 
 		private ExpressScoreReportService ReportService { get; }
 		public ExpressScoreService(ScoreCommonService scoreCommonService, RegisterAttributeService registerAttributeService)
@@ -106,25 +102,26 @@ namespace KadOzenka.Dal.ExpressScore
 				throw new Exception($"Не найдены оценочные факторы для сегмента {segment.GetEnumDescription()}");
 			}
 
-			List<ComplexCostFactor> complexCostFactors;
-			complexCostFactors = costFactors.ComplexCostFactors != null
+			var complexCostFactorsForPageCalculate = costFactors.ComplexCostFactors != null
 				? costFactors.ComplexCostFactors.Where(x => x.ShowInCalculatePage).ToList()
 				: new List<ComplexCostFactor>();
 
 			var analogsFactors = GetAnalogCostFactors(costFactors, targetKn, targetMarketObjectId);
 			var koFactors = GetObjectAndCostFactorsByUnitIds(GetSetting(segment), costFactors,
 				OMUnit.Where(x => x.CadastralNumber == targetKn).Select(x => x.Id).Execute().Select(x => x.Id).ToList());
-			foreach (var complexCostFactor in complexCostFactors)
+			foreach (var complexCostFactor in complexCostFactorsForPageCalculate)
 			{
 				if (IsAnalogAttribute(complexCostFactor.AttributeId.GetValueOrDefault()))
 				{
 					var val = analogsFactors?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
-					complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, val ?? complexCostFactor.DefaultValue));
+					string dValue = GetCommonValueReference(complexCostFactor.DictionaryId.GetValueOrDefault(), val);
+					complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, dValue ?? complexCostFactor.DefaultValue));
 					continue;
 				}
 
 				var koVal = koFactors?.Attributes?.FirstOrDefault(x => x.Id == complexCostFactor.AttributeId)?.Value;
-				complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, koVal ?? complexCostFactor.DefaultValue));
+				string dKoValue = GetCommonValueReference(complexCostFactor.DictionaryId.GetValueOrDefault(), koVal);
+				complexCostFactorsForCalculatePage.Add(new ComplexCostFactorForCalculateDto(complexCostFactor, dKoValue ?? complexCostFactor.DefaultValue));
 			}
 
 			return complexCostFactorsForCalculatePage;
@@ -401,24 +398,34 @@ namespace KadOzenka.Dal.ExpressScore
 				MarketSegment = inputParam.Segment,
 				ScenarioType = inputParam.ScenarioType,
 				TargetMarketObjectId = inputParam.TargetMarketObjectId,
-				TargetObjectFloor = inputParam.Floor,
 				TargetObjectId = inputParam.TargetObjectId,
 				Kn = inputParam.Kn,
-				Square = inputParam.Square
+				ComplexCalculateParameters = inputParam.ComplexCalculateParameters
 			};
 
 			resultCalculate = new ResultCalculateDto();
 			var squarePerMeterCost = CalculateSquarePerMeterCost(calculateSquareCost, out string msg, out List<long> successAnalogIds);
-
-			var summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
 			if (squarePerMeterCost == 0)
 			{
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
 			}
-
+			var summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
+			
 			DealType dealType = inputParam.DealType == DealTypeShort.Rent ? DealType.RentDeal : DealType.SaleDeal;
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, summaryCost, squarePerMeterCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
-				segmentType: inputParam.Segment, dealType: dealType, address: inputParam.Address);
+
+			SaveExpressScoreDto saveExpressScore = new SaveExpressScoreDto
+			{
+				Address = inputParam.Address,
+				CostSquareMeter = squarePerMeterCost,
+				DealType = dealType,
+				ScenarioType = inputParam.ScenarioType,
+				SegmentType = inputParam.Segment,
+				SummaryCost = summaryCost,
+				TargetMarketObjectId = inputParam.TargetMarketObjectId,
+				TargetObjectId = inputParam.TargetObjectId
+			};
+
+			msg = SaveSuccessExpressScore(saveExpressScore, out int id);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
@@ -455,19 +462,18 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public void GenerateLists(CostFactorsDto exCostFactors, ScenarioType? scenarioType = null)
         {
-			dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.IndexDateDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToDate).ToList();
-			if (scenarioType != null && scenarioType == ScenarioType.Oks) dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToNumber).ToList();
-			floorDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.FloorDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Key).ToList().ToList();
-		}
+			_dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.IndexDateDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToDate).ToList();
+			if (scenarioType != null && scenarioType == ScenarioType.Oks) _dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute().Select(ScoreCommonService.ReferenceToNumber).ToList();
+        }
 
 		public string RecalculateExpressScore(InputCalculateDto inputParam,  List<int> analogIds,
-			  int expressScoreId,  out decimal cost, out decimal squarePerMeterCost, out long reportId)
+			  int expressScoreId,  out decimal summaryCost, out decimal squarePerMeterCost, out long reportId)
 		{
-			cost = 0;
+			summaryCost = 0;
 			squarePerMeterCost = 0;
 			reportId = 0;
 
-			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Square, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
+			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
 
 			CalculateSquareCostDto calculateSquareCost = new CalculateSquareCostDto
 			{
@@ -476,20 +482,27 @@ namespace KadOzenka.Dal.ExpressScore
 				MarketSegment = inputParam.Segment,
 				ScenarioType = inputParam.ScenarioType,
 				TargetMarketObjectId = inputParam.TargetMarketObjectId,
-				TargetObjectFloor = inputParam.Floor,
 				TargetObjectId = inputParam.TargetObjectId,
-				Kn = inputParam.Kn,
-				Square = inputParam.Square
+				Kn = inputParam.Kn
 			};
 			squarePerMeterCost = CalculateSquarePerMeterCost(calculateSquareCost, out string msg, out var successAnalogIds);
 
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
-			cost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
+			summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
 			squarePerMeterCost = Math.Round(squarePerMeterCost, 2);
 
-			reportId = ReportService.GenerateReport(cost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
-			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, inputParam.TargetMarketObjectId, cost, squarePerMeterCost, out int id, expressScoreId);
+			reportId = ReportService.GenerateReport(summaryCost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
+
+			SaveExpressScoreDto saveExpressScore = new SaveExpressScoreDto
+			{
+				CostSquareMeter = squarePerMeterCost,
+				SummaryCost = summaryCost,
+				TargetMarketObjectId = inputParam.TargetMarketObjectId,
+				TargetObjectId = inputParam.TargetObjectId,
+				ExpressScoreId = expressScoreId
+			};
+			msg = SaveSuccessExpressScore(saveExpressScore, out int id);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			return msg;
@@ -551,7 +564,7 @@ namespace KadOzenka.Dal.ExpressScore
 				var dateEstimate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 				costTargetObjectDataForReport.Add(DateTime.Now.ToShortDateString());
 
-				var indexDateEstimate = dateDict.FirstOrDefault(x => x.Key == dateEstimate) ?? dateDict.OrderByDescending(x => x.Key).First();
+				var indexDateEstimate = _dateDict.FirstOrDefault(x => x.Key == dateEstimate) ?? _dateDict.OrderByDescending(x => x.Key).First();
 				costTargetObjectDataForReport.Add(indexDateEstimate.Value.ToString(CultureInfo.InvariantCulture));
 
 				DateReference indexAnalogDate = null;
@@ -563,7 +576,7 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					var analogDate = new DateTime(analog.Date.Year, analog.Date.Month, 1);
 					text = new KeyValuePair<string, string>("Дата предложения", analog.Date.ToShortDateString());
-					indexAnalogDate = dateDict.FirstOrDefault(x => x.Key == analogDate);
+					indexAnalogDate = _dateDict.FirstOrDefault(x => x.Key == analogDate);
 					dicText = new KeyValuePair<string, string>(@" Индекс ""Дата предложения""", indexAnalogDate?.Value.ToString() ?? "");
 				}
 
@@ -573,7 +586,7 @@ namespace KadOzenka.Dal.ExpressScore
 				if (indexAnalogDate == null)
 				{
 					// TODO Временное решение на время показов
-					indexAnalogDate = dateDict.OrderByDescending(x => x.Key).First();
+					indexAnalogDate = _dateDict.OrderByDescending(x => x.Key).First();
 					//continue;
 				}
 
@@ -605,7 +618,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				if (calculateSquareCost.ScenarioType != null && calculateSquareCost.ScenarioType == ScenarioType.Oks)
 				{
-					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analogFloorsCount)?.Value ?? dateNumb.Last()?.Value ?? null;
+					var coefficient = _dateNumb.FirstOrDefault(x => x.Key == analogFloorsCount)?.Value ?? _dateNumb.Last()?.Value ?? null;
 
 					if (analogFloorsCount == 0 && coefficient == null) coefficient = (decimal)fixedCoefflandShareZero;
 
@@ -627,13 +640,15 @@ namespace KadOzenka.Dal.ExpressScore
 				costTargetObjectDataForReport.Add("");
 				costTargetObjectDataForReport.Add("");
 
-                #endregion
+				#endregion
 
-                if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent)
-                {
-	                if (exCostFactors.IsVatIncluded.GetValueOrDefault())
-	                {
-		                cost = AddVat(exCostFactors.VatDictionaryId, calculateSquareCost.TargetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
+				#region НДС
+
+				if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent)
+				{
+					if (exCostFactors.IsVatIncluded.GetValueOrDefault())
+					{
+						cost = AddVat(exCostFactors.VatDictionaryId, calculateSquareCost.TargetMarketObjectId, analog, cost, costTargetObjectDataForReport, ref costFactorsDataForReport);
 					}
 					if (exCostFactors.IsOperatingCostsUsedInCalculations.GetValueOrDefault())
 					{
@@ -641,49 +656,9 @@ namespace KadOzenka.Dal.ExpressScore
 					}
 				}
 
-                #region Корректировка на этаж
-
-                {
-					var floor = (int)analog.Floor != 0 ? (int)analog.Floor : 1; // по условию из примера расчета
-					text = new KeyValuePair<string, string>("Этаж расположения", floor.ToString());
-
-					var floorFactor = floor != 0 && floorDict.Count > 0
-						? floor > floorDict.FirstOrDefault()?.Key ? floorDict.FirstOrDefault()?.Value :
-						floorDict.FirstOrDefault(x => x.Key == floor)?.Value
-						: 0;
-					dicText = new KeyValuePair<string, string>(@"Коэффициент ""Этаж расположения""", floorFactor?.ToString("N"));
-
-					var targetObjectFloorFactor = floorDict.Count > 0
-						? calculateSquareCost.TargetObjectFloor > floorDict.FirstOrDefault().Key
-							? floorDict.FirstOrDefault()?.Value
-							: floorDict.FirstOrDefault(x => x.Key == calculateSquareCost.TargetObjectFloor)?.Value : 0;
-
-                    correctText = new KeyValuePair<string, string>("Корректировка на этаж расположения (K1)", "1");
-
-					if (floorFactor != null && floorFactor != 0 && targetObjectFloorFactor != null &&
-					    targetObjectFloorFactor != 0)
-					{
-						var factor = targetObjectFloorFactor / floorFactor;
-						correctText = new KeyValuePair<string, string>("Корректировка на этаж расположения (K1)", Math.Round(factor.GetValueOrDefault(), 6).ToString("N"));
-
-                        try
-                        {
-                            cost = cost * (decimal)factor;
-                        }
-                        catch (OverflowException e)
-                        {
-                            GenerateOverflowException(e, analog.Kn, "Корректировку на этаж расположения (K1)", factor);
-                        }
-                    }
-					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
-					costFactorsDataForReport.Add(new Tuple<string, string>(dicText.Key, dicText.Value));
-					costFactorsDataForReport.Add(new Tuple<string, string>(correctText.Key, correctText.Value));
-					costTargetObjectDataForReport.Add(calculateSquareCost.TargetObjectFloor.ToString());
-					costTargetObjectDataForReport.Add(targetObjectFloorFactor?.ToString("N"));
-					costTargetObjectDataForReport.Add("");
-				}
-
 				#endregion
+
+				#region Тип сделки
 
 				if (calculateSquareCost.DealTypeShort == DealTypeShort.Sale)
 				{
@@ -696,6 +671,10 @@ namespace KadOzenka.Dal.ExpressScore
 					costFactorsDataForReport.Add(new Tuple<string, string>("Вид сделки (Предложение-аренда/Сделка-аренда)", analog.DealType.GetEnumDescription()));
 					costTargetObjectDataForReport.Add("");
 				}
+
+				#endregion
+
+				#region Корректировка на торг
 
 				if (exCostFactors.IsCorrectionByBargainUsedInCalculations.GetValueOrDefault())
 				{
@@ -720,29 +699,37 @@ namespace KadOzenka.Dal.ExpressScore
 					costTargetObjectDataForReport.Add("");
 				}
 
-				foreach (var simple in exCostFactors.SimpleCostFactors)
-                {
-	                text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
-						 simple.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
+				#endregion
 
-                    if (simple.Coefficient != null)
-                    {
-                        try
-                        {
-	                        cost = cost * simple.Coefficient.GetValueOrDefault();
-                        }
-                        catch (OverflowException e)
-                        {
-                            GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", simple.Coefficient);
-                        }
-                    }
-                    costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
-                    costTargetObjectDataForReport.Add("");
-                }
+
+				#region simple cost factors
+
+				foreach (var simple in exCostFactors.SimpleCostFactors)
+				{
+					text = new KeyValuePair<string, string>("Корректировка " + @"""" + simple.Name + @"""",
+						simple.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor));
+
+					if (simple.Coefficient != null)
+					{
+						try
+						{
+							cost = cost * simple.Coefficient.GetValueOrDefault();
+						}
+						catch (OverflowException e)
+						{
+							GenerateOverflowException(e, analog.Kn, $"Статичный коэффициент: {simple.Name}", simple.Coefficient);
+						}
+					}
+					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
+					costTargetObjectDataForReport.Add("");
+				}
+
+				#endregion
+
 
 
 				bool isBreak = false;
-				int amountSuccessComplexFactors = 2;
+				int amountSuccessComplexFactors = 1;
 				var idAnalog = OMCoreObject.Where(x => x.CadastralNumber == calculateSquareCost.Kn).ExecuteFirstOrDefault()?.Id;
 
 
@@ -757,67 +744,24 @@ namespace KadOzenka.Dal.ExpressScore
 					var complexCoefficientStr =
 						complex.Coefficient?.ToString(DecimalFormatForCoefficientsFromConstructor);
 
-					ParameterDataDto targetObjectFactor = null;
-					if (complex.ComplexCostFactorType == ComplexCostFactorSpecialization.SquareFactor)
+					ParameterDataDto targetObjectFactor = GetTargetObjectFactor(complex.AttributeId.GetValueOrDefault(),
+						(int) idAnalog, calculateSquareCost.TargetObjectId, (int) exSettingsCostFactors.Registerid, calculateSquareCost.ComplexCalculateParameters, out msg);
+
+					if (targetObjectFactor == null)
 					{
-						targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
-						{
-							Id = calculateSquareCost.TargetObjectId,
-							Value = calculateSquareCost.Square
-						});
-					}
-					else
-					{
-                        try
-                        {
-                            if (IsAnalogAttribute(complex.AttributeId.GetValueOrDefault()))
-                            {
-                                if (idAnalog != null)
-                                {
-                                    targetObjectFactor = GetEstimateParametersById((int)idAnalog,
-                                        complex.AttributeId.GetValueOrDefault(), OMCoreObject.GetRegisterId());
-                                }
-                            }
-                            else
-                            {
-                                targetObjectFactor = GetEstimateParametersById(calculateSquareCost.TargetObjectId,
-                                    complex.AttributeId.GetValueOrDefault(), (int)exSettingsCostFactors.Registerid);
-                            }
-
-                            if (targetObjectFactor == null || targetObjectFactor.Value == null)
-                            {
-	                            var esTargetObjectValue = OMTargetObjectValue.Where(x => x.UnitId == calculateSquareCost.TargetObjectId).SelectAll()
-		                            .ExecuteFirstOrDefault();
-
-	                            var targetAttributeValue =
-		                            esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
-
-	                            var attributeValue = targetAttributeValue.FirstOrDefault(x => x.Id == complex.AttributeId).Value;
-	                            targetObjectFactor = new ParameterDataDto(new PureParameterDataDto
-	                            {
-		                            Id = calculateSquareCost.TargetObjectId,
-		                            Value = attributeValue
-	                            });
-
-							}
-						}
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                            throw new Exception("Не найденны данные для объекта оценки");
-                        }
+						return 0;
 					}
 					ParameterDataDto analogFactor;
 					if (IsAnalogAttribute(complex.AttributeId.GetValueOrDefault()))
 					{
-						analogFactor = GetEstimateParametersById((int) analog.Id,
+						analogFactor = GetEstimateParametersById((int)analog.Id,
 							complex.AttributeId.GetValueOrDefault(), OMCoreObject.GetRegisterId());
 					}
 					else
 					{
-						analogFactor = GetEstimateParametersByKn(analog.Kn, (int) exSettingsCostFactors.TourId,
+						analogFactor = GetEstimateParametersByKn(analog.Kn, (int)exSettingsCostFactors.TourId,
 							complex.AttributeId.GetValueOrDefault(), calculateSquareCost.MarketSegment,
-							(int) exSettingsCostFactors.Registerid);
+							(int)exSettingsCostFactors.Registerid);
 					}
 
 					if (analogFactor == null)
@@ -827,7 +771,7 @@ namespace KadOzenka.Dal.ExpressScore
 						break;
 					}
 
-					if(analogFactor.Value == null || analogFactor.Value == string.Empty)
+					if(analogFactor.Value == null || analogFactor.Value.ToString() == string.Empty)
 					{
 						_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора", analog.Id);
 					}
@@ -835,7 +779,12 @@ namespace KadOzenka.Dal.ExpressScore
 					string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor.Value?.ToString();
 
 					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>(complex.Name, valueToComplexName));
-					costTargetObjectDataForReport.Add(targetObjectFactor?.Value != null ? targetObjectFactor?.Value.ToString() : "Не рассчитано");
+					string reportTargetObjVal = targetObjectFactor.ValueFromCalculateForm
+						? targetObjectFactor.ValueCalculateForm
+						: targetObjectFactor?.Value != null
+							? targetObjectFactor?.Value.ToString()
+							: "Не рассчитано";
+					costTargetObjectDataForReport.Add(reportTargetObjVal);
 
 					switch (analogFactor.Type)
 					{
@@ -845,9 +794,9 @@ namespace KadOzenka.Dal.ExpressScore
 							{
 								decimal analogC = ScoreCommonService.GetCoefficientFromStringFactor(analogFactor,
 									complex.DictionaryId.GetValueOrDefault());
-								decimal targetObjectC = ScoreCommonService.GetCoefficientFromStringFactor(
-									targetObjectFactor,
-									complex.DictionaryId.GetValueOrDefault());
+
+								decimal targetObjectC = targetObjectFactor.ValueFromCalculateForm ? targetObjectFactor.NumberValue 
+									: ScoreCommonService.GetCoefficientFromStringFactor(targetObjectFactor, complex.DictionaryId.GetValueOrDefault());
 
 								if (analogC == 0 || targetObjectC == 0)
 								{
@@ -896,9 +845,8 @@ namespace KadOzenka.Dal.ExpressScore
 							{
 								decimal analogC = ScoreCommonService.GetCoefficientFromDateFactor(analogFactor,
 									complex.DictionaryId.GetValueOrDefault());
-								decimal targetObjectC = ScoreCommonService.GetCoefficientFromDateFactor(
-									targetObjectFactor,
-									complex.DictionaryId.GetValueOrDefault());
+								decimal targetObjectC = targetObjectFactor.ValueFromCalculateForm ? targetObjectFactor.NumberValue 
+									: ScoreCommonService.GetCoefficientFromDateFactor(targetObjectFactor, complex.DictionaryId.GetValueOrDefault());
 
 								if (analogC == 0 || targetObjectC == 0)
 								{
@@ -945,9 +893,8 @@ namespace KadOzenka.Dal.ExpressScore
 						{
 							decimal analogC = ScoreCommonService.GetCoefficientFromNumberFactor(analogFactor,
 								complex.DictionaryId.GetValueOrDefault());
-							decimal targetObjectC =
-								ScoreCommonService.GetCoefficientFromNumberFactor(targetObjectFactor,
-									complex.DictionaryId.GetValueOrDefault());
+							decimal targetObjectC = targetObjectFactor.ValueFromCalculateForm ? targetObjectFactor.NumberValue 
+								: ScoreCommonService.GetCoefficientFromNumberFactor(targetObjectFactor, complex.DictionaryId.GetValueOrDefault());
 
 							if (analogC == 0 || targetObjectC == 0)
 							{
@@ -961,8 +908,7 @@ namespace KadOzenka.Dal.ExpressScore
 										: "");
 								}
 
-								AddReportDictValue(ref costFactorsDataForReport,
-									new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 								costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", "1"));
@@ -972,22 +918,18 @@ namespace KadOzenka.Dal.ExpressScore
 
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
-								AddReportDictValue(ref costFactorsDataForReport,
-									new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""",
-										analogC.ToString("N")));
-								costTargetObjectDataForReport.Add(targetObjectC != 0
-									? targetObjectC.ToString("N")
-									: "");
+								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""", analogC.ToString("N")));
+								costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
 							}
 
-							AddReportDictValue(ref costFactorsDataForReport,
-								new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
+							AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 							costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 							var coeff = Math.Exp((double) (targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 							            Math.Exp((double) (analogC * complex.Coefficient.GetValueOrDefault()));
 
-								AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
+								AddReportDictValue(ref costFactorsDataForReport, 
+									new KeyValuePair<string, string>("Корректировка " + @""""+complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
 								costTargetObjectDataForReport.Add("");
 								
                             try
@@ -1208,7 +1150,6 @@ namespace KadOzenka.Dal.ExpressScore
 
 				var query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)tourRegisterPrimaryKeyId.GetValueOrDefault(), unitIds);
 
-				query.AddColumn((long)costFactor.YearBuildId.GetValueOrDefault(), ((int)costFactor.YearBuildId.GetValueOrDefault()).ToString());
 				foreach (var factor in costFactor.ComplexCostFactors)
 				{
 					if (!IsAnalogAttribute(factor.AttributeId.GetValueOrDefault()))
@@ -1263,21 +1204,32 @@ namespace KadOzenka.Dal.ExpressScore
 			        return analogCostFactors;
 		        }
 
-		        QSQuery coreObject = new QSQuery
+		        var qsConGroup = new QSConditionGroup(QSConditionGroupType.And);
+		        qsConGroup.Add(new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.NotEqual,
+			        LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
+			        RightOperand = new QSColumnConstant(ProcessStep.Excluded)
+				});
+
+				qsConGroup.Add(kn != null ? new QSConditionSimple
+				{
+					ConditionType = QSConditionType.Equal,
+					LeftOperand = OMCoreObject.GetColumn(x => x.CadastralNumber),
+					RightOperand = new QSColumnConstant(kn)
+				} : new QSConditionSimple
+				{
+					ConditionType = QSConditionType.Equal,
+					LeftOperand = OMCoreObject.GetColumn(x => x.Id),
+					RightOperand = new QSColumnConstant(id)
+				});
+
+				QSQuery coreObject = new QSQuery
 		        {
 			        MainRegisterID = OMCoreObject.GetRegisterId(),
-			        Condition = kn != null ? new QSConditionSimple
-			        {
-				        ConditionType = QSConditionType.Equal,
-				        LeftOperand = OMCoreObject.GetColumn(x => x.CadastralNumber),
-				        RightOperand = new QSColumnConstant(kn)
-			        } : new QSConditionSimple
-			        {
-				        ConditionType = QSConditionType.Equal,
-				        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-				        RightOperand = new QSColumnConstant(id)
-			        }
-		        };
+			        Condition = qsConGroup
+				};
+
 
 		        foreach (var complexCostFactor in costFactors.ComplexCostFactors)
 		        {
@@ -1426,22 +1378,16 @@ namespace KadOzenka.Dal.ExpressScore
 		#endregion{
 
 
-		public string SaveSuccessExpressScore(int targetObjectId, long? targetMarketObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
-			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null, MarketSegment? segmentType = null, DealType? dealType = null, string address = null)
+		public string SaveSuccessExpressScore(SaveExpressScoreDto saveExpressScore,  out int id)
 		{
 			id = 0;
 			try
 			{
-				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()?.CadastralNumber;
+				var kn = OMUnit.Where(x => x.Id == saveExpressScore.TargetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()?.CadastralNumber;
 
-				if (expressScoreId == null && (square == null || floor == null))
-				{
-					return "Невозможно выполнить сохранение. Не задана площадь или этаж";
-				}
-
-				id = expressScoreId == null
-					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, targetMarketObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault(), dealType.GetValueOrDefault(), address)
-					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
+				id = saveExpressScore.ExpressScoreId == null
+					? AddExpressScore(saveExpressScore, kn)
+					:  UpdateCostsExpressScore(saveExpressScore.ExpressScoreId.Value, saveExpressScore.SummaryCost, saveExpressScore.CostSquareMeter);
 			}
 			catch (Exception e)
 			{
@@ -1453,25 +1399,21 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-        private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor,
-            int targetObjectId, long? targetMarketObjectId, ScenarioType scenarioType, MarketSegment segmentType,
-            DealType dealType, string address)
+        private int AddExpressScore(SaveExpressScoreDto saveExpressScore, string kn)
         {
             return new OMExpressScore
             {
                 KadastralNumber = kn,
-                CostSquareMeter = costSquareMeter,
+                CostSquareMeter = saveExpressScore.CostSquareMeter,
                 DateCost = DateTime.Now.Date,
-                SummaryCost = cost,
-                Objectid = targetObjectId,
-                TargetMarketObjectId = targetMarketObjectId,
-                Floor = floor,
-                Square = square,
-                ScenarioType_Code = scenarioType,
-                SegmentType_Code = segmentType,
-                DealType_Code = dealType,
-                Address = address
-            }.Save();
+                SummaryCost = saveExpressScore.SummaryCost,
+                Objectid = saveExpressScore.TargetObjectId,
+                TargetMarketObjectId = saveExpressScore.TargetMarketObjectId,
+                ScenarioType_Code = saveExpressScore.ScenarioType.GetValueOrDefault(),
+                SegmentType_Code = saveExpressScore.SegmentType.GetValueOrDefault(),
+                DealType_Code = saveExpressScore.DealType.GetValueOrDefault(),
+                Address = saveExpressScore.Address
+			}.Save();
         }
 
         private int UpdateCostsExpressScore(int expressScoreId, decimal summaryCost, decimal costSquareMeter)
@@ -1531,11 +1473,6 @@ namespace KadOzenka.Dal.ExpressScore
 				var complexFactors = costFactor.ComplexCostFactors;
 
 				var qsCGroup = new QSConditionGroup(QSConditionGroupType.And);
-				qsCGroup.Add(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.IsNotNull,
-					LeftOperand = new QSColumnSimple((long)costFactor.YearBuildId.GetValueOrDefault())
-				});
 
 				foreach (var factor in complexFactors.Where(x => !IsAnalogAttribute(x.AttributeId.GetValueOrDefault())))
 				{
@@ -1556,21 +1493,15 @@ namespace KadOzenka.Dal.ExpressScore
 		{
 			try
 			{
-				ReportService.InitRequiredMatrix(6, analogs.Count + 1);
+				ReportService.InitRequiredMatrix(5, analogs.Count + 1);
 
-				var exSettingsCostFactors = OMSettingsParams.Where(x => x.SegmentType_Code == marketSegment).SelectAll()
-					.ExecuteFirstOrDefault();
 
-				var costFactor = GetCostFactorsBySegmentType(marketSegment);
-
-				var targetObjectYear = GetEstimateParametersById(targetObjectId,
-					(int)costFactor.YearBuildId.GetValueOrDefault(), (int)exSettingsCostFactors.Registerid, marketSegment);
 				//Заполняем данные целевого объекта
 				ReportService.AddNameCharacteristicRequiredParam("Сегмент");
 				ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
 
-				ReportService.AddNameCharacteristicRequiredParam("Год постройки");
-				ReportService.AddValueRequiredParam(targetObjectYear?.NumberValue.ToString(CultureInfo.InvariantCulture));
+				//ReportService.AddNameCharacteristicRequiredParam("Год постройки");
+				//ReportService.AddValueRequiredParam(targetObjectYear?.NumberValue.ToString(CultureInfo.InvariantCulture));
 
 				//ReportService.AddNameCharacteristicRequiredParam("Площадь, кв.м");
 				//ReportService.AddValueRequiredParam(targetSquare.ToString(CultureInfo.InvariantCulture));
@@ -1592,7 +1523,7 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					ReportService.SetNextColumnRequiredParam();
 					ReportService.AddValueRequiredParam(marketSegment.GetEnumDescription());
-					ReportService.AddValueRequiredParam(analog.YearBuild.ToString(CultureInfo.InvariantCulture));
+					//ReportService.AddValueRequiredParam(analog.YearBuild.ToString(CultureInfo.InvariantCulture));
 					//ReportService.AddValueRequiredParam(analog.Square.ToString(CultureInfo.InvariantCulture));
 					ReportService.AddValueRequiredParam(analog.Address?.ToString(CultureInfo.InvariantCulture));
 					ReportService.AddValueRequiredParam(analog.Kn?.ToString(CultureInfo.InvariantCulture));
@@ -1855,6 +1786,135 @@ namespace KadOzenka.Dal.ExpressScore
 			return qsConditionGroup;
 		}
 
+
+		#endregion
+
+		#region support for calculate
+
+		private string GetCommonValueReference(long referenceId, string attributeValue)
+		{
+			string res = null;
+			var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll()
+				.ExecuteFirstOrDefault();
+			if (reference != null)
+			{
+				switch (reference.ValueType_Code)
+				{
+					case ReferenceItemCodeType.String:
+						{
+							res = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == attributeValue).Select(x => x.CommonValue)
+								.ExecuteFirstOrDefault().CommonValue;
+							break;
+						}
+					case ReferenceItemCodeType.Date:
+						{
+							if (DateTime.TryParse(attributeValue, out var date))
+							{
+								if (reference.UseInterval.GetValueOrDefault())
+								{
+									List<DateReferenceInterval> dateReferenceIntervals = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
+										.Select(ScoreCommonService.IntervalReferenceToDate).ToList();
+
+									res = dateReferenceIntervals.FirstOrDefault(x => x.KeyTo >= date && x.KeyFrom <= date)?
+										.CommonValue;
+									return res;
+								}
+
+								List<DateReference> dateReferenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
+									.Select(ScoreCommonService.ReferenceToDate).ToList();
+								res = dateReferenceItems.FirstOrDefault(x => x.Key == date)?
+										.CommonValue;
+								return res;
+							}
+							break;
+						}
+					case ReferenceItemCodeType.Number:
+					{
+						if (decimal.TryParse(attributeValue, out var value))
+						{
+							if (reference.UseInterval.GetValueOrDefault())
+							{
+								List<NumberReferenceInterval> numberReferenceIntervals = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
+									.Select(ScoreCommonService.IntervalReferenceToNumber).ToList();
+
+								res = numberReferenceIntervals.FirstOrDefault(x => x.KeyTo >= value && x.KeyFrom <= value)?
+									.CommonValue;
+								return res;
+							}
+
+							List<NumberReference> dateReferenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
+								.Select(ScoreCommonService.ReferenceToNumber).ToList();
+							res = dateReferenceItems.FirstOrDefault(x => x.Key == value)?
+								.CommonValue;
+							return res;
+						}
+						break;
+						}
+				}
+
+			}
+			return res;
+		}
+
+		private ParameterDataDto GetTargetObjectFactor(long attributeId, int? idAnalog, int targetObjectId, int registerId, List<SearchAttribute> complexCalculateParameters, out string msg)
+		{
+			msg = "";
+			ParameterDataDto targetObjectFactor = null;
+			SearchAttribute currentValueFactor =
+				complexCalculateParameters.FirstOrDefault(x => x.IdAttribute == attributeId);
+
+			if (currentValueFactor != null)
+			{
+				var item = OMEsReferenceItem.Where(x => x.ReferenceId == currentValueFactor.ReferenceId
+				                             && x.CommonValue == currentValueFactor.Value).SelectAll().ExecuteFirstOrDefault();
+
+				if (item != null)
+				{
+					targetObjectFactor = new ParameterDataDto
+					{
+						Id = targetObjectId,
+						Value = item.CalculationValue,
+						ValueCalculateForm = currentValueFactor.Value,
+						ValueFromCalculateForm = true
+					};
+					return targetObjectFactor;
+				}
+			}
+			{
+				try
+				{
+					if (IsAnalogAttribute(attributeId))
+					{
+						if (idAnalog != null)
+						{
+							targetObjectFactor = GetEstimateParametersById((int)idAnalog,
+								(int)attributeId, OMCoreObject.GetRegisterId());
+						}
+					}
+					else
+					{
+						targetObjectFactor = GetEstimateParametersById(targetObjectId,
+							(int)attributeId, registerId);
+					}
+
+					if (targetObjectFactor == null && IsAnalogAttribute(attributeId))
+					{
+						targetObjectFactor = new ParameterDataDto();
+					}
+					else if (targetObjectFactor == null)
+					{
+						msg = "Во время расчетов в Ко части не был найден объект оценки.";
+					}
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					throw new Exception("Не найденны данные для объекта оценки");
+				}
+			}
+
+			return targetObjectFactor;
+		}
 
 		#endregion
 	}

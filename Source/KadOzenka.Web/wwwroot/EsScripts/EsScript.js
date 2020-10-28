@@ -434,11 +434,13 @@ function getComplexSearchParameters() {
 function getComplexCalculateParameters() {
     var res = [];
     $.each($('#costFactors').find('[id*="DefaultValue"]'), function () {
-        var attributeId = $control.attr('DataAttributeId');
-        var value = $(this).data('kendoDropDownList') && $control.data('kendoDropDownList').value();
+        var attributeId = $(this).attr('DataAttributeId');
+        var referenceId = $(this).attr('DataReferenceId');
+        var value = $(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').value();
         res.push({
             IdAttribute: attributeId,
-            Value: value
+            Value: value,
+            referenceId
         });
     });
     return JSON.stringify(res);

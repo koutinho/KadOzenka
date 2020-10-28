@@ -58,11 +58,6 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 	public class CostFactorsDto
 	{
 		/// <summary>
-		/// ид аттрибута года постройки для поиска аналогов
-		/// </summary>
-		public decimal? YearBuildId { get; set; }
-
-		/// <summary>
 		/// Ид словаря индекс дата для обязательного параметра
 		/// </summary>
 		public decimal? IndexDateDicId { get; set; }
@@ -73,11 +68,6 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public decimal? LandShareDicId { get; set; }
 
 		/// <summary>
-		/// Ид словаря этажа расположения обязательный параметр
-		/// </summary>
-		public decimal? FloorDicId { get; set; }
-
-        /// <summary>
         /// Флаг для учета НДС
         /// </summary>
         public bool? IsVatIncluded { get; set; }

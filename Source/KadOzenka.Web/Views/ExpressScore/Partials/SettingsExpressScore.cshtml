@@ -104,25 +104,7 @@
 		<li id="RequiredParam" data-expand>
             <fieldset class="required-param">
                 <legend>Обязательные параметры</legend>
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        @Html.CustomLabelFor("Атрибут года постройки", true)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter(FilterType.Contains)
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(a => a.Action("GetAttributesKo", "ExpressScore").Data("getDataAttribute"));
-                                    }).HtmlAttributes(new
-                                    {
-                                        name = "YearBuildId"
-                                    }))
-                    </div>
-                </div>
-                <div class="form-group">
+	            <div class="form-group">
                     <div class="col-sm-3">
                         @Html.CustomLabelFor(@"Корректировка на дату ""Справочник""", true)
                     </div>
@@ -160,26 +142,7 @@
                                     }))
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        @Html.CustomLabelFor(@"Корректировка на этаж ""Справочник""", true)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.FloorDicId)
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter(FilterType.Contains)
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-                                    }
-                                    ).HtmlAttributes(new
-                                    {
-                                        name = "FloorDicId"
-                                    }))
-                    </div>
-                </div>
-                <div class="form-group">
+	            <div class="form-group">
                     <div class="col-sm-3">
                         @Html.CustomLabelFor("НДС включен")
                     </div>
@@ -398,13 +361,11 @@
 			TourId: formObject['TourId'],
 			FactorRegisterId: formObject['FactorRegisterId'],
 			CostFactors: {
-				YearBuildId: formObject['YearBuildId'],
 				complexCostFactors,
 				simpleCostFactors,
 				LandShareDicId: formObject["LandShareDicId"],
 				IndexDateDicId: formObject["IndexDateDicId"],
-				FloorDicId: formObject["FloorDicId"],
-                IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
+				IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
 				VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"],
 				IsSquareFactorUsedInCalculations: formObject["@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)"],
 				IsCorrectionByBargainUsedInCalculations: formObject["@nameof(CostFactorsDto.IsCorrectionByBargainUsedInCalculations)"],

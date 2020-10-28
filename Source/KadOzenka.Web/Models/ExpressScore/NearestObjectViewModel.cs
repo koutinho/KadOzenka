@@ -15,11 +15,6 @@ namespace CIPJS.Models.ExpressScore
 	public class NearestObjectViewModel
 	{
 		/// <summary>
-		/// Площадь
-		/// </summary>
-		//public decimal? Square { get; set; }
-
-		/// <summary>
 		/// Сегмент рынка
 		/// </summary>
 		[Required(ErrorMessage = "Заполните сегмент рынка.")]

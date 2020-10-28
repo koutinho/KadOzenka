@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -60,30 +61,14 @@ namespace KadOzenka.Dal.ScoreCommon
 			return query;
 		}
 
-        public List<OMEsReference> GetDictionaries(List<long> dictionaryIds, bool withItems = true)
-        {
-            if (dictionaryIds == null || dictionaryIds.Count == 0)
-                return new List<OMEsReference>();
-
-            var dictionaries = OMEsReference.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
-
-            if (!withItems)
-                return dictionaries;
-
-            var dictionariesItems = OMEsReferenceItem.Where(x => dictionaryIds.Contains(x.ReferenceId)).SelectAll()
-                .Execute().ToList();
-
-            dictionaries.ForEach(dictionary =>
-            {
-                dictionary.EsReferenceItem = dictionariesItems.Where(item => item.ReferenceId == dictionary.Id).ToList();
-            });
-
-            return dictionaries;
-        }
-
-        public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
+		public decimal GetCoefficientFromStringFactor(ParameterDataDto parameterData, int referenceId)
 		{
-            var type = GetReferenceValueType(referenceId);
+            var type = GetReferenceValueType(referenceId, out bool isIntervalRef);
+
+            if (isIntervalRef)
+            {
+	            return 0;
+            }
 
 			if (type == ReferenceItemCodeType.String)
 			{
@@ -93,25 +78,6 @@ namespace KadOzenka.Dal.ScoreCommon
 			return 0;
 		}
 
-        /// <summary>
-        /// Поиск в словаре коэффициента для строкового атрибута
-        /// </summary>
-        /// <param name="stringValue">Атрибут</param>
-        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
-        /// <returns></returns>
-        public decimal GetCoefficientFromStringFactor(string stringValue, OMEsReference dictionary)
-        {
-            if (dictionary == null)
-                return 0;
-
-            if (dictionary.ValueType_Code == ReferenceItemCodeType.String)
-            {
-                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
-                return referenceItems?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
-            }
-
-            return 0;
-        }
 
         public decimal GetCoefficientFromNumberFactor(ParameterDataDto parameterData, int referenceId)
 		{
@@ -120,90 +86,97 @@ namespace KadOzenka.Dal.ScoreCommon
 				return parameterData.NumberValue;
 			}
 
-			var type = GetReferenceValueType(referenceId);
+			var type = GetReferenceValueType(referenceId, out bool isIntervalReference);
 
 			if (type == ReferenceItemCodeType.Number)
 			{
-                var referenceItems = GetReferenceItems(referenceId, parameterData.NumberValue.ToString(), true);
+				List<OMEsReferenceItem> referenceItems;
+                if (isIntervalReference){
+	                 referenceItems = GetReferenceItems(referenceId);
+	                 return referenceItems.Select(IntervalReferenceToNumber)
+		                 .FirstOrDefault(x => x.KeyFrom <= parameterData.NumberValue && x.KeyTo >= parameterData.NumberValue)?.Value ?? 1;
+                }
+				referenceItems = GetReferenceItems(referenceId, parameterData.NumberValue.ToString(CultureInfo.InvariantCulture));
                 return referenceItems.Select(ReferenceToNumber).Count() != 0 ? referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == parameterData.NumberValue)?.Value ?? 1 : 1;
 			}
 			return 0;
 		}
 
-        /// <summary>
-        /// Поиск в словаре коэффициента для числового атрибута
-        /// </summary>
-        /// <param name="number">Атрибут</param>
-        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
-        public decimal GetCoefficientFromNumberFactor(decimal? number, OMEsReference dictionary)
-        {
-            if (dictionary == null || number == null)
-                return number ?? 0;
-
-            if (dictionary.ValueType_Code == ReferenceItemCodeType.Number)
-            {
-                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
-                return referenceItems?.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == number)?.Value ?? 1;
-            }
-            return 0;
-        }
 
         public decimal GetCoefficientFromDateFactor(ParameterDataDto parameterData, int referenceId)
 		{
-            var type = GetReferenceValueType(referenceId);
+            var type = GetReferenceValueType(referenceId, out bool isIntervalRef);
 
 			if (type == ReferenceItemCodeType.Date)
 			{
                 var referenceItems = GetReferenceItems(referenceId);
+                if (isIntervalRef)
+                { 
+	                return referenceItems.Select(IntervalReferenceToDate)
+		                .FirstOrDefault(x => x.KeyFrom <= parameterData.DateValue && x.KeyTo >= parameterData.DateValue)?.Value ?? 1;
+                }
                 return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == parameterData.DateValue)?.Value ?? 1;
 			}
 			return 0;
 		}
 
-        /// <summary>
-        /// Поиск в словаре коэффициента для атрибута с типом 'датa'
-        /// </summary>
-        /// <param name="date">Атрибут</param>
-        /// <param name="dictionary">Словарь (желательно с заполненными OMEsReferenceItem)</param>
-        public decimal GetCoefficientFromDateFactor(DateTime? date, OMEsReference dictionary)
-        {
-            if (dictionary == null || date == null)
-                return 0;
-
-            if (dictionary.ValueType_Code == ReferenceItemCodeType.Date)
-            {
-                var referenceItems = dictionary.EsReferenceItem ?? GetReferenceItems(dictionary.Id);
-                return referenceItems?.Select(ReferenceToDate).FirstOrDefault(x => x.Key == date)?.Value ?? 1;
-            }
-            return 0;
-        }
 
         public DateReference ReferenceToDate(OMEsReferenceItem item)
 		{
 			return new DateReference
 			{
+				CommonValue = item.CommonValue,
 				Key = DateTime.Parse(item.Value),
 				Value = item.CalculationValue.GetValueOrDefault()
 			};
 		}
 
-		public NumberReference ReferenceToNumber(OMEsReferenceItem item)
+        public DateReferenceInterval IntervalReferenceToDate(OMEsReferenceItem item)
+        {
+	        return new DateReferenceInterval
+            {
+				CommonValue = item.CommonValue,
+		        KeyFrom = DateTime.Parse(item.ValueFrom),
+		        KeyTo = DateTime.Parse(item.ValueTo),
+		        Value = item.CalculationValue.GetValueOrDefault()
+	        };
+        }
+
+        public NumberReference ReferenceToNumber(OMEsReferenceItem item)
 		{
 			return new NumberReference
 			{
+				CommonValue = item.CommonValue,
 				Key = decimal.TryParse(item.Value, out var res) ? res : decimal.Zero,
 				Value = item.CalculationValue.GetValueOrDefault()
 			};
 		}
 
+        public NumberReferenceInterval IntervalReferenceToNumber(OMEsReferenceItem item)
+        {
+	        return new NumberReferenceInterval
+	        {
+		        CommonValue = item.CommonValue,
+				KeyFrom = decimal.TryParse(item.ValueFrom, out var resFrom) ? resFrom : decimal.Zero,
+		        KeyTo = decimal.TryParse(item.ValueTo, out var resTo) ? resTo : decimal.Zero,
+		        Value = item.CalculationValue.GetValueOrDefault()
+	        };
+        }
+
+
 
         #region Support Methods
-
-		private List<OMEsReferenceItem> GetReferenceItems(long referenceId, string addVar = "", bool specialData = false)
+        /// <summary>
+        /// Получить значения справочника
+        /// </summary>
+        /// <param name="referenceId">Ид справочника</param>
+        /// <param name="value"> Значение справочника если известно</param>
+        /// <returns>Значения справочника</returns>
+        private List<OMEsReferenceItem> GetReferenceItems(long referenceId, string value = "")
 		{
-            QSQuery<OMEsReferenceItem> query = addVar.IsEmpty() ?
+            QSQuery<OMEsReferenceItem> query = value.IsEmpty() ?
                 OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll() :
-                OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == addVar).SelectAll();
+                OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == value).SelectAll();
             List<OMEsReferenceItem> result = new List<OMEsReferenceItem>();
             return query.Execute().ToList();
             /*
@@ -214,9 +187,13 @@ namespace KadOzenka.Dal.ScoreCommon
             */
         }
 
-		private ReferenceItemCodeType GetReferenceValueType(long referenceId)
+		private ReferenceItemCodeType GetReferenceValueType(long referenceId, out bool isIntervalReference)
 		{
-			return OMEsReference.Where(x => x.Id == referenceId).Select(x => x.ValueType_Code).ExecuteFirstOrDefault().ValueType_Code;
+			isIntervalReference = false;
+            var res = OMEsReference.Where(x => x.Id == referenceId).Select(x => new {x.UseInterval, x.ValueType_Code})
+				.ExecuteFirstOrDefault();
+            isIntervalReference = res.UseInterval.GetValueOrDefault();
+            return res.ValueType_Code;
 		}
 
 		#endregion

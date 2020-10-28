@@ -168,7 +168,6 @@ namespace KadOzenka.Web.Controllers
             if (unitsIds.Count == 0) return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
 
             var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0) return SendErrorMessage("В настройках не задан атрибут для года постройки.");
 
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds, param.Kn);
             if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
@@ -211,10 +210,8 @@ namespace KadOzenka.Web.Controllers
 				Address = viewModel.Address,
 				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
 				DealType = viewModel.DealType,
-				Floor = viewModel.Floor.GetValueOrDefault(),
 				Kn = viewModel.Kn,
 				ScenarioType = viewModel.ScenarioType,
-				Square = viewModel.Square.GetValueOrDefault(),
 				Segment = viewModel.Segment,
 				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),
                 TargetMarketObjectId = viewModel.TargetMarketObjectId,
@@ -275,9 +272,7 @@ namespace KadOzenka.Web.Controllers
 				Kn = obj.KadastralNumber,
 				Analogs = _service.GetAnalogsByIds(analogIds),
 				DealType = obj.DealType_Code == DealType.RentDeal ? DealTypeShort.Rent : DealTypeShort.Sale,
-				Floor = (int) obj.Floor,
 				ScenarioType = obj.ScenarioType_Code,
-				Square = obj.Square,
 				Segment = obj.SegmentType_Code,
 				TargetObjectId = (int) obj.Objectid,
                 TargetMarketObjectId = obj.TargetMarketObjectId
