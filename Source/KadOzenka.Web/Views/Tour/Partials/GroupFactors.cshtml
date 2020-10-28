@@ -211,6 +211,32 @@
                     800, 400);
             }
         });
+
+        $('#upload-group-marks-catalog').on('click', function () {
+            var grid = $("#groupFactorsGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                var groupId = '@((long)ViewBag.GroupId)';
+                var factorId = data.FactorId;
+                Common.UI.ShowWindow('Загрузка меток',
+                    '@Url.Action("MarksCatalogUploading", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
+                    null,
+                    function(e) {},
+                    800, 400);
+            }
+        });
+
+        $('#download-group-marks-catalog').on('click', function () {
+            var grid = $("#groupFactorsGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                var groupId = '@((long)ViewBag.GroupId)';
+                var factorId = data.FactorId;
+                window.open('@Url.Action("DownloadMarksCatalog", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+            }
+        });
     });
 
 </script>

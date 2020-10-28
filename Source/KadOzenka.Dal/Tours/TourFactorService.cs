@@ -169,7 +169,7 @@ namespace KadOzenka.Dal.Tours
             RegisterAttributeService.RemoveRegisterAttribute(attributeId);
         }
 
-        public List<UnitFactor> GetUnitFactorValues(OMUnit unit, List<long> attributes)
+        public List<UnitFactor> GetUnitFactorValues(OMUnit unit, List<long> attributes = null)
         {
 	        var tourRegister = GetTourRegister(unit.TourId.GetValueOrDefault(),
 		        unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks);
