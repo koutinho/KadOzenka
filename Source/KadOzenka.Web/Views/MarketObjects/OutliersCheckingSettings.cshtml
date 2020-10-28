@@ -1,0 +1,157 @@
+﻿@{
+    if (ViewBag.isPartialView)
+    {
+        Layout = null;
+    }
+}
+
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div id="outliersSettingsGrid"></div>
+</div>
+
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Html.Raw(Url.Action("GetOutliersSettingsCoefficients", "MarketObjects"))',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    },
+                    update: {
+                        url: '@Html.Raw(Url.Action("UpdateOutliersSettingsCoefficients", "MarketObjects"))',
+                        dataType: "json"
+                    },
+                    parameterMap: function(options, operation) {
+                        if (operation === "update") {
+                            return { modelJson: kendo.stringify(options.models[0])};
+                        }
+                    },
+                },
+                error: function(response) {
+                    if (response.xhr && response.xhr.responseText) {
+                        Common.ShowError(response.xhr.responseText);
+                    } else {
+                        Common.ShowError();
+                    }
+                    console.log(response);
+                },
+                batch: true,
+                pageSize: 10,
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false },
+                            Zone: { editable: false },
+                            ZoneName: { editable: false },
+                            District: { editable: false },
+                            DistrictName: { editable: false },
+                            Region: { editable: false },
+                            RegionName: { editable: false },
+                            MinDeltaCoef: { type: "number", editable: true },
+                            MaxDeltaCoef: { type: "number", editable: true }
+                        }
+                    }
+                }
+            });
+
+            $("#outliersSettingsGrid").kendoGrid({
+                columns: [
+                    {
+                        title: "Зона",
+                        field: "ZoneName",
+                        width: "200px",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Административный округ",
+                        field: "DistrictName",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Район",
+                        field: "RegionName",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Коэффициент минимальной разности", format: "{0:n4}",
+                        field: "MinDeltaCoef",
+                        template: '<span> #= MinDeltaCoef ? kendo.toString(MinDeltaCoef, "n4") : "" #</span>',
+                        width: "200px",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: "Коэффициент максимальной разности", format: "{0:n4}",
+                        field: "MaxDeltaCoef",
+                        template: '<span> #= MaxDeltaCoef ? kendo.toString(MaxDeltaCoef, "n4") : "" #</span>',
+                        width: "200px",
+                        filterable: {
+                            cell: {
+                                showOperators: false,
+                                operator: "contains",
+                                minLength: 999,
+                                template: function(args) {
+                                    args.element.addClass("k-textbox");
+                                }
+                            }
+                        }
+                    },
+                    { command: ["edit"], title: "&nbsp;", width: "250px"}
+                ],
+                filterable: {
+                    mode: "row"
+                },
+                editable: "inline",
+                edit: function(e) {
+                    if (!e.model.isNew()) {
+                        e.container.find("input[name=MinDeltaCoef]").data("kendoNumericTextBox").min(0);
+                        e.container.find("input[name=MaxDeltaCoef]").data("kendoNumericTextBox").min(0);
+                    }
+                },
+                dataSource: dataSource,
+                pageable: true,
+                sortable: true,
+                resizable: true
+            });
+        });
+</script>

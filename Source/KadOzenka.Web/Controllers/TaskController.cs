@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Core.Main.FileStorages;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,10 @@ using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
 
@@ -56,6 +60,7 @@ namespace KadOzenka.Web.Controllers
 		public RegisterAttributeService RegisterAttributeService { get; set; }
 		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
 		public TemplateService TemplateService { get; set; }
+		public FactorSettingsService FactorSettingsService { get; set; }
 
 		public TaskController(TemplateService templateService)
 		{
@@ -69,7 +74,8 @@ namespace KadOzenka.Web.Controllers
 			RegisterAttributeService = new RegisterAttributeService();
             UpdateCadastralDataService = new UpdateCadastralDataService();
             TemplateService = templateService;
-        }
+            FactorSettingsService = new FactorSettingsService();
+		}
 
 		#region Карточка задачи
 
@@ -280,7 +286,6 @@ namespace KadOzenka.Web.Controllers
             //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = settings.SerializeToXml()
             //}, new CancellationToken());
-
 
 			ExportAttributeToKoProcess.AddProcessToQueue(settings);
 			_log.ForContext("TaskFilter", settings.TaskFilter)
@@ -1089,8 +1094,113 @@ namespace KadOzenka.Web.Controllers
 				$"{taskId}_{dt:ddMMyyyy}_TaskAttributeChanges.xlsx");
 		}
 
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult TaskForCod(long taskId)
+		{
+			////TODO код для отладки
+			//new TaskForCodLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	ObjectId = taskId,
+			//	UserId = SRDSession.GetCurrentUserId()
+			//}, new CancellationToken());
+
+			TaskForCodLongProcess.AddProcessToQueue(taskId);
+
+			return View();
+		}
+
 		#endregion
 
+		#region Выгрузка факторов
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult GetRegistersForFactorDownload(long taskId, bool isOks)
+        {
+            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+            if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
+
+            var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201)
+                .Select(x => new {x.Id, x.Name, x.ValueField, x.CodeField, x.Type});
+            var taskAttrTree =
+                new DropDownTreeItemModel
+                {
+                    Value = "201",
+                    Text = "Еденица оценки",
+                    Items = taskAttr.Select(x => new DropDownTreeItemModel
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    }).ToList()
+                };
+
+            var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
+            if (tourAttributes.Count == 0)
+                return StatusCode(500,$"Для {(isOks?"ОКС":"ЗУ")} тура оценки {task.TourId} не найдены факторы");
+
+            var tourRegister = TourFactorService.GetTourRegister(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
+            var paramsRegisterId = tourRegister.RegisterId;
+            var paramsTree = new DropDownTreeItemModel
+            {
+                Value = paramsRegisterId.ToString(),
+                Text = "Факторы",
+                Items = tourAttributes.Select(x => new DropDownTreeItemModel
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList()
+            };
+            var treeModel = new List<DropDownTreeItemModel>
+            {
+                taskAttrTree,
+                paramsTree
+            };
+            return new JsonResult(treeModel);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult FactorDownloadForm(long taskId)
+        {
+            return View("~/Views/Task/FactorDownloadForm.cshtml", taskId);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public IActionResult QueueFactorDownload(long taskId, long[] attributes, bool isOks)
+        {
+            try
+            {
+	            FactorsExportLongProcess.AddProcessToQueue(
+		            new FactorsExportLongProcess.FactorsDownloadParams
+		            {
+			            Attributes = attributes,
+			            TaskId = taskId,
+			            IsOks = isOks,
+			            UserId = SRDSession.GetCurrentUserId()
+		            });
+	            return Ok();
+            }
+            catch
+            {
+	            return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
+            }
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public FileResult DownloadFactorExportResult(long taskId, string dt)
+        {
+            var FileStorage = "DataExporterByTemplate";
+            var dateTime = DateTime.Parse(dt);
+            var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
+            return File(st, Consts.ExcelContentType,
+	            $"{taskId}_{dt:ddMMyyyy}_FactorsExport.xlsx");
+        }
+
+		#endregion
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)
@@ -1119,5 +1229,31 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(list);
 		}
-	}	
+
+		#region Просмотр настроек факторов
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult FactorSettings()
+		{
+			return View();
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorSettings()
+		{
+			var factorSettings = FactorSettingsService.GetFactorSettings()
+				.Select(FactorSettingsModel.FromDto).ToList();
+
+			return Json(factorSettings);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorInheritanceTypes()
+		{
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(FactorInheritance));
+			return Json(types);
+		}
+
+		#endregion Просмотр настроек факторов
+	}
 }

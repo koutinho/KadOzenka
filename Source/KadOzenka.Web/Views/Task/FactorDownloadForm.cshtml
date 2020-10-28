@@ -1,0 +1,189 @@
+﻿@model long
+
+@{
+    ViewData["Title"] = "Конфигуратор выгрузки факторов";
+}
+
+    <div class="col-md-12" id="configuratorForm">
+        <div class="form-group">
+            <div class="col-md-10 col-md-offset-1">
+                <h4>Конфигуратор выгрузки факторов</h4>
+                <input type="radio" name="type" id="zu" class="k-radio" checked="checked">
+                <label class="k-radio-label" for="zu">Земельные участки</label>
+                <input type="radio" name="type" id="oks" class="k-radio">
+                <label class="k-radio-label" for="oks">Объекты капитального строительства</label>
+                <br/>
+                <button id="exportButton" class="k-button">Запустить выгрузку</button>
+                <br/>
+                <input id="search" class="k-textbox"/>
+            </div>
+            <div class="col-md-10 col-md-offset-1">
+                <div id="treeview"></div>
+            </div>
+        </div>
+    </div>
+<style>
+    .k-checkbox-label:before{
+        top: -5px;
+        width: 20px;
+        height: 20px;
+        padding-top: 0px;
+        line-height: 20px;
+    }
+    .k-checkbox:indeterminate + .k-checkbox-label:after {
+        width: 16px;
+        height: 16px;
+        top: 6px;
+        left: 11px;
+        border-style: none;
+    }
+</style>
+
+<script>
+    var isOks = isOksSelected();
+    var taskId = @Model;
+
+    $(document).ready(function () {
+        getAttributes();
+        $("#zu").change(onChange);
+        $("#oks").change(onChange);
+    });
+    function getAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetRegistersForFactorDownload", "Task")',
+            data: { taskId: @Model, isOks: isOks },
+            dataType: 'json',
+            success: function(response) {
+                const dataList = response.map(function(factorBase) {
+                    return {
+                        Value: factorBase.Value,
+                        Text: factorBase.Text,
+                        items: factorBase.Items.map(function(factor) {
+                            return {
+                                Value: factor.Value,
+                                Text: factor.Text
+                            }
+                        })
+                    }
+                });
+                const tV = treeView.getKendoTreeView();
+                tV.setDataSource(dataList);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    const treeView = $("#treeview").kendoTreeView({
+        checkboxes: {
+            checkChildren: true
+        },
+        check: onCheck,
+        dataSource: [],
+        dataTextField: 'Text',
+        dataValueField: 'Value',
+        loadOnDemand: false
+    });
+
+    $("#exportButton").kendoButton({
+        enable: true,
+        click: function (e, sender) {
+            var button = $(e.event.target).data('kendoButton');
+            button.enable(false);
+
+            var checkedNodes = [],
+                treeView = $("#treeview").data('kendoTreeView');
+            // убираем фильтрацию для корректной отправки атрибутов
+            var search = $('#search');
+            search.val('');
+            search.trigger('input');
+            checkedNodeValues(treeView.dataSource.view(), checkedNodes);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("QueueFactorDownload", "Task")',
+                data: { taskId: taskId, attributes: checkedNodes, isOks: isOks },
+                success: function () {
+                    Common.ShowMessage('Задача поставлена в очередь обработки');
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    button.enable(true);
+                }
+            });
+        }
+    });
+
+    $("#search").on("input", function() {
+          var query = this.value.toLowerCase();
+          var dataSource = $("#treeview").data("kendoTreeView").dataSource;
+
+          filter(dataSource, query);
+        });
+
+    function filter(dataSource, query) {
+        var hasVisibleChildren = false;
+        var data = dataSource instanceof kendo.data.HierarchicalDataSource && dataSource.data();
+
+        for (var i = 0; i < data.length; i++) {
+        var item = data[i];
+        var text = item.Text.toLowerCase();
+        var itemVisible =
+            query === true // parent already matches
+            || query === "" // query is empty
+            || text.indexOf(query) >= 0; // item text matches query
+
+        var anyVisibleChildren = filter(item.children, itemVisible || query); // pass true if parent matches
+
+        hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
+
+        item.hidden = !itemVisible && !anyVisibleChildren;
+        }
+
+        if (data) {
+        // Re-apply the filter on the children.
+        dataSource.filter({ field: "hidden", operator: "neq", value: true });
+        }
+
+        return hasVisibleChildren;
+    }
+
+    function isOksSelected() {
+        return $('#oks').prop('checked');
+    }
+
+    function onChange(){
+        isOks = isOksSelected();
+        getAttributes();
+    }
+
+    function checkedNodeValues(nodes, checkedNodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) {
+                    checkedNodes.push(nodes[i].Value);
+                }
+
+                if (nodes[i].hasChildren) {
+                    checkedNodeValues(nodes[i].children.view(), checkedNodes);
+                }
+            }
+        }
+
+    function onCheck() {
+        var checkedNodes = [],
+            treeView = $("#treeview").data("kendoTreeView");
+
+        checkedNodeValues(treeView.dataSource.view(), checkedNodes);
+
+        if (checkedNodes.length > 0) {
+            var columns = checkedNodes.filter(function(key) { return key < 1000; });
+        }
+    }
+</script>

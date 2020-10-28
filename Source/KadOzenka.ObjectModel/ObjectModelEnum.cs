@@ -8327,6 +8327,13 @@ namespace ObjectModel.Directory
         [EnumCode("17")]
         [ShortTitle("")]
         Auction = 801,
+		/// <summary>
+		/// Некорректная цена (807)
+		/// </summary>
+		[Description("Некорректная цена")]
+        [EnumCode("18")]
+        [ShortTitle("")]
+        UnacceptablePrice = 807,
     }
 }
 
@@ -10221,6 +10228,13 @@ namespace ObjectModel.Directory
         [EnumCode("20")]
         [ShortTitle("Обращение")]
         Appeal = 20,
+		/// <summary>
+		/// Добавление нового объекта (21)
+		/// </summary>
+		[Description("Добавление нового объекта")]
+        [EnumCode("21")]
+        [ShortTitle("Добавление нового объекта")]
+        NewObjectAddition = 21,
     }
 }
 

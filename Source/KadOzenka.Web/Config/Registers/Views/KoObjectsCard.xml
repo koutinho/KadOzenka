@@ -35,6 +35,18 @@
           <Parameter Key="TaskId" Value="{Get:20100400}"/>
         </Parameters>
       </Button>
+
+      <Button Caption="Выгрузка факторов в Excel" Icon="icon-excel" NavigateURL="/Task/FactorDownloadForm" WindowHeight="800" WindowWidth="800" OpenInRadWindow="true">
+        <Parameters>
+          <Parameter Key="TaskId" Value="{Get:20100400}"/>
+        </Parameters>
+      </Button>
+
+      <Button Caption="Задания для ЦОД" Icon="icon-excel" NavigateURL="/Task/TaskForCod" WindowHeight="100" WindowWidth="800" OpenInRadWindow="true">
+        <Parameters>
+          <Parameter Key="TaskId" Value="{Get:20100400}"/>
+        </Parameters>
+      </Button>
       </DropDownButtons>
     </Button>
   </Buttons>
