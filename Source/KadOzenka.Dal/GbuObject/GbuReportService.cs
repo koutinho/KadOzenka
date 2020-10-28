@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.GbuObject
 		private Row _currentRow2 { get; set; }
 		private long _reportId { get; set; }
 		private int _listCounter;
-		private const int MaxRowsCount = 40;
+		private const int MaxRowsCount = 1;
 		private List<Column> _columnsWidth;
 
 
@@ -186,7 +186,15 @@ namespace KadOzenka.Dal.GbuObject
             _currentRow++;
         }
 
-        public void SetStyle()
+		public void AddRowNew(Row row, List<string> values)
+		{
+			for (var i = 0; i < values.Count; i++)
+			{
+				row.Sheet.Rows[row.Index].Cells[i].SetValue(values[i]);
+			}
+		}
+
+		public void SetStyle()
 		{
 			for (var sheetCounter = 0; sheetCounter < workSheets.Count; sheetCounter++)
 			{
