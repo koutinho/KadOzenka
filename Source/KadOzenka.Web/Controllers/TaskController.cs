@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Core.Main.FileStorages;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,9 @@ using KadOzenka.Web.Models.DataImport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
@@ -283,7 +286,6 @@ namespace KadOzenka.Web.Controllers
             //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = settings.SerializeToXml()
             //}, new CancellationToken());
-
 
 			ExportAttributeToKoProcess.AddProcessToQueue(settings);
 			_log.ForContext("TaskFilter", settings.TaskFilter)
@@ -1090,6 +1092,23 @@ namespace KadOzenka.Web.Controllers
 			var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_TaskAttributeChanges.xlsx");
 			return File(st, Consts.ExcelContentType,
 				$"{taskId}_{dt:ddMMyyyy}_TaskAttributeChanges.xlsx");
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult TaskForCod(long taskId)
+		{
+			////TODO код для отладки
+			//new TaskForCodLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	ObjectId = taskId,
+			//	UserId = SRDSession.GetCurrentUserId()
+			//}, new CancellationToken());
+
+			TaskForCodLongProcess.AddProcessToQueue(taskId);
+
+			return View();
 		}
 
 		#endregion

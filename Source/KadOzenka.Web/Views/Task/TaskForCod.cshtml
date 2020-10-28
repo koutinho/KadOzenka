@@ -1,0 +1,13 @@
+﻿<script>
+    $(document).ready(function () {
+        Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов.<br> Результат будет отправлен на почту.');
+
+        closeMainWindow();
+    });
+
+    function closeMainWindow() {
+        setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 5000);
+    }
+</script>
