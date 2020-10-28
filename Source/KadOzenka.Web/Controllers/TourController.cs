@@ -739,9 +739,23 @@ namespace KadOzenka.Web.Controllers
             return Json(items);
         }
 
-        #region Импорт группы из Excel
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetSortedGroupsWithNumbersByTasks(List<long> taskIds)
+		{
+			var groups = GroupService.GetSortedGroupsWithNumbersByTasks(taskIds);
 
-        [HttpGet]
+			var items = groups.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.CombinedName
+			});
+
+			return Json(items);
+		}
+
+		#region Импорт группы из Excel
+
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult ImportGroupDataFromExcel()
         {

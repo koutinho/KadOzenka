@@ -73,6 +73,55 @@ namespace FastReport
         }
           
       }
+      
+      //adding new total row     
+      int totalRowNumber = 0;
+      for (int i = 0; i &lt; table.RowCount; i++)
+      {
+        if(table[0, i].Text == &quot;Итого&quot;){
+          totalRowNumber = i;
+          break;
+        }       
+      }    
+      TableRow newRow1 = new TableRow();
+      newRow1.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow1);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      }
+      
+      TableRow newRow2 = new TableRow();
+      newRow2.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow2);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber + 1].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      }  
+      
+      TableRow newRow3 = new TableRow();
+      newRow3.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow3);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber + 2].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      } 
+      
+      //set RowSpan  for new total row
+      table[0, table.RowCount - 3].RowSpan = 3;
+      table[1, table.RowCount - 3].RowSpan = 3;
+
+      //delete previous total rows
+      table.Rows.Remove(table.Rows[totalRowNumber+2]);
+      table.Rows.Remove(table.Rows[totalRowNumber + 1]);
+      table.Rows.Remove(table.Rows[totalRowNumber]); 
+      
 
       //adding new column and row for col/row numbering
       TableRow newRow = new TableRow();
@@ -144,7 +193,7 @@ namespace FastReport
           <Header Expression="[Data.GroupName]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
-          <Header Expression="[Data.Name]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.Name]" Totals="false"/>
           <Header Expression="[Data.UpksCalcType]" Sort="None" Totals="false"/>
         </MatrixRows>
         <MatrixCells>

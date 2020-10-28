@@ -56,7 +56,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         private static List<Group> GetGroups(List<long> taskIds)
         {
-            return GroupService.GetGroupsByTasks(taskIds).Select(x => new Group { Id = x.Id, Name = x.GroupName }).ToList();
+	        return GroupService.GetSortedGroupsWithNumbersByTasks(taskIds)
+		        .Select(x => new Group {Id = x.Id, Name = x.CombinedName}).ToList();
         }
 
         #endregion

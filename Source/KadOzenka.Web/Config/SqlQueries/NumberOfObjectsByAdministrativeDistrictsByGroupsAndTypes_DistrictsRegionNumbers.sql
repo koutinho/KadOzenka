@@ -6,7 +6,9 @@ SELECT
         L1_R201.PROPERTY_TYPE_CODE AS PropertyTypeCode,
 		(SELECT case when L2_R205.NUMBER is null then L2_R205.GROUP_NAME 
                 else CONCAT(L2_R205.NUMBER, '. ', L2_R205.GROUP_NAME) end
-            FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroup
+            FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroup,
+        (SELECT L2_R205.NUMBER
+            FROM KO_GROUP L2_R205 WHERE(L2_R205.ID = L1_R205.PARENT_ID)) AS ParentGroupNumber
 FROM KO_UNIT L1_R201
 LEFT JOIN KO_GROUP L1_R205 ON (L1_R201.GROUP_ID = L1_R205.ID) 
 WHERE (L1_R201.TASK_ID IN ({0}) AND L1_R201.OBJECT_ID IS NOT NULL
@@ -24,6 +26,7 @@ data AS (
 	L1_R107.DISTRICT_CODE AS DistrictCode,
     u.PropertyTypeCode,
     u.ParentGroup,
+    u.ParentGroupNumber,
     substring(COALESCE(cadastralQuartalGbu.attributeValue, u.CadastralQuartal) from 1 for 5) as CadastralQuartal
     from unit_data u
     left outer join cadastralQuartalAttrValues cadastralQuartalGbu on u.ObjectId=cadastralQuartalGbu.objectId
@@ -38,3 +41,4 @@ select count(d.id) AS objectsCount,
     d.ParentGroup
 from data d
 GROUP BY (DistrictCode, CadastralQuartal, PropertyTypeCode, ParentGroup)
+order by min(d.ParentGroupNumber::int)
