@@ -59,8 +59,7 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Выборки из справочника ЦОД");
 
             _reportService = new GbuReportService();
-
-            _reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            _reportService.AddHeadersNew(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -121,15 +120,11 @@ namespace KadOzenka.Dal.GbuObject
             string value = string.Empty;
             if (item != null) value = item.Value;
 
-
-            int rowReport;
-
             lock (locked)
             {
-                rowReport = _reportService.GetCurrentRow();
+                var rowReport = _reportService.GetCurrentRowNew();
+                AddRowToReport(rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
             }
-
-            AddRowToReport(rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
 
             var attributeValue = new GbuObjectAttribute
             {
@@ -146,7 +141,7 @@ namespace KadOzenka.Dal.GbuObject
             DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
         }
 
-        public static void AddRowToReport(int rowNumber, string kn, string value, long resultAttribute, string errorMessage = "", string sourceName = "Справочник ЦОД")
+        public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, string value, long resultAttribute, string errorMessage = "", string sourceName = "Справочник ЦОД")
         {
 	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
 	        _reportService.AddValue(kn, knColumn, rowNumber);
