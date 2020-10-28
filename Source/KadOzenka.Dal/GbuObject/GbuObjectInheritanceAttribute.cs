@@ -33,7 +33,9 @@ namespace KadOzenka.Dal.GbuObject
         private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
         public static long Run(GbuInheritanceAttributeSettings setting)
         {
-			var reportService = new GbuReportService();
+	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Наследования");
+
+            var reportService = new GbuReportService();
 			reportService.AddHeaders(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
 
             locked = new object();
@@ -58,19 +60,10 @@ namespace KadOzenka.Dal.GbuObject
                 _log.ForContext("TasksId", setting.TaskFilter)
                   .Debug("Выполнение операции наследования атрибутов ГБУ по {TasksCount} заданиям на оценку. Всего {Count} объектов", setting.TaskFilter.Count, MaxCount);
 
-                try {
-                    _log.Debug("Данные объекта 1: ", JsonConvert.SerializeObject(Objs[0]));
-                }
-                catch (Exception ex) {
-                    _log.Warning(ex, "Ошибка логирования");
-                }
-
                 Parallel.ForEach(Objs, options, item => { 
-                    RunOneUnit(item, setting, reportService); 
-                    Objs.Remove(item); 
+                    RunOneUnit(item, setting, reportService);
                 });
                 _log.Debug("Операция наследования атрибутов ГБУ завершена");
-
 
                 CurrentCount = 0;
                 MaxCount = 0;
