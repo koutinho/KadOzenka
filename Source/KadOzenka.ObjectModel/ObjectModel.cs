@@ -24386,6 +24386,26 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private string _costcalculatefactors;
+        /// <summary>
+        /// 60001400 Оценочные факторы выведенные на страницу расчетов (COST_CALCULATE_FACTORS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001400)]
+        public string CostCalculateFactors
+        {
+            get
+            {
+                CheckPropertyInited("CostCalculateFactors");
+                return _costcalculatefactors;
+            }
+            set
+            {
+                _costcalculatefactors = value;
+                NotifyPropertyChanged("CostCalculateFactors");
+            }
+        }
+
     }
 }
 
