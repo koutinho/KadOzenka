@@ -422,7 +422,8 @@ namespace KadOzenka.Dal.ExpressScore
 				SegmentType = inputParam.Segment,
 				SummaryCost = summaryCost,
 				TargetMarketObjectId = inputParam.TargetMarketObjectId,
-				TargetObjectId = inputParam.TargetObjectId
+				TargetObjectId = inputParam.TargetObjectId,
+				ComplexCalculateParameters = inputParam.ComplexCalculateParameters.SerializeToXml()
 			};
 
 			msg = SaveSuccessExpressScore(saveExpressScore, out int id);
@@ -483,7 +484,8 @@ namespace KadOzenka.Dal.ExpressScore
 				ScenarioType = inputParam.ScenarioType,
 				TargetMarketObjectId = inputParam.TargetMarketObjectId,
 				TargetObjectId = inputParam.TargetObjectId,
-				Kn = inputParam.Kn
+				Kn = inputParam.Kn,
+				ComplexCalculateParameters = inputParam.ComplexCalculateParameters
 			};
 			squarePerMeterCost = CalculateSquarePerMeterCost(calculateSquareCost, out string msg, out var successAnalogIds);
 
@@ -1412,7 +1414,8 @@ namespace KadOzenka.Dal.ExpressScore
                 ScenarioType_Code = saveExpressScore.ScenarioType.GetValueOrDefault(),
                 SegmentType_Code = saveExpressScore.SegmentType.GetValueOrDefault(),
                 DealType_Code = saveExpressScore.DealType.GetValueOrDefault(),
-                Address = saveExpressScore.Address
+                Address = saveExpressScore.Address,
+				CostCalculateFactors = saveExpressScore.ComplexCalculateParameters
 			}.Save();
         }
 

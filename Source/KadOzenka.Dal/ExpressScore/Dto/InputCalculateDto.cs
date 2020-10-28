@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public DealTypeShort DealType { get; set; }
 
 		/// <summary>
-		/// Оценочные параметры для ЦО полученный из формы
+		/// Оценочные параметры для ЦО полученный из страницы расчетов
 		/// </summary>
 		public List<SearchAttribute> ComplexCalculateParameters { get; set; }
 	}

@@ -530,7 +530,7 @@ function createPlacemark(coords) {
 
 //Пересчет стоимости
 function updateCost(cost, squareCost) {
-    if (cost && squareCost) {
+    if (squareCost) {
         $('#cost').text(cost.toLocaleString());
         $('#squareCost').text(squareCost.toLocaleString());
     }

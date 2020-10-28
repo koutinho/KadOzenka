@@ -275,7 +275,9 @@ namespace KadOzenka.Web.Controllers
 				ScenarioType = obj.ScenarioType_Code,
 				Segment = obj.SegmentType_Code,
 				TargetObjectId = (int) obj.Objectid,
-                TargetMarketObjectId = obj.TargetMarketObjectId
+                TargetMarketObjectId = obj.TargetMarketObjectId,
+				ComplexCalculateParameters = obj.CostCalculateFactors != null
+					? obj.CostCalculateFactors.DeserializeFromXml<List<SearchAttribute>>() : new List<SearchAttribute>()
 			};
 
 			string resMsg = _service.RecalculateExpressScore(inputParam, analogIds, expressScoreId, out decimal cost, out decimal squareCost, out long reportId);
