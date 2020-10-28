@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Task.UnitDto
+﻿@using KadOzenka.Web.Models.Unit
+@model KadOzenka.Web.Models.Task.UnitDto
 
 <div>
     @Html.HiddenFor(x => x.Id)
@@ -259,12 +260,15 @@
 
 <script type="text/x-kendo-template" id="factorsGridToolbarTemplate">
     <div class="factorsGridToolbarContainer">
-        <label class="factors-switch-label" for="factors-switch">Отображать факторы, используемые в рамках текущей модели</label>
-        <input id="factors-switch" checked="checked" />
-        <div style="margin-top: 1%">
-            <input type="checkbox" id="factorsWithValueCheckBox" class="k-checkbox">
-            <label class="k-checkbox-label" for="factorsWithValueCheckBox">Заполненные</label>
+        <div style="display: flex;">
+            @*<label class="factors-switch-label" for="factors-dropdownlist">Вид отображения факторов</label>*@
+            <input id="factors-dropdownlist" />
+            <div style="display: flex;margin-left:1%;">
+                <input type="checkbox" id="factorsWithValueCheckBox" class="k-checkbox">
+                <label class="k-checkbox-label" for="factorsWithValueCheckBox">Заполненные</label>
+            </div>
         </div>
+       
     </div>
 </script>
 
@@ -377,17 +381,22 @@
             }
         });
 
-        $("#factors-switch").kendoSwitch({
-            change: function (e) {
-                if ($('#factorsGrid .k-pager-first')) {
-                    $('#factorsGrid .k-pager-first').click();
+        var unitFactorsShowTypesDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Html.Raw(Url.Action("GetUnitFactorsShowTypes", "Task"))',
+                    dataType: "json"
                 }
+            }
+        });
+        $("#factors-dropdownlist").kendoDropDownList({
+            dataSource: unitFactorsShowTypesDataSource,
+            dataTextField: "Text",
+            dataValueField: "Value",
+            change: function(e) {
                 getFactors();
             },
-            messages: {
-                checked: "",
-                unchecked: ""
-            }
+            value: @((long)UnitFactorsShowType.ModelFactors)
         });
 
         $('#factorsWithValueCheckBox').on('change', getFactors);
@@ -395,10 +404,10 @@
 
 
     function getFactors() {
-        var isShowOnlyModelFactorsChecked = $('#factors-switch').prop('checked');
+        var unitFactorsShowType = $("#factors-dropdownlist").data('kendoDropDownList').value();
         var isFilledFactorsChecked = $('#factorsWithValueCheckBox').prop('checked');
         var grid = $('#factorsGrid').data("kendoGrid");
-        grid.dataSource.transport.options.read.data["showOnlyModelFactors"] = isShowOnlyModelFactorsChecked;
+        grid.dataSource.transport.options.read.data["unitFactorsShowType"] = unitFactorsShowType;
         grid.dataSource.transport.options.read.data["isShowOnlyFilledFactors"] = isFilledFactorsChecked;
         grid.dataSource.read();
     }
@@ -424,8 +433,16 @@
     }
 
     .factors-switch-label {
-        margin-right: 5px; 
-        font-weight: 300; 
-        color:#0a1124;
+        margin-right: 5px;
+        font-weight: 300;
+        color: #0a1124;
+        align-self: center;
+    }
+    .k-checkbox-label {
+        align-self: center;
+    }
+
+    .factorsGridToolbarContainer span.k-widget.k-dropdown {
+        width: auto;
     }
 </style>

@@ -48,6 +48,14 @@ namespace KadOzenka.Dal.Tours
                             x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
         }
 
+        public List<OMAttribute> GetTourAllAttributes(long tourId)
+        {
+	        var result = GetTourAttributes(tourId, ObjectType.Oks);
+            result.AddRange(GetTourAttributes(tourId, ObjectType.ZU));
+
+            return result;
+        }
+
         public OMRegister GetTourRegister(long tourId, ObjectType objectType)
         {
             var existedTourFactorRegister = objectType == ObjectType.ZU
@@ -161,7 +169,7 @@ namespace KadOzenka.Dal.Tours
             RegisterAttributeService.RemoveRegisterAttribute(attributeId);
         }
 
-        public List<UnitFactor> GetUnitFactorValues(OMUnit unit, List<long> attributes)
+        public List<UnitFactor> GetUnitFactorValues(OMUnit unit, List<long> attributes = null)
         {
 	        var tourRegister = GetTourRegister(unit.TourId.GetValueOrDefault(),
 		        unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks);
