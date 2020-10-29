@@ -454,6 +454,12 @@ namespace KadOzenka.Web.Controllers
 
         #region Метки
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult MarkCatalog()
+        {
+	        return View();
+        }
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult MarksGrid(long groupId, long factorId)
@@ -467,6 +473,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetMarkCatalog(long groupId, long factorId)
         {
+	        if (groupId == 0 || factorId == 0)
+		        return Json(new List<MarkModel>());
+
             var marks = ModelFactorsService.GetMarks(groupId, factorId);
 
             var markModels = marks.Select(MarkModel.ToModel).ToList();

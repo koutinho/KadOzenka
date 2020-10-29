@@ -649,50 +649,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetParentGroup(string type, long? id)
-		{
-			KoGroupAlgoritm groupAlgoritm;
-
-			switch (type)
-			{
-				case "OKS":
-					groupAlgoritm = KoGroupAlgoritm.MainOKS;
-					break;
-				case "Parcel":
-					groupAlgoritm = KoGroupAlgoritm.MainParcel;
-					break;
-				default:
-					throw new Exception("Не выбран тип объекта");
-			}			
-
-			var groups = OMGroup.Where(x => x.GroupAlgoritm_Code == groupAlgoritm
-					&& x.Id != id)
-				.SelectAll().Execute()
-				.Select(x => new SelectListItem
-				{
-					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
-				});
-
-			return Json(groups);
-		}
-
-		//TODO hot fix, будет исправлен в новой ветке
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetParentGroupNew(string type, long? id, long? tourId)
+		public JsonResult GetParentGroup(ObjectTypeExtended type, long? tourId)
 		{
 			if(tourId == null)
 				return Json(new List<SelectListItem>());
 
-			KoGroupAlgoritm groupAlgorithm;
-			if (type == "OKS")
-			{
-				groupAlgorithm = KoGroupAlgoritm.MainOKS;
-			}
-			else
-			{
-				groupAlgorithm = KoGroupAlgoritm.MainParcel;
-			}
+			var groupAlgorithm = type == ObjectTypeExtended.Oks ? KoGroupAlgoritm.MainOKS : KoGroupAlgoritm.MainParcel;
 
 			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
 
@@ -707,9 +669,8 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
-		//TODO hot fix, будет исправлен в новой ветке
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetSubgroupNew(long? groupId, long? tourId)
+		public JsonResult GetSubgroup(long? groupId, long? tourId)
 		{
 			if (groupId == null || tourId == null)
 			{
@@ -724,26 +685,6 @@ namespace KadOzenka.Web.Controllers
 				{
 					Value = x.Id.ToString(),
 					Text = x.GroupName
-				});
-
-			return Json(groups);
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetSubgroup(long? groupId)
-		{
-			if (groupId == null)
-			{
-				return Json(new List<SelectListItem> { });
-			}
-
-			var groups = OMGroup.Where(x => x.ParentId == groupId)
-				.OrderBy(x => x.GroupName)
-				.SelectAll().Execute()
-				.Select(x => new SelectListItem
-				{
-					Value = x.Id.ToString(),
-					Text = $"{GroupService.GetSubGroupNumber(x.Number)}.{x.GroupName}"
 				});
 
 			return Json(groups);
@@ -1124,7 +1065,24 @@ namespace KadOzenka.Web.Controllers
             return EmptyResponse();
         }
 
-        #endregion
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult GetTourFactorsByType(long? tourId, ObjectTypeExtended type)
+        {
+	        if (tourId == null)
+		        return Json(new List<SelectListItem>());
+
+	        var tourFactors = TourFactorService.GetTourAttributes(tourId.Value, type);
+
+			var result = tourFactors.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.Name
+			});
+
+			return Json(result);
+        }
+
+		#endregion
 
 		#region Зависимости при расчете подгрупп
 
