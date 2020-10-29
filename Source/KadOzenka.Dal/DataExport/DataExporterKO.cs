@@ -3901,7 +3901,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.1",
                      "Кадастровая стоимость",
-                     _unit.CadastralCost.ToString(),
+                     _unit.CadastralCost.ToString()?.Replace(",", "."),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4074,7 +4074,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.5",
                      "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
-                     CheckNullEmpty.CheckStringOut(_unit.Square.ToString()),
+                     CheckNullEmpty.CheckStringOut(_unit.Square.ToString()?.Replace(",", ".")),
                      10,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
@@ -4387,17 +4387,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         jj = false;
                     }
@@ -4409,17 +4409,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", по субъекту)") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited) //subgroup.Type_SubGroup == 11)
@@ -4429,17 +4429,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Min) //subgroup.Type_SubGroup == 12)
@@ -4454,17 +4454,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4472,12 +4472,12 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (!dd)
                     {
-                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     else
                     {
                         formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
-                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))
@@ -4491,19 +4491,19 @@ namespace KadOzenka.Dal.DataExport
                             formula = formula + "$$" +
                                 "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4690,7 +4690,11 @@ namespace KadOzenka.Dal.DataExport
             {
                 foreach (DataRow row in data.Rows)
                 {
-                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+	                var numberValue = row.ItemArray[7].ParseToDecimalNullable();
+                    if (numberValue.HasValue)
+	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), numberValue.ToString().Replace(",", ".")));
+                    else
+	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                 }
                 CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
                                         FactorValuesGroup.Find(x => x.FactorId == _factor_id) :
@@ -4717,7 +4721,7 @@ namespace KadOzenka.Dal.DataExport
 
                         if (mc != null)
                         {
-                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(".00000000000000000000", ".00") + ")";
+                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
                         }
                     }
                     #endregion

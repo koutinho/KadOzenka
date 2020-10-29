@@ -2389,7 +2389,7 @@ namespace ObjectModel.KO
         }
         private static string GetFormulaPart(string val, string znak, double empty)
         {
-            string res = Convert.ToDouble(val).ToString() + " " + znak + " ";
+            string res = Convert.ToDouble(val).ToString()?.Replace(',', '.') + " " + znak + " ";
             double rval = Convert.ToDouble(val);
             if (rval == empty)
                 res = string.Empty;
@@ -2485,12 +2485,12 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + model.A0.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + model.A0.ToString()?.Replace(',', '.') + D_string + ")" + De_string;
                         else
-                            res = "exp(" + model.A0.ToString() + D_string + ")";
+                            res = "exp(" + model.A0.ToString()?.Replace(',', '.') + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
-                        res = model.A0.ToString() + D_string;
+                        res = model.A0.ToString()?.Replace(',', '.') + D_string;
                         break;
                     case KoAlgoritmType.Multi:
                         res = GetFormulaPart(model.A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
