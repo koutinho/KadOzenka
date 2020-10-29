@@ -676,32 +676,26 @@ namespace ObjectModel.KO
             if (ParentGroup != null) return GetFactorReestrId(ParentGroup);
             else
             {
+	            long? factorRegisterId = null;
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == current.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
                     if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS)
                     {
-                        if (tourgroup.TourId == 2016) return 252;
-                        else
-                        if (tourgroup.TourId == 2018) return 250;
-                        else
-                            return null;
+	                    factorRegisterId =  OMTourFactorRegister
+		                    .Where(x => x.TourId == tourgroup.TourId && x.ObjectType_Code != PropertyTypes.Stead)
+		                    .Select(x => x.RegisterId).ExecuteFirstOrDefault()?.RegisterId;
                     }
                     else
                     if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel)
                     {
-                        if (tourgroup.TourId == 2016) return 253;
-                        else
-                        if (tourgroup.TourId == 2018) return 251;
-                        else
-                            return null;
+	                    factorRegisterId = OMTourFactorRegister
+		                    .Where(x => x.TourId == tourgroup.TourId && x.ObjectType_Code == PropertyTypes.Stead)
+		                    .Select(x => x.RegisterId).ExecuteFirstOrDefault()?.RegisterId;
                     }
-                    else
-                        return null;
 
                 }
-                else
-                    return null;
+                return (int?)factorRegisterId;
             }
         }
         public static int GetFactorReestrId(OMUnit current)
