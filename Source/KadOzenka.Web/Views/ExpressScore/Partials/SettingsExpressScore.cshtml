@@ -39,6 +39,19 @@
 	.k-item .k-in {
 		white-space: pre-wrap;
 	}
+
+	.hint {
+		background-color: white;
+	}
+
+	.placeholder {
+		opacity: 0.6;
+	}
+
+	fieldset.complex-factor fieldset {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
 	/*#RequiredParam span.k-header {
 		display: none;
 	}*/
@@ -91,25 +104,7 @@
 		<li id="RequiredParam" data-expand>
             <fieldset class="required-param">
                 <legend>Обязательные параметры</legend>
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        @Html.CustomLabelFor("Атрибут года постройки", true)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter(FilterType.Contains)
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(a => a.Action("GetAttributesKo", "ExpressScore").Data("getDataAttribute"));
-                                    }).HtmlAttributes(new
-                                    {
-                                        name = "YearBuildId"
-                                    }))
-                    </div>
-                </div>
-                <div class="form-group">
+	            <div class="form-group">
                     <div class="col-sm-3">
                         @Html.CustomLabelFor(@"Корректировка на дату ""Справочник""", true)
                     </div>
@@ -147,26 +142,7 @@
                                     }))
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        @Html.CustomLabelFor(@"Корректировка на этаж ""Справочник""", true)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CostFactors.FloorDicId)
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter(FilterType.Contains)
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-                                    }
-                                    ).HtmlAttributes(new
-                                    {
-                                        name = "FloorDicId"
-                                    }))
-                    </div>
-                </div>
-                <div class="form-group">
+	            <div class="form-group">
                     <div class="col-sm-3">
                         @Html.CustomLabelFor("НДС включен")
                     </div>
@@ -292,7 +268,6 @@
 					    <fieldset id="factor-@i">
                             @(await Html.PartialAsync("PartialComplexFactorCard.cshtml", Model.CostFactors.ComplexCostFactors[i], new ViewDataDictionary(ViewData){{ "Count", i }, {"IsEdit", Model.IsEdit} }))
                         </fieldset>
-						<div class="form-group"></div>
 						i++;
 					}
 				}
@@ -363,6 +338,8 @@
 					obj['AttributeId'] = validateParams(formObject[`AttributeId-${i}`]);
 					obj['DictionaryId'] = formObject[`DictionaryId-${i}`];
                     obj['ComplexCostFactorType'] = formObject[`ComplexCostFactorType-${i}`];
+					obj['ShowInCalculatePage'] = formObject[`ShowInCalculatePage-${i}`];
+					obj['DefaultValue'] = formObject[`DefaultValueCostFactor-${i}`];
 					complexCostFactors.push(obj);
 				}
 			}
@@ -384,13 +361,11 @@
 			TourId: formObject['TourId'],
 			FactorRegisterId: formObject['FactorRegisterId'],
 			CostFactors: {
-				YearBuildId: formObject['YearBuildId'],
 				complexCostFactors,
 				simpleCostFactors,
 				LandShareDicId: formObject["LandShareDicId"],
 				IndexDateDicId: formObject["IndexDateDicId"],
-				FloorDicId: formObject["FloorDicId"],
-                IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
+				IsVatIncluded: formObject["@nameof(CostFactorsDto.IsVatIncluded)"],
 				VatDictionaryId: formObject["@nameof(CostFactorsDto.VatDictionaryId)"],
 				IsSquareFactorUsedInCalculations: formObject["@nameof(CostFactorsDto.IsSquareFactorUsedInCalculations)"],
 				IsCorrectionByBargainUsedInCalculations: formObject["@nameof(CostFactorsDto.IsCorrectionByBargainUsedInCalculations)"],
@@ -541,8 +516,6 @@
     }
 
 
-
-
 	$(document).ready(function () {
 		refreshComplexHandlers();
         refreshSimpleHandlers();
@@ -563,6 +536,17 @@
 					}
 				});
 			});
+
+		$('.complex-factor').on('change', '[id^=ShowInCalculatePage]', function () {
+			if ($(this).is(':checked')) {
+				$(this).closest('.form-group').find('.default-value').show();
+				$(this).closest('.form-group').find('.default-label').show();
+			} else {
+				$(this).closest('.form-group').find('.default-value').hide();
+				$(this).closest('.form-group').find('.default-label').hide();
+			}
+		
+		});
 	});
 
 </script>

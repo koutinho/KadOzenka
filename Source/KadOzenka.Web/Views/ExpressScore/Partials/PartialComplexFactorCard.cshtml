@@ -1,7 +1,6 @@
 ﻿@using KadOzenka.Dal.ExpressScore.Dto
 @model KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactor
 
-<div class="form-group"></div>
 <div>
     <input type="hidden" class="complexCostFactorType" name="ComplexCostFactorType-@ViewBag.Count" value="@Model.ComplexCostFactorType">
     <div class="form-group">
@@ -24,32 +23,53 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor("Имя атрибута", true)
-        </div>
-        <div class="col-sm-4">
-            @(Html.Kendo().DropDownTreeFor(m => m.AttributeId)
-                .DataTextField("Text")
-                .DataValueField("Value")
-                .Filter(FilterType.Contains)
-                .ClearButton(false)
-                .HtmlAttributes(new {name = $"AttributeId-{ViewBag.Count}", id = $"AttributeId-{ViewBag.Count}", style = "width: 100%"})
-                )
-        </div>
-        <div class="col-sm-2">
-            @Html.CustomLabelFor("Справочник")
-        </div>
-        <div class="col-sm-4">
-            @(Html.Kendo().DropDownListFor(m => m.DictionaryId)
-                .DataTextField("Text")
-                .DataValueField("Value")
-                .Filter(FilterType.Contains)
-                .DataSource(source =>
-                {
-                    source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-                })
-                .HtmlAttributes(new {name = $"DictionaryId-{ViewBag.Count}", id = $"DictionaryId-{ViewBag.Count}"})
-                )
-        </div>
+	    <div class="col-sm-2">
+		    @Html.CustomLabelFor("Имя атрибута", true)
+	    </div>
+	    <div class="col-sm-4">
+		    @(Html.Kendo().DropDownTreeFor(m => m.AttributeId)
+			    .DataTextField("Text")
+			    .DataValueField("Value")
+			    .Filter(FilterType.Contains)
+			    .ClearButton(false)
+			    .HtmlAttributes(new {name = $"AttributeId-{ViewBag.Count}", id = $"AttributeId-{ViewBag.Count}", style = "width: 100%"})
+			    )
+	    </div>
+	    <div class="col-sm-2">
+		    @Html.CustomLabelFor("Справочник")
+	    </div>
+	    <div class="col-sm-4">
+		    @(Html.Kendo().DropDownListFor(m => m.DictionaryId)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.Filter(FilterType.Contains)
+				.DataSource(source =>
+				{
+					source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+				})
+			    .Events(e => e.Select("selectDictionary"))
+				.HtmlAttributes(new {name = $"DictionaryId-{ViewBag.Count}", id = $"DictionaryId-{ViewBag.Count}"})
+			    )
+	    </div>
+    </div>
+    <div class="form-group">
+	    <div class="col-sm-4">
+		    @(Html.Kendo().CheckBoxFor(m => m.ShowInCalculatePage).Label("Выводить в меню расчетов").Name($"ShowInCalculatePage-{ViewBag.Count}"))
+	    </div>
+	    <div class="col-sm-offset-2 col-sm-2 default-label" style="@(Model.ShowInCalculatePage ? "" : "display: none")">
+		    @Html.CustomLabelFor("Значение по умолчанию")
+	    </div>
+	    <div class="col-sm-4 default-value" style="@(Model.ShowInCalculatePage ? "" : "display: none")">
+		    @( Html.Kendo().DropDownListFor(m => m.DefaultValue)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.Filter(FilterType.Contains)
+				.DataSource(source =>
+				{
+					source.Read(a => a.Action("GetEsDictionary", "ExpressScore", new { dictionaryId = Model.DictionaryId}));
+				})
+				.HtmlAttributes(new {name = $"DefaultValueCostFactor-{ViewBag.Count}", id = $"DefaultValueCostFactor-{ViewBag.Count}"})
+			    )
+	    </div>
     </div>
 </div>

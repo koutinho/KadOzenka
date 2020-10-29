@@ -1,0 +1,47 @@
+﻿@model List<KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactorForCalculateDto>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+	<div class="form-group flex-row">
+		<div class="col-sm-6">
+			<div>
+				@Html.CustomLabel(Model[i].Name)
+			</div>
+			<div class="flex-row wrapper-factor">
+				@(Html.Kendo()
+					.DropDownListFor(m => m[i].DefaultValue)
+					.DataTextField("Text")
+					.DataValueField("Value")
+					.DataSource(source =>
+						source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
+							new { dictionaryId = Model[i].DictionaryId }))
+					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId, DataReferenceId = Model[i].DictionaryId}))
+				<div style="margin-left: 5px">
+					@Html.Kendo().CheckBox().Name($"chFactor-{i}").Checked(true)
+				</div>
+			</div>
+		</div>
+		@if (i + 1 < Model.Count)
+		{
+			<div class="col-sm-6">
+				<div>
+					@Html.CustomLabel(Model[i + 1].Name)
+				</div>
+				<div class="flex-row wrapper-factor">
+					@(Html.Kendo()
+				.DropDownListFor(m => m[i + 1].DefaultValue)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.DataSource(source =>
+					source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
+						new { dictionaryId = Model[i + 1].DictionaryId }))
+				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId, DataReferenceId = Model[i + 1].DictionaryId }))
+					<div style="margin-left: 5px">
+						@Html.Kendo().CheckBox().Name($"chFactor-{i + 1}").Checked(true)
+					</div>
+				</div>
+			</div>
+			i++;
+		}
+	</div>
+}

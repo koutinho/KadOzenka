@@ -47,11 +47,11 @@ namespace KadOzenka.Web.Controllers
             {
                 if (id == -1)
                 {
-                    id = ReferenceService.CreateReference(viewModel.Name, viewModel.ValueType);
+                    id = ReferenceService.CreateReference(viewModel.Name, viewModel.ValueType, viewModel.UseInterval);
                 }
                 else
                 {
-                    ReferenceService.UpdateReference(viewModel.Id, viewModel.Name, viewModel.ValueType);
+                    ReferenceService.UpdateReference(viewModel.Id, viewModel.Name, viewModel.ValueType, viewModel.UseInterval);
                 }
             }
             catch (Exception e)
@@ -107,17 +107,10 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
             }
 
-            var id = viewModel.Id;
+            long id;
             try
             {
-                if (id == -1)
-                {
-                    id = ReferenceService.CreateReferenceItem(viewModel.ToDto());
-                }
-                else
-                {
-                    ReferenceService.UpdateReferenceItem(viewModel.ToDto());
-                }
+	            id = ReferenceService.SaveReferenceItem(viewModel.ToDto());
             }
             catch (Exception e)
             {
@@ -188,9 +181,13 @@ namespace KadOzenka.Web.Controllers
 		            var importInfo = new ImportReferenceFileInfoDto
 		            {
 			            FileName = file.FileName,
+                        CommonValueColumnName = viewModel.CommonValue,
 			            ValueColumnName = viewModel.Value,
 			            CalcValueColumnName = viewModel.CalcValue,
-			            ValueType = viewModel.ValueType
+			            ValueType = viewModel.ValueType,
+                        UseInterval = viewModel.UseInterval,
+                        ValueFromColumnName = viewModel.ValueFrom,
+                        ValueToColumnName = viewModel.ValueTo
 		            };
 
 		            if (ReferenceService.UseLongProcess(fileStream))
