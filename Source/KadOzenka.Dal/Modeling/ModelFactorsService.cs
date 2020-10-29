@@ -320,12 +320,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public int CreateMark(string value, decimal? metka, long? factorId, long? groupId)
 		{
-			if (groupId == null)
-				throw new Exception("Не переден ИД группы");
-			if(string.IsNullOrWhiteSpace(value))
-				throw new Exception("Передано пустое значение");
-			if (metka == null)
-				throw new Exception("Передана пустая метка");
+			ValidateMark(groupId, value, metka);
 
 			return new OMMarkCatalog
 			{
@@ -339,6 +334,8 @@ namespace KadOzenka.Dal.Modeling
 		public void UpdateMark(long id, string value, decimal? metka)
 		{
 			var mark = GetMarkById(id);
+
+			ValidateMark(mark.GroupId, value, metka);
 
 			mark.ValueFactor = value;
 			mark.MetkaFactor = metka;
@@ -359,6 +356,25 @@ namespace KadOzenka.Dal.Modeling
 
 			marks.ForEach(x => x.Destroy());
 		}
+
+
+		#region Support Methods
+
+		private void ValidateMark(long? groupId, string value, decimal? metka)
+		{
+			if (string.IsNullOrWhiteSpace(value))
+				throw new Exception("Передано пустое значение");
+			if (metka == null)
+				throw new Exception("Передана пустая метка");
+			if (groupId == null)
+				throw new Exception("Не переден ИД группы");
+
+			var model = OMModel.Where(x => x.GroupId == groupId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+			if (model?.Type_Code == KoModelType.Automatic)
+				throw new Exception($"Модель группы относится к типу '{KoModelType.Automatic.GetEnumDescription()}', ручная работа с метками запрещена");
+		}
+
+		#endregion
 
 		#endregion
 	}
