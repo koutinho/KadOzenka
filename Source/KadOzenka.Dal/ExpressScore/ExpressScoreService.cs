@@ -246,7 +246,8 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					JoinCondition = new QSConditionSimple(OMPriceHistory.GetColumn(x => x.InitialId), QSConditionType.Equal,
 						OMCoreObject.GetColumn(x => x.Id)),
-					RegisterId = OMPriceHistory.GetRegisterId()
+					RegisterId = OMPriceHistory.GetRegisterId(),
+					JoinType = QSJoinType.Left
 				}
 			};
 		}

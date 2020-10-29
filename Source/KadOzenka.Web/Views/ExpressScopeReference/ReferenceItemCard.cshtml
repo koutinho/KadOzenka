@@ -60,12 +60,16 @@
 			    </div>
 			    <div style="@(Model.ReferenceValueType == ReferenceItemCodeType.Date ? "" : "display: none")">
 				    <div class="col-sm-5">
-					    <span>От</span>
-					    @Html.KendoDatePickerFor(x => x.DateTimeValueFrom, isReadonly: false)
+					    <div class="flex-row">
+						    <span class="margin-diapason-text">От</span>
+						    @Html.KendoDatePickerFor(x => x.DateTimeValueFrom, isReadonly: false)
+					    </div>
 				    </div>
 				    <div class="col-sm-5">
-					    <span>До</span>
-					    @Html.KendoDatePickerFor(x => x.DateTimeValueTo, isReadonly: false)
+					    <div class="flex-row">
+						    <span class="margin-diapason-text">До</span>
+						    @Html.KendoDatePickerFor(x => x.DateTimeValueTo, isReadonly: false)
+					    </div>
 				    </div>
 			    </div>
 		    </div>
