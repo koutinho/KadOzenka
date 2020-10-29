@@ -633,7 +633,7 @@ namespace KadOzenka.Dal.GbuObject
 	        GbuReportService.Row currentRow;
 	        lock (PriorityGrouping.locked)
 	        {
-		        currentRow = reportService.GetCurrentRowNew();
+		        currentRow = reportService.GetCurrentRow();
 		        PriorityGrouping.CurrentCount++;
 		        reportService.AddValue(obj.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
             }
@@ -908,7 +908,7 @@ namespace KadOzenka.Dal.GbuObject
 	        lock (PriorityGrouping.locked)
 	        {
 		        PriorityGrouping.CurrentCount++;
-		        currentRow = reportService.GetCurrentRowNew();
+		        currentRow = reportService.GetCurrentRow();
 		        reportService.AddValue(unit.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
             }
 
@@ -1233,7 +1233,7 @@ namespace KadOzenka.Dal.GbuObject
           
             _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
  
-            reportService.AddHeadersNew(dataHeaderAndColumnNumber.Headers);
+            reportService.AddHeaders(dataHeaderAndColumnNumber.Headers);
 			long reportId = 0;
 
 	        ErrorMessages = new List<string>();

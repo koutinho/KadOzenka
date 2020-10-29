@@ -46,13 +46,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private long PerformProc(KOCalcSettings settings)
 		{
 			var reportService = new GbuReportService();
-			reportService.AddHeadersNew(new List<string> {"КН", "Ошибка"});
+			reportService.AddHeaders(new List<string> {"КН", "Ошибка"});
 
 			var result = OMGroup.CalculateSelectGroup(settings);
 
 			foreach (var errorItem in result)
 			{
-				var row = reportService.GetCurrentRowNew();
+				var row = reportService.GetCurrentRow();
 				reportService.AddValue(errorItem.CadastralNumber, KnColumn, row);
 				reportService.AddValue(errorItem.Error, ErrorColumn, row);
 			}

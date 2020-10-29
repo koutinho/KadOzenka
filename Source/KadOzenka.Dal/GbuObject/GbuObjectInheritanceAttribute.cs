@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Наследования");
 
             var reportService = new GbuReportService();
-			reportService.AddHeadersNew(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
+			reportService.AddHeaders(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.GbuObject
                     {
 	                    lock (locked)
 	                    {
-		                    rowsReport = reportService.GetRangeRowsNew(pattribs.Count);
+		                    rowsReport = reportService.GetRangeRows(pattribs.Count);
 	                    }
                     }
 
@@ -146,7 +146,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     lock (locked)
 					{
-						var rowReport = reportService.GetCurrentRowNew();
+						var rowReport = reportService.GetCurrentRow();
                         reportService.AddValue(unit.CadastralNumber, 0, rowReport);
                         reportService.AddValue($"Не найден объект по кадастровому номеру {attribs[0].StringValue}", 4, rowReport);
                     }
@@ -156,7 +156,7 @@ namespace KadOzenka.Dal.GbuObject
             {
                 lock (locked)
 	            {
-		            var rowReport = reportService.GetCurrentRowNew();
+		            var rowReport = reportService.GetCurrentRow();
                     reportService.AddValue(unit.CadastralNumber, 0, rowReport);
                     reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
                 }

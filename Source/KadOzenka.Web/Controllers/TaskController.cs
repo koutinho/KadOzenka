@@ -794,9 +794,18 @@ namespace KadOzenka.Web.Controllers
                 throw new ArgumentException("Не выбраны группы");
 
             var settings = CadastralPriceCalculationModel.UnMap(model);
-            CalculateCadastralPriceLongProcess.AddProcessToQueue(settings);
 
-            return Json(new {Message = "Операция Расчета кадастровой стоимости добавлена в очередь" });
+			////TODO код для отладки
+			//new CalculateCadastralPriceLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = settings.SerializeToXml()
+			//}, new CancellationToken());
+			
+			CalculateCadastralPriceLongProcess.AddProcessToQueue(settings);
+
+			return Json(new {Message = "Операция Расчета кадастровой стоимости добавлена в очередь" });
         }
 
         [HttpGet]

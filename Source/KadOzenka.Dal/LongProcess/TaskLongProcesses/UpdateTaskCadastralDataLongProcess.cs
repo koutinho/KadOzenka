@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				.Debug("Загружено {UnitsCount} единиц оценки для обработки", units.Count);
 
 			var reportService = new GbuReportService();
-			reportService.AddHeadersNew(
+			reportService.AddHeaders(
 				new List<string>
 				{
 					"Кадастровый номер", "Кадастровый квартал старый", "Кадастровый квартал новый",
@@ -116,7 +116,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				{
 					lock (_locked)
 					{
-						var row = reportService.GetCurrentRowNew();
+						var row = reportService.GetCurrentRow();
 						AddRowToReport(row,
 							unit.CadastralNumber,
 							unit.CadastralBlock,

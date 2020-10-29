@@ -99,7 +99,7 @@ namespace KadOzenka.Dal.LongProcess
             long success = 0;
             long errors = 0;
 
-            GbuReportService.AddHeadersNew(new List<string>
+            GbuReportService.AddHeaders(new List<string>
             {
 	            _cadastralNumberColumn.Header, _operationResultColumn.Header, _errorColumn.Header
             });
@@ -316,9 +316,9 @@ namespace KadOzenka.Dal.LongProcess
 
         private void AddRowToReport(string cadastralNumber, bool isSuccessful, string errorMessage)
         {
-	        var row = GbuReportService.GetCurrentRowNew();
+	        var row = GbuReportService.GetCurrentRow();
             var isSuccessfulStr = isSuccessful ? "Да" : "Нет";
-            GbuReportService.AddRowNew(row, new List<string>{cadastralNumber, isSuccessfulStr, errorMessage});
+            GbuReportService.AddRow(row, new List<string>{cadastralNumber, isSuccessfulStr, errorMessage});
         }
 
         #endregion

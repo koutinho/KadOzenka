@@ -77,7 +77,7 @@ namespace KadOzenka.Dal.LongProcess
         {
             WorkerCommon.SetProgress(processQueue, 0);
 
-            GbuReportService.AddHeadersNew(new List<string>
+            GbuReportService.AddHeaders(new List<string>
             {
 	            _taskNumberColumn.Header, _taskDateColumn.Header, 
 	            _tourYearColumn.Header, _filesCountColumn.Header,
@@ -225,9 +225,9 @@ namespace KadOzenka.Dal.LongProcess
 
         private void AddRowToReport(string taskNumber, DateTime? taskDate, int? tourYear, int filesCount, string errorMessage)
         {
-	        var row = GbuReportService.GetCurrentRowNew();
+	        var row = GbuReportService.GetCurrentRow();
 
-	        GbuReportService.AddRowNew(row, new List<string>
+	        GbuReportService.AddRow(row, new List<string>
                 {taskNumber, taskDate?.ToShortDateString(), tourYear?.ToString(), filesCount.ToString(), errorMessage});
         }
 

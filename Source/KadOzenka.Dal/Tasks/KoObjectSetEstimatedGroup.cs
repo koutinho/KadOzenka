@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.KoObject
 		public static long Run(EstimatedGroupModel param)
 		{
 			var reportService = new GbuReportService();
-			reportService.AddHeadersNew(new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+			reportService.AddHeaders(new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 			locked = new object();
 			var units = OMUnit.Where(x => x.TaskId != null && x.TaskId == param.IdTask).SelectAll().Execute().ToList();
 			CountAllUnits = units.Count;
@@ -91,7 +91,7 @@ namespace KadOzenka.Dal.KoObject
 				GbuReportService.Row rowReport;
 				lock (locked)
 				{
-					rowReport = reportService.GetCurrentRowNew();
+					rowReport = reportService.GetCurrentRow();
 					reportService.AddValue(item.CadastralNumber, (int)ReportColumns.KnColumn, rowReport);
 				}
 

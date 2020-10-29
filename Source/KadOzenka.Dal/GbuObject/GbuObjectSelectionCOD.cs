@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Выборки из справочника ЦОД");
 
             _reportService = new GbuReportService();
-            _reportService.AddHeadersNew(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            _reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -122,7 +122,7 @@ namespace KadOzenka.Dal.GbuObject
 
             lock (locked)
             {
-                var rowReport = _reportService.GetCurrentRowNew();
+                var rowReport = _reportService.GetCurrentRow();
                 AddRowToReport(rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
             }
 
