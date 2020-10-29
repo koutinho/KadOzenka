@@ -276,6 +276,7 @@ namespace KadOzenka.Dal.DataImport
 
         }
 
+        //TODO перенести в общий сервис, например, GbuObjectService
         public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
         {
             // TODO: разобраться почему перехваченное исключение все равно приводит к "25P02: текущая транзакция прервана, команды до конца блока транзакции игнорируются"

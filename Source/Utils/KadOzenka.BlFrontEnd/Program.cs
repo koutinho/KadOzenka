@@ -43,6 +43,7 @@ using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
@@ -274,8 +275,9 @@ namespace KadOzenka.BlFrontEnd
 			{
 				var service = new RosreestrDataApi();
 
-				Console.WriteLine("Введите дату, на которую нужно загрузить задания");
-				DateTime date = Console.ReadLine().ParseToDateTime();
+				//Console.WriteLine("Введите дату, на которую нужно загрузить задания");
+				//DateTime date = Console.ReadLine().ParseToDateTime();
+				var date = DateTime.Today;
 
 				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(date, date.AddDays(1));
 
@@ -285,10 +287,10 @@ namespace KadOzenka.BlFrontEnd
 
 			consoleHelper.AddCommand("901-2", "Загрузка заданий из РЕОН", () =>
 			{
-				Console.WriteLine("Введите дату, на которую нужно загрузить задания");
-				DateTime date = Console.ReadLine().ParseToDateTime();
+				//Console.WriteLine("Введите дату, на которую нужно загрузить задания");
+				//DateTime date = Console.ReadLine().ParseToDateTime();
 
-
+				var date = DateTime.Today;
 
 				var processType = OMProcessType.Where(x => x.ProcessName == "KoTaskFromReon").SelectAll().ExecuteFirstOrDefault();
 
@@ -320,13 +322,24 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("903", "Тест Сервиса для получения графических факторов из РЕОН", () =>
             {
                 var taskId = 44354853;
-                new KoFactorsFromReon().StartProcess(null,
+				var attributes = new RegisterAttributeService()
+					.GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
+					.Select(x => x.Id).ToList();
+
+				var inputParameters = new KoFactorsFromReonInputParameters
+				{
+					TaskId = taskId,
+					AttributeIds = attributes
+				};
+
+				new KoFactorsFromReon().StartProcess(null,
                     new OMQueue
                     {
                         ObjectId = taskId,
                         UserId = SRDSession.Current.UserID,
-                        Status_Code = Status.Added
-                    },
+                        Status_Code = Status.Added,
+						Parameters = inputParameters.SerializeToXml()
+					},
                     new CancellationToken());
             });
 

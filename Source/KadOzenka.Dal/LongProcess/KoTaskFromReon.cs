@@ -26,6 +26,11 @@ namespace KadOzenka.Dal.LongProcess
         private DocumentService DocumentService { get; set; }
         private RosreestrDataApi ReonWebClientService { get; set; }
         private GbuReportService GbuReportService { get; set; }
+        private readonly GbuReportService.Column _taskNumberColumn;
+        private readonly GbuReportService.Column _taskDateColumn;
+        private readonly GbuReportService.Column _tourYearColumn;
+        private readonly GbuReportService.Column _filesCountColumn;
+        private readonly GbuReportService.Column _errorColumn;
 
         public KoTaskFromReon()
         {
@@ -33,15 +38,56 @@ namespace KadOzenka.Dal.LongProcess
             DocumentService = new DocumentService();
             ReonWebClientService = new RosreestrDataApi();
             GbuReportService = new GbuReportService();
+
+            _taskNumberColumn = new GbuReportService.Column
+            {
+                Header = "Номер задания",
+                Index = 0,
+                Width = 8
+            };
+            _taskDateColumn = new GbuReportService.Column
+            {
+	            Header = "Дата задания",
+	            Index = 1,
+	            Width = 4
+            };
+            _tourYearColumn = new GbuReportService.Column
+            {
+	            Header = "Год тура",
+	            Index = 2,
+	            Width = 2
+            };
+            _filesCountColumn = new GbuReportService.Column
+            {
+	            Header = "Количество файлов",
+	            Index = 3,
+	            Width = 2
+            };
+            _errorColumn = new GbuReportService.Column
+            {
+	            Header = "Ошибка",
+	            Index = 4,
+	            Width = 8
+            };
         }
 
-        public const string LongProcessName = "KoTaskFromReon";
+        
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
-            
-            GbuReportService.AddHeaders(0, new List<string> { "Номер задания", "Дата задания", "Год тура", "Количество файлов", "Ошибка" });
+
+            GbuReportService.AddHeaders(new List<string>
+            {
+	            _taskNumberColumn.Header, _taskDateColumn.Header, 
+	            _tourYearColumn.Header, _filesCountColumn.Header,
+	            _errorColumn.Header
+            });
+            GbuReportService.SetIndividualWidth(_taskNumberColumn.Index, _taskNumberColumn.Width);
+            GbuReportService.SetIndividualWidth(_taskDateColumn.Index, _taskDateColumn.Width);
+            GbuReportService.SetIndividualWidth(_tourYearColumn.Index, _tourYearColumn.Width);
+            GbuReportService.SetIndividualWidth(_filesCountColumn.Index, _filesCountColumn.Width);
+            GbuReportService.SetIndividualWidth(_errorColumn.Index, _errorColumn.Width);
 
             var request = GetRequest(processType);
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
@@ -51,7 +97,8 @@ namespace KadOzenka.Dal.LongProcess
                 ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-            var reportId = GbuReportService.SaveReport("олучение заданий на оценку из ИС РЕОН");
+            GbuReportService.SetStyle();
+            var reportId = GbuReportService.SaveReport("Получение заданий на оценку из ИС РЕОН");
             var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
@@ -178,7 +225,9 @@ namespace KadOzenka.Dal.LongProcess
 
         private void AddRowToReport(string taskNumber, DateTime? taskDate, int? tourYear, int filesCount, string errorMessage)
         {
-            GbuReportService.AddRow(new List<string>
+	        var row = GbuReportService.GetCurrentRow();
+
+	        GbuReportService.AddRow(row, new List<string>
                 {taskNumber, taskDate?.ToShortDateString(), tourYear?.ToString(), filesCount.ToString(), errorMessage});
         }
 

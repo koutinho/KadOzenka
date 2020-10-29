@@ -6,12 +6,14 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.InheritanceAttribute;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 {
 	public class InheritanceLongProcess : LongProcess
 	{
 		public const string LongProcessName = "InheritanceLongProcess";
+		private static readonly ILogger _log = Log.ForContext<InheritanceLongProcess>();
 
 		public static long AddProcessToQueue(GbuInheritanceAttributeSettings setting)
 		{
@@ -64,6 +66,8 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 			}
 			catch (Exception ex)
 			{
+				_log.Error(ex, "Операция наследования завершена с ошибкой");
+
 				cancelSource.Cancel();
 				NotificationSender.SendNotification(processQueue, "Результат операции наследование", $"Операция была прервана: {ex.Message}");
 				throw;
