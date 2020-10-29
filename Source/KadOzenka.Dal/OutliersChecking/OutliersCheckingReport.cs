@@ -58,12 +58,13 @@ namespace KadOzenka.Dal.OutliersChecking
 			_excelFile = new ExcelFile();
 		}
 
-		public void AddNewWorksheetForSegment(MarketSegment segment)
+		public void AddNewWorksheetForSegment(MarketSegment segment, DealType dealType)
 		{
-			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}", segment.GetEnumDescription());
+			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}({DealType})", segment.GetEnumDescription(),
+				dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
 
 			_currentRow = 0;
-			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName(segment.GetEnumDescription()));
+			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName($"{(dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда")} {segment.GetEnumDescription()}"));
 			_currentWorksheet.Cells.Style.Font.Name = "Times New Roman";
 			AddHeaders();
 			SetWidth();
