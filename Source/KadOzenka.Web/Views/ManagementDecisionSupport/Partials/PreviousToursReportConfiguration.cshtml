@@ -102,7 +102,7 @@
         var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetGroupsByTasks", "Tour")',
+                    url: '@Url.Action("GetSortedGroupsWithNumbersByTasks", "Tour")',
                     data: { taskIds: taskIds},
                     dataType: 'json',
                     traditional: true

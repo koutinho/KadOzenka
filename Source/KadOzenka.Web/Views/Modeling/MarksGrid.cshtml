@@ -53,8 +53,25 @@
                     fields: {
                         Id: { editable: false, nullable: true },
                         GroupId: { editable: false},
-                        Value: { validation: { required: true } },
-                        Metka: { type: "number", nullable: true  }
+                        FactorId: { editable: false },
+                        ValueFactor: { validation: {
+                            valuefactorvalidation: function (input) {
+                                if (input.is("[name='ValueFactor']") && input.val() == "") {
+                                    input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
+                                    return false;
+                                }
+                                return true;
+                            }
+                        } },
+                        MetkaFactor: { validation: {
+                            metkafactorvalidation: function (input) {
+                                if (input.is("[name='MetkaFactor']") && input.val() == "") {
+                                    input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }, type: "number", nullable: true   }
                     }
                 }
             },
@@ -98,6 +115,9 @@
                                 decimals: 14,
                                 step: 0.1
                             });
+                        //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
+                        var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
+                        tooltipElement.appendTo(container);
                     }
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }

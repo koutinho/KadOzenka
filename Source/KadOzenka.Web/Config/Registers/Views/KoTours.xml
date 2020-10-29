@@ -12,6 +12,9 @@
     <Button Caption="Группы" NavigateURL="/Tour/Groups" WindowHeight="500" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.GROUPS" Icon="fas fa-plus">
     </Button>
 
+    <Button Caption="Значения меток" NavigateURL="/Tour/MarkCatalog" WindowHeight="750" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.MARK_CATALOG" Icon="fas fa-plus">
+    </Button>
+
     <Button Caption="Импорт группы из Excel" NavigateURL="/Tour/ImportGroupDataFromExcel" WindowHeight="400" WindowWidth="800"  SRDFunctionTag="KO.DICT.TOURS.IMPORT_GROUP_DATA_FROM_EXCEL" Icon="fas fa-wrench"/>
 
     <Button Caption="Настройки атрибутов туров" NavigateURL="/Tour/TourAttributeSettings" SRDFunctionTag="KO.DICT.TOURS.ATTRIBUTE_SETTINGS" Icon="fas fa-wrench">

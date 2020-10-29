@@ -3,6 +3,7 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using Serilog;
+using Core.Messages;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -42,5 +43,18 @@ namespace KadOzenka.Dal.LongProcess
             processQueue.Log = newLog;
             processQueue.Save();
         }
-    }
+
+        protected void SendMessage(OMQueue processQueue, string message, string subject)
+        {
+	        new MessageService().SendMessages(new MessageDto
+	        {
+		        Addressers = new MessageAddressersDto { UserIds = processQueue.UserId.HasValue ? new[] { processQueue.UserId.Value } : new long[] { } },
+		        Subject = subject,
+		        Message = message,
+		        IsUrgent = true,
+		        IsEmail = true,
+		        ExpireDate = DateTime.Now.AddHours(2)
+	        });
+        }
+	}
 }

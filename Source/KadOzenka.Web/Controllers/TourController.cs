@@ -48,17 +48,19 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
 		public TourComplianceImportService TourComplianceImportService { get; set; }
+		public GroupFactorService GroupFactorService { get; set; }
 
 		public TourController()
-        {
-            TourFactorService = new TourFactorService();
-            TourService = new TourService(TourFactorService);
-            GroupService = new GroupService();
-            GbuObjectService = new GbuObjectService();
-            TourComplianceImportService = new TourComplianceImportService();
-        }
+		{
+			TourFactorService = new TourFactorService();
+			TourService = new TourService(TourFactorService);
+			GroupService = new GroupService();
+			GbuObjectService = new GbuObjectService();
+			TourComplianceImportService = new TourComplianceImportService();
+			GroupFactorService = new GroupFactorService();
+		}
 
-        #region Карточка тура
+		#region Карточка тура
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
@@ -675,6 +677,58 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetParentGroupNew(string type, long? id, long? tourId)
+		{
+			if(tourId == null)
+				return Json(new List<SelectListItem>());
+
+			KoGroupAlgoritm groupAlgorithm;
+			if (type == "OKS")
+			{
+				groupAlgorithm = KoGroupAlgoritm.MainOKS;
+			}
+			else
+			{
+				groupAlgorithm = KoGroupAlgoritm.MainParcel;
+			}
+
+			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
+
+			var groups = allGroups.Where(x => x.Id == (int)groupAlgorithm)
+				.SelectMany(x => x.Items)
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.GroupName
+				});
+
+			return Json(groups);
+		}
+
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetSubgroupNew(long? groupId, long? tourId)
+		{
+			if (groupId == null || tourId == null)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
+			var subGroups = allGroups.SelectMany(x => x.Items).Where(x => x.Id == groupId).SelectMany(x => x.Items);
+
+			var groups = subGroups
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.GroupName
+				});
+
+			return Json(groups);
+		}
+
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetSubgroup(long? groupId)
 		{
@@ -684,11 +738,12 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var groups = OMGroup.Where(x => x.ParentId == groupId)
+				.OrderBy(x => x.GroupName)
 				.SelectAll().Execute()
 				.Select(x => new SelectListItem
 				{
 					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
+					Text = $"{GroupService.GetSubGroupNumber(x.Number)}.{x.GroupName}"
 				});
 
 			return Json(groups);
@@ -733,9 +788,111 @@ namespace KadOzenka.Web.Controllers
             return Json(items);
         }
 
-        #region Импорт группы из Excel
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetSortedGroupsWithNumbersByTasks(List<long> taskIds)
+		{
+			var groups = GroupService.GetSortedGroupsWithNumbersByTasks(taskIds);
 
-        [HttpGet]
+			var items = groups.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.CombinedName
+			});
+
+			return Json(items);
+		}
+
+		#region Факторы группы
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public ActionResult GroupFactors(long groupId)
+		{
+			ViewBag.GroupId = groupId;
+			return PartialView("~/Views/Tour/Partials/GroupFactors.cshtml");
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetGroupFactors(long groupId)
+		{
+			var models = GroupFactorService.GetGroupFactors(groupId).Select(GroupFactorModel.FromDto).ToList();
+			return Json(models);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetTourFactors(long? groupId)
+		{
+			OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId)
+				.Select(x => x.TourId).ExecuteFirstOrDefault();
+
+			if (tourGroup != null)
+			{
+				var tourAllAttributes = TourFactorService.GetTourAllAttributes(tourGroup.TourId);
+				var result = tourAllAttributes.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.Name
+				}).OrderBy(x => x.Text);
+
+				return Json(result);
+			}
+
+			return Json(new List<SelectListItem>());
+		}
+
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public ActionResult EditGroupFactor(long? id, long groupId)
+		{
+			GroupFactorModel model;
+
+			if (id.HasValue)
+			{
+				var dto = GroupFactorService.GetGroupFactor(id.Value);
+				model = GroupFactorModel.FromDto(dto);
+			}
+			else
+			{
+				model = new GroupFactorModel(groupId);
+			}
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public ActionResult EditGroupFactor(GroupFactorModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			if (model.Id == -1)
+			{
+				var id = GroupFactorService.CreateGroupFactor(model.ToDto());
+				model.Id = id;
+			}
+			else
+			{
+				GroupFactorService.UpdateGroupFactor(model.ToDto());
+			}
+
+			return Json(new { Success = "Сохранено успешно", Id = model.Id });
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public ActionResult DeleteGroupFactor(long id)
+		{
+			GroupFactorService.DeleteGroupFactor(id);
+			return Json(new { Success = "Удаление выполненно" });
+		}
+
+		#endregion Факторы группы
+
+		#region Импорт группы из Excel
+
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
         public ActionResult ImportGroupDataFromExcel()
         {

@@ -193,19 +193,47 @@ namespace KadOzenka.Dal.Groups
             if (taskIds.Count == 0)
                 return new List<OMGroup>();
 
-            var groupIds = OMUnit.Where(x => taskIds.Contains((long) x.TaskId) && x.GroupId != null)
-                .GroupBy(x => x.GroupId)
-                .Select(x => x.GroupId)
-                .SetDistinct()
-                .Execute()
-                .Select(x => x.GroupId)
-                .Distinct()
-                .ToList();
+            var groupIds = GetGroupIdsByTasts(taskIds);
 
             if (groupIds.Count == 0)
                 return new List<OMGroup>();
 
-            return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Execute().ToList();
+            return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Select(x => x.Number).Execute().ToList();
+        }
+
+        public List<GroupNumberDto> GetSortedGroupsWithNumbersByTasks(List<long> taskIds)
+        {
+	        var result = new List<GroupNumberDto>();
+            if (taskIds.Count == 0)
+		        return result;
+
+	        var groupIds = GetGroupIdsByTasts(taskIds);
+	        if (groupIds.Count == 0)
+		        return result;
+
+            var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
+		        .Select(x => x.Id)
+		        .Select(x => x.ParentId)
+                .Select(x => x.GroupName)
+		        .Select(x => x.Number).Execute().ToList();
+
+	        foreach (var omGroup in groups)
+	        {
+		        var dto = new GroupNumberDto
+		        {
+			        Id = omGroup.Id,
+			        CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
+                    Number = ParseGroupNumber(omGroup.ParentId, omGroup.Number),
+                };
+		        if (GetGroupType(omGroup.ParentId) == GroupType.SubGroup)
+		        {
+			        dto.ParentNumber = GetParentGroupNumber(omGroup.Number);
+		        }
+
+                result.Add(dto);
+	        }
+
+	        return result.OrderBy(x => x.ParentNumber).ThenBy(x => x.Number).ToList();
         }
 
         public int AddGroup(GroupDto groupDto)
@@ -480,10 +508,16 @@ namespace KadOzenka.Dal.Groups
             return number;
         }
 
-        private int? GetSubGroupNumber(string fullNumber)
+        public int? GetSubGroupNumber(string fullNumber)
         {
             var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(1);
             return subGroupNumberStr?.ParseToInt();
+        }
+
+        private int? GetParentGroupNumber(string fullNumber)
+        {
+	        var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(0);
+	        return subGroupNumberStr?.ParseToInt();
         }
 
         private OMGroup GetGroupByIdInternal(long? groupId)
@@ -531,6 +565,19 @@ namespace KadOzenka.Dal.Groups
 	        mainGroups.Add(parcel);
 
 	        return mainGroups;
+        }
+
+        private List<long?> GetGroupIdsByTasts(List<long> taskIds)
+        {
+	        var groupIds = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.GroupId != null)
+		        .GroupBy(x => x.GroupId)
+		        .Select(x => x.GroupId)
+		        .SetDistinct()
+		        .Execute()
+		        .Select(x => x.GroupId)
+		        .Distinct()
+		        .ToList();
+	        return groupIds;
         }
 
         #endregion
