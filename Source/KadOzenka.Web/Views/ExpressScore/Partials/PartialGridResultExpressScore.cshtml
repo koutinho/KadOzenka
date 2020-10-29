@@ -65,13 +65,6 @@
 		<div class="col-sm-12">
 			<p>Аналоги (@Model.Analogs.Count)</p>
 		</div>
-		@*<div class="col-sm-12" style="padding: 0">
-			<div style="height: auto">
-				<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content($"~/RegistersView/MarketObjectCard?Transition=1&{ViewBag.Filter}")"
-				     data-param-Pageable="true" data-param-Scrollable="true" data-param-EsId="@ViewBag.EsId"
-				     data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid100"></div>
-			</div>
-		</div>*@
 		<div id="resultGrid"></div>
 	</div>
 </div>
@@ -83,7 +76,6 @@
 </script>
 
 <script type="text/javascript">
-	debugger;
 	var reportId = "@Model.ReportId";
 	var dataGrid = null;
 	var data = null;

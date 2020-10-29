@@ -17,6 +17,9 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 
 		public dynamic Value { get; set; }
 
+		public bool ValueFromCalculateForm { get; set; }
+
+		public string ValueCalculateForm { get; set; }
 		public ParameterDataDto(PureParameterDataDto es)
 		{
 			Id = es.Id;

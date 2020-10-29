@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.ExpressScore
 	        return false;
         }
 
-        public long CreateReference(string name, ReferenceItemCodeType valueType)
+        public long CreateReference(string name, ReferenceItemCodeType valueType, bool useInterval)
         {
             var isExistsReferencesWithTheSameName = OMEsReference.Where(x => x.Name == name).ExecuteExists();
             if (isExistsReferencesWithTheSameName)
@@ -53,14 +53,15 @@ namespace KadOzenka.Dal.ExpressScore
             var reference = new OMEsReference
             {
                 Name = name, 
-                ValueType_Code = valueType
+                ValueType_Code = valueType,
+                UseInterval = useInterval
             };
             var id = reference.Save();
 
             return id;
         }
 
-        public void UpdateReference(long id, string name, ReferenceItemCodeType valueType)
+        public void UpdateReference(long id, string name, ReferenceItemCodeType valueType, bool useInterval)
         {
             var reference = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             if (reference == null)
@@ -74,17 +75,19 @@ namespace KadOzenka.Dal.ExpressScore
                 throw new Exception($"Справочник '{name}' уже существует");
             }
 
-            if (reference.ValueType_Code != valueType)
+            if (reference.ValueType_Code != valueType || reference.UseInterval != useInterval)
             {
                 var isReferenceNotEmpty = OMEsReferenceItem.Where(x => x.ReferenceId == id).ExecuteExists();
                 if (isReferenceNotEmpty)
                 {
-                    throw new Exception($"Нельзя изменить тип для непустого справочника");
+                    throw new Exception($"Нельзя изменить тип или вид для непустого справочника");
                 }
             }
 
+
             reference.Name = name;
             reference.ValueType_Code = valueType;
+            reference.UseInterval = useInterval;
             reference.Save();
         }
 
@@ -109,68 +112,43 @@ namespace KadOzenka.Dal.ExpressScore
             }
         }
 
-        public long CreateReferenceItem(ReferenceItemDto dto)
+        public long SaveReferenceItem(ReferenceItemDto dto)
         {
-            var reference = OMEsReference.Where(x => x.Id == dto.ReferenceId).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
-            }
+	        OMEsReferenceItem item = new OMEsReferenceItem();
 
-            if (dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.Value, out var decimalResult)
-                    || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.Value, out var dateResult)))
+            if (dto.Id != -1)
             {
-                throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
-            }
+	            item = OMEsReferenceItem.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
+	            if (item == null)
+	            {
+		            throw new Exception($"Не найдено значение справочника с ИД {dto.Id}");
+	            }
 
-            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.Value == dto.Value).ExecuteExists();
-            if (isExistsTheSameReferenceItem)
-            {
-                throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
-            }
-
-            var item = new OMEsReferenceItem
-            {
-                ReferenceId = dto.ReferenceId,
-                Value = dto.Value,
-                CalculationValue = dto.CalcValue
-            };
-            var id = item.Save();
-
-            return id;
-        }
-
-        public void UpdateReferenceItem(ReferenceItemDto dto)
-        {
-            var item = OMEsReferenceItem.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
-            if (item == null)
-            {
-                throw new Exception($"Не найдено значение справочника с ИД {dto.Id}");
             }
 
             var reference = OMEsReference.Where(x => x.Id == dto.ReferenceId).SelectAll().ExecuteFirstOrDefault();
-            if (reference == null)
-            {
-                throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
-            }
+	        if (reference == null)
+	        {
+		        throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
+	        }
 
-            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.Value == dto.Value && x.Id != dto.Id && x.ReferenceId == dto.ReferenceId).ExecuteExists();
-            if (isExistsTheSameReferenceItem)
-            {
-                throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
-            }
+	        ValidateReferenceItemValue(dto, reference);
+	        ValidateExistsReferenceItemValue(dto, reference);
 
-            if (dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.Value, out var decimalResult)
-                || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.Value, out var dateResult)))
-            {
-                throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
-            }
+	        if (dto.Id == -1)
+	        {
+		        item.ReferenceId = dto.ReferenceId;
+	        }
 
             item.Value = dto.Value;
-            item.CalculationValue = dto.CalcValue;
-            item.Save();
-        }
+	        item.CommonValue = dto.CommonValue;
+	        item.ValueFrom = dto.ValueFrom;
+	        item.ValueTo = dto.ValueTo;
+	        item.CalculationValue = dto.CalcValue;
+	        item.Save();
 
+	        return item.Id;
+        }
         public void DeleteReferenceItem(long id)
         {
             var item = OMEsReferenceItem.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -187,7 +165,7 @@ namespace KadOzenka.Dal.ExpressScore
 	        OMEsReference reference;
 	        if (settings.IsNewReference)
 	        {
-		        long referenceId = CreateReference(settings.NewReferenceName, settings.FileInfo.ValueType);
+		        long referenceId = CreateReference(settings.NewReferenceName, settings.FileInfo.ValueType, settings.FileInfo.UseInterval);
 		        reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
 	        }
 	        else
@@ -225,7 +203,7 @@ namespace KadOzenka.Dal.ExpressScore
 
             var resFileStream = ImportReferenceItemsFromExcel(dataFileStream, reference, settings.FileInfo);
             SaveResultFile(import, resFileStream);
-            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id);
+            SendImportResultNotification(reference, DataImporterCommon.GetDataFileTitle(settings.FileInfo.FileName), import.Id, true);
 		}
 
         public void UpdateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, long referenceId, bool deleteOldValues)
@@ -262,7 +240,7 @@ namespace KadOzenka.Dal.ExpressScore
         public long CreateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, string referenceName)
         {
 	   
-			long referenceId = CreateReference(referenceName, fileImportInfo.ValueType);
+			long referenceId = CreateReference(referenceName, fileImportInfo.ValueType, fileImportInfo.UseInterval);
             var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
 
 
@@ -354,54 +332,70 @@ namespace KadOzenka.Dal.ExpressScore
             {
                 try
                 {
-                    var cellValue = mainWorkSheet.Rows[row.Index]
-                        .Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)];
+	                var cellCommonValue = mainWorkSheet.Rows[row.Index]
+		                .Cells[columnNames.IndexOf(fileImportInfo.CommonValueColumnName)];
+                    var cellValue = !fileImportInfo.UseInterval ? mainWorkSheet.Rows[row.Index]
+                        .Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)] : null;
                     var cellCalcValue = mainWorkSheet.Rows[row.Index]
                         .Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)];
+                    var cellValueFrom = mainWorkSheet.Rows[row.Index]
+	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueFromColumnName)];
+                    var cellValueTo = mainWorkSheet.Rows[row.Index]
+	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueToColumnName)];
 
                     if (!cellCalcValue.Value.TryParseToDecimal(out var calcValue))
                     {
                         throw new Exception(
-                            $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+                            $"Значение '{cellCalcValue.Value}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
                     }
 
                     string valueString = null;
+                    string valueFrom = null;
+                    string valueTo = null;
                     switch (fileImportInfo.ValueType)
                     {
                         case ReferenceItemCodeType.Number:
-                            if (!cellValue.Value.TryParseToDecimal(out var number))
+                            if(!fileImportInfo.UseInterval) valueString = GetDecimalValue(cellValue?.Value).ToString(CultureInfo.InvariantCulture);
+                            if (fileImportInfo.UseInterval)
                             {
-                                throw new Exception(
-                                    $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+	                            valueFrom = GetDecimalValue(cellValueFrom.Value).ToString(CultureInfo.InvariantCulture);
+	                            valueTo = GetDecimalValue(cellValueTo.Value).ToString(CultureInfo.InvariantCulture);
                             }
 
-                            valueString = number.ToString();
-                            break;
+	                        break;
                         case ReferenceItemCodeType.String:
-                            valueString = cellValue.Value.ToString();
-                            break;
+	                        if (!fileImportInfo.UseInterval) valueString = cellValue?.Value.ToString();
+	                        break;
                         case ReferenceItemCodeType.Date:
-                            if (!cellValue.Value.TryParseToDateTime(out var date))
-                            {
-                                throw new Exception(
-                                    $"Значение '{cellValue.Value.ToString()}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
-                            }
-
-                            valueString = date.ToString(CultureInfo.CurrentCulture);
+	                        if (!fileImportInfo.UseInterval) valueString = GetDateValue(cellValue?.Value).ToString(CultureInfo.CurrentCulture);
+	                        if (fileImportInfo.UseInterval)
+	                        {
+		                        valueFrom = GetDateValue(cellValueFrom.Value).ToShortDateString();
+		                        valueTo = GetDateValue(cellValueTo.Value).ToShortDateString();
+	                        }
                             break;
                     }
 
-                    OMEsReferenceItem obj;
-					//lock (locked)
+                    OMEsReferenceItem obj =  null;
+					if(!fileImportInfo.UseInterval)
 					{
-						obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll().ExecuteFirstOrDefault();
+						obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll()
+							.ExecuteFirstOrDefault();
+					}
+
+					if (fileImportInfo.UseInterval)
+					{
+						obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.ValueTo == valueTo && x.ValueFrom == valueFrom)
+							.SelectAll().ExecuteFirstOrDefault();
+
 					}
 
 					if (obj != null)
                     {
                         obj.CalculationValue = calcValue;
-						//lock (locked)
-						{
+                        obj.CommonValue = cellCommonValue?.Value?.ToString();
+                        //lock (locked)
+                        {
                             obj.Save();
                         }
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
@@ -411,12 +405,15 @@ namespace KadOzenka.Dal.ExpressScore
 						//lock (locked)
 						{
                             new OMEsReferenceItem
-                            {
-                                ReferenceId = reference.Id,
-                                Value = valueString,
-                                CalculationValue = calcValue
-                            }.Save();
-                        }
+							{
+								ReferenceId = reference.Id,
+								Value = valueString,
+								CommonValue = cellCommonValue?.Value?.ToString(),
+								CalculationValue = calcValue,
+                                ValueFrom = valueFrom,
+                                ValueTo = valueTo
+							}.Save();
+						}
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
                     }
 					lock(locked)
@@ -434,12 +431,33 @@ namespace KadOzenka.Dal.ExpressScore
                 }
             });
 
-            MemoryStream stream;
-            stream = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
             excelFile.Save(stream, SaveOptions.XlsxDefault);
             stream.Seek(0, SeekOrigin.Begin);
 
 			return stream;
+        }
+
+        public decimal GetDecimalValue(object value)
+        {
+	        if (!value.TryParseToDecimal(out var number))
+	        {
+		        throw new Exception(
+			        $"Значение '{value}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+	        }
+
+	        return number;
+        }
+
+        public DateTime GetDateValue(object value)
+        {
+	        if (!value.TryParseToDateTime(out var date))
+	        {
+		        throw new Exception(
+			        $"Значение '{value}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
+	        }
+
+	        return date;
         }
 
         private void SaveResultFile(OMImportDataLog import, Stream streamResult)
@@ -451,9 +469,9 @@ namespace KadOzenka.Dal.ExpressScore
 	        import.Save();
         }
 
-        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId)
+        private void SendImportResultNotification(OMEsReference reference, string fileName, long importId, bool isUrgent = false)
         {
-            new MessageService().SendMessages(new MessageDto
+	        new MessageService().SendMessages(new MessageDto
             {
                 Addressers =
                     new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
@@ -461,10 +479,10 @@ namespace KadOzenka.Dal.ExpressScore
                 Message = $@"Загрузка файла ""{fileName}"" была завершена.
 <a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
 <a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
-                IsUrgent = true,
+                IsUrgent = isUrgent,
                 IsEmail = true,
                 ExpireDate = DateTime.Now.AddHours(2)
-            });
+        });
         }
 
         private long GetCountRows(Stream fileStream)
@@ -474,5 +492,54 @@ namespace KadOzenka.Dal.ExpressScore
 	        long res = mainWorkSheet.Rows.Count;
 	        return res;
         }
+
+        #region support methods
+
+        private void ValidateReferenceItemValue(ReferenceItemDto dto, OMEsReference reference)
+        {
+	        if (!dto.UseInterval && dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.Value, out var decimalResult)
+	                                  || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.Value, out var dateResult)))
+	        {
+		        throw new Exception($"Значение '{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
+	        }
+
+	        if (dto.UseInterval && dto.ValueFrom != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.ValueFrom, out var decimalResultFrom)
+	                                                      || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.ValueFrom, out var dateResultFrom)))
+	        {
+		        throw new Exception($"Значение от'{dto.ValueFrom}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
+	        }
+
+	        if (dto.UseInterval && dto.Value != null && (reference.ValueType_Code == ReferenceItemCodeType.Number && !decimal.TryParse(dto.ValueTo, out var decimalResultTo)
+	                                                      || reference.ValueType_Code == ReferenceItemCodeType.Date && !DateTime.TryParse(dto.ValueTo, out var dateResultTo)))
+	        {
+		        throw new Exception($"Значение до'{dto.Value}' не может быть приведено к типу '{reference.ValueType_Code.GetEnumDescription()}'");
+	        }
+        }
+
+        private void ValidateExistsReferenceItemValue(ReferenceItemDto dto, OMEsReference reference)
+        {
+	        if (reference.UseInterval.GetValueOrDefault())
+	        {
+		        var isExistsTheSameReferenceItemValueFrom = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.ValueFrom == dto.ValueFrom && x.Id != dto.Id).ExecuteExists();
+		        var isExistsTheSameReferenceItemValueTo = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.ValueTo == dto.ValueTo && x.Id != dto.Id).ExecuteExists();
+                if (isExistsTheSameReferenceItemValueFrom && isExistsTheSameReferenceItemValueTo)
+		        {
+			        throw new Exception($"Значение в диапозоне от'{dto.ValueFrom}'до {dto.ValueTo} в справочнике '{reference.Name}' уже существует");
+		        }
+	        }
+	        else
+	        {
+		        var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.ReferenceId == dto.ReferenceId && x.Value == dto.Value && x.Id != dto.Id).ExecuteExists();
+		        if (isExistsTheSameReferenceItem)
+		        {
+			        throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
+		        }
+            }
+
+
+	     
+        }
+
+        #endregion
     }
 }

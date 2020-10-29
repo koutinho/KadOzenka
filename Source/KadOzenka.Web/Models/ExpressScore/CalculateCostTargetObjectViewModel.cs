@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using DevExpress.XtraRichEdit.Model;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.ExpressScore.Dto;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
 
@@ -8,18 +11,6 @@ namespace KadOzenka.Web.Models.ExpressScore
 {
 	public class CalculateCostTargetObjectViewModel
 	{
-		/// <summary>
-		/// Площадь
-		/// </summary>
-		[Required(ErrorMessage = "Заполните поле площадь")]
-		public decimal? Square { get; set; }
-
-		/// <summary>
-		/// Этаж
-		/// </summary>
-		[Required(ErrorMessage = "Заполните поле этаж")]
-		public int? Floor { get; set; }
-
 		/// <summary>
 		/// Ид найденных аналогов
 		/// </summary>
@@ -65,5 +56,15 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Не заполнен тип сделки")]
 		public DealTypeShort DealType { get; set; }
+
+		/// <summary>
+		/// Сериализованные данные для расчета 
+		/// </summary>
+		public string ComplexCalculateParameters { get; set; }
+
+		/// <summary>
+		/// Десерилизованный список параметров для расчета
+		/// </summary>
+		public List<SearchAttribute> DeserializeComplexParameters => JsonConvert.DeserializeObject<List<SearchAttribute>>(ComplexCalculateParameters ?? string.Empty);
 	}
 }

@@ -13,18 +13,21 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 
 		public long? TargetMarketObjectId { get; set; }
 
-		public int Floor { get; set; }
-
-		public decimal Square { get; set; }
-
 		public ScenarioType ScenarioType { get; set; }
 
 		public MarketSegment Segment { get; set; }
+
+		public decimal Square { get; set; }
 
 		public string Address { get; set; }
 
 		public string Kn { get; set; }
 
 		public DealTypeShort DealType { get; set; }
+
+		/// <summary>
+		/// Оценочные параметры для ЦО полученный из страницы расчетов
+		/// </summary>
+		public List<SearchAttribute> ComplexCalculateParameters { get; set; }
 	}
 }

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Register;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
@@ -62,45 +63,17 @@ namespace KadOzenka.Web.Models.ExpressScore
 				}
             }
 
-			if (CostFactors != null && CostFactors.YearBuildId == 0 || CostFactors.YearBuildId == null)
-			{
-				errors.Add(new ValidationResult(errorMessage: "Заполните атрибут года постройки."));
-			}
-
-			if (CostFactors != null && CostFactors.IndexDateDicId == 0 || CostFactors.IndexDateDicId == null)
-			{
-				errors.Add(new ValidationResult(errorMessage: "Выберите справочник для корректировки даты."));
-			}
-
-			if (CostFactors != null && CostFactors.LandShareDicId == 0 || CostFactors.LandShareDicId == null)
-			{
-				errors.Add(new ValidationResult(errorMessage: "Выберите справочник для корректировки земельного участка."));
-			}
-
-			if(CostFactors != null && CostFactors.IndexDateDicId != 0 && CostFactors.IndexDateDicId != null)
-            {
-                var dicType = GetDictionaryType(CostFactors.IndexDateDicId);
-                if (dicType != ReferenceItemCodeType.Date)
-				{
-					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки даты должен быть типа ""дата""."));
-                }
-			}
-
-			if (CostFactors != null && CostFactors.LandShareDicId != 0 && CostFactors.LandShareDicId != null)
-			{
-                var dicType = GetDictionaryType(CostFactors.LandShareDicId);
-                if (dicType != ReferenceItemCodeType.Number)
-				{
-					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки земельного участка должен быть типа ""число""."));
-                }
-			}
-
-            ValidateVat(errors);
+			ValidateLandShareDic(errors);
+			ValidateIndexDate(errors);
+			ValidateVat(errors);
             ValidateSquareCostFactor(errors);
             ValidateCorrectionByBargainCoef(errors);
             ValidateOperatingCostsCoef(errors);
+            ValidateShowInCalculatePageParameter(errors);
+            ValidateDefaultComplexCostFactorValue(errors);
 
-            if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
+
+			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
 				foreach (var complexFactor in CostFactors.ComplexCostFactors)
 				{
@@ -218,6 +191,89 @@ namespace KadOzenka.Web.Models.ExpressScore
 		        errors.Add(new ValidationResult("Не указан коэффициент операционных расходов."));
 	        }
         }
+
+        private void ValidateShowInCalculatePageParameter(List<ValidationResult> errors)
+        {
+	        if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count > 0)
+	        {
+		        foreach (var complexCostFactor in CostFactors.ComplexCostFactors)
+		        {
+			        if (complexCostFactor.ShowInCalculatePage && complexCostFactor.DictionaryId == 0 ||
+			            complexCostFactor.DictionaryId == null)
+			        {
+						errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить словарь. Т.к выбрана возможность изменения параметра на странице расчетов."));
+			        }
+		        }
+	        }
+
+        }
+
+        private void ValidateDefaultComplexCostFactorValue(List<ValidationResult> errors)
+        {
+	        if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count > 0)
+	        {
+		        foreach (var complexCostFactor in CostFactors.ComplexCostFactors)
+		        {
+			        if (complexCostFactor.ShowInCalculatePage && complexCostFactor.DefaultValue.IsNullOrEmpty())
+			        {
+				        errors.Add(new ValidationResult($@"Для оценочного фактора ""{complexCostFactor.Name}"" необходимо заполнить ""Значение по умолчанию"". Т.к выбрана возможность изменения параметра на странице расчетов."));
+			        }
+		        }
+	        }
+        }
+
+        private void ValidateIndexDate(List<ValidationResult> errors)
+        {
+	        if (CostFactors != null && (CostFactors.IndexDateDicId == 0 || CostFactors.IndexDateDicId == null))
+	        {
+		        errors.Add(new ValidationResult(errorMessage: "Выберите справочник для корректировки даты."));
+	        } else
+	        {
+		      var reference =  OMEsReference.Where(x => x.Id == CostFactors.IndexDateDicId).Select(x => x.UseInterval)
+			        .ExecuteFirstOrDefault();
+
+		      if (reference != null && reference.UseInterval.GetValueOrDefault())
+		      {
+			      errors.Add(new ValidationResult(errorMessage: "Cправочник для корректировки даты не может быть интервальным"));
+				}
+	        }
+
+	        if (CostFactors != null && CostFactors.IndexDateDicId != 0 && CostFactors.IndexDateDicId != null)
+	        {
+		        var dicType = GetDictionaryType(CostFactors.IndexDateDicId);
+		        if (dicType != ReferenceItemCodeType.Date)
+		        {
+			        errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки даты должен быть типа ""дата""."));
+		        }
+	        }
+		}
+
+        private void ValidateLandShareDic(List<ValidationResult> errors)
+        {
+	        if (CostFactors != null && (CostFactors.LandShareDicId == 0 || CostFactors.LandShareDicId == null))
+	        {
+		        errors.Add(new ValidationResult(errorMessage: "Выберите справочник для корректировки земельного участка."));
+	        }else
+	        {
+		        var reference = OMEsReference.Where(x => x.Id == CostFactors.LandShareDicId).Select(x => x.UseInterval)
+			        .ExecuteFirstOrDefault();
+
+		        if (reference != null && reference.UseInterval.GetValueOrDefault())
+		        {
+			        errors.Add(new ValidationResult(errorMessage: "Cправочник для корректировки корректировки земельного участка не может быть интервальным"));
+		        }
+	        }
+
+
+	        if (CostFactors != null && CostFactors.LandShareDicId != 0 && CostFactors.LandShareDicId != null)
+	        {
+		        var dicType = GetDictionaryType(CostFactors.LandShareDicId);
+		        if (dicType != ReferenceItemCodeType.Number)
+		        {
+			        errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки земельного участка должен быть типа ""число""."));
+		        }
+	        }
+		}
 
 		private ReferenceItemCodeType? GetDictionaryType(decimal? dictionaryId)
         {

@@ -13,14 +13,22 @@
             @Html.KendoTextBoxFor(m => m.Name, isReadonly: false)
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(m => m.ValueType)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(m => m.ValueType, isReadonly: !Model.ValueTypeCanBeChanged, withoutNull: true)
-        </div>
-    </div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.ValueType)
+		</div>
+		<div class="col-sm-10">
+			@Html.KendoEnumDropDownListFor(m => m.ValueType, isReadonly: !Model.ValueTypeCanBeChanged, withoutNull: true)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Интервальный справочник")
+		</div>
+		<div class="col-sm-10">
+			@Html.Kendo().CheckBoxFor(m => m.UseInterval).Enable(Model.ValueTypeCanBeChanged)
+		</div>
+	</div>
     <div class="form-group">
         <div class="col-sm-12">
             <button disabled="@(!Model.IsEdit)" style="float: right" class="k-button" id="save" type="button">Сохранить</button>
@@ -42,7 +50,7 @@
     #sidePanel-610  {
         min-height: 440px;
     }
-    .contentPanel {
+    .contentPanel { 
         height: auto;
     }
 </style>
@@ -59,6 +67,7 @@
                     if (node.matches('div[class="contentPanel"]')) {
                         grid = $("#Grid-610").data("kendoGrid");
                         grid.bind("dataBound", dataBound);
+                        console.log("its work");
                     }
                     for (let elem of node.querySelectorAll('div[class="contentPanel"]')) {
                         grid = $("#Grid-610").data("kendoGrid");
@@ -86,20 +95,44 @@
                         $('#@Html.IdFor(m => m.Id)').val(response.Id);
                         Common.ShowMessage(response.Success);
                     }
-                }).fail(function (response, textStatus, errorThrown) {
-                    Common.ShowError(response.responseText);
-                }).always(function () {
-                    kendo.ui.progress($('body'), false);
+                }).fail(function(response, textStatus, errorThrown) {
+	                Common.ShowError(response.responseText);
+                }).always(function() {
+	                kendo.ui.progress($('body'), false);
                 });
             });
+
+        var kDropDownList = $('#@(nameof(Model.ValueType))').data('kendoDropDownList');
+        (function (control) {
+            if (control) {
+	            control.bind('cascade',
+		            function(e) {
+			            if (this.value() === "4") {
+				            disableAndUncheckIntervalCheckbox();
+				            return;
+			            }
+			            $('#@(nameof(Model.UseInterval))').prop('disabled', false);
+		            });
+	            var stringValue = "4";
+				control.value() === stringValue && disableAndUncheckIntervalCheckbox();
+            }
+        }(kDropDownList));
     });
 
     function dataBound(e) {
         var itemCount = e.sender.dataSource.total();
         if (itemCount == 0) {
             $('#@(nameof(Model.ValueType))').data('kendoDropDownList').enable(true);
+			$('#@(nameof(Model.UseInterval))').prop('disabled', false);
         } else {
             $('#@(nameof(Model.ValueType))').data('kendoDropDownList').readonly();
+			$('#@(nameof(Model.UseInterval))').prop('disabled', true);
         }
     }
+
+    function disableAndUncheckIntervalCheckbox() {
+	    $('#@(nameof(Model.UseInterval))').prop('disabled', true);
+	    $('#@(nameof(Model.UseInterval))').prop('checked', false);
+    }
+
 </script>

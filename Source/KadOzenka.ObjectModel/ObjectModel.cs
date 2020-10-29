@@ -8608,26 +8608,6 @@ namespace ObjectModel.KO
             }
         }
 
-
-        private long? _generalmodelid;
-        /// <summary>
-        /// 21100600 ИД основной модели (206 реестр) (general_model_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100600)]
-        public long? GeneralModelId
-        {
-            get
-            {
-                CheckPropertyInited("GeneralModelId");
-                return _generalmodelid;
-            }
-            set
-            {
-                _generalmodelid = value;
-                NotifyPropertyChanged("GeneralModelId");
-            }
-        }
-
     }
 }
 
@@ -24406,6 +24386,26 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private string _costcalculatefactors;
+        /// <summary>
+        /// 60001400 Оценочные факторы выведенные на страницу расчетов (COST_CALCULATE_FACTORS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001400)]
+        public string CostCalculateFactors
+        {
+            get
+            {
+                CheckPropertyInited("CostCalculateFactors");
+                return _costcalculatefactors;
+            }
+            set
+            {
+                _costcalculatefactors = value;
+                NotifyPropertyChanged("CostCalculateFactors");
+            }
+        }
+
     }
 }
 
@@ -24769,6 +24769,26 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private bool? _useinterval;
+        /// <summary>
+        /// 60900400 Признак интервального справочника (USE_INTERVAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60900400)]
+        public bool? UseInterval
+        {
+            get
+            {
+                CheckPropertyInited("UseInterval");
+                return _useinterval;
+            }
+            set
+            {
+                _useinterval = value;
+                NotifyPropertyChanged("UseInterval");
+            }
+        }
+
     }
 }
 
@@ -24878,6 +24898,46 @@ namespace ObjectModel.ES
             {
                 _commonvalue = value;
                 NotifyPropertyChanged("CommonValue");
+            }
+        }
+
+
+        private string _valuefrom;
+        /// <summary>
+        /// 61000700 Значение от (VALUE_FROM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000700)]
+        public string ValueFrom
+        {
+            get
+            {
+                CheckPropertyInited("ValueFrom");
+                return _valuefrom;
+            }
+            set
+            {
+                _valuefrom = value;
+                NotifyPropertyChanged("ValueFrom");
+            }
+        }
+
+
+        private string _valueto;
+        /// <summary>
+        /// 61000800 Значение до (VALUE_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000800)]
+        public string ValueTo
+        {
+            get
+            {
+                CheckPropertyInited("ValueTo");
+                return _valueto;
+            }
+            set
+            {
+                _valueto = value;
+                NotifyPropertyChanged("ValueTo");
             }
         }
 
