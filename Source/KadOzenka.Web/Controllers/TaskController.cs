@@ -1263,7 +1263,7 @@ namespace KadOzenka.Web.Controllers
             var dateTime = DateTime.Parse(dt);
             var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
             return File(st, Consts.ExcelContentType,
-	            $"{taskId}_{dt:ddMMyyyy}_FactorsExport.xlsx");
+	            $"{taskId}_{dateTime:ddMMyyyy}_FactorsExport.xlsx");
         }
 
 		#endregion
