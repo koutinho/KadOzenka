@@ -35,6 +35,7 @@ using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
+using KadOzenka.Web.Models.Unit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
@@ -525,7 +526,42 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorsNew(long? tourId, string type)
+		{
+			if(tourId == null)
+				return Json(new List<SelectListItem>());
+
+			List<OMTourFactorRegister> tfrList;
+			if (type == "OKS")
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+			else
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+
+			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
+
+			if (ids.Count == 0)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var result = GetModelFactorNameSql(ids, true).OrderBy(x => x.Value).Select(x => new SelectListItem
+			{
+				Value = x.Key.ToString(),
+				Text = x.Value
+			});
+
+			return Json(result);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long modelId)
 		{
 			ModelFactorDto factorDto;
@@ -695,8 +731,15 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetUnitFactors(long id, bool showOnlyModelFactors = true, bool isShowOnlyFilledFactors = false)
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetUnitFactorsShowTypes()
+		{
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(UnitFactorsShowType));
+			return Json(types);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetUnitFactors(long id, UnitFactorsShowType unitFactorsShowType = UnitFactorsShowType.ModelFactors, bool isShowOnlyFilledFactors = false)
 		{
 			var unit = OMUnit.Where(x => x.Id == id)
 				.Select(x => new
@@ -709,20 +752,34 @@ namespace KadOzenka.Web.Controllers
 
 			if (unit != null)
 			{
-				var modelFactorIds = new List<long>();
-				if (showOnlyModelFactors)
+				List<UnitFactor> factorsValues = new List<UnitFactor>();
+				switch (unitFactorsShowType)
 				{
-					var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
-					if (model != null)
-					{
-						modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+					case UnitFactorsShowType.ModelFactors:
+						var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
+						if (model != null)
+						{
+							var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+								.Select(x => x.FactorId)
+								.Execute()
+								.Select(x => x.FactorId.GetValueOrDefault()).ToList();
+							if(!modelFactorIds.IsEmpty())
+								factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
+						}
+						break;
+					case UnitFactorsShowType.GroupFactors:
+						var groupFactorIds = OMGroupFactor.Where(x => x.GroupId == unit.GroupId && x.FactorId != null)
 							.Select(x => x.FactorId)
 							.Execute()
 							.Select(x => x.FactorId.GetValueOrDefault()).ToList();
-					}
+						if(!groupFactorIds.IsEmpty())
+							factorsValues = TourFactorService.GetUnitFactorValues(unit, groupFactorIds);
+						break;
+					default:
+						factorsValues = TourFactorService.GetUnitFactorValues(unit);
+						break;
 				}
 
-				var factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
 				var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
 				return Json(result);
 			}
