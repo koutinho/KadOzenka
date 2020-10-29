@@ -1,0 +1,1 @@
+﻿NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU

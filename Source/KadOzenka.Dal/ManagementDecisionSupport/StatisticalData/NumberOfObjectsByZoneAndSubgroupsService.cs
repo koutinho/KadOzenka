@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
@@ -25,33 +28,41 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<NumberOfObjectsByZoneAndSubgroupsDto> GetNumberOfObjectsByZoneAndSubgroupsData(long firstTourId, long secondTourId, NumberOfObjectsByZoneAndSubgroupsReportDataType reportDataType, bool isOksReportType)
 		{
-			var firstTourCodeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(firstTourId);
-			if (firstTourCodeGroupAttr == null)
-			{
-				throw new Exception($"Для тура {firstTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
-			}
-			var secondTourCodeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(secondTourId);
-			if (secondTourCodeGroupAttr == null)
-			{
-				throw new Exception($"Для тура {secondTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
-			}
+			string fileName = string.Empty, contents = string.Empty;
+
+			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType) fileName = "NumberOfObjectsByZoneAndSubgroupsData_Initial_OKS";
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType) fileName = "NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU";
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType) fileName = "NumberOfObjectsByZoneAndSubgroupsData_VUON_OKS";
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) fileName = "NumberOfObjectsByZoneAndSubgroupsData_VUON_ZU";
+
+			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
+
+			Console.WriteLine(contents);
+
+			RegisterAttribute firstTourCodeGroupAttr = QSQuery.ExecuteSql<RegisterAttribute>(string.Format("SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={0} AND ATTRIBUTE_USING_TYPE_CODE = 1;", firstTourId)).FirstOrDefault();
+			RegisterAttribute secondTourCodeGroupAttr = QSQuery.ExecuteSql<RegisterAttribute>(string.Format("SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={0} AND ATTRIBUTE_USING_TYPE_CODE = 1;", secondTourId)).FirstOrDefault();
+			if (firstTourCodeGroupAttr == null) throw new Exception($"Для тура {firstTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
+			if (secondTourCodeGroupAttr == null) throw new Exception($"Для тура {secondTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
+
+			long? firstTourTaskId = null, secondTourTaskId = null;
+
+			//TourTaskIdsRegisterAttributes
+			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT ID FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
 
 			var conditions = new List<QSCondition>();
+
+			Console.WriteLine(firstTourTaskId);
 			//TODO: при переделке отчета учесть, что теперь мы исключаем юниты типа "Кадастровый квартал" (PropertyTypes.CadastralQuartal)
 			if (isOksReportType)
 			{
-				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-					QSConditionType.NotEqual, (long)PropertyTypes.Stead));
-				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-					QSConditionType.NotEqual, (long)PropertyTypes.None));
+				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.Stead));
+				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.None));
 			}
-			else
-			{
-				conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-					QSConditionType.Equal, (long)PropertyTypes.Stead));
-			}
+			else conditions.Add(new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (long)PropertyTypes.Stead));
 
-			long? firstTourTaskId, secondTourTaskId;
 			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial)
 			{
 				firstTourTaskId = GetTourTaskId(firstTourId, KoNoteType.Initial, isOksReportType);
@@ -219,18 +230,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		private long? GetTourTaskId(long tourId, KoNoteType koNoteType, bool isOks)
 		{
 			long? taskId = null;
-			var tasks = OMTask.Where(x => x.TourId == tourId
-										  && x.NoteType_Code == koNoteType)
-				.Select(x => x.CreationDate)
-				.Execute().OrderByDescending(x => x.CreationDate).ToList();
+			var tasks = OMTask.Where(x => x.TourId == tourId && x.NoteType_Code == koNoteType).Select(x => x.CreationDate).Execute().OrderByDescending(x => x.CreationDate).ToList();
 			foreach (var task in tasks)
 			{
 				if (isOks)
 				{
-					if (OMUnit.Where(x =>
-							x.TaskId == task.Id && x.PropertyType_Code != PropertyTypes.Stead &&
-							x.PropertyType_Code != PropertyTypes.None)
-						.ExecuteExists())
+					if (OMUnit.Where(x => x.TaskId == task.Id && x.PropertyType_Code != PropertyTypes.Stead && x.PropertyType_Code != PropertyTypes.None).ExecuteExists())
 					{
 						taskId = task.Id;
 						break;
@@ -238,16 +243,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				}
 				else
 				{
-					if (OMUnit.Where(x =>
-							x.TaskId == task.Id && x.PropertyType_Code == PropertyTypes.Stead)
-						.ExecuteExists())
+					if (OMUnit.Where(x => x.TaskId == task.Id && x.PropertyType_Code == PropertyTypes.Stead).ExecuteExists())
 					{
 						taskId = task.Id;
 						break;
 					}
 				}
 			}
-
 			return taskId;
 		}
 
