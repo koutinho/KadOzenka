@@ -526,7 +526,42 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorsNew(long? tourId, string type)
+		{
+			if(tourId == null)
+				return Json(new List<SelectListItem>());
+
+			List<OMTourFactorRegister> tfrList;
+			if (type == "OKS")
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+			else
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+
+			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
+
+			if (ids.Count == 0)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var result = GetModelFactorNameSql(ids, true).OrderBy(x => x.Value).Select(x => new SelectListItem
+			{
+				Value = x.Key.ToString(),
+				Text = x.Value
+			});
+
+			return Json(result);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long modelId)
 		{
 			ModelFactorDto factorDto;

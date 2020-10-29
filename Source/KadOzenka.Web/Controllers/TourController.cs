@@ -683,6 +683,58 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetParentGroupNew(string type, long? id, long? tourId)
+		{
+			if(tourId == null)
+				return Json(new List<SelectListItem>());
+
+			KoGroupAlgoritm groupAlgorithm;
+			if (type == "OKS")
+			{
+				groupAlgorithm = KoGroupAlgoritm.MainOKS;
+			}
+			else
+			{
+				groupAlgorithm = KoGroupAlgoritm.MainParcel;
+			}
+
+			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
+
+			var groups = allGroups.Where(x => x.Id == (int)groupAlgorithm)
+				.SelectMany(x => x.Items)
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.GroupName
+				});
+
+			return Json(groups);
+		}
+
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+		public JsonResult GetSubgroupNew(long? groupId, long? tourId)
+		{
+			if (groupId == null || tourId == null)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
+			var subGroups = allGroups.SelectMany(x => x.Items).Where(x => x.Id == groupId).SelectMany(x => x.Items);
+
+			var groups = subGroups
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.GroupName
+				});
+
+			return Json(groups);
+		}
+
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
 		public JsonResult GetSubgroup(long? groupId)
 		{
@@ -692,11 +744,12 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var groups = OMGroup.Where(x => x.ParentId == groupId)
+				.OrderBy(x => x.GroupName)
 				.SelectAll().Execute()
 				.Select(x => new SelectListItem
 				{
 					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
+					Text = $"{GroupService.GetSubGroupNumber(x.Number)}.{x.GroupName}"
 				});
 
 			return Json(groups);

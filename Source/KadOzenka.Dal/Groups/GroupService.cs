@@ -508,7 +508,7 @@ namespace KadOzenka.Dal.Groups
             return number;
         }
 
-        private int? GetSubGroupNumber(string fullNumber)
+        public int? GetSubGroupNumber(string fullNumber)
         {
             var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(1);
             return subGroupNumberStr?.ParseToInt();
