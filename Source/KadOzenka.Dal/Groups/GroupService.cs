@@ -217,23 +217,43 @@ namespace KadOzenka.Dal.Groups
                 .Select(x => x.GroupName)
 		        .Select(x => x.Number).Execute().ToList();
 
-	        foreach (var omGroup in groups)
-	        {
-		        var dto = new GroupNumberDto
-		        {
-			        Id = omGroup.Id,
-			        CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
-                    Number = ParseGroupNumber(omGroup.ParentId, omGroup.Number),
-                };
-		        if (GetGroupType(omGroup.ParentId) == GroupType.SubGroup)
-		        {
-			        dto.ParentNumber = GetParentGroupNumber(omGroup.Number);
-		        }
+	        return GetGroupsWithNumbersSorted(groups);
+        }
 
-                result.Add(dto);
-	        }
+        public List<GroupNumberDto> GetOtherGroupsFromTreeLevelForTour(long groupId)
+        {
+            if(groupId == (int)KoGroupAlgoritm.MainOKS || groupId == (int)KoGroupAlgoritm.MainParcel)
+                return new List<GroupNumberDto>();
 
-	        return result.OrderBy(x => x.ParentNumber).ThenBy(x => x.Number).ToList();
+            var group = OMGroup.Where(x => x.Id == groupId)
+	            .Select(x => x.ParentId)
+	            .ExecuteFirstOrDefault();
+            var groupType = GetGroupType(group.ParentId);
+
+            var tg = OMTourGroup.Where(x => x.GroupId == groupId)
+	            .Select(x => x.TourId)
+	            .ExecuteFirstOrDefault();
+            if (tg == null)
+	            throw new Exception("Не найден тур для выбранной группы");
+
+            var tourGroups = OMTourGroup.Where(x => x.TourId == tg.TourId)
+	            .Select(x => x.GroupId)
+	            .Execute()
+	            .Select(x => x.GroupId).ToList();
+
+            var subGroups = groupType == GroupType.SubGroup
+	            ? OMGroup.Where(x => x.ParentId != -1 && tourGroups.Contains(x.Id) && x.Id != groupId)
+		            .Select(x => x.GroupName)
+		            .Select(x => x.ParentId)
+                    .Select(x => x.Number)
+                    .Execute()
+	            : OMGroup.Where(x => x.ParentId == -1 && tourGroups.Contains(x.Id) && x.Id != groupId)
+		            .Select(x => x.Number)
+		            .Select(x => x.ParentId)
+                    .Select(x => x.GroupName)
+		            .Execute();
+
+            return GetGroupsWithNumbersSorted(subGroups);
         }
 
         public int AddGroup(GroupDto groupDto)
@@ -578,6 +598,28 @@ namespace KadOzenka.Dal.Groups
 		        .Distinct()
 		        .ToList();
 	        return groupIds;
+        }
+
+        private List<GroupNumberDto> GetGroupsWithNumbersSorted(List<OMGroup> groups)
+        {
+	        List<GroupNumberDto> result = new List<GroupNumberDto>();
+	        foreach (var omGroup in groups)
+	        {
+		        var dto = new GroupNumberDto
+		        {
+			        Id = omGroup.Id,
+			        CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
+			        Number = ParseGroupNumber(omGroup.ParentId, omGroup.Number),
+		        };
+		        if (GetGroupType(omGroup.ParentId) == GroupType.SubGroup)
+		        {
+			        dto.ParentNumber = GetParentGroupNumber(omGroup.Number);
+		        }
+
+		        result.Add(dto);
+	        }
+
+	        return result.OrderBy(x => x.ParentNumber).ThenBy(x => x.Number).ToList();
         }
 
         #endregion

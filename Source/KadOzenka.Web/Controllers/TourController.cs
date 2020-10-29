@@ -1269,26 +1269,8 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
 		public JsonResult GetSubgroups(long groupId)
 		{
-			var group = OMGroup.Where(x => x.Id == groupId)
-				.Select(x => x.ParentId)				
-				.ExecuteFirstOrDefault();
-			long? parentId = group.ParentId;
-
-			var tg = OMTourGroup.Where(x => x.GroupId == groupId)
-				.Select(x => x.TourId)
-				.ExecuteFirstOrDefault();
-
-			if (tg == null)
-				throw new Exception("Не найден тур для выбранной группы");
-
-			var sameGroups = OMTourGroup.Where(x => x.TourId == tg.TourId)
-				.Select(x => x.GroupId)
-				.Execute()
-				.Select(x => x.GroupId).ToList();
-
-			var subGroups = OMGroup.Where(x => x.ParentId == parentId && sameGroups.Contains(x.Id) && x.Id != groupId)
-				.Select(x => x.GroupName).Execute();
-			var res = subGroups.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.GroupName });
+			var dtos = GroupService.GetOtherGroupsFromTreeLevelForTour(groupId);
+			var res = dtos.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.CombinedName });
 
 			return Json(res);
 		}
