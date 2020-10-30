@@ -2,7 +2,7 @@
 
 namespace KadOzenka.Dal.Groups.Dto
 {
-	public class GroupInfoDto
+	public class GroupAlgorithmInfoDto
 	{
 		public long Id { get; set; }
 		public string Number { get; set; }

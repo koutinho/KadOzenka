@@ -3,16 +3,16 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Groups.Dto
 {
-	public class GroupNumberDto
+	public class GroupNumberInfoDto
 	{
 		public long? Id { get; set; }
 		public string CombinedName { get; set; }
 		public int? Number { get; set; }
 		public int? ParentNumber { get; set; }
 
-		public static GroupNumberDto FromOMGroup(OMGroup omGroup, GroupService service)
+		public static GroupNumberInfoDto FromOMGroup(OMGroup omGroup, GroupService service)
 		{
-			var dto = new GroupNumberDto
+			var dto = new GroupNumberInfoDto
 			{
 				Id = omGroup.Id,
 				CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
@@ -26,9 +26,9 @@ namespace KadOzenka.Dal.Groups.Dto
 			return dto;
 		}
 
-		public static GroupNumberDto FromGroupInfoDto(GroupInfoDto omGroup, GroupService service)
+		public static GroupNumberInfoDto FromGroupInfoDto(GroupAlgorithmInfoDto omGroup, GroupService service)
 		{
-			var dto = new GroupNumberDto
+			var dto = new GroupNumberInfoDto
 			{
 				Id = omGroup.Id,
 				CombinedName = $"{omGroup.Number}. {omGroup.Name}",
