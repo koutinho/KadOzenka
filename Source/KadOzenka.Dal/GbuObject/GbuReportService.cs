@@ -9,6 +9,8 @@ using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
+using System.Text;
+using Ionic.Zip;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -18,24 +20,20 @@ namespace KadOzenka.Dal.GbuObject
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		private const int MaxRowsCountInSheet = 1000000;
 
-		private ExcelFile _excelTemplate;
-		private List<ExcelWorksheet> workSheets;
+		private List<ExcelFile> _excelFiles;
 		private Row CurrentRow { get; set; }
 		private long ReportId { get; set; }
-		private int _listCounter;
 		private readonly List<Column> _columnsWidth;
 		private List<string> _headers;
 
 
 		public GbuReportService()
 		{
-			_listCounter = 1;
-			_excelTemplate = new ExcelFile();
+			_excelFiles = new List<ExcelFile>();
 			_headers = new List<string>();
-			workSheets = new List<ExcelWorksheet>();
 			_columnsWidth = new List<Column>();
 
-			CreateWorkSheet();
+			CreateFile();
 		}
 
 
@@ -77,13 +75,14 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			var rowIndex = 0;
 			int columnIndex = 0;
+			var sheet = CurrentRow.File.Worksheets[0];
 			foreach (string value in values)
 			{
-				CurrentRow.Sheet.Rows[rowIndex].Cells[columnIndex].SetValue(value);
-				CurrentRow.Sheet.Rows[rowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-				CurrentRow.Sheet.Rows[rowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-				CurrentRow.Sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-				CurrentRow.Sheet.Rows[rowIndex].Cells[columnIndex].Style.WrapText = true;
+				sheet.Rows[rowIndex].Cells[columnIndex].SetValue(value);
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.WrapText = true;
 				columnIndex++;
 			}
 
@@ -95,7 +94,7 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			try
 			{
-				var cell = row.Sheet.Rows[row.Index].Cells[column];
+				var cell = row.File.Worksheets[0].Rows[row.Index].Cells[column];
 
 				cell.SetValue(value);
 
@@ -103,12 +102,12 @@ namespace KadOzenka.Dal.GbuObject
 					cell.Style = cellStyle;
 
 				if (new Random().Next(0, 10000) > 9950)
-					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
 			}
 			catch (Exception ex)
 			{
 				if (new Random().Next(0, 100) > 80)
-					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row, column, value);
+					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
 			}
 		}
 
@@ -116,21 +115,21 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			for (var i = 0; i < values.Count; i++)
 			{
-				row.Sheet.Rows[row.Index].Cells[i].SetValue(values[i]);
+				row.File.Worksheets[0].Rows[row.Index].Cells[i].SetValue(values[i]);
 			}
 		}
 
 		public void SetStyle()
 		{
-			for (var sheetCounter = 0; sheetCounter < workSheets.Count; sheetCounter++)
+			for (var fileCounter = 0; fileCounter < _excelFiles.Count; fileCounter++)
 			{
-				var sheet = workSheets[sheetCounter];
+				var sheet = _excelFiles[fileCounter].Worksheets[0];
 
 				int countRows = sheet.Rows.Count;
 				int countColumns = sheet.CalculateMaxUsedColumns();
 				int errCount = 0;
 				int successCount = 0;
-				_log.Debug("Установка стилей в Excel для листа {ListIndex}. В таблице {countRows} x {countColumns}", sheet.Index, countRows, countColumns);
+				_log.Debug("Установка стилей в Excel для файла №{FileCounter}. В таблице {countRows} x {countColumns}", fileCounter, countRows, countColumns);
 				
 				for (int i = 0; i < countRows; i++)
 				{
@@ -159,7 +158,7 @@ namespace KadOzenka.Dal.GbuObject
 					}
 				}
 
-				_log.Debug("Применение стилей в Excel для страницы {SheetNumber} завершено. Успешно {successCount}, с ошибкой {errCount}", sheetCounter, successCount, errCount);
+				_log.Debug("Применение стилей в Excel для файла №{FileCounter} завершено. Успешно {successCount}, с ошибкой {errCount}", fileCounter, successCount, errCount);
 			}
 		}
 
@@ -167,7 +166,10 @@ namespace KadOzenka.Dal.GbuObject
 		{
 			_log.Verbose("Установка ширины {width} для столбца {column}", width, column);
 
-			workSheets.ForEach(x => x.Columns[column].SetWidth(width, LengthUnit.Centimeter));
+			_excelFiles.ForEach(x =>
+			{
+				x.Worksheets[0].Columns[column].SetWidth(width, LengthUnit.Centimeter);
+			});
 
 			if (saveWidth)
 			{
@@ -177,10 +179,50 @@ namespace KadOzenka.Dal.GbuObject
 
 		public long SaveReport(string fileName, long? mainRegisterId = null, string registerViewId = null)
 		{
+			return _excelFiles.Count == 1 
+				? SaveReportXlsx(fileName, mainRegisterId, registerViewId) 
+				: SaveReportZip(fileName, mainRegisterId, registerViewId);
+		}
+
+
+		#region Support Methods
+
+		private void CreateFile()
+		{
+			_log.Debug("Создание нового файла");
+
+			var newFile = new ExcelFile();
+			
+			var sheet = newFile.Worksheets.Add("Лист 1");
+			sheet.Cells.Style.Font.Name = "Times New Roman";
+			_excelFiles.Add(newFile);
+
+			CurrentRow = new Row
+			{
+				File = newFile
+			};
+		}
+
+		private void ValidateRowsCountInSheet()
+		{
+			if (CurrentRow.Index > MaxRowsCountInSheet)
+			{
+				CreateFile();
+
+				AddHeaders(_headers);
+
+				_columnsWidth.ForEach(x => SetIndividualWidth(x.Index, x.Width, false));
+			}
+		}
+
+		private long SaveReportXlsx(string fileName, long? mainRegisterId = null, string registerViewId = null)
+		{
+			_log.Debug("Начато сохранение отчета через xlsx");
+
 			try
 			{
 				MemoryStream stream = new MemoryStream();
-				_excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+				_excelFiles[0].Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
 
 				var currentDate = DateTime.Now;
@@ -205,9 +247,10 @@ namespace KadOzenka.Dal.GbuObject
 
 				_log.ForContext("ResultFileName", export.ResultFileName)
 					.ForContext("FileId", export.Id)
-					.Debug("Сохранение отчета {FileName}", fileName);
+					.Debug("Закончено сохранение отчета {FileName}", fileName);
 
 				ReportId = export.Id;
+
 				return ReportId;
 			}
 			catch (Exception ex)
@@ -218,32 +261,51 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-
-		#region Support Methods
-
-		private void CreateWorkSheet()
+		private long SaveReportZip(string fileName, long? mainRegisterId = null, string registerViewId = null)
 		{
-			var newSheet = _excelTemplate.Worksheets.Add($"Лист {_listCounter}");
-			newSheet.Cells.Style.Font.Name = "Times New Roman";
-			workSheets.Add(newSheet);
+			_log.Debug("Сохранение отчета через zip");
 
-			_listCounter++;
-
-			CurrentRow = new Row
+			try
 			{
-				Sheet = newSheet
-			};
-		}
+				using (var zipFile = new ZipFile())
+				{
+					zipFile.AlternateEncoding = Encoding.UTF8;
+					zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
-		private void ValidateRowsCountInSheet()
-		{
-			if (CurrentRow.Index > MaxRowsCountInSheet)
+					for (int i = 0; i < _excelFiles.Count; i++)
+					{
+						var currentFileName = $"{fileName} {i + 1}.xlsx";
+
+						_log.Debug($"Начато добавление файла '{currentFileName}' в zip");
+
+						var stream = new MemoryStream();
+						_excelFiles[i].Save(stream, SaveOptions.XlsxDefault);
+						stream.Seek(0, SeekOrigin.Begin);
+
+						zipFile.AddEntry(currentFileName, stream);
+
+						_log.Debug($"Закончено добавление файла '{currentFileName}' в zip");
+					}
+
+					var zipStream = new MemoryStream();
+					zipFile.Save(zipStream);
+					zipStream.Seek(0, SeekOrigin.Begin);
+					var zipFileName = "Результаты переноса атрибутов";
+					var registerId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId();
+					var resultRegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects";
+
+					_log.Debug($"Начато сохранение zip-файла '{zipFileName}'");
+					ReportId = SaveReportDownload.SaveReport(zipFileName, zipStream, registerId, resultRegisterViewId, "zip");
+					_log.Debug($"Закончено сохранение zip-файла '{zipFileName}'");
+				}
+
+				return ReportId;
+			}
+			catch (Exception ex)
 			{
-				CreateWorkSheet();
-
-				AddHeaders(_headers);
-
-				_columnsWidth.ForEach(x => SetIndividualWidth(x.Index, x.Width, false));
+				_log.Error(ex, "Сохранение отчета завершилось исключением");
+				ErrorManager.LogError(ex);
+				throw;
 			}
 		}
 
@@ -262,14 +324,14 @@ namespace KadOzenka.Dal.GbuObject
 		public class Row
 		{
 			public int Index;
-			public ExcelWorksheet Sheet;
+			public ExcelFile File;
 
 			public Row Copy()
 			{
 				return new Row
 				{
 					Index = Index,
-					Sheet = Sheet
+					File = File
 				};
 			}
 		}
