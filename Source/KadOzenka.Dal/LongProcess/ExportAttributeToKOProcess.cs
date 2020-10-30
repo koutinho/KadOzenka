@@ -20,13 +20,9 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "ExportAttributeToKoProcess";
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKoProcess>();
-        private GbuReportService ReportService { get; }
-        private string ReportName => "Отчет по переносу атрибутов";
-        private int ColumnWidth => 8;
 
         public ExportAttributeToKoProcess()
         {
-	        ReportService = new GbuReportService();
         }
 
 
@@ -62,8 +58,8 @@ namespace KadOzenka.Dal.LongProcess
                 }, cancelProgressCounterToken);
 
 
-                var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
-                var exportResult = new ExportAttributeToKO().Run(settings, processQueue);
+				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
+                var urlToDownload = new ExportAttributeToKO().Run(settings, processQueue);
                 //TestLongRunningProcess(settings);
 
                 cancelProgressCounterSource.Cancel();
@@ -71,10 +67,7 @@ namespace KadOzenka.Dal.LongProcess
                 cancelProgressCounterSource.Dispose();
 
                 WorkerCommon.LogState(processQueue, "Отправка уведомления о завершении операции.");
-                _log.Information("Отправка уведомления о завершении операции.");
-
-                var urlToDownloadReport = GenerateReport(settings, exportResult);
-				SendSuccessNotification(processQueue, urlToDownloadReport);
+				SendSuccessNotification(processQueue, urlToDownload);
                 WorkerCommon.SetProgress(processQueue, 100);
             }
 			catch (Exception ex)
@@ -85,78 +78,6 @@ namespace KadOzenka.Dal.LongProcess
                 SendFailureNotification(processQueue, message);
 				throw;
 			}
-		}
-
-		private string GenerateReport(GbuExportAttributeSettings settings, List<ExportAttributeToKO.OperationResult> exportResults)
-		{
-			_log.Information("Начато формирование отчета.");
-
-			var cadastralNumberColumn = new GbuReportService.Column
-			{
-				Index = 0,
-				Header = "КН",
-				Width = 4
-			};
-			ReportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
-
-			var numberOfAttributes = settings.Attributes?.Count ?? 0;
-			var copiedColumns = new List<GbuReportService.Column>(numberOfAttributes);
-			for (int i = 0; i < numberOfAttributes; i++)
-			{
-				var currentAttribute = settings.Attributes[i];
-				var koAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeKO);
-				var gbuAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeGBU);
-				var gbuRegister = RegisterCache.GetRegisterData(gbuAttribute.RegisterId);
-
-				var column = new GbuReportService.Column
-				{
-					Header = $"{gbuAttribute.Name} ({gbuRegister.Description}) -> {koAttribute.Name}",
-					Index = i + 1,
-					Width = ColumnWidth
-				};
-				copiedColumns.Add(column);
-				ReportService.SetIndividualWidth(column.Index, column.Width);
-			}
-			
-			var headers = copiedColumns.Select(x => x.Header).ToList();
-			headers.Insert(0, cadastralNumberColumn.Header);
-			ReportService.AddHeaders(headers);
-
-			var copiedColumnsStartIndex = cadastralNumberColumn.Index + 1;
-			exportResults.ForEach(exportResult =>
-			{
-				var currentReportRowIndex = ReportService.GetCurrentRow();
-				ReportService.AddValue(exportResult.CadastralNumber, cadastralNumberColumn.Index, currentReportRowIndex);
-
-				exportResult.Atributes.ForEach(attribute =>
-				{
-					var color = SpreadsheetColor.FromName(ColorName.White);
-					var columnValue = attribute.Value?.ToString();
-
-					if (!string.IsNullOrWhiteSpace(attribute.Warning))
-					{
-						color = SpreadsheetColor.FromName(ColorName.Yellow);
-						columnValue = $"{columnValue}\n{attribute.Warning}";
-					}
-					if (!string.IsNullOrWhiteSpace(attribute.Error))
-					{
-						color = SpreadsheetColor.FromName(ColorName.Red);
-						columnValue = $"{columnValue}\n{attribute.Error}";
-					}
-
-					var cellStyle = new CellStyle();
-					cellStyle.FillPattern.SetPattern(FillPatternStyle.Solid, color, SpreadsheetColor.FromName(ColorName.Black));
-
-					ReportService.AddValue(columnValue, attribute.Index + copiedColumnsStartIndex, currentReportRowIndex, cellStyle);
-				});
-			});
-
-			ReportService.SetStyle();
-			ReportService.SaveReport(ReportName);
-
-			_log.Information("Закончено формирование отчета.");
-
-			return ReportService.UrlToDownload;
 		}
 
 
