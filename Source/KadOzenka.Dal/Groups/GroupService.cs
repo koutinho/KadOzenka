@@ -217,7 +217,10 @@ namespace KadOzenka.Dal.Groups
                 .Select(x => x.GroupName)
 		        .Select(x => x.Number).Execute().ToList();
 
-	        return GetGroupsWithNumbersSorted(groups);
+            return groups.Select(x => GroupNumberDto.FromOMGroup(x, this))
+		        .OrderBy(x => x.ParentNumber)
+		        .ThenBy(x => x.Number)
+		        .ToList();
         }
 
         public List<GroupNumberDto> GetOtherGroupsFromTreeLevelForTour(long groupId)
@@ -227,33 +230,30 @@ namespace KadOzenka.Dal.Groups
 
             var group = OMGroup.Where(x => x.Id == groupId)
 	            .Select(x => x.ParentId)
-	            .ExecuteFirstOrDefault();
+	            .Select(x => x.GroupAlgoritm_Code)
+                .ExecuteFirstOrDefault();
             var groupType = GetGroupType(group.ParentId);
+            KoGroupAlgoritm algoritm;
+            if (groupType == GroupType.Group)
+            {
+	            algoritm = group.GroupAlgoritm_Code;
+            }
+            else
+            {
+	            algoritm = OMGroup.Where(x => x.Id == group.ParentId)
+	                .Select(x => x.GroupAlgoritm_Code)
+	                .ExecuteFirstOrDefault().GroupAlgoritm_Code;
+            }
 
-            var tg = OMTourGroup.Where(x => x.GroupId == groupId)
-	            .Select(x => x.TourId)
-	            .ExecuteFirstOrDefault();
-            if (tg == null)
-	            throw new Exception("Не найден тур для выбранной группы");
+            var allGroupsInfo = GetGroupsInfoForTour(groupId);
+            var finalGroups = groupType == GroupType.Group
+	            ? allGroupsInfo.Where(x => x.ParentId == -1 && x.GroupAlgoritm == algoritm && x.Id != groupId).ToList()
+	            : allGroupsInfo.Where(x => x.ParentId != -1 && x.ParentGroupAlgoritm == algoritm && x.Id != groupId).ToList();
 
-            var tourGroups = OMTourGroup.Where(x => x.TourId == tg.TourId)
-	            .Select(x => x.GroupId)
-	            .Execute()
-	            .Select(x => x.GroupId).ToList();
-
-            var subGroups = groupType == GroupType.SubGroup
-	            ? OMGroup.Where(x => x.ParentId != -1 && tourGroups.Contains(x.Id) && x.Id != groupId)
-		            .Select(x => x.GroupName)
-		            .Select(x => x.ParentId)
-                    .Select(x => x.Number)
-                    .Execute()
-	            : OMGroup.Where(x => x.ParentId == -1 && tourGroups.Contains(x.Id) && x.Id != groupId)
-		            .Select(x => x.Number)
-		            .Select(x => x.ParentId)
-                    .Select(x => x.GroupName)
-		            .Execute();
-
-            return GetGroupsWithNumbersSorted(subGroups);
+            return finalGroups.Select(x => GroupNumberDto.FromGroupInfoDto(x, this))
+	            .OrderBy(x => x.ParentNumber)
+	            .ThenBy(x => x.Number)
+	            .ToList();
         }
 
         public int AddGroup(GroupDto groupDto)
@@ -490,7 +490,7 @@ namespace KadOzenka.Dal.Groups
             return groupId;
 		}
 
-        private GroupType GetGroupType(long? parentGroupId)
+        public GroupType GetGroupType(long? parentGroupId)
         {
             return parentGroupId != null && parentGroupId != -1 && 
                    parentGroupId != (long) KoGroupAlgoritm.MainOKS &&
@@ -514,7 +514,7 @@ namespace KadOzenka.Dal.Groups
             });
         }
 
-        private int? ParseGroupNumber(long? parentId, string combinedNumber)
+        public int? ParseGroupNumber(long? parentId, string combinedNumber)
         {
             if (string.IsNullOrWhiteSpace(combinedNumber))
                 return null;
@@ -534,7 +534,7 @@ namespace KadOzenka.Dal.Groups
             return subGroupNumberStr?.ParseToInt();
         }
 
-        private int? GetParentGroupNumber(string fullNumber)
+        public int? GetParentGroupNumber(string fullNumber)
         {
 	        var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(0);
 	        return subGroupNumberStr?.ParseToInt();
@@ -600,26 +600,68 @@ namespace KadOzenka.Dal.Groups
 	        return groupIds;
         }
 
-        private List<GroupNumberDto> GetGroupsWithNumbersSorted(List<OMGroup> groups)
+        private List<GroupInfoDto> GetGroupsInfoForTour(long groupId)
         {
-	        List<GroupNumberDto> result = new List<GroupNumberDto>();
-	        foreach (var omGroup in groups)
+	        var tg = OMTourGroup.Where(x => x.GroupId == groupId)
+		        .Select(x => x.TourId)
+		        .ExecuteFirstOrDefault();
+	        if (tg == null)
+		        throw new Exception("Не найден тур для выбранной группы");
+
+            var query = new QSQuery
 	        {
-		        var dto = new GroupNumberDto
+		        MainRegisterID = OMGroup.GetRegisterId(),
+		        Condition = new QSConditionGroup
 		        {
-			        Id = omGroup.Id,
-			        CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
-			        Number = ParseGroupNumber(omGroup.ParentId, omGroup.Number),
-		        };
-		        if (GetGroupType(omGroup.ParentId) == GroupType.SubGroup)
+			        Type = QSConditionGroupType.And,
+			        Conditions = new List<QSCondition>
+			        {
+				        new QSConditionSimple(OMTourGroup.GetColumn(x => x.TourId), QSConditionType.Equal, tg.TourId)
+			        }
+                },
+		        Joins = new List<QSJoin>
 		        {
-			        dto.ParentNumber = GetParentGroupNumber(omGroup.Number);
+			        new QSJoin
+			        {
+				        RegisterId = OMTourGroup.GetRegisterId(),
+				        JoinCondition = new QSConditionSimple
+				        {
+					        ConditionType = QSConditionType.Equal,
+					        LeftOperand = OMGroup.GetColumn(x => x.Id),
+					        RightOperand = OMTourGroup.GetColumn(x => x.GroupId)
+				        },
+				        JoinType = QSJoinType.Inner
+			        }
 		        }
+	        };
 
-		        result.Add(dto);
-	        }
+	        query.AddColumn(OMGroup.GetColumn(x => x.Number, nameof(GroupInfoDto.Number)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupInfoDto.Name)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupAlgoritm_Code, nameof(GroupInfoDto.GroupAlgoritm)));
+            query.AddColumn(OMGroup.GetColumn(x => x.ParentId, nameof(GroupInfoDto.ParentId)));
 
-	        return result.OrderBy(x => x.ParentNumber).ThenBy(x => x.Number).ToList();
+            var subQuery = new QSQuery(OMGroup.GetRegisterId())
+            {
+	            Columns = new List<QSColumn>
+	            {
+		            OMGroup.GetColumn(x => x.GroupAlgoritm_Code)
+	            },
+	            Condition = new QSConditionGroup(QSConditionGroupType.And)
+	            {
+		            Conditions = new List<QSCondition>
+		            {
+			            new QSConditionSimple(
+				            OMGroup.GetColumn(x => x.Id),
+				            QSConditionType.Equal,
+				            OMGroup.GetColumn(x => x.ParentId)){
+				            RightOperandLevel = 1
+			            }
+		            }
+	            }
+            };
+            query.AddColumn(subQuery, nameof(GroupInfoDto.ParentGroupAlgoritm));
+
+            return query.ExecuteQuery<GroupInfoDto>();
         }
 
         #endregion
