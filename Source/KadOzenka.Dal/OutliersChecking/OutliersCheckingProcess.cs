@@ -43,13 +43,15 @@ namespace KadOzenka.Dal.OutliersChecking
 			foreach (var objectsBySegment in objectsBySegments)
 			{
 				var segmentCode = objectsBySegment.Key;
-				var saleObjects = objectsBySegment.Value.Where(x =>
-					x.DealType_Code == DealType.SaleDeal || x.DealType_Code == DealType.SaleSuggestion).ToList();
-				var rentObjects = objectsBySegment.Value.Where(x =>
-					x.DealType_Code == DealType.RentDeal || x.DealType_Code == DealType.RentSuggestion).ToList();
+				var saleODealbjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
+				var saleOSuggestionbjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
+				var rentDealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
+				var rentSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
 
-				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.SaleDeal, saleObjects);
-				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.RentDeal, rentObjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.SaleDeal, saleODealbjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionbjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.RentDeal, rentDealObjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
 			}
 
 			_outliersCheckingReport.SetStyleAndSorting();
@@ -65,7 +67,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
 				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
 				.Debug("Получено '{LocationSliceCount}'локаций для сегмента '{MarketSegment}'({DealType})",
-					objectsByLocationSliceList.Count, segmentCode.GetEnumDescription(), dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
+					objectsByLocationSliceList.Count, segmentCode.GetEnumDescription(),  dealType.GetEnumDescription());
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -79,7 +81,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
 				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
 				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
-				.Debug("Обработка сегмента '{MarketSegment}'({DealType}) завершена", segmentCode.GetEnumDescription(), dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
+				.Debug("Обработка сегмента '{MarketSegment}'({DealType}) завершена", segmentCode.GetEnumDescription(), dealType.GetEnumDescription());
 		}
 
 		private void SetTotalObjectsCount(Dictionary<MarketSegment, List<OMCoreObject>> objectsBySegments)
@@ -141,7 +143,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				Log.ForContext("ObjectsCountByLocation", 1)
 					.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment}({DealType}) завершена",
 						objectsByLocation.LocationName,
-						objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription(), dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
+						objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription(), dealType.GetEnumDescription());
 
 				return;
 			}
@@ -205,7 +207,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment}({DealType}) завершена",
 					objectsByLocation.LocationName,
 					objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription(),
-					dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
+					dealType.GetEnumDescription());
 		}
 
 		private decimal GetMedianPricePerMeter(List<OMCoreObject> orderedMarketObjects)
