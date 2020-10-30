@@ -17,6 +17,8 @@ namespace KadOzenka.Dal.GbuObject
 	public class GbuReportService
 	{
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={ReportId}";
+		public CellStyle WarningCellStyle { get; private set; }
+		public CellStyle ErrorCellStyle { get; private set; }
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		private const int MaxRowsCountInSheet = 1000000;
 
@@ -32,6 +34,14 @@ namespace KadOzenka.Dal.GbuObject
 			_excelFiles = new List<ExcelFile>();
 			_headers = new List<string>();
 			_columnsWidth = new List<Column>();
+
+			WarningCellStyle = new CellStyle();
+			WarningCellStyle.FillPattern.SetPattern(FillPatternStyle.Solid, SpreadsheetColor.FromName(ColorName.Yellow),
+				SpreadsheetColor.FromName(ColorName.Black));
+
+			ErrorCellStyle = new CellStyle();
+			ErrorCellStyle.FillPattern.SetPattern(FillPatternStyle.Solid, SpreadsheetColor.FromName(ColorName.Red),
+				SpreadsheetColor.FromName(ColorName.Black));
 
 			CreateFile();
 		}
