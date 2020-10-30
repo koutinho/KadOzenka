@@ -60,11 +60,10 @@ namespace KadOzenka.Dal.OutliersChecking
 
 		public void AddNewWorksheetForSegment(MarketSegment segment, DealType dealType)
 		{
-			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}({DealType})", segment.GetEnumDescription(),
-				dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда");
+			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}({DealType})", segment.GetEnumDescription(), dealType.GetEnumDescription());
 
 			_currentRow = 0;
-			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName($"{(dealType == DealType.SaleDeal || dealType == DealType.SaleSuggestion ? "Продажа" : "Аренда")} {segment.GetEnumDescription()}"));
+			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName($"{dealType.GetEnumDescription()} {segment.GetEnumDescription()}"));
 			_currentWorksheet.Cells.Style.Font.Name = "Times New Roman";
 			AddHeaders();
 			SetWidth();
@@ -101,12 +100,12 @@ namespace KadOzenka.Dal.OutliersChecking
 		public void SetStyleAndSorting()
 		{
 			int worksheetCount = _excelFile.Worksheets.Count;
-			int countRows = _currentWorksheet.Rows.Count;
 			int countColumns = _headersList.Count;
 			int errCount = 0;
 			int successCount = 0;
 			for (var w = 0; w < worksheetCount; w++)
 			{
+				int countRows = _excelFile.Worksheets[w].Rows.Count;
 				Log.ForContext("MarketSegment", _excelFile.Worksheets[w].Name)
 					.Debug("Установка стилей в Excel таблице {CountRows} x {CountColumns}", countRows, countColumns);
 				for (int i = 0; i < countRows; i++)
