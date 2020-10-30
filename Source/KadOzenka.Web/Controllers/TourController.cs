@@ -1250,7 +1250,7 @@ namespace KadOzenka.Web.Controllers
                 return Json(string.Empty);
 
             var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
-                .Select(x => x.GroupName).Execute();
+                .Select(x => x.GroupName).Select(x => x.Number).Execute();
 
             var result = groupList.Join(groups,
                 calc => calc.ParentCalcGroupId,
@@ -1260,7 +1260,7 @@ namespace KadOzenka.Web.Controllers
                     Id = calc.Id,
                     GroupId = calc.GroupId,
                     ParentCalcGroupId = calc.ParentCalcGroupId,
-                    Title = group.GroupName
+                    Title = $"{group.Number}. {group.GroupName}"
                 }).ToList();
 
             return Json(result);
