@@ -68,8 +68,6 @@ namespace KadOzenka.Dal.GbuObject
             foreach (ExportAttributeItem item in setting.Attributes)
             {
 	            var gbuAttribute = RegisterCache.GetAttributeData((int)item.IdAttributeGBU);
-	            var gbuRegister = RegisterCache.GetRegisterData(gbuAttribute.RegisterId);
-	            gbuAttribute.RegisterName = gbuRegister.Description;
 	            gbuAttributes.Add(gbuAttribute);
             }
             WorkerCommon.LogState(processQueue, $"Найдено {setting.Attributes.Count} пар атрибутов.");
@@ -91,6 +89,7 @@ namespace KadOzenka.Dal.GbuObject
 
             return ExportResults;
         }
+
 
         #region Support Methods
 
@@ -159,9 +158,6 @@ namespace KadOzenka.Dal.GbuObject
                     operationResult.Atributes.Add(new Attribute
                     {
                         Index = setting.Attributes.IndexOf(current),
-                        KoAttributeName = koAttributeData.Name,
-                        GbuAttributeName = gbuAttributeData.Name,
-                        GbuRegisterName = gbuAttributeData.RegisterName,
                         Value = value,
                         Warning = koAttributeData.Type != gbuAttributeData.Type ? GetWarningMessage(koAttributeData, gbuAttributeData) : ""
                     });
@@ -173,10 +169,7 @@ namespace KadOzenka.Dal.GbuObject
                     operationResult.Atributes.Add(new Attribute
                     {
 	                    Index = setting.Attributes.IndexOf(current),
-                        KoAttributeName = koAttributeData.Name,
-	                    GbuAttributeName = gbuAttributeData.Name,
-                        GbuRegisterName = gbuAttributeData.RegisterName,
-                        Error = $"Ошибка обработки (журнал: {errorId})."
+	                    Error = $"Ошибка обработки (журнал: {errorId})."
                     });
                 }
             }
@@ -329,9 +322,6 @@ namespace KadOzenka.Dal.GbuObject
         public class Attribute
         {
             public int Index { get; set; }
-            public string KoAttributeName { get; set; }
-            public string GbuAttributeName { get; set; }
-            public string GbuRegisterName { get; set; }
             public object Value { get; set; }
             public string Warning { get; set; }
             public string Error { get; set; }

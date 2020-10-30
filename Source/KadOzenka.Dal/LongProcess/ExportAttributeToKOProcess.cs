@@ -9,6 +9,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using System.Threading.Tasks;
+using Core.Register;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject.Dto;
 using Serilog;
@@ -99,17 +100,24 @@ namespace KadOzenka.Dal.LongProcess
 			ReportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
 
 			var numberOfAttributes = settings.Attributes?.Count ?? 0;
-			var copiedColumns = Enumerable.Range(1, numberOfAttributes).Select(x =>
+			var copiedColumns = new List<GbuReportService.Column>(numberOfAttributes);
+			for (int i = 0; i < numberOfAttributes; i++)
 			{
-				ReportService.SetIndividualWidth(x, ColumnWidth);
-				return new GbuReportService.Column
+				var currentAttribute = settings.Attributes[i];
+				var koAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeKO);
+				var gbuAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeGBU);
+				var gbuRegister = RegisterCache.GetRegisterData(gbuAttribute.RegisterId);
+
+				var column = new GbuReportService.Column
 				{
-					Header = $"Скопированное значение №{x}",
-					Index = x,
+					Header = $"{gbuAttribute.Name} ({gbuRegister.Description}) -> {koAttribute.Name}",
+					Index = i + 1,
 					Width = ColumnWidth
 				};
-			});
-
+				copiedColumns.Add(column);
+				ReportService.SetIndividualWidth(column.Index, column.Width);
+			}
+			
 			var headers = copiedColumns.Select(x => x.Header).ToList();
 			headers.Insert(0, cadastralNumberColumn.Header);
 			ReportService.AddHeaders(headers);
@@ -123,7 +131,7 @@ namespace KadOzenka.Dal.LongProcess
 				exportResult.Atributes.ForEach(attribute =>
 				{
 					var color = SpreadsheetColor.FromName(ColorName.White);
-					var columnValue = $"{attribute.GbuAttributeName} ({attribute.GbuRegisterName}) -> {attribute.KoAttributeName} = '{attribute.Value}'";
+					var columnValue = attribute.Value?.ToString();
 
 					if (!string.IsNullOrWhiteSpace(attribute.Warning))
 					{
