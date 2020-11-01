@@ -8,17 +8,11 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.Shared.Misc;
-using DevExpress.CodeParser;
-using DevExpress.XtraPrinting.Native.WebClientUIControl;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
-using KadOzenka.Dal.Tours.Dto;
-using KadOzenka.Dal.YandexParsing;
-using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ObjectModel.Directory;
@@ -99,7 +93,7 @@ namespace KadOzenka.Dal.ExpressScore
 			var costFactors = GetCostFactorsBySegmentType(segment);
 			if(costFactors == null)
 			{
-				throw new Exception($"Не найдены оценочные факторы для сегмента {segment.GetEnumDescription()}");
+				return complexCostFactorsForCalculatePage;
 			}
 
 			var complexCostFactorsForPageCalculate = costFactors.ComplexCostFactors != null
@@ -419,6 +413,7 @@ namespace KadOzenka.Dal.ExpressScore
 				Address = inputParam.Address,
 				CostSquareMeter = squarePerMeterCost,
 				DealType = dealType,
+				Square = inputParam.Square,
 				ScenarioType = inputParam.ScenarioType,
 				SegmentType = inputParam.Segment,
 				SummaryCost = summaryCost,
@@ -784,7 +779,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 						if (analogFactor.Value == null || analogFactor.Value.ToString() == string.Empty)
 						{
-							_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора", analog.Id);
+							_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора {name}", analog.Id, complex.Name);
 						}
 
 						string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor.Value?.ToString();
@@ -1422,6 +1417,7 @@ namespace KadOzenka.Dal.ExpressScore
         {
             return new OMExpressScore
             {
+				Square = saveExpressScore.Square,
                 KadastralNumber = kn,
                 CostSquareMeter = saveExpressScore.CostSquareMeter,
                 DateCost = DateTime.Now.Date,

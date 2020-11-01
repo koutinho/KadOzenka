@@ -5,6 +5,8 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 {
 	public class SaveExpressScoreDto
 	{
+		public decimal Square { get; set; }
+
 		public int TargetObjectId { get; set; }
 
 		public long? TargetMarketObjectId { get; set; }

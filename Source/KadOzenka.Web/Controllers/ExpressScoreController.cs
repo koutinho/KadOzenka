@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -211,6 +210,7 @@ namespace KadOzenka.Web.Controllers
 				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
 				DealType = viewModel.DealType,
 				Kn = viewModel.Kn,
+				Square = viewModel.Square,
 				ScenarioType = viewModel.ScenarioType,
 				Segment = viewModel.Segment,
 				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),
@@ -276,6 +276,7 @@ namespace KadOzenka.Web.Controllers
 				Segment = obj.SegmentType_Code,
 				TargetObjectId = (int) obj.Objectid,
                 TargetMarketObjectId = obj.TargetMarketObjectId,
+				Square = obj.Square,
 				ComplexCalculateParameters = obj.CostCalculateFactors != null
 					? obj.CostCalculateFactors.DeserializeFromXml<List<SearchAttribute>>() : new List<SearchAttribute>()
 			};
@@ -564,22 +565,22 @@ namespace KadOzenka.Web.Controllers
 			});
 		}
 
-		public JsonResult GetEsDictionary(int? dictionaryId)
+		public JsonResult GetEsDictionary(int dictionaryId)
 		{
-			List<SelectListItem> res = new List<SelectListItem>();
-
-			if (dictionaryId != null)
+			bool? useInterval = OMEsReference.Where(x => x.Id == dictionaryId).Select(x => x.UseInterval)
+				.ExecuteFirstOrDefault()?.UseInterval;
+			var res = OMEsReferenceItem.Where(x => x.ReferenceId == dictionaryId).SelectAll().Execute().Select(x => new
 			{
-				var dictionaries = OMEsReferenceItem.Where(x => x.ReferenceId == dictionaryId).SelectAll().Execute();
-				if (dictionaries != null)
+				Text = x.CommonValue,
+				Value = x.CommonValue,
+				item = new
 				{
-					res.AddRange(dictionaries.Where(x => !x.CommonValue.IsNullOrEmpty()).Select(x => new SelectListItem
-					{
-						Text = x.CommonValue,
-						Value = x.CommonValue
-					}));
+					value = x.Value,
+					valueFrom = x.ValueFrom,
+					valueTo = x.ValueTo,
+					useInterval = useInterval.GetValueOrDefault()
 				}
-			}
+			});
 
 			return Json(res.DistinctBy(x => x.Text));
 
