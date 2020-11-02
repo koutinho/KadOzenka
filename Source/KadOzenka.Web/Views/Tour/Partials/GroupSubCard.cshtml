@@ -36,37 +36,72 @@
 	</div>
 }
 
-	<div class="row">
-		<div class="form-horizontal" style="margin-top: 10px">
-			<div class="form-group col-sm-12">
-				<div id="modelContent">
+<ul id="groupSubCard_panelbar" class="panelbar">
+    <li id="Section_Model" data-expand>
+        <span>Модель группы</span>
+        <div>
+            <div class="row">
+                <div class="form-horizontal" style="margin-top: 10px">
+                    <div class="form-group col-sm-12">
+                        <div id="modelContent">
 
-				</div>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="Section_GroupFactors" data-expand>
+        <span>Факторы группы</span>
+        <div>
+            <div class="row">
+                <div class="form-horizontal" style="margin-top: 10px">
+                    <div class="form-group col-sm-12">
+                        <div id="groupFactorsContent">
 
-	<div class="row">
-		<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-			<div class="form-group col-sm-12">
-				<div style="padding-top: 2%;">
-					<div id="reestrToolbar"></div>
-				</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="Section_GroupFactors" data-expand>
+        <span>Группы, на основе которых считается текущая группа</span>
+        <div>
+            <div class="row">
+                <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+                    <div class="form-group col-sm-12">
+                        <div style="padding-top: 2%;">
+                            <div id="reestrToolbar"></div>
+                        </div>
 
-				<div style="display: flex;">
-					<div style="align-items: stretch">
-						<div id="reestrGrid"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div style="display: flex;">
+                            <div style="align-items: stretch">
+                                <div id="reestrGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+
 </div>
 
-
+<style>
+    .panelbar {
+        border: none;
+    }
+    .panelbar li span {
+        margin: 0;
+    }
+</style>
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        var panelbar = $('#groupSubCard_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand('li[data-expand]');
 
         $('#reestrToolbar').kendoToolBar({
             items: [
@@ -235,6 +270,22 @@
 			error: function (response) {
 				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
 				kendo.ui.progress($('#modelContent'), false);
+            }
+        });
+
+        kendo.ui.progress($('#groupFactorsContent'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GroupFactors", "Tour")',
+            data: { 'groupId': '@Model.Id' },
+            success: function (response) {
+                $('#groupFactorsContent').html(response);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#groupFactorsContent'), false);
             }
         });
 

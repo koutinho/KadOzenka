@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.LongProcess
 		        Header = "Статус после обновления",
 		        Width = 8
 	        };
-	        reportService.AddHeaders(0, new List<string> { cadastralNumberColumn.Header, statusNumberColumn.Header });
+	        reportService.AddHeaders(new List<string> { cadastralNumberColumn.Header, statusNumberColumn.Header });
 	        reportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
 	        reportService.SetIndividualWidth(statusNumberColumn.Index, statusNumberColumn.Width);
 

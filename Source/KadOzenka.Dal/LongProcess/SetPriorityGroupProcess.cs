@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
-				string message = "Операция успешно завершена." +
+				string message = "Операция успешно завершена. " +
 				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
 
