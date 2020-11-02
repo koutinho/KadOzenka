@@ -133,27 +133,28 @@ namespace KadOzenka.Web.Controllers
 			return PartialView("~/Views/ExpressScore/Partials/PartialComplexCostFactorsForCalculate.cshtml", _service.GetCostFactorsForCalculate(targetKn, targetMarketObjectId, segment));
 		}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
-        public ActionResult TargetObjectSubCard(string targetObjectStr)
-        {
-            var targetObject = JsonConvert.DeserializeObject<TargetObjectDto>(targetObjectStr);
+		//TODO Пока заказчик сказал не надо, если и дальше не потребуется то удалить весь связанный код
+   //     [HttpGet]
+   //     [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+   //     public ActionResult TargetObjectSubCard(string targetObjectStr)
+   //     {
+   //         var targetObject = JsonConvert.DeserializeObject<TargetObjectDto>(targetObjectStr);
 
-            var model = TargetObjectModel.ToModel(targetObject);
+   //         var model = TargetObjectModel.ToModel(targetObject);
        
-            return PartialView("~/Views/ExpressScore/Partials/TargetObjectSubCard.cshtml", model);
-        }
+   //         return PartialView("~/Views/ExpressScore/Partials/TargetObjectSubCard.cshtml", model);
+   //     }
 
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
-        public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
-        {
-	        if (!ModelState.IsValid)
-		        return GenerateMessageNonValidModel();
+   //     [HttpPost]
+   //     [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+   //     public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
+   //     {
+	  //      if (!ModelState.IsValid)
+		 //       return GenerateMessageNonValidModel();
 
-	        _service.SetTargetObjectAttribute(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
-			return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
-        }
+	  //      _service.SetTargetObjectAttribute(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
+			//return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
+   //     }
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
@@ -580,7 +581,7 @@ namespace KadOzenka.Web.Controllers
 					valueTo = x.ValueTo,
 					useInterval = useInterval.GetValueOrDefault()
 				}
-			});
+			}).Where(x => x.Value != null);
 
 			return Json(res.DistinctBy(x => x.Text));
 

@@ -133,10 +133,6 @@ namespace KadOzenka.Dal.ExpressScore
         {
 	        var targetObject = GetObjectAndCostFactorsByUnitIds(setting, costFactor, unitIds);
             targetObject?.Attributes.AddRange(GetAnalogCostFactors(costFactor, kn));
-            if (targetObject != null)
-            {
-	            GetAttributeFromEsTargetValue(ref targetObject);
-			}
             return targetObject;
         }
 
@@ -1289,48 +1285,6 @@ namespace KadOzenka.Dal.ExpressScore
         }
 
 		/// <summary>
-		/// Получение атрибутов для объекта оценки из таблицы OMTargetObjectValue
-		/// </summary>
-		/// <param name="targetObjectDto"></param>
-		private void GetAttributeFromEsTargetValue(ref TargetObjectDto targetObjectDto)
-		{
-			if (targetObjectDto.Attributes.Any(x => x.Value.IsNullOrEmpty()))
-			{
-				long unitId = targetObjectDto.UnitId;
-				var esTargetObjectValue =
-					OMTargetObjectValue.Where(x => x.UnitId == unitId).SelectAll().ExecuteFirstOrDefault();
-
-				if (esTargetObjectValue != null)
-				{
-					Dictionary<int, string> attributeValues = targetObjectDto.Attributes.DistinctBy(x => x.Id)
-						.ToDictionary(x => x.Id, y => y.Value);
-
-					var esTargetObjectAttributeValue =
-						esTargetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
-					if (esTargetObjectAttributeValue != null && esTargetObjectAttributeValue.Count > 0)
-					{
-						var existedAttributeValue = esTargetObjectAttributeValue.Where(x => attributeValues.Keys.ToList().Contains(x.Id));
-						foreach (var attributeValue in existedAttributeValue)
-						{
-							if (attributeValues[attributeValue.Id] == null ||
-							    attributeValues[attributeValue.Id] == string.Empty)
-							{
-								attributeValues[attributeValue.Id] = attributeValue.Value.ToString();
-							}
-							
-						}
-						targetObjectDto.Attributes = attributeValues.Select(x => new AttributePure
-						{
-							Id = x.Key,
-							Value = x.Value
-						}).ToList();
-					}
-				}
-			}
-
-		}
-
-		/// <summary>
 		/// Собираем данные для грида с результатом расчета ЭО
 		/// </summary>
 		/// <param name="marketSegment"></param>
@@ -1612,45 +1566,6 @@ namespace KadOzenka.Dal.ExpressScore
 			}
         }
 
-
-		#region preserving target object attributes
-
-		public void SetTargetObjectAttribute(long unitId, List<AttributeValueDto> attributeValueDtos)
-		{
-			var unit = OMUnit.Where(x => x.Id == unitId)
-				.ExecuteFirstOrDefault();
-			if (unit == null)
-			{
-				throw new Exception($"Не найдена единица оценки с ИД {unitId}");
-			}
-
-			var targetObjectValue = OMTargetObjectValue.Where(x => x.UnitId == unitId).SelectAll().ExecuteFirstOrDefault();
-
-			if (targetObjectValue == null)
-			{
-				new OMTargetObjectValue
-				{
-					UnitId = unitId,
-					AttributeValue = attributeValueDtos.SerializeToXml()
-				}.Save();
-			} else
-			{
-				var targetObjectAttributeValues = targetObjectValue.AttributeValue.DeserializeFromXml<List<AttributeValueDto>>();
-
-				foreach (var attributeValueDto in attributeValueDtos)
-				{
-					if (targetObjectAttributeValues.Any(x => x.Id != attributeValueDto.Id))
-					{
-						targetObjectAttributeValues.Add(attributeValueDto);
-					}
-				}
-
-				targetObjectValue.AttributeValue = targetObjectAttributeValues.SerializeToXml();
-				targetObjectValue.Save();
-			}
-		}
-		#endregion
-
 		#region Support For Search
 		/// <summary>
 		/// Создания условия для поиска
@@ -1819,7 +1734,7 @@ namespace KadOzenka.Dal.ExpressScore
 					case ReferenceItemCodeType.String:
 						{
 							res = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == attributeValue).Select(x => x.CommonValue)
-								.ExecuteFirstOrDefault().CommonValue;
+								.ExecuteFirstOrDefault()?.CommonValue;
 							break;
 						}
 					case ReferenceItemCodeType.Date:
