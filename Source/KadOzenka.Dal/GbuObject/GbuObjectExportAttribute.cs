@@ -9,6 +9,7 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
+using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Core.LongProcess;
@@ -27,7 +28,10 @@ namespace KadOzenka.Dal.GbuObject
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKO>();
         private RosreestrRegisterService RosreestrRegisterService { get; }
         private GbuObjectService GbuObjectService { get; }
-        private List<OperationResult> ExportResults { get; set; }
+        private string ReportName => "Отчет по переносу атрибутов";
+        private int ColumnWidth => 8;
+        private int CadastralNumberColumnIndex => 0;
+        private int AttributesStartColumnIndex => 1;
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -52,9 +56,12 @@ namespace KadOzenka.Dal.GbuObject
         }
         
         
-        public List<OperationResult> Run(GbuExportAttributeSettings setting, OMQueue processQueue)
+        public string Run(GbuExportAttributeSettings setting, OMQueue processQueue)
         {
-            locked = new object();
+	        var reportService = new GbuReportService();
+	        GenerateReportHeaders(setting.Attributes, reportService);
+
+	        locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -68,8 +75,6 @@ namespace KadOzenka.Dal.GbuObject
             foreach (ExportAttributeItem item in setting.Attributes)
             {
 	            var gbuAttribute = RegisterCache.GetAttributeData((int)item.IdAttributeGBU);
-	            var gbuRegister = RegisterCache.GetRegisterData(gbuAttribute.RegisterId);
-	            gbuAttribute.RegisterName = gbuRegister.Description;
 	            gbuAttributes.Add(gbuAttribute);
             }
             WorkerCommon.LogState(processQueue, $"Найдено {setting.Attributes.Count} пар атрибутов.");
@@ -78,39 +83,77 @@ namespace KadOzenka.Dal.GbuObject
             if (setting.TaskFilter.Count > 0)
             {
 	            var units = GetUnits(setting);
-	            ExportResults = new List<OperationResult>(units?.Count ?? 0);
-                MaxCount = units.Count;
+	            MaxCount = units.Count;
                 CurrentCount = 0;
 				WorkerCommon.LogState(processQueue, $"Найдено {units.Count} единиц оценки.");
 
                 var gbuAttributeIds = gbuAttributes.Select(x => x.Id).ToList();
-				Parallel.ForEach(units, options, item => { RunOneUnit(item, setting, gbuAttributeIds, gbuAttributes); });
+				Parallel.ForEach(units, options, item => { RunOneUnit(item, setting, gbuAttributeIds, gbuAttributes, reportService); });
 				CurrentCount = 0;
                 MaxCount = 0;
             }
 
-            return ExportResults;
+            reportService.SetStyle();
+            reportService.SaveReport(ReportName);
+
+            return reportService.UrlToDownload;
         }
+
 
         #region Support Methods
 
-        private void RunOneUnit(UnitPure unit, GbuExportAttributeSettings setting, List<long> lstIds,
-	        List<RegisterAttribute> gbuAttributes)
+        private void GenerateReportHeaders(List<ExportAttributeItem> attributesFromSettings, GbuReportService reportService)
         {
+	        var cadastralNumberColumn = new GbuReportService.Column
+	        {
+		        Index = CadastralNumberColumnIndex,
+		        Header = "КН",
+		        Width = 4
+	        };
+	        reportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
+
+	        var numberOfAttributes = attributesFromSettings?.Count ?? 0;
+	        var copiedColumns = new List<GbuReportService.Column>(numberOfAttributes);
+	        for (var i = 0; i < numberOfAttributes; i++)
+	        {
+		        var currentAttribute = attributesFromSettings[i];
+		        var koAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeKO);
+		        var gbuAttribute = RegisterCache.GetAttributeData((int)currentAttribute.IdAttributeGBU);
+		        var gbuRegister = RegisterCache.GetRegisterData(gbuAttribute.RegisterId);
+
+		        var column = new GbuReportService.Column
+		        {
+			        Header = $"{gbuAttribute.Name} ({gbuRegister.Description}) -> {koAttribute.Name}",
+			        //+1 чтобы учесть колонку с КН
+			        Index = i + AttributesStartColumnIndex,
+			        Width = ColumnWidth
+		        };
+		        copiedColumns.Add(column);
+		        reportService.SetIndividualWidth(column.Index, column.Width);
+	        }
+
+	        var headers = copiedColumns.Select(x => x.Header).ToList();
+	        headers.Insert(0, cadastralNumberColumn.Header);
+	        reportService.AddHeaders(headers);
+        }
+
+        private void RunOneUnit(UnitPure unit, GbuExportAttributeSettings setting, List<long> lstIds,
+	        List<RegisterAttribute> gbuAttributes, GbuReportService reportService)
+        {
+	        GbuReportService.Row row;
             lock (locked)
             {
                 CurrentCount++;
+                row = reportService.GetCurrentRow();
+                reportService.AddValue(unit.CadastralNumber, CadastralNumberColumnIndex, row);
             }
 
-			var operationResult = new OperationResult
-			{
-                CadastralNumber = unit.CadastralNumber
-			};
             var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, DateTime.Now.GetEndOfTheDay());
 
             foreach (GbuObjectAttribute attrib in attributes)
             {
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
+                var columnIndexInReport = setting.Attributes.IndexOf(current) + AttributesStartColumnIndex;
 
                 var koAttributeData = RegisterCache.GetAttributeData((int)current.IdAttributeKO);
                 var gbuAttributeData = gbuAttributes.FirstOrDefault(x => x.Id == current.IdAttributeGBU);
@@ -155,34 +198,31 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     registerObject.SetAttributeValue((int)id_factor, value, referenceItemId);
                     RegisterStorage.Save(registerObject);
-
-                    operationResult.Atributes.Add(new Attribute
+                   
+                    lock (locked)
                     {
-                        Index = setting.Attributes.IndexOf(current),
-                        KoAttributeName = koAttributeData.Name,
-                        GbuAttributeName = gbuAttributeData.Name,
-                        GbuRegisterName = gbuAttributeData.RegisterName,
-                        Value = value,
-                        Warning = koAttributeData.Type != gbuAttributeData.Type ? GetWarningMessage(koAttributeData, gbuAttributeData) : ""
-                    });
+	                    var columnValue = value == null ? "''" : value.ToString();
+	                    if (koAttributeData.Type != gbuAttributeData.Type)
+	                    {
+		                    columnValue = $"{columnValue}\n{GetWarningMessage(koAttributeData, gbuAttributeData)}";
+		                    reportService.AddValue(columnValue, columnIndexInReport, row, reportService.WarningCellStyle);
+                        }
+	                    else
+	                    {
+		                    reportService.AddValue(columnValue, columnIndexInReport, row);
+                        }
+                    }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
 	                var errorId = ErrorManager.LogError(ex);
-                    
-                    operationResult.Atributes.Add(new Attribute
-                    {
-	                    Index = setting.Attributes.IndexOf(current),
-                        KoAttributeName = koAttributeData.Name,
-	                    GbuAttributeName = gbuAttributeData.Name,
-                        GbuRegisterName = gbuAttributeData.RegisterName,
-                        Error = $"Ошибка обработки (журнал: {errorId})."
-                    });
+
+	                lock (locked)
+	                {
+		                reportService.AddValue($"Ошибка обработки (журнал: {errorId}).", columnIndexInReport, row,
+			                reportService.ErrorCellStyle);
+	                }
                 }
-            }
-            lock (locked)
-            {
-	            ExportResults.Add(operationResult);
             }
         }
 
@@ -208,7 +248,7 @@ namespace KadOzenka.Dal.GbuObject
 	        };
 	        query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, nameof(UnitPure.ObjectId)));
 	        query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitPure.CadastralNumber)));
-            query.AddColumn(OMUnit.GetColumn(x => x.CreationDate, nameof(UnitPure.CreationDate)));
+            //query.AddColumn(OMUnit.GetColumn(x => x.CreationDate, nameof(UnitPure.CreationDate)));
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitPure.ObjectType)));
 
             var allUnits = query.ExecuteQuery<UnitPure>();
@@ -311,30 +351,8 @@ namespace KadOzenka.Dal.GbuObject
 	        public string CadastralNumber { get; set; }
             //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
             //TODO если хотфикс будет заапрувлен, нужно убрать
-            public DateTime? CreationDate { get; set; }
+            //public DateTime? CreationDate { get; set; }
 	        public PropertyTypes? ObjectType { get; set; }
-        }
-
-        public class OperationResult
-		{
-			public string CadastralNumber { get; set; }
-            public List<Attribute> Atributes { get; set; }
-
-            public OperationResult()
-            {
-	            Atributes = new List<Attribute>();
-            }
-		}
-
-        public class Attribute
-        {
-            public int Index { get; set; }
-            public string KoAttributeName { get; set; }
-            public string GbuAttributeName { get; set; }
-            public string GbuRegisterName { get; set; }
-            public object Value { get; set; }
-            public string Warning { get; set; }
-            public string Error { get; set; }
         }
 
         #endregion

@@ -42,31 +42,46 @@ namespace KadOzenka.Dal.OutliersChecking
 			Locked = new object();
 			foreach (var objectsBySegment in objectsBySegments)
 			{
-				_outliersCheckingReport.AddNewWorksheetForSegment(objectsBySegment.Key);
-				var objectsByLocationSliceList = ObjectsByLocationSliceDto.FromEntityList(objectsBySegment.Value);
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Получено '{LocationSliceCount}'локаций для сегмента '{MarketSegment}'", objectsByLocationSliceList.Count, objectsBySegment.Key.GetEnumDescription());
+				var segmentCode = objectsBySegment.Key;
+				var saleODealbjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
+				var saleOSuggestionbjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
+				var rentDealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
+				var rentSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
 
-				var cancelTokenSource = new CancellationTokenSource();
-				var options = new ParallelOptions
-				{
-					CancellationToken = cancelTokenSource.Token,
-					MaxDegreeOfParallelism = 20
-				};
-				Parallel.ForEach(objectsByLocationSliceList, options, ProcessObjectsByLocation);
-
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Обработка сегмента '{MarketSegment}' завершена", objectsBySegment.Key.GetEnumDescription());
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.SaleDeal, saleODealbjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionbjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.RentDeal, rentDealObjects);
+				ProcessObjectsBySegmentAndDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
 			}
 
 			_outliersCheckingReport.SetStyleAndSorting();
 			return _outliersCheckingReport.SaveReport();
+		}
+
+		private void ProcessObjectsBySegmentAndDealType(MarketSegment segmentCode, DealType dealType, List<OMCoreObject> objectsBySegment)
+		{
+			_outliersCheckingReport.AddNewWorksheetForSegment(segmentCode, dealType);
+			var objectsByLocationSliceList = ObjectsByLocationSliceDto.FromEntityList(objectsBySegment);
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Получено '{LocationSliceCount}'локаций для сегмента '{MarketSegment}'({DealType})",
+					objectsByLocationSliceList.Count, segmentCode.GetEnumDescription(),  dealType.GetEnumDescription());
+
+			var cancelTokenSource = new CancellationTokenSource();
+			var options = new ParallelOptions
+			{
+				CancellationToken = cancelTokenSource.Token,
+				MaxDegreeOfParallelism = 20
+			};
+			Parallel.ForEach(objectsByLocationSliceList, options, ProcessObjectsByLocation);
+
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Обработка сегмента '{MarketSegment}'({DealType}) завершена", segmentCode.GetEnumDescription(), dealType.GetEnumDescription());
 		}
 
 		private void SetTotalObjectsCount(Dictionary<MarketSegment, List<OMCoreObject>> objectsBySegments)
@@ -101,6 +116,8 @@ namespace KadOzenka.Dal.OutliersChecking
 					x.Zone,
 					x.District,
 					x.District_Code,
+					x.DealType,
+					x.DealType_Code,
 					x.Neighborhood,
 					x.Neighborhood_Code,
 					x.PricePerMeter,
@@ -116,6 +133,7 @@ namespace KadOzenka.Dal.OutliersChecking
 
 		private void ProcessObjectsByLocation(ObjectsByLocationSliceDto objectsByLocation)
 		{
+			var dealType = objectsByLocation.MarketObjects.First().DealType_Code;
 			if (objectsByLocation.MarketObjects.Count == 1)
 			{
 				lock (Locked)
@@ -123,9 +141,9 @@ namespace KadOzenka.Dal.OutliersChecking
 					CurrentHandledObjectsCount++;
 				}
 				Log.ForContext("ObjectsCountByLocation", 1)
-					.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment} завершена",
+					.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment}({DealType}) завершена",
 						objectsByLocation.LocationName,
-						objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription());
+						objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription(), dealType.GetEnumDescription());
 
 				return;
 			}
@@ -186,9 +204,10 @@ namespace KadOzenka.Dal.OutliersChecking
 				.ForContext("UpperLimit", reportRow.UpperLimit)
 				.ForContext("ObjectsCountByLocation", objectsByLocation.MarketObjects.Count)
 				.ForContext("ExcludedObjectsCountByLocation", excludedObjectsCountByLocation)
-				.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment} завершена",
+				.Verbose("Обработка локации '{LocationName}' для семента {MarketSegment}({DealType}) завершена",
 					objectsByLocation.LocationName,
-					objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription());
+					objectsByLocation.MarketObjects.First().PropertyMarketSegment_Code.GetEnumDescription(),
+					dealType.GetEnumDescription());
 		}
 
 		private decimal GetMedianPricePerMeter(List<OMCoreObject> orderedMarketObjects)
