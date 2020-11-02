@@ -2339,9 +2339,254 @@ namespace ObjectModel.KO
             });
 
         }
+
+        public List<CalcErrorItem> CalculateKorrect(List<ObjectModel.KO.OMUnit> units)
+        {
+            List<CalcErrorItem> res = new List<CalcErrorItem>();
+            List<ObjectModel.KO.OMGroupFactor> koeff = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
+            int? factorReestrId = GetFactorReestrId(this);
+            if (factorReestrId != null)
+            {
+                foreach (ObjectModel.KO.OMUnit unit in units)
+                {
+                    res.AddRange(CalculateKorrect(unit, factorReestrId.Value, koeff));
+                }
+            }
+
+            return res;
+        }
+
+        private List<CalcErrorItem> CalculateKorrect(ObjectModel.KO.OMUnit unit, int factorReestrId, List<ObjectModel.KO.OMGroupFactor> groupFactors)
+        {
+            List<CalcErrorItem> res = new List<CalcErrorItem>();
+            if (unit.GroupId == null)
+            {
+                lock (res)
+                {
+                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение группы" });
+                }
+            }
+            else
+            {
+                bool ok = false;
+                ObjectModel.KO.OMUnit etobj = ObjectModel.KO.OMUnit.Where(x => x.TourId == unit.TourId && x.GroupId == unit.GroupId && x.UseAsPrototype == true && x.PropertyType_Code == unit.PropertyType_Code && x.CadastralBlock == unit.CadastralBlock && x.Status_Code == KoUnitStatus.Initial).SelectAll().ExecuteFirstOrDefault();
+                if (etobj != null)
+                {
+                    decimal cost = Math.Round(etobj.UpksPre.Value * unit.Square.Value, 2, MidpointRounding.AwayFromZero);
+                    unit.UpksPre = etobj.UpksPre;
+                    unit.CadastralCostPre = cost;
+                    unit.Upks = 0;
+                    unit.CadastralCost = 0;
+                    unit.Save();
+
+                    UpdateCorrectFactor(etobj, unit, groupFactors, ref res);
+                    ok = true;
+                }
+
+                //if (!ok)
+                //{
+                //    ALLGipoEtalonItem gipo = ALLGipoEtalonItem.GetGipoEtalon(obj.ID_SUBGROUP, obj.KN_KK.Substring(0, 5));
+                //    if (gipo != null)
+                //    {
+                //        ALLObjectItem gobj = gipo.Object;
+                //        if (gobj != null)
+                //        {
+                //            obj.UpdateCalc(gobj.NUPKSZ_OBJECT, gobj.NUPKSZ_OBJECT * obj.SQUARE_CALC);
+                //            UpdateCorrectFactor(aSubGroup, gobj, obj, koeff, lstFact, sw1);
+                //            ok = true;
+                //        }
+                //        else
+                //        {
+                //            ok = false;
+                //        }
+                //    }
+                //}
+
+                if (!ok)
+                {
+                    lock (res)
+                    {
+                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Эталонный объект для объекта " + unit.CadastralNumber + " в квартале " + unit.CadastralBlock + " не найден" });
+                    }
+                }
+            }
+            return res;
+        }
+
+        public void UpdateCorrectFactor(ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
+        {
+            int? factorReestrId = GetFactorReestrId(this);
+            OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+            if (model != null && factorReestrId != null)
+            {
+                if (model.ModelFactor.Count == 0)
+                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+                foreach (OMModelFactor weight in model.ModelFactor)
+                {
+
+                    if (weight.SignMarket)
+                        weight.FillMarkCatalogs(model);
+                }
+
+                List<CalcItem> FactorChildValues = new List<CalcItem>();
+                DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId.Value);
+                if (dataChild != null)
+                {
+                    foreach (DataRow row in dataChild.Rows)
+                    {
+                        FactorChildValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                    }
+                }
+
+                List<CalcItem> FactorEtalonValues = new List<CalcItem>();
+                DataTable dataEtalon = RegisterStorage.GetAttributes((int)etalon.Id, factorReestrId.Value);
+                if (dataEtalon != null)
+                {
+                    foreach (DataRow row in dataEtalon.Rows)
+                    {
+                        FactorEtalonValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                    }
+                }
+
+
+                foreach (OMModelFactor weight in model.ModelFactor)
+                {
+                    CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
+                    CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
+                    if (fv_et != null && fv_ch != null)
+                    {
+                        double kk = 1;
+                        string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
+
+                        long? id_factor = weight.FactorId;
+                        long? id_correct = null;
+
+                        ObjectModel.KO.OMFactorSettings factor_correct = ObjectModel.KO.OMFactorSettings.Where(x => x.CorrectFactorId == weight.FactorId).SelectAll().ExecuteFirstOrDefault();
+                        if (factor_correct != null) id_correct = factor_correct.FactorId;
+
+                        if (id_correct != null)
+                        {
+
+                            if (weight.SignMarket)
+                            {
+                                decimal zm_et = 1;
+                                decimal zm_ch = 0;
+                                bool m_et = false;
+                                bool m_ch = false;
+
+
+                                OMMarkCatalog mcEtalon = null;
+                                mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace('.', ','));
+                                if (mcEtalon == null)
+                                    mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace(',', '.'));
+                                if (mcEtalon != null)
+                                {
+                                    zm_et = mcEtalon.MetkaFactor.ParseToDecimal();
+                                    m_et = true;
+                                }
+                                if (!m_et)
+                                {
+                                    kk = 0;
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
+                                    }
+                                }
+
+
+                                OMMarkCatalog mcChild = null;
+                                mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace('.', ','));
+                                if (mcChild == null)
+                                    mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace(',', '.'));
+                                if (mcChild != null)
+                                {
+                                    zm_ch = mcChild.MetkaFactor.ParseToDecimal();
+                                    m_ch = true;
+                                }
+                                if (!m_ch)
+                                {
+                                    kk = 0;
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
+                                    }
+                                }
+
+                                if (m_ch && m_et)
+                                {
+                                    kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_et));
+                                }
+
+                                if (id_correct != null)
+                                {
+                                    child.AddKOFactor(id_correct.Value, null, kk);
+                                }
+                            }
+                            else
+                            {
+                                if (fv_ch.Value == string.Empty)
+                                {
+                                    kk = 0;
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                    }
+                                }
+                                else
+                                if (fv_et.Value == string.Empty)
+                                {
+                                    kk = 0;
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                    }
+                                }
+                                else
+                                {
+                                    string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                    bool dok_child = decimal.TryParse(fv_ch.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_ch);
+                                    if (!dok_child)
+                                    {
+                                        lock (errors)
+                                        {
+                                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                        }
+                                    }
+
+                                    bool dok_etalon = decimal.TryParse(fv_et.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_et);
+                                    if (!dok_etalon)
+                                    {
+                                        lock (errors)
+                                        {
+                                            errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
+                                        }
+                                    }
+
+                                    if (dok_etalon && dok_child)
+                                    {
+                                        kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
+                                    }
+                                    else
+                                    {
+                                        kk = 0;
+                                    }
+                                }
+                                child.AddKOFactor(id_correct.Value, null, kk);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
         public static List<CalcErrorItem> CalculateSelectGroup(KOCalcSettings setting)
         {
-	        List<CalcErrorItem> result = new List<CalcErrorItem>();
+            List<CalcErrorItem> result = new List<CalcErrorItem>();
             if (setting.CalcAllGroups)
             {
                 List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
@@ -2356,7 +2601,14 @@ namespace ObjectModel.KO
                             List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                             foreach (long taskId in setting.TaskFilter)
                             {
-                                Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                                if (setting.CalcParcel)
+                                {
+                                    Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                                }
+                                else
+                                {
+                                    Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code != PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                                }
                             }
 
                             if (Units.Count > 0)
@@ -2371,8 +2623,13 @@ namespace ObjectModel.KO
 
                                 if (AutoCalcGroup.CalcStage1)
                                 {
-	                                var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
-	                                result.AddRange(calculationResult);
+                                    var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+                                    result.AddRange(calculationResult);
+                                }
+                                if (AutoCalcGroup.CalcStage2)
+                                {
+                                    var calculationResult = CalcGroup.CalculateKorrect(Units);
+                                    result.AddRange(calculationResult);
                                 }
                                 if (AutoCalcGroup.CalcStage3)
                                 {
@@ -2400,7 +2657,14 @@ namespace ObjectModel.KO
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                         foreach (long taskId in setting.TaskFilter)
                         {
-                            Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel?(x.PropertyType_Code == PropertyTypes.Stead) :(x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            if (setting.CalcParcel)
+                            {
+                                Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            }
+                            else
+                            {
+                                Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code != PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
+                            }
                         }
 
                         if (Units.Count > 0)
@@ -2415,7 +2679,12 @@ namespace ObjectModel.KO
 
                             if (setting.CalcStage1)
                             {
-	                            var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+                                var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+                                result.AddRange(calculationResult);
+                            }
+                            if (setting.CalcStage2)
+                            {
+                                var calculationResult = CalcGroup.CalculateKorrect(Units);
                                 result.AddRange(calculationResult);
                             }
 
@@ -2431,6 +2700,7 @@ namespace ObjectModel.KO
 
             return result;
         }
+
         public static string GetFormulaKoeff(OMGroup _parent_group, bool upks, string value)
         {
             string res = string.Empty;
