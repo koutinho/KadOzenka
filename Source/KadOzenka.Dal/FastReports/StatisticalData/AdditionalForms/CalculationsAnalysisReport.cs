@@ -7,19 +7,27 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms.Entities;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 {
 	public class CalculationsAnalysisReport : StatisticalDataReport
 	{
 		private readonly string _reportSqlFileName = "AdditionalForms_CalculationAnalysis";
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
+
+		public CalculationsAnalysisReport()
+		{
+			_logger = Log.ForContext<CalculationsAnalysisReport>();
+		}
 
 		protected override string TemplateName(NameValueCollection query)
 		{
 			return "AdditionalFormsCalculationsAnalysisReport";
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportItems = GetReportData(taskIdList);
@@ -29,6 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			return dataSet;
 		}
+
 
 		#region Support Methods
 

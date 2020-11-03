@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return "PricingFactorsCompositionNonuniformReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query).ToList();
 

@@ -125,9 +125,6 @@
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PreviousToursReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PricingFactorsCompositionBaseReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\UniformReport.cs">
       <SubType>Component</SubType>
     </Compile>

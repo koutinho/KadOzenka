@@ -5,24 +5,29 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
 {
 	public class NumberOfObjectsByAdministrativeDistrictsBySubjectReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByAdministrativeDistrictsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public NumberOfObjectsByAdministrativeDistrictsBySubjectReport()
 		{
 			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService(), new GbuCodRegisterService());
+			_logger = Log.ForContext<NumberOfObjectsByAdministrativeDistrictsBySubjectReport>();
 		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
 			return "NumberOfObjectsByAdministrativeDistrictsBySubjectReport";
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);

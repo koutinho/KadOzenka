@@ -10,6 +10,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
@@ -17,10 +18,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
     {
 	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
         private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
 
         public CadastralCostDeterminationResultsMainReport()
         {
             _reportsDictionary = new Dictionary<Type, ICadastralCostDeterminationResultsReport>();
+            _logger = Log.ForContext<CadastralCostDeterminationResultsMainReport>();
         }
 
         protected override string TemplateName(NameValueCollection query)
@@ -29,7 +34,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return report.GetTemplateName(query);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIdList = GetTaskIdList(query).ToList();
 

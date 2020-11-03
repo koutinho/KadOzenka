@@ -11,6 +11,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -22,6 +23,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private readonly string _usageTypeCodeSource = "UsageTypeCodeSource";
         private readonly string _subGroupUsageTypeCode = "SubGroupUsageTypeCode";
         private readonly string _functionalSubGroupName = "FunctionalSubGroupName";
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
+        public PlacementsReport()
+        {
+	        _logger = Log.ForContext<PlacementsReport>();
+        }
 
 
         protected override string TemplateName(NameValueCollection query)
@@ -29,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             return "ResultsByCadastralDistrictForPlacementsReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);

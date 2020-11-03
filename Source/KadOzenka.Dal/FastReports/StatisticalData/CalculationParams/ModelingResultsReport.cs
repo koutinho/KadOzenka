@@ -9,11 +9,21 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Core.UI.Registers.Reports.Model;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
     public class ModelingResultsReport : StatisticalDataReport
     {
+	    private readonly ILogger _logger;
+	    protected override ILogger Logger => _logger;
+
+	    public ModelingResultsReport()
+	    {
+		    _logger = Log.ForContext<ModelingResultsReport>();
+	    }
+
+
         protected override string TemplateName(NameValueCollection query)
         {
             return "CalculationParamsModelingResultsReport";
@@ -24,7 +34,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             GroupFilter.InitializeFilterValues(StatisticalDataType.ModelingResults, initialization, filterValues);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIdList = GetTaskIdList(query).ToList();
             var groupId = GetGroupIdFromFilter(query);

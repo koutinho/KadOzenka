@@ -6,7 +6,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
-    public class StateResultsReport : StatisticalDataReport, ICadastralCostDeterminationResultsReport
+    public class StateResultsReport : ICadastralCostDeterminationResultsReport
     {
         string ICadastralCostDeterminationResultsReport.GetTemplateName(NameValueCollection query)
         {

@@ -4,18 +4,29 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class OksReport : PricingFactorsCompositionBaseReport
+    public class OksReport : StatisticalDataReport
     {
+	    protected readonly string BaseFolderWithSql = "PricingFactorsComposition";
+	    private readonly ILogger _logger;
+	    protected override ILogger Logger => _logger;
+
+	    public OksReport()
+	    {
+		    _logger = Log.ForContext<OksReport>();
+	    }
+
         protected override string TemplateName(NameValueCollection query)
         {
             return "PricingFactorsCompositionForOksReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
@@ -34,7 +45,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         private List<ReportItem> GetOperations(long tourId, List<long> taskIds)
         {
-            var sql = GetSqlFileContent("Oks");
+            var sql = StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, "Oks");
 
             var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
             var buildYear = RosreestrRegisterService.GetBuildYearAttribute();

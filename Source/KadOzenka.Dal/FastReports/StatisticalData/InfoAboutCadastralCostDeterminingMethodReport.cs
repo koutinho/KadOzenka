@@ -7,17 +7,27 @@ using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
     public class InfoAboutCadastralCostDeterminingMethodReport : StatisticalDataReport
     {
+	    private readonly ILogger _logger;
+	    protected override ILogger Logger => _logger;
+
+	    public InfoAboutCadastralCostDeterminingMethodReport()
+	    {
+		    _logger = Log.ForContext<InfoAboutCadastralCostDeterminingMethodReport>();
+	    }
+
+
         protected override string TemplateName(NameValueCollection query)
         {
             return "InfoAboutCadastralCostDeterminingMethodReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query).ToList();
             var operations = GetOperations(taskIds);

@@ -8,17 +8,22 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class MinMaxAverageUPKSByAdministrativeDistrictsReport : StatisticalDataReport
 	{
 		private readonly MinMaxAverageUPKSByAdministrativeDistrictsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public MinMaxAverageUPKSByAdministrativeDistrictsReport()
 		{
 			_service = new MinMaxAverageUPKSByAdministrativeDistrictsService(new GbuCodRegisterService());
+			_logger = Log.ForContext<MinMaxAverageUPKSByAdministrativeDistrictsReport>();
 		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -32,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetReportType(GetQueryParam<string>("ReportType", query));

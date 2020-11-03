@@ -6,12 +6,15 @@ using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 {
 	public abstract class ResultsForApprovalUpksAverageReport : StatisticalDataReport
 	{
 		protected readonly ResultsForApprovalService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		protected bool IsOks(NameValueCollection query)
 		{
@@ -22,6 +25,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 		protected ResultsForApprovalUpksAverageReport()
 		{
 			_service = new ResultsForApprovalService(StatisticalDataService, new GbuCodRegisterService());
+			_logger = Log.ForContext<ResultsForApprovalUpksAverageReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -33,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 		protected abstract string GetDataNameColumnText();
 		protected abstract StatisticDataAreaDivisionType GetStatisticDataAreaDivisionTypeReport();
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 

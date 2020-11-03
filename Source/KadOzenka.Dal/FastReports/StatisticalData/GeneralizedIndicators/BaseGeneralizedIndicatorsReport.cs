@@ -8,23 +8,28 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 {
 	public abstract class BaseGeneralizedIndicatorsReport : StatisticalDataReport
 	{
 		private readonly GeneralizedIndicatorsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public BaseGeneralizedIndicatorsReport()
 		{
 			_service = new GeneralizedIndicatorsService(StatisticalDataService, new GbuCodRegisterService());
+			_logger = Log.ForContext<BaseGeneralizedIndicatorsReport>();
 		}
+
 
 		protected abstract string GetReportTitle(NameValueCollection query);
 		protected abstract string GetDataNameColumnText(NameValueCollection query);
 		protected abstract StatisticDataAreaDivisionType GetStatisticDataAreaDivisionTypeReport(NameValueCollection query);
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 

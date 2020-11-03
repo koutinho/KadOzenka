@@ -10,6 +10,7 @@ using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.Register;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -20,6 +21,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             RegisterAttributeType.INTEGER,
             RegisterAttributeType.DECIMAL
         };
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
+        public CalculationParamsReport()
+        {
+	        _logger = Log.ForContext<CalculationParamsReport>();
+        }
 
         protected override string TemplateName(NameValueCollection query)
         {
@@ -31,7 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             GroupFilter.InitializeFilterValues(StatisticalDataType.CalculationParams, initialization, filterValues);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var groupId = GetGroupIdFromFilter(query);
 

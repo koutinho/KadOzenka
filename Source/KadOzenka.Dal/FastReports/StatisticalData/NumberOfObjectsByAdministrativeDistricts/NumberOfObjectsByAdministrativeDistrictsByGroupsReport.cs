@@ -8,16 +8,20 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrativeDistricts
 {
 	public class NumberOfObjectsByAdministrativeDistrictsByGroupsReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByAdministrativeDistrictsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public NumberOfObjectsByAdministrativeDistrictsByGroupsReport()
 		{
 			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService(), new GbuCodRegisterService());
+			_logger = Log.ForContext<NumberOfObjectsByAdministrativeDistrictsByGroupsReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -38,7 +42,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskList = GetTaskIdList(query);
 			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));

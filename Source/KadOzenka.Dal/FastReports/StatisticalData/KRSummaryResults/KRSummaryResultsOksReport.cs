@@ -6,16 +6,20 @@ using System.Linq;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 {
 	public class KRSummaryResultsOksReport : StatisticalDataReport
 	{
 		private readonly KRSummaryResultsService _summaryResultsService;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public KRSummaryResultsOksReport()
 		{
 			_summaryResultsService = new KRSummaryResultsService(StatisticalDataService);
+			_logger = Log.ForContext<KRSummaryResultsOksReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -34,7 +38,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
             }
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
