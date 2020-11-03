@@ -41,7 +41,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             var report = GetReport(query);
             Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
 
-            var units = report.GetUnitsForCadastralCostDetermination(taskIdList);
+            var groupIds = report.GetAvailableGroupIds();
+            Logger.Debug("Найдено {GroupsCount} Групп", groupIds.Count);
+
+            var units = GetUnits(taskIdList, groupIds);
             Logger.Debug("Найдено {UnitsCount} Единиц оценки", units?.Count);
 
             var operations = GetOperations(units);
@@ -83,6 +86,23 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return concreteReport;
         }
 
+        private List<OMUnit> GetUnits(List<long> taskIds, List<long?> groupIds)
+        {
+	        return OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
+	                          x.GroupId != null && groupIds.Contains(x.GroupId) &&
+	                          x.PropertyType_Code != PropertyTypes.CadastralQuartal)
+		        .Select(x => new
+		        {
+			        x.CadastralBlock,
+			        x.ObjectId,
+			        x.CadastralNumber,
+			        x.PropertyType_Code,
+			        x.Square,
+			        x.Upks,
+			        x.CadastralCost
+		        }).Execute();
+        }
+
         private List<ReportItem> GetOperations(List<OMUnit> units)
         {
             if (units.Count == 0)
@@ -92,7 +112,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 	            units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
 	            new List<long>{ GbuCodRegisterService.GetCadastralQuarterFinalAttribute().RegisterId},
 	            new List<long> { GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id },
-	            DateTime.Now.GetEndOfTheDay());
+	            DateTime.Now.GetEndOfTheDay(), isLight: true);
             Logger.Debug("Найдено {Count} атрибутов Кадастрового квартала", cadastralQuartalGbuAttributes?.Count);
 
             var i = 0;
