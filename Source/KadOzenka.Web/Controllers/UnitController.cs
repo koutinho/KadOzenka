@@ -59,7 +59,7 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception("Единица оценки не найдена");
 			}
 
-			List<HistoryUnit> historyUnits = HistoryUnit.GetHistory(unit.CadastralNumber);
+			List<HistoryUnit> historyUnits = HistoryUnit.GetHistory(unit);
 			List<UnitHistoryDto> result = historyUnits.Select(x => new UnitHistoryDto
 			{
 				Id = x.Unit.Id,				
