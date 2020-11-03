@@ -47,9 +47,6 @@
     <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\StateResultsReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\CalculationParams\CalculationParamsReport.cs">
       <SubType>Component</SubType>
     </Compile>
