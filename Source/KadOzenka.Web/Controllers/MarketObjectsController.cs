@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
 using System.Threading;
+using Core.ErrorManagment;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Market;
@@ -13,12 +14,16 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
+using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.MarketObjects;
 using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
+using KadOzenka.Dal.OutliersChecking.Dto;
 using KadOzenka.Web.Attributes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -583,6 +588,44 @@ namespace KadOzenka.Web.Controllers
 	        OutliersCheckingSettingsService.UpdateOutliersCheckingSettings(model.ToDto());
 
 	        return Json(new[] { model });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
+        public IActionResult OutliersCheckingSettingsImport()
+        {
+	        return View(new OutliersSettingsImportModel());
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
+        public IActionResult OutliersCheckingSettingsImport(IFormFile file, OutliersSettingsImportModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return GenerateMessageNonValidModel();
+            }
+
+            object returnedData;
+            try
+            {
+	            using (var stream = file.OpenReadStream())
+	            {
+		            var settingDto = viewModel.ToDto(file);
+		            var importId = OutliersCheckingSettingsService.ImportOutliersCheckingSettingsFromExcel(stream, settingDto);
+		            returnedData = new
+		            {
+			            importId
+		            };
+	            }
+            }
+            catch (Exception ex)
+            {
+	            ErrorManager.LogError(ex);
+	            return BadRequest();
+            }
+
+            return Content(JsonConvert.SerializeObject(returnedData), "application/json");
         }
 
         public ActionResult PerformOutliersChecking(MarketSegment? segment)
