@@ -557,7 +557,7 @@ namespace KadOzenka.Web.Controllers
 
         #region Outliers Checking
 
-
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult GetMarketSegmentList()
         {
 	        var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
@@ -567,6 +567,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult OutliersSettings(bool isPartialView = false)
         {
 	        ViewBag.isPartialView = isPartialView;
@@ -574,6 +575,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public JsonResult GetOutliersSettingsCoefficients()
         {
 	        var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
@@ -582,6 +584,7 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
         {
 	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
@@ -591,14 +594,14 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public IActionResult OutliersCheckingSettingsImport()
         {
 	        return View(new OutliersSettingsImportModel());
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_REFERENCES_IMPORT)]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public IActionResult OutliersCheckingSettingsImport(IFormFile file, OutliersSettingsImportModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -628,6 +631,7 @@ namespace KadOzenka.Web.Controllers
             return Content(JsonConvert.SerializeObject(returnedData), "application/json");
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult PerformOutliersChecking(MarketSegment? segment)
         {
             ////For testing
