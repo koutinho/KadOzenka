@@ -2612,162 +2612,159 @@ namespace ObjectModel.KO
                 }
 
 
-                foreach (OMModelFactor weight in model.ModelFactor)
+                foreach (ObjectModel.KO.OMGroupFactor koef in koeff)
                 {
-                    string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
-                    CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
-                    CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
-                    if (fv_et == null)
+                    long? id_correct = null;
+                    ObjectModel.KO.OMFactorSettings factor_correct = ObjectModel.KO.OMFactorSettings.Where(x => x.FactorId == koef.FactorId).SelectAll().ExecuteFirstOrDefault();
+                    if (factor_correct != null)
                     {
-                        lock (errors)
-                        {
-                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
-                        }
-                    }
-                    if (fv_ch == null)
-                    {
-                        lock (errors)
-                        {
-                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
-                        }
-                    }
-
-                    if (fv_et != null && fv_ch != null)
-                    {
-                        double kk = 1;
-
-                        long? id_factor = weight.FactorId;
-                        long? id_correct = null;
-
-                        ObjectModel.KO.OMFactorSettings factor_correct = ObjectModel.KO.OMFactorSettings.Where(x => x.CorrectFactorId == weight.FactorId).SelectAll().ExecuteFirstOrDefault();
-                        if (factor_correct != null) id_correct = factor_correct.FactorId;
-
+                        id_correct = factor_correct.CorrectFactorId;
                         if (id_correct != null)
                         {
-
-                            if (weight.SignMarket)
+                            OMModelFactor weight = model.ModelFactor.Find(x => x.FactorId == id_correct.Value);
+                            if (weight != null)
                             {
-                                decimal zm_et = 1;
-                                decimal zm_ch = 0;
-                                bool m_et = false;
-                                bool m_ch = false;
-
-
-                                OMMarkCatalog mcEtalon = null;
-                                mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace('.', ','));
-                                if (mcEtalon == null)
-                                    mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace(',', '.'));
-                                if (mcEtalon != null)
+                                string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
+                                CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
+                                CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
+                                if (fv_et == null)
                                 {
-                                    zm_et = mcEtalon.MetkaFactor.ParseToDecimal();
-                                    m_et = true;
-                                }
-                                if (!m_et)
-                                {
-                                    kk = 0;
                                     lock (errors)
                                     {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
+                                    }
+                                }
+                                if (fv_ch == null)
+                                {
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
                                     }
                                 }
 
+                                if (fv_et != null && fv_ch != null)
+                                {
+                                    double kk = 1;
 
-                                OMMarkCatalog mcChild = null;
-                                mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace('.', ','));
-                                if (mcChild == null)
-                                    mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace(',', '.'));
-                                if (mcChild != null)
-                                {
-                                    zm_ch = mcChild.MetkaFactor.ParseToDecimal();
-                                    m_ch = true;
-                                }
-                                if (!m_ch)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
-                                    }
-                                }
 
-                                if (m_ch && m_et)
-                                {
-                                    kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_et));
-                                }
+                                    if (weight.SignMarket)
+                                    {
+                                        decimal zm_et = 1;
+                                        decimal zm_ch = 0;
+                                        bool m_et = false;
+                                        bool m_ch = false;
 
-                                if (id_correct != null)
-                                {
-                                    child.AddKOFactor(id_correct.Value, null, kk);
-                                }
-                            }
-                            else
-                            {
-                                if (fv_ch.Value == string.Empty)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
-                                    }
-                                }
-                                else
-                                if (fv_et.Value == string.Empty)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
-                                    }
-                                }
-                                else
-                                {
-                                    string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-                                    bool dok_child = decimal.TryParse(fv_ch.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_ch);
-                                    if (!dok_child)
-                                    {
-                                        lock (errors)
+
+                                        OMMarkCatalog mcEtalon = null;
+                                        mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace('.', ','));
+                                        if (mcEtalon == null)
+                                            mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace(',', '.'));
+                                        if (mcEtalon != null)
                                         {
-                                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                            zm_et = mcEtalon.MetkaFactor.ParseToDecimal();
+                                            m_et = true;
                                         }
-                                    }
-
-                                    bool dok_etalon = decimal.TryParse(fv_et.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_et);
-                                    if (!dok_etalon)
-                                    {
-                                        lock (errors)
+                                        if (!m_et)
                                         {
-                                            errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
-                                        }
-                                    }
-
-                                    if (dok_etalon && dok_child)
-                                    {
-                                        kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
-                                        if (kk==0)
-                                        {
+                                            kk = 0;
                                             lock (errors)
                                             {
-                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
                                             }
+                                        }
+
+
+                                        OMMarkCatalog mcChild = null;
+                                        mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace('.', ','));
+                                        if (mcChild == null)
+                                            mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace(',', '.'));
+                                        if (mcChild != null)
+                                        {
+                                            zm_ch = mcChild.MetkaFactor.ParseToDecimal();
+                                            m_ch = true;
+                                        }
+                                        if (!m_ch)
+                                        {
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
+                                            }
+                                        }
+
+                                        if (m_ch && m_et)
+                                        {
+                                            kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_et));
+                                        }
+
+                                        if (id_correct != null)
+                                        {
+                                            child.AddKOFactor(koef.FactorId.Value, null, kk);
                                         }
                                     }
                                     else
                                     {
-                                        kk = 0;
-                                        lock (errors)
+                                        if (fv_ch.Value == string.Empty)
                                         {
-                                            errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value+"\", значение объекта: \""+ fv_ch.Value+"\"" });
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                            }
                                         }
+                                        else
+                                        if (fv_et.Value == string.Empty)
+                                        {
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                            bool dok_child = decimal.TryParse(fv_ch.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_ch);
+                                            if (!dok_child)
+                                            {
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                                }
+                                            }
+
+                                            bool dok_etalon = decimal.TryParse(fv_et.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_et);
+                                            if (!dok_etalon)
+                                            {
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
+                                                }
+                                            }
+
+                                            if (dok_etalon && dok_child)
+                                            {
+                                                kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
+                                                if (kk == 0)
+                                                {
+                                                    lock (errors)
+                                                    {
+                                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                kk = 0;
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                }
+                                            }
+                                        }
+                                        child.AddKOFactor(koef.FactorId.Value, null, kk);
                                     }
                                 }
-                                child.AddKOFactor(id_correct.Value, null, kk);
-                            }
-                        }
-                        else
-                        {
-                            lock (errors)
-                            {
-                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует корректируемый фактор для фактора " + factorName });
                             }
                         }
                     }
