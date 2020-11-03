@@ -718,7 +718,7 @@ $(document).ready(function () {
                         try {
                             var valueFrom = parseFloat(item.item.valueFrom);
                             var valueTo = parseFloat(item.item.valueTo);
-                            var isThisInterval = currentSquare > valueFrom && currentSquare < valueTo;
+                            var isThisInterval = currentSquare >= valueFrom && currentSquare < valueTo;
                             if (isThisInterval) {
                                 skipChangeSquareHandler = true;
                                 $dropDownSquare.value(item.Value);

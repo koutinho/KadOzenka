@@ -211,7 +211,7 @@ namespace KadOzenka.Web.Controllers
 				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
 				DealType = viewModel.DealType,
 				Kn = viewModel.Kn,
-				Square = viewModel.Square,
+				Square = viewModel.Square.GetValueOrDefault(),
 				ScenarioType = viewModel.ScenarioType,
 				Segment = viewModel.Segment,
 				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),

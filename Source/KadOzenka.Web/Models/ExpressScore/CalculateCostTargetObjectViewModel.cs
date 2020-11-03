@@ -14,7 +14,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// <summary>
 		/// Площадь для расчета полной стоимости объекта оценки
 		/// </summary>
-		public decimal Square { get; set; }
+		public decimal? Square { get; set; }
 		/// <summary>
 		/// Ид найденных аналогов
 		/// </summary>

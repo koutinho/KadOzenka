@@ -828,7 +828,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 										try
 										{
-											cost = cost * (decimal)coeff;
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 										}
 										catch (OverflowException e)
 										{
@@ -880,7 +880,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 										try
 										{
-											cost = cost * (decimal)coeff;
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 										}
 										catch (OverflowException e)
 										{
@@ -936,7 +936,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 									try
 									{
-										cost = cost * (decimal)coeff;
+										cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 									}
 									catch (OverflowException e)
 									{
