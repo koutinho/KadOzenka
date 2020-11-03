@@ -2501,18 +2501,34 @@ namespace ObjectModel.KO
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             List<ObjectModel.KO.OMGroupFactor> koeff = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
             int? factorReestrId = GetFactorReestrId(this);
+
             if (factorReestrId != null)
             {
-                foreach (ObjectModel.KO.OMUnit unit in units)
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (model != null)
                 {
-                    res.AddRange(CalculateKorrect(unit, factorReestrId.Value, koeff));
+                    if (model.ModelFactor.Count == 0)
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+                    foreach (OMModelFactor weight in model.ModelFactor)
+                    {
+
+                        if (weight.SignMarket)
+                            weight.FillMarkCatalogs(model);
+                    }
+
+
+                    foreach (ObjectModel.KO.OMUnit unit in units)
+                    {
+                        res.AddRange(CalculateKorrect(model, unit, factorReestrId.Value, koeff));
+                    }
                 }
             }
 
             return res;
         }
 
-        private List<CalcErrorItem> CalculateKorrect(ObjectModel.KO.OMUnit unit, int factorReestrId, List<ObjectModel.KO.OMGroupFactor> groupFactors)
+        private List<CalcErrorItem> CalculateKorrect(OMModel model, ObjectModel.KO.OMUnit unit, int factorReestrId, List<ObjectModel.KO.OMGroupFactor> groupFactors)
         {
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             if (unit.GroupId == null)
@@ -2535,7 +2551,7 @@ namespace ObjectModel.KO
                     unit.CadastralCost = 0;
                     unit.Save();
 
-                    UpdateCorrectFactor(etobj, unit, groupFactors, ref res);
+                    UpdateCorrectFactor(model, etobj, unit, groupFactors, ref res);
                     ok = true;
                 }
 
@@ -2569,21 +2585,11 @@ namespace ObjectModel.KO
             return res;
         }
 
-        public void UpdateCorrectFactor(ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
+        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
         {
             int? factorReestrId = GetFactorReestrId(this);
-            OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
             if (model != null && factorReestrId != null)
             {
-                if (model.ModelFactor.Count == 0)
-                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-                foreach (OMModelFactor weight in model.ModelFactor)
-                {
-
-                    if (weight.SignMarket)
-                        weight.FillMarkCatalogs(model);
-                }
 
                 List<CalcItem> FactorChildValues = new List<CalcItem>();
                 DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId.Value);
@@ -2608,12 +2614,27 @@ namespace ObjectModel.KO
 
                 foreach (OMModelFactor weight in model.ModelFactor)
                 {
+                    string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
                     CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
                     CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
+                    if (fv_et == null)
+                    {
+                        lock (errors)
+                        {
+                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
+                        }
+                    }
+                    if (fv_ch == null)
+                    {
+                        lock (errors)
+                        {
+                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
+                        }
+                    }
+
                     if (fv_et != null && fv_ch != null)
                     {
                         double kk = 1;
-                        string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
 
                         long? id_factor = weight.FactorId;
                         long? id_correct = null;
@@ -2722,13 +2743,31 @@ namespace ObjectModel.KO
                                     if (dok_etalon && dok_child)
                                     {
                                         kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
+                                        if (kk==0)
+                                        {
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                            }
+                                        }
                                     }
                                     else
                                     {
                                         kk = 0;
+                                        lock (errors)
+                                        {
+                                            errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value+"\", значение объекта: \""+ fv_ch.Value+"\"" });
+                                        }
                                     }
                                 }
                                 child.AddKOFactor(id_correct.Value, null, kk);
+                            }
+                        }
+                        else
+                        {
+                            lock (errors)
+                            {
+                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует корректируемый фактор для фактора " + factorName });
                             }
                         }
                     }
