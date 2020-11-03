@@ -40,6 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 			var data = _service.GetCalculationStatisticsData(taskIdList, zuOksObjectType == "ОКС");
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.SubgroupId,
@@ -53,6 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

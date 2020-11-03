@@ -50,6 +50,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var quantitativeFactors = GetQuantitativeFactors(factors, groupId);
             var qualityFactors = GetQualityFactors(factors, groupId);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
 
             var modelTable = GetModelDataTable(model);
@@ -61,6 +62,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             dataSet.Tables.Add(coefficientsTable);
             dataSet.Tables.Add(quantitativeFactorsTable);
             dataSet.Tables.Add(qualityFactorsTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

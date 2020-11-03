@@ -31,9 +31,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportItems = GetReportData(taskIdList);
+
+			Logger.Debug("Начато формирование таблиц");
 			var dataSet = new DataSet();
 			var dataTable = GetReportDataTable(reportItems);
 			dataSet.Tables.Add(dataTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

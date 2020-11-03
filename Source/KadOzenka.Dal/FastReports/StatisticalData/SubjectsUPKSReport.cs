@@ -70,6 +70,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeData(taskIdList);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.ObjectsCount,
@@ -82,6 +84,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

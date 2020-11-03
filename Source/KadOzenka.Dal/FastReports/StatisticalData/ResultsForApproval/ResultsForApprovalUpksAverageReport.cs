@@ -54,6 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 
 			var data = _service.GetResultsForApprovalUpksAverageData(taskIdList, GetStatisticDataAreaDivisionTypeReport(), IsOks(query));
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(
@@ -66,6 +67,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

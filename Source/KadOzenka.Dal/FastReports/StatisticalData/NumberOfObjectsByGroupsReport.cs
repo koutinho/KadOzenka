@@ -42,6 +42,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var isOksReportType = reportType == "Статистика по группам с количеством ОКС";
 			var data = _service.GetNumberOfObjectsByGroups(taskIdList, isOksReportType);
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Group, unitDto.ParentGroup, unitDto.Count);
@@ -50,6 +51,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

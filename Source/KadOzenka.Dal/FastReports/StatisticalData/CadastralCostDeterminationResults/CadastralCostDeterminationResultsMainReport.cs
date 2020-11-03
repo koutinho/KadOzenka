@@ -42,9 +42,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             var units = report.GetUnitsForCadastralCostDetermination(taskIdList);
             var operations = GetOperations(units);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

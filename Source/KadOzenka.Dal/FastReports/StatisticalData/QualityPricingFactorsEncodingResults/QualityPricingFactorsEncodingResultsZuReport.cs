@@ -112,6 +112,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			var data = _service.GetDataForZuObjects(taskIdList, linkedObjectsInfoAttributeId.Value, linkedObjectsInfoSourceAttributeId.Value,
 				segmentAttributeId.Value, typeOfUsingNameAttributeId.Value, typeOfUsingCodeAttributeId.Value, typeOfUsingCodeSourceAttributeId.Value);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -137,6 +138,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

@@ -43,11 +43,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
             var reportInfo = PreviousToursService.GetReportInfo(taskIds, groupId);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(reportInfo.Items, reportInfo.ColumnTitles);
             var commonTable = GetCommonDataTable(reportInfo.Title);
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

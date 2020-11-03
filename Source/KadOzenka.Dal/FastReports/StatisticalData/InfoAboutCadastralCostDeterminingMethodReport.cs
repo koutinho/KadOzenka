@@ -32,9 +32,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
             var taskIds = GetTaskIdList(query).ToList();
             var operations = GetOperations(taskIds);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

@@ -48,11 +48,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             var commonTable = GetCommonDataTable(group);
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

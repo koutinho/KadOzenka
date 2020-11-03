@@ -49,6 +49,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 
 			var data = _service.GetData(taskIdList, GetStatisticDataAreaDivisionTypeReport(query), GetPropertyObjectTypeReport(query));
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(
@@ -61,6 +62,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

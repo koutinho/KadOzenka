@@ -84,6 +84,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("AnnualRateOfRent");
 
 			var data = _service.GetMarketData(dateFrom, dateTo, typeOfUseCodeAttributeId, oksGroupAttributeId, typeOfUseAttributeId);
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var dto in data)
 			{
@@ -121,6 +122,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

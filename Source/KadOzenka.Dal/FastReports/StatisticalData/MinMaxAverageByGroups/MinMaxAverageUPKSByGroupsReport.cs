@@ -40,6 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                         .GroupBy(x => x.ParentGroup)
                         .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
 
+                    Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
                     {
                         var parentGroup = PreprocessGroupName(unitDto.ParentGroup);
@@ -56,10 +57,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 GetCalcValue(calcType, unitDto));
                         }
                     }
+                    Logger.Debug("Закончено формирование таблиц");
                 }
                 else
                 {
                     var data = UpksService.GetDataByGroupsForZu(taskIdList);
+
+                    Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
                     {
                         foreach (var calcType in calcTypes)
@@ -74,6 +78,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 GetCalcValue(calcType, unitDto));
                         }
                     }
+                    Logger.Debug("Закончено формирование таблиц");
                 }
 
                 return dataTable;
@@ -104,6 +109,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                         .ToDictionary(k => PreprocessGroupName(k.Key.ParentGroup) + PreprocessGroupName(k.Key.SubGroup),
                             v => v.Sum(x => x.ObjectsCount));
 
+                    Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
                     {
                         var key = PreprocessGroupName(unitDto.ParentGroup) + PreprocessGroupName(unitDto.SubGroup);
@@ -121,10 +127,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 GetCalcValue(calcType, unitDto));
                         }
                     }
+                    Logger.Debug("Закончено формирование таблиц");
                 }
                 else
                 {
                     var data = UpksService.GetDataByGroupsAndSubgroupsForZu(taskIdList);
+
+                    Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
                     {
                         foreach (var calcType in calcTypes)
@@ -139,6 +148,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                                 GetCalcValue(calcType, unitDto));
                         }
                     }
+                    Logger.Debug("Закончено формирование таблиц");
                 }
 
                 return dataTable;

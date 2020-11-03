@@ -130,6 +130,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 				typeOfUsingNameAttributeId.Value, typeOfUsingCodeAttributeId.Value, typeOfUsingCodeSourceAttributeId.Value, typeOfUsingGroupCodeAttributeId.Value,
 				functionalGroupNameAttributeId.Value, segmentAttributeId.Value);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var dto in data)
 			{
@@ -163,6 +164,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

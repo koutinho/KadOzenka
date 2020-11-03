@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			var data = _service.GetNumberOfObjectsByZoneAndSubgroupsData(firstTourId.Value,
 				secondTourId.Value, GetReportDataType(query), true);
 
-
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var dto in data)
 			{
 				dataTable.Rows.Add(dto.Zone,
@@ -133,6 +133,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

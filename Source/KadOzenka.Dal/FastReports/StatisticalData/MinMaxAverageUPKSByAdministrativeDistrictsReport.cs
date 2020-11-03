@@ -61,6 +61,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 					dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 					var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
+
+					Logger.Debug("Начато формирование таблиц");
 					foreach (var unitDto in data)
 					{
 						dataTable.Rows.Add(unitDto.AdditionalName, unitDto.Name, unitDto.ObjectsCount, unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
@@ -70,6 +72,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 					dataSet.Tables.Add(dataTable);
 					dataSet.Tables.Add(dataTitleTable);
+					Logger.Debug("Закончено формирование таблиц");
 				}
 			}
 

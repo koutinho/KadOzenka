@@ -67,6 +67,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 
 			var data = _summaryResultsService.GetKRSummaryResultsZuData(taskIdList, klardAttributeId.Value);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -89,6 +90,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

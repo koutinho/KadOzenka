@@ -40,6 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 
 			var data = _service.GetResultsForApprovalData(taskIdList);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -53,6 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

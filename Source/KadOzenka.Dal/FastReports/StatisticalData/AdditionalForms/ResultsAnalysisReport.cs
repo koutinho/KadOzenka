@@ -45,6 +45,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			var data = _service.GetResultsAnalysisData(taskIdList);
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.CadastralNumber,
@@ -68,6 +69,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}
