@@ -39,8 +39,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             var taskIdList = GetTaskIdList(query).ToList();
 
             var report = GetReport(query);
+            Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
+
             var units = report.GetUnitsForCadastralCostDetermination(taskIdList);
+            Logger.Debug("Найдено {UnitsCount} Единиц оценки", units?.Count);
+
             var operations = GetOperations(units);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
@@ -88,13 +93,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 	            new List<long>{ GbuCodRegisterService.GetCadastralQuarterFinalAttribute().RegisterId},
 	            new List<long> { GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id },
 	            DateTime.Now.GetEndOfTheDay());
+            Logger.Debug("Найдено {Count} атрибутов Кадастрового квартала", cadastralQuartalGbuAttributes?.Count);
 
+            var i = 0;
             return units.Select(unit =>
             {
 	            var cadastralQuartalGbu = cadastralQuartalGbuAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 	            var cadastralQuartal = !string.IsNullOrEmpty(cadastralQuartalGbu)
 		            ? cadastralQuartalGbu
 		            : unit.CadastralBlock;
+
+	            i++;
+                if(i % 500 == 0)
+                    Logger.Debug($"Обработано {i} объектов");
 
                 return new ReportItem
 	            {

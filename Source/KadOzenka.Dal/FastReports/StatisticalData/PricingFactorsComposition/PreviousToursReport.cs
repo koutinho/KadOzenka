@@ -38,10 +38,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
-
             var groupId = GetGroupIdFromFilter(query);
 
             var reportInfo = PreviousToursService.GetReportInfo(taskIds, groupId);
+            Logger.Debug("Найдено {Count} объектов", reportInfo.Items?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();

@@ -57,7 +57,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
+	                Logger.Debug("Тип ОКС");
+
                     var data = UpksAndUprsService.GetDataByGroupsForOks(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
+
                     var objectCountInGroup = data
                         .GroupBy(x => x.ParentGroup)
                         .ToDictionary(k => PreprocessGroupName(k.Key), v => v.Sum(x => x.ObjectsCount));
@@ -84,7 +88,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
+	                Logger.Debug("Тип ЗУ");
+
                     var data = UpksAndUprsService.GetDataByGroupsForZu(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
 
                     Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
@@ -105,7 +112,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                     Logger.Debug("Закончено формирование таблиц");
                 }
                 
-
                 return dataTable;
             }
         }
@@ -128,7 +134,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
+	                Logger.Debug("Тип ОКС");
+
                     var data = UpksAndUprsService.GetDataByGroupsAndSubGroupsForOks(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
 
                     var objectCountInGroupAndSubGroup = data.GroupBy(x => new { x.ParentGroup, x.SubGroup })
                         .ToDictionary(k => PreprocessGroupName(k.Key.ParentGroup) + PreprocessGroupName(k.Key.SubGroup),
@@ -155,7 +164,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
+	                Logger.Debug("Тип ЗУ");
+
                     var data = UpksAndUprsService.GetDataByGroupsAndSubGroupsForZu(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
+
                     foreach (var unitDto in data)
                     {
                         foreach (var calcType in calcTypes)

@@ -39,6 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 			var data = _service.GetCalculationStatisticsData(taskIdList, zuOksObjectType == "ОКС");
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

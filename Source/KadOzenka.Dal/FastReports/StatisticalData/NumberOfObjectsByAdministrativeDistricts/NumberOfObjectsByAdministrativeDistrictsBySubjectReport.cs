@@ -31,6 +31,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 		{
 			var taskIdList = GetTaskIdList(query);
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
+			Logger.Debug("Тип объекта {ObjectType}", zuOksObjectType);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -44,6 +45,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
 			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsBySubject(taskIdList, zuOksObjectType == "ОКС");
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

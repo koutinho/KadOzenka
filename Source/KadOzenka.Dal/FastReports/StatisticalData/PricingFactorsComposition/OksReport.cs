@@ -32,6 +32,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var tourId = GetTourId(query);
 
             var operations = GetOperations(tourId, taskIds);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();

@@ -41,8 +41,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetReportType(GetQueryParam<string>("ReportType", query));
-			var dataSet = new DataSet();
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
+			var dataSet = new DataSet();
 			using (DataTable dataTitleTable = new DataTable("Common"))
             {
 				dataTitleTable.Columns.Add("Title");
@@ -61,6 +62,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 					dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 					var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
+					Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 					Logger.Debug("Начато формирование таблиц");
 					foreach (var unitDto in data)

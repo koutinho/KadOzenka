@@ -5,21 +5,18 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
-using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
     public abstract class DataCompositionByCharacteristicsBaseReport : StatisticalDataReport
     {
 	    protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
-	    private readonly ILogger _logger;
-	    protected override ILogger Logger => _logger;
 
 	    public DataCompositionByCharacteristicsBaseReport()
 	    {
 		    DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
-		    _logger = Log.ForContext<DataCompositionByCharacteristicsBaseReport>();
-		}
+	    }
+
 
 	    protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 	    {

@@ -44,11 +44,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var groupId = GetGroupIdFromFilter(query);
 
             var model = ModelService.GetModelEntityByGroupId(groupId);
+            Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model.Id, groupId);
 
             var factors = GetFactors(model.Id);
+            Logger.Debug("Найдено {FactorsCount} Факторов для модели", factors?.Count);
 
             var quantitativeFactors = GetQuantitativeFactors(factors, groupId);
+            Logger.Debug("Найдено {QuantitativeFFactorsCount} количественных факторов", quantitativeFactors?.Count);
+
             var qualityFactors = GetQualityFactors(factors, groupId);
+            Logger.Debug("Найдено {QuantitativeFFactorsCount} качественных факторов", qualityFactors?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();

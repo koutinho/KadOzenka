@@ -42,8 +42,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("GroupNumber");
 			dataTable.Columns.Add("ModelCalculationMethod");
 
-
 			var data = _service.GetGroupingData(taskIdList, tourId);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			var i = 1;

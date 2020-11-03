@@ -44,6 +44,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("Status", typeof(string));
 
 			var data = _service.GetResultsAnalysisData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

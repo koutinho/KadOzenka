@@ -52,7 +52,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			dataTable.Columns.Add("GroupName");
 			dataTable.Columns.Add("UpksAverageWeight");
 
-			var data = _service.GetResultsForApprovalUpksAverageData(taskIdList, GetStatisticDataAreaDivisionTypeReport(), IsOks(query));
+			var divisionType = GetStatisticDataAreaDivisionTypeReport();
+			Logger.Debug("Тип разделения {DivisionType}", divisionType);
+
+			var data = _service.GetResultsForApprovalUpksAverageData(taskIdList, divisionType, IsOks(query));
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

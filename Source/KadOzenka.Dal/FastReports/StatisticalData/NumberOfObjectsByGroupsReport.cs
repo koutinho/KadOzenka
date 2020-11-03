@@ -28,6 +28,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetQueryParam<string>("ReportType", query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -41,6 +42,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 			var isOksReportType = reportType == "Статистика по группам с количеством ОКС";
 			var data = _service.GetNumberOfObjectsByGroups(taskIdList, isOksReportType);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

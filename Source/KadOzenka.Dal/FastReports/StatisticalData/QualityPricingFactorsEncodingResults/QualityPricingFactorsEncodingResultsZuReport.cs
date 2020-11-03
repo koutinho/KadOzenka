@@ -108,9 +108,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("TypeOfUsingCode");
 			dataTable.Columns.Add("TypeOfUsingCodeSource");
 
-
 			var data = _service.GetDataForZuObjects(taskIdList, linkedObjectsInfoAttributeId.Value, linkedObjectsInfoSourceAttributeId.Value,
 				segmentAttributeId.Value, typeOfUsingNameAttributeId.Value, typeOfUsingCodeAttributeId.Value, typeOfUsingCodeSourceAttributeId.Value);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			var i = 1;

@@ -34,7 +34,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
+	                Logger.Debug("Тип ОКС");
+
                     var data = UprsService.GetDataByGroupsForOks(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
 
                     var objectCountInGroup = data
                         .GroupBy(x => x.ParentGroup)
@@ -61,7 +64,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
+	                Logger.Debug("Тип ЗУ");
+
                     var data = UprsService.GetDataByGroupsForZu(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
 
                     Logger.Debug("Начато формирование таблиц");
                     foreach (var unitDto in data)
@@ -102,7 +108,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 
                 if (isOks)
                 {
+	                Logger.Debug("Тип ОКС");
+
                     var data = UprsService.GetDataByGroupsAndSubGroupsForOks(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
 
                     var objectCountInGroupAndSubGroup = data
                         .GroupBy(x => new { x.ParentGroup, x.SubGroup })
@@ -129,7 +138,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 }
                 else
                 {
+	                Logger.Debug("Тип ЗУ");
+
                     var data = UprsService.GetDataByGroupsAndSubgroupsForZu(taskIdList);
+                    Logger.Debug("Найдено {Count} объектов", data?.Count);
+
                     foreach (var unitDto in data)
                     {
                         foreach (var calcType in calcTypes)

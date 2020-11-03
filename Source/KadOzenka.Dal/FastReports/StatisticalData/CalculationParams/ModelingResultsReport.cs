@@ -44,9 +44,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.GroupName,
                 x.Number
             }).ExecuteFirstOrDefault();
+
             var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();

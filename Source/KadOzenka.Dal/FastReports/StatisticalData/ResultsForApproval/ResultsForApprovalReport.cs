@@ -39,6 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			dataTable.Columns.Add("CadastralCost");
 
 			var data = _service.GetResultsForApprovalData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			var i = 1;

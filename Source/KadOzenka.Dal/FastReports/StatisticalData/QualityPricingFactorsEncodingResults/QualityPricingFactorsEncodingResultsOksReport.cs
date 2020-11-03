@@ -125,10 +125,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("FunctionalGroupName");
 			dataTable.Columns.Add("Segment");
 
-
 			var data = _service.GetDataForOksObjects(taskIdList, parentKnAttributeId.Value,
 				typeOfUsingNameAttributeId.Value, typeOfUsingCodeAttributeId.Value, typeOfUsingCodeSourceAttributeId.Value, typeOfUsingGroupCodeAttributeId.Value,
 				functionalGroupNameAttributeId.Value, segmentAttributeId.Value);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			var i = 1;

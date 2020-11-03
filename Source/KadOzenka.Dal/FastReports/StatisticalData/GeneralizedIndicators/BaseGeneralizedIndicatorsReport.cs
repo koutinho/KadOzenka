@@ -47,7 +47,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
-			var data = _service.GetData(taskIdList, GetStatisticDataAreaDivisionTypeReport(query), GetPropertyObjectTypeReport(query));
+			var areaDivisionType = GetStatisticDataAreaDivisionTypeReport(query);
+			Logger.Debug("Тип разделения {AreaDivisionType}", areaDivisionType);
+
+			var type = GetPropertyObjectTypeReport(query);
+			Logger.Debug("Тип объекта {ObjectType}", type.GetEnumDescription());
+
+			var data = _service.GetData(taskIdList, areaDivisionType, type);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

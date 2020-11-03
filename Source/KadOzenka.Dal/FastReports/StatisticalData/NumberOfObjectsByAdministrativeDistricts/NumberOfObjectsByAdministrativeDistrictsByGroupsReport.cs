@@ -48,6 +48,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 
+			Logger.Debug("Тип разделения {DivisionType}", divisionType);
+			Logger.Debug("Тип объекта {ObjectType}", zuOksObjectType);
+
 			DataSet dataset;
 			switch (divisionType)
 			{
@@ -89,6 +92,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 					dataTable.Columns.Add("ObjectsCount", typeof(long));
 
 					var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.RegionNumbers, isOks);
+					Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+					Logger.Debug("Начато формирование таблиц");
 					foreach (var unitDto in data)
 					{
 						dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -96,7 +102,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 					dataSet.Tables.Add(dataTable);
 					dataSet.Tables.Add(dataTitleTable);
-
+					Logger.Debug("Закончено формирование таблиц");
 				}
 			}
 
@@ -120,6 +126,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
 			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Districts, isOks);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -128,6 +137,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}
@@ -147,6 +157,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
 			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Regions, isOks);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.FirstParentName, unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -155,6 +168,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 
@@ -175,9 +189,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			dataTable.Columns.Add("Name", typeof(string));
 			dataTable.Columns.Add("Group", typeof(string));
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
-			
 
 			var data = _service.GetNumberOfObjectsByAdministrativeDistrictsByGroups(taskList, StatisticDataAreaDivisionType.Quarters, isOks);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.FirstParentName, unitDto.SecondParentName, unitDto.ThirdParentName, unitDto.Name, unitDto.Group, unitDto.ObjectsCount);
@@ -186,6 +202,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 

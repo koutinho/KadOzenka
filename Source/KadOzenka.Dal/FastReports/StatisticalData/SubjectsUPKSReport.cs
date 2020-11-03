@@ -40,6 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetQueryParam<string>("ReportType", query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			DataSet data;
 			switch (reportType)
@@ -70,6 +71,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
@@ -103,8 +105,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(string));
 			
-
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeAndPurposeData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
@@ -117,6 +121,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

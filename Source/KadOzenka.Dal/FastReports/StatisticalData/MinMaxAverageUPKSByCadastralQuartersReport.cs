@@ -46,6 +46,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 			var data = _service.GetMinMaxAverageUPKS(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)

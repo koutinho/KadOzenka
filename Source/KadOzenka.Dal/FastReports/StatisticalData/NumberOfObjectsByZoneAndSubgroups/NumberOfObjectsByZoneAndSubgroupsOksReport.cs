@@ -71,9 +71,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			dataTable.Columns.Add("MaxUpksVarianceBetweenToursWithoutGroupChanging");
 			dataTable.Columns.Add("AverageUpksVarianceBetweenToursWithoutGroupChanging");
 
+			var reportType = GetReportDataType(query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			var data = _service.GetNumberOfObjectsByZoneAndSubgroupsData(firstTourId.Value,
-				secondTourId.Value, GetReportDataType(query), true);
+				secondTourId.Value, reportType, true);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
 			foreach (var dto in data)

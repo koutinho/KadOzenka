@@ -44,6 +44,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var inputParameters = GetInputParameters(query);
 
             var operations = GetOperations(tourId, taskIds, inputParameters);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
             Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
