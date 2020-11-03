@@ -132,6 +132,7 @@ namespace ObjectModel.KO
     {
         public OMUnit Unit { get; set; }
         public OMTask Task { get; set; }
+        public OMTour Tour { get; set; }
         public bool IsActual { get; set; }
         public bool IsBad { get; set; }
         public Core.TD.OMInstance InputDoc { get; set; }
@@ -155,16 +156,26 @@ namespace ObjectModel.KO
                 {
                     OutputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Outdoc.Value).SelectAll().ExecuteFirstOrDefault();
                 }
+                long? id_tour = unit.TourId;
+                if (id_tour != null)
+                {
+                    Tour = OMTour.Where(x => x.Id == id_tour.Value).SelectAll().ExecuteFirstOrDefault();
+                }
             }
         }
         int IComparer<HistoryUnit>.Compare(HistoryUnit unit1, HistoryUnit unit2)
         {
-            if (unit1.Unit.CreationDate.Value == unit2.Unit.CreationDate.Value)
+            if (unit1.Tour.Year.ParseToLong() == unit2.Tour.Year.ParseToLong())
             {
-                return -1 * unit1.Unit.StatusResultCalc_Code.CompareTo(unit2.Unit.StatusResultCalc_Code);
+                if (unit1.Unit.CreationDate.Value == unit2.Unit.CreationDate.Value)
+                {
+                    return -1 * unit1.Unit.StatusResultCalc_Code.CompareTo(unit2.Unit.StatusResultCalc_Code);
+                }
+                else
+                    return unit1.Unit.CreationDate.Value.CompareTo(unit2.Unit.CreationDate.Value);
             }
             else
-                return unit1.Unit.CreationDate.Value.CompareTo(unit2.Unit.CreationDate.Value);
+               return unit1.Tour.Year.Value.CompareTo(unit2.Tour.Year.Value);
         }
         public override string ToString()
         {
@@ -175,6 +186,21 @@ namespace ObjectModel.KO
         {
             List<HistoryUnit> Items = new List<HistoryUnit>();
             List<OMUnit> units = OMUnit.Where(x => x.CadastralNumber == cadastralNumber).SelectAll().Execute();
+            foreach (OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+            }
+            return Items;
+        }
+        public static List<HistoryUnit> GetHistory(OMUnit current)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId==current.TourId).SelectAll().Execute();
             foreach (OMUnit unit in units)
             {
                 Items.Add(new HistoryUnit(unit));
@@ -225,6 +251,7 @@ namespace ObjectModel.KO
             }
             return Items;
         }
+
         public static List<HistoryUnit> GetPrevHistoryTour(OMUnit current)
         {
             List<HistoryUnit> Items = new List<HistoryUnit>();

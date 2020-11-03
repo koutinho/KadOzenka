@@ -218,8 +218,12 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
 			consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
 			consoleHelper.AddCommand("292", "История", () =>
-			{
-				List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
+			{ //36855837
+
+				ObjectModel.KO.OMUnit tmp = ObjectModel.KO.OMUnit.Where(x => x.Id == 36855837).SelectAll().ExecuteFirstOrDefault();
+
+				List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory(tmp);
+				//List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
 				foreach (ObjectModel.KO.HistoryUnit history in histories) Console.WriteLine(history.ToString());
 			});
 
