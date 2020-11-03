@@ -53,7 +53,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_OBJECTS)]
 		public JsonResult GetUnitHistory(long unitId)
 		{
-			OMUnit unit = OMUnit.Where(x => x.Id == unitId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault();
+			OMUnit unit = OMUnit.Where(x => x.Id == unitId).Select(x => x.CadastralNumber).Select(x => x.TourId).ExecuteFirstOrDefault();
 			if (unit == null)
 			{
 				throw new Exception("Единица оценки не найдена");
