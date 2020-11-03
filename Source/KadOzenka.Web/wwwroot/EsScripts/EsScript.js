@@ -362,7 +362,7 @@ function updateCost(cost, squareCost) {
 function updateReportId(reportId = null) { if (reportId) $('#report').data('report-id', reportId); }
 
 
-
+var connectionSignalRId = "";
 /**
  * Выполнение расчетов
  * @param {number} scenarioType тип сценария расчета
@@ -388,7 +388,13 @@ function executeCalculate(scenarioType = null) {
     var topBody = window.top.document.body;
     kendo.ui.progress($(topBody), true);
     var url = "/ExpressScore/CalculateCostTargetObject";
-    $.post(url, data).done(function (data) {
+    var jqxhr  =  $.ajax({
+        url,
+        data,
+        method: 'post',
+        headers: { 'connection-signalr-id': connectionSignalRId }
+    });
+    jqxhr.done(function (data) {
         if (data.Errors) {
             var errors = getErrors(data.Errors);
             Common.ShowError(errors);
@@ -747,6 +753,8 @@ $(document).ready(function () {
 
         }
     });
+
+    initSignalRConnection();
 });
 
 
@@ -787,4 +795,30 @@ function handlerChangeSquare(e) {
     if (value) {
         $('#square').data('kendoNumericTextBox') && $('#square').data('kendoNumericTextBox').value(parseFloat(value));
     }
+}
+
+var connection;
+//signalR
+function initSignalRConnection() {
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl("/esProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on('ReceiveProgress', function (progress) {
+        console.log('progress', progress);
+        var encodedMsg = JSON.parse(message);
+        //updateWidgetState(encodedMsg);
+    });
+    connection.on('Connection', function (connectionId) {
+        connectionSignalRId = connectionId;
+    });
+
+    connection.start()
+        .then(function () {
+            connection.invoke("SendMessage");
+        })
+        .catch(error => {
+            console.error(error.message);
+        });
 }

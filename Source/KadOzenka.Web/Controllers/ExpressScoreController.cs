@@ -19,9 +19,11 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
+using KadOzenka.Web.SignalR;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
@@ -41,6 +43,7 @@ namespace KadOzenka.Web.Controllers
 		#region Init
 
 		private ExpressScoreService _service;
+		private EsHubService _esHubService;
 		private ScoreCommonService ScoreCommonService { get; set; }
 		private ViewRenderService _viewRenderService;
 		private TourFactorService TourFactorService { get; set; }
@@ -48,10 +51,11 @@ namespace KadOzenka.Web.Controllers
 		public RegisterAttributeService RegisterAttributeService { get; set; }
 
 		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService,
-			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, RegisterAttributeService registerAttributeService)
+			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, RegisterAttributeService registerAttributeService, EsHubService esHubService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;
+			_esHubService = esHubService;
             ScoreCommonService = scoreCommonService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
@@ -204,6 +208,10 @@ namespace KadOzenka.Web.Controllers
 			{
 				return GenerateMessageNonValidModel();
 			}
+
+			var headers = Request.Headers;
+			string connectionId = headers.TryGetValue("connection-signalr-id", out var str) ? (string)str : "";
+			_service.NotifyCalculateProgress += progress => _esHubService.SendCalculateProgress(progress, connectionId);
 
 			var inputParam = new InputCalculateDto
 			{

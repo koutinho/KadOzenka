@@ -27,8 +27,12 @@ namespace KadOzenka.Dal.ExpressScore
 {
 	public class ExpressScoreService
 	{
-
+		
 		private static readonly ILogger _log = Log.ForContext<ExpressScoreReportService>();
+
+		public delegate void CalculateProcessHandler(decimal progress);
+
+		public event CalculateProcessHandler NotifyCalculateProgress;
 
 		public ScoreCommonService ScoreCommonService { get; set; }
 		public RegisterAttributeService RegisterAttributeService { get; set; }
@@ -379,8 +383,9 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
 		{
+			SetProgressCalculate(0);
 			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
-
+			SetProgressCalculate(5);
 
 			CalculateSquareCostDto calculateSquareCost = new CalculateSquareCostDto
 			{
@@ -1847,6 +1852,11 @@ namespace KadOzenka.Dal.ExpressScore
 			return targetObjectFactor;
 		}
 
+
+		private void SetProgressCalculate(decimal progress)
+		{
+			NotifyCalculateProgress?.Invoke(progress);
+		}
 		#endregion
 	}
 }
