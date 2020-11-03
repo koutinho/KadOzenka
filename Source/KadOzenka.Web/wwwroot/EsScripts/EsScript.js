@@ -559,6 +559,10 @@ $(document).ready(function () {
                 Common.ShowError('Выберите или заполните целевой объект');
                 return;
             }
+            if (!actualDate) {
+                Common.ShowError('Заполните дату актуальности ');
+                return;
+            }
 
             complexSearchParameters = getComplexSearchParameters();
             kendo.ui.progress($('body'), true);
