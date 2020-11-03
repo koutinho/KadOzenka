@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
@@ -6,7 +8,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComp
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
-    public class DataCompositionByCharacteristicsBaseReport : StatisticalDataReport
+    public abstract class DataCompositionByCharacteristicsBaseReport : StatisticalDataReport
     {
 	    protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
@@ -14,6 +16,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	    {
 		    DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 	    }
+
+
+	    protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
+	    {
+		    return GetDataCompositionByCharacteristicsReportData(query, objectList);
+	    }
+
+	    protected abstract DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null);
 
 
 		protected List<T> GetOperations<T>(List<long> taskIds) where T : new()

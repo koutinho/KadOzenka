@@ -10,6 +10,7 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -21,23 +22,33 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private readonly string _usageTypeCode = "UsageTypeCode";
         private readonly string _usageTypeName = "UsageTypeName";
         private readonly string _usageTypeCodeSource = "UsageTypeCodeSource";
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
+        public ParcelsReport()
+        {
+	        _logger = Log.ForContext<ParcelsReport>();
+        }
 
         protected override string TemplateName(NameValueCollection query)
         {
             return "ResultsByCadastralDistrictForParcelsReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
             var inputParameters = GetInputParameters(query);
 
             var operations = GetOperations(tourId, taskIds, inputParameters);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

@@ -6,17 +6,22 @@ using System.Linq;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodingResults
 {
 	public class QualityPricingFactorsEncodingResultsZuReport : StatisticalDataReport
 	{
 		private readonly QualityPricingFactorsEncodingResultsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public QualityPricingFactorsEncodingResultsZuReport()
 		{
 			_service = new QualityPricingFactorsEncodingResultsService(StatisticalDataService, GbuCodRegisterService);
+			_logger = Log.ForContext<QualityPricingFactorsEncodingResultsZuReport>();
 		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -42,7 +47,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -103,10 +108,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("TypeOfUsingCode");
 			dataTable.Columns.Add("TypeOfUsingCodeSource");
 
-
 			var data = _service.GetDataForZuObjects(taskIdList, linkedObjectsInfoAttributeId.Value, linkedObjectsInfoSourceAttributeId.Value,
 				segmentAttributeId.Value, typeOfUsingNameAttributeId.Value, typeOfUsingCodeAttributeId.Value, typeOfUsingCodeSourceAttributeId.Value);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -132,6 +138,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

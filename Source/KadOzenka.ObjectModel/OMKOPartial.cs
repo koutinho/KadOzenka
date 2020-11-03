@@ -132,6 +132,7 @@ namespace ObjectModel.KO
     {
         public OMUnit Unit { get; set; }
         public OMTask Task { get; set; }
+        public OMTour Tour { get; set; }
         public bool IsActual { get; set; }
         public bool IsBad { get; set; }
         public Core.TD.OMInstance InputDoc { get; set; }
@@ -155,16 +156,26 @@ namespace ObjectModel.KO
                 {
                     OutputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Outdoc.Value).SelectAll().ExecuteFirstOrDefault();
                 }
+                long? id_tour = unit.TourId;
+                if (id_tour != null)
+                {
+                    Tour = OMTour.Where(x => x.Id == id_tour.Value).SelectAll().ExecuteFirstOrDefault();
+                }
             }
         }
         int IComparer<HistoryUnit>.Compare(HistoryUnit unit1, HistoryUnit unit2)
         {
-            if (unit1.Unit.CreationDate.Value == unit2.Unit.CreationDate.Value)
+            if (unit1.Tour.Year.ParseToLong() == unit2.Tour.Year.ParseToLong())
             {
-                return -1 * unit1.Unit.StatusResultCalc_Code.CompareTo(unit2.Unit.StatusResultCalc_Code);
+                if (unit1.Unit.CreationDate.Value == unit2.Unit.CreationDate.Value)
+                {
+                    return -1 * unit1.Unit.StatusResultCalc_Code.CompareTo(unit2.Unit.StatusResultCalc_Code);
+                }
+                else
+                    return unit1.Unit.CreationDate.Value.CompareTo(unit2.Unit.CreationDate.Value);
             }
             else
-                return unit1.Unit.CreationDate.Value.CompareTo(unit2.Unit.CreationDate.Value);
+               return unit1.Tour.Year.Value.CompareTo(unit2.Tour.Year.Value);
         }
         public override string ToString()
         {
@@ -175,6 +186,21 @@ namespace ObjectModel.KO
         {
             List<HistoryUnit> Items = new List<HistoryUnit>();
             List<OMUnit> units = OMUnit.Where(x => x.CadastralNumber == cadastralNumber).SelectAll().Execute();
+            foreach (OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+            }
+            return Items;
+        }
+        public static List<HistoryUnit> GetHistory(OMUnit current)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId==current.TourId).SelectAll().Execute();
             foreach (OMUnit unit in units)
             {
                 Items.Add(new HistoryUnit(unit));
@@ -225,6 +251,7 @@ namespace ObjectModel.KO
             }
             return Items;
         }
+
         public static List<HistoryUnit> GetPrevHistoryTour(OMUnit current)
         {
             List<HistoryUnit> Items = new List<HistoryUnit>();
@@ -761,7 +788,7 @@ namespace ObjectModel.KO
             bool prFindInCadastralBlock = false;
             bool prFindInCadastralRaion = false;
             bool prFindInCadastralRegion = false;
-            string kr = kk.Substring(0, 5);
+            string kr = kk.Substring(0, Math.Min(5, kk.Length));
 
             #region поиск по кварталу
             foreach (long calcChildGroup in calcChildGroups)
@@ -880,7 +907,7 @@ namespace ObjectModel.KO
             bool prFindInCadastralBlock = false;
             bool prFindInCadastralRaion = false;
             bool prFindInCadastralRegion = false;
-            string kr = kk.Substring(0, 5);
+            string kr = kk.Substring(0, Math.Min(5, kk.Length));
             decimal sumSquare = 0;
             decimal sumCost = 0;
 
@@ -1007,7 +1034,7 @@ namespace ObjectModel.KO
                 bool prFindInCadastralBlock = false;
                 bool prFindInCadastralRaion = false;
                 bool prFindInCadastralRegion = false;
-                string kr = kk.Substring(0, 5);
+                string kr = kk.Substring(0, Math.Min(5, kk.Length));
                 decimal sumSquare = 0;
                 decimal sumCost = 0;
 
@@ -1678,10 +1705,20 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
+                        }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
                         }
 
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1717,14 +1754,30 @@ namespace ObjectModel.KO
                             string calc_obj = string.Empty;
                             KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj,
-                                out calc_obj_code))
+
+                            if (!unit.CadastralBlock.IsNullOrEmpty())
                             {
-                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock,
-                                    PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj,
-                                    out calc_obj_code);
-                                minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                                if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj,
+                                    out calc_obj_code))
+                                {
+                                    GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock,
+                                        PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj,
+                                        out calc_obj_code);
+                                    minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                                }
                             }
+                            else
+                            {
+                                lock (res)
+                                {
+                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                }
+                            }
+
+
+
+
+
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
@@ -1773,15 +1826,32 @@ namespace ObjectModel.KO
                             string calc_obj = string.Empty;
                             KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                            if (!flatKN.Get(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, out upksz,
-                                out calc_obj, out calc_obj_code))
+                            if (!unit.BuildingCadastralNumber.IsNullOrEmpty() && !unit.CadastralBlock.IsNullOrEmpty())
                             {
-                                GetAvgValue(ref avgKK, ref avgKR, ref avgKS, tourgroup.TourId,
-                                    unit.BuildingCadastralNumber, unit.CadastralBlock, PropertyTypes.Pllacement,
-                                    CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                                flatKN.Add(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, upksz, calc_obj,
-                                    calc_obj_code);
+                                if (!flatKN.Get(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, out upksz,
+                                    out calc_obj, out calc_obj_code))
+                                {
+                                    GetAvgValue(ref avgKK, ref avgKR, ref avgKS, tourgroup.TourId,
+                                        unit.BuildingCadastralNumber, unit.CadastralBlock, PropertyTypes.Pllacement,
+                                        CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                    flatKN.Add(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, upksz, calc_obj,
+                                        calc_obj_code);
+                                }
                             }
+                            else
+                            {
+                                lock (res)
+                                {
+                                    if (unit.CadastralBlock.IsNullOrEmpty())
+                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                    if (unit.BuildingCadastralNumber.IsNullOrEmpty())
+                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового номера здания для помещения" });
+                                }
+                            }
+
+
+
+
 
                             decimal square = (unit.Square == null) ? 1 : unit.Square.Value;
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1830,12 +1900,22 @@ namespace ObjectModel.KO
                             string calc_obj = string.Empty;
                             KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
-                            {
-                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
-                            }
 
+                            if (!unit.CadastralBlock.IsNullOrEmpty())
+                            {
+                                if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
+                                {
+                                    GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                    avgKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
+                                }
+                            }
+                            else
+                            {
+                                lock (res)
+                                {
+                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                }
+                            }
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
                             //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
@@ -1877,10 +1957,20 @@ namespace ObjectModel.KO
                             string calc_obj = string.Empty;
                             KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
+                            if (!unit.CadastralBlock.IsNullOrEmpty())
                             {
-                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                                minKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
+                                if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
+                                {
+                                    GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                    minKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
+                                }
+                            }
+                            else
+                            {
+                                lock (res)
+                                {
+                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                }
                             }
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1920,10 +2010,20 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            avgKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            }
+                        }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
                         }
 
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1957,10 +2057,20 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            minKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            }
+                        }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
                         }
 
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1997,10 +2107,20 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            avgKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            }
+                        }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
                         }
 
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -2034,10 +2154,20 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            minKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            }
+                        }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
                         }
 
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -2077,11 +2207,26 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
                         }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
+                        }
+
+
+
+
+
 
                         upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -2117,11 +2262,22 @@ namespace ObjectModel.KO
                         string calc_obj = string.Empty;
                         KoParentCalcType calc_obj_code = KoParentCalcType.None;
 
-                        if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                        if (!unit.CadastralBlock.IsNullOrEmpty())
                         {
-                            GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
-                            avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
                         }
+                        else
+                        {
+                            lock (res)
+                            {
+                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                            }
+                        }
+
 
                         upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
                         decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -2345,18 +2501,34 @@ namespace ObjectModel.KO
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             List<ObjectModel.KO.OMGroupFactor> koeff = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
             int? factorReestrId = GetFactorReestrId(this);
+
             if (factorReestrId != null)
             {
-                foreach (ObjectModel.KO.OMUnit unit in units)
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (model != null)
                 {
-                    res.AddRange(CalculateKorrect(unit, factorReestrId.Value, koeff));
+                    if (model.ModelFactor.Count == 0)
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+                    foreach (OMModelFactor weight in model.ModelFactor)
+                    {
+
+                        if (weight.SignMarket)
+                            weight.FillMarkCatalogs(model);
+                    }
+
+
+                    foreach (ObjectModel.KO.OMUnit unit in units)
+                    {
+                        res.AddRange(CalculateKorrect(model, unit, factorReestrId.Value, koeff));
+                    }
                 }
             }
 
             return res;
         }
 
-        private List<CalcErrorItem> CalculateKorrect(ObjectModel.KO.OMUnit unit, int factorReestrId, List<ObjectModel.KO.OMGroupFactor> groupFactors)
+        private List<CalcErrorItem> CalculateKorrect(OMModel model, ObjectModel.KO.OMUnit unit, int factorReestrId, List<ObjectModel.KO.OMGroupFactor> groupFactors)
         {
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             if (unit.GroupId == null)
@@ -2379,7 +2551,7 @@ namespace ObjectModel.KO
                     unit.CadastralCost = 0;
                     unit.Save();
 
-                    UpdateCorrectFactor(etobj, unit, groupFactors, ref res);
+                    UpdateCorrectFactor(model, etobj, unit, groupFactors, ref res);
                     ok = true;
                 }
 
@@ -2413,21 +2585,11 @@ namespace ObjectModel.KO
             return res;
         }
 
-        public void UpdateCorrectFactor(ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
+        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
         {
             int? factorReestrId = GetFactorReestrId(this);
-            OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
             if (model != null && factorReestrId != null)
             {
-                if (model.ModelFactor.Count == 0)
-                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-                foreach (OMModelFactor weight in model.ModelFactor)
-                {
-
-                    if (weight.SignMarket)
-                        weight.FillMarkCatalogs(model);
-                }
 
                 List<CalcItem> FactorChildValues = new List<CalcItem>();
                 DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId.Value);
@@ -2450,129 +2612,159 @@ namespace ObjectModel.KO
                 }
 
 
-                foreach (OMModelFactor weight in model.ModelFactor)
+                foreach (ObjectModel.KO.OMGroupFactor koef in koeff)
                 {
-                    CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
-                    CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
-                    if (fv_et != null && fv_ch != null)
+                    long? id_correct = null;
+                    ObjectModel.KO.OMFactorSettings factor_correct = ObjectModel.KO.OMFactorSettings.Where(x => x.FactorId == koef.FactorId).SelectAll().ExecuteFirstOrDefault();
+                    if (factor_correct != null)
                     {
-                        double kk = 1;
-                        string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
-
-                        long? id_factor = weight.FactorId;
-                        long? id_correct = null;
-
-                        ObjectModel.KO.OMFactorSettings factor_correct = ObjectModel.KO.OMFactorSettings.Where(x => x.CorrectFactorId == weight.FactorId).SelectAll().ExecuteFirstOrDefault();
-                        if (factor_correct != null) id_correct = factor_correct.FactorId;
-
+                        id_correct = factor_correct.CorrectFactorId;
                         if (id_correct != null)
                         {
-
-                            if (weight.SignMarket)
+                            OMModelFactor weight = model.ModelFactor.Find(x => x.FactorId == id_correct.Value);
+                            if (weight != null)
                             {
-                                decimal zm_et = 1;
-                                decimal zm_ch = 0;
-                                bool m_et = false;
-                                bool m_ch = false;
-
-
-                                OMMarkCatalog mcEtalon = null;
-                                mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace('.', ','));
-                                if (mcEtalon == null)
-                                    mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace(',', '.'));
-                                if (mcEtalon != null)
+                                string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == weight.FactorId)?.Name;
+                                CalcItem fv_et = FactorEtalonValues.Find(x => x.FactorId == weight.FactorId);
+                                CalcItem fv_ch = FactorChildValues.Find(x => x.FactorId == weight.FactorId);
+                                if (fv_et == null)
                                 {
-                                    zm_et = mcEtalon.MetkaFactor.ParseToDecimal();
-                                    m_et = true;
-                                }
-                                if (!m_et)
-                                {
-                                    kk = 0;
                                     lock (errors)
                                     {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
+                                    }
+                                }
+                                if (fv_ch == null)
+                                {
+                                    lock (errors)
+                                    {
+                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
                                     }
                                 }
 
+                                if (fv_et != null && fv_ch != null)
+                                {
+                                    double kk = 1;
 
-                                OMMarkCatalog mcChild = null;
-                                mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace('.', ','));
-                                if (mcChild == null)
-                                    mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace(',', '.'));
-                                if (mcChild != null)
-                                {
-                                    zm_ch = mcChild.MetkaFactor.ParseToDecimal();
-                                    m_ch = true;
-                                }
-                                if (!m_ch)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
-                                    }
-                                }
 
-                                if (m_ch && m_et)
-                                {
-                                    kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_et));
-                                }
+                                    if (weight.SignMarket)
+                                    {
+                                        decimal zm_et = 1;
+                                        decimal zm_ch = 0;
+                                        bool m_et = false;
+                                        bool m_ch = false;
 
-                                if (id_correct != null)
-                                {
-                                    child.AddKOFactor(id_correct.Value, null, kk);
-                                }
-                            }
-                            else
-                            {
-                                if (fv_ch.Value == string.Empty)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
-                                    }
-                                }
-                                else
-                                if (fv_et.Value == string.Empty)
-                                {
-                                    kk = 0;
-                                    lock (errors)
-                                    {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
-                                    }
-                                }
-                                else
-                                {
-                                    string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-                                    bool dok_child = decimal.TryParse(fv_ch.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_ch);
-                                    if (!dok_child)
-                                    {
-                                        lock (errors)
+
+                                        OMMarkCatalog mcEtalon = null;
+                                        mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace('.', ','));
+                                        if (mcEtalon == null)
+                                            mcEtalon = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_et.Value.ToUpper().Replace(',', '.'));
+                                        if (mcEtalon != null)
                                         {
-                                            errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                            zm_et = mcEtalon.MetkaFactor.ParseToDecimal();
+                                            m_et = true;
                                         }
-                                    }
-
-                                    bool dok_etalon = decimal.TryParse(fv_et.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_et);
-                                    if (!dok_etalon)
-                                    {
-                                        lock (errors)
+                                        if (!m_et)
                                         {
-                                            errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
+                                            }
                                         }
-                                    }
 
-                                    if (dok_etalon && dok_child)
-                                    {
-                                        kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
+
+                                        OMMarkCatalog mcChild = null;
+                                        mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace('.', ','));
+                                        if (mcChild == null)
+                                            mcChild = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == fv_ch.Value.ToUpper().Replace(',', '.'));
+                                        if (mcChild != null)
+                                        {
+                                            zm_ch = mcChild.MetkaFactor.ParseToDecimal();
+                                            m_ch = true;
+                                        }
+                                        if (!m_ch)
+                                        {
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
+                                            }
+                                        }
+
+                                        if (m_ch && m_et)
+                                        {
+                                            kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(zm_et));
+                                        }
+
+                                        if (id_correct != null)
+                                        {
+                                            child.AddKOFactor(koef.FactorId.Value, null, kk);
+                                        }
                                     }
                                     else
                                     {
-                                        kk = 0;
+                                        if (fv_ch.Value == string.Empty)
+                                        {
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                            }
+                                        }
+                                        else
+                                        if (fv_et.Value == string.Empty)
+                                        {
+                                            kk = 0;
+                                            lock (errors)
+                                            {
+                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                            }
+                                        }
+                                        else
+                                        {
+                                            string dec_sep = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                            bool dok_child = decimal.TryParse(fv_ch.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_ch);
+                                            if (!dok_child)
+                                            {
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                                }
+                                            }
+
+                                            bool dok_etalon = decimal.TryParse(fv_et.Value.Replace(",", dec_sep).Replace(".", dec_sep), out decimal d_et);
+                                            if (!dok_etalon)
+                                            {
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
+                                                }
+                                            }
+
+                                            if (dok_etalon && dok_child)
+                                            {
+                                                kk = Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_ch)) / Math.Exp(Convert.ToDouble(weight.Weight) * Convert.ToDouble(d_et));
+                                                if (kk == 0)
+                                                {
+                                                    lock (errors)
+                                                    {
+                                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                kk = 0;
+                                                lock (errors)
+                                                {
+                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                }
+                                            }
+                                        }
+                                        child.AddKOFactor(koef.FactorId.Value, null, kk);
                                     }
                                 }
-                                child.AddKOFactor(id_correct.Value, null, kk);
                             }
                         }
                     }
