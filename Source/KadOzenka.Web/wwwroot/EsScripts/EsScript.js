@@ -560,7 +560,7 @@ $(document).ready(function () {
                 return;
             }
             if (!actualDate) {
-                Common.ShowError('Заполните дату актуальности ');
+                Common.ShowError('Заполните дату актуальности или установите корректную дату');
                 return;
             }
 
