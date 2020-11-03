@@ -7,7 +7,19 @@
 
 
 <div class="form-horizontal col-sm-12">
-    <div class="form-group"></div>
+    <div class="form-group" style="padding-top: 5px;">
+        <div class="col-sm-12" >
+            @(Html.Kendo().Button()
+                .Name("ImportSettingsBtn").Content("Импорт коэффициентов")
+                .IconClass("k-icon k-i-download")
+                .HtmlAttributes(new {type = "button"}))
+            @(Html.Kendo().Tooltip()
+                .For("#ImportSettingsBtn")
+                .Position(TooltipPosition.Bottom)
+                .Content("Импорт коэффициентов"))
+
+        </div>
+    </div>
     <div id="outliersSettingsGrid"></div>
 </div>
 
@@ -152,6 +164,16 @@
                 pageable: true,
                 sortable: true,
                 resizable: true
+            });
+
+            $('#ImportSettingsBtn').on('click', function () {
+                var importSettingsWindow = Common.UI.ShowWindow('Импорт настроек коэффициентов',
+                    '@Url.Action("OutliersCheckingSettingsImport", "MarketObjects")',
+                    'outliersCheckingSettingsImportWindow', 
+                    null, 1000, 600);
+                importSettingsWindow.bind("close", function (e) {
+                    $("#outliersSettingsGrid").data("kendoGrid").dataSource.read();
+                }); 
             });
         });
 </script>
