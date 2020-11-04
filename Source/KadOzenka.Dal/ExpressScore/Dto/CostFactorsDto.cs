@@ -20,6 +20,16 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		{
 		}
 
+		public ComplexCostFactor(ComplexCostFactor complexCostFactor)
+		{
+			Name = complexCostFactor.Name;
+			Coefficient = complexCostFactor.Coefficient;
+			AttributeId = complexCostFactor.AttributeId;
+			DictionaryId = complexCostFactor.DictionaryId;
+			ComplexCostFactorType = complexCostFactor.ComplexCostFactorType;
+			ShowInCalculatePage = complexCostFactor.ShowInCalculatePage;
+		}
+
 		public ComplexCostFactor(ComplexCostFactorSpecialization factorSpecialization)
 		{
 			ComplexCostFactorType = factorSpecialization;
@@ -34,14 +44,19 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public int? AttributeId { get; set; }
 		public int? DictionaryId { get; set; }
 		public ComplexCostFactorSpecialization ComplexCostFactorType { get; set; }
+
+		/// <summary>
+		/// Чекбокс указывающий что данный параемтр будет отображаться на странице расчетов
+		/// </summary>
+		public bool ShowInCalculatePage { get; set; }
+
+		/// <summary>
+		/// Значение по уболчанию на случай если выбран пункт показывать на старнице расчетов
+		/// </summary>
+		public string DefaultValue { get; set; }
 	}
 	public class CostFactorsDto
 	{
-		/// <summary>
-		/// ид аттрибута года постройки для поиска аналогов
-		/// </summary>
-		public decimal? YearBuildId { get; set; }
-
 		/// <summary>
 		/// Ид словаря индекс дата для обязательного параметра
 		/// </summary>
@@ -53,11 +68,6 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public decimal? LandShareDicId { get; set; }
 
 		/// <summary>
-		/// Ид словаря этажа расположения обязательный параметр
-		/// </summary>
-		public decimal? FloorDicId { get; set; }
-
-        /// <summary>
         /// Флаг для учета НДС
         /// </summary>
         public bool? IsVatIncluded { get; set; }

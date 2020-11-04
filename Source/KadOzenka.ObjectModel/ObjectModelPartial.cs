@@ -3301,55 +3301,6 @@ namespace ObjectModel.ES
 namespace ObjectModel.ES
 {
     /// <summary>
-    /// 601 Экспресс оценка. Год постройки
-    /// </summary>
-    public partial class OMYearConstruction
-    {
-
-        public OMYearConstruction()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMYearConstruction(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 602 Экспресс оценка. Площадь помещений
-    /// </summary>
-    public partial class OMSquare
-    {
-
-        public OMSquare()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSquare(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-
-namespace ObjectModel.ES
-{
-    /// <summary>
     /// 608 Связь экспресс оценки и объектов аналогов
     /// </summary>
     public partial class OMEsToMarketCoreObject
@@ -3445,30 +3396,6 @@ namespace ObjectModel.Es
 
         }
         public OMSettingsParams(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 612 Экспресс оценка. Значения объекта оценки
-    /// </summary>
-    public partial class OMTargetObjectValue
-    {
-
-        public OMTargetObjectValue()
-        {
-
-            UnitId = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMTargetObjectValue(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

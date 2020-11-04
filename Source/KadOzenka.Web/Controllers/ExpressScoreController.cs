@@ -7,6 +7,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Helpers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
@@ -23,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.Gbu;
@@ -126,27 +128,33 @@ namespace KadOzenka.Web.Controllers
             } });
 		}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
-        public ActionResult TargetObjectSubCard(string targetObjectStr)
-        {
-            var targetObject = JsonConvert.DeserializeObject<TargetObjectDto>(targetObjectStr);
+		public ActionResult GetCostFactorsForCalculate(string targetKn, int? targetMarketObjectId, MarketSegment segment)
+		{
+			return PartialView("~/Views/ExpressScore/Partials/PartialComplexCostFactorsForCalculate.cshtml", _service.GetCostFactorsForCalculate(targetKn, targetMarketObjectId, segment));
+		}
 
-            var model = TargetObjectModel.ToModel(targetObject);
+		//TODO Пока заказчик сказал не надо, если и дальше не потребуется то удалить весь связанный код
+   //     [HttpGet]
+   //     [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+   //     public ActionResult TargetObjectSubCard(string targetObjectStr)
+   //     {
+   //         var targetObject = JsonConvert.DeserializeObject<TargetObjectDto>(targetObjectStr);
+
+   //         var model = TargetObjectModel.ToModel(targetObject);
        
-            return PartialView("~/Views/ExpressScore/Partials/TargetObjectSubCard.cshtml", model);
-        }
+   //         return PartialView("~/Views/ExpressScore/Partials/TargetObjectSubCard.cshtml", model);
+   //     }
 
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
-        public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
-        {
-	        if (!ModelState.IsValid)
-		        return GenerateMessageNonValidModel();
+   //     [HttpPost]
+   //     [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
+   //     public JsonResult TargetObjectSubCard(TargetObjectModel targetObject)
+   //     {
+	  //      if (!ModelState.IsValid)
+		 //       return GenerateMessageNonValidModel();
 
-	        _service.SetTargetObjectAttribute(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
-			return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
-        }
+	  //      _service.SetTargetObjectAttribute(targetObject.UnitId, targetObject.Attributes.Select(x => x.ToDto()).ToList());
+			//return Json(new {success = true, message = "Значения атрибутов успешно сохранены"});
+   //     }
 
         [SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CALCULATE)]
 		public ActionResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
@@ -160,33 +168,21 @@ namespace KadOzenka.Web.Controllers
             if (unitsIds.Count == 0) return SendErrorMessage("Выбранный объект не входит в тур или его параметры оценки не заполнены");
 
             var costFactor = setting.CostFacrors.DeserializeFromXml<CostFactorsDto>();
-            if (costFactor.YearBuildId == null && costFactor.YearBuildId == 0) return SendErrorMessage("В настройках не задан атрибут для года постройки.");
 
             var targetObject = _service.GetTargetObject(setting, costFactor, unitsIds, param.Kn);
             if(targetObject == null) return SendErrorMessage("Не найдены данные для выбранного объекта.");
 
-            if (targetObject.Attributes.Any(x => string.IsNullOrWhiteSpace(x.Value)))
-	            return Json(new { updateTargetObjectUrl = Url.Action("TargetObjectSubCard", new { targetObjectStr = JsonConvert.SerializeObject(targetObject) }) });
-
-			var targetObjectBuildYear = Convert.ToInt32(targetObject.Attributes.FirstOrDefault(x => x.Id == costFactor.YearBuildId)?.Value);
-            var yearRange = OMYearConstruction.Where(x => x.YearFrom <= targetObjectBuildYear && targetObjectBuildYear <= x.YearTo).SelectAll().ExecuteFirstOrDefault();
-
-            var square = param.Square.GetValueOrDefault();
-            var squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll().ExecuteFirstOrDefault();
-
-            if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild) return SendErrorMessage("Не найден диапазон даты постройки или площади.");
-
-			var condition = 
-				_service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
+            var conditionAnalog = 
+				_service.GetSearchConditionForAnalogs(param.DeserializeSearchParameters,param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
 			var actualDateCondition = _service.GetActualDateCondition(param.ActualDate.Value);
 
-			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(condition.And(actualDateCondition)).SetJoins(_service.JoinPriceHistory()).Select(x => new { x.Id, x.Lat, x.Lng });
+			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(conditionAnalog.And(actualDateCondition))
+				.SetJoins(_service.JoinPriceHistory())
+				.Select(x => new { x.Id, x.Lat, x.Lng, x.CadastralNumber });
 
-			var objects = qSQuery
-				.Execute()
-				.Select(x => new CoordinatesDto { Id = x.Id, Lat = x.Lat.GetValueOrDefault(), Lng = x.Lng.GetValueOrDefault() })
-				.ToList();
+			var analogs = qSQuery.Execute().ToList();
 
+			List<CoordinatesDto> objects = _service.CheckAnalogsByKoFactors(analogs, setting, param.DeserializeSearchParameters);
 			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
 
 			var coordinatesInput = objects.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto { Id = y.Id, Lat = y.Lat, Lng = y.Lng });
@@ -214,14 +210,14 @@ namespace KadOzenka.Web.Controllers
 				Address = viewModel.Address,
 				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
 				DealType = viewModel.DealType,
-				Floor = viewModel.Floor.GetValueOrDefault(),
 				Kn = viewModel.Kn,
-				ScenarioType = viewModel.ScenarioType,
 				Square = viewModel.Square.GetValueOrDefault(),
+				ScenarioType = viewModel.ScenarioType,
 				Segment = viewModel.Segment,
 				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault(),
-                TargetMarketObjectId = viewModel.TargetMarketObjectId
-            };
+                TargetMarketObjectId = viewModel.TargetMarketObjectId,
+                ComplexCalculateParameters = viewModel.DeserializeComplexParameters
+			};
 
 			string resMsg = _service.CalculateExpressScore(inputParam, out ResultCalculateDto resultCalculate);
 
@@ -277,12 +273,13 @@ namespace KadOzenka.Web.Controllers
 				Kn = obj.KadastralNumber,
 				Analogs = _service.GetAnalogsByIds(analogIds),
 				DealType = obj.DealType_Code == DealType.RentDeal ? DealTypeShort.Rent : DealTypeShort.Sale,
-				Floor = (int) obj.Floor,
 				ScenarioType = obj.ScenarioType_Code,
-				Square = obj.Square,
 				Segment = obj.SegmentType_Code,
 				TargetObjectId = (int) obj.Objectid,
-                TargetMarketObjectId = obj.TargetMarketObjectId
+                TargetMarketObjectId = obj.TargetMarketObjectId,
+				Square = obj.Square,
+				ComplexCalculateParameters = obj.CostCalculateFactors != null
+					? obj.CostCalculateFactors.DeserializeFromXml<List<SearchAttribute>>() : new List<SearchAttribute>()
 			};
 
 			string resMsg = _service.RecalculateExpressScore(inputParam, analogIds, expressScoreId, out decimal cost, out decimal squareCost, out long reportId);
@@ -567,6 +564,34 @@ namespace KadOzenka.Web.Controllers
 				x.Market_Code = resultObject.Market_Code;
 				x.PropertyTypesCIPJS_Code = resultObject.PropertyTypesCIPJS_Code;
 			});
+		}
+
+		public JsonResult GetEsDictionary(int dictionaryId)
+		{
+			bool? useInterval = OMEsReference.Where(x => x.Id == dictionaryId).Select(x => x.UseInterval)
+				.ExecuteFirstOrDefault()?.UseInterval;
+			var res = OMEsReferenceItem.Where(x => x.ReferenceId == dictionaryId).SelectAll().Execute().Select(x => new
+			{
+				Text = x.CommonValue,
+				Value = x.CommonValue,
+				item = new
+				{
+					value = x.Value,
+					valueFrom = x.ValueFrom,
+					valueTo = x.ValueTo,
+					useInterval = useInterval.GetValueOrDefault()
+				}
+			}).Where(x => x.Value != null);
+
+			return Json(res.DistinctBy(x => x.Text));
+
+		}
+
+		public JsonResult GetScenarioCalculate()
+		{
+			List<SelectListItem> res = new List<SelectListItem>();
+			res.AddRange(ComboBoxHelper.GetSelectList(typeof(ScenarioType)));
+			return Json(res);
 		}
 
 		#endregion

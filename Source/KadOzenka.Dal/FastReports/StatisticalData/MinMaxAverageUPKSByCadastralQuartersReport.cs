@@ -6,16 +6,20 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class MinMaxAverageUPKSByCadastralQuartersReport : StatisticalDataReport
 	{
 		private readonly MinMaxAverageUPKSByCadastralQuartersService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public MinMaxAverageUPKSByCadastralQuartersReport()
 		{
 			_service = new MinMaxAverageUPKSByCadastralQuartersService(new StatisticalDataService(), new GbuCodRegisterService());
+			_logger = Log.ForContext<MinMaxAverageUPKSByCadastralQuartersReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -23,7 +27,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			return nameof(MinMaxAverageUPKSByCadastralQuartersReport);
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -42,6 +46,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 			var data = _service.GetMinMaxAverageUPKS(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.CadastralRegionNumber, unitDto.CadastralQuater, unitDto.ObjectsCount,
@@ -54,6 +61,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

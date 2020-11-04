@@ -6,16 +6,20 @@ using System.IO;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubgroups
 {
 	public class NumberOfObjectsByZoneAndSubgroupsZuReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByZoneAndSubgroupsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public NumberOfObjectsByZoneAndSubgroupsZuReport()
 		{
 			_service = new NumberOfObjectsByZoneAndSubgroupsService(StatisticalDataService, GbuObjectService);
+			_logger = Log.ForContext<NumberOfObjectsByZoneAndSubgroupsZuReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -23,7 +27,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			return "NumberOfObjectsByZoneAndSubgroupsZuOksReport";
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var firstTourId = GetQueryParam<long?>("TourId", query);
 			if (!firstTourId.HasValue)
@@ -67,11 +71,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			dataTable.Columns.Add("MaxUpksVarianceBetweenToursWithoutGroupChanging");
 			dataTable.Columns.Add("AverageUpksVarianceBetweenToursWithoutGroupChanging");
 
+			var reportType = GetReportDataType(query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			var data = _service.GetNumberOfObjectsByZoneAndSubgroupsData(firstTourId.Value, 
-				secondTourId.Value, GetReportDataType(query), false);
+				secondTourId.Value, reportType, false);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
-
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var dto in data)
 			{
 				dataTable.Rows.Add(dto.Zone,
@@ -129,6 +136,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

@@ -11766,6 +11766,20 @@ namespace ObjectModel.Directory.Common
         [EnumCode("7")]
         [ShortTitle("Перенос атрибутов (с созданием)")]
         TransferAttributesWithCreate = 7,
+		/// <summary>
+		/// Наследование (8)
+		/// </summary>
+		[Description("Наследование")]
+        [EnumCode("8")]
+        [ShortTitle("Наследование")]
+        Inheritance = 8,
+		/// <summary>
+		/// Выгрузка факторов единиц оценки по заданию на оценку (9)
+		/// </summary>
+		[Description("Выгрузка факторов единиц оценки по заданию на оценку")]
+        [EnumCode("9")]
+        [ShortTitle("Выгрузка факторов единиц оценки по заданию на оценку")]
+        ExportFactorsByTask = 9,
     }
 }
 

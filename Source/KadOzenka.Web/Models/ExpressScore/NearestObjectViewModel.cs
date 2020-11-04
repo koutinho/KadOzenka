@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design.Serialization;
+using DevExpress.CodeParser;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.ExpressScore.Dto;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
+using RestSharp.Deserializers;
 
 namespace CIPJS.Models.ExpressScore
 {
-	public class NearestObjectViewModel: IValidatableObject
-	{
-		/// <summary>
-		/// Площадь
-		/// </summary>
-		public decimal? Square { get; set; }
 
+	public class NearestObjectViewModel
+	{
 		/// <summary>
 		/// Сегмент рынка
 		/// </summary>
@@ -74,25 +75,18 @@ namespace CIPJS.Models.ExpressScore
 		/// <summary>
 		/// Дата актуальности
 		/// </summary>
-		[Required(ErrorMessage = "Не указана дата актуальности")]
+		[Required(ErrorMessage = "Не указана дата актуальности или указана не корректно")]
 		public DateTime? ActualDate { get; set; }
 
 		/// <summary>
-		/// Учитывать или нет год постройки для поиска объектов
+		/// Сериализованный список объектов SearchParameter для поиска
 		/// </summary>
-		public bool UseYearBuild { get; set; }
+		public string SearchParameters { get; set; }
 
 		/// <summary>
-		/// Учитывать или нет площадь для поиска объектов
+		/// Десерилизованный список параметров для поиска
 		/// </summary>
-		public bool UseSquare { get; set; }
+		public List<SearchAttribute> DeserializeSearchParameters => JsonConvert.DeserializeObject<List<SearchAttribute>>(SearchParameters ?? string.Empty);
 
-		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-		{
-			if (UseSquare && (Square == null || Square == 0))
-			{
-				yield return new ValidationResult("Заполните площадь");
-			}
-		}
 	}
 }
