@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var taskIds = GetTaskIdList(query).ToList();
 
-            var operations = GetOperations<ReportItem>(taskIds);
+            var operations = GetOperations<ReportItem>(taskIds, Logger);
             Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
 			Logger.Debug("Начато формирование таблиц");
