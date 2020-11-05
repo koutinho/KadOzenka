@@ -149,6 +149,13 @@
                     e.model.GroupId = '@ViewBag.GroupId';
                     e.model.FactorId = '@ViewBag.FactorId';
                 }
+            },
+            save: function (e) {
+                //из-за неправильного разделителя значение в контроллер приходит пустое
+                //была попытка установить culture для kendoNumericTextBox - не сработало
+                var initialValue = e.model.MetkaFactor.toString();
+                var replacedValue = initialValue.replace(".", ",");
+                e.model.MetkaFactor = replacedValue;
             }
         });
 
