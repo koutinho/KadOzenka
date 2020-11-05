@@ -201,9 +201,9 @@ namespace KadOzenka.Dal.Groups
             return OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Id).Select(x => x.GroupName).Select(x => x.Number).Execute().ToList();
         }
 
-        public List<GroupNumberDto> GetSortedGroupsWithNumbersByTasks(List<long> taskIds)
+        public List<GroupNumberInfoDto> GetSortedGroupsWithNumbersByTasks(List<long> taskIds)
         {
-	        var result = new List<GroupNumberDto>();
+	        var result = new List<GroupNumberInfoDto>();
             if (taskIds.Count == 0)
 		        return result;
 
@@ -217,23 +217,43 @@ namespace KadOzenka.Dal.Groups
                 .Select(x => x.GroupName)
 		        .Select(x => x.Number).Execute().ToList();
 
-	        foreach (var omGroup in groups)
-	        {
-		        var dto = new GroupNumberDto
-		        {
-			        Id = omGroup.Id,
-			        CombinedName = $"{omGroup.Number}. {omGroup.GroupName}",
-                    Number = ParseGroupNumber(omGroup.ParentId, omGroup.Number),
-                };
-		        if (GetGroupType(omGroup.ParentId) == GroupType.SubGroup)
-		        {
-			        dto.ParentNumber = GetParentGroupNumber(omGroup.Number);
-		        }
+            return groups.Select(x => GroupNumberInfoDto.FromOMGroup(x, this))
+		        .OrderBy(x => x.ParentNumber)
+		        .ThenBy(x => x.Number)
+		        .ToList();
+        }
 
-                result.Add(dto);
-	        }
+        public List<GroupNumberInfoDto> GetOtherGroupsFromTreeLevelForTour(long groupId)
+        {
+            if(groupId == (int)KoGroupAlgoritm.MainOKS || groupId == (int)KoGroupAlgoritm.MainParcel)
+                return new List<GroupNumberInfoDto>();
 
-	        return result.OrderBy(x => x.ParentNumber).ThenBy(x => x.Number).ToList();
+            var group = OMGroup.Where(x => x.Id == groupId)
+	            .Select(x => x.ParentId)
+	            .Select(x => x.GroupAlgoritm_Code)
+                .ExecuteFirstOrDefault();
+            var groupType = GetGroupType(group.ParentId);
+            KoGroupAlgoritm algoritm;
+            if (groupType == GroupType.Group)
+            {
+	            algoritm = group.GroupAlgoritm_Code;
+            }
+            else
+            {
+	            algoritm = OMGroup.Where(x => x.Id == group.ParentId)
+	                .Select(x => x.GroupAlgoritm_Code)
+	                .ExecuteFirstOrDefault().GroupAlgoritm_Code;
+            }
+
+            var allGroupsInfo = GetGroupsInfoForTour(groupId);
+            var finalGroups = groupType == GroupType.Group
+	            ? allGroupsInfo.Where(x => x.ParentId == -1 && x.GroupAlgoritm == algoritm && x.Id != groupId).ToList()
+	            : allGroupsInfo.Where(x => x.ParentId != -1 && x.ParentGroupAlgoritm == algoritm && x.Id != groupId).ToList();
+
+            return finalGroups.Select(x => GroupNumberInfoDto.FromGroupInfoDto(x, this))
+	            .OrderBy(x => x.ParentNumber)
+	            .ThenBy(x => x.Number)
+	            .ToList();
         }
 
         public int AddGroup(GroupDto groupDto)
@@ -470,7 +490,7 @@ namespace KadOzenka.Dal.Groups
             return groupId;
 		}
 
-        private GroupType GetGroupType(long? parentGroupId)
+        public GroupType GetGroupType(long? parentGroupId)
         {
             return parentGroupId != null && parentGroupId != -1 && 
                    parentGroupId != (long) KoGroupAlgoritm.MainOKS &&
@@ -494,7 +514,7 @@ namespace KadOzenka.Dal.Groups
             });
         }
 
-        private int? ParseGroupNumber(long? parentId, string combinedNumber)
+        public int? ParseGroupNumber(long? parentId, string combinedNumber)
         {
             if (string.IsNullOrWhiteSpace(combinedNumber))
                 return null;
@@ -514,7 +534,7 @@ namespace KadOzenka.Dal.Groups
             return subGroupNumberStr?.ParseToInt();
         }
 
-        private int? GetParentGroupNumber(string fullNumber)
+        public int? GetParentGroupNumber(string fullNumber)
         {
 	        var subGroupNumberStr = fullNumber?.Split('.')?.ElementAtOrDefault(0);
 	        return subGroupNumberStr?.ParseToInt();
@@ -578,6 +598,70 @@ namespace KadOzenka.Dal.Groups
 		        .Distinct()
 		        .ToList();
 	        return groupIds;
+        }
+
+        private List<GroupAlgorithmInfoDto> GetGroupsInfoForTour(long groupId)
+        {
+	        var tg = OMTourGroup.Where(x => x.GroupId == groupId)
+		        .Select(x => x.TourId)
+		        .ExecuteFirstOrDefault();
+	        if (tg == null)
+		        throw new Exception("Не найден тур для выбранной группы");
+
+            var query = new QSQuery
+	        {
+		        MainRegisterID = OMGroup.GetRegisterId(),
+		        Condition = new QSConditionGroup
+		        {
+			        Type = QSConditionGroupType.And,
+			        Conditions = new List<QSCondition>
+			        {
+				        new QSConditionSimple(OMTourGroup.GetColumn(x => x.TourId), QSConditionType.Equal, tg.TourId)
+			        }
+                },
+		        Joins = new List<QSJoin>
+		        {
+			        new QSJoin
+			        {
+				        RegisterId = OMTourGroup.GetRegisterId(),
+				        JoinCondition = new QSConditionSimple
+				        {
+					        ConditionType = QSConditionType.Equal,
+					        LeftOperand = OMGroup.GetColumn(x => x.Id),
+					        RightOperand = OMTourGroup.GetColumn(x => x.GroupId)
+				        },
+				        JoinType = QSJoinType.Inner
+			        }
+		        }
+	        };
+
+	        query.AddColumn(OMGroup.GetColumn(x => x.Number, nameof(GroupAlgorithmInfoDto.Number)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupAlgorithmInfoDto.Name)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupAlgoritm_Code, nameof(GroupAlgorithmInfoDto.GroupAlgoritm)));
+            query.AddColumn(OMGroup.GetColumn(x => x.ParentId, nameof(GroupAlgorithmInfoDto.ParentId)));
+
+            var subQuery = new QSQuery(OMGroup.GetRegisterId())
+            {
+	            Columns = new List<QSColumn>
+	            {
+		            OMGroup.GetColumn(x => x.GroupAlgoritm_Code)
+	            },
+	            Condition = new QSConditionGroup(QSConditionGroupType.And)
+	            {
+		            Conditions = new List<QSCondition>
+		            {
+			            new QSConditionSimple(
+				            OMGroup.GetColumn(x => x.Id),
+				            QSConditionType.Equal,
+				            OMGroup.GetColumn(x => x.ParentId)){
+				            RightOperandLevel = 1
+			            }
+		            }
+	            }
+            };
+            query.AddColumn(subQuery, nameof(GroupAlgorithmInfoDto.ParentGroupAlgoritm));
+
+            return query.ExecuteQuery<GroupAlgorithmInfoDto>();
         }
 
         #endregion

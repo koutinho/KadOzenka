@@ -9,7 +9,10 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
+using Serilog;
+using Serilog.Context;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -21,24 +24,34 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private readonly string _usageTypeCodeSource = "UsageTypeCodeSource";
         private readonly string _subGroupUsageTypeCode = "SubGroupUsageTypeCode";
         private readonly string _functionalSubGroupName = "FunctionalSubGroupName";
-       
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
+        public BuildingsReport()
+        {
+	        _logger = Log.ForContext<BuildingsReport>();
+        }
+
 
         protected override string TemplateName(NameValueCollection query)
         {
             return "ResultsByCadastralDistrictForBuildingsReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
-            var taskIds = GetTaskIdList(query)?.ToList();
+	        var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
             var inputParameters = GetInputParameters(query);
 
             var operations = GetOperations(tourId, taskIds, inputParameters);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

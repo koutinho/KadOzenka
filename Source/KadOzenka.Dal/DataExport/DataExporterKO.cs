@@ -5031,7 +5031,7 @@ namespace KadOzenka.Dal.DataExport
 		    {
 			    var export = new OMExportByTemplates
 			    {
-				    UserId = SRDSession.GetCurrentUserId().Value,
+				    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
 				    FileResultTitle = nameReport,

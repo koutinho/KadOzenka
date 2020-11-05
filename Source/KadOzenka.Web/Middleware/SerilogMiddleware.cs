@@ -64,7 +64,7 @@ namespace CIPJS
                 .ToDictionary(h => h.Key, h => h.Value.ToString());
 
             var result = Log
-                .ForContext("Username", Core.SRD.SRDSession.GetCurrentUsername())
+                .ForContext("UserName", Core.SRD.SRDSession.GetCurrentUsername())
                 .ForContext("UserIP", request.HttpContext.Connection.RemoteIpAddress)
                 .ForContext("Body", request.Body)
                 .ForContext("Host", request.Host);

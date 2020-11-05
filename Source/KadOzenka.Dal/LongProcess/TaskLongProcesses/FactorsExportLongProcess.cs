@@ -145,7 +145,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                     Addressers = new MessageAddressersDto {UserIds = new long[] {userId.Value}},
                     Subject = $"Выгрузка факторов по задаче с идентификатором {taskId}",
                     Message =
-                        $@"Выгрузка завершена. <a href=""/Task/DownloadFactorExportResult?dt={dt}&id={taskId}"">Скачать результаты</a>",
+                        $@"Выгрузка завершена. <a href=""/Task/DownloadFactorExportResult?taskId={taskId}&dt={dt}"">Скачать результаты</a>",
                     IsUrgent = true,
                     IsEmail = false,
                     ExpireDate = DateTime.Now.AddHours(2)

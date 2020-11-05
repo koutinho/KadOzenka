@@ -3,24 +3,29 @@ using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodingResults
 {
 	public class QualityPricingFactorsEncodingResultsGroupingReport : StatisticalDataReport
 	{
 		private readonly QualityPricingFactorsEncodingResultsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public QualityPricingFactorsEncodingResultsGroupingReport()
 		{
 			_service = new QualityPricingFactorsEncodingResultsService(StatisticalDataService, GbuCodRegisterService);
+			_logger = Log.ForContext<QualityPricingFactorsEncodingResultsGroupingReport>();
 		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
 			return nameof(QualityPricingFactorsEncodingResultsGroupingReport);
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var tourId = GetTourId(query);
@@ -37,9 +42,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("GroupNumber");
 			dataTable.Columns.Add("ModelCalculationMethod");
 
-
 			var data = _service.GetGroupingData(taskIdList, tourId);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -55,6 +61,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

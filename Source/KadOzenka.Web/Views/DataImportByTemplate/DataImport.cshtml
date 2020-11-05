@@ -682,7 +682,7 @@
 					query === "" || text.indexOf(query) >= 0;
 				var anyVisibleChildren = filter(item.children, query);
 				hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
-				item.hidden = !itemVisible && !anyVisibleChildren;
+                item.hidden = (!item.hasChildren && !itemVisible) || (item.hasChildren && !anyVisibleChildren);
 			}
 
 			if (data) {

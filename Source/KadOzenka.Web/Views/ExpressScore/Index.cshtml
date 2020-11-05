@@ -1,9 +1,6 @@
-﻿@using CIPJS.Models.ExpressScore
-@using KadOzenka.Dal.Enum
+﻿@using KadOzenka.Dal.Enum
 @using ObjectModel.Directory
-@using ObjectModel.Directory.ES
 @using System.Configuration;
-@using System.Linq.Expressions
 
 
 <link rel="stylesheet" href="~/css/jquery.fias.min.css" />
@@ -131,13 +128,19 @@
 					<div class="separator col-sm-12 no-padding"></div>
 				</div>
 				<div class="form-group no-margin">
-					<div class="col-sm-12 col-md-3 no-padding">
+					<div class="col-sm-12 col-md-2 no-padding">
 						@Html.CustomLabelFor("Сегмент", true)
 					</div>
-					<div class="col-sm-12 col-md-9 no-padding">
+					<div class="col-sm-12 col-md-5 no-padding">
 						@(Html.Kendo().DropDownList().Name("segment")
 							.BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment), new long[] {744, 745, 750, 746, 747, 748, 749, 751, 752, 753, 754, 795})).NoDataTemplate("Ничего не найдено!")
 							.Events(e => e.Cascade("handlerChangeSegment")).Enable(false))
+					</div>
+					<div class="col-sm-12 col-md-2">
+						@Html.CustomLabelFor("Площадь")
+					</div>
+					<div class="col-sm-12 col-md-3 no-padding">
+						@Html.Kendo().NumericTextBox().Spinners(false).Name("square").HtmlAttributes(new {style = "width: 100%"})
 					</div>
 				</div>
 				<!--Вставляем оценочные факторы-->

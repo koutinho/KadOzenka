@@ -12,6 +12,10 @@ namespace KadOzenka.Web.Models.ExpressScore
 	public class CalculateCostTargetObjectViewModel
 	{
 		/// <summary>
+		/// Площадь для расчета полной стоимости объекта оценки
+		/// </summary>
+		public decimal? Square { get; set; }
+		/// <summary>
 		/// Ид найденных аналогов
 		/// </summary>
 		[Required(ErrorMessage = "Не найдены объекты-аналоги")]
