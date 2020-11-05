@@ -385,13 +385,13 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult EditManualModelFactor(long? id, long generalModelId)
         {
-            FactorModel factorDto;
+            ManualFactorModel manualFactorDto;
 
             if (id.HasValue)
             {
                 var factor = ModelFactorsService.GetFactorById(id);
 
-                factorDto = new FactorModel
+                manualFactorDto = new ManualFactorModel
                 {
                     Id = factor.Id,
                     GeneralModelId = generalModelId,
@@ -407,7 +407,7 @@ namespace KadOzenka.Web.Controllers
             }
             else
             {
-                factorDto = new FactorModel
+                manualFactorDto = new ManualFactorModel
                 {
                     Id = -1,
                     GeneralModelId = generalModelId,
@@ -416,19 +416,19 @@ namespace KadOzenka.Web.Controllers
                 };
             }
 
-            return View(factorDto);
+            return View(manualFactorDto);
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult EditManualModelFactor(FactorModel factorModel)
+        public ActionResult EditManualModelFactor(ManualFactorModel manualFactorModel)
         {
-            var dto = factorModel.ToDto();
+            var dto = manualFactorModel.ToDto();
             
-            var model = ModelingService.GetModelEntityById(factorModel.GeneralModelId);
+            var model = ModelingService.GetModelEntityById(manualFactorModel.GeneralModelId);
             dto.Type = model.AlgoritmType_Code;
 
-            if (factorModel.Id == -1)
+            if (manualFactorModel.Id == -1)
             {
                 ModelFactorsService.AddFactor(dto);
             }

@@ -3,7 +3,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-	public class FactorModel
+	public class ManualFactorModel
 	{
 		public long Id { get; set; }
 		public long? GeneralModelId { get; set; }
