@@ -17,6 +17,9 @@ function disableSegmentControl() {
     $('#segment').data('kendoDropDownList') && $('#segment').data('kendoDropDownList').enable(false);
 }
 
+/**
+ * Загрузка оценочных параметров на страницу расчетов
+ */
 function loadCostFactorsForSegment() {
     if (!$('#Kn').val() && !$('#targetMarketObjectId').val()) {
         return;
@@ -53,22 +56,29 @@ function setCurrentAddress(address) {
     currentAddress = null;
 }
 
+/**
+ * @return текущий формализованный адрес
+ */
+function getCurrentAddress() {
+    return currentAddress;
+}
+
 function removeMyMarker() {
-    if (!!map) {
+    if (map) {
         map.geoObjects.remove(myMarker);
         myMarker = null;
     }
 }
 
 function removeMyPlacemark() {
-    if (!!map) {
+    if (map) {
         map.geoObjects.remove(myPlacemark);
         myPlacemark = null;
     }
 }
 
 function removeFindPoints() {
-    findPoints.forEach(function (item) { if (!!map) map.geoObjects.remove(item); });
+    findPoints.forEach(function (item) { if (map) map.geoObjects.remove(item); });
     findPoints = [];
     findPointsIds = [];
 }
@@ -148,8 +158,10 @@ var getAddressByKadNumber = (kadNumber) => new Promise(function (resolve, reject
 $addresses.on('focus', function () { $addresses.on('kladr_close_before', closeBefore); });
 $addresses.on('blur', function () { $addresses.off('kladr_close_before', closeBefore); });
 
+var addressForCompare = null;
 function closeBefore() {
-    if (!!$('#address').val()) {
+    if ($('#address').val() && $('#address').val() !== addressForCompare) {
+        addressForCompare = $('#address').val();
         var myGeocoder = ymaps.geocode($('#address').val());
         setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
             removeFindPoints();
@@ -202,8 +214,8 @@ function setMarkerByGeoCoder(geocoder) {
     if (typeof geocoder === 'string') geocoder = ymaps.geocode(geocoder);
     return new Promise(function (resolve) {
         geocoder.then(function (res) {
-            if (!!myMarker) removeMyMarker();
-            if (!!myPlacemark) removeMyPlacemark();
+            if (myMarker) removeMyMarker();
+            if (myPlacemark) removeMyPlacemark();
             var firstGeoObject = res.geoObjects.get(0), bounds = firstGeoObject.properties.get('boundedBy');
             myMarker = firstGeoObject;
             map.geoObjects.add(firstGeoObject);
@@ -213,6 +225,289 @@ function setMarkerByGeoCoder(geocoder) {
     });
 }
 
+
+
+/**
+ * Получаем значения комплексных факторов для поиска
+ * @return {string} сереализованный Json
+ */
+function getComplexSearchParameters() {
+    var res = [];
+    $.each($('#costFactors').find('[id^="chFactor"]:checked'), function() {
+        var $wrapperFactor = $(this).closest('.wrapper-factor');
+        var $control = $wrapperFactor.find('[id*="DefaultValue"]');
+        if ($control) {
+            var attributeId = $control.attr('DataAttributeId');
+            var referenceId = $control.attr('DataReferenceId');
+            var value = $control.data('kendoDropDownList') && $control.data('kendoDropDownList').value();
+            res.push({
+                IdAttribute: attributeId,
+                Value: value,
+                referenceId
+            });
+        }
+    });
+    return JSON.stringify(res);
+}
+
+/**
+ * Получаем значения комплексных факторов для расчета
+ *@return {string} сереализованный Json
+ */
+function getComplexCalculateParameters() {
+    var res = [];
+    $.each($('#costFactors').find('[id*="DefaultValue"]'), function () {
+        var attributeId = $(this).attr('DataAttributeId');
+        var referenceId = $(this).attr('DataReferenceId');
+        var value = $(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').value();
+        res.push({
+            IdAttribute: attributeId,
+            Value: value,
+            referenceId
+        });
+    });
+    return JSON.stringify(res);
+}
+
+// инициализация карты и евенты
+function initMap(src) {
+    var script = document.createElement('script');
+    script.src = AppData.useSandBoxKey
+        ? `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.sandboxKey}&lang=${
+        AppData.lang}`
+        : src;
+    //`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+    script.type = "text/javascript";
+    document.head.appendChild(script);
+    script.onload = function () {
+        ymaps.ready(function () {
+            map = new ymaps.Map('map',
+                {
+                    center: MapSettings.center,
+                    zoom: MapSettings.zoom,
+                    controls: ['fullscreenControl', 'zoomControl']
+                });
+            map.controls.get("zoomControl").options.set({ position: { top: 10, left: 10 } });
+            map.events.add('click',
+                function (e) {
+                    // Получение координат щелчка
+                    var coords = e.get('coords');
+                    removeFindPoints();
+                    clearFields();
+                    if (myMarker) removeMyMarker();
+                    if (myPlacemark) myPlacemark.geometry.setCoordinates(coords);
+                    else {
+                        myPlacemark = createPlacemark(coords);
+                        map.geoObjects.add(myPlacemark);
+                        myPlacemark.events.add('dragend',
+                            function () { getAddress(myPlacemark.geometry.getCoordinates()); });
+                    }
+                    getAddress(coords);
+                });
+        });
+    }
+};
+
+function clearFields() {
+    $('#address').val('');
+    $('#Kn').val('');
+}
+
+function getAddress(coords) {
+    myPlacemark.properties.set('iconCaption', 'поиск...');
+    ymaps.geocode(coords).then(function (res) {
+        var firstGeoObject = res.geoObjects.get(0);
+        if (firstGeoObject.getAdministrativeAreas().length === 0 ||
+            firstGeoObject.getAdministrativeAreas()[0] !== "Москва") {
+            removeMyPlacemark();
+            Common.ShowError("Объект за пределами г.Москва");
+            return;
+        } else {
+            $('.k-notification-error').each(function () {
+                $(this).hide();
+            });
+        }
+        if (firstGeoObject.getPremiseNumber()) {
+            $('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
+            setKadNumber(firstGeoObject.getAddressLine());
+            setCurrentAddress(firstGeoObject.getAddressLine());
+        }
+        myPlacemark.properties.set({
+            // Формируем строку с данными об объекте.
+            iconCaption: [
+                firstGeoObject.getLocalities().length
+                    ? firstGeoObject.getLocalities()
+                    : firstGeoObject.getAdministrativeAreas(),
+                firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+            ].filter(Boolean).join(', '),
+            balloonContent: firstGeoObject.getAddressLine()
+        });
+    });
+}
+
+function createPlacemark(coords) {
+    return new ymaps.Placemark(coords,
+        { iconCaption: 'поиск...' },
+        { preset: 'islands#violetDotIconWithCaption', draggable: true });
+}
+
+//Пересчет стоимости
+function updateCost(cost, squareCost) {
+    if (cost && squareCost) {
+        $('#cost').text(cost.toLocaleString());
+        $('#squareCost').text(squareCost.toLocaleString());
+    }
+}
+
+function updateReportId(reportId = null) { if (reportId) $('#report').data('report-id', reportId); }
+
+
+
+/**
+ * Выполнение расчетов
+ * @param {number} scenarioType тип сценария расчета
+ */
+function executeCalculate(scenarioType = null) {
+    if (scenarioType === null || scenarioType === 0) {
+        Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
+        return;
+    }
+    var complexCalculateParameters = getComplexCalculateParameters();
+    var data = {
+        selectedPoints: findPointsIds,
+        targetObjectId,
+        scenarioType,
+        segment: $('#segment').val(),
+        address: $('#address').val(),
+        kn: $('#Kn').val(),
+        dealType: $("input[name='DealTypeShort']:checked").val(),
+        targetMarketObjectId: $('#targetMarketObjectId').val(),
+        complexCalculateParameters,
+        square: $("#square").val()
+    }
+    var topBody = window.top.document.body;
+    kendo.ui.progress($(topBody), true);
+    var url = "/ExpressScore/CalculateCostTargetObject";
+    $.post(url, data).done(function (data) {
+        if (data.Errors) {
+            var errors = getErrors(data.Errors);
+            Common.ShowError(errors);
+            return;
+        }
+        $('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
+        $('.wrapper-success-dialog').html(data);
+    })
+        .fail(function (response) {
+            Common.ShowError(response.responseText);
+        })
+        .always(function () { kendo.ui.progress($(topBody), false); });
+    return;
+}
+
+function showDialog() { $('#dialog').data('kendoDialog') && $('#dialog').data('kendoDialog').open(); }
+
+function initDialog() {
+    $('#dialog').kendoDialog({
+        width: "450px",
+        title: "Выберите сценарий расчета",
+        closable: false,
+        modal: true,
+        content: '<div class="wrapper-scenario">' + '<div id="scenario"></div>' + '</div>',
+        visible: false,
+        buttonLayout: "normal",
+        actions: [
+            { text: 'Отмена' },
+            {
+                text: 'Выбрать',
+                primary: true,
+                action: function (e) {
+                    if (e.sender.element.find('#scenario')) {
+                        var value = e.sender.element.find('#scenario').data('kendoDropDownList') &&
+                            e.sender.element.find('#scenario').data('kendoDropDownList').value() ||
+                            null;
+                        executeCalculate(value);
+                    }
+                    return true;
+                }
+            }
+        ]
+    });
+
+    $('#scenario').kendoDropDownList({
+        dataTextField: "Text",
+        dataValueField: "Value",
+        value: 1,
+        dataSource: {
+            type: "json",
+            transport: {
+                read: "/ExpressScore/GetScenarioCalculate"
+            }
+        }
+    });
+
+    $('#successDialog').kendoDialog({
+        width: 1300,
+        height: 600,
+        title: "Расчет успешно выполнен",
+        closable: false,
+        modal: true,
+        content: '<div class="wrapper-success-dialog"></div>',
+        visible: false,
+        buttonLayout: "normal",
+        actions: [{ text: 'Ок' }]
+    });
+}
+
+function excludeFromCalculation() {
+    checkMiniCard(data);
+    var initElement = $(this);
+    var buttonId = initElement[0].element[0].id;
+    var objId = parseInt(buttonId.split('_')[1]);
+    findPointsIds.remove(objId);
+    findPoints.forEach(function (item) {
+        if (map) {
+            if (item.properties._data.pointId === objId) map.geoObjects.remove(item);
+        }
+    });
+    if (slider) {
+        slider.value(findPointsIds.length);
+        $(slider.wrapper).find('.k-draghandle').prop('title', findPointsIds.length);
+    }
+    Common.ShowMessage("Объект исключен из расчета");
+}
+
+function slide(rightSlide, data) {
+    console.log("slided");
+    if (rightSlide) {
+        if (data.currentSlide >= data.miniCardsContent.length - 1) data.currentSlide = -1;
+        $(`#centralBlock_${data.id}`).html(data.miniCardsContent[++data.currentSlide]);
+    } else {
+        if (data.currentSlide <= 0) data.currentSlide = data.miniCardsContent.length;
+        $(`#centralBlock_${data.id}`).html(data.miniCardsContent[--data.currentSlide]);
+    }
+    subscribeSlider(data);
+}
+
+function subscribeSlider(data) {
+    $(`#numOfObjs_${data.objs[data.currentSlide].id}`)
+        .text(`${data.currentSlide + 1} из ${data.miniCardsContent.length}`);
+    $(`#excludeFromCalculation_${data.objs[data.currentSlide].id}`)
+        .kendoButton({ click: function (e) { excludeFromCalculation(data); } });
+}
+
+function checkMiniCard(data) {
+    if (data.miniCardsContent.length <= 1) {
+        $(`#arrowLeft_${data.id}`).css("display", "none");
+        $(`#arrowRight_${data.id}`).css("display", "none");
+    } else {
+        $(`#arrowLeft_${data.id}`).css("display", "block");
+        $(`#arrowRight_${data.id}`).css("display", "block");
+    }
+}
+
+/**
+ * обработка после загрузки старницы
+ */
 $(document).ready(function () {
     $('#Kn').on('blur',
         function () {
@@ -262,6 +557,10 @@ $(document).ready(function () {
             }
             if (!coordinates) {
                 Common.ShowError('Выберите или заполните целевой объект');
+                return;
+            }
+            if (!actualDate) {
+                Common.ShowError('Заполните дату актуальности или установите корректную дату');
                 return;
             }
 
@@ -402,291 +701,57 @@ $(document).ready(function () {
                 }
             }).always(function () { kendo.ui.progress($('body'), false); });
         });
-});
 
-/**
- * Получаем значения комплексных факторов для поиска
- * @return {string} сереализованный Json
- */
-function getComplexSearchParameters() {
-    var res = [];
-    $.each($('#costFactors').find('[id^="chFactor"]:checked'), function() {
-        var $wrapperFactor = $(this).closest('.wrapper-factor');
-        var $control = $wrapperFactor.find('[id*="DefaultValue"]');
-        if ($control) {
-            var attributeId = $control.attr('DataAttributeId');
-            var referenceId = $control.attr('DataReferenceId');
-            var value = $control.data('kendoDropDownList') && $control.data('kendoDropDownList').value();
-            res.push({
-                IdAttribute: attributeId,
-                Value: value,
-                referenceId
-            });
-        }
-    });
-    return JSON.stringify(res);
-}
-
-/**
- * Получаем значения комплексных факторов для расчета
- *@return {string} сереализованный Json
- */
-function getComplexCalculateParameters() {
-    var res = [];
-    $.each($('#costFactors').find('[id*="DefaultValue"]'), function () {
-        var attributeId = $(this).attr('DataAttributeId');
-        var referenceId = $(this).attr('DataReferenceId');
-        var value = $(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').value();
-        res.push({
-            IdAttribute: attributeId,
-            Value: value,
-            referenceId
-        });
-    });
-    return JSON.stringify(res);
-}
-
-// инициализация карты и евенты
-function initMap(src) {
-    var script = document.createElement('script');
-    script.src = AppData.useSandBoxKey
-        ? `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.sandboxKey}&lang=${
-        AppData.lang}`
-        : src;
-    //`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
-    script.type = "text/javascript";
-    document.head.appendChild(script);
-    script.onload = function () {
-        ymaps.ready(function () {
-            map = new ymaps.Map('map',
-                {
-                    center: MapSettings.center,
-                    zoom: MapSettings.zoom,
-                    controls: ['fullscreenControl', 'zoomControl']
-                });
-            map.controls.get("zoomControl").options.set({ position: { top: 10, left: 10 } });
-            map.events.add('click',
-                function (e) {
-                    // Получение координат щелчка
-                    var coords = e.get('coords');
-                    removeFindPoints();
-                    clearFields();
-                    if (myMarker) removeMyMarker();
-                    if (myPlacemark) myPlacemark.geometry.setCoordinates(coords);
-                    else {
-                        myPlacemark = createPlacemark(coords);
-                        map.geoObjects.add(myPlacemark);
-                        myPlacemark.events.add('dragend',
-                            function () { getAddress(myPlacemark.geometry.getCoordinates()); });
-                    }
-                    getAddress(coords);
-                });
-        });
-    }
-};
-
-function clearFields() {
-    $('#address').val('');
-    $('#Kn').val('');
-}
-
-function getAddress(coords) {
-    myPlacemark.properties.set('iconCaption', 'поиск...');
-    ymaps.geocode(coords).then(function (res) {
-        var firstGeoObject = res.geoObjects.get(0);
-        if (firstGeoObject.getAdministrativeAreas().length === 0 ||
-            firstGeoObject.getAdministrativeAreas()[0] !== "Москва") {
-            removeMyPlacemark();
-            Common.ShowError("Объект за пределами г.Москва");
-            return;
-        } else {
-            $('.k-notification-error').each(function () {
-                $(this).hide();
-            });
-        }
-        if (firstGeoObject.getPremiseNumber()) {
-            $('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
-            setKadNumber(firstGeoObject.getAddressLine());
-            setCurrentAddress(firstGeoObject.getAddressLine());
-        }
-        myPlacemark.properties.set({
-            // Формируем строку с данными об объекте.
-            iconCaption: [
-                firstGeoObject.getLocalities().length
-                    ? firstGeoObject.getLocalities()
-                    : firstGeoObject.getAdministrativeAreas(),
-                firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-            ].filter(Boolean).join(', '),
-            balloonContent: firstGeoObject.getAddressLine()
-        });
-    });
-}
-
-function createPlacemark(coords) {
-    return new ymaps.Placemark(coords,
-        { iconCaption: 'поиск...' },
-        { preset: 'islands#violetDotIconWithCaption', draggable: true });
-}
-
-//Пересчет стоимости
-function updateCost(cost, squareCost) {
-    if (squareCost) {
-        $('#cost').text(cost.toLocaleString());
-        $('#squareCost').text(squareCost.toLocaleString());
-    }
-}
-
-function updateReportId(reportId = null) { if (reportId) $('#report').data('report-id', reportId); }
-
-$(document).ready(function () {
     initDialog();
     $('.calculate').on('click',
         function () {
             showDialog();
         });
-});
 
+    $('#square').on('blur', function () {
+        var currentSquare = parseFloat($(this).val());
+        var squareControl = $('#costFactors').find('[TypeControl*="SquareFactor"]')[0];
+        if (squareControl) {
+            var $dropDownSquare = $(squareControl).data('kendoDropDownList');
+            var dataItem = $dropDownSquare && $dropDownSquare.dataItem();
+            var items = $dropDownSquare && $dropDownSquare.dataSource.data() || [];
 
-/**
- * Выполнение расчетов
- * @param {number} scenarioType тип сценария расчета
- */
-function executeCalculate(scenarioType = null) {
-    if (scenarioType === null || scenarioType === 0) {
-        Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
-        return;
-    }
-    var complexCalculateParameters = getComplexCalculateParameters();
-    var data = {
-        selectedPoints: findPointsIds,
-        targetObjectId,
-        scenarioType,
-        segment: $('#segment').val(),
-        address: $('#address').val(),
-        kn: $('#Kn').val(),
-        dealType: $("input[name='DealTypeShort']:checked").val(),
-        targetMarketObjectId: $('#targetMarketObjectId').val(),
-        complexCalculateParameters
-    }
-    var topBody = window.top.document.body;
-    kendo.ui.progress($(topBody), true);
-    var url = "/ExpressScore/CalculateCostTargetObject";
-    $.post(url, data).done(function (data) {
-        if (data.Errors) {
-            var errors = getErrors(data.Errors);
-            Common.ShowError(errors);
-            return;
-        }
-        $('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
-        $('.wrapper-success-dialog').html(data);
-    })
-        .fail(function (response) {
-            Common.ShowError(response.responseText);
-        })
-        .always(function () { kendo.ui.progress($(topBody), false); });
-    return;
-}
-
-function showDialog() { $('#dialog').data('kendoDialog') && $('#dialog').data('kendoDialog').open(); }
-
-function initDialog() {
-    $('#dialog').kendoDialog({
-        width: "450px",
-        title: "Выберите сценарий расчета",
-        closable: false,
-        modal: true,
-        content: '<div class="wrapper-scenario">' + '<div id="scenario"></div>' + '</div>',
-        visible: false,
-        buttonLayout: "normal",
-        actions: [
-            { text: 'Отмена' },
-            {
-                text: 'Выбрать',
-                primary: true,
-                action: function (e) {
-                    if (e.sender.element.find('#scenario')) {
-                        var value = e.sender.element.find('#scenario').data('kendoDropDownList') &&
-                            e.sender.element.find('#scenario').data('kendoDropDownList').value() ||
-                            null;
-                        executeCalculate(value);
+            if (dataItem && dataItem.item.useInterval) {
+                items.forEach(function (item) {
+                    if (item.item.useInterval) {
+                        try {
+                            var valueFrom = parseFloat(item.item.valueFrom);
+                            var valueTo = parseFloat(item.item.valueTo);
+                            var isThisInterval = currentSquare >= valueFrom && currentSquare < valueTo;
+                            if (isThisInterval) {
+                                skipChangeSquareHandler = true;
+                                $dropDownSquare.value(item.Value);
+                            };
+                        } catch (e) {
+                            console.error(e);
+                        }
                     }
-                    return true;
+                });
+            } else if (dataItem && !dataItem.item.useInterval) {
+                try {
+                    var map = new Map();
+                    items.forEach(function (item) {
+                        if (!item.item.useInterval) {
+                            var delta = Math.abs(parseFloat(item.item.value) - currentSquare);
+                            map.set(item.Value, delta);
+                        }
+                    });
+                    var val = [...map.entries()].sort((a, b) => a[1] - b[1])[0][0];
+                    skipChangeSquareHandler = true;
+                    $dropDownSquare.value(val);
+                } catch (e) {
+                    console.error(e);
                 }
             }
-        ]
-    });
 
-    $('#scenario').kendoDropDownList({
-        dataTextField: "Text",
-        dataValueField: "Value",
-        value: 1,
-        dataSource: {
-            type: "json",
-            transport: {
-                read: "/ExpressScore/GetScenarioCalculate"
-            }
         }
     });
-
-    $('#successDialog').kendoDialog({
-        width: 1300,
-        height: 600,
-        title: "Расчет успешно выполнен",
-        closable: false,
-        modal: true,
-        content: '<div class="wrapper-success-dialog"></div>',
-        visible: false,
-        buttonLayout: "normal",
-        actions: [{ text: 'Ок' }]
-    });
-}
-
-function excludeFromCalculation() {
-    checkMiniCard(data);
-    var initElement = $(this);
-    var buttonId = initElement[0].element[0].id;
-    var objId = parseInt(buttonId.split('_')[1]);
-    findPointsIds.remove(objId);
-    findPoints.forEach(function (item) {
-        if (!!map) {
-            if (item.properties._data.pointId === objId) map.geoObjects.remove(item);
-        }
-    });
-    if (slider) {
-        slider.value(findPointsIds.length);
-        $(slider.wrapper).find('.k-draghandle').prop('title', findPointsIds.length);
-    }
-    Common.ShowMessage("Объект исключен из расчета");
-}
-
-function slide(rightSlide, data) {
-    console.log("slided");
-    if (rightSlide) {
-        if (data.currentSlide >= data.miniCardsContent.length - 1) data.currentSlide = -1;
-        $(`#centralBlock_${data.id}`).html(data.miniCardsContent[++data.currentSlide]);
-    } else {
-        if (data.currentSlide <= 0) data.currentSlide = data.miniCardsContent.length;
-        $(`#centralBlock_${data.id}`).html(data.miniCardsContent[--data.currentSlide]);
-    }
-    subscribeSlider(data);
-}
-
-function subscribeSlider(data) {
-    $(`#numOfObjs_${data.objs[data.currentSlide].id}`)
-        .text(`${data.currentSlide + 1} из ${data.miniCardsContent.length}`);
-    $(`#excludeFromCalculation_${data.objs[data.currentSlide].id}`)
-        .kendoButton({ click: function (e) { excludeFromCalculation(data); } });
-}
-
-function checkMiniCard(data) {
-    if (data.miniCardsContent.length <= 1) {
-        $(`#arrowLeft_${data.id}`).css("display", "none");
-        $(`#arrowRight_${data.id}`).css("display", "none");
-    } else {
-        $(`#arrowLeft_${data.id}`).css("display", "block");
-        $(`#arrowRight_${data.id}`).css("display", "block");
-    }
-}
+});
 
 
 var helper = {
@@ -704,5 +769,26 @@ var helper = {
             val = encodeURIComponent(obj[key]);
             return [str, delimiter, key, '=', val].join('');
         }, '');
+    }
+}
+
+//Хендлеры
+// переменная для устаранения циклических событий
+var skipChangeSquareHandler = false;
+function handlerChangeSquare(e) {
+
+    if (skipChangeSquareHandler) {skipChangeSquareHandler = false; return;}
+    var $control = this;
+    var item = $control.dataItem();
+
+    var isIntervalReference = item && item.item.useInterval;
+    var value;
+    if (isIntervalReference) {
+         value = item && item.item.valueFrom;
+    } else {
+        value = item && item.item.value;
+    }
+    if (value) {
+        $('#square').data('kendoNumericTextBox') && $('#square').data('kendoNumericTextBox').value(parseFloat(value));
     }
 }

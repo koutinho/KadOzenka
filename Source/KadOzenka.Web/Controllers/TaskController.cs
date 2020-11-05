@@ -35,6 +35,7 @@ using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
+using KadOzenka.Web.Models.Unit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
@@ -525,7 +526,42 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		//TODO hot fix, будет исправлен в новой ветке
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetFactorsNew(long? tourId, string type)
+		{
+			if(tourId == null)
+				return Json(new List<SelectListItem>());
+
+			List<OMTourFactorRegister> tfrList;
+			if (type == "OKS")
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+			else
+			{
+				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+					.SelectAll().Execute();
+			}
+
+			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
+
+			if (ids.Count == 0)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var result = GetModelFactorNameSql(ids, true).OrderBy(x => x.Value).Select(x => new SelectListItem
+			{
+				Value = x.Key.ToString(),
+				Text = x.Value
+			});
+
+			return Json(result);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult EditModelFactor(long? id, long modelId)
 		{
 			ModelFactorDto factorDto;
@@ -695,8 +731,15 @@ namespace KadOzenka.Web.Controllers
 			return Json(result);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetUnitFactors(long id, bool showOnlyModelFactors = true, bool isShowOnlyFilledFactors = false)
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetUnitFactorsShowTypes()
+		{
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(UnitFactorsShowType));
+			return Json(types);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public JsonResult GetUnitFactors(long id, UnitFactorsShowType unitFactorsShowType = UnitFactorsShowType.ModelFactors, bool isShowOnlyFilledFactors = false)
 		{
 			var unit = OMUnit.Where(x => x.Id == id)
 				.Select(x => new
@@ -709,20 +752,34 @@ namespace KadOzenka.Web.Controllers
 
 			if (unit != null)
 			{
-				var modelFactorIds = new List<long>();
-				if (showOnlyModelFactors)
+				List<UnitFactor> factorsValues = new List<UnitFactor>();
+				switch (unitFactorsShowType)
 				{
-					var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
-					if (model != null)
-					{
-						modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+					case UnitFactorsShowType.ModelFactors:
+						var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
+						if (model != null)
+						{
+							var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
+								.Select(x => x.FactorId)
+								.Execute()
+								.Select(x => x.FactorId.GetValueOrDefault()).ToList();
+							if(!modelFactorIds.IsEmpty())
+								factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
+						}
+						break;
+					case UnitFactorsShowType.GroupFactors:
+						var groupFactorIds = OMGroupFactor.Where(x => x.GroupId == unit.GroupId && x.FactorId != null)
 							.Select(x => x.FactorId)
 							.Execute()
 							.Select(x => x.FactorId.GetValueOrDefault()).ToList();
-					}
+						if(!groupFactorIds.IsEmpty())
+							factorsValues = TourFactorService.GetUnitFactorValues(unit, groupFactorIds);
+						break;
+					default:
+						factorsValues = TourFactorService.GetUnitFactorValues(unit);
+						break;
 				}
 
-				var factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
 				var result = MapFactors(factorsValues, isShowOnlyFilledFactors);
 				return Json(result);
 			}
@@ -794,9 +851,18 @@ namespace KadOzenka.Web.Controllers
                 throw new ArgumentException("Не выбраны группы");
 
             var settings = CadastralPriceCalculationModel.UnMap(model);
-            CalculateCadastralPriceLongProcess.AddProcessToQueue(settings);
 
-            return Json(new {Message = "Операция Расчета кадастровой стоимости добавлена в очередь" });
+			////TODO код для отладки
+			//new CalculateCadastralPriceLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = settings.SerializeToXml()
+			//}, new CancellationToken());
+			
+			CalculateCadastralPriceLongProcess.AddProcessToQueue(settings);
+
+			return Json(new {Message = "Операция Расчета кадастровой стоимости добавлена в очередь" });
         }
 
         [HttpGet]
@@ -1128,7 +1194,7 @@ namespace KadOzenka.Web.Controllers
                 new DropDownTreeItemModel
                 {
                     Value = "201",
-                    Text = "Еденица оценки",
+                    Text = "Единица оценки",
                     Items = taskAttr.Select(x => new DropDownTreeItemModel
                     {
                         Value = x.Id.ToString(),
@@ -1189,6 +1255,8 @@ namespace KadOzenka.Web.Controllers
             }
         }
 
+        private const string TourSeparator = "$";
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public FileResult DownloadFactorExportResult(long taskId, string dt)
@@ -1197,7 +1265,60 @@ namespace KadOzenka.Web.Controllers
             var dateTime = DateTime.Parse(dt);
             var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
             return File(st, Consts.ExcelContentType,
-	            $"{taskId}_{dt:ddMMyyyy}_FactorsExport.xlsx");
+	            $"{taskId}_{dateTime:ddMMyyyy}_FactorsExport.xlsx");
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult GetTemplate(int id)
+        {
+	        if (id == 0)
+	        {
+		        return Json(new { error = "Ид равен 0" });
+	        }
+
+	        try
+	        {
+		        var storage = OMDataFormStorage.Where(x =>
+				        x.Id == id)
+			        .SelectAll().ExecuteFirstOrDefault();
+
+		        if (storage != null && storage.FormType_Code == DataFormStorege.ExportFactorsByTask)
+		        {
+			        var nObj = storage.Data.DeserializeFromXml<FactorsDownloadByTaskModel>();
+			        return Json(new { data = JsonConvert.SerializeObject(nObj) });
+		        }
+	        }
+
+	        catch (Exception e)
+	        {
+		        return Json(new { error = $"Ошибка: {e.Message}" });
+	        }
+
+	        return Json(new { error = "Шаблон не найден" });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public List<SelectListItem> GetTemplatesFactors(long taskId)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        if (task == null) throw new ArgumentNullException($"Задача с id {taskId} не найдена");
+
+	        return TemplateService.GetTemplates(DataFormStorege.ExportFactorsByTask)
+		        .Where(x=>x.TemplateName.StartsWith(task.TourId+TourSeparator))
+		        .Select(x => new SelectListItem(x.TemplateName?.Split(TourSeparator,2)?[1] ?? "", x.Id.ToString())).ToList();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult SaveTemplate(string nameTemplate, bool isCommon, [FromForm]long taskId, [FromForm]bool isOks, [FromForm]string[] selectedAttributes)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        if (task == null) throw new ArgumentNullException($"Задача с id {taskId} не найдена");
+
+	        var obj = new FactorsDownloadByTaskModel{ TaskId = taskId,isOks = isOks, Attributes = selectedAttributes};
+	        return SaveTemplate(task.TourId+TourSeparator+nameTemplate, isCommon, DataFormStorege.ExportFactorsByTask, obj.SerializeToXml());
         }
 
 		#endregion

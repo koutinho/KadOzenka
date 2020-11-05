@@ -27,6 +27,9 @@ namespace KadOzenka.Web.Models.Task
 		[DisplayName("Дата создания")]
 		public DateTime? TaskCreationDate { get; set; }
 
+
+		[DisplayName("Кадастровый номер здания")]
+		public string BuildingCadastralNumber { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
 		[DisplayName("Кадастровый квартал")]
@@ -87,6 +90,7 @@ namespace KadOzenka.Web.Models.Task
 				dto.ObjectId = unit.ObjectId;
 
 				dto.CadastralNumber = unit.CadastralNumber;
+				dto.BuildingCadastralNumber = unit.BuildingCadastralNumber;
 				dto.CadastralBlock = unit.CadastralBlock;
 				dto.PropertyType = unit.PropertyType_Code;
 				dto.Square = unit.Square;

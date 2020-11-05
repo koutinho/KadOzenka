@@ -1,4 +1,16 @@
-﻿@model List<KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactorForCalculateDto>
+﻿@using KadOzenka.Dal.ExpressScore.Dto
+@model List<KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactorForCalculateDto>
+
+<style>
+	.red {
+		color: red;
+	}
+</style>
+
+@if (Model.Count == 0)
+{
+<span class="red">Не настроен вывод оценочных факторов на форму расчета</span>
+}
 
 @for (int i = 0; i < Model.Count; i++)
 {
@@ -15,9 +27,10 @@
 					.DataSource(source =>
 						source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
 							new { dictionaryId = Model[i].DictionaryId }))
-					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId, DataReferenceId = Model[i].DictionaryId}))
+					).HtmlAttributes(new { DataAttributeId = Model[i].AttributeId, DataReferenceId = Model[i].DictionaryId, TypeControl = Model[i].ComplexCostFactorType})
+					.Events(x=> x.Cascade(Model[i].ComplexCostFactorType == ComplexCostFactorSpecialization.SquareFactor ? "handlerChangeSquare" : "(() => {})()")))
 				<div style="margin-left: 5px">
-					@Html.Kendo().CheckBox().Name($"chFactor-{i}").Checked(true)
+					@Html.Kendo().CheckBox().Name($"chFactor-{i}").Checked(false)
 				</div>
 			</div>
 		</div>
@@ -35,9 +48,10 @@
 				.DataSource(source =>
 					source.Read(a => a.Action("GetEsDictionary", "ExpressScore",
 						new { dictionaryId = Model[i + 1].DictionaryId }))
-				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId, DataReferenceId = Model[i + 1].DictionaryId }))
+				).HtmlAttributes(new { DataAttributeId = Model[i + 1].AttributeId, DataReferenceId = Model[i + 1].DictionaryId, TypeControl = Model[i + 1].ComplexCostFactorType })
+						.Events(x => x.Cascade(Model[i + 1].ComplexCostFactorType == ComplexCostFactorSpecialization.SquareFactor ? "handlerChangeSquare" : "(() => {})()")))
 					<div style="margin-left: 5px">
-						@Html.Kendo().CheckBox().Name($"chFactor-{i + 1}").Checked(true)
+						@Html.Kendo().CheckBox().Name($"chFactor-{i + 1}").Checked(false)
 					</div>
 				</div>
 			</div>

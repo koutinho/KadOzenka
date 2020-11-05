@@ -10,6 +10,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
@@ -17,10 +18,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
     {
 	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
         private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
 
         public CadastralCostDeterminationResultsMainReport()
         {
             _reportsDictionary = new Dictionary<Type, ICadastralCostDeterminationResultsReport>();
+            _logger = Log.ForContext<CadastralCostDeterminationResultsMainReport>();
         }
 
         protected override string TemplateName(NameValueCollection query)
@@ -29,17 +34,27 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return report.GetTemplateName(query);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIdList = GetTaskIdList(query).ToList();
 
             var report = GetReport(query);
-            var units = report.GetUnitsForCadastralCostDetermination(taskIdList);
-            var operations = GetOperations(units);
+            Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
 
+            var groupIds = report.GetAvailableGroupIds();
+            Logger.Debug("Найдено {GroupsCount} Групп", groupIds.Count);
+
+            var units = GetUnits(taskIdList, groupIds);
+            Logger.Debug("Найдено {UnitsCount} Единиц оценки", units?.Count);
+
+            var operations = GetOperations(units);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
+
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }
@@ -71,6 +86,23 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return concreteReport;
         }
 
+        private List<OMUnit> GetUnits(List<long> taskIds, List<long?> groupIds)
+        {
+	        return OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
+	                          x.GroupId != null && groupIds.Contains(x.GroupId) &&
+	                          x.PropertyType_Code != PropertyTypes.CadastralQuartal)
+		        .Select(x => new
+		        {
+			        x.CadastralBlock,
+			        x.ObjectId,
+			        x.CadastralNumber,
+			        x.PropertyType_Code,
+			        x.Square,
+			        x.Upks,
+			        x.CadastralCost
+		        }).Execute();
+        }
+
         private List<ReportItem> GetOperations(List<OMUnit> units)
         {
             if (units.Count == 0)
@@ -80,14 +112,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 	            units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
 	            new List<long>{ GbuCodRegisterService.GetCadastralQuarterFinalAttribute().RegisterId},
 	            new List<long> { GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id },
-	            DateTime.Now.GetEndOfTheDay());
+	            DateTime.Now.GetEndOfTheDay(), isLight: true);
+            Logger.Debug("Найдено {Count} атрибутов Кадастрового квартала", cadastralQuartalGbuAttributes?.Count);
 
+            var i = 0;
             return units.Select(unit =>
             {
 	            var cadastralQuartalGbu = cadastralQuartalGbuAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 	            var cadastralQuartal = !string.IsNullOrEmpty(cadastralQuartalGbu)
 		            ? cadastralQuartalGbu
 		            : unit.CadastralBlock;
+
+	            i++;
+                if(i % 500 == 0)
+                    Logger.Debug($"Обработано {i} объектов");
 
                 return new ReportItem
 	            {

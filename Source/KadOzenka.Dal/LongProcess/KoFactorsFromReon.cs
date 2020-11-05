@@ -20,7 +20,6 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Configurator;
 using Serilog;
-using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -34,12 +33,34 @@ namespace KadOzenka.Dal.LongProcess
         private RosreestrDataApi ReonWebClientService { get; set; }
         private RegisterAttributeService RegisterAttributeService { get; set; }
         private GbuReportService GbuReportService { get; set; }
+        private readonly GbuReportService.Column _cadastralNumberColumn;
+        private readonly GbuReportService.Column _operationResultColumn;
+        private readonly GbuReportService.Column _errorColumn;
 
         public KoFactorsFromReon()
         {
             ReonWebClientService = new RosreestrDataApi();
             RegisterAttributeService = new RegisterAttributeService();
             GbuReportService = new GbuReportService();
+
+            _cadastralNumberColumn = new GbuReportService.Column
+            {
+	            Header = "Кадастровый номер",
+	            Index = 0,
+	            Width = 6
+            };
+            _operationResultColumn = new GbuReportService.Column
+            {
+	            Header = "Успешно",
+	            Index = 1,
+	            Width = 2
+            };
+            _errorColumn = new GbuReportService.Column
+            {
+	            Header = "Ошибка",
+	            Index = 2,
+	            Width = 8
+            };
         }
 
 
@@ -78,7 +99,13 @@ namespace KadOzenka.Dal.LongProcess
             long success = 0;
             long errors = 0;
 
-            GbuReportService.AddHeaders(0, new List<string> { "Кадастровый номер", "Успешно", "Ошибка" });
+            GbuReportService.AddHeaders(new List<string>
+            {
+	            _cadastralNumberColumn.Header, _operationResultColumn.Header, _errorColumn.Header
+            });
+            GbuReportService.SetIndividualWidth(_cadastralNumberColumn.Index, _cadastralNumberColumn.Width);
+            GbuReportService.SetIndividualWidth(_operationResultColumn.Index, _operationResultColumn.Width);
+            GbuReportService.SetIndividualWidth(_errorColumn.Index, _errorColumn.Width);
 
             units.ForEach(unit =>
             {
@@ -117,7 +144,6 @@ namespace KadOzenka.Dal.LongProcess
                     else {
                         AddRowToReport(unit.CadastralNumber, false, $"Ошибка загрузки (без записи в журнал)");
                     }
-                    
                 }
             });
 
@@ -126,6 +152,7 @@ namespace KadOzenka.Dal.LongProcess
                 : $"Загрузка факторов выполнена без ошибок. Всего единиц оценки: {total}; Успешно: {success}; Ошибки: {errors}";
             WorkerCommon.SetMessage(processQueue, info);
 
+            GbuReportService.SetStyle();
             var reportId = GbuReportService.SaveReport("Получение графических факторов из ИС РЕОН");
             var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
@@ -289,8 +316,9 @@ namespace KadOzenka.Dal.LongProcess
 
         private void AddRowToReport(string cadastralNumber, bool isSuccessful, string errorMessage)
         {
+	        var row = GbuReportService.GetCurrentRow();
             var isSuccessfulStr = isSuccessful ? "Да" : "Нет";
-            GbuReportService.AddRow(new List<string>{cadastralNumber, isSuccessfulStr, errorMessage});
+            GbuReportService.AddRow(row, new List<string>{cadastralNumber, isSuccessfulStr, errorMessage});
         }
 
         #endregion

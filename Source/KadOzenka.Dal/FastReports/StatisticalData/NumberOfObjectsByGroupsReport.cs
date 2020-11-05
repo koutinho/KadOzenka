@@ -3,16 +3,20 @@ using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class NumberOfObjectsByGroupsReport : StatisticalDataReport
 	{
 		private readonly NumberOfObjectsByGroupsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public NumberOfObjectsByGroupsReport()
 		{
 			_service = new NumberOfObjectsByGroupsService(new StatisticalDataService());
+			_logger = Log.ForContext<NumberOfObjectsByGroupsReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -20,10 +24,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			return nameof(NumberOfObjectsByGroupsReport);
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetQueryParam<string>("ReportType", query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -37,7 +42,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 			var isOksReportType = reportType == "Статистика по группам с количеством ОКС";
 			var data = _service.GetNumberOfObjectsByGroups(taskIdList, isOksReportType);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Group, unitDto.ParentGroup, unitDto.Count);
@@ -46,6 +53,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

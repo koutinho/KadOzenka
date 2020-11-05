@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.KoObject
 		public static long Run(EstimatedGroupModel param)
 		{
 			var reportService = new GbuReportService();
-			reportService.AddHeaders(0, new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+			reportService.AddHeaders(new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 			locked = new object();
 			var units = OMUnit.Where(x => x.TaskId != null && x.TaskId == param.IdTask).SelectAll().Execute().ToList();
 			CountAllUnits = units.Count;
@@ -88,24 +88,20 @@ namespace KadOzenka.Dal.KoObject
 
 			Parallel.ForEach(units, options, item =>
 			{
-				int rowReport;
+				GbuReportService.Row rowReport;
 				lock (locked)
 				{
 					rowReport = reportService.GetCurrentRow();
+					reportService.AddValue(item.CadastralNumber, (int)ReportColumns.KnColumn, rowReport);
 				}
 
-				reportService.AddValue(item.CadastralNumber, (int)ReportColumns.KnColumn, rowReport);
 				var gbuObject = OMMainObject.Where(x => x.Id == item.ObjectId).SelectAll().ExecuteFirstOrDefault();
 
-		
 				// берем код группы (значение из справочника цод)
 				var codeGroup = GetValueFactor(gbuObject, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
-					lock (locked)
-					{
-						AddErrorRow($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
-					}
+					AddErrorRow($"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", rowReport, reportService);
 					return;
 				}
 
@@ -138,7 +134,6 @@ namespace KadOzenka.Dal.KoObject
 
 					var gbuQuarterObject = OMMainObject.Where(x => x.CadastralNumber == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 
-					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 					if (gbuQuarterObject == null)
 					{
 						AddErrorRow($"Не найден объект кадастровый квартал {codeQuarter.Value} .", rowReport, reportService);
@@ -146,7 +141,7 @@ namespace KadOzenka.Dal.KoObject
 					}
 					var attributeTerritoryType = OMAttribute.Where(x => x.Id == param.IdTerritoryType).SelectAll().ExecuteFirstOrDefault();
 
-					ValueItem territoryType = GetValueFactor(gbuObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
+					ValueItem territoryType = GetValueFactor(gbuQuarterObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 
 					if (string.IsNullOrEmpty(territoryType.Value))
 					{
@@ -239,20 +234,26 @@ namespace KadOzenka.Dal.KoObject
 			return res;
 		}
 
-		public static void AddErrorRow(string value, int rowNumber, GbuReportService reportService)
+		public static void AddErrorRow(string value, GbuReportService.Row rowNumber, GbuReportService reportService)
 		{
-			reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowNumber);
+			lock (locked)
+			{
+				reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowNumber);
+			}
 		}
 
-		public static void AddRowToReport(int rowNumber, string kn, long inputAttributeId, long sourceAttributeId, string value, GbuReportService reportService)
+		public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, long inputAttributeId, long sourceAttributeId, string value, GbuReportService reportService)
 		{
-			var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
-			var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
-			reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowNumber);
-			reportService.AddValue(inputAttributeName, (int)ReportColumns.InputFieldColumn, rowNumber);
-			reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowNumber);
-			reportService.AddValue(sourceAttributeName, (int)ReportColumns.OutputFieldColumn, rowNumber);
-			reportService.AddValue(string.Empty, (int)ReportColumns.ErrorColumn, rowNumber);
+			lock (locked)
+			{
+				var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
+				var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
+				reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowNumber);
+				reportService.AddValue(inputAttributeName, (int)ReportColumns.InputFieldColumn, rowNumber);
+				reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowNumber);
+				reportService.AddValue(sourceAttributeName, (int)ReportColumns.OutputFieldColumn, rowNumber);
+				reportService.AddValue(string.Empty, (int)ReportColumns.ErrorColumn, rowNumber);
+			}
 		}
 
 		#endregion

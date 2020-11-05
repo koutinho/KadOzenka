@@ -190,11 +190,16 @@ namespace KadOzenka.Web.Controllers
             try
             {
                 var settings = model.CovertToGroupingSettings();
-                ////TODO код для отладки
-                //PriorityGrouping.SetPriorityGroup(settings);
-                //queueId = 0;
-                queueId = SetPriorityGroupProcess.AddProcessToQueue(settings);
-            }
+				////TODO код для отладки
+				//new SetPriorityGroupProcess().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	Parameters = settings.SerializeToXml()
+				//}, new CancellationToken());
+				//queueId = 0;
+				queueId = SetPriorityGroupProcess.AddProcessToQueue(settings);
+			}
 			catch (Exception e)
 			{
 				return SendErrorMessage(e.Message);
@@ -543,9 +548,17 @@ namespace KadOzenka.Web.Controllers
 
             viewModel.Document.ProcessDocument();
 
-            SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
+			////TODO код для отладки
+			//new SelectionCodLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = viewModel.ToCodSelectionSettings().SerializeToXml()
+			//}, new CancellationToken());
 
-		    return Json(new
+			SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
+
+			return Json(new
 		    {
 		        success = "Операция успешно поставлена в очерердь",
 		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
@@ -679,10 +692,21 @@ namespace KadOzenka.Web.Controllers
 	        {
 	            var estimatedGroupModelParamsDto =
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
-	            queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
-				viewModel.ToGroupModel(estimatedGroupModelParamsDto));
 
-			}
+	            var parameters = viewModel.ToGroupModel(estimatedGroupModelParamsDto);
+				////TODO код для отладки
+				//new TaskSetEstimatedGroup().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	ObjectRegisterId = OMTask.GetRegisterId(),
+				//	ObjectId = viewModel.IdTask.Value,
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	Parameters = parameters.SerializeToXml()
+				//}, new CancellationToken());
+				//queueId = 0;
+
+				queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value, parameters);
+	        }
 	        catch (Exception ex)
 	        {
 	            return SendErrorMessage(ex.Message);

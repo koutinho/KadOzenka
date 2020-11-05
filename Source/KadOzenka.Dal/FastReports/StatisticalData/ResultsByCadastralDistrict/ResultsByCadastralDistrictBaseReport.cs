@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using Core.Register.RegisterEntities;
 using System.Linq;
 using Core.Shared.Extensions;
@@ -62,6 +64,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         protected string GetSqlFileContent(string fileName)
         {
             return StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, fileName);
+        }
+
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
+        {
+	        return new DataSet();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace CIPJS.Models.ExpressScore
 		/// <summary>
 		/// Дата актуальности
 		/// </summary>
-		[Required(ErrorMessage = "Не указана дата актуальности")]
+		[Required(ErrorMessage = "Не указана дата актуальности или указана не корректно")]
 		public DateTime? ActualDate { get; set; }
 
 		/// <summary>

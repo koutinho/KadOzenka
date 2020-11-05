@@ -54,8 +54,24 @@
                         Id: { editable: false, nullable: true },
                         GroupId: { editable: false},
                         FactorId: { editable: false },
-                        ValueFactor: { validation: { required: true } },
-                        MetkaFactor: { type: "number", nullable: true  }
+                        ValueFactor: { validation: {
+                            valuefactorvalidation: function (input) {
+                                if (input.is("[name='ValueFactor']") && input.val() == "") {
+                                    input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
+                                    return false;
+                                }
+                                return true;
+                            }
+                        } },
+                        MetkaFactor: { validation: {
+                            metkafactorvalidation: function (input) {
+                                if (input.is("[name='MetkaFactor']") && input.val() == "") {
+                                    input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }, type: "number", nullable: true   }
                     }
                 }
             },
@@ -102,6 +118,9 @@
                                 decimals: 14,
                                 step: 0.1
                             });
+                        //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
+                        var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
+                        tooltipElement.appendTo(container);
                     }
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
@@ -130,6 +149,13 @@
                     e.model.GroupId = '@ViewBag.GroupId';
                     e.model.FactorId = '@ViewBag.FactorId';
                 }
+            },
+            save: function (e) {
+                //из-за неправильного разделителя значение в контроллер приходит пустое
+                //была попытка установить culture для kendoNumericTextBox - не сработало
+                var initialValue = e.model.MetkaFactor.toString();
+                var replacedValue = initialValue.replace(".", ",");
+                e.model.MetkaFactor = replacedValue;
             }
         });
 

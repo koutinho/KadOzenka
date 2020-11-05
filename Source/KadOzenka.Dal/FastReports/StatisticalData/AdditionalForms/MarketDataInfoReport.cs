@@ -6,16 +6,20 @@ using System.Linq;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 {
 	public class MarketDataInfoReport : StatisticalDataReport
 	{
 		private readonly AdditionalFormsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public MarketDataInfoReport()
 		{
 			_service = new AdditionalFormsService(StatisticalDataService);
+			_logger = Log.ForContext<MarketDataInfoReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -36,7 +40,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var dateFrom = GetQueryParam<DateTime?>("DateFrom", query);
 			var dateTo = GetQueryParam<DateTime?>("DateTo", query);
@@ -80,6 +84,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("AnnualRateOfRent");
 
 			var data = _service.GetMarketData(dateFrom, dateTo, typeOfUseCodeAttributeId, oksGroupAttributeId, typeOfUseAttributeId);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var dto in data)
 			{
@@ -117,6 +124,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}
