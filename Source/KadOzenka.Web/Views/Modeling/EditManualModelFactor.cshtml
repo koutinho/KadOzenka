@@ -1,6 +1,6 @@
 ﻿@model KadOzenka.Web.Models.Modeling.FactorModel
 
-@using (Html.BeginForm("EditModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
+@using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
 {
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.GeneralModelId)

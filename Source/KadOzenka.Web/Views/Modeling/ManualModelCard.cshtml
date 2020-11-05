@@ -411,7 +411,7 @@
     function addFactor() {
         var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
         Common.UI.ShowWindow('Редактирование фактора',
-            '@Url.Action("EditModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
+            '@Url.Action("EditManualModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
             'editFactorWindow',
             function (e, param) {
                 if (param == true) {
@@ -426,7 +426,7 @@
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.GeneralModelId',
+                '@Url.Action("EditManualModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.GeneralModelId',
                 'editFactorWindow',
                 function (e, param) {
                     if (param == true) {

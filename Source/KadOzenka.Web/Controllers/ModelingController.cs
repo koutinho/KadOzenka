@@ -383,7 +383,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult EditModelFactor(long? id, long generalModelId)
+        public ActionResult EditManualModelFactor(long? id, long generalModelId)
         {
             FactorModel factorDto;
 
@@ -421,7 +421,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult EditModelFactor(FactorModel factorModel)
+        public ActionResult EditManualModelFactor(FactorModel factorModel)
         {
             var dto = factorModel.ToDto();
             
