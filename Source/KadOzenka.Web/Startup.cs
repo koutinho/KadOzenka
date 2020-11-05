@@ -131,6 +131,10 @@ namespace CIPJS
 		        hubOptions.EnableDetailedErrors = true;
 	        });
 	        services.AddMemoryCache();
+
+	        var cultureInfo = new CultureInfo("ru-RU");
+	        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+	        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
