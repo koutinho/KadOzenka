@@ -219,7 +219,7 @@ namespace KadOzenka.Dal.Modeling
 			return query;
 		}
 
-		public int AddFactor(ModelFactorDto dto)
+		public int AddFactor(ManualModelFactorDto dto)
 		{
 			ValidateFactor(dto);
 
@@ -242,7 +242,7 @@ namespace KadOzenka.Dal.Modeling
 			return id;
 		}
 
-		public void UpdateFactor(ModelFactorDto dto)
+		public void UpdateFactor(ManualModelFactorDto dto)
 		{
 			var factor = GetFactorById(dto.Id);
 
@@ -270,7 +270,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateFactor(ModelFactorDto factorDto)
+		private void ValidateFactor(ManualModelFactorDto factorDto)
 		{
 			if (factorDto.GeneralModelId == null)
 				throw new Exception("Не передан ИД основной модели");

@@ -18,9 +18,9 @@ namespace KadOzenka.Web.Models.Modeling
 		public bool SignMarket { get; set; }
 
 
-		public ModelFactorDto ToDto()
+		public ManualModelFactorDto ToDto()
 		{
-			return new ModelFactorDto
+			return new ManualModelFactorDto
 			{
 				Id = Id,
 				GeneralModelId = GeneralModelId,

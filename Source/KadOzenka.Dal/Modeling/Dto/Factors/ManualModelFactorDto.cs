@@ -2,7 +2,7 @@
 
 namespace KadOzenka.Dal.Modeling.Dto.Factors
 {
-	public class ModelFactorDto
+	public class ManualModelFactorDto
 	{
 		public long Id { get; set; }
 		public long? GeneralModelId { get; set; }

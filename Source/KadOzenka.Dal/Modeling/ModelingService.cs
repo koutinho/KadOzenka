@@ -314,7 +314,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				types.ForEach(type =>
 				{
-					ModelFactorsService.AddFactor(new ModelFactorDto
+					ModelFactorsService.AddFactor(new ManualModelFactorDto
 					{
 						GeneralModelId = generalModelId,
 						FactorId = attribute.AttributeId,
