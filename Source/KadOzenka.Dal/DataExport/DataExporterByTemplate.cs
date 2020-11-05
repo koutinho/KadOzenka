@@ -72,9 +72,9 @@ namespace KadOzenka.Dal.DataExport
                 throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
             }
 
-            if (columns.Count(x => x.IsKey) > 1)
+            if (columns.All(x => x.IsKey))
             {
-                throw new Exception("Должен быть выбран только один ключевой параметр");
+                throw new Exception("Не указаны неключевые поля");
             }
         }
 

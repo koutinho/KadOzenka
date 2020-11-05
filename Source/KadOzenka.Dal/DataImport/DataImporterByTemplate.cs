@@ -102,6 +102,14 @@ namespace KadOzenka.Dal.DataImport
 		
 		public bool Test() => true;
 
+		public static void ValidateColumns(List<DataExportColumn> columns)
+		{
+			if (columns.All(x => x.IsKey))
+			{
+				throw new Exception("Не указаны неключевые поля");
+			}
+		}
+
 		public static long AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName,
             Stream templateFile, List<DataExportColumn> columns, long? documentId)
         {
@@ -133,7 +141,11 @@ namespace KadOzenka.Dal.DataImport
             List<DataExportColumn> columns, long? documentId, out bool success)
         {
             var mainWorkSheet = excelFile.Worksheets[0];
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+            if (mainWorkSheet.Rows.Count <= 1)  //файл пустой или в нем есть только заголовок
+	            throw new Exception("В указанном файле отсутствуют данные");
+
+			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = cancelTokenSource.Token,

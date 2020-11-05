@@ -269,7 +269,7 @@
                             var listView = $("#listView").data('kendoListView');
                             listView.dataSource.add({
                                 IsKey: false,
-                                IsReadOnly: false,
+                                IsReadOnly: isForGbuObjects || isForUnits,
                                 ColumnName: listBoxData.Name,
                                 ColumnId: listBoxData.Id,
                                 ColumnUid: listBoxData.uid,

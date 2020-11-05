@@ -136,10 +136,13 @@ namespace KadOzenka.Web.Controllers
 
         private DataExporterByTemplate GetExporter(int mainRegisterId)
         {
-            if (mainRegisterId == OMCoreObject.GetRegisterId() || mainRegisterId == OMMainObject.GetRegisterId())
+            if (mainRegisterId == OMCoreObject.GetRegisterId())
                 return new DataExporterByTemplate();
 
-            if (mainRegisterId == OMUnit.GetRegisterId())
+            if (mainRegisterId == OMMainObject.GetRegisterId())
+	            return new GbuObjectExporterByTemplate();
+
+			if (mainRegisterId == OMUnit.GetRegisterId())
                 return new UnitExporterByTemplate();
 
             throw new Exception($"Не известный тип экспорта: {mainRegisterId}");
