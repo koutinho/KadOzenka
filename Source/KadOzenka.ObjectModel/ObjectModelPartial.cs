@@ -1576,7 +1576,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (210 Значение факторов модели)
+        /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
@@ -1625,7 +1625,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 210 Значение факторов модели
+    /// 210 Факторы модели
     /// </summary>
     public partial class OMModelFactor
     {
@@ -1656,7 +1656,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (210 Значение факторов модели)
+        /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
@@ -2284,7 +2284,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (210 Значение факторов модели)
+        /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }

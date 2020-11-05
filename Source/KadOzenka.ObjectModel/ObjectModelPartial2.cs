@@ -656,7 +656,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 210 Значение факторов модели
+    /// 210 Факторы модели
     /// </summary>
     public partial class OMModelFactor
     {

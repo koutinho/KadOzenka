@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -9,6 +10,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory.ES;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -126,6 +128,7 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.PreviousWeight, nameof(ModelAttributeRelationDto.PreviousWeight)));
 
 			var sql = query.GetSql();
 
@@ -151,6 +154,7 @@ namespace KadOzenka.Dal.Modeling
 				var signDiv = row[nameof(ModelAttributeRelationDto.SignDiv)].ParseToBooleanNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+				var previousWeight = row[nameof(ModelAttributeRelationDto.PreviousWeight)].ParseToDecimalNullable();
 
 				attributes.Add(new ModelAttributeRelationDto
 				{
@@ -165,7 +169,8 @@ namespace KadOzenka.Dal.Modeling
 					SignAdd = signAdd.GetValueOrDefault(),
 					SignDiv = signDiv.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
-					Coefficient = weight
+					Coefficient = weight,
+					PreviousWeight = previousWeight
 				});
 			}
 
@@ -219,15 +224,53 @@ namespace KadOzenka.Dal.Modeling
 			return query;
 		}
 
-		public int AddFactor(ManualModelFactorDto dto)
+		public void AddAutomaticFactor(AutomaticModelFactorDto dto)
 		{
-			ValidateFactor(dto);
+			ValidateAutomaticFactor(dto);
+
+			var types = GetPossibleTypes(KoAlgoritmType.None);
+
+			using (var ts = new TransactionScope())
+			{
+				types.ForEach(type =>
+				{
+					new OMModelFactor
+					{
+						ModelId = dto.ModelId,
+						FactorId = dto.FactorId,
+						DictionaryId = dto.DictionaryId,
+						MarkerId = -1,
+						AlgorithmType_Code = type,
+						Weight = dto.CurrentWeight,
+						PreviousWeight = dto.PreviousWeight
+					}.Save();
+				});
+
+				ts.Complete();
+			}
+		}
+
+		public void UpdateAutomaticFactor(AutomaticModelFactorDto dto)
+		{
+			ValidateAutomaticFactor(dto);
+
+			var factor = GetFactorById(dto.Id);
+
+			factor.DictionaryId = dto.DictionaryId;
+			factor.Weight = dto.CurrentWeight;
+			factor.PreviousWeight = dto.PreviousWeight;
+			
+			factor.Save();
+		}
+
+		public int AddManualFactor(ManualModelFactorDto dto)
+		{
+			ValidateManualFactor(dto);
 
 			var id = new OMModelFactor
 			{
 				ModelId = dto.GeneralModelId,
 				FactorId = dto.FactorId,
-				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
 				Weight = dto.Weight,
 				B0 = dto.Weight,
@@ -242,11 +285,11 @@ namespace KadOzenka.Dal.Modeling
 			return id;
 		}
 
-		public void UpdateFactor(ManualModelFactorDto dto)
+		public void UpdateManualFactor(ManualModelFactorDto dto)
 		{
 			var factor = GetFactorById(dto.Id);
 
-			ValidateFactor(dto);
+			ValidateManualFactor(dto);
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -259,7 +302,7 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(dto.GeneralModelId);
 		}
 
-		public void DeleteFactor(long? id)
+		public void DeleteManualModelFactor(long? id)
 		{
 			var factor = GetFactorById(id);
 
@@ -268,9 +311,24 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(factor.ModelId);
 		}
 
+		public void DeleteAutomaticModelFactor(long? id)
+		{
+			var factor = GetFactorById(id);
+			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
+				.Execute();
+
+			using (var ts = new TransactionScope())
+			{
+				allFactors.ForEach(x => x.Destroy());
+
+				ts.Complete();
+			}
+		}
+
+
 		#region Support Methods
 
-		private void ValidateFactor(ManualModelFactorDto factorDto)
+		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
 			if (factorDto.GeneralModelId == null)
 				throw new Exception("Не передан ИД основной модели");
@@ -286,6 +344,61 @@ namespace KadOzenka.Dal.Modeling
 				.ExecuteExists();
 			if (isTheSameAttributeExists)
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData((int)factorDto.FactorId).Name}' уже был добавлен");
+		}
+
+		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
+		{
+			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
+			if (model == null)
+				throw new Exception($"Не найдена модель с ИД '{factor.ModelId}'");
+			var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == model.GroupId).Select(x => new
+			{
+				x.ParentTour.Year
+			}).ExecuteFirstOrDefault();
+			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
+			if (tourToGroupRelation?.ParentTour?.Year == 2016)
+				return;
+
+			var errors = new List<string>();
+
+			var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == factor.FactorId);
+
+			if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
+				factor.DictionaryId == null)
+			{
+				errors.Add($"Для атрибута '{attribute.Name}' нужно выбрать словарь");
+			}
+			if (factor.DictionaryId != null)
+			{
+				var dictionary = OMModelingDictionary.Where(x => x.Id == factor.DictionaryId).Select(x => x.Type_Code)
+					.ExecuteFirstOrDefault();
+				if (dictionary == null)
+					throw new Exception($"Не найден словарь для моделирования с ИД '{factor.DictionaryId}'");
+
+				switch (attribute?.Type)
+				{
+					case RegisterAttributeType.STRING:
+						{
+							if (dictionary.Type_Code != ReferenceItemCodeType.String)
+								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
+							break;
+						}
+					case RegisterAttributeType.DATE:
+						{
+							if (dictionary.Type_Code != ReferenceItemCodeType.Date)
+								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
+							break;
+						}
+				}
+			}
+
+			if (errors.Count > 0)
+				throw new Exception(string.Join("<br>", errors));
+		}
+
+		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
+		{
+			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
 		private void RecalculateFormula(long? generalModelId)

@@ -57,7 +57,6 @@ namespace KadOzenka.Web.Models.Modeling
 
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
-
 		public static AutomaticModelingModel ToModel(ModelingModelDto entity)
 		{
 			return new AutomaticModelingModel
@@ -83,17 +82,13 @@ namespace KadOzenka.Web.Models.Modeling
 
 		public static ModelingModelDto FromModel(AutomaticModelingModel model)
         {
-            if (model.GroupId == null)
-                throw new Exception("Не выбрана Группа");
-
-            return new ModelingModelDto
+	        return new ModelingModelDto
 			{
 				ModelId =  model.Id,
 				Name = model.Name,
                 Description = string.IsNullOrWhiteSpace(model.Description) ? "-" : model.Description,
 				TourId = model.TourId,
-                GroupId = model.GroupId.Value,
-				Attributes = model.Attributes,
+                GroupId = model.GroupId,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks,
                 AlgorithmType = model.AlgorithmType,
                 A0 = model.A0,

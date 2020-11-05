@@ -1,29 +1,7 @@
 ﻿@using KadOzenka.Dal.Modeling.Entities
 @using KadOzenka.Dal.Oks
-@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
-<!-- Модальное окно для добавления атрибута -->
-<div id="attributeAdditionModal" style="display: none; padding: 2%;">
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group">
-            <div class="col-sm-12">
-                <div id="attribute"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для добавления справочника -->
-<div id="dictionaryAdditionModal" style="display: none;  padding: 2%;">
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group">
-            <div class="col-sm-12">
-                <div id="dictionary"></div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Модальное окно для выбора типа модели -->
 <div id="modelTypeWindow" style="display: none; padding: 3% 0;">
@@ -49,6 +27,7 @@
         </div>
     </div>
 </div>
+
 
 @using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
@@ -211,6 +190,14 @@
                 },
                 {
                     type: 'button',
+                    id: 'editAttributeBtn',
+                    text: '',
+                    attributes: { title: "Изменить" },
+                    icon: 'edit',
+                    click: editAttribute
+                },
+                {
+                    type: 'button',
                     id: 'deleteAttributeBtn',
                     className: "k-state-disabled",
                     text: '',
@@ -229,6 +216,7 @@
             ]
         });
         $('#deleteAttributeBtn').addClass('k-state-disabled');
+        $('#editAttributeBtn').addClass('k-state-disabled');
         $(".k-toolbar [title]").kendoTooltip({
             position: "top"
         });
@@ -252,7 +240,8 @@
                             AttributeName: { type: "string" },
                             IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
-                            CoefficientFromModel: { type: "number" }
+                            Coefficient: { type: "number" },
+                            PreviousWeight: { type: "number" }
                         }
                     }
                 },
@@ -269,12 +258,12 @@
                 },
                 {
                     field: 'AttributeName',
-                    title: 'Атрибут'
+                    title: 'Фактор'
                 },
                 {
                     field: 'IsNormalized',
                     title: 'Нормализация',
-                    template: '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />',
+                    template: '<input type="checkbox" #= DictionaryId != null ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
                     attributes: { style: "text-align: center;" }
                 },
                 {
@@ -286,6 +275,11 @@
                     field: 'Coefficient',
                     title: 'Коэффициент',
                     attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'PreviousWeight',
+                    title: 'Коэффициент из предыдущего тура',
+                    attributes: { style: "text-align: center;" }
                 }
             ],
             change: changeToolBarButtonsClass,
@@ -295,7 +289,6 @@
             selectable: true
         });
 
-        $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
         $('[name="ObjectType"]').on('change', onObjectTypeChange);
         $("#chooseModelTypeButtons").kendoButtonGroup({
             select: function(e) {
@@ -303,7 +296,7 @@
             }
         });
         $('#@nameof(Model.TourId)').on('change', onTourChange);
-        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onTypeChange);
+        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', reloadGrid);
 
         initGroups('@Model.GroupId');
     });
@@ -352,6 +345,7 @@
     }
 
 
+    //TODO add objectType
     function initGroups(groupId) {
         kendo.ui.progress($('body'), true);
         var selectedTour = $("#TourId").data("kendoDropDownList").value();
@@ -464,25 +458,29 @@
 
 
     function updateModel() {
-        Common.UI.ShowConfirm({
-            title: 'Обновление модели',
-            content: 'При обновлении модели могут быть сброшены результаты её обучения. Вы уверены, что хотите обновить модель?',
-            onSuccess: onUpdateModel,
-            onFail: function () {
-                closeConfirmWindow($(this));
-            }
-        });
+        var newGroupId = $('#groups').data("kendoDropDownList").value();
+        var objectType = $('input[name="ObjectType"]:checked').val();
+        var isGroupChanged = '@Model.GroupId' != newGroupId;
+        var isObjectTypeChanged = '@Model.ObjectType' != objectType;
+        if (isGroupChanged || isObjectTypeChanged) {
+            Common.UI.ShowConfirm({
+                title: 'Обновление модели',
+                content: 'При обновлении Группы или Типа (ОКС/ЗУ) модели будут сброшены её факторы. Вы уверены, что хотите обновить модель?',
+                onSuccess: onUpdateModel,
+                onFail: function() {
+                    closeConfirmWindow($(this));
+                }
+            });
+        } else {
+            onUpdateModel();
+        }
     }
 
     function onUpdateModel() {
-        if (!validateForm())
-			return;
-		var attributes = getAttributesFromGrid();
-		var form = $('#updateModelModelForm');
+        var form = $('#updateModelModelForm');
         var formObject = Common.Functions.FormToObject(form);
         formObject.GroupId = $('#groups').data("kendoDropDownList").value();
-		formObject['Attributes'] = attributes;
-		kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
 			url: form.attr('action'),
@@ -560,179 +558,57 @@
     }
 
 
-	function validateForm() {
-		var messages = [];
-        var rows = $("#grid").data("kendoGrid").dataSource.data();
-		for (var i = 0; i < rows.length; i++) {
-			if (rows[i].IsNormalized) {
-				if (rows[i].DictionaryId == undefined || rows[i].DictionaryId === 0) {
-					messages.push("Не выбран словарь для атрибута в стороке №" + (i + 1));
-				}
-			}
-		}
-		if (messages.length) {
-			Common.ShowError(messages.join("<br/>"));
-			return false;
-		}
-        return true;
-	}
+    function addAttribute() {
+        Common.UI.ShowWindow('Добавление фактора',
+            '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
+            'editFactorWindow',
+            reloadGrid,
+            800, 400);
+    }
+
+    function editAttribute() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        Common.UI.ShowWindow('Редактирование фактора',
+            '@Url.Action("EditAutomaticModelFactor", "Modeling")' + '?id=' + selectedRowData.Id,
+            'editFactorWindow',
+            reloadGrid,
+            800, 400);
+    }
 
 
-	function getAttributesFromGrid() {
-		var rows = $("#grid").data("kendoGrid").dataSource.data();
-		var attributeIds = [];
-		rows.forEach(function (row) {
-			attributeIds.push({ AttributeId: row.AttributeId, DictionaryId: row.DictionaryId });
-		});
-		return attributeIds;
-	}
-
-
-	function addAttribute() {
-		var modal = $("#attributeAdditionModal");
-		ShowModal(modal, '50%', '20%', "Добавление атрибута");
-		initAttributes();
-	}
-
-
-	function deleteAttribute() {
-		var grid = $("#grid").data("kendoGrid");
-		var row = grid.select();
-		if (row.length > 0) {
-			grid.removeRow(row);
-		}
-	}
-
-
-    function initAttributes() {
-        var tourId = $('#TourId').val();
-		var objectType = $('input[name="ObjectType"]:checked').val();
-		var alreadySelectedAttributeIds = getAttributesFromGrid().map(function(x) {
-			return x.AttributeId;
-        });
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("GetAllAttributes", "Modeling")',
-            data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds },
-            dataType: "json",
-            traditional: true,
-            success: function(response) {
-                var data = response.map(function(item) {
-                    return {
-                        Text: item.Text,
-                        Value: item.Value,
-                        items: item.Items.map(function(i) {
-                            return {
-                                Text: i.Text,
-                                Value: i.Value
-                            }
-
-                        })
+    function deleteAttribute() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (!selectedRowData)
+            return;
+        Common.UI.ShowConfirm({
+            title: 'Удаление фактора',
+            content: 'Удалить фактор для всех типов модели?',
+            onSuccess: function () {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    url: '@Url.Action("DeleteAutomaticModelFactor", "Modeling")',
+                    type: 'POST',
+                    data: { id: selectedRowData.Id },
+                    success: function (response) {
+                        Common.ShowMessage("Удаление выполнено");
+                        reloadGrid();
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($('body'), false);
                     }
                 });
-                var attribute = $('#attribute').data("kendoDropDownTree");
-                if (attribute) {
-                    attribute.setDataSource(data);
-                    attribute.value('');
-                } else {
-                    attribute = $("#attribute").kendoDropDownTree({
-                        dataTextField: 'Text',
-                        dataValueField: 'Value',
-                        dataSource: data,
-                        change: addAttributeToGrid,
-                        filter: "contains"
-                    }).data("kendoDropDownTree");
-                    //нельзя выбирать корневой элемент дерева (таблицу)
-                    var attributeTableTreeSelect = function(e){
-                        if(e.sender.dataItem(e.node).hasChildren) {
-                            e.preventDefault();
-                        }
-                    };
-                    attribute.treeview.bind("select", attributeTableTreeSelect);
-                }
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
             }
         });
     }
 
 
-    function addAttributeToGrid() {
-        var modal = $('#attributeAdditionModal');
-		modal.data("kendoWindow").close();
-        var list = $('#attribute').data("kendoDropDownTree");
-		var attributeId = list.value();
-		var attributeName = list.text();
-		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalized: false });
-		changeToolBarButtonsClass();
-	}
+    function downloadLogs() {
+        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
+    }
 
-
-	var currentAttributeId;
-	function onNormalizationChecked(e) {
-		var grid = $("#grid").data("kendoGrid");
-		var dataItem = grid.dataItem($(e.target).closest("tr"));
-		dataItem.IsNormalized = this.checked;
-		currentAttributeId = dataItem.AttributeId;
-		if (dataItem.IsNormalized) {
-			var modal = $("#dictionaryAdditionModal");
-			ShowModal(modal, '50%', '20%', "Добавление справочника");
-			initDictionaries();
-		} else {
-			updateDictionaryInfoInGridRow(null, null);
-		}
-	}
-
-
-	function initDictionaries() {
-		var dataSource = new kendo.data.DataSource({
-			transport: {
-				read: {
-					url: '@Url.Action("GetDictionaries", "Modeling")',
-					dataType: 'json'
-				}
-			}
-		});
-		var dictionary = $('#dictionary').data("kendoDropDownList");
-		if (dictionary) {
-			dictionary.setDataSource(dataSource);
-			dictionary.value(-1);
-		}
-		else {
-			$("#dictionary").kendoDropDownList({
-				dataTextField: 'Text',
-				dataValueField: 'Value',
-				optionLabel: " ",
-				dataSource: dataSource,
-				change: addDictionaryToGrid,
-				filter: "contains"
-			});
-		}
-	}
-
-
-	function addDictionaryToGrid() {
-		var modal = $('#dictionaryAdditionModal');
-		modal.data("kendoWindow").close();
-		var list = $('#dictionary').data("kendoDropDownList");
-		updateDictionaryInfoInGridRow(list.value(), list.text());
-		changeToolBarButtonsClass();
-	}
-
-
-	function updateDictionaryInfoInGridRow(dictionaryId, dictionaryName) {
-		var grid = $("#grid").data("kendoGrid");
-		var dataItem = grid.dataSource.get(currentAttributeId);
-		dataItem.DictionaryId = dictionaryId;
-		dataItem.DictionaryName = dictionaryName;
-		dataItem.dirty = true;
-		$('#grid').data('kendoGrid').refresh();
-	}
 
 
     function changeToolBarButtonsClass() {
@@ -740,9 +616,11 @@
         $("#mainToolbar").data("kendoToolBar").enable("#trainModelBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
+            $('#editAttributeBtn').addClass('k-state-disabled');
 			$('#deleteAttributeBtn').addClass('k-state-disabled');
 		}
 		else {
+            $('#editAttributeBtn').removeClass('k-state-disabled');
 			$('#deleteAttributeBtn').removeClass('k-state-disabled');
 		}
     }
@@ -753,13 +631,17 @@
 		return grid.select();
     }
 
-
-    function downloadLogs() {
-        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
+    function getSelectedRowInFactorsGrid() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
     }
 
 
-    function onTypeChange() {
+    function reloadGrid() {
         $('#grid').data('kendoGrid').dataSource.read();
     }
 

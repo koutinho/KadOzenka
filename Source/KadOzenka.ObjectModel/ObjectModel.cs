@@ -8178,7 +8178,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 210 Значение факторов модели (KO_MODEL_FACTOR)
+    /// 210 Факторы модели (KO_MODEL_FACTOR)
     /// </summary>
     [RegisterInfo(RegisterID = 210)]
     [Serializable]
@@ -8436,6 +8436,26 @@ namespace ObjectModel.KO
                 this._algorithmtype_Code = value;
                 NotifyPropertyChanged("AlgorithmType");
                 NotifyPropertyChanged("AlgorithmType_Code");
+            }
+        }
+
+
+        private decimal? _previousweight;
+        /// <summary>
+        /// 21001200 Вес из предыдущего тура (previous_weight)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001200)]
+        public decimal? PreviousWeight
+        {
+            get
+            {
+                CheckPropertyInited("PreviousWeight");
+                return _previousweight;
+            }
+            set
+            {
+                _previousweight = value;
+                NotifyPropertyChanged("PreviousWeight");
             }
         }
 

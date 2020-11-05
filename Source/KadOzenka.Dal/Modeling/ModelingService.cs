@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
-using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -12,8 +11,6 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.Modeling.Dto.Factors;
-using ObjectModel.Directory.ES;
 using ObjectModel.Ko;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
@@ -171,15 +168,11 @@ namespace KadOzenka.Dal.Modeling
 
         public bool UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
-			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
+			ValidateAutomaticModel(modelDto);
 
-            ValidateAutomaticModel(modelDto);
-            ValidateAttributes(newAttributes);
+            var existedModel = GetModelEntityById(modelDto.ModelId);
 
-			var existedModel = GetModelEntityById(modelDto.ModelId);
-			var existedModelAttributes = ModelFactorsService.GetGeneralModelAttributes(existedModel.Id);
-
-            var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
+            var isModelChanged = IsModelChanged(existedModel, modelDto);
 
             using (var ts = new TransactionScope())
             {
@@ -193,12 +186,9 @@ namespace KadOzenka.Dal.Modeling
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
 	                var factors = ModelFactorsService.GetFactors(existedModel.Id, KoAlgoritmType.None);
 	                factors.ForEach(x => x.Destroy());
-	                existedModelAttributes = new List<ModelAttributeRelationDto>();
                 }
 
                 existedModel.Save();
-
-                AddModelAttributes(existedModel.Id, modelDto.TourId, newAttributes, existedModelAttributes);
 
                 ts.Complete();
             }
@@ -254,6 +244,12 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
+        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+        {
+	        var model = GetModelEntityById(modelId);
+            ResetTrainingResults(model, type);
+        }
+
         public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
 		{
 			switch (type)
@@ -277,103 +273,20 @@ namespace KadOzenka.Dal.Modeling
 			generalModel.Save();
 		}
 
+        public bool IsModelChanged(long modelId, ModelingModelDto newModel)
+        {
+	        var existedModel = GetModelEntityById(modelId);
 
-		#region Support
+	        return IsModelChanged(existedModel, newModel);
+        }
 
-        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel, List<ModelAttributeRelationDto> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
+
+        #region Support
+
+        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel)
 		{
-			var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x).ToList();
-			var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x).ToList();
-			var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
-
-			var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x).ToList();
-			var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x).ToList();
-			var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
-
 			return !(existedModel.GroupId == newModel.GroupId &&
-			         existedModel.IsOksObjectType == newModel.IsOksObjectType &&
-			         areAttributeIdsEqual && areDictionaryIdsSequenceEqualEqual);
-		}
-
-		public void AddModelAttributes(long? generalModelId, long tourId, List<ModelAttributeRelationDto> attributes,
-			List<ModelAttributeRelationDto> existedAttributes)
-		{
-			if (attributes == null || attributes.Count == 0)
-				return;
-
-			var tour = OMTour.Where(x => x.Id == tourId).Select(x => x.Year).ExecuteFirstOrDefault();
-			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
-			if (tour?.Year == 2016)
-				return;
-
-			var existedAttributeIds = existedAttributes.Select(x => x.AttributeId);
-			var newAttributes = attributes.Where(x => !existedAttributeIds.Contains(x.AttributeId)).ToList();
-			var types = ModelFactorsService.GetPossibleTypes(KoAlgoritmType.None);
-
-			newAttributes.ForEach(attribute =>
-			{
-				types.ForEach(type =>
-				{
-					ModelFactorsService.AddFactor(new ManualModelFactorDto
-					{
-						GeneralModelId = generalModelId,
-						FactorId = attribute.AttributeId,
-						DictionaryId = attribute.DictionaryId,
-						Type = type
-					});
-                });
-			});
-		}
-
-		private void ValidateAttributes(List<ModelAttributeRelationDto> attributes)
-		{
-			var errors = new List<string>();
-
-			var attributeIds = attributes.Select(x => x.AttributeId).ToList();
-			var dictionaryIds = attributes.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId).ToList();
-
-			var omAttributes = RegisterCache.RegisterAttributes.Values.Where(x => attributeIds.Contains(x.Id)).ToList();
-			var omDictionaries = dictionaryIds.Count > 0
-				? OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).Select(x => x.Type_Code).Execute()
-				: new List<OMModelingDictionary>();
-
-			foreach (var modelAttribute in attributes)
-			{
-				var attribute = omAttributes.FirstOrDefault(y => y.Id == modelAttribute.AttributeId);
-
-				if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
-				    modelAttribute.DictionaryId.GetValueOrDefault() == 0)
-				{
-					errors.Add($"Для атрибута '{attribute.Name}' нужно выбрать словарь");
-				}
-				if (modelAttribute.DictionaryId.GetValueOrDefault() != 0)
-				{
-					var dictionaryType = omDictionaries.FirstOrDefault(x => x.Id == modelAttribute.DictionaryId)?.Type_Code;
-					switch (attribute?.Type)
-					{
-						case RegisterAttributeType.STRING:
-						{
-							if (dictionaryType != ReferenceItemCodeType.String)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
-							break;
-						}
-						case RegisterAttributeType.DATE:
-						{
-							if (dictionaryType != ReferenceItemCodeType.Date)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
-							break;
-						}
-					}
-				}
-			}
-
-			if (errors.Count > 0)
-				throw new Exception(string.Join("<br>", errors));
-		}
-
-		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
-		{
-			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
+			         existedModel.IsOksObjectType == newModel.IsOksObjectType);
 		}
 
         #endregion

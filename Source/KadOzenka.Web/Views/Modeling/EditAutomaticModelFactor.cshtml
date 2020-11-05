@@ -1,0 +1,205 @@
+﻿@model KadOzenka.Web.Models.Modeling.AutomaticFactorModel
+
+@using (Html.BeginForm("EditAutomaticModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
+{
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.ModelId)
+    @Html.HiddenFor(x => x.AlgorithmType)
+    
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group" style="padding-bottom: 1%;">
+        <div class="col-sm-9 col-sm-offset-1">
+            <span class="k-icon k-i-warning"></span>
+            После сохранения изменений результаты обучения модели будут сброшены
+        </div>
+    </div>
+    @if (Model.Id != -1)
+    {
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(x => x.AlgorithmType, NotSetRequired: true)
+            </div>
+            <div class="col-sm-9">
+                @(Html.Kendo().DropDownListFor(m => m.AlgorithmTypeStr)
+                    .DataTextField("Name")
+                    .DataValueField("Name")
+                    .Enable(false))
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FactorId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.FactorId)
+                .HtmlAttributes(new {style = "width: 100%;"})
+                .Enable(Model.Id == -1))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.DictionaryId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.DictionaryId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel("--Выберите cловарь--")
+                .Filter(FilterType.Contains)
+                .DataSource(source =>
+                {
+                    source.Read(read => read.Action("GetDictionaries", "Modeling"));
+                }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.CurrentWeight, NotSetRequired: true)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.CurrentWeight, precision: 15, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.PreviousWeight, NotSetRequired: true)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.PreviousWeight, precision: 15, isReadonly: false)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
+        </div>
+    </div>
+</div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#save').on('click', saveFactor);
+        $('#cancel').on('click', closeWindow);
+
+        initAttributes();
+    });
+
+
+
+
+
+    function saveFactor(e) {
+        e.preventDefault();
+        var form = $('#updateFactorForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
+        formObject.DictionaryId = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList").value();
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function () {
+                Common.ShowMessage('Сохранение выполнено');
+                closeWindow();
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function initAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetAllAttributes", "Modeling")',
+            data: { modelId: '@Model.ModelId' },
+            dataType: "json",
+            traditional: true,
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.Text,
+                        Value: item.Value,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.Text,
+                                Value: i.Value
+                            }
+                        })
+                    }
+                });
+                var attribute = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
+                if (attribute) {
+                    attribute.setDataSource(data);
+                    attribute.value('');
+                } else {
+                    attribute = $('#@nameof(Model.FactorId)').kendoDropDownTree({
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data,
+                        filter: "contains"
+                    }).data("kendoDropDownTree");
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var attributeTableTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    attribute.treeview.bind("select", attributeTableTreeSelect);
+                }
+                var factorId = '@Model.FactorId';
+                if (factorId)
+                    attribute.value(factorId);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    @*function initDictionaries() {
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetDictionaries", "Modeling")',
+                    dataType: 'json'
+                }
+            }
+        });
+        var dictionary = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList");
+        if (dictionary) {
+            dictionary.setDataSource(dataSource);
+            dictionary.value(-1);
+        }
+        else {
+            $('#@nameof(Model.DictionaryId)').kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
+                dataSource: dataSource,
+                filter: "contains"
+            });
+        }
+    }*@
+
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+    }
+
+
+</script>

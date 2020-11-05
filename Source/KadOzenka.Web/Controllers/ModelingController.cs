@@ -63,6 +63,7 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService = modelFactorsService;
         }
 
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false)
@@ -104,63 +105,7 @@ namespace KadOzenka.Web.Controllers
             return View(model);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetAllAttributes(long tourId, int objectType, List<long> exceptedAttributes)
-        {
-            var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectTypeExtended)objectType);
-
-            var availableAttributeTypes = new[]
-            {
-                Consts.IntegerAttributeType, Consts.DecimalAttributeType,
-                Consts.StringAttributeType, Consts.DateAttributeType
-            };
-            var marketObjectAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
-                .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
-
-            if (exceptedAttributes != null && exceptedAttributes.Count > 0)
-            {
-                koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
-
-                marketObjectAttributes = marketObjectAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
-            }
-
-            var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == koAttributes.FirstOrDefault()?.RegisterId);
-            var tourAttributesTree = new DropDownTreeItemModel
-            {
-                Value = Guid.NewGuid().ToString(),
-                Text = tourFactorsRegister?.Description,
-                HasChildren = koAttributes.Count > 0,
-                Items = koAttributes.Select(x => new DropDownTreeItemModel
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList()
-            };
-
-            var marketObjectsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == OMCoreObject.GetRegisterId());
-            var marketObjectsRegisterAttributes = new DropDownTreeItemModel
-            {
-                Value = Guid.NewGuid().ToString(),
-                Text = marketObjectsRegister?.Description,
-                HasChildren = marketObjectAttributes.Count > 0,
-                Items = marketObjectAttributes.Select(x => new DropDownTreeItemModel
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList()
-            };
-
-            var fullTree = new List<DropDownTreeItemModel>
-            {
-                tourAttributesTree,
-                marketObjectsRegisterAttributes
-            };
-
-            return Json(fullTree);
-        }
-
-        [HttpGet]
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
@@ -222,7 +167,7 @@ namespace KadOzenka.Web.Controllers
             return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
 		}
 
-        [HttpPost]
+		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
@@ -294,6 +239,95 @@ namespace KadOzenka.Web.Controllers
         }
 
 
+        #region Факторы
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult AddAutomaticModelFactor(long generalModelId)
+        {
+	        var factorDto = new AutomaticFactorModel
+	        {
+		        Id = -1,
+		        ModelId = generalModelId
+	        };
+
+	        return View("EditAutomaticModelFactor", factorDto);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult EditAutomaticModelFactor(long? id)
+        {
+	       var factor = ModelFactorsService.GetFactorById(id);
+
+	       var model = AutomaticFactorModel.ToModel(factor);
+
+	        return View(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult EditAutomaticModelFactor(AutomaticFactorModel factorModel)
+        {
+	        var dto = factorModel.ToDto();
+
+	        if (factorModel.Id == -1)
+	        {
+		        ModelFactorsService.AddAutomaticFactor(dto);
+	        }
+	        else
+	        {
+		        ModelFactorsService.UpdateAutomaticFactor(dto);
+	        }
+
+	        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
+
+	        return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DeleteAutomaticModelFactor(long? id)
+        {
+	        ModelFactorsService.DeleteAutomaticModelFactor(id);
+
+	        return Ok();
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public JsonResult GetAllAttributes(long modelId)
+        {
+	        var model = ModelingService.GetModelEntityById(modelId);
+
+	        var tour = ModelingService.GetModelTour(model.GroupId);
+	        var type = model.IsOksObjectType.GetValueOrDefault() ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu;
+
+	        var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, type);
+
+	        var availableAttributeTypes = new[]
+	        {
+		        Consts.IntegerAttributeType, Consts.DecimalAttributeType,
+		        Consts.StringAttributeType, Consts.DateAttributeType
+	        };
+	        var marketObjectAttributes = RegisterAttributeService
+		        .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+		        .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
+
+	        var tourAttributesTree = MapAttributes(tourAttributes.FirstOrDefault()?.RegisterId, tourAttributes);
+	        var marketObjectsAttributesTree = MapAttributes(OMCoreObject.GetRegisterId(), marketObjectAttributes);
+
+	        var fullTree = new List<DropDownTreeItemModel>
+	        {
+		        tourAttributesTree,
+		        marketObjectsAttributesTree
+	        };
+
+	        return Json(fullTree);
+        }
+
+        #endregion
+
+
         #region Support Methods
 
         private KoAlgoritmType ConvertModelType(ModelType inputType)
@@ -313,10 +347,25 @@ namespace KadOzenka.Web.Controllers
 	        }
         }
 
-        #endregion
+        private DropDownTreeItemModel MapAttributes(long? registerId, List<OMAttribute> attributes)
+        {
+	        var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == registerId);
+	        return new DropDownTreeItemModel
+	        {
+		        Value = Guid.NewGuid().ToString(),
+		        Text = tourFactorsRegister?.Description,
+		        HasChildren = attributes.Count > 0,
+		        Items = attributes.Select(x => new DropDownTreeItemModel
+		        {
+			        Value = x.Id.ToString(),
+			        Text = x.Name
+		        }).ToList()
+	        };
+        }
 
         #endregion
 
+        #endregion
 
 
         #region Карточка ручной модели
@@ -341,12 +390,9 @@ namespace KadOzenka.Web.Controllers
         {
 	        var model = ModelingService.GetModelEntityById(modelId);
 
-	        var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == model.GroupId).Select(x => x.TourId)
-		        .ExecuteFirstOrDefault();
-	        if (tourToGroupRelation == null)
-		        throw new Exception("Для группы не найдено соответсвие с туром");
+	        var tour = ModelingService.GetModelTour(model.GroupId);
 
-	        var tourAttributes = TourFactorService.GetTourAttributes(tourToGroupRelation.TourId, ObjectTypeExtended.Both);
+	        var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, ObjectTypeExtended.Both);
 
 	        var result = tourAttributes.Select(x => new
 	        {
@@ -430,11 +476,11 @@ namespace KadOzenka.Web.Controllers
 
             if (manualFactorModel.Id == -1)
             {
-                ModelFactorsService.AddFactor(dto);
+                ModelFactorsService.AddManualFactor(dto);
             }
             else
             {
-                ModelFactorsService.UpdateFactor(dto);
+                ModelFactorsService.UpdateManualFactor(dto);
             }
 
             return Ok();
@@ -444,7 +490,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult DeleteModelFactor(long? id)
         {
-            ModelFactorsService.DeleteFactor(id);
+            ModelFactorsService.DeleteManualModelFactor(id);
 
             return Json(new { Success = "Удаление выполненно" });
         }
@@ -562,6 +608,7 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+
         #region Удаление модели
 
         [HttpGet]
@@ -593,6 +640,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
+
 
         #region Результаты обучения модели (из раскладки)
 
@@ -1038,10 +1086,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
         public JsonResult GetDictionaries()
         {
-	        var dictionaries = DictionaryService.GetDictionaries().Select(x => new
-	        {
+	        var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            {
 		        Text = x.Name,
-		        Value = (int)x.Id
+		        Value = x.Id.ToString()
 	        }).ToList();
 
 	        return Json(dictionaries);
