@@ -12,6 +12,8 @@ namespace KadOzenka.Web.Models.GbuObject
 	}
 	public class InheritanceViewModel : IValidatableObject
 	{
+		public long RatingTour { get; set; }
+
 		/// <summary>
 		/// Список заданий на оценку
 		/// </summary>

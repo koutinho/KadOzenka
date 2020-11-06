@@ -251,7 +251,14 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public List<SelectListItem> GetTemplatesInheritance()
+		{
+			return _templateService.GetTemplates(DataFormStorege.Inheritance)
+				.Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult GetTemplatesOneGroup(int id)
 		{
 			if (id == 0)
@@ -296,7 +303,12 @@ namespace KadOzenka.Web.Controllers
 			        return Json(new { data = JsonConvert.SerializeObject(unObj) });
 			    }
 
-            }
+			    if (storage != null && storage.FormType_Code == DataFormStorege.Inheritance)
+			    {
+				    var unObj = storage.Data.DeserializeFromXml<InheritanceViewModel>();
+				    return Json(new { data = JsonConvert.SerializeObject(unObj) });
+			    }
+			}
 
 			catch (Exception e)
 			{
@@ -345,11 +357,18 @@ namespace KadOzenka.Web.Controllers
 	        return SaveTemplate(nameTemplate, isCommon, DataFormStorege.EstimatedGroup, model.SerializeToXml());
 	    }
 
-        #endregion
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public JsonResult SaveTemplateInheritance(string nameTemplate, bool isCommon, [FromForm] InheritanceViewModel model)
+		{
+			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Inheritance, model.SerializeToXml());
+		}
 
-        #region Harmonization
+		#endregion
 
-        [HttpGet]
+		#region Harmonization
+
+		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization()
 		{

@@ -1,4 +1,6 @@
 ﻿@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
 
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
@@ -17,8 +19,7 @@
 				@Html.CustomLabel("Тур оценки")
 			</div>
 			<div class="col-sm-4">
-				@(Html.Kendo().DropDownList()
-											.Name("RatingTour")
+				@(Html.Kendo().DropDownListFor(x => x.RatingTour)
 											.DataTextField("Text")
 											.DataValueField("Value")
 											.DataSource(data => data.Read("GetRatingTours", "GbuObject"))
@@ -37,11 +38,11 @@
 									.Filter("contains")
 									.DataSource(source =>
 									{
-										source.Read(read =>
-										{
-											read.Action("GetTasksByTour", "Task").Data("handlerData");
-										})
-											.ServerFiltering(false);
+                                        source.Read(read =>
+                                        {
+                                            read.Action("GetTasksByTour", "Task").Data("handlerData");
+                                        })
+                                        .ServerFiltering(false);
 									}))
 			</div>
 		</div>
@@ -103,11 +104,18 @@
 				<a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-12">
-				<button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
-			</div>
-		</div>
+        <div class="form-group">
+            <div class="col-sm-8">
+                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+                     {
+                         ControllerName = "GbuObject",
+                         ActionName = "GetTemplatesInheritance"
+                     }))
+            </div>
+            <div class="col-sm-2 col-sm-offset-1">
+                <button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
+            </div>
+        </div>
 	</div>
 }
 <script type="text/x-kendo-template" id="templateRow">
@@ -119,8 +127,9 @@
 
 	var rowNumber = @Model.Attributes.Count + 1 || 0;
 
-	function addNewRow(e) {
-		e.preventDefault();
+	function addNewRow(e, value) {
+		if(e)
+		    e.preventDefault();
 		kendo.ui.progress($('body'), true);
 		var data = [{ rowNumber }];
 
@@ -136,6 +145,14 @@
 		var url = "@Url.Action("GetRow", "GbuObject")";
 		$(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
 			$(classWrapper).show(500);
+            if (value) {
+                var attributeElement = '@nameof(PartialAttribute.Attributes)';
+                var dropDownTree = $("#" + attributeElement + "_" + rowNumber).data('kendoDropDownTree');
+                if (dropDownTree) {
+                    dropDownTree.value(value || '');
+                    dropDownTree.trigger('change');
+                }
+            }
 			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
 			rowNumber++;
             kendo.ui.progress($('body'), false);
@@ -188,9 +205,7 @@
             e.preventDefault();
             return;
         }
-
         clearTreeStates();
-
         var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
         var arr = getSelectedValues();
         if (arr.includes(dataItem.value)) {
@@ -213,13 +228,119 @@
                 d.treeview.bind('select', e => updateSelected(e));
             }
         );
-
         updateStates();
-
         var clearButtons = $.find('[class^=clear-button-Attributes]');
-
         clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+	}
+
+
+    function addCustomLevelsToForm(formObject) {
+        if (!formObject) {
+            return formObject;
+		}
+        var attributes = [];
+        Object.keys(formObject).forEach(function (key) {
+            if (key.includes('Attributes')) {
+                attributes.push(formObject[key]);
+                delete formObject[key];
+            }
+        });
+        attributes = attributes.filter(function (val) { return !!val});
+        return Object.assign({}, formObject, { Attributes: attributes });
     }
+
+
+    function clearCustomLevels() {
+        var existedCustomLevels = $("div[class^='wrapper-']");
+        existedCustomLevels.each(function () {
+            this.remove();
+        });
+    }
+
+
+	function fillForm(data) {
+        //$('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        //clearCustomLevels();
+        data.forEach(function (val) {
+            var elementName = Object.keys(val)[0];
+            var elementValue = val[elementName];
+            if (elementName === '@(nameof(Model.RatingTour))') {
+                var tourDropDownList = $('#' + elementName).data("kendoDropDownList");
+                tourDropDownList.value(elementValue || '');
+				tourDropDownList.trigger('change');
+            }
+
+
+			if (elementName.startsWith('@(nameof(Model.TaskFilter))')) {
+                //debugger;
+                var a = elementValue + "";
+				var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                currentValue.push([a]);
+                var element = $('#@(nameof(Model.TaskFilter))');
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
+
+                var required = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect");
+                required.value([]);
+                var values = $.map(required.dataSource.data(), function (dataItem) {
+                    console.log('dataItem.value', dataItem.value);
+                    return dataItem.value;
+                });
+
+                required.value(values);
+
+                @*var multiData = [];
+                for (var i = 0; i < 3; i++) {
+                    multiData.push({ text: 'text', value: i });
+                }
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").dataSource.data(multiData);*@
+			}
+            @*if (elementName === '@(nameof(Model.CadastralBlockToParcel))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.ParcelToBuilding))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.CadastralBlockToBuilding))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.ParcelToConstruction))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.CadastralBlockToConstruction))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.ParcelToUncomplited))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.CadastralBlockToUncomplited))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@(nameof(Model.BuildToFlat))') {
+                $('#' + elementName).prop("checked", elementValue);
+                $('#' + elementName).trigger('change');
+			}
+            if (elementName === '@nameof(Model.ParentCadastralNumberAttribute)' ||
+                elementName.startsWith('@nameof(Model.Attributes)')) {
+                var kendoDropDownTree = $('#' + elementName).data('kendoDropDownTree');
+                if (kendoDropDownTree) {
+                    kendoDropDownTree.value(elementValue || '');
+                    kendoDropDownTree.trigger('change');
+                } else {
+                    //addNewRow(null, elementValue);
+                }
+            }*@
+		});
+    }
+
+
+
 
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
@@ -237,18 +358,8 @@
 				var form = $('form');
 				var formObject = Common.Functions.FormToObject(form);
 				formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-
-				var attributes = [];
-				Object.keys(formObject).forEach(function (key) {
-					if (key.includes('Attributes')) {
-						attributes.push(formObject[key]);
-						delete formObject[key];
-					}
-				});
-				attributes = attributes.filter(function (val) { return !!val});
-				var data = Object.assign({}, formObject, { Attributes: attributes });
-
-				$.post(form.attr('action'), data).done(function(response) {
+                var data = addCustomLevelsToForm(formObject);
+                $.post(form.attr('action'), data).done(function(response) {
 					if (response.Errors) {
                         var errors = getErrors(response.Errors);
 						Common.ShowError(errors);
@@ -263,6 +374,10 @@
 				    kendo.ui.progress($('body'), false);
 				});
 			});
-	});
+
+		templateStorage.init(@((int)DataFormStorege.Inheritance),
+			"SaveTemplateInheritance", "GbuObject",
+            "GetTemplatesOneGroup", "GbuObject", fillForm, addCustomLevelsToForm);
+    });
 
 </script>
