@@ -916,7 +916,7 @@ namespace KadOzenka.Web.Controllers
                 new DropDownTreeItemModel
                 {
                     Value = "201",
-                    Text = "Еденица оценки",
+                    Text = "Единица оценки",
                     Items = taskAttr.Select(x => new DropDownTreeItemModel
                     {
                         Value = x.Id.ToString(),

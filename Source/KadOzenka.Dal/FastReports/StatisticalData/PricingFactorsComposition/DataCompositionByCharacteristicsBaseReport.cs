@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
@@ -26,25 +28,34 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	    protected abstract DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null);
 
 
-		protected List<T> GetOperations<T>(List<long> taskIds) where T : new()
+		protected List<T> GetOperations<T>(List<long> taskIds, ILogger logger) where T : new()
 		{
 			var runtimeResults = new List<T>();
 
-			if (DataCompositionByCharacteristicsService.IsCacheTableExists())
+			var isCacheTableExists = DataCompositionByCharacteristicsService.IsCacheTableExists();
+			logger.ForContext("IsCacheTableExists", isCacheTableExists).Debug($"Поиск кеш-таблицы. Таблица существует {isCacheTableExists}");
+
+			if (isCacheTableExists)
 			{
 				var longPerformanceTaskIds = DataCompositionByCharacteristicsService.GetCachedTaskIds();
+				logger.ForContext("AllCachedTaskIds", longPerformanceTaskIds, true).Debug("ИД задач из кеша");
+				
 				var tasIdsForRuntime = taskIds.Except(longPerformanceTaskIds).ToList();
-				var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
+				logger.ForContext("RuntimeTaskIds", tasIdsForRuntime, true).Debug("ИД задач для рантайма");
 
+				var tasIdsForCache = longPerformanceTaskIds.Intersect(taskIds).ToList();
+				
 				if (tasIdsForRuntime.Count != 0)
 				{
 					var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
+					logger.Debug(new Exception(runtimeSql), "Sql запрос для рантайма");
 					runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
 				}
 
 				if (tasIdsForCache.Count != 0)
 				{
 					var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
+					logger.Debug(new Exception(cacheSql), "Sql запрос для кеша");
 					var cacheResults = QSQuery.ExecuteSql<T>(cacheSql);
 					runtimeResults.AddRange(cacheResults);
 				}
@@ -52,6 +63,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 			else
 			{
 				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(taskIds);
+				logger.Debug(new Exception(runtimeSql), "Sql запрос для рантайма");
 				runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
 			}
 
