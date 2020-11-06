@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
+using ObjectModel.Modeling;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -12,6 +14,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 		public long Id { get; set; }
         public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
+        public bool HasFormedObjectArray { get; private set; }
         public bool HasLinearTrainingResult { get; set; }
         public bool HasExponentialTrainingResult { get; set; }
         public bool HasMultiplicativeTrainingResult { get; set; }
@@ -57,7 +60,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
 
-		public static AutomaticModelingModel ToModel(ModelingModelDto entity)
+		public static AutomaticModelingModel ToModel(ModelingModelDto entity, bool hasFormedObjectArray)
 		{
 			return new AutomaticModelingModel
             {
@@ -73,6 +76,7 @@ namespace KadOzenka.Web.Models.Modeling
                 HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
                 HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
                 HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
+                HasFormedObjectArray = hasFormedObjectArray,
                 TypeStr = entity.Type.GetEnumDescription(),
                 AlgorithmType = entity.AlgorithmType,
                 CalculationType = entity.CalculationType.GetEnumDescription(),

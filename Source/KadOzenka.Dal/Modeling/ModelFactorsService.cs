@@ -311,9 +311,11 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(factor.ModelId);
 		}
 
-		public void DeleteAutomaticModelFactor(long? id)
+		public void DeleteAutomaticModelFactor(OMModelFactor factor)
 		{
-			var factor = GetFactorById(id);
+			if (factor == null)
+				throw new Exception("Не передан фактор для удаления");
+
 			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
 				.Execute();
 

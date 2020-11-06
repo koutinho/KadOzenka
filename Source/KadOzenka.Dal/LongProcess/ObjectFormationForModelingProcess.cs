@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess
 				var message = Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
 				WorkerCommon.SetMessage(processQueue, message);
 				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				SendMessage(processQueue, MessageSubject, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
+				SendMessage(processQueue, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов", MessageSubject);
 				return;
 			}
 
@@ -68,16 +68,17 @@ namespace KadOzenka.Dal.LongProcess
 
 				PrepareData(processQueue);
 
-				SendMessage(processQueue, MessageSubject, "Операция успешно завершена");
+				SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
 
             }
             catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
-				SendMessage(processQueue, MessageSubject, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})");
+				SendMessage(processQueue, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})", MessageSubject);
                 _log.Error(exception, "Ошибка в ходе сбора нанных для моделирования");
 			}
 
+			WorkerCommon.SetProgress(processQueue, 100);
             _log.Information("Закончен фоновый процесс Формирования массива данных для Моделирования");
 		}
 

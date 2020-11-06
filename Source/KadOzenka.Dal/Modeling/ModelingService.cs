@@ -494,11 +494,16 @@ namespace KadOzenka.Dal.Modeling
 
         #region Modeling Process
 
+        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long modelId, bool isForTraining)
+        {
+	        return OMModelToMarketObjects
+		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
+		                    x.IsForTraining.Coalesce(false) == isForTraining);
+        }
+
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
         {
-            return OMModelToMarketObjects
-                .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-                            x.IsForTraining.Coalesce(false) == isForTraining).SelectAll().Execute();
+            return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
         }
 
         public void DestroyModelMarketObjects(long? modelId)

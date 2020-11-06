@@ -163,7 +163,7 @@
                 },
                 {
                     type: 'button',
-                    id: 'updateModelBtn',
+                    id: 'formObjectArrayBtn',
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
                     icon: 'media-manager',
@@ -175,6 +175,7 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
+                    enable: '@Model.HasFormedObjectArray' === "True",
                     click: onTrainModelBtnClick
                 },
                 {
@@ -623,7 +624,7 @@
             return;
         Common.UI.ShowConfirm({
             title: 'Удаление фактора',
-            content: 'Удалить фактор для всех типов модели?',
+            content: 'Удалить фактор для всех типов модели?<br>При удалении фактора будут сброшены результаты обучения модели и удален массив данных.',
             onSuccess: function () {
                 kendo.ui.progress($('body'), true);
                 $.ajax({
@@ -648,7 +649,7 @@
 
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-        $("#mainToolbar").data("kendoToolBar").enable("#trainModelBtn", areAttributesExists);
+        $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
             $('#editAttributeBtn').addClass('k-state-disabled');

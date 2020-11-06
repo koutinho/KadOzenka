@@ -95,7 +95,8 @@ namespace KadOzenka.Web.Controllers
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
-			var model = AutomaticModelingModel.ToModel(modelDto);
+			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
 
 			if (isPartial)
 			{
@@ -304,24 +305,30 @@ namespace KadOzenka.Web.Controllers
 	        {
 		        ModelFactorsService.AddAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
-                ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
-            }
+	        }
 	        else
 	        {
 		        ModelFactorsService.UpdateAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
             }
 
-	        return Ok();
+	        ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
+
+            return Ok();
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult DeleteAutomaticModelFactor(long? id)
         {
-	        ModelFactorsService.DeleteAutomaticModelFactor(id);
+	        var factor = ModelFactorsService.GetFactorById(id);
 
-	        return Ok();
+            ModelFactorsService.DeleteAutomaticModelFactor(factor);
+
+            ModelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+            ModelingService.DestroyModelMarketObjects(factor.ModelId);
+
+            return Ok();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
@@ -733,7 +740,7 @@ namespace KadOzenka.Web.Controllers
             var modelDto = ModelingService.GetModelById(modelId);
             modelDto.Attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
-            var model = AutomaticModelingModel.ToModel(modelDto);
+            var model = AutomaticModelingModel.ToModel(modelDto, false);
 
             return View(model);
 		}
