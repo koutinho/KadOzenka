@@ -8,7 +8,6 @@ using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
@@ -22,8 +21,8 @@ namespace KadOzenka.Dal.Modeling
         protected OMModel GeneralModel { get; }
         protected override string SubjectForMessageInNotification => $"Процесс прогнозирования модели '{GeneralModel.Name}'";
 
-        public Prediction(string inputParametersXml, OMQueue processQueue, ILogger logger)
-            : base(processQueue, logger)
+        public Prediction(string inputParametersXml, OMQueue processQueue)
+            : base(processQueue, Log.ForContext<Prediction>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);

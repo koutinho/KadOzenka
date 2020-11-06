@@ -177,6 +177,25 @@ namespace KadOzenka.Web.Controllers
             return Json(isModelChanged);
 		}
 
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public ActionResult FormObjectArray(long modelId)
+		{
+			if (modelId == 0)
+				throw new Exception("Не передан ИД модели");
+			////TODO код для отладки
+			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = modelId
+			//}, new CancellationToken());
+
+			ObjectFormationForModelingProcess.AddProcessToQueue(modelId);
+
+			return Ok();
+		}
+
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)

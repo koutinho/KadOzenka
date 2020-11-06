@@ -163,6 +163,14 @@
                 },
                 {
                     type: 'button',
+                    id: 'updateModelBtn',
+                    text: '',
+                    attributes: { title: "Сформировать массив данных" },
+                    icon: 'media-manager',
+                    click: onFormObjectArrayBtnClick
+                },
+                {
+                    type: 'button',
                     id: 'trainModelBtn',
                     text: '',
                     attributes: { title: "Обучить" },
@@ -479,6 +487,7 @@
         });
     }
 
+
     function updateModel() {
         var form = $('#updateModelModelForm');
         var formObject = getFormObject(form);
@@ -515,6 +524,23 @@
         var formObject = Common.Functions.FormToObject(form);
         formObject.GroupId = $('#groups').data("kendoDropDownList").value();
         return formObject;
+    }
+
+
+    function onFormObjectArrayBtnClick() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("FormObjectArray", "Modeling", new {modelId = Model.Id})',
+            success: function () {
+                Common.ShowMessage("Процесс сбора данных поставлен в очередь. По его завершению будет отправлено сообщение на почту.");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 
