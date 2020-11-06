@@ -49,7 +49,10 @@ SELECT
     MAX(ObjectUpks) FILTER (WHERE TourId={5}) AS SecondTourMaxUpks,
     ((MIN(ObjectUpks) FILTER (WHERE TourId={4}))/NULLIF(MIN(ObjectUpks) FILTER (WHERE TourId={5}), 0)) AS MinUpksVarianceBetweenTours,
     ((AVG(ObjectUpks) FILTER (WHERE TourId={4}))/NULLIF(AVG(ObjectUpks) FILTER (WHERE TourId={5}), 0)) AS AverageUpksVarianceBetweenTours,
-    ((MAX(ObjectUpks) FILTER (WHERE TourId={4}))/NULLIF(MAX(ObjectUpks) FILTER (WHERE TourId={5}), 0)) AS MaxUpksVarianceBetweenTours
+    ((MAX(ObjectUpks) FILTER (WHERE TourId={4}))/NULLIF(MAX(ObjectUpks) FILTER (WHERE TourId={5}), 0)) AS MaxUpksVarianceBetweenTours,
+    ((MIN(ObjectUpks) FILTER (WHERE TourId={4} AND NOT(IsGroupChanged)))/NULLIF(MIN(ObjectUpks) FILTER (WHERE TourId={5} AND NOT(IsGroupChanged)), 0)) AS MinUpksVarianceBetweenToursWithoutGroupChanging,
+    ((AVG(ObjectUpks) FILTER (WHERE TourId={4} AND NOT(IsGroupChanged)))/NULLIF(AVG(ObjectUpks) FILTER (WHERE TourId={5} AND NOT(IsGroupChanged)), 0)) AS AverageUpksVarianceBetweenToursWithoutGroupChanging,
+    ((MAX(ObjectUpks) FILTER (WHERE TourId={4} AND NOT(IsGroupChanged)))/NULLIF(MAX(ObjectUpks) FILTER (WHERE TourId={5} AND NOT(IsGroupChanged)), 0)) AS MaxUpksVarianceBetweenToursWithoutGroupChanging
 FROM RESULT_DATA
 GROUP BY 
     Zone,
