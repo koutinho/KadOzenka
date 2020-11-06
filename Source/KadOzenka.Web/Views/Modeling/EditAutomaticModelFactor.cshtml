@@ -171,35 +171,8 @@
     }
 
 
-    @*function initDictionaries() {
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: '@Url.Action("GetDictionaries", "Modeling")',
-                    dataType: 'json'
-                }
-            }
-        });
-        var dictionary = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList");
-        if (dictionary) {
-            dictionary.setDataSource(dataSource);
-            dictionary.value(-1);
-        }
-        else {
-            $('#@nameof(Model.DictionaryId)').kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: " ",
-                dataSource: dataSource,
-                filter: "contains"
-            });
-        }
-    }*@
-
-
     function closeWindow() {
         Common.UI.CloseWindow('editFactorWindow', window.parent, true);
     }
-
 
 </script>

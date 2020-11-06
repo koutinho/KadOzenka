@@ -186,6 +186,7 @@ namespace KadOzenka.Dal.Modeling
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
 	                var factors = ModelFactorsService.GetFactors(existedModel.Id, KoAlgoritmType.None);
 	                factors.ForEach(x => x.Destroy());
+                    DestroyModelMarketObjects(existedModel.Id);
                 }
 
                 existedModel.Save();
@@ -500,7 +501,7 @@ namespace KadOzenka.Dal.Modeling
                             x.IsForTraining.Coalesce(false) == isForTraining).SelectAll().Execute();
         }
 
-        public void DestroyModelMarketObjects(long modelId)
+        public void DestroyModelMarketObjects(long? modelId)
         {
             var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
             existedModelObjects.ForEach(x => x.Destroy());

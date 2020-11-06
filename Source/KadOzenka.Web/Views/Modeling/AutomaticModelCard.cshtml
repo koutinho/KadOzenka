@@ -155,27 +155,36 @@
             items: [
                 {
                     type: 'button',
+                    id: 'updateModelBtn',
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    click: updateModel
+                    click: onUpdateModelBtnClick
                 },
                 {
-                    id: 'trainModelBtn',
                     type: 'button',
+                    id: 'trainModelBtn',
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
                     click: onTrainModelBtnClick
                 },
                 {
-                    id: 'predictModelBtn',
                     type: 'button',
+                    id: 'predictModelBtn',
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
                     enable: '@Model.IsModelWasTrained' === "True",
                     click: onPredictModelBtnClick
+                },
+                {
+                    type: 'button',
+                    id: 'warningsBtn',
+                    text: '',
+                    attributes: { title: "Логи" },
+                    icon: 'clock',
+                    click: downloadLogs
                 }
             ]
         });
@@ -183,6 +192,7 @@
             items: [
                 {
                     type: 'button',
+                    id: 'addAttributeBtn',
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
@@ -204,19 +214,9 @@
                     attributes: { title: "Удалить" },
                     icon: 'delete',
                     click: deleteAttribute
-                },
-                {
-                    type: 'button',
-                    id: 'warningsBtn',
-                    text: '',
-                    attributes: { title: "Логи" },
-                    icon: 'clock',
-                    click: downloadLogs
                 }
             ]
         });
-        $('#deleteAttributeBtn').addClass('k-state-disabled');
-        $('#editAttributeBtn').addClass('k-state-disabled');
         $(".k-toolbar [title]").kendoTooltip({
             position: "top"
         });
@@ -289,7 +289,7 @@
             selectable: true
         });
 
-        $('[name="ObjectType"]').on('change', onObjectTypeChange);
+        $('[name="ObjectType"]').on('change', validateModelChanges);
         $("#chooseModelTypeButtons").kendoButtonGroup({
             select: function(e) {
                 onModelTypeSelect(e);
@@ -303,49 +303,40 @@
 
 
 
-    function onObjectTypeChange() {
-        var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-        if (!areAttributesExists)
-            return;
-        Common.UI.ShowConfirm({
-            title: 'Изменение Типа',
-            content: 'При изменении типа атрибуты будут сброшены. Вы уверены, что хотите сменить тип?',
-            onSuccess: function () {
-                $("#grid").data("kendoGrid").dataSource.data([]);
-            },
-            onFail: function () {
-                var selector = "input[name='ObjectType'][value='" + @((int)Model.ObjectType) + "']";
-                $(selector).prop('checked', true);
-                closeConfirmWindow($(this));
-            }
-        });
-    }
-
-
     function onTourChange() {
         var selectedTour = $("#TourId").data("kendoDropDownList").value();
-		var initialTourId = '@Model.TourId';
+        var initialTourId = '@Model.TourId';
         if (selectedTour !== initialTourId) {
             initGroups();
-            var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-            if (!areAttributesExists)
-                return;
-            Common.UI.ShowConfirm({
-				title: 'Изменение тура',
-				content: 'При изменении тура атрибуты будут сброшены. Вы уверены, что хотите сменить тур?',
-				onSuccess: function () {
-                    $("#grid").data("kendoGrid").dataSource.data([]);
-                },
-				onFail: function() {
-					$("#TourId").data("kendoDropDownList").value(initialTourId);
-                    closeConfirmWindow($(this));
-                }
-			});
-		}
+        }
+        validateModelChanges();
     }
 
 
-    //TODO add objectType
+    function validateModelChanges() {
+        var selectedTour = $("#TourId").data("kendoDropDownList").value();
+        var initialTourId = '@Model.TourId';
+        var selectedObjectType = $('input[name="ObjectType"]:checked').val();
+        var initialObjectType = '@((int)Model.ObjectType)';
+        if (selectedObjectType !== initialObjectType || selectedTour !== initialTourId) {
+            changeUIForDirtyModel();
+        } else {
+            changeUIForCleanModel();
+        }
+    }
+
+    function changeUIForDirtyModel() {
+        $('#updateModelBtn').css({ backgroundColor: "greenyellow" });
+        $('#addAttributeBtn').addClass('k-state-disabled');
+        $('#editAttributeBtn').addClass('k-state-disabled');
+        $('#deleteAttributeBtn').addClass('k-state-disabled');
+    }
+    function changeUIForCleanModel() {
+        $('#updateModelBtn').css({ backgroundColor: "" });
+        $('#addAttributeBtn').removeClass('k-state-disabled');
+    }
+
+
     function initGroups(groupId) {
         kendo.ui.progress($('body'), true);
         var selectedTour = $("#TourId").data("kendoDropDownList").value();
@@ -457,29 +448,40 @@
     }
 
 
-    function updateModel() {
-        var newGroupId = $('#groups').data("kendoDropDownList").value();
-        var objectType = $('input[name="ObjectType"]:checked').val();
-        var isGroupChanged = '@Model.GroupId' != newGroupId;
-        var isObjectTypeChanged = '@Model.ObjectType' != objectType;
-        if (isGroupChanged || isObjectTypeChanged) {
-            Common.UI.ShowConfirm({
-                title: 'Обновление модели',
-                content: 'При обновлении Группы или Типа (ОКС/ЗУ) модели будут сброшены её факторы. Вы уверены, что хотите обновить модель?',
-                onSuccess: onUpdateModel,
-                onFail: function() {
-                    closeConfirmWindow($(this));
+    function onUpdateModelBtnClick() {
+        var form = $('#updateModelModelForm');
+        var formObject = getFormObject(form);
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("CheckIsModelChanged", "Modeling")',
+            data: formObject,
+            success: function (response) {
+                if (response) {
+                    Common.UI.ShowConfirm({
+                        title: 'Обновление модели',
+                        content: 'При обновлении Группы или Типа (ОКС/ЗУ) модели будут сброшены её факторы. Вы уверены, что хотите обновить модель?',
+                        onSuccess: updateModel,
+                        onFail: function() {
+                            closeConfirmWindow($(this));
+                        }
+                    });
+                } else {
+                    updateModel();
                 }
-            });
-        } else {
-            onUpdateModel();
-        }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
-    function onUpdateModel() {
+    function updateModel() {
         var form = $('#updateModelModelForm');
-        var formObject = Common.Functions.FormToObject(form);
-        formObject.GroupId = $('#groups').data("kendoDropDownList").value();
+        var formObject = getFormObject(form);
         kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
@@ -496,7 +498,9 @@
                         toolbar.enable("#predictModelBtn", false);
                     }
 					Common.ShowMessage(response.Message);
-				}
+                    reloadGrid();
+                    changeUIForCleanModel();
+                }
 			},
 			error: function(response) {
 				Common.ShowError(response.responseText);
@@ -505,6 +509,12 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
+    }
+
+    function getFormObject(form) {
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.GroupId = $('#groups').data("kendoDropDownList").value();
+        return formObject;
     }
 
 
@@ -558,6 +568,11 @@
     }
 
 
+    function downloadLogs() {
+        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
+    }
+
+
     function addAttribute() {
         Common.UI.ShowWindow('Добавление фактора',
             '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
@@ -589,7 +604,7 @@
                     url: '@Url.Action("DeleteAutomaticModelFactor", "Modeling")',
                     type: 'POST',
                     data: { id: selectedRowData.Id },
-                    success: function (response) {
+                    success: function () {
                         Common.ShowMessage("Удаление выполнено");
                         reloadGrid();
                     },
@@ -603,12 +618,6 @@
             }
         });
     }
-
-
-    function downloadLogs() {
-        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
-    }
-
 
 
     function changeToolBarButtonsClass() {

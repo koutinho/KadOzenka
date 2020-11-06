@@ -167,7 +167,17 @@ namespace KadOzenka.Web.Controllers
             return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
 		}
 
-		[HttpPost]
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public JsonResult CheckIsModelChanged(AutomaticModelingModel modelingModel)
+		{
+            var dto = AutomaticModelingModel.FromModel(modelingModel);
+            var isModelChanged = ModelingService.IsModelChanged(dto.ModelId, dto);
+
+            return Json(isModelChanged);
+		}
+
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult TrainModel(long modelId, ModelType modelType)
         {
@@ -274,13 +284,14 @@ namespace KadOzenka.Web.Controllers
 	        if (factorModel.Id == -1)
 	        {
 		        ModelFactorsService.AddAutomaticFactor(dto);
-	        }
+		        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+                ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
+            }
 	        else
 	        {
 		        ModelFactorsService.UpdateAutomaticFactor(dto);
-	        }
-
-	        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
+		        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
+            }
 
 	        return Ok();
         }
