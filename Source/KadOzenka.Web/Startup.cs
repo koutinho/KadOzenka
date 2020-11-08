@@ -189,7 +189,7 @@ namespace CIPJS
 	            routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
 	            routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
 	            routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
-	            routes.MapHub<EsHub>("/esProgress");
+	            routes.MapHub<EsHub>("/esCheckProgress");
             });
 
             app.UseMvc(routes =>

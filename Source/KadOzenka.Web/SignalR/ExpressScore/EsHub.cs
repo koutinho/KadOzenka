@@ -6,6 +6,7 @@ namespace KadOzenka.Web.SignalR
 {
 	public class EsHub: Hub
 	{
+		public EsHub(){}
 
 		public async void SendMessage()
 		{

@@ -34,6 +34,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public event CalculateProcessHandler NotifyCalculateProgress;
 
+		public decimal SummaryCalculateProgress;
+
 		public ScoreCommonService ScoreCommonService { get; set; }
 		public RegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
@@ -428,6 +430,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
+			SetProgressCalculate(5);
 			resultCalculate.SquareCost = Math.Round(squarePerMeterCost, 2);
 			resultCalculate.SummaryCost = summaryCost;
 			resultCalculate.Id = id;
@@ -436,7 +439,7 @@ namespace KadOzenka.Dal.ExpressScore
 			resultCalculate.MarketSegment = inputParam.Segment;
 
 			resultCalculate.ReportId = ReportService.GenerateReport(summaryCost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
-
+			SetProgressCalculate(5);
 			var resultAnalogs = inputParam.Analogs.Where(x => successAnalogIds.Contains(x.Id)).Select(x => new AnalogResultDto
 			{
 				Id = x.Id,
@@ -453,8 +456,8 @@ namespace KadOzenka.Dal.ExpressScore
 			resultCalculate.DataToGrid = JsonConvert.SerializeObject(GetDataToGrid(inputParam.Segment, resultAnalogs), new JsonSerializerSettings
 			{
 				ContractResolver = new CamelCasePropertyNamesContractResolver()
-			}); 
-
+			});
+			SetProgressCalculate(100);
 			return msg;
 		}
 
@@ -470,8 +473,9 @@ namespace KadOzenka.Dal.ExpressScore
 			summaryCost = 0;
 			squarePerMeterCost = 0;
 			reportId = 0;
-
+			SetProgressCalculate(0);
 			SetRequiredReportParameter(inputParam.TargetObjectId, inputParam.Analogs, inputParam.Segment, inputParam.Address, inputParam.Kn, inputParam.DealType);
+			SetProgressCalculate(5);
 
 			CalculateSquareCostDto calculateSquareCost = new CalculateSquareCostDto
 			{
@@ -492,7 +496,7 @@ namespace KadOzenka.Dal.ExpressScore
 			squarePerMeterCost = Math.Round(squarePerMeterCost, 2);
 
 			reportId = ReportService.GenerateReport(summaryCost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
-
+			SetProgressCalculate(5);
 			SaveExpressScoreDto saveExpressScore = new SaveExpressScoreDto
 			{
 				CostSquareMeter = squarePerMeterCost,
@@ -503,7 +507,7 @@ namespace KadOzenka.Dal.ExpressScore
 			};
 			msg = SaveSuccessExpressScore(saveExpressScore, out int id);
 			if (!string.IsNullOrEmpty(msg)) return msg;
-
+			SetProgressCalculate(100);
 			return msg;
 		}
 
@@ -550,9 +554,14 @@ namespace KadOzenka.Dal.ExpressScore
 
 			GenerateLists(exCostFactors, calculateSquareCost.ScenarioType);
 
+	
+			double percent = 100d / calculateSquareCost.Analogs.Count;
+			//0.8 коэф, т.е расчет занимает 80% от всего
+			int progress = (int)Math.Floor(percent * 0.8);
 			foreach (var analog in calculateSquareCost.Analogs)
-            {
-                decimal yPrice = 0; // Удельный показатель стоимости
+			{
+
+				decimal yPrice = 0; // Удельный показатель стоимости
 
 				if (analog.Price != 0 && analog.Square != 0) yPrice = analog.Price / analog.Square;
 
@@ -780,7 +789,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 						if (analogFactor.Value == null || analogFactor.Value.ToString() == string.Empty)
 						{
-							_log.Error("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора {name}", analog.Id, complex.Name);
+							_log.Warning("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора {name}", analog.Id, complex.Name);
 						}
 
 						string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor.Value?.ToString();
@@ -977,9 +986,9 @@ namespace KadOzenka.Dal.ExpressScore
 	                msg = "Ошибка во время прохода по комплексным параметрам";
 	                return 0;
                 }
+
 				
-
-
+				SetProgressCalculate(progress);
 				if (isBreak)
 				{
 					WriteByColumnToComplexMatrix(costFactorsDataForReport, costTargetObjectDataForReport);
@@ -1852,10 +1861,18 @@ namespace KadOzenka.Dal.ExpressScore
 			return targetObjectFactor;
 		}
 
-
-		private void SetProgressCalculate(decimal progress)
+		/// <summary>
+		/// Дергается событие для передачи в сигнал р передачи состояния прогресса расчета
+		/// </summary>
+		/// <param name="progress"> число на которое надо увеличть текущий прогресс</param>
+		private void SetProgressCalculate(int progress)
 		{
-			NotifyCalculateProgress?.Invoke(progress);
+			SummaryCalculateProgress = SummaryCalculateProgress + progress;
+			if (SummaryCalculateProgress > 100)
+			{
+				SummaryCalculateProgress = 100;
+			}
+			NotifyCalculateProgress?.Invoke(SummaryCalculateProgress);
 		}
 		#endregion
 	}

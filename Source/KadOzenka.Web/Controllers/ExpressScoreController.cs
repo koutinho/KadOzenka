@@ -275,6 +275,10 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage("Не найдена оценка");
             }
 
+			var headers = Request.Headers;
+			string connectionId = headers.TryGetValue("connection-signalr-id", out var str) ? (string)str : "";
+			_service.NotifyCalculateProgress += progress => _esHubService.SendCalculateProgress(progress, connectionId);
+
 			var inputParam = new InputCalculateDto
 			{
 				Address = obj.Address,

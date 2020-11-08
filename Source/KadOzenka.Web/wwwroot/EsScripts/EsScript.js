@@ -386,7 +386,7 @@ function executeCalculate(scenarioType = null) {
         square: $("#square").val()
     }
     var topBody = window.top.document.body;
-    kendo.ui.progress($(topBody), true);
+    progressLoader.loader($(topBody), true);
     var url = "/ExpressScore/CalculateCostTargetObject";
     var jqxhr  =  $.ajax({
         url,
@@ -406,7 +406,7 @@ function executeCalculate(scenarioType = null) {
         .fail(function (response) {
             Common.ShowError(response.responseText);
         })
-        .always(function () { kendo.ui.progress($(topBody), false); });
+        .always(function () { progressLoader.loader($(topBody), false); });
     return;
 }
 
@@ -801,22 +801,27 @@ var connection;
 //signalR
 function initSignalRConnection() {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl("/esProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+        .withUrl("/esCheckProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
         .withAutomaticReconnect()
         .build();
 
-    connection.on('ReceiveProgress', function (progress) {
-        console.log('progress', progress);
-        var encodedMsg = JSON.parse(message);
-        //updateWidgetState(encodedMsg);
-    });
+
     connection.on('Connection', function (connectionId) {
         connectionSignalRId = connectionId;
+    });
+    connection.on('ReceiveProgress', function (progress) {
+        var topBody = window.top.document.body;
+        progressLoader.move($(topBody), progress);
+        progressLoader.move($('#successDialog'), progress);
+    });
+    connection.onreconnected(function() {
+        console.log('Reconnected', connection);
+        connection.invoke('SendMessage');
     });
 
     connection.start()
         .then(function () {
-            connection.invoke("SendMessage");
+            connection.invoke('SendMessage');
         })
         .catch(error => {
             console.error(error.message);
