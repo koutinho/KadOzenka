@@ -699,6 +699,7 @@ namespace ObjectModel.KO
     public partial class OMGroup
     {
         static readonly ILogger _log = Serilog.Log.ForContext<OMGroup>();
+
         public static int? GetFactorReestrId(OMGroup current)
         {
             OMGroup ParentGroup = OMGroup.Where(x => x.Id == current.ParentId).SelectAll().ExecuteFirstOrDefault();
@@ -708,55 +709,28 @@ namespace ObjectModel.KO
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == current.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
-                    if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS)
-                    {
-                        if (tourgroup.TourId == 2016) return 252;
-                        else
-                        if (tourgroup.TourId == 2018) return 250;
-                        else
-                            return null;
-                    }
-                    else
-                    if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel)
-                    {
-                        if (tourgroup.TourId == 2016) return 253;
-                        else
-                        if (tourgroup.TourId == 2018) return 251;
-                        else
-                            return null;
-                    }
-                    else
+                    var existedTourFactorRegister = current.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel
+                    ? OMTourFactorRegister
+                        .Where(x => x.TourId == tourgroup.TourId && x.ObjectType_Code == PropertyTypes.Stead)
+                        .SelectAll().Execute().FirstOrDefault()
+                    : OMTourFactorRegister
+                        .Where(x => x.TourId == tourgroup.TourId && x.ObjectType_Code != PropertyTypes.Stead)
+                        .SelectAll().Execute().FirstOrDefault();
+
+                    if (existedTourFactorRegister == null)
                         return null;
 
+                    if (existedTourFactorRegister.RegisterId == null)
+                        return null;
+
+                    return (int)existedTourFactorRegister.RegisterId.Value;
                 }
                 else
                     return null;
             }
         }
-        public static int GetFactorReestrId(OMUnit current)
-        {
-            if (current != null)
-            {
-                if (current.PropertyType_Code != PropertyTypes.Stead)
-                {
-                    if (current.TourId == 2016) return 252;
-                    else
-                    if (current.TourId == 2018) return 250;
-                    else
-                        return 250;
-                }
-                else
-                {
-                    if (current.TourId == 2016) return 253;
-                    else
-                    if (current.TourId == 2018) return 251;
-                    else
-                        return 251;
-                }
-            }
-            else
-                return 251;
-        }
+
+
         public static List<ObjectModel.KO.OMGroup> GetListGroupTour(long tourId, ObjectModel.Directory.KoGroupAlgoritm GroupAlgoritm)
         {
             List<ObjectModel.KO.OMGroup> res = new List<ObjectModel.KO.OMGroup>();

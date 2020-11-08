@@ -348,6 +348,23 @@ namespace KadOzenka.Dal.DataImport
 
             SaveAttributeValueWithCheck(attributeValue);
         }
+        public static void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                NumValue=(value?1:0)
+            };
+
+            SaveAttributeValueWithCheck(attributeValue);
+        }
 
 
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -523,7 +540,7 @@ namespace KadOzenka.Dal.DataImport
 
                         var changedProperties = new UnitChangedProperties
                         {
-	                        IsNameChanged = !prNameObjectCheck,
+                            IsNameChanged = !prNameObjectCheck,
                             IsPurposeOksChanged = !prAssignationObjectCheck,
                             IsSquareChanged = !squareDidNotChange,
                             IsBuildYearChanged = !prYearBuiltObjectCheck,
@@ -579,6 +596,25 @@ namespace KadOzenka.Dal.DataImport
                                 }
                             }
                         }
+                        #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        //if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        //{
+                        //    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!prWallObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
                         #endregion
                     }
                     #endregion
@@ -642,6 +678,13 @@ namespace KadOzenka.Dal.DataImport
                             koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
                         }
                     }
+                    #endregion
+
+                    #region Признаки для формирования заданий ЦОД
+                    //SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
                 }
 
