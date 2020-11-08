@@ -99,6 +99,7 @@ namespace CIPJS
 	        services.AddSingleton<KoUnloadResultsListenerService>();
 	        services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
+            services.AddSingleton<EsHubService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -130,6 +131,7 @@ namespace CIPJS
 	        {
 		        hubOptions.EnableDetailedErrors = true;
 	        });
+
 	        services.AddMemoryCache();
 
 	        var cultureInfo = new CultureInfo("ru-RU");
@@ -191,6 +193,7 @@ namespace CIPJS
 	            routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
 	            routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
 	            routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
+	            routes.MapHub<EsHub>("/esCheckProgress");
             });
 
             app.UseMvc(routes =>
