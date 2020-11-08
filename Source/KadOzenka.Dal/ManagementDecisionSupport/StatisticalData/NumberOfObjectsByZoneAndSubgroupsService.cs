@@ -107,17 +107,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						FirstTourObjectCountWithGroupChanging = g.Sum(s => s.FirstTourObjectCountWithGroupChanging),
 						SecondTourObjectCountWithGroupChanging = g.Sum(s => s.SecondTourObjectCountWithGroupChanging),
 						FirstTourMinUpks = g.Min(min => min.FirstTourMinUpks),
-						FirstTourAverageUpks = g.Average(avg => avg.FirstTourAverageUpks),
+						FirstTourAverageUpks = g.Sum(sum => sum.FirstTourObjectCount) != 0 ? g.Sum(sum => sum.FirstTourSumUpks) / g.Sum(sum => sum.FirstTourObjectCount) : null,
 						FirstTourMaxUpks = g.Max(max => max.FirstTourMaxUpks),
 						SecondTourMinUpks = g.Min(min => min.SecondTourMinUpks),
-						SecondTourAverageUpks = g.Average(avg => avg.SecondTourAverageUpks),
+						SecondTourAverageUpks = g.Sum(sum => sum.SecondTourObjectCount) != 0 ? g.Sum(sum => sum.SecondTourSumUpks) / g.Sum(sum => sum.SecondTourObjectCount) : null,
 						SecondTourMaxUpks = g.Max(max => max.SecondTourMaxUpks),
-						MinUpksVarianceBetweenTours = g.Min(min => min.SecondTourMinUpks).HasValue && g.Min(min => min.SecondTourMinUpks) != 0 ? g.Min(min => min.FirstTourMinUpks) / g.Min(min => min.SecondTourMinUpks) : null,
-						MaxUpksVarianceBetweenTours = g.Max(max => max.SecondTourMaxUpks).HasValue && g.Max(max => max.SecondTourMaxUpks) != 0 ? g.Max(max => max.FirstTourMaxUpks) / g.Max(max => max.SecondTourMaxUpks) : null,
-						AverageUpksVarianceBetweenTours = g.Average(avg => avg.SecondTourAverageUpks).HasValue && g.Average(avg => avg.SecondTourAverageUpks) != 0 ? g.Average(avg => avg.FirstTourAverageUpks) / g.Average(avg => avg.SecondTourAverageUpks) : null,
-						MinUpksVarianceBetweenToursWithoutGroupChanging = g.Min(min => min.MinUpksVarianceBetweenToursWithoutGroupChanging),
-						AverageUpksVarianceBetweenToursWithoutGroupChanging = g.Average(avg => avg.AverageUpksVarianceBetweenToursWithoutGroupChanging),
-						MaxUpksVarianceBetweenToursWithoutGroupChanging = g.Max(max => max.MaxUpksVarianceBetweenToursWithoutGroupChanging)
+						MinUpksVarianceBetweenTours = 
+							g.Min(min => min.SecondTourMinUpks).HasValue && 
+							g.Min(min => min.SecondTourMinUpks) != 0 ? 
+							g.Min(min => min.FirstTourMinUpks) / g.Min(min => min.SecondTourMinUpks) : 
+							null,
+						MaxUpksVarianceBetweenTours = 
+							g.Max(max => max.SecondTourMaxUpks).HasValue && 
+							g.Max(max => max.SecondTourMaxUpks) != 0 ? 
+							g.Max(max => max.FirstTourMaxUpks) / g.Max(max => max.SecondTourMaxUpks) : 
+							null,
+						AverageUpksVarianceBetweenTours = 
+							g.Sum(sum => sum.FirstTourObjectCount) != 0 && 
+							g.Sum(sum => sum.SecondTourObjectCount) != 0 && 
+							g.Sum(sum => sum.SecondTourSumUpks) != 0 ? 
+							(g.Sum(sum => sum.FirstTourSumUpks) / g.Sum(sum => sum.FirstTourObjectCount)) / 
+							(g.Sum(sum => sum.SecondTourSumUpks) / g.Sum(sum => sum.SecondTourObjectCount)) : 
+							null//,
+						//MinUpksVarianceBetweenToursWithoutGroupChanging = g.Min(min => min.MinUpksVarianceBetweenToursWithoutGroupChanging),
+						//AverageUpksVarianceBetweenToursWithoutGroupChanging = g.Average(avg => avg.AverageUpksVarianceBetweenToursWithoutGroupChanging),
+						//MaxUpksVarianceBetweenToursWithoutGroupChanging = g.Max(max => max.MaxUpksVarianceBetweenToursWithoutGroupChanging)
 					})
 					.ToList());
 			Result = Result.OrderBy(x => x.Zone).ThenBy(x => x.DistrictName).ThenBy(x => x.RegionName).ThenBy(x => x.PropertyType != "Всего").ThenBy(x => x.PropertyType).ToList();
