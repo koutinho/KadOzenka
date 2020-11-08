@@ -9,11 +9,21 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Core.UI.Registers.Reports.Model;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
     public class ModelingResultsReport : StatisticalDataReport
     {
+	    private readonly ILogger _logger;
+	    protected override ILogger Logger => _logger;
+
+	    public ModelingResultsReport()
+	    {
+		    _logger = Log.ForContext<ModelingResultsReport>();
+	    }
+
+
         protected override string TemplateName(NameValueCollection query)
         {
             return "CalculationParamsModelingResultsReport";
@@ -24,7 +34,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             GroupFilter.InitializeFilterValues(StatisticalDataType.ModelingResults, initialization, filterValues);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIdList = GetTaskIdList(query).ToList();
             var groupId = GetGroupIdFromFilter(query);
@@ -34,15 +44,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.GroupName,
                 x.Number
             }).ExecuteFirstOrDefault();
+
             var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             var commonTable = GetCommonDataTable(group);
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

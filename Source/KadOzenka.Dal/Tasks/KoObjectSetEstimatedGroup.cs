@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.KoObject
 				var codeGroup = GetValueFactor(gbuObject, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
-					AddErrorRow($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
+					AddErrorRow($"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", rowReport, reportService);
 					return;
 				}
 
@@ -134,7 +134,6 @@ namespace KadOzenka.Dal.KoObject
 
 					var gbuQuarterObject = OMMainObject.Where(x => x.CadastralNumber == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 
-					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 					if (gbuQuarterObject == null)
 					{
 						AddErrorRow($"Не найден объект кадастровый квартал {codeQuarter.Value} .", rowReport, reportService);
@@ -142,7 +141,7 @@ namespace KadOzenka.Dal.KoObject
 					}
 					var attributeTerritoryType = OMAttribute.Where(x => x.Id == param.IdTerritoryType).SelectAll().ExecuteFirstOrDefault();
 
-					ValueItem territoryType = GetValueFactor(gbuObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
+					ValueItem territoryType = GetValueFactor(gbuQuarterObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 
 					if (string.IsNullOrEmpty(territoryType.Value))
 					{

@@ -50,6 +50,14 @@
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group">
                         <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BuildingCadastralNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.BuildingCadastralNumber, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralNumber)
                         </div>
                         <div class="col-sm-4">

@@ -565,6 +565,10 @@ $(document).ready(function () {
                 Common.ShowError('Выберите или заполните целевой объект');
                 return;
             }
+            if (!actualDate) {
+                Common.ShowError('Заполните дату актуальности или установите корректную дату');
+                return;
+            }
 
             complexSearchParameters = getComplexSearchParameters();
             kendo.ui.progress($('body'), true);
@@ -724,7 +728,7 @@ $(document).ready(function () {
                         try {
                             var valueFrom = parseFloat(item.item.valueFrom);
                             var valueTo = parseFloat(item.item.valueTo);
-                            var isThisInterval = currentSquare > valueFrom && currentSquare < valueTo;
+                            var isThisInterval = currentSquare >= valueFrom && currentSquare < valueTo;
                             if (isThisInterval) {
                                 skipChangeSquareHandler = true;
                                 $dropDownSquare.value(item.Value);

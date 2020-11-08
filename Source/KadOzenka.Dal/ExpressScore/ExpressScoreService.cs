@@ -220,6 +220,10 @@ namespace KadOzenka.Dal.ExpressScore
 				ConditionType = QSConditionType.GreaterOrEqual,
 				LeftOperand = OMCoreObject.GetColumn(x => x.ParserTime),
 				RightOperand = new QSColumnConstant(minSearchDate)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.IsNull,
+				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
 			})).Or(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.LessOrEqual,
@@ -842,7 +846,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 										try
 										{
-											cost = cost * (decimal)coeff;
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 										}
 										catch (OverflowException e)
 										{
@@ -894,7 +898,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 										try
 										{
-											cost = cost * (decimal)coeff;
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 										}
 										catch (OverflowException e)
 										{
@@ -950,7 +954,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 									try
 									{
-										cost = cost * (decimal)coeff;
+										cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
 									}
 									catch (OverflowException e)
 									{

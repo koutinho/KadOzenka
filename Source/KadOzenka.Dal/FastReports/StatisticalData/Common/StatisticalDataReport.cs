@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
+using System.Data;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 {
@@ -30,8 +32,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         protected readonly ModelingService ModelService;
 		protected readonly GroupService GroupService;
 		protected readonly FactorsService FactorsService;
+		protected virtual ILogger Logger { get; set; }
 
-		protected StatisticalDataReport()
+        protected StatisticalDataReport()
 		{
 			GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
@@ -47,10 +50,25 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 			return ReportType.Title;
 		}
 
+		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		{
+			Logger.Debug("Начат сбор данных");
 
-        #region Filter
+			var loggedHeaders = query.AllKeys.ToDictionary(h => h, h => GetQueryParam<string>(h, query));
+			Logger.ForContext("InputParameters", loggedHeaders, destructureObjects: true).Debug("Входные параметры");
 
-        protected long[] GetTaskIdList(NameValueCollection query)
+            var reportData = GetReportData(query, objectList);
+            Logger.Debug("Закончен сбор данных");
+
+            return reportData;
+		}
+
+		protected abstract DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null);
+
+
+		#region Filter
+
+		protected long[] GetTaskIdList(NameValueCollection query)
         {
             var taskIdList = GetQueryParam<string>("TaskIdList", query);
             if (string.IsNullOrEmpty(taskIdList))

@@ -3,16 +3,20 @@ using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 {
 	public class CalculationStatisticsReport : StatisticalDataReport
 	{
 		private readonly AdditionalFormsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public CalculationStatisticsReport()
 		{
 			_service = new AdditionalFormsService(StatisticalDataService);
+			_logger = Log.ForContext<CalculationStatisticsReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -20,7 +24,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			return "AdditionalFormsCalculationStatisticsReport";
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -35,7 +39,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 			var data = _service.GetCalculationStatisticsData(taskIdList, zuOksObjectType == "ОКС");
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.SubgroupId,
@@ -49,6 +55,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}
