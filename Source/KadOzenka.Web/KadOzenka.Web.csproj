@@ -237,6 +237,7 @@
     <None Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsBySubject.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
     <None Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isOksReportType.sql" />
+    <None Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU.sql" />
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
     <None Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
@@ -556,6 +557,7 @@
     <Content Include="Config\SqlQueries\GetMinMaxAverageUPKSByAdministrativeDistricts_Regions.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU.sql" />
     <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1888,6 +1890,8 @@
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationAnalysis.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\CodeGroupAttr_Initial_OKS.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\CodeGroupAttr_Initial_ZU.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
@@ -1897,6 +1901,10 @@
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_OKS.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_VUON_OKS.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_VUON_ZU.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
