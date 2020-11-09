@@ -131,7 +131,7 @@
                         Price: { type: "number", editable: false },
                         PriceFromModel: { type: "number", editable: false },
                         IsExcluded: { type: "boolean", editable: true },
-                        IsForTraining: { type: "boolean", editable: false },
+                        IsForTraining: { type: "boolean", editable: true },
                         ModelingPrice: { type: "number", editable: false },
                         Percent: { type: "number", editable: false }
 					}
@@ -152,7 +152,7 @@
         $("#grid").kendoGrid({
             toolbar: kendo.template($("#GridToolbarTemplate").html()),
             filterable: {
-                extra: false,
+                extra: true,
                 operators: {
                     string: {
                         startswith: "Начинается с",
@@ -174,6 +174,7 @@
 
         $("#grid .k-grid-content").on("change", "input.isExcluded", setIsExcludedCheckbox);
         $("#grid .k-grid-content").on("change", "input.isForTraining", setIsForTrainingCheckbox);
+        $("#headerCheckboxIsForTraining").on("click", selectAllObjectsForTraining);
     }
 
 
@@ -227,6 +228,7 @@
             {
                 title: "Объект для обучения",
                 field: "IsForTraining",
+                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForTraining' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForTraining'>Объект для обучения</label>",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
                 filterable: false,
                 sortable: false
@@ -269,6 +271,21 @@
     }
 
 
+    function selectAllObjectsForTraining() {
+        var grid = $("#grid").data("kendoGrid");
+        var headerState = $("#headerCheckboxIsForTraining").prop("checked");
+        var data = getObjectsFromGrid();
+        data.map(function (dataItem) {
+            dataItem.IsForTraining = headerState;
+            dataItem.IsDirty = true;
+            grid.tbody.find("tr[data-uid='" + dataItem.uid + "']")
+                .find(".checkbox")
+                .attr("checked", "checked");
+        });
+        grid.refresh();
+    }
+
+
     function saveObjects() {
         var objects = $("#grid").data("kendoGrid").dataSource.data();
         kendo.ui.progress($('body'), true);
@@ -292,19 +309,10 @@
 
     function exportObjectsToExcel() {
         var modelId = '@Model.Id';
-        //собираем данные так, как их видит юзер (с учетом фильтров и сортировки)
-        var dataSource = $("#grid").data("kendoGrid").dataSource;
-        var filteredDataSource = new kendo.data.DataSource({
-            data: dataSource.data(),
-            filter: dataSource.filter(),
-            sort: dataSource.sort()
-        });
-        filteredDataSource.read();
-        var data = filteredDataSource.view();
+        var data = getObjectsFromGrid();
         var objectIds = data.map(function (attribute) {
             return attribute.Id;
         });
-
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
@@ -323,6 +331,20 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+
+    //собираем данные так, как их видит юзер (с учетом фильтров и сортировки)
+    function getObjectsFromGrid() {
+        var dataSource = $("#grid").data("kendoGrid").dataSource;
+        var filteredDataSource = new kendo.data.DataSource({
+            data: dataSource.data(),
+            filter: dataSource.filter(),
+            sort: dataSource.sort()
+        });
+        filteredDataSource.read();
+        var data = filteredDataSource.view();
+        return data;
     }
 
 
