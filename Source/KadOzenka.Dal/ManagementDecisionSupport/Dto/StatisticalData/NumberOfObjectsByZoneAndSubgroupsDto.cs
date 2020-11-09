@@ -18,9 +18,11 @@
 		public decimal? FirstTourMinUpks { get; set; }
 		public decimal? FirstTourMaxUpks { get; set; }
 		public decimal? FirstTourAverageUpks { get; set; }
+		public decimal? FirstTourSumUpks { get; set; }
 		public decimal? SecondTourMinUpks { get; set; }
 		public decimal? SecondTourMaxUpks { get; set; }
 		public decimal? SecondTourAverageUpks { get; set; }
+		public decimal? SecondTourSumUpks { get; set; }
 		public decimal? MinUpksVarianceBetweenTours { get; set; }
 		public decimal? AverageUpksVarianceBetweenTours { get; set; }
 		public decimal? MaxUpksVarianceBetweenTours { get; set; }

@@ -145,7 +145,6 @@
 	}
 
 	function onDataBound(e) {
-		debugger;
 		for (var i = 1; i < this.columns.length; i++) {
 			this.autoFitColumn(this.columns[i]);
 		}
@@ -222,22 +221,28 @@
 					analogIds: checked,
 					expressScoreId
 				}
-				kendo.ui.progress($('#successDialog'), true);
+				progressLoader.loader($('#successDialog'), true);
 
-				$.post("@Url.Action("RecalculateAnalog", "ExpressScore")", data).done(function (data) {
+				var jqxhrReload  =  $.ajax({
+					url: "@Url.Action("RecalculateAnalog", "ExpressScore")",
+					data,
+					method: 'post',
+					headers: { 'connection-signalr-id': connectionSignalRId }
+				});
+
+				jqxhrReload.done(function (data) {
 					if (data.Errors) {
 						var errors = getErrors(data.Errors);
 						Common.ShowError(errors);
 					}
 					if (data.success) {
-						debugger;
 						updateCost(data.success.cost, data.success.squareCost);
 						updateReportId(data.success.reportId);
 							Common.ShowMessage("Перерасчет успешно выполнен.");
 					}
 
 				}).always(function() {
-					kendo.ui.progress($('#successDialog'), false);
+					progressLoader.loader($('#successDialog'), false);
 				});
 			});
 	});

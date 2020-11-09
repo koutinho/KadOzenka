@@ -5,13 +5,38 @@ using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.AddressChecker;
 using KadOzenka.Dal.KadNumberChecker;
 using KadOzenka.Dal.Selenium.PriceChecker;
+using Microsoft.Extensions.Configuration;
+
+using Serilog;
+using System.Threading;
 
 namespace Parser
 {
     class Program
     {
+
+        static readonly ILogger _log = Log.ForContext<Program>();
+
+        static void initializeSeq()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom
+                .Configuration(new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .Build())
+                .Enrich
+                .FromLogContext()
+                .CreateLogger();
+        }
+
         static void Main(string[] args)
         {
+            initializeSeq();
+
+            _log.Debug("Запуск парсера");
+
+            _log.Verbose("Тестовое сообщение из парсера");
+
             Console.WriteLine(args[0]);
             Console.WriteLine("===Старт парсинга ЦИАНа===");
             if(args[0] == "1")

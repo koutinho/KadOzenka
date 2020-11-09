@@ -362,7 +362,7 @@ function updateCost(cost, squareCost) {
 function updateReportId(reportId = null) { if (reportId) $('#report').data('report-id', reportId); }
 
 
-
+var connectionSignalRId = "";
 /**
  * Выполнение расчетов
  * @param {number} scenarioType тип сценария расчета
@@ -386,9 +386,15 @@ function executeCalculate(scenarioType = null) {
         square: $("#square").val()
     }
     var topBody = window.top.document.body;
-    kendo.ui.progress($(topBody), true);
+    progressLoader.loader($(topBody), true);
     var url = "/ExpressScore/CalculateCostTargetObject";
-    $.post(url, data).done(function (data) {
+    var jqxhr  =  $.ajax({
+        url,
+        data,
+        method: 'post',
+        headers: { 'connection-signalr-id': connectionSignalRId }
+    });
+    jqxhr.done(function (data) {
         if (data.Errors) {
             var errors = getErrors(data.Errors);
             Common.ShowError(errors);
@@ -400,7 +406,7 @@ function executeCalculate(scenarioType = null) {
         .fail(function (response) {
             Common.ShowError(response.responseText);
         })
-        .always(function () { kendo.ui.progress($(topBody), false); });
+        .always(function () { progressLoader.loader($(topBody), false); });
     return;
 }
 
@@ -751,6 +757,8 @@ $(document).ready(function () {
 
         }
     });
+
+    initSignalRConnection();
 });
 
 
@@ -791,4 +799,35 @@ function handlerChangeSquare(e) {
     if (value) {
         $('#square').data('kendoNumericTextBox') && $('#square').data('kendoNumericTextBox').value(parseFloat(value));
     }
+}
+
+var connection;
+//signalR
+function initSignalRConnection() {
+    connection = new signalR.HubConnectionBuilder()
+        .withUrl("/esCheckProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+        .withAutomaticReconnect()
+        .build();
+
+
+    connection.on('Connection', function (connectionId) {
+        connectionSignalRId = connectionId;
+    });
+    connection.on('ReceiveProgress', function (progress) {
+        var topBody = window.top.document.body;
+        progressLoader.move($(topBody), progress);
+        progressLoader.move($('#successDialog'), progress);
+    });
+    connection.onreconnected(function() {
+        console.log('Reconnected', connection);
+        connection.invoke('SendMessage');
+    });
+
+    connection.start()
+        .then(function () {
+            connection.invoke('SendMessage');
+        })
+        .catch(error => {
+            console.error(error.message);
+        });
 }
