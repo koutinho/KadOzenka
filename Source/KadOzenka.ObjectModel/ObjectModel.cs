@@ -7818,7 +7818,7 @@ namespace ObjectModel.KO
 
         private decimal? _a0;
         /// <summary>
-        /// 20600700 Cвободный член в формуле (A0)
+        /// 20600700 Cвободный член в формуле для Линейной формулы (A0)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600700)]
         public decimal? A0
@@ -8077,6 +8077,46 @@ namespace ObjectModel.KO
                 this._type_Code = value;
                 NotifyPropertyChanged("Type");
                 NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+
+        private decimal? _a0forexponential;
+        /// <summary>
+        /// 20601600 Cвободный член в формуле для Экспоненциальной формулы (A0_exponential)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601600)]
+        public decimal? A0ForExponential
+        {
+            get
+            {
+                CheckPropertyInited("A0ForExponential");
+                return _a0forexponential;
+            }
+            set
+            {
+                _a0forexponential = value;
+                NotifyPropertyChanged("A0ForExponential");
+            }
+        }
+
+
+        private decimal? _a0formultiplicative;
+        /// <summary>
+        /// 20601700 Cвободный член в формуле для Мультипликативной формулы (A0_multiplicative)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601700)]
+        public decimal? A0ForMultiplicative
+        {
+            get
+            {
+                CheckPropertyInited("A0ForMultiplicative");
+                return _a0formultiplicative;
+            }
+            set
+            {
+                _a0formultiplicative = value;
+                NotifyPropertyChanged("A0ForMultiplicative");
             }
         }
 
