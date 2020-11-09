@@ -152,7 +152,8 @@ namespace KadOzenka.Dal.LongProcess
                         ModelId = Model.Id,
                         CadastralNumber = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
-                        IsForTraining = isForTraining
+                        IsForTraining = isForTraining,
+                        IsForControl = isForTraining
                     };
 
                     var currentMarketObjectCoefficients = marketObjectCoefficients.TryGetValue(marketObject.Id, out var coefficients)

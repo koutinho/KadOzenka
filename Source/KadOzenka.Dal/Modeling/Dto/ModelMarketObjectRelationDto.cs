@@ -12,6 +12,7 @@ namespace KadOzenka.Dal.Modeling.Dto
         public decimal? Percent { get; set; }
         public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
+        public bool IsForControl { get; set; }
         public List<CoefficientForObject> Coefficients { get; set; }
     }
 }

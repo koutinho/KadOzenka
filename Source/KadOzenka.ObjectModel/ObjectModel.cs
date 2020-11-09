@@ -25099,6 +25099,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private bool? _isforcontrol;
+        /// <summary>
+        /// 70200900 Признак: используется ли объект для контрольной выборки модели (IS_FOR_CONTROL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200900)]
+        public bool? IsForControl
+        {
+            get
+            {
+                CheckPropertyInited("IsForControl");
+                return _isforcontrol;
+            }
+            set
+            {
+                _isforcontrol = value;
+                NotifyPropertyChanged("IsForControl");
+            }
+        }
+
     }
 }
 

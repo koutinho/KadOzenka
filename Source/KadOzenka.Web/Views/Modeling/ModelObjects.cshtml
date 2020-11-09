@@ -132,6 +132,7 @@
                         PriceFromModel: { type: "number", editable: false },
                         IsExcluded: { type: "boolean", editable: true },
                         IsForTraining: { type: "boolean", editable: true },
+                        IsForControl: { type: "boolean", editable: true },
                         ModelingPrice: { type: "number", editable: false },
                         Percent: { type: "number", editable: false }
 					}
@@ -174,7 +175,9 @@
 
         $("#grid .k-grid-content").on("change", "input.isExcluded", setIsExcludedCheckbox);
         $("#grid .k-grid-content").on("change", "input.isForTraining", setIsForTrainingCheckbox);
+        $("#grid .k-grid-content").on("change", "input.IsForControl", setIsForControlCheckbox);
         $("#headerCheckboxIsForTraining").on("click", selectAllObjectsForTraining);
+        $("#headerCheckboxIsForControl").on("click", selectAllObjectsForControl);
     }
 
 
@@ -226,10 +229,18 @@
                 sortable: true
             },
             {
-                title: "Объект для обучения",
+                title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
-                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForTraining' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForTraining'>Объект для обучения</label>",
+                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForTraining' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForTraining'>Признак выбора аналога в обучающую модель</label>",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
+                filterable: false,
+                sortable: false
+            },
+            {
+                title: "Признак выбора аналога в контрольную модель",
+                field: "IsForControl",
+                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForControl' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForControl'>Признак выбора аналога в контрольную модель</label>",
+                template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
                 filterable: false,
                 sortable: false
             }
@@ -264,6 +275,11 @@
         dataItem.IsForTraining = this.checked;
         dataItem.IsDirty = true;
     }
+    function setIsForControlCheckbox(e) {
+        var dataItem = gerGridRow(e);
+        dataItem.IsForControl = this.checked;
+        dataItem.IsDirty = true;
+    }
     function gerGridRow(e) {
         var grid = $("#grid").data("kendoGrid");
         var dataItem = grid.dataItem($(e.target).closest("tr"));
@@ -277,12 +293,27 @@
         var data = getObjectsFromGrid();
         data.map(function (dataItem) {
             dataItem.IsForTraining = headerState;
-            dataItem.IsDirty = true;
-            grid.tbody.find("tr[data-uid='" + dataItem.uid + "']")
-                .find(".checkbox")
-                .attr("checked", "checked");
+            setCheckboxState(grid, dataItem);
         });
         grid.refresh();
+    }
+
+    function selectAllObjectsForControl() {
+        var grid = $("#grid").data("kendoGrid");
+        var headerState = $("#headerCheckboxIsForControl").prop("checked");
+        var data = getObjectsFromGrid();
+        data.map(function (dataItem) {
+            dataItem.IsForControl = headerState;
+            setCheckboxState(grid, dataItem);
+        });
+        grid.refresh();
+    }
+
+    function setCheckboxState(grid, dataItem) {
+        dataItem.IsDirty = true;
+        grid.tbody.find("tr[data-uid='" + dataItem.uid + "']")
+            .find(".checkbox")
+            .attr("checked", "checked");
     }
 
 
@@ -295,7 +326,6 @@
 			data: { objects: JSON.stringify({ objects }) },
 			success: function (response) {
                 Common.ShowMessage(response.Message);
-                window.location.reload();
             },
 			error: function(response) {
 				Common.ShowError(response.responseText);

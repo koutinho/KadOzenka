@@ -13,6 +13,7 @@ namespace KadOzenka.Web.Models.Modeling
         public decimal? Percent { get; set; }
 		public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
+        public bool IsForControl { get; set; }
         public bool IsDirty { get; set; }
         public List<CoefficientForObject> Coefficients { get; set; }
 
@@ -29,6 +30,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Percent = entity.Percent,
                 IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
+                IsForControl = entity.IsForControl,
                 Coefficients = entity.Coefficients
             };
 		}
@@ -45,6 +47,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Percent = model.Percent,
 				IsExcluded = model.IsExcluded,
 				IsForTraining = model.IsForTraining,
+				IsForControl = model.IsForControl,
 				Coefficients = model.Coefficients
 			};
 		}

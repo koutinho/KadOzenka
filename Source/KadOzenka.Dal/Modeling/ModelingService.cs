@@ -320,13 +320,19 @@ namespace KadOzenka.Dal.Modeling
                 if (objFromDb == null)
                     return;
 
-                objFromDb.IsExcluded = obj.IsExcluded;
-                objFromDb.IsForTraining = obj.IsForTraining;
-                if (obj.IsExcluded)
+                if (objFromDb.IsExcluded.GetValueOrDefault() != obj.IsExcluded ||
+                    objFromDb.IsForTraining.GetValueOrDefault() != obj.IsForTraining ||
+                    objFromDb.IsForControl.GetValueOrDefault() != obj.IsForControl)
                 {
-	                objFromDb.Coefficients = null;
+	                objFromDb.IsExcluded = obj.IsExcluded;
+	                objFromDb.IsForTraining = obj.IsForTraining;
+	                objFromDb.IsForControl = obj.IsForControl;
+	                if (obj.IsExcluded)
+	                {
+		                objFromDb.Coefficients = null;
+	                }
+	                objFromDb.Save();
                 }
-                objFromDb.Save();
             });
         }
 
@@ -382,7 +388,8 @@ namespace KadOzenka.Dal.Modeling
             var columnHeaders = new List<object>
             {
                 "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена",
-                "Объект для обучения"
+                "Признак выбора аналога в обучающую модель",
+                "Признак выбора аналога в контрольную модель"
             };
             columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
             columnHeaders.AddRange(new List<string>{ "МС", "%" });
@@ -397,7 +404,7 @@ namespace KadOzenka.Dal.Modeling
 	                var values = new List<object>
                     {
                         obj.Id, obj.IsExcluded, obj.CadastralNumber, obj.Price, obj.PriceFromModel,
-                        obj.IsForTraining
+                        obj.IsForTraining, obj.IsForControl
                     };
 
                     modelAttributes.ForEach(attribute =>
@@ -559,6 +566,7 @@ namespace KadOzenka.Dal.Modeling
                 PriceFromModel = entity.PriceFromModel,
                 IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),
+                IsForControl = entity.IsForControl.GetValueOrDefault(),
                 Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
             };
 		}
