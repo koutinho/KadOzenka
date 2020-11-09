@@ -321,7 +321,11 @@ namespace KadOzenka.Dal.Modeling
                     return;
 
                 objFromDb.IsExcluded = obj.IsExcluded;
-                objFromDb.Coefficients = null;
+                objFromDb.IsForTraining = obj.IsForTraining;
+                if (obj.IsExcluded)
+                {
+	                objFromDb.Coefficients = null;
+                }
                 objFromDb.Save();
             });
         }

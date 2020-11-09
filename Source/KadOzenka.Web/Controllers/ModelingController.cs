@@ -762,7 +762,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-		public JsonResult ChangeObjectsStatusInCalculation(string objects, long modelId)
+		public JsonResult ChangeObjectsStatusInCalculation(string objects)
 		{
 			var objectsJson = JObject.Parse(objects).SelectToken("objects").ToString();
 

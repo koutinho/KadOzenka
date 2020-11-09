@@ -80,7 +80,7 @@
 
 <script id="GridToolbarTemplate" type="text/x-kendo-template">
     <div style="float: left">
-        <a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
+        <a class="k-button k-button-icon" id="saveBtn" style="width:120px;">
             <span class="k-icon k-i-save" style="padding-right: 30%"></span>
             Сохранить
         </a>
@@ -103,7 +103,7 @@
         updateGrid();
         initFileUploader();
 
-        $('#excludeBtn').on('click', excludeObjectsFromCalculation);
+        $('#saveBtn').on('click', saveObjects);
         $('#exportBtn').on('click', exportObjectsToExcel);
         $('#uploadBtn').on('click', uploadObjects);
     });
@@ -172,7 +172,8 @@
             resizable: true
         });
 
-        $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
+        $("#grid .k-grid-content").on("change", "input.isExcluded", setIsExcludedCheckbox);
+        $("#grid .k-grid-content").on("change", "input.isForTraining", setIsForTrainingCheckbox);
     }
 
 
@@ -199,7 +200,7 @@
             {
                 title: "Исключен из расчета",
                 field: "IsExcluded",
-                template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />',
+                template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx, isExcluded" />',
                 filterable: false,
                 sortable: false
             },
@@ -226,7 +227,7 @@
             {
                 title: "Объект для обучения",
                 field: "IsForTraining",
-                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # disabled />',
+                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
                 filterable: false,
                 sortable: false
             }
@@ -251,24 +252,33 @@
     }
 
 
-    function updateGridDataSource(e) {
-        var grid = $("#grid").data("kendoGrid");
-		var dataItem = grid.dataItem($(e.target).closest("tr"));
+    function setIsExcludedCheckbox(e) {
+        var dataItem = gerGridRow(e);
 		dataItem.IsExcluded = this.checked;
 		dataItem.IsDirty = true;
-	}
+    }
+    function setIsForTrainingCheckbox(e) {
+        var dataItem = gerGridRow(e);
+        dataItem.IsForTraining = this.checked;
+        dataItem.IsDirty = true;
+    }
+    function gerGridRow(e) {
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem($(e.target).closest("tr"));
+        return dataItem;
+    }
 
 
-    function excludeObjectsFromCalculation() {
-        var modelId = '@Model.Id';
+    function saveObjects() {
         var objects = $("#grid").data("kendoGrid").dataSource.data();
         kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
 			url: '@Url.Action("ChangeObjectsStatusInCalculation", "Modeling")',
-			data: { objects: JSON.stringify({ objects }), modelId: modelId },
+			data: { objects: JSON.stringify({ objects }) },
 			success: function (response) {
                 Common.ShowMessage(response.Message);
+                window.location.reload();
             },
 			error: function(response) {
 				Common.ShowError(response.responseText);

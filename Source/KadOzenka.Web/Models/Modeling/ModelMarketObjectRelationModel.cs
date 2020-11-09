@@ -40,7 +40,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Id = model.Id,
 				CadastralNumber = model.CadastralNumber,
 				Price = model.Price,
-				IsExcluded = model.IsExcluded
+				IsExcluded = model.IsExcluded,
+				IsForTraining = model.IsForTraining
 			};
 		}
 	}
