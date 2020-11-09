@@ -28,15 +28,18 @@ namespace KadOzenka.Dal.LongProcess
         public DictionaryService DictionaryService { get; set; }
         protected ModelingService ModelingService { get; set; }
         protected ModelFactorsService ModelFactorsService { get; set; }
-        private OMModel GeneralModel { get; set; }
+        private OMModel Model { get; set; }
         private OMTour Tour { get; set; }
-        private string MessageSubject => $"Сбор данных для Модели '{GeneralModel?.Name}'";
+        private OMQueue Queue { get; set; }
+        private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
+        private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess()
         {
 	        ModelingService = new ModelingService();
 	        ModelFactorsService = new ModelFactorsService();
 	        DictionaryService = new DictionaryService();
+	        MarketObjectsForTraining = new List<OMModelToMarketObjects>();
         }
 
 
@@ -49,6 +52,7 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			WorkerCommon.SetProgress(processQueue, 0);
 			var modelId = processQueue.ObjectId;
+			Queue = processQueue;
 
             _log.ForContext("ModelId", modelId).Information("Старт фонового процесса Формирования массива данных для Моделирования");
 
@@ -63,12 +67,18 @@ namespace KadOzenka.Dal.LongProcess
 
 			try
 			{
-				GeneralModel = ModelingService.GetModelEntityById(modelId);
-				Tour = ModelingService.GetModelTour(GeneralModel.GroupId);
+				Model = ModelingService.GetModelEntityById(modelId);
+				Tour = ModelingService.GetModelTour(Model.GroupId);
 
-				PrepareData(processQueue);
+				AddLog(processQueue, $"Начата сбор данных для модели '{Model.Name}'.", logger: _log);
+                PrepareData();
+                AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: _log);
 
-				SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
+                AddLog(processQueue, $"Начато формирование каталога меток для модели '{Model.Name}'.", logger: _log);
+                CreateMarkCatalog();
+                AddLog(processQueue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: _log);
+
+                SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
 
             }
             catch (Exception exception)
@@ -85,18 +95,17 @@ namespace KadOzenka.Dal.LongProcess
 
         #region Support Methods
 
-        private void PrepareData(OMQueue processQueue)
+        private void PrepareData()
         {
-            AddLog(processQueue, $"Начата работа с моделью '{GeneralModel.Name}'.", logger:_log);
+	        var marketObjects = GetMarketObjects();
+            AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: _log);
 
-            var marketObjects = GetMarketObjects(processQueue);
-            AddLog(processQueue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: _log);
+            ModelingService.DestroyModelMarketObjects(Model.Id);
+            AddLog(Queue, "Удалены предыдущие данные.", logger: _log);
 
-            ModelingService.DestroyModelMarketObjects(GeneralModel.Id);
-            AddLog(processQueue, "Удалены предыдущие данные.", logger: _log);
+            var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(Model.Id);
+            AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: _log);
 
-            var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
-            AddLog(processQueue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: _log);
             var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new GroupedModelAttributes
             {
                 RegisterId = (int)k,
@@ -104,18 +113,18 @@ namespace KadOzenka.Dal.LongProcess
             }).ToList();
             var marketObjectAttributes = groupedModelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId())
                 .SelectMany(x => x.Attributes).ToList();
-            AddLog(processQueue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: _log);
+            AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: _log);
             var tourFactorsAttributes = groupedModelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
-            AddLog(processQueue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: _log);
+            AddLog(Queue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: _log);
 
             var dictionaries = GetDictionaries(modelAttributes);
-            AddLog(processQueue, $"Найдено {dictionaries?.Count} словарей для атрибутов  модели.", logger: _log);
+            AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибутов  модели.", logger: _log);
 
-            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(processQueue, marketObjects, tourFactorsAttributes.Count != 0);
-            AddLog(processQueue, $"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.", logger: _log);
+            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
+            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.", logger: _log);
 
             var i = 0;
-            AddLog(processQueue, "Обработано объектов: ", logger: _log);
+            AddLog(Queue, "Обработано объектов: ", logger: _log);
             var packageSize = 500;
             var packageIndex = 0;
             for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
@@ -140,7 +149,7 @@ namespace KadOzenka.Dal.LongProcess
                     i++;
                     var modelToMarketObjectRelation = new OMModelToMarketObjects
                     {
-                        ModelId = GeneralModel.Id,
+                        ModelId = Model.Id,
                         CadastralNumber = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
                         IsForTraining = isForTraining
@@ -157,14 +166,18 @@ namespace KadOzenka.Dal.LongProcess
                     modelToMarketObjectRelation.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
                     modelToMarketObjectRelation.Save();
 
+                    //сохраняем в список, чтобы не выкачивать повторно
+                    if(isForTraining)
+	                    MarketObjectsForTraining.Add(modelToMarketObjectRelation);
+
                     if (i % 100 == 0)
-                        AddLog(processQueue, $"{i}, ", false, logger: _log);
+                        AddLog(Queue, $"{i}, ", false, logger: _log);
                 });
 
                 packageIndex++;
             }
 
-            AddLog(processQueue, $"{i}.", false, logger: _log);
+            AddLog(Queue, $"{i}.", false, logger: _log);
         }
 
         private List<OMModelingDictionary> GetDictionaries(List<ModelAttributeRelationDto> modelAttributes)
@@ -175,23 +188,24 @@ namespace KadOzenka.Dal.LongProcess
             return DictionaryService.GetDictionaries(dictionaryIds);
         }
 
-        private List<MarketObjectPure> GetMarketObjects(OMQueue processQueue)
+        private List<MarketObjectPure> GetMarketObjects()
         {
             var groupToMarketSegmentRelation = GetGroupToMarketSegmentRelation();
-            AddLog(processQueue, $"Найден тип: {groupToMarketSegmentRelation.MarketSegment_Code.GetEnumDescription()}", logger: _log);
+            AddLog(Queue, $"Найден тип: {groupToMarketSegmentRelation.MarketSegment_Code.GetEnumDescription()}", logger: _log);
 
             //TODO ждем выполнения CIPJSKO-307
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
-            return OMCoreObject.Where(x =>
-                    x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    x.CadastralNumber != null &&
-                    x.ProcessType_Code != ProcessStep.Excluded
-                    //x.Id == 17812712
-                    )
-                //TODO ждем выполнения CIPJSKO-307
-                //.And(territoryCondition)
-                .Select(x => new
+			return OMCoreObject.Where(x =>
+					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+					x.CadastralNumber != null &&
+					x.ProcessType_Code != ProcessStep.Excluded
+				)
+                //TODO для тестирования расчета МС и Процента
+				//return OMCoreObject.Where(x => x.CadastralNumber == "77:06:0004004:9714")
+				//TODO ждем выполнения CIPJSKO-307
+				//.And(territoryCondition)
+				.Select(x => new
                 {
                     x.CadastralNumber,
                     x.PricePerMeter
@@ -235,18 +249,18 @@ namespace KadOzenka.Dal.LongProcess
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
         {
             var relation = OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == GeneralModel.GroupId)
+                .Where(x => x.GroupId == Model.GroupId)
                 .Select(x => x.MarketSegment_Code)
                 .Select(x => x.TerritoryType_Code)
                 .ExecuteFirstOrDefault();
 
             if (relation == null)
-                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{GeneralModel.GroupId}'");
+                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{Model.GroupId}'");
 
             return relation;
         }
 
-        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(OMQueue processQueue, List<MarketObjectPure> marketObjects, bool downloadUnits)
+        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
         {
             var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).ToList();
             if (cadastralNumbers.Count == 0)
@@ -267,7 +281,7 @@ namespace KadOzenka.Dal.LongProcess
                 var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
                 if (placementUnits.Count > 0)
                 {
-                    ProcessPlacemenUnits(processQueue, placementUnits, units);
+                    ProcessPlacemenUnits(placementUnits, units);
                 }
 
                 unitsDictionary = units.GroupBy(x => x.CadastralNumber)
@@ -289,9 +303,9 @@ namespace KadOzenka.Dal.LongProcess
             return marketObjectToUnitsRelation;
         }
 
-        private void ProcessPlacemenUnits(OMQueue processQueue, List<OMUnit> placementUnits, List<OMUnit> units)
+        private void ProcessPlacemenUnits(List<OMUnit> placementUnits, List<OMUnit> units)
         {
-            AddLog(processQueue, $"Найдено {placementUnits.Count} Единиц оценки с типом '{PropertyTypes.Pllacement.GetEnumDescription()}'", logger: _log);
+            AddLog(Queue, $"Найдено {placementUnits.Count} Единиц оценки с типом '{PropertyTypes.Pllacement.GetEnumDescription()}'", logger: _log);
 
             var buildingCadastralNumbers = placementUnits
                 .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
@@ -311,7 +325,7 @@ namespace KadOzenka.Dal.LongProcess
                     var currentBuildingUnits = buildingUnits.Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
                     currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
                     units.AddRange(buildingUnits);
-                    AddLog(processQueue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: _log);
+                    AddLog(Queue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: _log);
                 }
 
                 units.Remove(placementUnit);
@@ -475,6 +489,48 @@ namespace KadOzenka.Dal.LongProcess
         private string GetErrorMessage(string type)
         {
             return $"Ошибка: нет справочника. Атрибут относится к типу '{type}', но к нему не выбран справочник.";
+        }
+
+        private void CreateMarkCatalog()
+        {
+	        var factors = ModelFactorsService.GetFactors(Model.Id, KoAlgoritmType.Exp);
+
+	        factors.ForEach(attribute =>
+	        {
+		        ModelFactorsService.DeleteMarks(Model.GroupId, attribute.FactorId);
+		        AddLog(Queue, $"Удалены предыдущие метки для фактора {attribute.FactorId}", logger: _log);
+	        });
+
+            for (var i = 0; i < MarketObjectsForTraining.Count; i++)
+	        {
+		        var modelObject = MarketObjectsForTraining[i];
+
+		        decimal modelingPrice = 0;
+                foreach (var factor in factors)
+		        {
+			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+			        if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+				        return;
+
+			        var value = objectCoefficient.Value;
+			        var metka = objectCoefficient.Coefficient;
+
+			        if (metka != null)
+			        {
+				        ModelFactorsService.CreateMark(value, metka, factor.FactorId, Model.GroupId);
+				        modelingPrice = modelingPrice + (metka * factor.PreviousWeight ?? 1);
+			        }
+		        }
+
+                var resultModelingPrice = (decimal?) Math.Exp((double) (Model.A0.GetValueOrDefault() + modelingPrice));
+                modelObject.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
+                if (modelObject.Price != 1)
+                {
+	                modelObject.Percent = (modelObject.ModelingPrice / modelObject.Price - 1) * 100;
+                }
+                modelObject.Save();
+	        }
         }
 
         #endregion

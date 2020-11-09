@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
 <!-- Модальное окно для загрузки Excel-файла -->
 <div id="downloadFilesModalWnd" style="display: none; padding: 2%;">
@@ -42,6 +43,19 @@
             @(Html.Kendo().DropDownListFor(m => m.TourYear)
                 .DataTextField("Name")
                 .DataValueField("Name")
+                .Enable(false))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тип")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                .Name("AlgorithmType")
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Value(KoAlgoritmType.Exp.GetEnumDescription())
                 .Enable(false))
         </div>
     </div>
@@ -117,7 +131,9 @@
                         Price: { type: "number", editable: false },
                         PriceFromModel: { type: "number", editable: false },
                         IsExcluded: { type: "boolean", editable: true },
-                        IsForTraining: { type: "boolean", editable: false }
+                        IsForTraining: { type: "boolean", editable: false },
+                        ModelingPrice: { type: "number", editable: false },
+                        Percent: { type: "number", editable: false }
 					}
                 },
                 data: function (response) {
@@ -174,7 +190,7 @@
                 sortable: false
             };
         });
-        var baseColumns = [
+        var baseColumnsBeforeMarks = [
             {
                 title: "Id",
                 field: "Id",
@@ -215,7 +231,23 @@
                 sortable: false
             }
         ];
-        return baseColumns.concat(additionalColumns);
+        var baseColumnsAfterMarks = [
+            {
+                title: "МС",
+                field: "ModelingPrice",
+                template: '#: ModelingPrice == null ? "" : kendo.format("{0:c}", ModelingPrice) #',
+                filterable: true,
+                sortable: true
+            },
+            {
+                title: "%",
+                field: "Percent",
+                template: '#: Percent == null ? "" : kendo.toString(Percent, "n2") #',
+                filterable: true,
+                sortable: true
+            }
+        ];
+        return baseColumnsBeforeMarks.concat(additionalColumns).concat(baseColumnsAfterMarks);
     }
 
 

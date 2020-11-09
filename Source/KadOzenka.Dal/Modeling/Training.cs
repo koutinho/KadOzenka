@@ -124,9 +124,6 @@ namespace KadOzenka.Dal.Modeling
             ResetPredictedPrice();
             AddLog("Закончен сброс спрогнозированной цены.");
 
-            CreateMarkCatalog();
-            AddLog("Закончено создание меток.");
-
             trainingResults.ForEach(trainingResult =>
             {
 	            if (trainingResult == null)
@@ -208,30 +205,6 @@ namespace KadOzenka.Dal.Modeling
 	            }
 
                 AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{attributeId}' модели '{type.GetEnumDescription()}'");
-	        }
-        }
-
-        private void CreateMarkCatalog()
-        {
-	        foreach (var attribute in ModelAttributes)
-	        {
-		        ModelFactorsService.DeleteMarks(GeneralModel.GroupId, attribute.AttributeId);
-		        AddLog("Удалены предыдущие метки");
-
-                MarketObjectsForTraining.ForEach(modelObject =>
-		        {
-			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
-			        if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
-				        return;
-
-			        var value = objectCoefficient.Value;
-			        var metka = objectCoefficient.Coefficient;
-
-			        ModelFactorsService.CreateMark(value, metka, attribute.AttributeId, GeneralModel.GroupId);
-		        });
-
-                AddLog($"Сохранение меток для фактора '{attribute.AttributeName}', ИД ({attribute.AttributeId})");
 	        }
         }
 

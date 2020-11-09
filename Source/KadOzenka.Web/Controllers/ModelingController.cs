@@ -570,6 +570,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult CreateMark(MarkModel markCatalog)
         {
+	        var model = OMModel.Where(x => x.GroupId == markCatalog.GroupId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+	        if (model?.Type_Code == KoModelType.Automatic)
+		        throw new Exception($"Модель группы относится к типу '{KoModelType.Automatic.GetEnumDescription()}', ручная работа с метками запрещена");
+
             var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GroupId);
             markCatalog.Id = id;
 

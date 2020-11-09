@@ -529,6 +529,7 @@
 
 
     function onFormObjectArrayBtnClick() {
+        kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("FormObjectArray", "Modeling", new {modelId = Model.Id})',

@@ -483,10 +483,6 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception("Передана пустая метка");
 			if (groupId == null)
 				throw new Exception("Не переден ИД группы");
-
-			var model = OMModel.Where(x => x.GroupId == groupId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
-			if (model?.Type_Code == KoModelType.Automatic)
-				throw new Exception($"Модель группы относится к типу '{KoModelType.Automatic.GetEnumDescription()}', ручная работа с метками запрещена");
 		}
 
 		#endregion
