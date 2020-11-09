@@ -529,9 +529,7 @@ namespace KadOzenka.Dal.Modeling
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
-                ModelingPrice = entity.ModelingPrice,
-                Percent = entity.Percent,
-				IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
+                IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),
                 Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
             };

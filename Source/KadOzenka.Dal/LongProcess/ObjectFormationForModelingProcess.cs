@@ -70,12 +70,15 @@ namespace KadOzenka.Dal.LongProcess
 				Model = ModelingService.GetModelEntityById(modelId);
 				Tour = ModelingService.GetModelTour(Model.GroupId);
 
-				AddLog(processQueue, $"Начата сбор данных для модели '{Model.Name}'.", logger: _log);
-                PrepareData();
+				var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(Model.Id);
+				AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: _log);
+
+                AddLog(processQueue, $"Начата сбор данных для модели '{Model.Name}'.", logger: _log);
+                PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: _log);
 
                 AddLog(processQueue, $"Начато формирование каталога меток для модели '{Model.Name}'.", logger: _log);
-                CreateMarkCatalog();
+                CreateMarkCatalog(modelAttributes);
                 AddLog(processQueue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: _log);
 
                 SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
@@ -95,16 +98,13 @@ namespace KadOzenka.Dal.LongProcess
 
         #region Support Methods
 
-        private void PrepareData()
+        private void PrepareData(List<ModelAttributeRelationDto> modelAttributes)
         {
 	        var marketObjects = GetMarketObjects();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: _log);
 
             ModelingService.DestroyModelMarketObjects(Model.Id);
             AddLog(Queue, "Удалены предыдущие данные.", logger: _log);
-
-            var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(Model.Id);
-            AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: _log);
 
             var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new GroupedModelAttributes
             {
@@ -491,25 +491,22 @@ namespace KadOzenka.Dal.LongProcess
             return $"Ошибка: нет справочника. Атрибут относится к типу '{type}', но к нему не выбран справочник.";
         }
 
-        private void CreateMarkCatalog()
+        private void CreateMarkCatalog(List<ModelAttributeRelationDto> attributes)
         {
-	        var factors = ModelFactorsService.GetFactors(Model.Id, KoAlgoritmType.Exp);
+            attributes.ForEach(attribute =>
+            {
+	            ModelFactorsService.DeleteMarks(Model.GroupId, attribute.AttributeId);
+	            AddLog(Queue, $"Удалены предыдущие метки для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: _log);
+            });
 
-	        factors.ForEach(attribute =>
-	        {
-		        ModelFactorsService.DeleteMarks(Model.GroupId, attribute.FactorId);
-		        AddLog(Queue, $"Удалены предыдущие метки для фактора {attribute.FactorId}", logger: _log);
-	        });
-
-            for (var i = 0; i < MarketObjectsForTraining.Count; i++)
+	        for (var i = 0; i < MarketObjectsForTraining.Count; i++)
 	        {
 		        var modelObject = MarketObjectsForTraining[i];
 
-		        decimal modelingPrice = 0;
-                foreach (var factor in factors)
+		        foreach (var attribute in attributes)
 		        {
 			        var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+			        var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
 			        if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
 				        return;
 
@@ -518,18 +515,9 @@ namespace KadOzenka.Dal.LongProcess
 
 			        if (metka != null)
 			        {
-				        ModelFactorsService.CreateMark(value, metka, factor.FactorId, Model.GroupId);
-				        modelingPrice = modelingPrice + (metka * factor.PreviousWeight ?? 1);
+				        ModelFactorsService.CreateMark(value, metka, attribute.AttributeId, Model.GroupId);
 			        }
 		        }
-
-                var resultModelingPrice = (decimal?) Math.Exp((double) (Model.A0.GetValueOrDefault() + modelingPrice));
-                modelObject.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-                if (modelObject.Price != 1)
-                {
-	                modelObject.Percent = (modelObject.ModelingPrice / modelObject.Price - 1) * 100;
-                }
-                modelObject.Save();
 	        }
         }
 

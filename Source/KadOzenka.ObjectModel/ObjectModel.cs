@@ -25059,46 +25059,6 @@ namespace ObjectModel.Modeling
             }
         }
 
-
-        private decimal? _modelingprice;
-        /// <summary>
-        /// 70200900 Модельная стоимость (modeling_price)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70200900)]
-        public decimal? ModelingPrice
-        {
-            get
-            {
-                CheckPropertyInited("ModelingPrice");
-                return _modelingprice;
-            }
-            set
-            {
-                _modelingprice = value;
-                NotifyPropertyChanged("ModelingPrice");
-            }
-        }
-
-
-        private decimal? _percent;
-        /// <summary>
-        /// 70201000 Процент (percent)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70201000)]
-        public decimal? Percent
-        {
-            get
-            {
-                CheckPropertyInited("Percent");
-                return _percent;
-            }
-            set
-            {
-                _percent = value;
-                NotifyPropertyChanged("Percent");
-            }
-        }
-
     }
 }
 
