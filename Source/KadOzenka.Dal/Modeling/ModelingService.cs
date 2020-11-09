@@ -535,9 +535,16 @@ namespace KadOzenka.Dal.Modeling
 
         public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long modelId, bool isForTraining)
         {
+	        if (isForTraining)
+	        {
+		        return OMModelToMarketObjects
+			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
+			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
+            }
+
 	        return OMModelToMarketObjects
 		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-		                    x.IsForTraining.Coalesce(false) == isForTraining);
+		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
         }
 
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)

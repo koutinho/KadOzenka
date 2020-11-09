@@ -9,17 +9,23 @@ namespace KadOzenka.Dal.Modeling.Entities
         public List<long> AttributeIds { get; set; }
 
         [JsonProperty("y")]
-        public List<List<decimal>> Prices { get; set; }
+        public List<List<decimal>> PricesForControl { get; set; }
+        [JsonProperty("test_y")]
+        public List<List<decimal>> PricesForTraining { get; set; }
         [JsonProperty("columns")]
         public List<string> AttributeNames { get; set; }
         [JsonProperty("x")]
-        public List<List<decimal?>> Coefficients { get; set; }
+        public List<List<decimal?>> CoefficientsForControl { get; set; }
+        [JsonProperty("test_x")]
+        public List<List<decimal?>> CoefficientsForTraining { get; set; }
 
         public TrainingRequest()
         {
-            Prices = new List<List<decimal>>();
+            PricesForControl = new List<List<decimal>>();
+            PricesForTraining = new List<List<decimal>>();
             AttributeNames = new List<string>();
-            Coefficients = new List<List<decimal?>>();
+            CoefficientsForControl = new List<List<decimal?>>();
+            CoefficientsForTraining = new List<List<decimal?>>();
             AttributeIds = new List<long>();
         }
     }

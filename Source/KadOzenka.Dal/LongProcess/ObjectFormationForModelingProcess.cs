@@ -31,7 +31,7 @@ namespace KadOzenka.Dal.LongProcess
         private OMModel Model { get; set; }
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
-        private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
+        private List<OMModelToMarketObjects> ModelObjects { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess()
@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.LongProcess
 	        ModelingService = new ModelingService();
 	        ModelFactorsService = new ModelFactorsService();
 	        DictionaryService = new DictionaryService();
-	        MarketObjectsForTraining = new List<OMModelToMarketObjects>();
+	        ModelObjects = new List<OMModelToMarketObjects>();
         }
 
 
@@ -125,6 +125,9 @@ namespace KadOzenka.Dal.LongProcess
 
             var i = 0;
             AddLog(Queue, "Обработано объектов: ", logger: _log);
+            //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
+            var objectsCount = marketObjects.Count * 75 / 100;
+            var firstHalf = objectsCount / 2.0;
             var packageSize = 500;
             var packageIndex = 0;
             for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
@@ -145,7 +148,8 @@ namespace KadOzenka.Dal.LongProcess
                     var marketObject = marketObjectToUnitRelation.MarketObject;
                     var units = marketObjectToUnitRelation.UnitIds;
 
-                    var isForTraining = i < marketObjects.Count / 2.0;
+                    var isForTraining = i < firstHalf;
+                    var isForControl = i >= firstHalf && i <= objectsCount;
                     i++;
                     var modelToMarketObjectRelation = new OMModelToMarketObjects
                     {
@@ -153,7 +157,7 @@ namespace KadOzenka.Dal.LongProcess
                         CadastralNumber = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
                         IsForTraining = isForTraining,
-                        IsForControl = isForTraining
+                        IsForControl = isForControl
                     };
 
                     var currentMarketObjectCoefficients = marketObjectCoefficients.TryGetValue(marketObject.Id, out var coefficients)
@@ -168,8 +172,7 @@ namespace KadOzenka.Dal.LongProcess
                     modelToMarketObjectRelation.Save();
 
                     //сохраняем в список, чтобы не выкачивать повторно
-                    if(isForTraining)
-	                    MarketObjectsForTraining.Add(modelToMarketObjectRelation);
+                    ModelObjects.Add(modelToMarketObjectRelation);
 
                     if (i % 100 == 0)
                         AddLog(Queue, $"{i}, ", false, logger: _log);
@@ -500,9 +503,9 @@ namespace KadOzenka.Dal.LongProcess
 	            AddLog(Queue, $"Удалены предыдущие метки для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: _log);
             });
 
-	        for (var i = 0; i < MarketObjectsForTraining.Count; i++)
+	        for (var i = 0; i < ModelObjects.Count; i++)
 	        {
-		        var modelObject = MarketObjectsForTraining[i];
+		        var modelObject = ModelObjects[i];
 
 		        foreach (var attribute in attributes)
 		        {

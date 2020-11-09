@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Core.Register;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
-using Kendo.Mvc.Extensions;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Ko;
 using ObjectModel.KO;
-using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
 
@@ -95,14 +89,25 @@ namespace KadOzenka.Dal.Modeling
                 //TODO эта проверка будет в сервисе
                 if (coefficients.All(x => x != null))
                 {
-                    RequestForService.Coefficients.Add(coefficients);
-                    RequestForService.Prices.Add(new List<decimal>{modelObject.Price});
+	                if (modelObject.IsForTraining.GetValueOrDefault())
+	                {
+		                RequestForService.CoefficientsForTraining.Add(coefficients);
+		                RequestForService.PricesForTraining.Add(new List<decimal> { modelObject.Price });
+                    }
+	                if (modelObject.IsForControl.GetValueOrDefault())
+	                {
+		                RequestForService.CoefficientsForControl.Add(coefficients);
+		                RequestForService.PricesForControl.Add(new List<decimal> { modelObject.Price });
+                    }
+
                     RequestForService.CadastralNumbers.Add(modelObject.CadastralNumber);
                 }
             });
 
-            if (RequestForService.Coefficients.Count < 2)
-                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые)");
+            if (RequestForService.CoefficientsForControl.Count < 2)
+                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в контрольной выборке.");
+            if (RequestForService.CoefficientsForTraining.Count < 2)
+	            throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в обучающей выборке.");
 
             return RequestForService;
         }
