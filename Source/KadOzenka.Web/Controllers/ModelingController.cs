@@ -755,31 +755,9 @@ namespace KadOzenka.Web.Controllers
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
 
-			var model = ModelingService.GetModelEntityById(modelId);
-            //пока работаем только с Exp
-            var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
-            
-			objectsDto.ForEach(obj =>
-			{
-				decimal modelingPrice = 0;
-                foreach (var factor in factors)
-				{
-					var objectCoefficient = obj.Coefficients.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
-					
-					var metka = objectCoefficient?.Coefficient;
+			ModelingService.CalculateModelingPrice(modelId, objectsDto);
 
-					modelingPrice = modelingPrice + (metka.GetValueOrDefault(1) * factor.PreviousWeight ?? 1);
-				}
-
-				var resultModelingPrice = (decimal?)Math.Exp((double)(model.A0.GetValueOrDefault() + modelingPrice));
-				obj.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-				if (obj.Price != 1)
-				{
-					obj.Percent = (obj.ModelingPrice / obj.Price - 1) * 100;
-				}
-			});
-
-			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+            var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
 
             return Json(models);
         }
@@ -803,10 +781,11 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
+            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objects").ToString();
+            var objects = JsonConvert.DeserializeObject<List<ModelMarketObjectRelationModel>>(objectsJson);
+            var objectsDtos = objects.Select(ModelMarketObjectRelationModel.FromModel).ToList();
 
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(objectIds, modelId);
+            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectsDtos);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 

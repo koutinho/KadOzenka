@@ -372,7 +372,7 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream ExportMarketObjectsToExcel(List<long> marketObjectIds, long modelId)
+        public Stream ExportMarketObjectsToExcel(long modelId, List<ModelMarketObjectRelationDto> marketObjects)
         {
             var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
@@ -385,31 +385,31 @@ namespace KadOzenka.Dal.Modeling
                 "Объект для обучения"
             };
             columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
+            columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
             AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
 
-            if (marketObjectIds != null && marketObjectIds.Count > 0)
+            if (marketObjects != null && marketObjects.Count > 0)
             {
                 var rowCounter = 1;
-                var marketObjects = OMModelToMarketObjects.Where(x => marketObjectIds.Contains(x.Id)).SelectAll().Execute();
-                marketObjectIds.ForEach(id =>
+                marketObjects.ForEach(obj =>
                 {
-                    var obj = marketObjects.FirstOrDefault(x => x.Id == id);
-                    if (obj == null)
-                        return;
-
-                    var values = new List<object>
+	                var values = new List<object>
                     {
-                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
-                        obj.IsForTraining.GetValueOrDefault()
+                        obj.Id, obj.IsExcluded, obj.CadastralNumber, obj.Price, obj.PriceFromModel,
+                        obj.IsForTraining
                     };
 
                     modelAttributes.ForEach(attribute =>
                     {
-                        var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                        var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId)?.Coefficient;
+	                    var coefficient = obj.Coefficients
+		                    ?.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId && x.Value != null)
+		                    ?.Coefficient;
                         values.Add(coefficient);
                     });
+
+                    values.Add(obj.ModelingPrice);
+                    values.Add(obj.Percent);
 
                     AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
                 });
@@ -453,6 +453,34 @@ namespace KadOzenka.Dal.Modeling
                 modelObject.IsExcluded = keyValuePair.Value;
                 modelObject.Save();
             }
+        }
+
+
+        public void CalculateModelingPrice(long modelId, List<ModelMarketObjectRelationDto> objects)
+        {
+	        var model = GetModelEntityById(modelId);
+	        //пока работаем только с Exp
+	        var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
+
+	        objects.ForEach(obj =>
+	        {
+		        decimal modelingPrice = 0;
+		        foreach (var factor in factors)
+		        {
+			        var objectCoefficient = obj.Coefficients.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+
+			        var metka = objectCoefficient?.Coefficient;
+
+			        modelingPrice = modelingPrice + (metka.GetValueOrDefault(1) * factor.PreviousWeight ?? 1);
+		        }
+
+		        var resultModelingPrice = (decimal?)Math.Exp((double)(model.A0.GetValueOrDefault() + modelingPrice));
+		        obj.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
+		        if (obj.Price != 1)
+		        {
+			        obj.Percent = (obj.ModelingPrice / obj.Price - 1) * 100;
+		        }
+	        });
         }
 
 

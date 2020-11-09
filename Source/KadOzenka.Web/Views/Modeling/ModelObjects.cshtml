@@ -310,14 +310,11 @@
     function exportObjectsToExcel() {
         var modelId = '@Model.Id';
         var data = getObjectsFromGrid();
-        var objectIds = data.map(function (attribute) {
-            return attribute.Id;
-        });
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("ExportModelObjectsToExcel", "Modeling")',
-            data: { objectIdsStr: JSON.stringify({ 'objectIds': objectIds }), modelId: modelId},
+            data: { objectIdsStr: JSON.stringify({ 'objects': data }), modelId: modelId},
             success: function (response) {
                 var url =
                     '@Url.Action("DownloadModelObjectsFromExcel", "Modeling", new {modelName = Model.Name})&fileName=' +
