@@ -570,7 +570,7 @@ namespace ObjectModel.KO
             if (ParentGroup == null)
                 ParentGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == GroupId).SelectAll().ExecuteFirstOrDefault();
             if (ModelFactor.Count == 0)
-                ModelFactor = OMModelFactor.Where(x => x.ModelId == this.Id).SelectAll().Execute();
+                ModelFactor = OMModelFactor.Where(x => x.ModelId == this.Id && x.AlgorithmType_Code==this.AlgoritmType_Code).SelectAll().Execute();
 
             if (ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || this.ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
@@ -649,15 +649,15 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + A0.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + A0ForExponential.ToString() + D_string + ")" + De_string;
                         else
-                            res = "exp(" + A0.ToString() + D_string + ")";
+                            res = "exp(" + A0ForExponential.ToString() + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
                         res = A0.ToString() + D_string;
                         break;
                     case KoAlgoritmType.Multi:
-                        res = GetFormulaPart(A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
+                        res = GetFormulaPart(A0ForMultiplicative.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
                         break;
                     default:
                         res = string.Empty;
@@ -1230,7 +1230,7 @@ namespace ObjectModel.KO
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     long? idsquarefactor = null;
                     long? idanalogfactor = null;
@@ -1547,7 +1547,7 @@ namespace ObjectModel.KO
 
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0 + D))) * De, 2, MidpointRounding.AwayFromZero);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0ForExponential + D))) * De, 2, MidpointRounding.AwayFromZero);
                                     decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
                                     if (!unit.isExplication)
                                     {
@@ -1630,7 +1630,7 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 * Dm), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2);
                                     decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
 
                                     if (!unit.isExplication)
@@ -2499,7 +2499,7 @@ namespace ObjectModel.KO
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     foreach (OMModelFactor weight in model.ModelFactor)
                     {
@@ -2542,7 +2542,7 @@ namespace ObjectModel.KO
                     unit.CadastralCost = 0;
                     unit.Save();
 
-                    UpdateCorrectFactor(model, etobj, unit, groupFactors, ref res);
+                    UpdateCorrectFactor(model, etobj, unit, groupFactors, factorReestrId, ref res);
                     ok = true;
                 }
 
@@ -2576,14 +2576,12 @@ namespace ObjectModel.KO
             return res;
         }
 
-        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
+        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, int factorReestrId, ref List<CalcErrorItem> errors)
         {
-            int? factorReestrId = GetFactorReestrId(this);
-            if (model != null && factorReestrId != null)
+            if (model != null)
             {
-
                 List<CalcItem> FactorChildValues = new List<CalcItem>();
-                DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId.Value);
+                DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId);
                 if (dataChild != null)
                 {
                     foreach (DataRow row in dataChild.Rows)
@@ -2593,7 +2591,7 @@ namespace ObjectModel.KO
                 }
 
                 List<CalcItem> FactorEtalonValues = new List<CalcItem>();
-                DataTable dataEtalon = RegisterStorage.GetAttributes((int)etalon.Id, factorReestrId.Value);
+                DataTable dataEtalon = RegisterStorage.GetAttributes((int)etalon.Id, factorReestrId);
                 if (dataEtalon != null)
                 {
                     foreach (DataRow row in dataEtalon.Rows)
@@ -2931,7 +2929,7 @@ namespace ObjectModel.KO
             if (model != null)
             {
                 if (model.ModelFactor.Count == 0)
-                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
             }
 
             if (_parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || _parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
@@ -3011,15 +3009,15 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + model.A0.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")" + De_string;
                         else
-                            res = "exp(" + model.A0.ToString() + D_string + ")";
+                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
                         res = model.A0.ToString() + D_string;
                         break;
                     case KoAlgoritmType.Multi:
-                        res = GetFormulaPart(model.A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
+                        res = GetFormulaPart(model.A0ForMultiplicative.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
                         break;
                     default:
                         res = string.Empty;

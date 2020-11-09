@@ -789,7 +789,7 @@ namespace KadOzenka.Dal.DataExport
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code==model.AlgoritmType_Code).SelectAll().Execute();
 
                     int countCurr = 0;
                     int countAll = model.ModelFactor.Count();
@@ -997,7 +997,7 @@ namespace KadOzenka.Dal.DataExport
                     if (model != null)
                     {
                         if (model.ModelFactor.Count == 0)
-                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
                         foreach (OMModelFactor factor_model in model.ModelFactor)
                         {
                             bool findf = false;
@@ -2437,7 +2437,7 @@ namespace KadOzenka.Dal.DataExport
             }
 
             if (model.ModelFactor.Count == 0)
-                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -4240,7 +4240,7 @@ namespace KadOzenka.Dal.DataExport
                         if (model_calc != null)
                         {
                             if (model_calc.ModelFactor.Count == 0)
-                                model_calc.ModelFactor = OMModelFactor.Where(x => x.ModelId == model_calc.Id).SelectAll().Execute();
+                                model_calc.ModelFactor = OMModelFactor.Where(x => x.ModelId == model_calc.Id && x.AlgorithmType_Code == model_calc.AlgoritmType_Code).SelectAll().Execute();
 
                             foreach (OMModelFactor factor in model_calc.ModelFactor)
                             {
@@ -4302,7 +4302,7 @@ namespace KadOzenka.Dal.DataExport
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     foreach (OMModelFactor factor in model.ModelFactor)
                     {
