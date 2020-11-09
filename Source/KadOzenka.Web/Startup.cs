@@ -218,6 +218,7 @@ namespace CIPJS
                         case "/DuplicateProgress":
                             System.Net.WebSockets.WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
                             await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
+                            await new SocketPool().SendMessage(socket, Duplicates.GetListOfMarkets());
                             await new SocketPool().AddSocket(socket);
                             break;
                     }

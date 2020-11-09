@@ -25,11 +25,60 @@
             font-weight: bold; 
             color: #6fd0d0;
         }
-        .startCheckingButton:hover
+        .ButtonStyle 
         {
-            background: #6fd0d0; 
+            background: #fff;
+            border: 1px solid #6fd0d0;
+            padding: 0px;
+            padding-left: 10px;
+            padding-right: 10px;
+            color: #6fd0d0;
+            height: 30px;
+            border-radius: 0px;
+            border-top-color: #6fd0d0;
+            width: 200px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .ButtonStyle:hover
+        {
+            background: #6fd0d0;
+            color: #fff;
+            border-color: #6fd0d0;
+        }
+        .ButtonStyle .caret
+        {
+            border-top-color: #6fd0d0;
+        }
+        .ButtonStyle:hover .caret
+        {
+            border-top-color: #fff;
+        }
+        .startCheckingButton:hover {
+            background: #6fd0d0;
             color: #fff;
             cursor: pointer;
+        }
+        ul.dropdown-menu
+        {
+            max-height: 60px;
+            overflow:auto;
+            min-width: 220px;
+            box-shadow: none;
+            border: 1px solid #6fd0d0;
+            border-radius: 0px;
+        }
+        ul.dropdown-menu li 
+        {
+            padding-left: 8px;
+            cursor: pointer;
+            color: #6fd0d0;
+        }
+        ul.dropdown-menu li:hover 
+        {
+            cursor: pointer;
+            color: #fff;
+            background: #6fd0d0;
         }
     </style>
     <script>
@@ -38,7 +87,10 @@
 
         var socket = new WebSocket(`ws://${location.hostname + (location.port ? ':' + location.port : '')}/DuplicateProgress`);
 
-        socket.onmessage = function (event) { updateProgress(JSON.parse(event.data)); };
+        socket.onmessage = function (event) {
+            if (JSON.parse(event.data).ListOfMarkets != undefined) updateComboBox(JSON.parse(event.data).ListOfMarkets);
+            else updateProgress(JSON.parse(event.data));
+        };
         socket.onclose = function (event) { console.log(event); };
         socket.onerror = function (event) { console.log(event); };
 
@@ -104,6 +156,12 @@
             });
         }
 
+        function updateComboBox(data) {
+            var content = "";
+            data.forEach(x => { content += `<li value="${x.value}">${x.description}</li>`; });
+            document.getElementById("dropDownMenu").innerHTML = content;
+        }
+
         function updateProgress(data) {
             currentProgress = data.currentProgress;
             inProgress = data.inProgress;
@@ -129,13 +187,23 @@
                 if (currentProgress == 0 && !inProgress) {
                     var price = Number.parseInt(document.getElementById("priceTextBox").value);
                     var area = Number.parseInt(document.getElementById("areaTextBox").value);
+                    var market = Number.parseInt(document.getElementById("dropDownButton").value);
                     price = isNaN(price) ? 5 : price;
                     area = isNaN(area) ? 1 : area;
+                    market = isNaN(market) ? 0 : market;
                     inProgress = true;
-                    var data = { Area: area, Price: price, InProgress: inProgress };
+                    var data = { Area: area, Price: price, Market: market, InProgress: inProgress };
                     sendInitialData(data);
                     waitPanel();
                 }
+            });
+            document.getElementById("dropDownButton").addEventListener("click", function () {
+                document.getElementById("dropDownMenu").style.display = document.getElementById("dropDownMenu").style.display == "block" ? "none" : "block";
+            });
+            document.getElementById("dropDownMenu").addEventListener("click", function (e) {
+                document.getElementById("dropDownButton").innerHTML = `${e.target.innerHTML} <span class="caret"></span>`;
+                document.getElementById("dropDownButton").value = e.target.value;
+                document.getElementById("dropDownMenu").style.display = "none";
             });
         });
     </script>
@@ -150,6 +218,13 @@
             <div style="display: flex; align-items: center; margin-left: 5px">
                 <input type="text" id="priceTextBox" placeholder="цена">
                 <input type="text" id="areaTextBox" placeholder="площадь">
+                <div class="dropdown" style="margin-left: 10px;">
+                    <button value="0" id="dropDownButton" class="ButtonStyle btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        Значение отсутствует
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="dropDownMenu" class="dropdown-menu"></ul>
+                </div>
                 <div id="startCheckingButton" class="startCheckingButton" style="display:flex; align-items:center;">Начать&nbsp;проверку</div>
             </div>
         </div>
