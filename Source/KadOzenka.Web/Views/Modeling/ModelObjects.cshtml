@@ -291,10 +291,13 @@
         var grid = $("#grid").data("kendoGrid");
         var headerState = $("#headerCheckboxIsForTraining").prop("checked");
         var data = getObjectsFromGrid();
-        data.map(function (dataItem) {
-            dataItem.IsForTraining = headerState;
-            setCheckboxState(grid, dataItem);
-        });
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].IsForControl && headerState) {
+                continue;
+            }
+            data[i].IsForTraining = headerState;
+            setCheckboxState(grid, data[i]);
+        }
         grid.refresh();
     }
 
@@ -302,10 +305,13 @@
         var grid = $("#grid").data("kendoGrid");
         var headerState = $("#headerCheckboxIsForControl").prop("checked");
         var data = getObjectsFromGrid();
-        data.map(function (dataItem) {
-            dataItem.IsForControl = headerState;
-            setCheckboxState(grid, dataItem);
-        });
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].IsForTraining && headerState) {
+                continue;
+            }
+            data[i].IsForControl = headerState;
+            setCheckboxState(grid, data[i]);
+        }
         grid.refresh();
     }
 
@@ -318,12 +324,18 @@
 
 
     function saveObjects() {
-        var objects = $("#grid").data("kendoGrid").dataSource.data();
+        var dirtyObjects = [];
+        var objects = getObjectsFromGrid();
+        for (var i = 0; i < objects.length; i++) {
+            if (objects[i].IsDirty) {
+                dirtyObjects.push(objects[i]);
+            }
+        }
         kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
 			url: '@Url.Action("ChangeObjectsStatusInCalculation", "Modeling")',
-			data: { objects: JSON.stringify({ objects }) },
+            data: { objects: JSON.stringify({ objects: dirtyObjects }) },
 			success: function (response) {
                 Common.ShowMessage(response.Message);
             },

@@ -324,6 +324,9 @@ namespace KadOzenka.Dal.Modeling
                     objFromDb.IsForTraining.GetValueOrDefault() != obj.IsForTraining ||
                     objFromDb.IsForControl.GetValueOrDefault() != obj.IsForControl)
                 {
+	                if (obj.IsForTraining && obj.IsForControl)
+		                throw new Exception($"Объект с КН '{obj.CadastralNumber}' не может одновременно быть и в обучающей, и в контрольной выборках");
+
 	                objFromDb.IsExcluded = obj.IsExcluded;
 	                objFromDb.IsForTraining = obj.IsForTraining;
 	                objFromDb.IsForControl = obj.IsForControl;
