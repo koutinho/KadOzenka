@@ -133,7 +133,9 @@ namespace KadOzenka.Dal.DataImport
             List<DataExportColumn> columns, long? documentId, out bool success)
         {
             var mainWorkSheet = excelFile.Worksheets[0];
-            if (mainWorkSheet.Rows.Count <= 1)  //файл пустой или в нем есть только заголовок
+            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var usedRowCount = lastUsedRowIndex + 1;
+			if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 	            throw new Exception("В указанном файле отсутствуют данные");
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -142,7 +144,7 @@ namespace KadOzenka.Dal.DataImport
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 100
             };
-            int maxColumns = GetLastUsedColumnIndex(mainWorkSheet) + 1;
+            int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
             mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
             mainWorkSheet.Rows[0].Cells[maxColumns + 1].SetValue("Создание объекта");
             List<string> columnNames = new List<string>();
@@ -156,9 +158,9 @@ namespace KadOzenka.Dal.DataImport
             bool isAllpri = !string.IsNullOrEmpty(register.AllpriTable);
 
             if (isAllpri)
-                success = ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, documentId);
+                success = ProcessAllpri(columns, mainWorkSheet, options, lastUsedRowIndex, maxColumns, columnNames, documentId);
             else
-                success = ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
+                success = ProcessNotAllpri(columns, mainWorkSheet, options, lastUsedRowIndex, maxColumns, columnNames, mainRegisterId);
 
             MemoryStream stream = new MemoryStream();
             excelFile.Save(stream, SaveOptions.XlsxDefault);
@@ -167,12 +169,11 @@ namespace KadOzenka.Dal.DataImport
         }
 
         private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
-			ParallelOptions options, int maxColumns, List<string> columnNames, long? documentId)
+			ParallelOptions options, int lastUsedRowIndex, int maxColumns, List<string> columnNames, long? documentId)
 		{
             var success = true;
             OMInstance doc = OMInstance.Where(x => x.Id == documentId).SelectAll().Execute().FirstOrDefault();
             var docDate = doc.ApproveDate;
-            var lastUsedRowIndex = GetLastUsedRowIndex(mainWorkSheet);
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
 				try
@@ -279,14 +280,13 @@ namespace KadOzenka.Dal.DataImport
 		}
 
 		private static bool ProcessNotAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
-			ParallelOptions options, int maxColumns, List<string> columnNames, int mainRegisterId)
+			ParallelOptions options, int lastUsedRowIndex, int maxColumns, List<string> columnNames, int mainRegisterId)
 		{
 		    var success = true;
 		    var errorCount = 0;
 		    var handledObjects = new Dictionary<int, RegisterObject>();
 		    object locked = new object();
-		    var lastUsedRowIndex = GetLastUsedRowIndex(mainWorkSheet);
-			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		    Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
 				{
@@ -465,43 +465,5 @@ namespace KadOzenka.Dal.DataImport
 
 		    return success;
         }
-
-		private static int GetLastUsedRowIndex(ExcelWorksheet worksheet)
-		{
-			var lasUsedRowIndex = worksheet.Rows.Count - 1;
-			for (var i = lasUsedRowIndex; i >= 0; i--)
-			{
-				if (worksheet.Rows[i].AllocatedCells.All(x => x.ValueType == CellValueType.Null))
-				{
-					lasUsedRowIndex--;
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			return lasUsedRowIndex;
-		}
-
-		private static int GetLastUsedColumnIndex(ExcelWorksheet worksheet)
-		{
-			int lasUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
-			int maxRowIndex = worksheet.Rows.Count - 1;
-			for (var i = lasUsedColumnIndex; i >= 0; i--)
-			{
-				if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
-					.All(x => x.ValueType == CellValueType.Null))
-				{
-					lasUsedColumnIndex--;
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			return lasUsedColumnIndex;
-		}
 	}
 }

@@ -650,6 +650,46 @@ namespace KadOzenka.Dal.DataExport
             SetTextToCellDoc(document, row.Cells[2], col3, size, align3, border, bold);
             SetTextToCellDoc(document, row.Cells[3], col4, size, align4, border, bold);
         }
+
+        //Возвращает индекс последней заполненной строки
+        public static int GetLastUsedRowIndex(ExcelWorksheet worksheet)
+        {
+	        var lastUsedRowIndex = worksheet.Rows.Count - 1;
+	        for (var i = lastUsedRowIndex; i >= 0; i--)
+	        {
+		        if (worksheet.Rows[i].AllocatedCells.All(x => x.ValueType == CellValueType.Null))
+		        {
+			        lastUsedRowIndex--;
+		        }
+		        else
+		        {
+			        break;
+		        }
+	        }
+
+	        return lastUsedRowIndex;
+        }
+
+        //Возвращает последнего заполненного столбца
+        public static int GetLastUsedColumnIndex(ExcelWorksheet worksheet)
+        {
+	        int lastUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
+	        int maxRowIndex = worksheet.Rows.Count - 1;
+	        for (var i = lastUsedColumnIndex; i >= 0; i--)
+	        {
+		        if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
+			        .All(x => x.ValueType == CellValueType.Null))
+		        {
+			        lastUsedColumnIndex--;
+		        }
+		        else
+		        {
+			        break;
+		        }
+	        }
+
+	        return lastUsedColumnIndex;
+        }
     }
 
     public class CheckNullEmpty

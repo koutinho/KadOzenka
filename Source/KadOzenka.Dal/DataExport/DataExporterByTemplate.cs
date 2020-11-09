@@ -136,16 +136,16 @@ namespace KadOzenka.Dal.DataExport
 			int packageSize = 1000;
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
-
-			if (mainWorkSheet.Rows.Count <= 1)  //файл пустой или в нем есть только заголовок
+			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var usedRowCount = lastUsedRowIndex + 1;
+            if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");
 			if (!columns.Any(x => x.IsKey))
 				throw new Exception("Не указана ни одна ключевая колонка");
 
 			var columnNames = GetAllColumnNames(mainWorkSheet);
             var keyColumns = columns.Where(x => x.IsKey).ToList();
-
-			while (!isFinish)
+            while (!isFinish)
 			{
                 var conditions = new List<QSCondition>();
                 keyColumns.ForEach(keyColumn =>
@@ -153,7 +153,7 @@ namespace KadOzenka.Dal.DataExport
                     var keyValues = new List<string>();
                     for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
                     {
-                        if (i == mainWorkSheet.Rows.Count - 1) //одна строка - заголовок
+	                    if (i == usedRowCount - 1) //одна строка - заголовок
                         {
                             isFinish = true;
                             break;
@@ -191,7 +191,7 @@ namespace KadOzenka.Dal.DataExport
 
                 for (int rowInFileIndex = packageNum * packageSize; rowInFileIndex < (packageNum + 1) * packageSize; rowInFileIndex++)
                 {
-                    if (rowInFileIndex == mainWorkSheet.Rows.Count - 1)
+                    if (rowInFileIndex == usedRowCount - 1)
                         break;
 
                     var filteredTable = GetDataForCurrentRowInFile(keyColumns, columnNames, mainWorkSheet, rowInFileIndex, dt);
@@ -274,11 +274,12 @@ namespace KadOzenka.Dal.DataExport
         protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
-			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			for (var i = 0; i < maxColumns; i++)
 			{
                 var value = GetCellValue(mainWorkSheet, 0, i);
-                columnNames.Add(value);
+                if (value != null)
+                    columnNames.Add(value);
             }
 
 			return columnNames;
