@@ -465,11 +465,13 @@ namespace KadOzenka.Dal.Modeling
 			mark.Destroy();
 		}
 
-		public void DeleteMarks(long? groupId, long? factorId)
+		public int DeleteMarks(long? groupId, long? factorId)
 		{
 			var marks = GetMarks(groupId, factorId);
 
 			marks.ForEach(x => x.Destroy());
+
+			return marks.Count;
 		}
 
 

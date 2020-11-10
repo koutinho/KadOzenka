@@ -501,8 +501,8 @@ namespace KadOzenka.Dal.LongProcess
         {
             attributes.ForEach(attribute =>
             {
-	            ModelFactorsService.DeleteMarks(Model.GroupId, attribute.AttributeId);
-	            AddLog(Queue, $"Удалены предыдущие метки для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: _log);
+	            var numberOfMarks = ModelFactorsService.DeleteMarks(Model.GroupId, attribute.AttributeId);
+	            AddLog(Queue, $"Удалено {numberOfMarks} предыдущих меток для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: _log);
             });
 
 	        for (var i = 0; i < ModelObjects.Count; i++)
