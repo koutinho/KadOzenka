@@ -106,15 +106,20 @@ namespace KadOzenka.Dal.Modeling
             if (groupsInTour.Count == 0)
                 return new List<GroupDto>();
 
-            var groupsToMarketSegmentInTour = OMGroupToMarketSegmentRelation.Where(x => groupsInTour.Contains(x.GroupId))
-                .Select(x => x.GroupId)
-                .Select(x => x.ParentGroup.GroupName)
-                .Execute().Select(
-                    x => new GroupDto
-                    {
-                        GroupId = x.GroupId,
-                        Name = x.ParentGroup?.GroupName
-                    }).OrderBy(x => x.Name).ToList();
+            var groupsToMarketSegmentInTour = OMGroupToMarketSegmentRelation
+	            .Where(x => groupsInTour.Contains(x.GroupId))
+	            .Select(x => new
+	            {
+		            x.GroupId,
+		            x.ParentGroup.GroupName,
+		            x.ParentGroup.Number
+	            })
+	            .Execute()
+	            .Select(x => new GroupDto
+	            {
+		            GroupId = x.GroupId,
+		            Name = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}"
+	            }).OrderBy(x => x.Name).ToList();
 
             return groupsToMarketSegmentInTour;
         }
