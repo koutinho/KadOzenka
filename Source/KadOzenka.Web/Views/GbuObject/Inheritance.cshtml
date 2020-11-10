@@ -129,30 +129,44 @@
     var setTaskFilterValuesFromTemplate = false;
     var taskFilterValuesFromTemplate = [];
 
-    async function addNewRow(rowNumber, value) {
+    function addNewRow(rowNumber) {
         kendo.ui.progress($('body'), true);
-		var data = [{ rowNumber }];
 
-		var templateContent = $("#templateRow").html();
-		var template = kendo.template(templateContent);
+        var classWrapper = generateCustomRowFromTemplate(rowNumber);
+        $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
+            $(classWrapper).show(250);
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+            addSelectionHandlersForDropDowns();
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+    async function addNewRows(startRowNumber, rowCount, rowValues) {
+        if (rowCount === 0)
+            return;
+
+        var rowRange = `${startRowNumber}-${startRowNumber + rowCount - 1}`;
+        var classWrapper = generateCustomRowFromTemplate(rowRange);
+        await $.post("@Url.Action("GetRows", "GbuObject")",
+            { startRowNumber: startRowNumber, rowCount: rowCount, rowValues: rowValues },
+            function(data) {
+                $(classWrapper).append(data);
+                $(classWrapper).show(250);
+                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                addSelectionHandlersForDropDowns();
+            });
+    }
+
+    function generateCustomRowFromTemplate(rowNumber) {
+        var data = [{ rowNumber }];
+
+        var templateContent = $("#templateRow").html();
+        var template = kendo.template(templateContent);
         var result = kendo.render(template, data);
         $("#wrapperCustomRow").append(result);
-        var classWrapper = ".wrapper-" + rowNumber;
+        var classWrapper = `.wrapper-${rowNumber}`;
 
-        await $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
-            $(classWrapper).show(250);
-            if (value) {
-                var attributeElement = '@nameof(PartialAttribute.Attributes)';
-                var dropDownTree = $("#" + attributeElement + "_" + rowNumber).data('kendoDropDownTree');
-                if (dropDownTree) {
-                    dropDownTree.value(value || '');
-                    dropDownTree.trigger('change');
-                }
-            }
-			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
-            kendo.ui.progress($('body'), false);
-            addSelectionHandlersForDropDowns();
-        });
+        return classWrapper;
     }
 
 	function handlerData() {
@@ -262,10 +276,10 @@
         currentRowNumber = minCustomRowNumber;
     }
 
-    function fillForm(data) {
+    async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
-
+        var customRowValues = [];
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
@@ -306,11 +320,13 @@
                     predefinedKendoDropDownTree.value(elementValue || '');
                     predefinedKendoDropDownTree.trigger('change');
                 } else {
-                    addNewRow(currentRowNumber, elementValue).then(() => { Common.ShowMessage("Шаблоны загружены");});
+                    customRowValues.push(elementValue);
                     currentRowNumber++;
                 }
             }
         });
+
+        return await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
     }
 
 
@@ -356,7 +372,7 @@
 
 		templateStorage.init(@((int)DataFormStorege.Inheritance),
 			"SaveTemplateInheritance", "GbuObject",
-            "GetTemplatesOneGroup", "GbuObject", fillForm, addCustomLevelsToForm);
+            "GetTemplatesOneGroup", "GbuObject", null, addCustomLevelsToForm, fillForm);
     });
 
 </script>

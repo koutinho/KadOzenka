@@ -42,14 +42,15 @@
 			actionNameUrlSelectedTemplate: null,
 			controllerNameUrlSelectedTemplate: null,
 			currentFormType: 0,
-            setDataForm: null,
+			setDataForm: null,
+            setDataFormAsync: null,
             additionalFormObjectMapping: null,
-            init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback, additionalFormObjectMapping) {
+            init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback, additionalFormObjectMapping, callbackAsync) {
                 if (!actionNameUrlSaveTemplate ||
 					!controllerNameUrlSaveTemplate ||
 					!actionNameUrlSelectedTemplate ||
 					!controllerNameUrlSelectedTemplate ||
-					!callback) {
+                    (!callback && !callbackAsync)) {
 					return;
 				}
 				this.currentFormType = typeForm;
@@ -58,6 +59,7 @@
 				this.actionNameUrlSelectedTemplate = actionNameUrlSelectedTemplate;
 				this.controllerNameUrlSelectedTemplate = controllerNameUrlSelectedTemplate;
 				this.setDataForm = callback;
+                this.setDataFormAsync = callbackAsync;
                 this.additionalFormObjectMapping = additionalFormObjectMapping;
 				this.subscribers();
 			},
@@ -126,24 +128,31 @@
 					function() {
 						var url = "/" + self.controllerNameUrlSelectedTemplate + "/" + self.actionNameUrlSelectedTemplate + "?id=" + $('#selectedTemplate').data("kendoDropDownList").value();
 						kendo.ui.progress($('body'), true);
-						$.get(url).done(function (response) {
-							if (response.error) {
-                                Common.ShowError(response.Error);
-								return;
+                        $.get(url).done(function(response) {
+                                if (response.error) {
+                                    kendo.ui.progress($('body'), false);
+                                    Common.ShowError(response.Error);
+                                    return;
 							}
-							if (response.data && self.setDataForm) {
-								self.setDataForm(self.parseData(response.data));
-							}
-							$('.template-select-wrapper').hide(500);
-                            Common.ShowMessage("Данные заполнены");
-                        })
-                            .fail(function (response) {
-                                Common.ShowError(response.responseText);
+                                if (response.data && (self.setDataForm || self.setDataFormAsync)) {
+                                    if (self.setDataForm) {
+                                        self.setDataForm(self.parseData(response.data));
+                                        setFormDataComplete();
+                                    } else {
+                                        self.setDataFormAsync(self.parseData(response.data))
+                                            .then(() => {
+                                                setFormDataComplete();
+                                            });
+                                    }
+                                } else {
+                                    setFormDataComplete();
+                                }
                             })
-                            .always(function () {
+                            .fail(function(response) {
                                 kendo.ui.progress($('body'), false);
+                                Common.ShowError(response.responseText);
                             });
-					});
+                    });
 			},
             parseData: function (data) {
                 //парс простых типов данных
@@ -220,5 +229,11 @@
             params[parameter[0]] = parameter[1];
         });
         return params;
+	}
+
+    function setFormDataComplete() {
+        kendo.ui.progress($('body'), false);
+        $('.template-select-wrapper').hide(500);
+        Common.ShowMessage("Данные заполнены");
     }
 </script>

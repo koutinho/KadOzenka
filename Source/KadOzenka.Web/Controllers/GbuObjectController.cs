@@ -623,6 +623,32 @@ namespace KadOzenka.Web.Controllers
 			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
 		}
 
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRows(int startRowNumber, int rowCount, int[] rowValues)
+		{
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
+			ViewData["StartRowNumber"] = startRowNumber;
+			ViewData["RowCount"] = rowCount;
+
+			var models = new List<PartialAttribute>();
+			for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+			{
+				models.Add(new PartialAttribute {Attributes = rowValues[i]});
+			}
+
+			return PartialView("/Views/GbuObject/Partials/PartialNewRows.cshtml", models);
+		}
+
 		#endregion
 		
         [HttpGet]
