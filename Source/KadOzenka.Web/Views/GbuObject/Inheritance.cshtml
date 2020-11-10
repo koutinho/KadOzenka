@@ -124,27 +124,23 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
+    var minCustomRowNumber =  @Model.Attributes.Count || 0;
+    var currentRowNumber = @Model.Attributes.Count || 0;
+    var setTaskFilterValuesFromTemplate = false;
+    var taskFilterValuesFromTemplate = [];
 
-	var rowNumber = @Model.Attributes.Count + 1 || 0;
-
-	function addNewRow(e, value) {
-		if(e)
-		    e.preventDefault();
-		kendo.ui.progress($('body'), true);
+    async function addNewRow(rowNumber, value) {
+        kendo.ui.progress($('body'), true);
 		var data = [{ rowNumber }];
 
 		var templateContent = $("#templateRow").html();
 		var template = kendo.template(templateContent);
+        var result = kendo.render(template, data);
+        $("#wrapperCustomRow").append(result);
+        var classWrapper = ".wrapper-" + rowNumber;
 
-		var result = kendo.render(template, data);
-
-		$("#wrapperCustomRow").append(result);
-
-		var classWrapper = ".wrapper-" + rowNumber;
-
-		var url = "@Url.Action("GetRow", "GbuObject")";
-		$(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
-			$(classWrapper).show(500);
+        await $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
+            $(classWrapper).show(250);
             if (value) {
                 var attributeElement = '@nameof(PartialAttribute.Attributes)';
                 var dropDownTree = $("#" + attributeElement + "_" + rowNumber).data('kendoDropDownTree');
@@ -154,21 +150,29 @@
                 }
             }
 			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
-			rowNumber++;
             kendo.ui.progress($('body'), false);
             addSelectionHandlersForDropDowns();
-		});
-	}
+        });
+    }
+
 	function handlerData() {
 		return {
 			tourId: $('#RatingTour').data('kendoDropDownList').value()
 		}
 	}
 
-	function dropdownlist_select(e) {
-		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
+    function tourdropdownlist_select(e) {
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
 		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
-	}
+    }
+
+    function taskFiltermultiselect_dataBound(e) {
+        if (setTaskFilterValuesFromTemplate) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(taskFilterValuesFromTemplate);
+            setTaskFilterValuesFromTemplate = false;
+            taskFilterValuesFromTemplate = [];
+        }
+    }
 
 	function getDataSource() {
         return $.find('[class^=Attributes_]').map(d => $(d).data('kendoDropDownTree'));
@@ -255,88 +259,58 @@
         existedCustomLevels.each(function () {
             this.remove();
         });
+        currentRowNumber = minCustomRowNumber;
     }
 
+    function fillForm(data) {
+        $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        clearCustomLevels();
 
-	function fillForm(data) {
-        //$('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-        //clearCustomLevels();
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
             if (elementName === '@(nameof(Model.RatingTour))') {
                 var tourDropDownList = $('#' + elementName).data("kendoDropDownList");
                 tourDropDownList.value(elementValue || '');
-				tourDropDownList.trigger('change');
+                tourDropDownList.trigger('change');
             }
 
+            if (elementName.includes('@(nameof(Model.TaskFilter))')) {
+                setTaskFilterValuesFromTemplate = true;
+                taskFilterValuesFromTemplate.push([elementValue]);
+            }
 
-			if (elementName.startsWith('@(nameof(Model.TaskFilter))')) {
-                //debugger;
-                var a = elementValue + "";
-				var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-                currentValue.push([a]);
-                var element = $('#@(nameof(Model.TaskFilter))');
-                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
-
-                var required = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect");
-                required.value([]);
-                var values = $.map(required.dataSource.data(), function (dataItem) {
-                    console.log('dataItem.value', dataItem.value);
-                    return dataItem.value;
-                });
-
-                required.value(values);
-
-                @*var multiData = [];
-                for (var i = 0; i < 3; i++) {
-                    multiData.push({ text: 'text', value: i });
+            if (elementName === '@(nameof(Model.CadastralBlockToParcel))' ||
+                elementName === '@(nameof(Model.ParcelToBuilding))' ||
+                elementName === '@(nameof(Model.CadastralBlockToBuilding))' ||
+                elementName === '@(nameof(Model.ParcelToConstruction))' ||
+                elementName === '@(nameof(Model.CadastralBlockToConstruction))' ||
+                elementName === '@(nameof(Model.ParcelToUncomplited))' ||
+                elementName === '@(nameof(Model.CadastralBlockToUncomplited))' ||
+                elementName === '@(nameof(Model.BuildToFlat))') {
+                $(`input[name='${elementName}']`).prop("checked", elementValue);
+                if (elementValue) {
+                    $(`input[name='${elementName}']`).trigger('change');
                 }
-                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").dataSource.data(multiData);*@
-			}
-            @*if (elementName === '@(nameof(Model.CadastralBlockToParcel))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.ParcelToBuilding))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.CadastralBlockToBuilding))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.ParcelToConstruction))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.CadastralBlockToConstruction))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.ParcelToUncomplited))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.CadastralBlockToUncomplited))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@(nameof(Model.BuildToFlat))') {
-                $('#' + elementName).prop("checked", elementValue);
-                $('#' + elementName).trigger('change');
-			}
-            if (elementName === '@nameof(Model.ParentCadastralNumberAttribute)' ||
-                elementName.startsWith('@nameof(Model.Attributes)')) {
-                var kendoDropDownTree = $('#' + elementName).data('kendoDropDownTree');
-                if (kendoDropDownTree) {
-                    kendoDropDownTree.value(elementValue || '');
-                    kendoDropDownTree.trigger('change');
+            }
+
+            if (elementName === '@nameof(Model.ParentCadastralNumberAttribute)') {
+                var kendoDropDownTree = $(`#${elementName}`).data('kendoDropDownTree');
+                kendoDropDownTree.value(elementValue || '');
+                kendoDropDownTree.trigger('change');
+            }
+
+            if (elementName.startsWith('@nameof(Model.Attributes)')) {
+                var predefinedKendoDropDownTree = $(`#${elementName}_`).data('kendoDropDownTree');
+                if (predefinedKendoDropDownTree) {
+                    predefinedKendoDropDownTree.value(elementValue || '');
+                    predefinedKendoDropDownTree.trigger('change');
                 } else {
-                    //addNewRow(null, elementValue);
+                    addNewRow(currentRowNumber, elementValue).then(() => { Common.ShowMessage("Шаблоны загружены");});
+                    currentRowNumber++;
                 }
-            }*@
-		});
+            }
+        });
     }
 
 
@@ -345,11 +319,16 @@
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
 
-		$('#addRow').on('click', addNewRow);
-		$("#RatingTour").data('kendoDropDownList').bind('change', dropdownlist_select);
-		$("#RatingTour").data('kendoDropDownList').bind('dataBound', dropdownlist_select);
+        $('#addRow').on('click', (e) => {
+            e.preventDefault();
+            addNewRow(currentRowNumber);
+            currentRowNumber++;
+        });
+		$("#RatingTour").data('kendoDropDownList').bind('change', tourdropdownlist_select);
+        $("#RatingTour").data('kendoDropDownList').bind('dataBound', tourdropdownlist_select);
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').bind('dataBound', taskFiltermultiselect_dataBound);
 
-		$('input[type=radio]').change(function() {
+        $('input[type=radio]').change(function() {
 			$('input[type=radio]:checked').not(this).prop('checked', false);
 		});
 
