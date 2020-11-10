@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Modeling;
+using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -15,6 +15,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public long Id { get; set; }
         public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
         public bool HasFormedObjectArray { get; private set; }
+        public bool HasProcessToFormObjectArrayInQueue { get; private set; }
         public bool HasLinearTrainingResult { get; set; }
         public bool HasExponentialTrainingResult { get; set; }
         public bool HasMultiplicativeTrainingResult { get; set; }
@@ -81,6 +82,7 @@ namespace KadOzenka.Web.Models.Modeling
                 HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
                 HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
                 HasFormedObjectArray = hasFormedObjectArray,
+                HasProcessToFormObjectArrayInQueue = CheckProcessToFormObjectArrayExistsInQueue(entity.ModelId),
                 TypeStr = entity.Type.GetEnumDescription(),
                 AlgorithmType = entity.AlgorithmType,
                 AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmType,
@@ -104,6 +106,16 @@ namespace KadOzenka.Web.Models.Modeling
                 A0 = model.A0,
                 Type = model.Type
             };
+		}
+
+		public static bool CheckProcessToFormObjectArrayExistsInQueue(long? modelId)
+		{
+			var possibleStatuses = new List<Status> { Status.Running, Status.Added, Status.PrepareToRun };
+
+			return OMQueue.Where(x =>
+					x.ProcessTypeId == ObjectFormationForModelingProcess.ProcessId &&
+					possibleStatuses.Contains(x.Status_Code) && x.ObjectId == modelId)
+				.ExecuteExists();
 		}
     }
 }

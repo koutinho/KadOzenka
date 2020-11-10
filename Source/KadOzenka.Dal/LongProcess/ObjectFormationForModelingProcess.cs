@@ -25,9 +25,11 @@ namespace KadOzenka.Dal.LongProcess
     {
 	    private readonly ILogger _log = Log.ForContext<ObjectFormationForModelingProcess>();
 
-        public DictionaryService DictionaryService { get; set; }
-        protected ModelingService ModelingService { get; set; }
-        protected ModelFactorsService ModelFactorsService { get; set; }
+	    public static long ProcessId => 60;
+
+        private DictionaryService DictionaryService { get; set; }
+        private ModelingService ModelingService { get; set; }
+        private ModelFactorsService ModelFactorsService { get; set; }
         private OMModel Model { get; set; }
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }

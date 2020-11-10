@@ -213,6 +213,11 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
+
+            var isProcessExists = AutomaticModelingModel.CheckProcessToFormObjectArrayExistsInQueue(modelId);
+			if (isProcessExists)
+				throw new Exception($"Процесс сбора данных для модели уже находится в очереди");
+
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
