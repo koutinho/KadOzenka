@@ -139,11 +139,10 @@ namespace KadOzenka.Dal.Modeling
 		        Description = modelDto.Description,
 		        GroupId = modelDto.GroupId,
 		        CalculationType_Code = KoCalculationType.Comparative,
-		        AlgoritmType_Code = KoAlgoritmType.None,
-		        Type_Code = KoModelType.Automatic
+		        AlgoritmType_Code = modelDto.AlgorithmType,
+		        Type_Code = KoModelType.Automatic,
+                Formula = "-"
 	        };
-
-	        model.Formula = model.GetFormulaFull(true);
 
 	        model.Save();
         }
@@ -180,6 +179,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
+                existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
                 switch (modelDto.AlgorithmType)
                 {
                     case KoAlgoritmType.None:
@@ -193,6 +193,7 @@ namespace KadOzenka.Dal.Modeling
 		                existedModel.A0ForMultiplicative = modelDto.A0;
                         break;
                 }
+
                 if (isModelChanged)
                 {
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);

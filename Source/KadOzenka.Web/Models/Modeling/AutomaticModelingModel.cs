@@ -35,7 +35,11 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Алгоритм расчета")]
 		public KoAlgoritmType AlgorithmType { get; set; }
 
-		[Display(Name = "Тип расчета")]
+		[Display(Name = "Алгоритм для рассчета Кадастровой стоимости")]
+		[Required(ErrorMessage = "Не выбран Алгоритм для рассчета Кадастровой стоимости")]
+        public KoAlgoritmType AlgorithmTypeForCadastralPriceCalculation { get; set; }
+
+        [Display(Name = "Тип расчета")]
 		public string CalculationType { get; set; }
 
 		[Display(Name = "Свободный член")]
@@ -79,6 +83,7 @@ namespace KadOzenka.Web.Models.Modeling
                 HasFormedObjectArray = hasFormedObjectArray,
                 TypeStr = entity.Type.GetEnumDescription(),
                 AlgorithmType = entity.AlgorithmType,
+                AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmType,
                 CalculationType = entity.CalculationType.GetEnumDescription(),
                 A0 = entity.A0
             };
@@ -95,6 +100,7 @@ namespace KadOzenka.Web.Models.Modeling
                 GroupId = model.GroupId,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks,
                 AlgorithmType = model.AlgorithmType,
+                AlgorithmTypeForCadastralPriceCalculation = model.AlgorithmTypeForCadastralPriceCalculation,
                 A0 = model.A0,
                 Type = model.Type
             };

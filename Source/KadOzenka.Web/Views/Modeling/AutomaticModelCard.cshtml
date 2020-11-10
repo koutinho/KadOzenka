@@ -64,7 +64,7 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.AlgorithmType)
+                    @Html.CustomLabelFor(x => x.AlgorithmType, NotSetRequired: true)
                 </div>
                 <div class="col-sm-9">
                     @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
@@ -87,6 +87,14 @@
                 </div>
                 <div class="col-sm-9">
                     @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.AlgorithmTypeForCadastralPriceCalculation)
+                </div>
+                <div class="col-sm-9">
+                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: false, withoutNull: true)
                 </div>
             </div>
             <div class="form-group">
