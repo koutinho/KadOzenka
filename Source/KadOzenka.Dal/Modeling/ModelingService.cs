@@ -213,22 +213,37 @@ namespace KadOzenka.Dal.Modeling
         {
 	        ValidateBaseModel(modelDto);
 
-            var omModel = GetModelEntityById(modelDto.ModelId);
+            var existedModel = GetModelEntityById(modelDto.ModelId);
 
-            omModel.Name = modelDto.Name;
-	        omModel.Description = modelDto.Description;
-	        omModel.GroupId = modelDto.GroupId;
-	        omModel.AlgoritmType_Code = modelDto.AlgorithmType;
-	        omModel.A0 = modelDto.A0;
+            using (var ts = new TransactionScope())
+            {
+	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmType)
+	            {
+		            var factors = ModelFactorsService.GetFactors(modelDto.ModelId, existedModel.AlgoritmType_Code);
+		            factors.ForEach(x =>
+		            {
+			            x.AlgorithmType_Code = modelDto.AlgorithmType;
+			            x.Save();
+		            });
+	            }
 
-	        omModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
-		        ? modelDto.CalculationMethod
-                : KoCalculationMethod.None;
+	            existedModel.Name = modelDto.Name;
+	            existedModel.Description = modelDto.Description;
+	            existedModel.GroupId = modelDto.GroupId;
+	            existedModel.AlgoritmType_Code = modelDto.AlgorithmType;
+	            existedModel.A0 = modelDto.A0;
 
-	        omModel.CalculationType_Code = modelDto.CalculationType;
-	        omModel.Formula = omModel.GetFormulaFull(true);
+	            existedModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
+		            ? modelDto.CalculationMethod
+		            : KoCalculationMethod.None;
 
-	        omModel.Save();
+	            existedModel.CalculationType_Code = modelDto.CalculationType;
+	            existedModel.Formula = existedModel.GetFormulaFull(true);
+
+	            existedModel.Save();
+
+                ts.Complete();
+            }
         }
 
         public void DeleteModel(long modelId)
