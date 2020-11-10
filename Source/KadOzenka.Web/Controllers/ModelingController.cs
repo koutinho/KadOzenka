@@ -784,7 +784,20 @@ namespace KadOzenka.Web.Controllers
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
 
-			ModelingService.CalculateModelingPrice(modelId, objectsDto);
+			var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
+			if (model == null)
+				throw new Exception($"Не найдена модель с ИД '{modelId}'");
+			//пока работаем только с Exp
+			var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
+
+			objectsDto.ForEach(obj =>
+			{
+				var calculationParameters =
+					ModelingService.CalculateModelingPrice(model.A0ForExponential, obj.Price, factors,
+						obj.Coefficients);
+				obj.ModelingPrice = calculationParameters.ModelingPrice;
+				obj.Percent = calculationParameters.Percent;
+			});
 
             var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
 
@@ -810,11 +823,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objects").ToString();
-            var objects = JsonConvert.DeserializeObject<List<ModelMarketObjectRelationModel>>(objectsJson);
-            var objectsDtos = objects.Select(ModelMarketObjectRelationModel.FromModel).ToList();
+            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
+            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
 
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectsDtos);
+            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 

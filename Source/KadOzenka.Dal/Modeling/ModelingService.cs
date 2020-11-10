@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
+using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -415,9 +416,13 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream ExportMarketObjectsToExcel(long modelId, List<ModelMarketObjectRelationDto> marketObjects)
+        public Stream ExportMarketObjectsToExcel(long modelId, List<long> marketObjectsIds)
         {
-            var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
+            if (model == null)
+	            throw new Exception($"Не найдена модель с ИД '{modelId}'");
+            //пока работаем только с Exp
+            var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
             var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
@@ -428,32 +433,38 @@ namespace KadOzenka.Dal.Modeling
                 "Признак выбора аналога в обучающую модель",
                 "Признак выбора аналога в контрольную модель"
             };
-            columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
+            columnHeaders.AddRange(factors.Select(x => RegisterCache.GetAttributeData((int)x.FactorId.GetValueOrDefault()).Name).ToList());
             columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
             AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
 
-            if (marketObjects != null && marketObjects.Count > 0)
+            if (marketObjectsIds != null && marketObjectsIds.Count > 0)
             {
                 var rowCounter = 1;
-                marketObjects.ForEach(obj =>
+                var marketObjects = OMModelToMarketObjects.Where(x => marketObjectsIds.Contains(x.Id)).SelectAll().Execute();
+                marketObjectsIds.ForEach(id =>
                 {
+	                var obj = marketObjects.FirstOrDefault(x => x.Id == id);
+                    if(obj == null)
+                        return;
+                    
 	                var values = new List<object>
                     {
-                        obj.Id, obj.IsExcluded, obj.CadastralNumber, obj.Price, obj.PriceFromModel,
-                        obj.IsForTraining, obj.IsForControl
+                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
+                        obj.IsForTraining.GetValueOrDefault(), obj.IsForControl.GetValueOrDefault()
                     };
 
-                    modelAttributes.ForEach(attribute =>
-                    {
-	                    var coefficient = obj.Coefficients
-		                    ?.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId && x.Value != null)
-		                    ?.Coefficient;
-                        values.Add(coefficient);
-                    });
+	                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+	                factors.ForEach(attribute =>
+	                {
+		                var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.FactorId)?.Coefficient;
+		                values.Add(coefficient);
+	                });
 
-                    values.Add(obj.ModelingPrice);
-                    values.Add(obj.Percent);
+	                var calculationParameters = CalculateModelingPrice(model.A0ForExponential, obj.Price, factors, coefficients);
+
+                    values.Add(calculationParameters.ModelingPrice);
+                    values.Add(calculationParameters.Percent);
 
                     AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
                 });
@@ -499,34 +510,31 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-
-        public void CalculateModelingPrice(long modelId, List<ModelMarketObjectRelationDto> objects)
+        public ModelObjectsCalculationParameters CalculateModelingPrice(decimal? a0, decimal? objectPrice, List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
-	        if (model == null)
-		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
-	        //пока работаем только с Exp
-	        var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
-
-	        objects.ForEach(obj =>
+	        decimal modelingPriceCounter = 0;
+	        foreach (var factor in factors)
 	        {
-		        decimal modelingPrice = 0;
-		        foreach (var factor in factors)
-		        {
-			        var objectCoefficient = obj.Coefficients?.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+		        var objectCoefficient = objectCoefficients?.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
 
-			        var metka = objectCoefficient?.Coefficient;
+		        var metka = objectCoefficient?.Coefficient;
 
-			        modelingPrice = modelingPrice + (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
-		        }
+		        modelingPriceCounter = modelingPriceCounter + (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
+	        }
 
-		        var resultModelingPrice = (decimal?)Math.Exp((double)(model.A0ForExponential.GetValueOrDefault() + modelingPrice));
-		        obj.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-		        if (obj.Price != 1)
-		        {
-			        obj.Percent = (obj.ModelingPrice / obj.Price - 1) * 100;
-		        }
-	        });
+	        var resultModelingPrice = (decimal?)Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
+	        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
+	        decimal? percent = null;
+	        if (objectPrice.GetValueOrDefault() != 1)
+	        {
+		        percent = (modelingPrice / objectPrice.GetValueOrDefault() - 1) * 100;
+	        }
+
+	        return new ModelObjectsCalculationParameters
+	        {
+                ModelingPrice = modelingPrice,
+                Percent = percent
+	        };
         }
 
 
@@ -658,6 +666,16 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Entities
+
+        public class ModelObjectsCalculationParameters
+        {
+	        public decimal? ModelingPrice { get; set; }
+	        public decimal? Percent { get; set; }
+        }
+
+        #endregion
+    }
 }
