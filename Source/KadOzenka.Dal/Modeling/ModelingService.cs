@@ -313,7 +313,13 @@ namespace KadOzenka.Dal.Modeling
             if (ids.Count == 0)
                 return;
 
-            var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
+            var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).Select(x => new
+            {
+                x.IsExcluded,
+                x.IsForTraining,
+                x.IsForControl,
+                x.Coefficients
+            }).Execute();
             objects.ForEach(obj =>
             {
                 var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
@@ -468,7 +474,9 @@ namespace KadOzenka.Dal.Modeling
 
         public void CalculateModelingPrice(long modelId, List<ModelMarketObjectRelationDto> objects)
         {
-	        var model = GetModelEntityById(modelId);
+	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
 	        //пока работаем только с Exp
 	        var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
@@ -477,14 +485,14 @@ namespace KadOzenka.Dal.Modeling
 		        decimal modelingPrice = 0;
 		        foreach (var factor in factors)
 		        {
-			        var objectCoefficient = obj.Coefficients.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+			        var objectCoefficient = obj.Coefficients?.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
 
 			        var metka = objectCoefficient?.Coefficient;
 
-			        modelingPrice = modelingPrice + (metka.GetValueOrDefault(1) * factor.PreviousWeight ?? 1);
+			        modelingPrice = modelingPrice + (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
 		        }
 
-		        var resultModelingPrice = (decimal?)Math.Exp((double)(model.A0.GetValueOrDefault() + modelingPrice));
+		        var resultModelingPrice = (decimal?)Math.Exp((double)(model.A0ForExponential.GetValueOrDefault() + modelingPrice));
 		        obj.ModelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
 		        if (obj.Price != 1)
 		        {

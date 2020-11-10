@@ -272,13 +272,29 @@
     }
     function setIsForTrainingCheckbox(e) {
         var dataItem = gerGridRow(e);
-        dataItem.IsForTraining = this.checked;
-        dataItem.IsDirty = true;
+        var isChecked = this.checked;
+        if (dataItem.IsForControl && isChecked) {
+            Common.ShowError("Объект относится к контрольной выборке, нельзя отнести его в обучающую выборку");
+            dataItem.IsForTraining = false;
+            this.checked = false;
+        }
+        else {
+            dataItem.IsForTraining = isChecked;
+            dataItem.IsDirty = true;
+        }
     }
     function setIsForControlCheckbox(e) {
         var dataItem = gerGridRow(e);
-        dataItem.IsForControl = this.checked;
-        dataItem.IsDirty = true;
+        var isChecked = this.checked;
+        if (dataItem.IsForTraining && isChecked) {
+            Common.ShowError("Объект относится к обучающей выборке, нельзя отнести его в контрольную выборку");
+            dataItem.IsForControl = false;
+            this.checked = false;
+        }
+        else {
+            dataItem.IsForControl = isChecked;
+            dataItem.IsDirty = true;
+        }
     }
     function gerGridRow(e) {
         var grid = $("#grid").data("kendoGrid");
@@ -328,7 +344,14 @@
         var objects = getObjectsFromGrid();
         for (var i = 0; i < objects.length; i++) {
             if (objects[i].IsDirty) {
-                dirtyObjects.push(objects[i]);
+                var simpleObject = {
+                    Id: objects[i].Id,
+                    IsDirty: objects[i].IsDirty,
+                    IsExcluded: objects[i].IsExcluded,
+                    IsForTraining: objects[i].IsForTraining,
+                    IsForControl: objects[i].IsForControl
+                };
+                dirtyObjects.push(simpleObject);
             }
         }
         kendo.ui.progress($('body'), true);
