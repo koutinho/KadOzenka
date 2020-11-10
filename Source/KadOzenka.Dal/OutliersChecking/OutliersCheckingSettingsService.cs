@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.OutliersChecking.Dto;
 using Newtonsoft.Json;
@@ -121,15 +122,17 @@ namespace KadOzenka.Dal.OutliersChecking
 			};
 			object locked = new object();
 
-			var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			var columnNames = new List<string>();
 			for (var i = 0; i < maxColumns; i++)
 			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+				if (mainWorkSheet.Rows[0].Cells[i].Value != null)
+					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
 
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
+			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= lastUsedRowIndex);
 
 			var existedValues = OMCoefficientsOutliersChecking.Where(x => true)
 				.SelectAll()
