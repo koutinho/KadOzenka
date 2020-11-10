@@ -139,21 +139,22 @@ namespace KadOzenka.Dal.DataImport
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 10
 			};
-			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-
+			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 
 			var columnNames = new List<string>();
 			for (var i = 0; i < maxColumns; i++)
 			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+				if (mainWorkSheet.Rows[0].Cells[i].Value != null)
+					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
 
+			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
 				{
-					if (row.Index != 0) //все, кроме заголовков
+					if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 					{
 						if (areKeyColumnsIncluded)
 						{

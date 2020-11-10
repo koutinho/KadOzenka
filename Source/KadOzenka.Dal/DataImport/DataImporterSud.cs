@@ -13,6 +13,7 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Linq;
 using ObjectModel.Directory.Sud;
+using KadOzenka.Dal.DataExport;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -147,8 +148,8 @@ namespace KadOzenka.Dal.DataImport
 				MaxDegreeOfParallelism = 10
 			};
 
-			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-
+			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				bool ReadyImport = false;
@@ -159,7 +160,7 @@ namespace KadOzenka.Dal.DataImport
 				string errortext = string.Empty;
 				try
 				{
-					if (row.Index != 0) //все, кроме заголовков
+					if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 					{
 
 						string cKn = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();

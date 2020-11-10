@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using KadOzenka.Dal.DataExport;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -2161,12 +2162,12 @@ namespace KadOzenka.Dal.XmlParser
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 1
             };
-
+            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
                 try
                 {
-                    if (row.Index != 0) //все, кроме заголовков
+	                if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
                     {
                         string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
                         if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel));
