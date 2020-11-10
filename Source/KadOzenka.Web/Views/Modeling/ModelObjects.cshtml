@@ -120,7 +120,11 @@
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json'
 				}
-			},
+            },
+            error: function (e) {
+                Common.ShowError(e.xhr.responseText);
+                kendo.ui.progress($('body'), false);
+            },
 			schema: {
 				model: {
                     id: "Id",

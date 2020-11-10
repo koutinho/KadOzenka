@@ -13,13 +13,15 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using ObjectModel.Ko;
+using Serilog;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
-		public ModelFactorsService ModelFactorsService { get; set; }
+		private readonly ILogger _log = Log.ForContext<ModelingService>();
+        public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService()
 		{
@@ -461,7 +463,8 @@ namespace KadOzenka.Dal.Modeling
 		                values.Add(coefficient);
 	                });
 
-	                var calculationParameters = CalculateModelingPrice(model.A0ForExponential, obj.Price, factors, coefficients);
+	                var calculationParameters = GetModelCalculationParameters(model.A0ForExponential, obj.Price,
+		                factors, coefficients, obj.CadastralNumber);
 
                     values.Add(calculationParameters.ModelingPrice);
                     values.Add(calculationParameters.Percent);
@@ -510,31 +513,45 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        public ModelObjectsCalculationParameters CalculateModelingPrice(decimal? a0, decimal? objectPrice, List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients)
+        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
-	        decimal modelingPriceCounter = 0;
-	        foreach (var factor in factors)
+	        try
 	        {
-		        var objectCoefficient = objectCoefficients?.FirstOrDefault(x => x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
+		        decimal modelingPriceCounter = 0;
+		        foreach (var factor in factors)
+		        {
+			        var objectCoefficient = objectCoefficients?.FirstOrDefault(x =>
+				        x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
 
-		        var metka = objectCoefficient?.Coefficient;
+			        var metka = objectCoefficient?.Coefficient;
 
-		        modelingPriceCounter = modelingPriceCounter + (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
+			        modelingPriceCounter = modelingPriceCounter +
+			                               (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
+		        }
+
+		        var resultModelingPrice = (decimal?) Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
+		        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
+		        decimal? percent = null;
+		        if (objectPrice.GetValueOrDefault() != 1)
+		        {
+			        percent = (modelingPrice / objectPrice.GetValueOrDefault() - 1) * 100;
+		        }
+
+		        return new ModelObjectsCalculationParameters
+		        {
+			        ModelingPrice = modelingPrice,
+			        Percent = percent
+		        };
 	        }
-
-	        var resultModelingPrice = (decimal?)Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
-	        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-	        decimal? percent = null;
-	        if (objectPrice.GetValueOrDefault() != 1)
+	        catch (Exception exception)
 	        {
-		        percent = (modelingPrice / objectPrice.GetValueOrDefault() - 1) * 100;
+		        _log.ForContext("CadastralNumber", cadastralNumber)
+			        .ForContext("A0", a0)
+			        .ForContext("ObjectPrice", objectPrice)
+			        .Error(exception, "Ошибка во время расчета МС и % для объекта моделирования");
+		        return new ModelObjectsCalculationParameters();
 	        }
-
-	        return new ModelObjectsCalculationParameters
-	        {
-                ModelingPrice = modelingPrice,
-                Percent = percent
-	        };
         }
 
 

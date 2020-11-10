@@ -793,8 +793,8 @@ namespace KadOzenka.Web.Controllers
 			objectsDto.ForEach(obj =>
 			{
 				var calculationParameters =
-					ModelingService.CalculateModelingPrice(model.A0ForExponential, obj.Price, factors,
-						obj.Coefficients);
+					ModelingService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
+						obj.Coefficients, obj.CadastralNumber);
 				obj.ModelingPrice = calculationParameters.ModelingPrice;
 				obj.Percent = calculationParameters.Percent;
 			});
