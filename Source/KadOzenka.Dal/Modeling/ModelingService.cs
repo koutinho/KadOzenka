@@ -180,7 +180,19 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Description = modelDto.Description;
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
-                existedModel.A0 = modelDto.A0;
+                switch (modelDto.AlgorithmType)
+                {
+                    case KoAlgoritmType.None:
+	                case KoAlgoritmType.Line:
+	                    existedModel.A0 = modelDto.A0;
+                        break;
+	                case KoAlgoritmType.Exp:
+		                existedModel.A0ForExponential = modelDto.A0;
+                        break;
+	                case KoAlgoritmType.Multi:
+		                existedModel.A0ForMultiplicative = modelDto.A0;
+                        break;
+                }
                 if (isModelChanged)
                 {
 	                ResetTrainingResults(existedModel, KoAlgoritmType.None);

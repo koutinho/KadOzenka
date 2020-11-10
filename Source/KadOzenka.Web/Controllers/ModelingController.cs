@@ -115,7 +115,36 @@ namespace KadOzenka.Web.Controllers
 			return Json(attributes);
 		}
 
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public JsonResult GetA0(long modelId, KoAlgoritmType type)
+		{
+			var model = OMModel.Where(x => x.Id == modelId).Select(x => new
+			{
+				x.A0,
+				x.A0ForExponential,
+				x.A0ForMultiplicative
+			}).ExecuteFirstOrDefault();
+
+			decimal? a0 = null;
+			switch (type)
+			{
+				case KoAlgoritmType.None:
+				case KoAlgoritmType.Line:
+					a0 = model?.A0;
+                    break;
+				case KoAlgoritmType.Exp:
+					a0 = model?.A0ForExponential;
+                    break;
+				case KoAlgoritmType.Multi:
+					a0 = model.A0ForMultiplicative;
+					break;
+			}
+
+			return Json(a0);
+		}
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups(long tourId)
         {
             var groups = ModelingService.GetGroups(tourId)

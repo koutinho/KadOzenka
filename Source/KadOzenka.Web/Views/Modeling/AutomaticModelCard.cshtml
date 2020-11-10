@@ -305,7 +305,7 @@
             }
         });
         $('#@nameof(Model.TourId)').on('change', onTourChange);
-        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', reloadGrid);
+        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onAlgorithmTypeChange);
 
         initGroups('@Model.GroupId');
     });
@@ -688,5 +688,24 @@
         return { modelId: '@Model.Id', type: modelType }
     }
 
+
+    function onAlgorithmTypeChange() {
+        reloadGrid();
+        var modelType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetA0", "Modeling")',
+            data: { modelId: '@Model.Id', type: modelType},
+            success: function (response) {
+                $("#@nameof(Model.A0)").data("kendoNumericTextBox").value(response);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 </script>
