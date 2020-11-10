@@ -427,7 +427,8 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-        public ActionResult GetRowWithNewLevelForHarmonization([FromForm] int rowNumber)
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRowWithNewLevelForHarmonization([FromForm] int rowNumber)
         {
             ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
@@ -440,9 +441,30 @@ namespace KadOzenka.Web.Controllers
             return PartialView("/Views/GbuObject/Partials/PartialNewHarmonizationRow.cshtml", model);
         }
 
-        #endregion
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRowsWithNewLevelForHarmonization(int startRowNumber, int rowCount, int?[] rowValues)
+        {
+	        ViewData["TreeAttributes"] = GetGbuAttributesTree();
+	        ViewData["StartRowNumber"] = startRowNumber;
+	        ViewData["RowCount"] = rowCount;
 
-        #region HarmonizationCOD
+	        var models = new List<PartialNewHarmonizationLevel>();
+	        for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+	        {
+		        models.Add(new PartialNewHarmonizationLevel
+		        {
+			        RowNumber = rowNumber,
+			        LevelNumber = HarmonizationViewModel.NumberOfConstantLevelsInHarmonization + rowNumber,
+					AttributeId = rowValues[i]
+		        });
+	        }
+
+	        return PartialView("/Views/GbuObject/Partials/PartialNewHarmonizationRows.cshtml", models);
+        }
+
+		#endregion
+
+		#region HarmonizationCOD
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]

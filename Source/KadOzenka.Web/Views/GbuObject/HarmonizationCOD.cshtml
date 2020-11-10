@@ -321,13 +321,15 @@
     <script src="~/js/harmonization.js"></script>
     <script type="text/javascript">
         var urlForNewCustomLevel = '@Url.Action("GetRowWithNewLevelForHarmonization", "GbuObject")';
+        var urlForNewCustomLevels = '@Url.Action("GetRowsWithNewLevelForHarmonization", "GbuObject")';
         globalRowNumber = 1;
 
-        function fillForm(data) {
+        async function fillForm(data) {
             $('#valuesFilter').getKendoMultiSelect().value([]);
             $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
             clearCustomLevels();
             globalRowNumber = 1;
+            var customRowValues = [];
 
             data.forEach(function (val) {
                 if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
@@ -341,8 +343,8 @@
 
                 if (Object.keys(val)[0].includes('@(nameof(Model.AdditionalCustomLevels))')) {
                     var additionalCustomLevel = val[Object.keys(val)[0]];
+                    customRowValues.push(additionalCustomLevel.AttributeId);
                     globalRowNumber = additionalCustomLevel.RowNumber + 1;
-                    addNewCustomLevel(urlForNewCustomLevel, additionalCustomLevel.RowNumber, additionalCustomLevel.AttributeId);
                 }
 
                 if (Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
@@ -460,6 +462,8 @@
                 $('#SelectAllObject').prop('checked');
             selectAllObjectChanged(isSelectAllObjectsChecked);
             onPropertyTypeChange();
+
+            return await addNewCustomLevels(urlForNewCustomLevels, 1, globalRowNumber - 1, customRowValues);
         }
 
         function changeDataActualAvailability(isDataActualUsed) {
@@ -613,7 +617,7 @@
             templateStorage.init(@((int)DataFormStorege.HarmonizationCOD),
                 "SaveTemplateHarmonizationCODObject", "GbuObject",
                 "GetTemplatesOneGroup", "GbuObject",
-                fillForm, addCustomLevelsToForm);
+                null, addCustomLevelsToForm, fillForm);
 
 
             function onDataBound(e) {
