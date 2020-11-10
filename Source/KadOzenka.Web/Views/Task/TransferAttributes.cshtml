@@ -327,11 +327,6 @@
         $('#@nameof(Model.IsOks)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#execute').on('click', transferAttributes);
 
-        @if (Model.CreateAttributes)
-        {<Text>
-        beforeLoad();
-        </Text>}
-
         templateStorage.init(0,
             '@Model.MethodToSaveTemplate', "Task",
             '@Model.MethodToGetTemplate', "Task",
@@ -339,17 +334,6 @@
 
         setVisibilityForAdditionalFiltersForOks();
     });
-
-
-
-
-
-    function beforeLoad() {
-        $('[id^="IdAttributeKO"]').parents(".col-sm-5").hide();
-        var gbuCells = $('[id^="IdAttributeGBU"]').parents(".col-sm-5");
-        gbuCells.removeClass("col-sm-5").addClass("col-sm-10 col-sm-offset-2");
-    }
-
 
     function initTasksList() {
         var tourId = $('#@nameof(Model.RatingTour)').val();

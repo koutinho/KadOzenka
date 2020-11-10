@@ -156,7 +156,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-		public ActionResult TransferAttributes(bool create = false)
+		public ActionResult TransferAttributes()
 		{
 			var model = new ExportAttributesModel();
 
@@ -174,7 +174,7 @@ namespace KadOzenka.Web.Controllers
 
 			ViewData["KoAttributes"] = new List<string>();
 
-			model.CreateAttributes = create;
+			model.CreateAttributes = false;
 
 			return View(model);
 		}

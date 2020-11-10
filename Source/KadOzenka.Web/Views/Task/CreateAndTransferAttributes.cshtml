@@ -100,11 +100,6 @@
     </div>
 }
 
-<script type="text/x-kendo-template" id="templateRow">
-	<div class="wrapper-#: rowNumber #" style="display: none">
-	</div>
-	</script>
-
 <style>
     .attributes-list {
         padding-right: 2%;
@@ -207,41 +202,6 @@
         });
     }
 
-    var rowNumber = 1;
-    @*function addNewRow(localRowNumber, idAttributeKo, idAttributeGbu) {
-        var objectType = getObjectType();
-        if (objectType === -1)
-            return;
-        kendo.ui.progress($('body'), true);
-        var data = [{ rowNumber: localRowNumber }];
-        var templateContent = $('#templateRow').html();
-        var template = kendo.template(templateContent);
-        var result = kendo.render(template, data);
-        $('#attributesList').append(result);
-        var classWrapper = ".wrapper-" + localRowNumber;
-        var idTour = $('#RatingTour').data('kendoDropDownList').value();
-        var url = "@Url.Action("GetRowExport", "Task")";
-        $(classWrapper).load(url, { rowNumber: localRowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' },
-            function(response) {
-                $(classWrapper).show(500);
-                if (idAttributeKo || idAttributeGbu) {
-                    var attributeKoElement = '@nameof(PartialExportAttributesRowModel.IdAttributeKO)';
-                    var attributeGbuElement = '@nameof(PartialExportAttributesRowModel.IdAttributeGbu)';
-                    fillLevelFromTemplate(attributeKoElement, "kendoDropDownList", localRowNumber, idAttributeKo);
-                    fillLevelFromTemplate(attributeGbuElement, "kendoDropDownTree", localRowNumber, idAttributeGbu);
-                }
-                kendo.ui.progress($('body'), false);
-            });
-    }
-
-    function fillLevelFromTemplate(elementName, elementType, localRowNumber, value) {
-        var dropDownTree = $("#" + elementName + "_" + localRowNumber).data(elementType);
-        if (dropDownTree) {
-            dropDownTree.value(value || '');
-            dropDownTree.trigger('change');
-        }
-    }*@
-
     $(document).ready(function() {
         $('[name="RatingTour"]')
             .kendoDropDownList({
@@ -260,20 +220,11 @@
             });
 
         $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
-        $('#@nameof(Model.IsZu)').on('change', initKoAttributes);
         $('#@nameof(Model.IsZu)').on('change', setVisibilityForAdditionalFiltersForOks);
-        $('#@nameof(Model.IsOks)').on('change', initKoAttributes);
         $('#@nameof(Model.IsOks)').on('change', setVisibilityForAdditionalFiltersForOks);
 
         $('#execute').on('click', transferAttributes);
-
-        @if (Model.CreateAttributes)
-        {<Text>
-        beforeLoad();
-        </Text>}
 
         templateStorage.init(0,
             '@Model.MethodToSaveTemplate', "Task",
@@ -283,11 +234,6 @@
         setVisibilityForAdditionalFiltersForOks();
     });
 
-    function beforeLoad() {
-        $('[id^="IdAttributeKO"]').parents('.col-sm-5').hide();
-        var gbuCells = $('[id^="IdAttributeGBU"]').parents('.col-sm-5');
-        gbuCells.removeClass('col-sm-5").addClass("col-sm-10 col-sm-offset-2');
-    }
     function initTasksList() {
         var tourId = $('#@nameof(Model.RatingTour)').val();
         var dataSource = new kendo.data.DataSource({
@@ -319,32 +265,6 @@
 
         return '@ObjectTypeExtended.Zu';
     }
-
-    function initKoAttributes() {
-        var objectType = getObjectType();
-        var tourId = $('#RatingTour').val();
-        var koAttributesSource = objectType === -1
-            ? null
-            : new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: '@Url.Action("GetKoAttributes", "Task")',
-                        data: { tourId: tourId, objectType: objectType },
-                        dataType: 'json'
-                    }
-                }
-            });
-        $('[name^="IdAttributeKO"]').each(function() {
-            $(this).kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: " ",
-                filter: "contains",
-                dataSource: koAttributesSource
-            });
-        });
-    }
-
 
     function addCustomLevelsToForm(formObject) {
         if (!formObject) {
@@ -397,7 +317,6 @@
 
     function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value([]);
-        rowNumber = 1;
         var attrValues = [];
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
