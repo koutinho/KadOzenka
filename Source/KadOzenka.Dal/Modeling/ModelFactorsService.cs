@@ -242,7 +242,7 @@ namespace KadOzenka.Dal.Modeling
 						MarkerId = -1,
 						AlgorithmType_Code = type,
 						Weight = dto.CurrentWeight,
-						PreviousWeight = dto.PreviousWeight
+						PreviousWeight = dto.PreviousWeight ?? 1
 					}.Save();
 				});
 
@@ -258,7 +258,7 @@ namespace KadOzenka.Dal.Modeling
 
 			factor.DictionaryId = dto.DictionaryId;
 			factor.Weight = dto.CurrentWeight;
-			factor.PreviousWeight = dto.PreviousWeight;
+			factor.PreviousWeight = dto.PreviousWeight ?? 1;
 			
 			factor.Save();
 		}
