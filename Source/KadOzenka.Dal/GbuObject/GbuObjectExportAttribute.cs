@@ -13,6 +13,7 @@ using Core.Register.RegisterEntities;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using Serilog;
@@ -153,6 +154,8 @@ namespace KadOzenka.Dal.GbuObject
             }
 
             var attributes = GetUnitGbuAttributes(unit, lstIds, gbuAttributesWithSettings);
+            _log.ForContext("Attributes", JsonConvert.SerializeObject(attributes.Select(x => new { AttributeId = x.AttributeId, ObjectId = x.ObjectId, Value = x.GetValueInString()}).ToList()))
+	            .Verbose("Для юнита {UnitId}({UnitCadastralNumber}) получено {AttributesCount} гбу атрибута", unit.Id, unit.CadastralNumber, attributes.Count);
             foreach (GbuObjectAttribute attrib in attributes)
             {
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
