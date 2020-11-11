@@ -203,24 +203,31 @@ namespace KadOzenka.Dal.LongProcess
             //TODO ждем выполнения CIPJSKO-307
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
-			return OMCoreObject.Where(x =>
-					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-					x.CadastralNumber != null &&
-					x.ProcessType_Code != ProcessStep.Excluded
-				)
+            var baseQuery = OMCoreObject.Where(x =>
+	            x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+	            x.CadastralNumber != null &&
+	            x.ProcessType_Code != ProcessStep.Excluded);
+
+            var type = Model.IsOksObjectType.GetValueOrDefault() ? QSConditionType.NotEqual : QSConditionType.Equal;
+            baseQuery.And(new QSConditionSimple(OMCoreObject.GetColumn(x => x.PropertyTypesCIPJS_Code),
+	            type, (int) PropertyTypesCIPJS.LandArea));
+
+			baseQuery.Select(x => new
+			{
+				x.CadastralNumber,
+				x.PricePerMeter
+			});
+
+			//TODO для тестирования
+            //baseQuery.SetPackageIndex(0).SetPackageSize(100);
+            //var sql = baseQuery.GetSql();
+
+            return baseQuery
                 //TODO для тестирования расчета МС и Процента
-				//return OMCoreObject.Where(x => x.CadastralNumber == "77:06:0004004:9714")
-				//TODO ждем выполнения CIPJSKO-307
-				//.And(territoryCondition)
-				.Select(x => new
-                {
-                    x.CadastralNumber,
-                    x.PricePerMeter
-                })
-				////TODO для тестирования
-				//.SetPackageIndex(0)
-				//.SetPackageSize(100)
-				.Execute()
+                //return OMCoreObject.Where(x => x.CadastralNumber == "77:06:0004004:9714")
+                //TODO ждем выполнения CIPJSKO-307
+                //.And(territoryCondition)
+                .Execute()
                 .GroupBy(x => new
                 {
                     x.CadastralNumber,
