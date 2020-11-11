@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
@@ -23,6 +24,7 @@ namespace KadOzenka.Dal.Modeling
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
         private List<ModelAttributeRelationDto> ModelAttributes { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
+        private string AdditionalMessage { get; set; }
 
         public Training(string inputParametersXml, OMQueue processQueue)
             : base(processQueue, Log.ForContext<Training>())
@@ -116,45 +118,73 @@ namespace KadOzenka.Dal.Modeling
         {
 	        var trainingResults = new List<TrainingResponse>();
 
+	        var data = generalResponse.Data.ToString();
+
+            Logger.ForContext("TrainingResultFromService", data).Debug("Результаты обучения от сервиса");
             if (InputParameters.ModelType == KoAlgoritmType.None)
 	        {
-		        trainingResults = JsonConvert.DeserializeObject<List<TrainingResponse>>(generalResponse.Data.ToString());
+		        trainingResults = JsonConvert.DeserializeObject<List<TrainingResponse>>(data);
             }
 	        else
 	        {
-		        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
+		        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(data);
 		        trainingResults.Add(trainingResult);
             }
 
             ResetPredictedPrice();
             AddLog("Закончен сброс спрогнозированной цены.");
 
+            var returnedResultType = new List<KoAlgoritmType>();
             trainingResults.ForEach(trainingResult =>
             {
 	            if (trainingResult == null)
-		            throw new Exception("Сервис моделирования не вернул результат обучения");
+	            {
+		            var returnedTypesStr = string.Join(", ", returnedResultType.Select(x => x.GetEnumDescription()).ToArray());
+
+                    AdditionalMessage = $"Сервис моделирования вернул результаты обучения для алгоритмов: {returnedTypesStr}";
+		            Logger.Error(AdditionalMessage);
+                    return;
+                }
 
 	            PreprocessTrainingResult(trainingResult);
 
 	            var trainingType = GetTrainingType(trainingResult.Type);
-	            
-	            SaveCoefficients(trainingResult.CoefficientsForAttributes, trainingType);
+	            returnedResultType.Add(trainingType);
+
+                SaveCoefficients(trainingResult.CoefficientsForAttributes, trainingType);
 	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult));
 
 	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
             });
+
+            try
+            {
+	            if (InputParameters.ModelType == KoAlgoritmType.None)
+	            {
+		            var array = (KoAlgoritmType[])System.Enum.GetValues(typeof(KoAlgoritmType));
+		            var list = new List<KoAlgoritmType>(array);
+		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
+		            notReturnedTypes.ForEach(ResetTrainingResults);
+                }
+            }
+            catch (Exception)
+            {
+	            Logger.Error("Ошибка при сбросе результатов обучения");
+            }
         }
 
         protected override void RollBackResult()
         {
-            ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+	        ResetTrainingResults(InputParameters.ModelType);
+        }
 
-            var factors = ModelFactorsService.GetFactors(GeneralModel.Id, InputParameters.ModelType);
-            factors.ForEach(x =>
-            {
-	            x.Weight = 0;
-	            x.Save();
-            });
+        protected override void SendSuccessNotification(OMQueue processQueue)
+        {
+	        var message = string.IsNullOrWhiteSpace(AdditionalMessage) 
+		        ? "Операция успешно завершена."
+		        : $"Операция частично завершена.<br>{AdditionalMessage}";
+
+	        NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
 
@@ -247,6 +277,18 @@ namespace KadOzenka.Dal.Modeling
 
 			GeneralModel.Save();
 		}
+
+        private void ResetTrainingResults(KoAlgoritmType type)
+        {
+	        ModelingService.ResetTrainingResults(GeneralModel, type);
+
+	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
+	        factors.ForEach(x =>
+	        {
+		        x.Weight = 0;
+		        x.Save();
+	        });
+        }
 
         #endregion
     }
