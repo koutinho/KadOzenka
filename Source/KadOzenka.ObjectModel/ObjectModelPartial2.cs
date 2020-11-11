@@ -474,6 +474,24 @@ namespace ObjectModel.Gbu
 }
 
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 81 Реестр хранения настроек гбу атрибута
+    /// </summary>
+    public partial class OMAttributeSettings
+    {
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Market
 {
     /// <summary>

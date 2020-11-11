@@ -5,6 +5,7 @@ using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using ObjectModel.Core.Register;
+using ObjectModel.Gbu;
 using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
@@ -91,8 +92,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditCharacteristic(long attributeId)
         {
             var attribute = GetAttribute(attributeId);
-
-            var model = CharacteristicModel.Map(attribute);
+            var setting = GetGbuAttributeSettings(attributeId);
+            var model = CharacteristicModel.Map(attribute, setting);
 
             return View(model);
         }
@@ -124,8 +125,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult DeleteCharacteristic(long attributeId)
         {
             var attribute = GetAttribute(attributeId);
-
-            var model = CharacteristicModel.Map(attribute);
+            var setting = GetGbuAttributeSettings(attributeId);
+            var model = CharacteristicModel.Map(attribute, setting);
 
             return View(model);
         }
@@ -147,6 +148,12 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
 
             return attribute;
+        }
+
+        private OMAttributeSettings GetGbuAttributeSettings(long attributeId)
+        {
+            var setting = ObjectsCharacteristicsService.GetRegisterAttributeSettings(attributeId);
+            return setting;
         }
 
         #endregion
