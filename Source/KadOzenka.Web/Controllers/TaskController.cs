@@ -326,6 +326,36 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
+        public ActionResult GetRowExports(int startRowNumber, int rowCount, List<PartialExportAttributesRowModel> rowValues, long tourId,
+	         ObjectTypeExtended objectType)
+        {
+	        ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+		        .Select(x => new DropDownTreeItemModel
+		        {
+			        Value = Guid.NewGuid().ToString(),
+			        Text = x.Text,
+			        Items = x.Items.Select(y => new DropDownTreeItemModel
+			        {
+				        Value = y.Value,
+				        Text = y.Text
+			        }).ToList()
+		        }).AsEnumerable();
+
+	        var koAttributes = GetOmAttributesForKo(tourId, objectType, null) ?? new List<OMAttribute>();
+
+	        ViewData["KoAttributes"] = koAttributes.Select(x => new
+	        {
+		        Value = x.Id,
+		        Text = x.Name
+	        }).AsEnumerable();
+
+	        ViewData["StartRowNumber"] = startRowNumber;
+	        ViewData["RowCount"] = rowCount;
+
+	        return PartialView("/Views/Task/PartialTransferAttributeRows.cshtml", rowValues);
+        }
+
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
         public List<SelectListItem> GetTemplatesForTransferAttributes(bool isCreateMode)
         {
             var formType = isCreateMode

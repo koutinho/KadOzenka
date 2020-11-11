@@ -1,0 +1,20 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@model List<KadOzenka.Web.Models.Task.PartialExportAttributesRowModel>;
+
+@{
+    var startRowNumber = (int)ViewData["StartRowNumber"];
+    var rowCount = (int)ViewData["RowCount"];
+}
+@for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+{
+    <tr class="wrapper-@rowNumber">
+        <td>
+            @Html.KendoDropDownListWithAutocompleteFor(m => m[i].IdAttributeKO, (IEnumerable)ViewData["KoAttributes"], idPrefix: "_" + rowNumber)
+        </td>
+        <td>
+            @Html.KendoDropDownListTreeWithButton(m => m[i].IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + rowNumber)
+        </td>
+    </tr>
+}
+
