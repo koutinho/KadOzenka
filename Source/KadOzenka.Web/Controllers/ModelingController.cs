@@ -164,6 +164,14 @@ namespace KadOzenka.Web.Controllers
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
+			var exists = OMModel.Where(x =>
+				x.Name == modelingModel.Name
+			    && x.GroupId == modelingModel.GroupId)
+				.Select(x=>x.Id)
+				.ExecuteFirstOrDefault();
+			if (exists != null)
+				return Json(new { Errors = new List<object>{ new { Message = "Модель с таким названием уже существует для данной группы"} }});
+
 			var modelDto = ModelingModel.FromModel(modelingModel);
 			ModelingService.AddModel(modelDto);
 
