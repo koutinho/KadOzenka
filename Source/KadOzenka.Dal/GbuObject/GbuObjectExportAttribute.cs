@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
@@ -16,6 +17,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using Serilog;
 using ObjectModel.Directory;
+using ObjectModel.Gbu;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.GbuObject
@@ -70,12 +72,14 @@ namespace KadOzenka.Dal.GbuObject
             };
             //если используется "Перенос с созданием атрибутов", нужно обновить кеш, т.к. нового атрибута может не быть в нем
             RegisterCache.UpdateCache(0, null);
-
-            var gbuAttributes = new List<RegisterAttribute>();
+            var gbuAttributeSettings = OMAttributeSettings.Where(x => true).SelectAll().Execute();
+            var gbuAttributes = new List<Tuple<RegisterAttribute, OMAttributeSettings>>();
             foreach (ExportAttributeItem item in setting.Attributes)
             {
 	            var gbuAttribute = RegisterCache.GetAttributeData((int)item.IdAttributeGBU);
-	            gbuAttributes.Add(gbuAttribute);
+	            var gbuAttributeSetting =
+		            gbuAttributeSettings.FirstOrDefault(x => x.AttributeId == item.IdAttributeGBU);
+                gbuAttributes.Add(new Tuple<RegisterAttribute, OMAttributeSettings>(gbuAttribute, gbuAttributeSetting));
             }
             WorkerCommon.LogState(processQueue, $"Найдено {setting.Attributes.Count} пар атрибутов.");
             WorkerCommon.LogState(processQueue, $"Найдено {setting.TaskFilter.Count} заданий на оценку.");
@@ -87,7 +91,7 @@ namespace KadOzenka.Dal.GbuObject
                 CurrentCount = 0;
 				WorkerCommon.LogState(processQueue, $"Найдено {units.Count} единиц оценки.");
 
-                var gbuAttributeIds = gbuAttributes.Select(x => x.Id).ToList();
+                var gbuAttributeIds = gbuAttributes.Select(x => x.Item1.Id).ToList();
 				Parallel.ForEach(units, options, item => { RunOneUnit(item, setting, gbuAttributeIds, gbuAttributes, reportService); });
 				CurrentCount = 0;
                 MaxCount = 0;
@@ -138,7 +142,7 @@ namespace KadOzenka.Dal.GbuObject
         }
 
         private void RunOneUnit(UnitPure unit, GbuExportAttributeSettings setting, List<long> lstIds,
-	        List<RegisterAttribute> gbuAttributes, GbuReportService reportService)
+	        List<Tuple<RegisterAttribute, OMAttributeSettings>> gbuAttributesWithSettings, GbuReportService reportService)
         {
 	        GbuReportService.Row row;
             lock (locked)
@@ -148,15 +152,14 @@ namespace KadOzenka.Dal.GbuObject
                 reportService.AddValue(unit.CadastralNumber, CadastralNumberColumnIndex, row);
             }
 
-            var attributes = GbuObjectService.GetAllAttributes(unit.ObjectId, null, lstIds, DateTime.Now.GetEndOfTheDay());
-
+            var attributes = GetUnitGbuAttributes(unit, lstIds, gbuAttributesWithSettings);
             foreach (GbuObjectAttribute attrib in attributes)
             {
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
                 var columnIndexInReport = setting.Attributes.IndexOf(current) + AttributesStartColumnIndex;
 
                 var koAttributeData = RegisterCache.GetAttributeData((int)current.IdAttributeKO);
-                var gbuAttributeData = gbuAttributes.FirstOrDefault(x => x.Id == current.IdAttributeGBU);
+                var gbuAttributeData = gbuAttributesWithSettings.FirstOrDefault(x => x.Item1.Id == current.IdAttributeGBU).Item1;
 
                 try
                 {
@@ -251,7 +254,49 @@ namespace KadOzenka.Dal.GbuObject
             //query.AddColumn(OMUnit.GetColumn(x => x.CreationDate, nameof(UnitPure.CreationDate)));
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitPure.ObjectType)));
 
-            var allUnits = query.ExecuteQuery<UnitPure>();
+            var parentObjectIsSubQuery = new QSQuery(OMMainObject.GetRegisterId())
+            {
+                Columns = new List<QSColumn>
+                {
+	                OMMainObject.GetColumn(x => x.Id)
+                },
+                Condition = new QSConditionGroup(QSConditionGroupType.And)
+                {
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMMainObject.GetColumn(x => x.ObjectType_Code), QSConditionType.In,
+	                        new List<double> {(double) PropertyTypes.Building, (double) PropertyTypes.Construction}),
+                        new QSConditionSimple(
+		                    OMMainObject.GetColumn(x => x.CadastralNumber),
+		                    QSConditionType.Equal,
+		                    OMUnit.GetColumn(x => x.BuildingCadastralNumber))
+	                    {
+		                    RightOperandLevel = 1
+	                    },
+                        new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.In,
+	                        new List<double> {(double) PropertyTypes.Pllacement, (double) PropertyTypes.Parking})
+                        {
+                            LeftOperandLevel = 1
+                        }
+                    }
+                }, PackageSize = 1
+            };
+            query.AddColumn(parentObjectIsSubQuery, nameof(UnitPure.ParentPlacementObjectId));
+
+            var allUnits = new List<UnitPure>();
+            var resultTable = query.ExecuteQuery();
+            foreach (DataRow row in resultTable.Rows)
+            {
+	            allUnits.Add(new UnitPure
+	            {
+                    Id = row[nameof(UnitPure.Id)].ParseToLong(),
+                    ObjectId = row[nameof(UnitPure.ObjectId)].ParseToLong(),
+                    ParentPlacementObjectId = row[nameof(UnitPure.ParentPlacementObjectId)].ParseToLongNullable(),
+                    CadastralNumber = row[nameof(UnitPure.CadastralNumber)].ParseToString(),
+                    ObjectType = (PropertyTypes)row[nameof(UnitPure.ObjectType)].ParseToLong()
+                });
+            }
+
             if (settings.OksAdditionalFilters.IsPlacements)
             {
 	            return FilterPlacementObjects(allUnits, settings);
@@ -334,7 +379,43 @@ namespace KadOzenka.Dal.GbuObject
 	        throw new ArgumentException("Не указан тип объекта");
         }
 
-        private static string GetWarningMessage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
+        private List<GbuObjectAttribute> GetUnitGbuAttributes(UnitPure unit, List<long> lstIds, List<Tuple<RegisterAttribute, OMAttributeSettings>> gbuAttributesWithSettings)
+        {
+	        List<GbuObjectAttribute> result = null;
+
+	        var objectIds = new List<long> { unit.ObjectId };
+	        if (unit.ParentPlacementObjectId.HasValue)
+	        {
+		        objectIds.Add(unit.ParentPlacementObjectId.Value);
+	        }
+	        //Получаем все атрибуты (в т.ч. атрибуты родительского объекта для юнитов с типом 'Помещение' или 'Машино-место')
+	        var allAttributes = GbuObjectService.GetAllAttributes(objectIds, null, lstIds, DateTime.Now.GetEndOfTheDay());
+
+	        if (unit.ObjectType == PropertyTypes.Pllacement || unit.ObjectType == PropertyTypes.Parking)
+	        {
+		        //Для атрибутов с настройкой 'Использовать родительский атрибут для помещений' необходимо использовать значение родительского атрибута
+		        result = new List<GbuObjectAttribute>();
+		        foreach (var attributeId in lstIds)
+		        {
+			        var useParentAttributeForPlacements = gbuAttributesWithSettings
+				        .FirstOrDefault(x => x.Item1.Id == attributeId)?.Item2?.UseParentAttributeForPlacements;
+
+			        var attribute = useParentAttributeForPlacements.GetValueOrDefault()
+						? allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ParentPlacementObjectId)
+				        : allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ObjectId);
+			        if (attribute != null)
+				        result.Add(attribute);
+				}
+	        }
+	        else
+	        {
+		        result = allAttributes;
+	        }
+
+	        return result;
+        }
+
+		private static string GetWarningMessage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
         {
 	        return $"Типы данных не совпадают. Тип КО - '{koAttributeData.Type.GetEnumDescription()}', тип ГБУ - '{gbuAttributeData.Type.GetEnumDescription()}'";
         }
@@ -348,11 +429,12 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        public long Id { get; set; }
 	        public long ObjectId { get; set; }
-	        public string CadastralNumber { get; set; }
+	        public long? ParentPlacementObjectId { get; set; }
+            public string CadastralNumber { get; set; }
             //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
             //TODO если хотфикс будет заапрувлен, нужно убрать
             //public DateTime? CreationDate { get; set; }
-	        public PropertyTypes? ObjectType { get; set; }
+            public PropertyTypes ObjectType { get; set; }
         }
 
         #endregion
