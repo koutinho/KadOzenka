@@ -231,22 +231,6 @@
                 template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
                 filterable: true,
                 sortable: true
-            },
-            {
-                title: "Признак выбора аналога в обучающую модель",
-                field: "IsForTraining",
-                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForTraining' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForTraining'>Признак выбора аналога в обучающую модель</label>",
-                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
-                filterable: false,
-                sortable: false
-            },
-            {
-                title: "Признак выбора аналога в контрольную модель",
-                field: "IsForControl",
-                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForControl' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForControl'>Признак выбора аналога в контрольную модель</label>",
-                template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
-                filterable: false,
-                sortable: false
             }
         ];
         var baseColumnsAfterMarks = [
@@ -263,6 +247,22 @@
                 template: '#: Percent == null ? "" : kendo.toString(Percent, "n2") #',
                 filterable: true,
                 sortable: true
+            },
+            {
+                title: "Признак выбора аналога в обучающую модель",
+                field: "IsForTraining",
+                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForTraining' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForTraining'>Признак выбора аналога в обучающую модель</label>",
+                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
+                filterable: false,
+                sortable: false
+            },
+            {
+                title: "Признак выбора аналога в контрольную модель",
+                field: "IsForControl",
+                headerTemplate: "<input type='checkbox' id='headerCheckboxIsForControl' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='headerCheckboxIsForControl'>Признак выбора аналога в контрольную модель</label>",
+                template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
+                filterable: false,
+                sortable: false
             }
         ];
         return baseColumnsBeforeMarks.concat(additionalColumns).concat(baseColumnsAfterMarks);
