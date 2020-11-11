@@ -25119,6 +25119,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private long? _marketobjectid;
+        /// <summary>
+        /// 70201000 ИД объекта-аналога (market_object_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201000)]
+        public long? MarketObjectId
+        {
+            get
+            {
+                CheckPropertyInited("MarketObjectId");
+                return _marketobjectid;
+            }
+            set
+            {
+                _marketobjectid = value;
+                NotifyPropertyChanged("MarketObjectId");
+            }
+        }
+
     }
 }
 

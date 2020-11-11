@@ -156,6 +156,7 @@ namespace KadOzenka.Dal.LongProcess
                     var modelToMarketObjectRelation = new OMModelToMarketObjects
                     {
                         ModelId = Model.Id,
+                        MarketObjectId = marketObject.Id,
                         CadastralNumber = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
                         IsForTraining = isForTraining,

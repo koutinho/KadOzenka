@@ -634,6 +634,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
+                MarketObjectId = entity.MarketObjectId,
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
                 IsExcluded = entity.IsExcluded.GetValueOrDefault(), 

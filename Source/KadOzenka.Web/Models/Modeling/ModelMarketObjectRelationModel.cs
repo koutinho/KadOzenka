@@ -7,6 +7,7 @@ namespace KadOzenka.Web.Models.Modeling
 	{
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }
+		public long? MarketObjectId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
         public decimal? ModelingPrice { get; set; }
@@ -24,6 +25,7 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
+				MarketObjectId = entity.MarketObjectId,
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
 				ModelingPrice = entity.ModelingPrice,
