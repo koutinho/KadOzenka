@@ -795,18 +795,26 @@ namespace KadOzenka.Web.Controllers
 			//пока работаем только с Exp
 			var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
-			objectsDto.ForEach(obj =>
+			var objectsWithErrors = new List<ModelMarketObjectRelationDto>();
+			for (var i = 0; i < objectsDto.Count; i++)
 			{
+				var obj = objectsDto[i];
 				var calculationParameters =
 					ModelingService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
 						obj.Coefficients, obj.CadastralNumber);
 				obj.ModelingPrice = calculationParameters.ModelingPrice;
 				obj.Percent = calculationParameters.Percent;
-			});
 
-            var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+				if (obj.ModelingPrice.GetValueOrDefault() == 0)
+				{
+					objectsWithErrors.Add(obj);
+				}
+            }
 
-            return Json(models);
+			var successfulModels = objectsDto.Except(objectsWithErrors).Select(ModelMarketObjectRelationModel.ToModel).ToList();
+            var errorModels = objectsWithErrors.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+
+            return Json(new { successfulModels, errorModels });
         }
 
 		[HttpGet]
