@@ -107,6 +107,16 @@
 }
 
 <script>
+    // Подсветка файла после его выбора (select в kendoUpload срабатывает раньше чем элемент создается)
+    var mutConfig = { childList: true, subtree: true };
+    var mutationFunction = function(mutList, observer) {
+        var targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
+
+
     $(document).ready(function () {
 
         $('#toolbar').kendoToolBar({
@@ -385,6 +395,11 @@
                 }
             }
         }).data('kendoUpload');
+        var mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
 
         $("#loadMarksCatalogFilesButton").kendoButton({
             click: function (e) {
