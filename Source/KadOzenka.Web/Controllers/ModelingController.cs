@@ -809,7 +809,23 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
         }
 
-		[HttpPost]
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+		public JsonResult GetCoefficientsForPreviousTour(long modelId)
+		{
+			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+
+			var models = factors.Select(x => new
+			{
+				Name = RegisterCache.GetAttributeData(x.FactorId.GetValueOrDefault()).Name,
+				Coefficient = x.PreviousWeight ?? 1
+			}).OrderBy(x => x.Name).ToList();
+
+			//return Json(new {columns = models.Select(x => x.Name), data = models});
+			return Json(models);
+		}
+
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult ChangeObjectsStatusInCalculation(string objects)
 		{

@@ -59,6 +59,10 @@
                 .Enable(false))
         </div>
     </div>
+    <div class="form-group" style="padding: 1% 0 2% 0" id="previousTourCoefficientsBlock">
+        <div>Коэффициенты из предыдущего тура</div>
+        <div id="gridWithPreviousTourCoefficients"></div>
+    </div>
     <div class="form-group">
         <div id="grid"></div>
     </div>
@@ -102,12 +106,55 @@
 	$(document).ready(function () {
         updateGrid();
         initFileUploader();
+        initGridWithPreviousTourCoefficients();
 
         $('#saveBtn').on('click', saveObjects);
         $('#exportBtn').on('click', exportObjectsToExcel);
         $('#uploadBtn').on('click', uploadObjects);
     });
 
+
+
+     function initGridWithPreviousTourCoefficients() {
+         var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetCoefficientsForPreviousTour", "Modeling", new {modelId = Model.Id})',
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json'
+				}
+            },
+            error: function (e) {
+                Common.ShowError(e.xhr.responseText);
+            },
+			schema: {
+				model: {
+                    fields: {
+                        Name: { type: "string", editable: false },
+                        Coefficient: { type: "number", editable: false }
+                    }
+                },
+                data: function (response) {
+                    return response;
+                }
+            },
+			pageSize: 10
+        });
+        $("#gridWithPreviousTourCoefficients").kendoGrid({
+             columns: [
+                 {
+                     title: "Имя",
+                     field: "Name"
+                 },
+                 {
+                     title: "Коэффициент",
+                     field: "Coefficient"
+                 }],
+            dataSource: dataSource,
+             pageable: true,
+             resizable: true
+        });
+     }
 
 
     function updateGrid() {
