@@ -1805,6 +1805,9 @@
 	  <Content Update="wwwroot\images\Cursors\cursor_col_resize.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="wwwroot\lib\signalr\dist\browser\signalr.js">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <Content Update="wwwroot\MapIcons\arrow_left.svg">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

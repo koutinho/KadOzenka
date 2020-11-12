@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Core.Register;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using ObjectModel.Core.Register;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Web.Models.ObjectsCharacteristics
 {
@@ -22,8 +23,11 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
 
         public long RegisterId { get; set; }
 
+        [Display(Name = "Для помещений использовать родительскую характеристику")]
+        public bool UseParentAttributeForPlacement { get; set; }
 
-        public static CharacteristicModel Map(OMAttribute attribute)
+
+        public static CharacteristicModel Map(OMAttribute attribute, OMAttributeSettings setting = null)
         {
             return new CharacteristicModel
             {
@@ -33,7 +37,8 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                 Type = attribute.ReferenceId.HasValue
                     ? RegisterAttributeType.REFERENCE
                     : (RegisterAttributeType)attribute.Type,
-                ReferenceId = attribute.ReferenceId
+                ReferenceId = attribute.ReferenceId,
+                UseParentAttributeForPlacement = setting != null && setting.UseParentAttributeForPlacements.GetValueOrDefault()
             };
         }
 
@@ -45,7 +50,8 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                 Name = model.Name,
                 RegisterId = model.RegisterId,
                 Type = model.Type,
-                ReferenceId = model.ReferenceId
+                ReferenceId = model.ReferenceId,
+                UseParentAttributeForPlacement = model.UseParentAttributeForPlacement
             };
         }
 

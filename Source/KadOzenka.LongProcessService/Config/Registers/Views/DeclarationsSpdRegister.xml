@@ -19,7 +19,7 @@
 		  </Parameters>
 	  </Button>
 
-	  <Button Caption="Создать деклорацю"  NavigateURL="/Declarations/CreateFromSpd"
+	  <Button Caption="Создать декларацию"  NavigateURL="/Declarations/CreateFromSpd"
 	          Icon="fas fa-plus">
 		  <ConditionGroups>
 			  <ConditionGroup HideOrDisable="Disable">

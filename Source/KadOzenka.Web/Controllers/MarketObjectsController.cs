@@ -125,24 +125,22 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
         public ActionResult ActivateProcess()
         {
+            /*
             if (AddressesDetector.IsProcessAdditable())
             {
                 AddressesDetector.AddProcessToQueue();
                 return Content("Присвоение зон, районов, округов");
             }
             else return Content("Процесс уже добавлен в очередь или выполняется");
+            */
+            return Content("Присвоение зон, районов, округов");
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_COORDINATES)]
         public ActionResult ActivateCoordinates()
         {
-            if (CoordinatesJoiner.IsProcessAdditable())
-            {
-                CoordinatesJoiner.AddProcessToQueue();
-                return Content("Присвоение координат");
-            }
-            else return Content("Процесс уже добавлен в очередь или выполняется");
+            return View("~/Views/AnalogCheck/ActivateCoordinates.cshtml");
         }
 
         #region Correction By Date
