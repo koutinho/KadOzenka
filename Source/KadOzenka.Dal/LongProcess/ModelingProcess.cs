@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.LongProcess
             }
 
             var strategy = GetModelingStrategy(inputParameters, processQueue);
-            AddLog(processQueue, $"Запущено моделирование вида '{inputParameters.Mode.GetEnumDescription()}'");
+            AddLog(processQueue, $"Запущено моделирование вида '{inputParameters.Mode.GetEnumDescription()}'", logger: _log);
             strategy.Process();
 
             _log.Information("Закончен фоновый процесс Моделирования");
@@ -54,11 +54,11 @@ namespace KadOzenka.Dal.LongProcess
             switch (inputParameters.Mode)
             {
                 case ModelingMode.Training:
-                    return new Training(inputParameters.InputParametersXml, processQueue, _log);
+                    return new Training(inputParameters.InputParametersXml, processQueue);
                 case ModelingMode.Prediction:
-                    return new Prediction(inputParameters.InputParametersXml, processQueue, _log);
+                    return new Prediction(inputParameters.InputParametersXml, processQueue);
                 case ModelingMode.Correlation:
-                    return new Correlation(inputParameters.InputParametersXml, processQueue, _log);
+                    return new Correlation(inputParameters.InputParametersXml, processQueue);
                 default:
                     throw new Exception("Не определен тип моделирования");
             }

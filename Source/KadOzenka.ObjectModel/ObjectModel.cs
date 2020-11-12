@@ -7870,7 +7870,7 @@ namespace ObjectModel.KO
 
         private decimal? _a0;
         /// <summary>
-        /// 20600700 Cвободный член в формуле (A0)
+        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600700)]
         public decimal? A0
@@ -8077,90 +8077,38 @@ namespace ObjectModel.KO
             }
         }
 
-    }
-}
 
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная (ko_model_typified)
-    /// </summary>
-    [RegisterInfo(RegisterID = 207)]
-    [Serializable]
-    public partial class OMModelTypified : OMBaseClass<OMModelTypified>
-    {
-
-        private long _id;
+        private string _type;
         /// <summary>
-        /// 20700100 Идентификатор (ID)
+        /// 20601500 Тип модели ()
         /// </summary>
-        [PrimaryKey(AttributeID = 20700100)]
-        public long Id
+        [RegisterAttribute(AttributeID = 20601500)]
+        public string Type
         {
             get
             {
-                CheckPropertyInited("Id");
-                return _id;
+                CheckPropertyInited("Type");
+                return _type;
             }
             set
             {
-                _id = value;
-                NotifyPropertyChanged("Id");
+                _type = value;
+                NotifyPropertyChanged("Type");
             }
         }
 
 
-        private long _modelid;
+        private KoModelType _type_Code;
         /// <summary>
-        /// 20700200 ИД модели (model_id)
+        /// 20601500 Тип модели (справочный код) (type)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20700200)]
-        public long ModelId
+        [RegisterAttribute(AttributeID = 20601500)]
+        public KoModelType Type_Code
         {
             get
             {
-                CheckPropertyInited("ModelId");
-                return _modelid;
-            }
-            set
-            {
-                _modelid = value;
-                NotifyPropertyChanged("ModelId");
-            }
-        }
-
-
-        private string _algoritmtype;
-        /// <summary>
-        /// 20700300 Алгоритм расчета ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700300)]
-        public string AlgoritmType
-        {
-            get
-            {
-                CheckPropertyInited("AlgoritmType");
-                return _algoritmtype;
-            }
-            set
-            {
-                _algoritmtype = value;
-                NotifyPropertyChanged("AlgoritmType");
-            }
-        }
-
-
-        private KoAlgoritmType _algoritmtype_Code;
-        /// <summary>
-        /// 20700300 Алгоритм расчета (справочный код) (ALGORITM_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700300)]
-        public KoAlgoritmType AlgoritmType_Code
-        {
-            get
-            {
-                CheckPropertyInited("AlgoritmType_Code");
-                return this._algoritmtype_Code;
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
             }
             set
             {
@@ -8168,59 +8116,119 @@ namespace ObjectModel.Ko
 
                 if (string.IsNullOrEmpty(descr))
                 {
-                    if (string.IsNullOrEmpty(_algoritmtype))
+                    if (string.IsNullOrEmpty(_type))
                     {
-                         _algoritmtype = descr;
+                         _type = descr;
                     }
                 }
                 else
                 {
-                     _algoritmtype = descr;
+                     _type = descr;
                 }
 
-                this._algoritmtype_Code = value;
-                NotifyPropertyChanged("AlgoritmType");
-                NotifyPropertyChanged("AlgoritmType_Code");
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
             }
         }
 
 
-        private string _formula;
+        private decimal? _a0forexponential;
         /// <summary>
-        /// 20700400 Формула (formula)
+        /// 20601600 Cвободный член в формуле для Экспоненциального алгоритма (A0_exponential)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20700400)]
-        public string Formula
+        [RegisterAttribute(AttributeID = 20601600)]
+        public decimal? A0ForExponential
         {
             get
             {
-                CheckPropertyInited("Formula");
-                return _formula;
+                CheckPropertyInited("A0ForExponential");
+                return _a0forexponential;
             }
             set
             {
-                _formula = value;
-                NotifyPropertyChanged("Formula");
+                _a0forexponential = value;
+                NotifyPropertyChanged("A0ForExponential");
             }
         }
 
 
-        private string _trainingresult;
+        private decimal? _a0formultiplicative;
         /// <summary>
-        /// 20700500 Результаты обучения (коэффициенты от сервиса Моделирования) (training_result)
+        /// 20601700 Cвободный член в формуле для Мультипликативного алгоритма (A0_multiplicative)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20700500)]
-        public string TrainingResult
+        [RegisterAttribute(AttributeID = 20601700)]
+        public decimal? A0ForMultiplicative
         {
             get
             {
-                CheckPropertyInited("TrainingResult");
-                return _trainingresult;
+                CheckPropertyInited("A0ForMultiplicative");
+                return _a0formultiplicative;
             }
             set
             {
-                _trainingresult = value;
-                NotifyPropertyChanged("TrainingResult");
+                _a0formultiplicative = value;
+                NotifyPropertyChanged("A0ForMultiplicative");
+            }
+        }
+
+
+        private decimal? _a0forlineartypeinprevioustour;
+        /// <summary>
+        /// 20601800 Cвободный член в формуле для Линейного алгоритма в предыдущем туре (A0_linear_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601800)]
+        public decimal? A0ForLinearTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForLinearTypeInPreviousTour");
+                return _a0forlineartypeinprevioustour;
+            }
+            set
+            {
+                _a0forlineartypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForLinearTypeInPreviousTour");
+            }
+        }
+
+
+        private decimal? _a0forexponentialtypeinprevioustour;
+        /// <summary>
+        /// 20601900 Cвободный член в формуле для Экспоненциального алгоритма в предыдущем туре (A0_exponential_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601900)]
+        public decimal? A0ForExponentialTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForExponentialTypeInPreviousTour");
+                return _a0forexponentialtypeinprevioustour;
+            }
+            set
+            {
+                _a0forexponentialtypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForExponentialTypeInPreviousTour");
+            }
+        }
+
+
+        private decimal? _a0formultiplicativetypeinprevioustour;
+        /// <summary>
+        /// 20602000 Cвободный член в формуле для Мультипликативного алгоритма в предыдущем туре (A0_multiplicative_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602000)]
+        public decimal? A0ForMultiplicativeTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForMultiplicativeTypeInPreviousTour");
+                return _a0formultiplicativetypeinprevioustour;
+            }
+            set
+            {
+                _a0formultiplicativetypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForMultiplicativeTypeInPreviousTour");
             }
         }
 
@@ -8529,22 +8537,77 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _typifiedmodelid;
+        private string _algorithmtype;
         /// <summary>
-        /// 21001100 Идентификатор типизированной модели (typified_model_id)
+        /// 21001100  Алгоритм рассчёта ()
         /// </summary>
         [RegisterAttribute(AttributeID = 21001100)]
-        public long? TypifiedModelId
+        public string AlgorithmType
         {
             get
             {
-                CheckPropertyInited("TypifiedModelId");
-                return _typifiedmodelid;
+                CheckPropertyInited("AlgorithmType");
+                return _algorithmtype;
             }
             set
             {
-                _typifiedmodelid = value;
-                NotifyPropertyChanged("TypifiedModelId");
+                _algorithmtype = value;
+                NotifyPropertyChanged("AlgorithmType");
+            }
+        }
+
+
+        private KoAlgoritmType _algorithmtype_Code;
+        /// <summary>
+        /// 21001100  Алгоритм рассчёта (справочный код) (algorithm_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001100)]
+        public KoAlgoritmType AlgorithmType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType_Code");
+                return this._algorithmtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algorithmtype))
+                    {
+                         _algorithmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algorithmtype = descr;
+                }
+
+                this._algorithmtype_Code = value;
+                NotifyPropertyChanged("AlgorithmType");
+                NotifyPropertyChanged("AlgorithmType_Code");
+            }
+        }
+
+
+        private decimal? _previousweight;
+        /// <summary>
+        /// 21001200 Вес из предыдущего тура (previous_weight)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001200)]
+        public decimal? PreviousWeight
+        {
+            get
+            {
+                CheckPropertyInited("PreviousWeight");
+                return _previousweight;
+            }
+            set
+            {
+                _previousweight = value;
+                NotifyPropertyChanged("PreviousWeight");
             }
         }
 
@@ -25145,6 +25208,46 @@ namespace ObjectModel.Modeling
             {
                 _pricefrommodel = value;
                 NotifyPropertyChanged("PriceFromModel");
+            }
+        }
+
+
+        private bool? _isforcontrol;
+        /// <summary>
+        /// 70200900 Признак: используется ли объект для контрольной выборки модели (IS_FOR_CONTROL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200900)]
+        public bool? IsForControl
+        {
+            get
+            {
+                CheckPropertyInited("IsForControl");
+                return _isforcontrol;
+            }
+            set
+            {
+                _isforcontrol = value;
+                NotifyPropertyChanged("IsForControl");
+            }
+        }
+
+
+        private long? _marketobjectid;
+        /// <summary>
+        /// 70201000 ИД объекта-аналога (market_object_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201000)]
+        public long? MarketObjectId
+        {
+            get
+            {
+                CheckPropertyInited("MarketObjectId");
+                return _marketobjectid;
+            }
+            set
+            {
+                _marketobjectid = value;
+                NotifyPropertyChanged("MarketObjectId");
             }
         }
 

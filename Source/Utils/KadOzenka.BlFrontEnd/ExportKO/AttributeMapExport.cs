@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Core.Register;
@@ -113,13 +114,13 @@ namespace KadOzenka.BlFrontEnd.ExportKO
 			switch (worksheetNum)
 			{
 				case 0:
-					return service.GetTourAttributes(2018, ObjectType.Oks);
+					return service.GetTourAttributes(2018, ObjectTypeExtended.Oks);
 				case 1:
-					return service.GetTourAttributes(2018, ObjectType.ZU);
+					return service.GetTourAttributes(2018, ObjectTypeExtended.Zu);
 				case 2:
-					return service.GetTourAttributes(2016, ObjectType.Oks);
+					return service.GetTourAttributes(2016, ObjectTypeExtended.Oks);
 				case 3:
-					return service.GetTourAttributes(2016, ObjectType.ZU);
+					return service.GetTourAttributes(2016, ObjectTypeExtended.Zu);
 				default:
 					throw new NotSupportedException();
 			}

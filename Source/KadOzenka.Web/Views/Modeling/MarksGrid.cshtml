@@ -1,10 +1,11 @@
-﻿@model KadOzenka.Web.Models.Tour.TourModel
-
+﻿
 <div class="form-horizontal col-sm-12">
     <div style="display: flex;">
         <div id="markGrid"></div>
     </div>
 </div>
+
+
 
 <script>
     $(document).ready(function () {
@@ -12,24 +13,23 @@
         var markGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Tour")',
+                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: {
-                        groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
+                    data: { groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Tour")',                         
+                    url: '@Url.Action("CreateMark", "Modeling")',                         
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Tour")',                    
+                    url: '@Url.Action("UpdateMark", "Modeling")',                    
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark", "Tour")',                        
+                    url: '@Url.Action("DeleteMark", "Modeling")',                        
                     type: 'POST',
                     dataType: 'json'
                 }
@@ -54,18 +54,18 @@
                         Id: { editable: false, nullable: true },
                         GroupId: { editable: false},
                         FactorId: { editable: false },
-                        ValueFactor: { validation: {
+                        Value: { validation: {
                             valuefactorvalidation: function (input) {
-                                if (input.is("[name='ValueFactor']") && input.val() == "") {
+                                if (input.is("[name='Value']") && input.val() == "") {
                                     input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
                                     return false;
                                 }
                                 return true;
                             }
                         } },
-                        MetkaFactor: { validation: {
+                        Metka: { validation: {
                             metkafactorvalidation: function (input) {
-                                if (input.is("[name='MetkaFactor']") && input.val() == "") {
+                                if (input.is("[name='Metka']") && input.val() == "") {
                                     input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
                                     return false;
                                 }
@@ -97,17 +97,14 @@
             dataSource: markGridDataSource,
             columns: [
                 {
-                    field: 'ValueFactor',
+                    field: 'Value',
                     title: 'Значение',
-                    headerAttributes: {                            
-                        style: "text-align: center;"
-                    }
-                }, {
-                    field: 'MetkaFactor',
+                    headerAttributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'Metka',
                     title: 'Метка',
-                    headerAttributes: {
-                        style: "text-align: center;"
-                    },
+                    headerAttributes: { style: "text-align: center;" },
                     //по умолчанию точность новой метки - 2 знака после запятой, 
                     //переопределяем это
                     editor: function (container, options) {
@@ -153,12 +150,11 @@
             save: function (e) {
                 //из-за неправильного разделителя значение в контроллер приходит пустое
                 //была попытка установить culture для kendoNumericTextBox - не сработало
-                var initialValue = e.model.MetkaFactor.toString();
+                var initialValue = e.model.Metka.toString();
                 var replacedValue = initialValue.replace(".", ",");
-                e.model.MetkaFactor = replacedValue;
+                e.model.Metka = replacedValue;
             }
         });
-
     });
 
 </script>

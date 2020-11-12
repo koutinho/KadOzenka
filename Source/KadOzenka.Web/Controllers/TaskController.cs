@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Core.Main.FileStorages;
+using Core.Register;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -35,6 +36,7 @@ using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
+using KadOzenka.Web.Models.Modeling;
 using KadOzenka.Web.Models.Unit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,7 +54,6 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly ILogger _log = Log.ForContext<TaskController>();
 		public TaskService TaskService { get; set; }
-		public ModelingService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
@@ -66,7 +67,6 @@ namespace KadOzenka.Web.Controllers
 		public TaskController(TemplateService templateService)
 		{
 			TaskService = new TaskService();
-			ModelService = new ModelingService(new DictionaryService());
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
@@ -77,6 +77,7 @@ namespace KadOzenka.Web.Controllers
             TemplateService = templateService;
             FactorSettingsService = new FactorSettingsService();
 		}
+
 
 		#region Карточка задачи
 
@@ -390,16 +391,7 @@ namespace KadOzenka.Web.Controllers
 
         private List<OMAttribute> GetOmAttributesForKo(long tourId, ObjectTypeExtended objectType, List<long> exceptedAttributes)
         {
-            List<OMAttribute> koAttributes;
-            if (objectType == ObjectTypeExtended.Both)
-            {
-                koAttributes = TourFactorService.GetTourAttributes(tourId, ObjectType.Oks);
-                koAttributes.AddRange(TourFactorService.GetTourAttributes(tourId, ObjectType.ZU));
-            }
-            else
-            {
-                koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
-            }
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType);
 
             if (exceptedAttributes != null && exceptedAttributes.Count > 0)
             {
@@ -434,259 +426,6 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Модель
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult Model(long groupId, bool isPartial)
-		{
-			var modelDto = ModelService.GetModelEntityByGroupId(groupId);
-			var model = ModelModel.ToModel(modelDto);
-
-			if (isPartial)
-			{
-				model.IsPartial = true;
-				return PartialView(model);
-			}
-			
-			return View(model);
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult Model(ModelModel model)
-		{
-			var omModel = ModelService.GetModelEntityById(model.Id);
-
-			omModel.Name = model.Name;
-			omModel.Description = model.Description;
-			omModel.AlgoritmType_Code = model.AlgorithmTypeCode;
-			omModel.A0 = model.A0;
-
-			omModel.CalculationMethod_Code = model.CalculationTypeCode == KoCalculationType.Comparative
-				? model.CalculationMethodCode
-				: KoCalculationMethod.None;
-
-			omModel.CalculationType_Code = model.CalculationTypeCode;
-			omModel.Formula = omModel.GetFormulaFull(true);
-			omModel.Save();
-			return Ok();
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetFormula(long modelId, long algType)
-		{
-			OMModel model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
-			model.AlgoritmType_Code = (KoAlgoritmType)algType;
-			string formula = model.GetFormulaFull(true);
-			return Json(new { formula });
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetModelFactors(long modelId)
-        {
-	        var query = ModelService.GetModelFactorsQuery(modelId);
-			query.AddColumn(OMModelFactor.GetColumn(x => x.ModelId, nameof(Dal.Modeling.Dto.ModelFactorDto.ModelId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(Dal.Modeling.Dto.ModelFactorDto.FactorId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(Dal.Modeling.Dto.ModelFactorDto.Factor)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(Dal.Modeling.Dto.ModelFactorDto.Type)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(Dal.Modeling.Dto.ModelFactorDto.RegisterId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkerId, nameof(Dal.Modeling.Dto.ModelFactorDto.MarkerId)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(Dal.Modeling.Dto.ModelFactorDto.Weight)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(Dal.Modeling.Dto.ModelFactorDto.B0)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(Dal.Modeling.Dto.ModelFactorDto.SignDiv)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(Dal.Modeling.Dto.ModelFactorDto.SignAdd)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(Dal.Modeling.Dto.ModelFactorDto.SignMarket)));
-
-			var factorDtos = query.ExecuteQuery<Dal.Modeling.Dto.ModelFactorDto>();
-
-			var models = factorDtos.Select(ModelFactorDto.FromEntity).ToList();
-
-            return Json(models);
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetFactors(long? tourId)
-		{
-			List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId)
-				.Select(x => x.RegisterId).Execute();
-
-			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
-
-			if (ids.Count == 0)
-			{
-				return Json(new List<SelectListItem> { });
-			}
-
-			var result = GetModelFactorNameSql(ids, true).Select(x => new SelectListItem
-			{
-				Value = x.Key.ToString(),
-				Text = x.Value
-			});
-
-			return Json(result);
-		}
-
-		//TODO hot fix, будет исправлен в новой ветке
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetFactorsNew(long? tourId, string type)
-		{
-			if(tourId == null)
-				return Json(new List<SelectListItem>());
-
-			List<OMTourFactorRegister> tfrList;
-			if (type == "OKS")
-			{
-				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
-					.SelectAll().Execute();
-			}
-			else
-			{
-				tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
-					.SelectAll().Execute();
-			}
-
-			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
-
-			if (ids.Count == 0)
-			{
-				return Json(new List<SelectListItem> { });
-			}
-
-			var result = GetModelFactorNameSql(ids, true).OrderBy(x => x.Value).Select(x => new SelectListItem
-			{
-				Value = x.Key.ToString(),
-				Text = x.Value
-			});
-
-			return Json(result);
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult EditModelFactor(long? id, long modelId)
-		{
-			ModelFactorDto factorDto;
-
-			if (id.HasValue)
-			{
-				OMModelFactor factor = OMModelFactor.Where(x => x.Id == id)
-					.SelectAll().ExecuteFirstOrDefault();
-
-				factorDto = new ModelFactorDto();
-				factorDto.Id = factor.Id;
-				factorDto.ModelId = factor.ModelId;
-				factorDto.FactorId = factor.FactorId;
-				factorDto.MarkerId = factor.MarkerId;
-				factorDto.Weight = factor.Weight;
-				factorDto.B0 = factor.B0;
-				factorDto.SignDiv = factor.SignDiv;
-				factorDto.SignAdd = factor.SignAdd;
-				factorDto.SignMarket = factor.SignMarket;
-
-				var sqlResult = GetModelFactorNameSql(new List<long?> { factorDto.FactorId });
-				factorDto.Factor = sqlResult[factorDto.FactorId];
-			}
-			else
-			{
-				factorDto = new ModelFactorDto()
-				{
-					Id = -1,
-					ModelId = modelId,
-					FactorId = -1,
-					MarkerId = -1
-				};
-			}
-			return View(factorDto);
-		}
-
-		private static Dictionary<long?, string> GetModelFactorNameSql(List<long?> idList, bool byRegisterIds = false)
-		{
-			string ids = string.Join(",", idList.Where(x => x.HasValue));
-			string sql = $@"select cra.id, cra.name from core_register_attribute cra ";
-
-			if (byRegisterIds)
-			{
-				sql += $@"where cra.registerid in ({ids});";
-			}
-			else
-			{
-				sql += $@"where cra.id in ({ids});";
-			}
-
-			DbCommand command = DBMngr.Main.GetSqlStringCommand(sql);
-			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
-
-			Dictionary<long?, string> result = new Dictionary<long?, string>();
-			foreach (DataRow dataRow in dt.Rows)
-			{
-				result.Add(dataRow[0].ParseToLong(), dataRow[1].ParseToString());
-			}
-
-			return result;
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetModelFactorName(long? modelId)
-		{
-			OMModel model = OMModel.Where(x => x.Id == modelId)
-				.Select(x => x.GroupId).ExecuteFirstOrDefault();
-
-			if (model != null)
-			{
-				OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == model.GroupId)
-					.Select(x => x.TourId).ExecuteFirstOrDefault();
-
-				if (tourGroup != null)
-				{
-					List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourGroup.TourId)
-						.Select(x => x.RegisterId).Execute();
-
-					List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
-					if (ids.Count == 0)
-					{
-						return Json(new List<SelectListItem>());
-					}
-
-					var result = GetModelFactorNameSql(ids, true).Select(x => new SelectListItem
-					{
-						Value = x.Key.ToString(),
-						Text = x.Value
-					});
-
-					return Json(result);
-				}
-			}
-
-			return Json(new List<SelectListItem>());
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult EditModelFactor(OMModelFactor factor)
-		{
-			factor.Save();
-
-			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
-			model.Formula = model.GetFormulaFull(true);
-			model.Save();
-
-			return Ok();
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public ActionResult DeleteModelFactor(long? id)
-		{
-			OMModelFactor factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			factor.Destroy();
-
-			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
-			model.Formula = model.GetFormulaFull(true);
-			model.Save();
-
-			return Json(new { Success = "Удаление выполненно" });
-		}
-
-		#endregion
 
 		#region Единица оценки
 
@@ -785,23 +524,6 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new List<UnitFactorsDto>());
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-		public JsonResult GetFactorsList(long id)
-		{
-			OMUnit unit = OMUnit.Where(x => x.Id == id)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			if (unit != null)
-			{
-				var model = OMModel.Where(x => x.GroupId == unit.GroupId).Select(x => x.Id).ExecuteFirstOrDefault();
-				var result = GetModelFactorName(model?.Id);
-				return result;
-			}
-
-			return Json(new List<SelectListItem>());
 		}
 
 
@@ -1202,7 +924,7 @@ namespace KadOzenka.Web.Controllers
                     }).ToList()
                 };
 
-            var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
+            var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
             if (tourAttributes.Count == 0)
                 return StatusCode(500,$"Для {(isOks?"ОКС":"ЗУ")} тура оценки {task.TourId} не найдены факторы");
 
