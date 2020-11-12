@@ -68,13 +68,18 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
-	        if (model.Type_Code == KoModelType.Automatic)
+	        var model = OMModel.Where(x => x.Id == modelId).Select(x => new
+	        {
+                x.Type_Code,
+                x.GroupId
+	        }).ExecuteFirstOrDefault();
+
+	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
 		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial});
 	        }
 
-	        return RedirectToAction(nameof(ManualModelCard), new {groupId = model.GroupId, isPartial});
+	        return RedirectToAction(nameof(ManualModelCard), new {groupId = model?.GroupId, isPartial});
         }
 
         [HttpGet]
@@ -123,25 +128,32 @@ namespace KadOzenka.Web.Controllers
 			{
 				x.A0,
 				x.A0ForExponential,
-				x.A0ForMultiplicative
+				x.A0ForMultiplicative,
+                x.A0ForLinearTypeInPreviousTour,
+                x.A0ForExponentialTypeInPreviousTour,
+                x.A0ForMultiplicativeTypeInPreviousTour
 			}).ExecuteFirstOrDefault();
 
 			decimal? a0 = null;
+			decimal? a0Previous = null;
 			switch (type)
 			{
 				case KoAlgoritmType.None:
 				case KoAlgoritmType.Line:
 					a0 = model?.A0;
+					a0Previous = model?.A0ForLinearTypeInPreviousTour;
                     break;
 				case KoAlgoritmType.Exp:
 					a0 = model?.A0ForExponential;
+					a0Previous = model?.A0ForExponentialTypeInPreviousTour;
                     break;
 				case KoAlgoritmType.Multi:
-					a0 = model.A0ForMultiplicative;
-					break;
+					a0 = model?.A0ForMultiplicative;
+					a0Previous = model?.A0ForMultiplicativeTypeInPreviousTour;
+                    break;
 			}
 
-			return Json(a0);
+			return Json(new {a0, a0Previous});
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]

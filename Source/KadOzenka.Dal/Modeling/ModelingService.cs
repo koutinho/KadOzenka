@@ -71,7 +71,8 @@ namespace KadOzenka.Dal.Modeling
                     x.Type_Code,
                     x.AlgoritmType_Code,
                     x.CalculationType_Code,
-                    x.A0
+                    x.A0,
+                    x.A0ForLinearTypeInPreviousTour
 		        }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -95,8 +96,9 @@ namespace KadOzenka.Dal.Modeling
                 Type = model.Type_Code,
                 AlgorithmType = model.AlgoritmType_Code,
                 CalculationType = model.CalculationType_Code,
-                A0 = model.A0
-	        };
+                A0 = model.A0,
+                A0ForPreviousTour = model.A0ForLinearTypeInPreviousTour
+            };
         }
 
         public List<GroupDto> GetGroups(long tourId)
@@ -193,12 +195,15 @@ namespace KadOzenka.Dal.Modeling
                     case KoAlgoritmType.None:
 	                case KoAlgoritmType.Line:
 	                    existedModel.A0 = modelDto.A0;
+	                    existedModel.A0ForLinearTypeInPreviousTour = modelDto.A0ForPreviousTour;
                         break;
 	                case KoAlgoritmType.Exp:
 		                existedModel.A0ForExponential = modelDto.A0;
+		                existedModel.A0ForExponentialTypeInPreviousTour = modelDto.A0ForPreviousTour;
                         break;
 	                case KoAlgoritmType.Multi:
 		                existedModel.A0ForMultiplicative = modelDto.A0;
+		                existedModel.A0ForMultiplicativeTypeInPreviousTour = modelDto.A0ForPreviousTour;
                         break;
                 }
 
@@ -469,12 +474,12 @@ namespace KadOzenka.Dal.Modeling
 
 	                values.Add(obj.IsForTraining.GetValueOrDefault());
 	                values.Add(obj.IsForControl.GetValueOrDefault());
-	                
-	                //var calculationParameters = GetModelCalculationParameters(model.A0ForExponential, obj.Price,
-		               // factors, coefficients, obj.CadastralNumber); 
-	                
-	                //values.Add(calculationParameters.ModelingPrice); 
-	                //values.Add(calculationParameters.Percent);
+
+                    //var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
+                    // factors, coefficients, obj.CadastralNumber); 
+
+                    //values.Add(calculationParameters.ModelingPrice); 
+                    //values.Add(calculationParameters.Percent);
 
                     AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
                 });

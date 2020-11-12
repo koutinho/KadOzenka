@@ -46,6 +46,9 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Свободный член")]
 		public decimal? A0 { get; set; }
 
+		[Display(Name = "Свободный член из предыдущего тура")]
+		public decimal? A0ForPreviousTour { get; set; }
+
         [Display(Name = "Тур")]
 		[Required(ErrorMessage = "Не выбран Тур")]
 		public long TourId { get; set; }
@@ -87,8 +90,9 @@ namespace KadOzenka.Web.Models.Modeling
                 AlgorithmType = entity.AlgorithmType,
                 AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmType,
                 CalculationType = entity.CalculationType.GetEnumDescription(),
-                A0 = entity.A0
-            };
+                A0 = entity.A0,
+                A0ForPreviousTour = entity.A0ForPreviousTour
+			};
         }
 
 		public static ModelingModelDto FromModel(AutomaticModelingModel model)
@@ -104,6 +108,7 @@ namespace KadOzenka.Web.Models.Modeling
                 AlgorithmType = model.AlgorithmType,
                 AlgorithmTypeForCadastralPriceCalculation = model.AlgorithmTypeForCadastralPriceCalculation,
                 A0 = model.A0,
+				A0ForPreviousTour = model.A0ForPreviousTour,
                 Type = model.Type
             };
 		}

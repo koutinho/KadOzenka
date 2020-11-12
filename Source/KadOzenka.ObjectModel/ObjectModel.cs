@@ -7870,7 +7870,7 @@ namespace ObjectModel.KO
 
         private decimal? _a0;
         /// <summary>
-        /// 20600700 Cвободный член в формуле для Линейной формулы (A0)
+        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600700)]
         public decimal? A0
@@ -8135,7 +8135,7 @@ namespace ObjectModel.KO
 
         private decimal? _a0forexponential;
         /// <summary>
-        /// 20601600 Cвободный член в формуле для Экспоненциальной формулы (A0_exponential)
+        /// 20601600 Cвободный член в формуле для Экспоненциального алгоритма (A0_exponential)
         /// </summary>
         [RegisterAttribute(AttributeID = 20601600)]
         public decimal? A0ForExponential
@@ -8155,7 +8155,7 @@ namespace ObjectModel.KO
 
         private decimal? _a0formultiplicative;
         /// <summary>
-        /// 20601700 Cвободный член в формуле для Мультипликативной формулы (A0_multiplicative)
+        /// 20601700 Cвободный член в формуле для Мультипликативного алгоритма (A0_multiplicative)
         /// </summary>
         [RegisterAttribute(AttributeID = 20601700)]
         public decimal? A0ForMultiplicative
@@ -8169,6 +8169,66 @@ namespace ObjectModel.KO
             {
                 _a0formultiplicative = value;
                 NotifyPropertyChanged("A0ForMultiplicative");
+            }
+        }
+
+
+        private decimal? _a0forlineartypeinprevioustour;
+        /// <summary>
+        /// 20601800 Cвободный член в формуле для Линейного алгоритма в предыдущем туре (A0_linear_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601800)]
+        public decimal? A0ForLinearTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForLinearTypeInPreviousTour");
+                return _a0forlineartypeinprevioustour;
+            }
+            set
+            {
+                _a0forlineartypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForLinearTypeInPreviousTour");
+            }
+        }
+
+
+        private decimal? _a0forexponentialtypeinprevioustour;
+        /// <summary>
+        /// 20601900 Cвободный член в формуле для Экспоненциального алгоритма в предыдущем туре (A0_exponential_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20601900)]
+        public decimal? A0ForExponentialTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForExponentialTypeInPreviousTour");
+                return _a0forexponentialtypeinprevioustour;
+            }
+            set
+            {
+                _a0forexponentialtypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForExponentialTypeInPreviousTour");
+            }
+        }
+
+
+        private decimal? _a0formultiplicativetypeinprevioustour;
+        /// <summary>
+        /// 20602000 Cвободный член в формуле для Мультипликативного алгоритма в предыдущем туре (A0_multiplicative_previous)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602000)]
+        public decimal? A0ForMultiplicativeTypeInPreviousTour
+        {
+            get
+            {
+                CheckPropertyInited("A0ForMultiplicativeTypeInPreviousTour");
+                return _a0formultiplicativetypeinprevioustour;
+            }
+            set
+            {
+                _a0formultiplicativetypeinprevioustour = value;
+                NotifyPropertyChanged("A0ForMultiplicativeTypeInPreviousTour");
             }
         }
 
