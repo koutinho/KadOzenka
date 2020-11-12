@@ -32,122 +32,136 @@
 @using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
     @Html.HiddenFor(x => x.Id)
-    <div style="padding: 2%">
-        <div id="mainToolbar"></div>
-        <div class="form-horizontal col-sm-12" style="margin-top: 10px">
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.Name)
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="SectionMainData" data-expand style="padding-top: 1%">
+            <span>Основные данные</span>
+            <div class="form-horizontal col-sm-12" style="padding: 2%">
+                <div id="mainToolbar"></div>
+                <div class="form-group" style="padding-top: 1%">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.Name)
+                    </div>
+                    <div class="col-sm-9">
+                        @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.Description)
+                    </div>
+                    <div class="col-sm-9">
+                        @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.Description)
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.TypeStr)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.TypeStr)
+                            .DataTextField("Name")
+                            .DataValueField("Name")
+                            .Enable(false))
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.CalculationType)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.CalculationType)
+                            .DataTextField("Name")
+                            .DataValueField("Name")
+                            .Enable(false))
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.TypeStr)
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.AlgorithmTypeForCadastralPriceCalculation)
+                    </div>
+                    <div class="col-sm-9">
+                        @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: false, withoutNull: true)
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @(Html.Kendo().DropDownListFor(m => m.TypeStr)
-                        .DataTextField("Name")
-                        .DataValueField("Name")
-                        .Enable(false))
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.GroupId)
+                    </div>
+                    <div class="col-sm-9">
+                        <div id="groups"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.AlgorithmType, NotSetRequired: true)
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.TourId)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().DropDownListFor(m => m.TourId)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .DataSource(source =>
+                            {
+                                source.Read("GetRatingTours", "Tour");
+                            }))
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.CalculationType)
-                </div>
-                <div class="col-sm-9">
-                    @(Html.Kendo().DropDownListFor(m => m.CalculationType)
-                        .DataTextField("Name")
-                        .DataValueField("Name")
-                        .Enable(false))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.A0)
-                </div>
-                <div class="col-sm-9">
-                    @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.AlgorithmTypeForCadastralPriceCalculation)
-                </div>
-                <div class="col-sm-9">
-                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: false, withoutNull: true)
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.GroupId)
-                </div>
-                <div class="col-sm-9">
-                    <div id="groups"></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.TourId)
-                </div>
-                <div class="col-sm-9">
-                    @(Html.Kendo().DropDownListFor(m => m.TourId)
-                                                .DataTextField("Text")
-                                                .DataValueField("Value")
-                                                .Filter(FilterType.Contains)
-                                                .DataSource(source =>
-                                                {
-                                                    source.Read("GetRatingTours", "Tour");
-                                                }))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.LabelFor(x => x.ObjectType)
-                </div>
-                <div class="col-sm-9">
-                    @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                                        .Label(ObjectType.Oks.GetEnumDescription())
-                                        .Value((int)ObjectType.Oks)
-                                        .Checked(Model.ObjectType == ObjectType.Oks))
-                    @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                                        .Label(ObjectType.ZU.GetEnumDescription())
-                                        .Value((int)ObjectType.ZU)
-                                        .Checked(Model.ObjectType == ObjectType.ZU)
-                                        .HtmlAttributes(new { style = "padding-left:1%;" }))
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.LabelFor(x => x.ObjectType)
+                    </div>
+                    <div class="col-sm-9">
+                        @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
+                            .Label(ObjectType.Oks.GetEnumDescription())
+                            .Value((int)ObjectType.Oks)
+                            .Checked(Model.ObjectType == ObjectType.Oks))
+                        @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
+                            .Label(ObjectType.ZU.GetEnumDescription())
+                            .Value((int)ObjectType.ZU)
+                            .Checked(Model.ObjectType == ObjectType.ZU)
+                            .HtmlAttributes(new { style = "padding-left:1%;" }))
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div style="padding-top: 2%;">
-                    <div id="attributesToolbar"></div>
+        </li>
+
+        <li id="SectionMainData" data-expand style="padding-top: 1%">
+            <span>Данные, зависимые от типа модели</span>
+            <div class="form-horizontal col-sm-12" style="padding: 2%">
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.AlgorithmType, NotSetRequired: true)
+                    </div>
+                    <div class="col-sm-9">
+                        @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
+                    </div>
                 </div>
-                <div id="grid"></div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.A0)
+                    </div>
+                    <div class="col-sm-9">
+                        @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div style="padding-top: 2%;">
+                        <div id="attributesToolbar"></div>
+                    </div>
+                    <div id="grid"></div>
+                </div>
             </div>
-        </div>
-    </div>
+        </li>
+    </ul>
 }
 
 
+<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
 <style>
+    #ls_panelbar {
+        width: 99% !important;
+    }
+
     .k-dropdowntree {
         width: 100%;
     }
@@ -157,10 +171,17 @@
 
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
+<script src="~/js/jquery.fancybox.min.js"></script>
 <script>
     var hasProcessToFormObjectArrayInQueue = '@Model.HasProcessToFormObjectArrayInQueue' === "True";
 
     $(document).ready(function () {
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand('li[data-expand]');
+        $("#navigation-menu a").mPageScroll2id({
+            highlightSelector: "#navigation-menu a"
+        });
+
         $('#mainToolbar').kendoToolBar({
             items: [
                 {
