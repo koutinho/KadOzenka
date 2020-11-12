@@ -11,6 +11,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
         public decimal? ModelingPrice { get; set; }
+        public decimal? DeviationFromPredictablePrice { get; set; }
         public decimal? Percent { get; set; }
 		public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
@@ -21,7 +22,7 @@ namespace KadOzenka.Web.Models.Modeling
 
         public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
         {
-            return new ModelMarketObjectRelationModel
+	        return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
@@ -29,6 +30,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
 				ModelingPrice = entity.ModelingPrice,
+				DeviationFromPredictablePrice = entity.DeviationFromPredictablePrice,
 				Percent = entity.Percent,
                 IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
@@ -42,15 +44,9 @@ namespace KadOzenka.Web.Models.Modeling
 			return new ModelMarketObjectRelationDto
 			{
 				Id = model.Id,
-				CadastralNumber = model.CadastralNumber,
-				Price = model.Price,
-				PriceFromModel = model.PriceFromModel,
-				ModelingPrice = model.ModelingPrice,
-				Percent = model.Percent,
 				IsExcluded = model.IsExcluded,
 				IsForTraining = model.IsForTraining,
-				IsForControl = model.IsForControl,
-				Coefficients = model.Coefficients
+				IsForControl = model.IsForControl
 			};
 		}
 	}

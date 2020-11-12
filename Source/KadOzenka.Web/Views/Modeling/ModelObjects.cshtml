@@ -207,6 +207,7 @@
                         IsForTraining: { type: "boolean", editable: true },
                         IsForControl: { type: "boolean", editable: true },
                         ModelingPrice: { type: "number", editable: false },
+                        DeviationFromPredictablePrice: { type: "number", editable: false },
                         Percent: { type: "number", editable: false }
 					}
                 },
@@ -294,6 +295,13 @@
                 title: "Спрогнозированная цена",
                 field: "PriceFromModel",
                 template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
+                filterable: true,
+                sortable: true
+            },
+            {
+                title: "Отклонение цены от прогнозной, %",
+                field: "DeviationFromPredictablePrice",
+                template: '#: DeviationFromPredictablePrice == null ? "" : kendo.toString(DeviationFromPredictablePrice, "n2") #',
                 filterable: true,
                 sortable: true
             }

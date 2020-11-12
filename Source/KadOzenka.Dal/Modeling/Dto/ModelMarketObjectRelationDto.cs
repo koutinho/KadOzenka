@@ -9,6 +9,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long? MarketObjectId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
+        public decimal? DeviationFromPredictablePrice => ModelingService.CalculatePercent(PriceFromModel, Price);
         public decimal? ModelingPrice { get; set; }
         public decimal? Percent { get; set; }
         public bool IsExcluded { get; set; }

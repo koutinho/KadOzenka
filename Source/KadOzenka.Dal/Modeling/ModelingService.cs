@@ -358,8 +358,7 @@ namespace KadOzenka.Dal.Modeling
             {
                 x.IsExcluded,
                 x.IsForTraining,
-                x.IsForControl,
-                x.Coefficients
+                x.IsForControl
             }).Execute();
             objects.ForEach(obj =>
             {
@@ -547,7 +546,7 @@ namespace KadOzenka.Dal.Modeling
 		        decimal? percent = null;
 		        if (objectPrice.GetValueOrDefault() != 1)
 		        {
-			        percent = (modelingPrice / objectPrice.GetValueOrDefault() - 1) * 100;
+			        percent = CalculatePercent(modelingPrice, objectPrice);
 		        }
 
 		        return new ModelObjectsCalculationParameters
@@ -564,6 +563,17 @@ namespace KadOzenka.Dal.Modeling
 			        .Error(exception, "Ошибка во время расчета МС и % для объекта моделирования");
 		        return new ModelObjectsCalculationParameters();
 	        }
+        }
+
+        public static decimal? CalculatePercent(decimal? calculatedPrice, decimal? initialPrice)
+        {
+	        decimal? percent = null;
+	        if (calculatedPrice != null && initialPrice.GetValueOrDefault() != 1)
+	        {
+		        percent = (calculatedPrice / initialPrice.GetValueOrDefault() - 1) * 100;
+	        }
+
+	        return percent;
         }
 
 
