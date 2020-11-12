@@ -1742,22 +1742,42 @@ namespace KadOzenka.Dal.DataImport
 
                         var changedProperties = new UnitChangedProperties
                         {
-	                        IsNameChanged = !nameDidNotChange,
-	                        IsPurposeOksChanged = !purposeOksDidNotChange,
-	                        IsSquareChanged = !squareDidNotChange,
-	                        IsBuildYearChanged = !buildYearDidNotChange,
-	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
-	                        IsFloorsCountChanged = !floorsCountDidNotChange,
-	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange
+                            IsNameChanged = !nameDidNotChange,
+                            IsPurposeOksChanged = !purposeOksDidNotChange,
+                            IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !buildYearDidNotChange,
+                            IsCommissioningYearChanged = !commissioningYearDidNotChange,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !wallMaterialDidNotChange,
+                            IsAddressChanged = !addressDidNotChange,
+                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+                            IsLocationChanged = !locationDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
+
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && purposeOksDidNotChange && nameDidNotChange)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+                        }
+                        #endregion
+
                     }
 
                     #endregion
+
+
                 }
                 //Если данные о прошлой оценке не найдены
                 else
@@ -1791,7 +1811,7 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                    
+
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
                     #endregion
@@ -2052,6 +2072,23 @@ namespace KadOzenka.Dal.DataImport
 	                        IsLocationChanged = !locationDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
+
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && purposeOksDidNotChange && nameDidNotChange)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+                        }
+                        #endregion
                     }
                     #endregion
                 }
