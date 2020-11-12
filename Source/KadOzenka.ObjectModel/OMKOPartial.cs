@@ -1021,16 +1021,21 @@ namespace ObjectModel.KO
                 foreach (long calcChildGroup in calcChildGroups)
                 {
                     List<OMUnit> unitsKB = OMUnit.Where(x =>
-                        x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup &&
+                        x.TourId == tourId && x.Upks>0 && x.GroupId == calcChildGroup &&
                         x.CadastralNumber == kb && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
                     if (unitsKB.Count > 0)
                     {
                         prFindInBuilding = true;
+                        DateTime dtmax = DateTime.MinValue;
                         foreach (OMUnit unit in unitsKB)
                         {
                             if (unit.Upks != null)
                             {
-                                upks = unit.Upks.Value;
+                                if (dtmax < unit.CreationDate)
+                                {
+                                    upks = unit.Upks.Value;
+                                    dtmax = unit.CreationDate.Value;
+                                }
                             }
                         }
                     }
@@ -1053,7 +1058,7 @@ namespace ObjectModel.KO
                             List<OMUnit> unitsKK = OMUnit.Where(x =>
                                     x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
                                     x.GroupId == calcChildGroup && x.CadastralBlock == kk &&
-                                    x.PropertyType_Code == type)
+                                    x.PropertyType_Code == PropertyTypes.Building)
                                 .SelectAll().Execute();
                             if (unitsKK.Count > 0)
                             {
@@ -1085,7 +1090,7 @@ namespace ObjectModel.KO
 
                 #region поиск по району
 
-                if (!prFindInCadastralBlock)
+                if (!prFindInBuilding && !prFindInCadastralBlock)
                 {
                     if (!avgKR.Get(kr, PropertyTypes.Pllacement, out upks, out parentCalcObject, out parentCalcType))
                     {
@@ -1094,7 +1099,7 @@ namespace ObjectModel.KO
                         {
                             List<OMUnit> unitsKR = OMUnit.Where(x =>
                                 x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
-                                x.GroupId == calcChildGroup && x.PropertyType_Code == type &&
+                                x.GroupId == calcChildGroup && x.PropertyType_Code == PropertyTypes.Building &&
                                 x.CadastralBlock.Contains(krf)).SelectAll().Execute();
                             if (unitsKR.Count > 0)
                             {
@@ -1139,7 +1144,7 @@ namespace ObjectModel.KO
                         {
                             List<OMUnit> unitsKS = OMUnit.Where(x =>
                                 x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
-                                x.GroupId == calcChildGroup && x.PropertyType_Code == type).SelectAll().Execute();
+                                x.GroupId == calcChildGroup && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
                             if (unitsKS.Count > 0)
                             {
                                 foreach (OMUnit unit in unitsKS)
