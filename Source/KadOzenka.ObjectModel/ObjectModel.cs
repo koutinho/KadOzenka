@@ -543,6 +543,58 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 81 Реестр хранения настроек гбу атрибута (GBU_ATTRIBUTE_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 81)]
+    [Serializable]
+    public partial class OMAttributeSettings : OMBaseClass<OMAttributeSettings>
+    {
+
+        private long _attributeid;
+        /// <summary>
+        /// 8100100 Идентификатор атрибута (ATTRIBUTE_ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 8100100)]
+        public long AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
+            }
+        }
+
+
+        private bool? _useparentattributeforplacements;
+        /// <summary>
+        /// 8100200 Использовать родительский атрибут для помещений (USE_PARENT_ATTRIBUTE_FOR_PLACEMENTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8100200)]
+        public bool? UseParentAttributeForPlacements
+        {
+            get
+            {
+                CheckPropertyInited("UseParentAttributeForPlacements");
+                return _useparentattributeforplacements;
+            }
+            set
+            {
+                _useparentattributeforplacements = value;
+                NotifyPropertyChanged("UseParentAttributeForPlacements");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>

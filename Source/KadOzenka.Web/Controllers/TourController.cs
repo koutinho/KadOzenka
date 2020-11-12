@@ -21,6 +21,7 @@ using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Attributes;
@@ -1001,7 +1002,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult EditTourFactorObjectCard(TourFactorObjectModel model)
         {
-            if (!ModelState.IsValid)
+	        if (!ModelState.IsValid)
             {
                 return GenerateMessageNonValidModel();
             }
@@ -1018,7 +1019,13 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.Id == -1)
                 {
-                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
+	                var existingAttr = TourFactorService.GetTourAttributes(model.TourId,
+		                model.IsSteadObjectType ? ObjectTypeExtended.Zu : ObjectTypeExtended.Oks);
+	                if (existingAttr.Any(x => x.Name == model.Name))
+	                {
+		                return Json(new {Errors = new List<object>{ new {Message = "Фактор с данным названием уже существует"}}});
+	                }
+	                model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
                 }
                 else
                 {

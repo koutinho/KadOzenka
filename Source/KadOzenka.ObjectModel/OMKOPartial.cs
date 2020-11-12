@@ -899,6 +899,7 @@ namespace ObjectModel.KO
             bool prFindInCadastralRaion = false;
             bool prFindInCadastralRegion = false;
             string kr = kk.Substring(0, Math.Min(5, kk.Length));
+            string krf = kr+":";
             decimal sumSquare = 0;
             decimal sumCost = 0;
 
@@ -908,13 +909,13 @@ namespace ObjectModel.KO
                 List<OMUnit> unitsKK = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock == kk && x.PropertyType_Code == type).SelectAll().Execute();
                 if (unitsKK.Count > 0)
                 {
-                    prFindInCadastralBlock = true;
                     foreach (OMUnit unit in unitsKK)
                     {
                         if (unit.Square != null && unit.CadastralCost != null)
                         {
                             sumSquare += unit.Square.ParseToDecimal();
                             sumCost += unit.CadastralCost.ParseToDecimal();
+                            prFindInCadastralBlock = true;
                         }
                     }
                 }
@@ -930,7 +931,7 @@ namespace ObjectModel.KO
                     upks = 0;
                     foreach (long calcChildGroup in calcChildGroups)
                     {
-                        List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type && x.CadastralBlock.Contains(kr)).SelectAll().Execute();
+                        List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type && x.CadastralBlock.Contains((krf))).SelectAll().Execute();
                         if (unitsKR.Count > 0)
                         {
                             foreach (OMUnit unit in unitsKR)
@@ -941,6 +942,7 @@ namespace ObjectModel.KO
                                     {
                                         sumSquare += unit.Square.ParseToDecimal();
                                         sumCost += unit.CadastralCost.ParseToDecimal();
+                                        prFindInCadastralRaion = true;
                                     }
                                 }
                             }
@@ -1026,6 +1028,7 @@ namespace ObjectModel.KO
                 bool prFindInCadastralRaion = false;
                 bool prFindInCadastralRegion = false;
                 string kr = kk.Substring(0, Math.Min(5, kk.Length));
+                string krf = kr + ":";
                 decimal sumSquare = 0;
                 decimal sumCost = 0;
 
@@ -1071,13 +1074,13 @@ namespace ObjectModel.KO
                                 .SelectAll().Execute();
                             if (unitsKK.Count > 0)
                             {
-                                prFindInCadastralBlock = true;
                                 foreach (OMUnit unit in unitsKK)
                                 {
                                     if (unit.Square != null && unit.CadastralCost != null)
                                     {
                                         sumSquare += unit.Square.ParseToDecimal();
                                         sumCost += unit.CadastralCost.ParseToDecimal();
+                                        prFindInCadastralBlock = true;
                                     }
                                 }
                             }
@@ -1109,7 +1112,7 @@ namespace ObjectModel.KO
                             List<OMUnit> unitsKR = OMUnit.Where(x =>
                                 x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
                                 x.GroupId == calcChildGroup && x.PropertyType_Code == type &&
-                                x.CadastralBlock.Contains(kr)).SelectAll().Execute();
+                                x.CadastralBlock.Contains(krf)).SelectAll().Execute();
                             if (unitsKR.Count > 0)
                             {
                                 foreach (OMUnit unit in unitsKR)
@@ -1120,6 +1123,7 @@ namespace ObjectModel.KO
                                         {
                                             sumSquare += unit.Square.ParseToDecimal();
                                             sumCost += unit.CadastralCost.ParseToDecimal();
+                                            prFindInCadastralRaion = true;
                                         }
                                     }
                                 }
@@ -1155,13 +1159,13 @@ namespace ObjectModel.KO
                                 x.GroupId == calcChildGroup && x.PropertyType_Code == type).SelectAll().Execute();
                             if (unitsKS.Count > 0)
                             {
-                                prFindInCadastralRegion = true;
                                 foreach (OMUnit unit in unitsKS)
                                 {
                                     if (unit.Square != null && unit.CadastralCost != null)
                                     {
                                         sumSquare += unit.Square.ParseToDecimal();
                                         sumCost += unit.CadastralCost.ParseToDecimal();
+                                        prFindInCadastralRegion = true;
                                     }
                                 }
                             }

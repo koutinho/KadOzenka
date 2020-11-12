@@ -1893,6 +1893,7 @@ namespace KadOzenka.Dal.DataImport
                     CadastralCostPre = 0,
                     Upks = 0,
                     UpksPre = 0,
+                    BuildingCadastralNumber=current.CadastralNumberOKS
                 };
                 koUnit.Save();
             }
@@ -2189,6 +2190,7 @@ namespace KadOzenka.Dal.DataImport
                     CadastralCostPre = 0,
                     Upks = 0,
                     UpksPre = 0,
+                    BuildingCadastralNumber=current.CadastralNumberOKS
                 };
                 koUnit.Save();
             }

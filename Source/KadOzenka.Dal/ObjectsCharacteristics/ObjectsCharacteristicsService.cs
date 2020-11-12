@@ -3,6 +3,7 @@ using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
+using ObjectModel.Gbu;
 using ObjectModel.KO;
 using Platform.Configurator;
 
@@ -17,6 +18,11 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
         {
             RegisterService = new RegisterService();
             RegisterAttributeService = new RegisterAttributeService();
+        }
+
+        public static OMAttributeSettings GetRegisterAttributeSettings(long attributeId)
+        {
+	        return OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
         }
 
         #region Source
@@ -105,6 +111,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
                     characteristicDto.RegisterId, characteristicDto.Type, withValueField, characteristicDto.ReferenceId);
                 id = omAttribute.Id;
+                CreateOrUpdateCharacteristicSetting(id, characteristicDto.UseParentAttributeForPlacement);
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
                 RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
@@ -120,6 +127,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             ValidateCharacteristic(characteristicDto);
 
             RegisterAttributeService.RenameRegisterAttribute(characteristicDto.Id, characteristicDto.Name);
+            CreateOrUpdateCharacteristicSetting(characteristicDto.Id, characteristicDto.UseParentAttributeForPlacement);
         }
 
         public void DeleteCharacteristic(long characteristicId)
@@ -142,6 +150,21 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             {
                 RegisterId = registerId
             }.Save();
+        }
+
+        private void CreateOrUpdateCharacteristicSetting(long attributeId, bool useParentAttributeForPlacements)
+        {
+            var settings = OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
+            if (settings == null)
+            {
+	            settings = new OMAttributeSettings
+	            {
+		            AttributeId = attributeId
+	            };
+            }
+
+            settings.UseParentAttributeForPlacements = useParentAttributeForPlacements;
+            settings.Save();
         }
 
         #endregion

@@ -606,6 +606,30 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 81 Реестр хранения настроек гбу атрибута
+    /// </summary>
+    public partial class OMAttributeSettings
+    {
+
+        public OMAttributeSettings()
+        {
+
+            AttributeId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAttributeSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>
