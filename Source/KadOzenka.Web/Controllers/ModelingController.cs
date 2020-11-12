@@ -825,11 +825,11 @@ namespace KadOzenka.Web.Controllers
 
 			var models = factors.Select(x => new
 			{
+                FactorId = x.FactorId,
 				Name = RegisterCache.GetAttributeData(x.FactorId.GetValueOrDefault()).Name,
 				Coefficient = x.PreviousWeight ?? 1
 			}).OrderBy(x => x.Name).ToList();
 
-			//return Json(new {columns = models.Select(x => x.Name), data = models});
 			return Json(models);
 		}
 
