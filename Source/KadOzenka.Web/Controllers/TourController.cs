@@ -643,7 +643,7 @@ namespace KadOzenka.Web.Controllers
 				.Select(x => new SelectListItem
 				{
 					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
+					Text = $"{GroupService.ParseGroupNumber(x.ParentId, x.Number)}. {x.GroupName}"
 				});
 
 			return Json(groups);
