@@ -125,15 +125,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
         public ActionResult ActivateProcess()
         {
-            /*
-            if (AddressesDetector.IsProcessAdditable())
-            {
-                AddressesDetector.AddProcessToQueue();
-                return Content("Присвоение зон, районов, округов");
-            }
-            else return Content("Процесс уже добавлен в очередь или выполняется");
-            */
-            return Content("Присвоение зон, районов, округов");
+            return View("~/Views/AnalogCheck/ActivateDistrictsRegionsZones.cshtml");
         }
 
         [HttpGet]
