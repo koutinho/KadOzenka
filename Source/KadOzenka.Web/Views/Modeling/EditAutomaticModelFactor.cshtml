@@ -95,6 +95,7 @@
 
     function saveFactor(e) {
         e.preventDefault();
+        kendo.ui.progress($('body'), true);
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
         formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
