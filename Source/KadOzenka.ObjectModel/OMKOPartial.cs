@@ -1015,7 +1015,7 @@ namespace ObjectModel.KO
         }
 
         private static void GetAvgValue(ref ALLStatOKS avgKK, ref ALLStatOKS avgKR, ref ALLStatOKS avgKS, long tourId,
-            string kb, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks,
+            string kb, string kk, PropertyTypes type, List<long> calcChildGroups, DateTime estimatedate, out decimal upks,
             out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             try
@@ -1038,7 +1038,7 @@ namespace ObjectModel.KO
                 foreach (long calcChildGroup in calcChildGroups)
                 {
                     List<OMUnit> unitsKB = OMUnit.Where(x =>
-                        x.TourId == tourId && x.Upks>0 && x.GroupId == calcChildGroup &&
+                        x.TourId == tourId && x.GroupId == calcChildGroup &&
                         x.CadastralNumber == kb && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
                     if (unitsKB.Count > 0)
                     {
@@ -1048,7 +1048,7 @@ namespace ObjectModel.KO
                         {
                             if (unit.Upks != null)
                             {
-                                if (dtmax < unit.CreationDate)
+                                if (dtmax < unit.CreationDate.Value && unit.CreationDate.Value.Date <= estimatedate)
                                 {
                                     upks = unit.Upks.Value;
                                     dtmax = unit.CreationDate.Value;
@@ -1833,7 +1833,7 @@ namespace ObjectModel.KO
                                 {
                                     GetAvgValue(ref avgKK, ref avgKR, ref avgKS, tourgroup.TourId,
                                         unit.BuildingCadastralNumber, unit.CadastralBlock, PropertyTypes.Pllacement,
-                                        CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                        CalcParentGroup, unit.CreationDate.Value.Date, out upksz, out calc_obj, out calc_obj_code);
                                     flatKN.Add(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, upksz, calc_obj,
                                         calc_obj_code);
                                 }
