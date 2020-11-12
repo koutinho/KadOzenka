@@ -59,10 +59,10 @@
                 .Enable(false))
         </div>
     </div>
-    <div class="form-group" id="previousTourCoefficientsBlock" style="padding: 1% 0 2% 0">
+    @*<div class="form-group" id="previousTourCoefficientsBlock" style="padding: 1% 0 2% 0">
         <div>Коэффициенты из предыдущего тура</div>
         <div id="gridWithPreviousTourCoefficients"></div>
-    </div>
+    </div>*@
     <div class="form-group">
         <a class="k-button k-button-icon" id="uploadBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
@@ -70,13 +70,13 @@
         </a>
     </div>
     <div class="form-group" style="padding: 1% 0 2% 0">
-        <div>Объекты с рассчитанной МС</div>
+        @*<div>Объекты с рассчитанной МС</div>*@
         <div id="grid"></div>
     </div>
-    <div class="form-group" style="padding: 1% 0 2% 0">
+    @*<div class="form-group" style="padding: 1% 0 2% 0">
         <div>Объекты, у которых нельзя рассчитать МС</div>
         <div id="gridForObjectsWithErrors"></div>
-    </div>
+    </div>*@
 </div>
 
 
@@ -116,14 +116,15 @@
     $(document).ready(function () {
         updateGrid();
         initFileUploader();
-        initFactorsGrid();
+        //initFactorsGrid();
 
         $('#uploadBtn').on('click', uploadObjects);
     });
 
 
 
-    function initFactorsGrid() {
+    //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+    @*function initFactorsGrid() {
         $.ajax({
             url: '@Url.Action("GetCoefficientsForPreviousTour", "Modeling", new {modelId = Model.Id})',
             success: function (factors) {
@@ -133,25 +134,25 @@
                 Common.ShowError(response.responseText);
             }
         });
-    }
+    }*@
 
-    function generateGridWithFactors(response) {
-        var fieldPrefix = "Coefficient_";
-        var columns = response.map(function (factor) {
-            return { field: fieldPrefix + factor.FactorId, title: factor.Name};
-        });
-        var coefficients = new Object;
-        $.each(response, function(index, factor) {
-            var fieldName = fieldPrefix + factor.FactorId;
-            coefficients[fieldName] = factor.Coefficient;
-        });
-        $("#gridWithPreviousTourCoefficients").kendoGrid({
-             columns: columns,
-             dataSource: {
-                 data: [coefficients]
-             }
-        });
-    }
+    //function generateGridWithFactors(response) {
+    //    var fieldPrefix = "Coefficient_";
+    //    var columns = response.map(function (factor) {
+    //        return { field: fieldPrefix + factor.FactorId, title: factor.Name};
+    //    });
+    //    var coefficients = new Object;
+    //    $.each(response, function(index, factor) {
+    //        var fieldName = fieldPrefix + factor.FactorId;
+    //        coefficients[fieldName] = factor.Coefficient;
+    //    });
+    //    $("#gridWithPreviousTourCoefficients").kendoGrid({
+    //         columns: columns,
+    //         dataSource: {
+    //             data: [coefficients]
+    //         }
+    //    });
+    //}
 
     
 
@@ -165,12 +166,12 @@
                     setIsForTrainingCheckboxForSuccessfulObjects, setIsForControlCheckboxForSuccessfulObjects,
                     selectAllObjectsForTrainingForSuccessfulObjects, selectAllObjectsForControlForSuccessfulObjects,
                     saveSuccessfulObjects, exportSuccessfulObjectsToExcel);
-
-                generateGrid(result.errorModels, errorObjectsGridId,
-                    setIsExcludedCheckboxForErrorObjects,
-                    setIsForTrainingCheckboxForErrorObjects, setIsForControlCheckboxForErrorObjects,
-                    selectAllObjectsForTrainingForErrorObjects, selectAllObjectsForControlForErrorObjects,
-                    saveErrorObjects, exportErrorObjectsToExcel);
+                //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+                //generateGrid(result.errorModels, errorObjectsGridId,
+                //    setIsExcludedCheckboxForErrorObjects,
+                //    setIsForTrainingCheckboxForErrorObjects, setIsForControlCheckboxForErrorObjects,
+                //    selectAllObjectsForTrainingForErrorObjects, selectAllObjectsForControlForErrorObjects,
+                //    saveErrorObjects, exportErrorObjectsToExcel);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -216,12 +217,10 @@
             },
 			pageSize: 15
         });
-
         var grid = $("#" + gridId).data("kendoGrid");
         if (grid) {
             $("#" + gridId).empty().kendoGrid();
         }
-
         $("#" + gridId).kendoGrid({
             toolbar: kendo.template($("#GridToolbarTemplate").html())({ gridId: gridId}),
             filterable: {
@@ -271,11 +270,6 @@
         });
         var baseColumnsBeforeMarks = [
             {
-                title: "Id",
-                field: "Id",
-                sortable: false
-            },
-            {
                 title: "Исключен из расчета",
                 field: "IsExcluded",
                 template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx, isExcluded" />',
@@ -307,20 +301,20 @@
         var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
         var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsAfterMarks = [
-            {
-                title: "МС",
-                field: "ModelingPrice",
-                template: '#: ModelingPrice == null ? "" : kendo.format("{0:c}", ModelingPrice) #',
-                filterable: true,
-                sortable: true
-            },
-            {
-                title: "%",
-                field: "Percent",
-                template: '#: Percent == null ? "" : kendo.toString(Percent, "n2") #',
-                filterable: true,
-                sortable: true
-            },
+            //{
+            //    title: "МС",
+            //    field: "ModelingPrice",
+            //    template: '#: ModelingPrice == null ? "" : kendo.format("{0:c}", ModelingPrice) #',
+            //    filterable: true,
+            //    sortable: true
+            //},
+            //{
+            //    title: "%",
+            //    field: "Percent",
+            //    template: '#: Percent == null ? "" : kendo.toString(Percent, "n2") #',
+            //    filterable: true,
+            //    sortable: true
+            //},
             {
                 title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
@@ -349,10 +343,10 @@
         var dataItem = gerGridRow(e, successfulObjectsGridId);
         setIsExcludedCheckbox(dataItem, this);
     }
-    function setIsExcludedCheckboxForErrorObjects(e) {
-        var dataItem = gerGridRow(e, errorObjectsGridId);
-        setIsExcludedCheckbox(dataItem, this);
-    }
+    //function setIsExcludedCheckboxForErrorObjects(e) {
+    //    var dataItem = gerGridRow(e, errorObjectsGridId);
+    //    setIsExcludedCheckbox(dataItem, this);
+    //}
     function setIsExcludedCheckbox(dataItem, checkbox) {
         dataItem.IsExcluded = checkbox.checked;
         dataItem.IsDirty = true;
@@ -364,10 +358,10 @@
         var dataItem = gerGridRow(e, successfulObjectsGridId);
         setIsForTrainingCheckbox(dataItem, this);
     }
-    function setIsForTrainingCheckboxForErrorObjects(e) {
-        var dataItem = gerGridRow(e, errorObjectsGridId);
-        setIsForTrainingCheckbox(dataItem, this);
-    }
+    //function setIsForTrainingCheckboxForErrorObjects(e) {
+    //    var dataItem = gerGridRow(e, errorObjectsGridId);
+    //    setIsForTrainingCheckbox(dataItem, this);
+    //}
     function setIsForTrainingCheckbox(dataItem, checkbox) {
         var isChecked = checkbox.checked;
         if (dataItem.IsForControl && isChecked) {
@@ -387,10 +381,10 @@
         var dataItem = gerGridRow(e, successfulObjectsGridId);
         setIsForControlCheckbox(dataItem, this);
     }
-    function setIsForControlCheckboxForErrorObjects(e) {
-        var dataItem = gerGridRow(e, errorObjectsGridId);
-        setIsForControlCheckbox(dataItem, this);
-    }
+    //function setIsForControlCheckboxForErrorObjects(e) {
+    //    var dataItem = gerGridRow(e, errorObjectsGridId);
+    //    setIsForControlCheckbox(dataItem, this);
+    //}
     function setIsForControlCheckbox(dataItem, checkbox) {
         var isChecked = checkbox.checked;
         if (dataItem.IsForTraining && isChecked) {
@@ -416,9 +410,9 @@
     function selectAllObjectsForTrainingForSuccessfulObjects() {
         selectAllObjectsForTraining(successfulObjectsGridId);
     }
-    function selectAllObjectsForTrainingForErrorObjects() {
-        selectAllObjectsForTraining(errorObjectsGridId);
-    }
+    //function selectAllObjectsForTrainingForErrorObjects() {
+    //    selectAllObjectsForTraining(errorObjectsGridId);
+    //}
     function selectAllObjectsForTraining(gridId) {
         var grid = $("#" + gridId).data("kendoGrid");
         var headerState = $("#headerCheckboxIsForTraining-" + gridId).prop("checked");
@@ -438,9 +432,9 @@
     function selectAllObjectsForControlForSuccessfulObjects() {
         selectAllObjectsForControl(successfulObjectsGridId);
     }
-    function selectAllObjectsForControlForErrorObjects() {
-        selectAllObjectsForControl(errorObjectsGridId);
-    }
+    //function selectAllObjectsForControlForErrorObjects() {
+    //    selectAllObjectsForControl(errorObjectsGridId);
+    //}
     function selectAllObjectsForControl(gridId) {
         var grid = $("#" + gridId).data("kendoGrid");
         var headerState = $("#headerCheckboxIsForControl-" + gridId).prop("checked");
@@ -467,9 +461,9 @@
     function saveSuccessfulObjects() {
         saveObjects(successfulObjectsGridId);
     }
-    function saveErrorObjects() {
-        saveObjects(errorObjectsGridId);
-    }
+    //function saveErrorObjects() {
+    //    saveObjects(errorObjectsGridId);
+    //}
     function saveObjects(gridId) {
         var dirtyObjects = [];
         var objects = getObjectsFromGrid(gridId);
@@ -507,9 +501,9 @@
     function exportSuccessfulObjectsToExcel() {
         exportObjectsToExcel(successfulObjectsGridId);
     }
-    function exportErrorObjectsToExcel() {
-        exportObjectsToExcel(errorObjectsGridId);
-    }
+    //function exportErrorObjectsToExcel() {
+    //    exportObjectsToExcel(errorObjectsGridId);
+    //}
     function exportObjectsToExcel(gridId) {
         var modelId = '@Model.Id';
         var data = getObjectsFromGrid(gridId);

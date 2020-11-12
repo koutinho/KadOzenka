@@ -421,23 +421,27 @@ namespace KadOzenka.Dal.Modeling
 
         public Stream ExportMarketObjectsToExcel(long modelId, List<long> marketObjectsIds)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
-            if (model == null)
-	            throw new Exception($"Не найдена модель с ИД '{modelId}'");
+	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
+	        //if (model == null)
+	        //    throw new Exception($"Не найдена модель с ИД '{modelId}'");
             //пока работаем только с Exp
-            var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
+            var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp).Select(x => new
+            {
+	            FactorId = x.FactorId.GetValueOrDefault(),
+                Name = RegisterCache.GetAttributeData((int)x.FactorId.GetValueOrDefault()).Name
+            }).OrderBy(x => x.Name).ToList();
 
             var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
             var columnHeaders = new List<object>
             {
-                "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена",
-                "Признак выбора аналога в обучающую модель",
-                "Признак выбора аналога в контрольную модель"
+                "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена"
             };
-            columnHeaders.AddRange(factors.Select(x => RegisterCache.GetAttributeData((int)x.FactorId.GetValueOrDefault()).Name).ToList());
-            columnHeaders.AddRange(new List<string>{ "МС", "%" });
+            columnHeaders.AddRange(factors.Select(x => x.Name).ToList());
+            columnHeaders.AddRange(new List<string>{ "Признак выбора аналога в обучающую модель", "Признак выбора аналога в контрольную модель" });
+            //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+            //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
             AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
 
@@ -453,8 +457,7 @@ namespace KadOzenka.Dal.Modeling
                     
 	                var values = new List<object>
                     {
-                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
-                        obj.IsForTraining.GetValueOrDefault(), obj.IsForControl.GetValueOrDefault()
+                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel
                     };
 
 	                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
@@ -464,11 +467,14 @@ namespace KadOzenka.Dal.Modeling
 		                values.Add(coefficient);
 	                });
 
-	                var calculationParameters = GetModelCalculationParameters(model.A0ForExponential, obj.Price,
-		                factors, coefficients, obj.CadastralNumber);
-
-                    values.Add(calculationParameters.ModelingPrice);
-                    values.Add(calculationParameters.Percent);
+	                values.Add(obj.IsForTraining.GetValueOrDefault());
+	                values.Add(obj.IsForControl.GetValueOrDefault());
+	                
+	                //var calculationParameters = GetModelCalculationParameters(model.A0ForExponential, obj.Price,
+		               // factors, coefficients, obj.CadastralNumber); 
+	                
+	                //values.Add(calculationParameters.ModelingPrice); 
+	                //values.Add(calculationParameters.Percent);
 
                     AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
                 });

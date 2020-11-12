@@ -789,49 +789,53 @@ namespace KadOzenka.Web.Controllers
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
 
-			var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
-			if (model == null)
-				throw new Exception($"Не найдена модель с ИД '{modelId}'");
-			//пока работаем только с Exp
-			var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
+            //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
+            //if (model == null)
+            //	throw new Exception($"Не найдена модель с ИД '{modelId}'");
+            //TODO пока работаем только с Exp
+            //var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
-			var objectsWithErrors = new List<ModelMarketObjectRelationDto>();
-			for (var i = 0; i < objectsDto.Count; i++)
-			{
-				var obj = objectsDto[i];
-				var calculationParameters =
-					ModelingService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
-						obj.Coefficients, obj.CadastralNumber);
-				obj.ModelingPrice = calculationParameters.ModelingPrice;
-				obj.Percent = calculationParameters.Percent;
+            //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+            //var objectsWithErrors = new List<ModelMarketObjectRelationDto>();
+            //for (var i = 0; i < objectsDto.Count; i++)
+            //{
+            //	var obj = objectsDto[i];
+            //	var calculationParameters =
+            //		ModelingService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
+            //			obj.Coefficients, obj.CadastralNumber);
+            //	obj.ModelingPrice = calculationParameters.ModelingPrice;
+            //	obj.Percent = calculationParameters.Percent;
 
-				if (obj.ModelingPrice.GetValueOrDefault() == 0)
-				{
-					objectsWithErrors.Add(obj);
-				}
-            }
+            //	if (obj.ModelingPrice.GetValueOrDefault() == 0)
+            //	{
+            //		objectsWithErrors.Add(obj);
+            //	}
+            //}
 
-			var successfulModels = objectsDto.Except(objectsWithErrors).Select(ModelMarketObjectRelationModel.ToModel).ToList();
-            var errorModels = objectsWithErrors.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+            //var successfulModels = objectsDto.Except(objectsWithErrors).Select(ModelMarketObjectRelationModel.ToModel).ToList();
+            //var errorModels = objectsWithErrors.Select(ModelMarketObjectRelationModel.ToModel).ToList();
 
-            return Json(new { successfulModels, errorModels });
+            var successfulModels = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+
+            return Json(new { successfulModels });
         }
 
-		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-		public JsonResult GetCoefficientsForPreviousTour(long modelId)
-		{
-			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+		//TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+        //[HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        //public JsonResult GetCoefficientsForPreviousTour(long modelId)
+        //{
+        //	var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
 
-			var models = factors.Select(x => new
-			{
-                FactorId = x.FactorId,
-				Name = RegisterCache.GetAttributeData(x.FactorId.GetValueOrDefault()).Name,
-				Coefficient = x.PreviousWeight ?? 1
-			}).OrderBy(x => x.Name).ToList();
+        //	var models = factors.Select(x => new
+        //	{
+        //              FactorId = x.FactorId,
+        //		Name = RegisterCache.GetAttributeData(x.FactorId.GetValueOrDefault()).Name,
+        //		Coefficient = x.PreviousWeight ?? 1
+        //	}).OrderBy(x => x.Name).ToList();
 
-			return Json(models);
-		}
+        //	return Json(models);
+        //}
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
