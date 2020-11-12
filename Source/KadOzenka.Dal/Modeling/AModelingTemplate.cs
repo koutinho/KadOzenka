@@ -89,7 +89,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected virtual void SendFailNotification(OMQueue processQueue, Exception exception, long errorId)
         {
-            var message = $"Операция завершена с ошибкой: {exception.Message}.\nПодробнее в списке процессов.\nЖурнал: {errorId}";
+            var message = $"Операция завершена с ошибкой.\n{exception.Message}\n\nПодробнее в списке процессов.\nЖурнал: {errorId}";
             NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
