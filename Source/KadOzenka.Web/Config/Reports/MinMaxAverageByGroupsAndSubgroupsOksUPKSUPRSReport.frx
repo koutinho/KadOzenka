@@ -201,14 +201,14 @@ namespace FastReport
           <TableCell Name="Cell25" Border.Lines="All" Text="[Purpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
           <TableCell Name="Cell29"/>
         </TableRow>
-        <TableRow Name="Row4">
+        <TableRow Name="Row4" AutoSize="true">
           <TableCell Name="Cell17"/>
           <TableCell Name="Cell18"/>
           <TableCell Name="Cell22"/>
           <TableCell Name="Cell26" Border.Lines="All" Text="УПКС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell30" Border.Lines="All" Text="УПРС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row5">
+        <TableRow Name="Row5" AutoSize="true">
           <TableCell Name="Cell31" Border.Lines="All" Text="[GroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell32" Border.Lines="All" Text="[SubgroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell33" Border.Lines="All" Text="[CalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>

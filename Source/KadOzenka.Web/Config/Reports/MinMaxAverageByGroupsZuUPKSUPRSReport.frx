@@ -127,19 +127,19 @@ namespace FastReport
           <TableCell Name="Cell19" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
           <TableCell Name="Cell28" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row2">
+        <TableRow Name="Row2" AutoSize="true">
           <TableCell Name="Cell3" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" RowSpan="2"/>
           <TableCell Name="Cell12" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" RowSpan="2"/>
           <TableCell Name="Cell20" Border.Lines="All" Text="[PropertyType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
           <TableCell Name="Cell29" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row3">
+        <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell13" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell21" Border.Lines="All" Text="УПКС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell30" Border.Lines="All" Text="УПРС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row4">
+        <TableRow Name="Row4" AutoSize="true">
           <TableCell Name="Cell25" Border.Lines="All" Text="[GroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell26" Border.Lines="All" Text="[CalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell27" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
