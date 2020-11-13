@@ -32,14 +32,14 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
         private string GetCheckingHistory()
         {
             int historyCount = OMDuplicatesHistory
-                .Where(x => x.MarketSegment == null && x.AreaDelta == null && x.PriceDelta == null)
+                .Where(x => x.MarketSegment == "Присвоение координат")
                 .SelectAll()
                 .ExecuteCount();
             if (historyCount == 0) return CHECK_HISTORY_DEFAULT;
             else
             {
                 OMDuplicatesHistory history = OMDuplicatesHistory
-                    .Where(x => x.MarketSegment == null && x.AreaDelta == null && x.PriceDelta == null)
+                    .Where(x => x.MarketSegment == "Присвоение координат")
                     .Select(x => new { x.CheckDate, x.CommonCount, x.InProgressCount, x.DuplicateObjects })
                     .OrderByDescending(x => x.CheckDate)
                     .ExecuteFirstOrDefault();
@@ -50,6 +50,7 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
         private void SetCheckingHistory(DateTime? creationDate, long? commonCount, long? correctCount, long? errorCount)
         {
             OMDuplicatesHistory history = new OMDuplicatesHistory();
+            history.MarketSegment = "Присвоение координат";
             history.CheckDate = creationDate;
             history.CommonCount = commonCount;
             history.InProgressCount = correctCount;

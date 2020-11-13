@@ -148,7 +148,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
 
         public static string GetCurrentProgress()
         {
-            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => true).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
+            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => x.AreaDelta != null && x.PriceDelta != null).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
             return JsonConvert.SerializeObject(new
             {
                 checkDate = history == null ? null : history.CheckDate?.ToString("yyyy.MM.dd HH:mm:ss"),
