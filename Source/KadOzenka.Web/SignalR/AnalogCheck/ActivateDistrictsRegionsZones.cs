@@ -1,29 +1,19 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using KadOzenka.Web.Models.MarketObject;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using ObjectModel.Market;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using KadOzenka.Web.Models.MarketObject;
 using System.Globalization;
-using ObjectModel.Market;
-using Core.Shared.Misc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace KadOzenka.Web.SignalR.AnalogCheck
 {
 
-    enum ButtonState
+    public class ActivateDistrictsRegionsZones : Hub
     {
-        Avaliable, 
-        Loading, 
-        Locked
-    }
-
-    public class ActivateCoordinates : Hub
-    {
-        private const string KEY = "364a064a-ad89-403c-9e2b-abe8c3b8715b";
-        private const string CHECK_HISTORY_DEFAULT = "Присвоение координат ещё не было запущено";
+        private const string CHECK_HISTORY_DEFAULT = "Присвоение округов, районов, зон ещё не было запущено";
 
         private static ButtonState _button_lock = ButtonState.Avaliable;
         private static object _lockObject = new object();
@@ -32,18 +22,18 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
         private string GetCheckingHistory()
         {
             int historyCount = OMDuplicatesHistory
-                .Where(x => x.MarketSegment == null && x.AreaDelta == null && x.PriceDelta == null)
+                .Where(x => x.MarketSegment == "Присвоение округов, районов, зон")
                 .SelectAll()
                 .ExecuteCount();
             if (historyCount == 0) return CHECK_HISTORY_DEFAULT;
             else
             {
                 OMDuplicatesHistory history = OMDuplicatesHistory
-                    .Where(x => x.MarketSegment == null && x.AreaDelta == null && x.PriceDelta == null)
+                    .Where(x => x.MarketSegment == "Присвоение округов, районов, зон")
                     .Select(x => new { x.CheckDate, x.CommonCount, x.InProgressCount, x.DuplicateObjects })
                     .OrderByDescending(x => x.CheckDate)
                     .ExecuteFirstOrDefault();
-                return $"Последняя проверка проводилась: {history.CheckDate}. Всего объектов проверено: {history.CommonCount}";
+                return $"Последняя проверка: {history.CheckDate}. Всего проверено: {history.CommonCount}, корректно: {history.InProgressCount}, без зон: {history.DuplicateObjects}";
             }
         }
 
@@ -51,6 +41,7 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
         {
             OMDuplicatesHistory history = new OMDuplicatesHistory();
             history.CheckDate = creationDate;
+            history.MarketSegment = "Присвоение округов, районов, зон";
             history.CommonCount = commonCount;
             history.InProgressCount = correctCount;
             history.DuplicateObjects = errorCount;
@@ -67,7 +58,7 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             };
         }
 
-        private async Task LoadButton() 
+        private async Task LoadButton()
         {
             _button_lock = ButtonState.Loading;
             await BroadcastCurrentWidgetState();
@@ -85,10 +76,10 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             await BroadcastCurrentWidgetState();
         }
 
-        public async Task InitializeCoordinatesCheck()
+        public async Task InitializeDistrictsRegionsZonesCheck()
         {
             await LoadButton();
-            lock (_lockObject) { new CoordinatesJoiner(RefreshCurrentProgress, LockButton, SetCheckingHistory).ManageData(KEY); }
+            lock (_lockObject) { new DistrictsRegionsZonesJoiner(RefreshCurrentProgress, LockButton, SetCheckingHistory).ManageData(); }
             await UnlockButton();
         }
 
@@ -101,7 +92,6 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             _current_progress = currentProgress;
             await Clients.All.SendAsync("SetCurrentProgress", currentProgress.ToString("0.##", new CultureInfo("en-US")));
         }
-
     }
 
 }
