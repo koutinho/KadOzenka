@@ -97,6 +97,7 @@ namespace CIPJS
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
+	        services.AddTransient<ModelFactorsService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
 	        services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();

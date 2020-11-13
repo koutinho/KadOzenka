@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Tour.GroupModel
+﻿@using KadOzenka.Dal.GbuObject.Dto
+@model KadOzenka.Web.Models.Tour.GroupModel
 
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
@@ -146,13 +147,17 @@
                     }
                 }
             });
+        $('[name="RatingTour"]').data("kendoDropDownList").bind('dataBound', ParentGroupDropDownInit);
+        $('[name="RatingTour"]').data("kendoDropDownList").bind('change', ParentGroupDropDownInit);
 
-        function ParentGroupDropDownInit() {         
-
+        function ParentGroupDropDownInit() {
             if ($('input[name="ObjType"]:checked').length == 0)
                 return;
             var parentType = $('input[name="ObjType"]:checked')[0].id;
-
+            var convertedType = '@((int)ObjectTypeExtended.Zu)';
+            if(parentType == "OKS")
+                convertedType = '@((int)ObjectTypeExtended.Oks)';
+            var tourId = $('[name="RatingTour"]').data("kendoDropDownList").value();
             $('[name="ParentGroup"]')
             .kendoDropDownList({
                 dataTextField: 'Text',
@@ -163,7 +168,7 @@
                     transport: {
                         read: {
                             url: '@Url.Action("GetParentGroup", "Tour")',
-                            data: { type: parentType, id: '@Model.Id' },
+                            data: { type: convertedType, tourId: tourId  },
                             dataType: 'json'
                         }
                     }

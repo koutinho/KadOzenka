@@ -1,10 +1,10 @@
-﻿using KadOzenka.Dal.Modeling.Entities;
+﻿using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.LongProcess.InputParameters
 {
     public class GeneralModelingInputParameters
     {
         public long ModelId { get; set; }
-        public ModelType ModelType { get; set; }
+        public KoAlgoritmType ModelType { get; set; }
     }
 }

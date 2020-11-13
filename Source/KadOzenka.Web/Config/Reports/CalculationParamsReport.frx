@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/02/2020 19:17:59" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="10/26/2020 10:35:40" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -78,30 +78,59 @@
     <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
       <TextObject Name="Text1" Left="9.45" Top="9.45" Width="1039.5" Height="18.9" Text="[Model.Formula]" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
     </ReportTitleBand>
-    <DataBand Name="BandModel" Top="41" Width="1047.06" Height="75.6">
-      <TextObject Name="Text23" Left="9.45" Top="37.8" Width="1030.57" Height="18.9" Text="[Model.Type]" Font="Times New Roman, 12pt"/>
+    <DataBand Name="BandModel" Top="41.8" Width="1047.06" Height="94.5">
+      <TextObject Name="Text23" Left="9.45" Top="37.8" Width="1030.57" Height="18.9" Text="Тип: [Model.Type]" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text51" Left="9.45" Top="9.45" Width="1030.57" Height="18.9" Text="Характеристики модели" Font="Times New Roman, 12pt, style=Bold"/>
+      <TextObject Name="Text72" Left="9.45" Top="66.15" Width="1030.57" Height="18.9" Text="Алгоритм расчета: [Model.AlgorithmType]" Font="Times New Roman, 12pt"/>
     </DataBand>
-    <DataBand Name="BandCoefficients" Top="236.4" Width="1047.06" Height="47.25" Guides="47.25" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
-      <TextObject Name="Text9" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[Coefficients.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text10" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[Coefficients.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <TextObject Name="Text11" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[Coefficients.Coefficient]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader1" Top="119.8" Width="1047.06" Height="113.4">
+    <DataBand Name="BandLinearCoefficients" Top="257.7" Width="1047.06" Height="47.25" Guides="47.25">
+      <TextObject Name="Text9" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[LinearCoefficients.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text10" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[LinearCoefficients.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text11" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[LinearCoefficients.Coefficient]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="140.3" Width="1047.06" Height="113.4">
         <TextObject Name="Text2" Left="9.45" Top="28.35" Width="94.5" Height="66.15" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text3" Left="103.95" Top="28.35" Width="519.75" Height="66.15" Border.Lines="All" Text="Наименование ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text4" Left="623.7" Top="28.35" Width="198.45" Height="66.15" Border.Lines="All" Text="Значение коэффициента" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text16" Left="9.45" Top="94.5" Width="94.5" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text17" Left="103.95" Top="94.5" Width="519.75" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text18" Left="623.7" Top="94.5" Width="198.45" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-        <TextObject Name="Text24" Left="9.45" Top="9.45" Width="1030.05" Height="18.9" Text="1. Значения коэффициентов" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text24" Left="9.45" Top="9.45" Width="1030.05" Height="18.9" Text="1. Значения коэффициентов (Линейная)" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <DataBand Name="BandQuantitativeFactors" Top="422.35" Width="1047.06" Height="47.25" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+    <DataBand Name="BandExponentialCoefficients" Top="416.9" Width="1047.06" Height="47.25" CanShrink="true">
+      <TextObject Name="Text59" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[ExponentialCoefficients.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text60" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[ExponentialCoefficients.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text61" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[ExponentialCoefficients.Coefficient]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader4" Top="308.95" Width="1047.06" Height="103.95" CanShrink="true">
+        <TextObject Name="Text52" Left="9.45" Top="28.35" Width="94.5" Height="56.7" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text53" Left="103.95" Top="28.35" Width="519.75" Height="56.7" Border.Lines="All" Text="Наименование ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text54" Left="623.7" Top="28.35" Width="198.45" Height="56.7" Border.Lines="All" Text="Значение коэффициента" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text55" Left="9.45" Top="85.05" Width="94.5" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text56" Left="103.95" Top="85.05" Width="519.75" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text57" Left="623.7" Top="85.05" Width="198.45" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text58" Left="9.45" Top="9.45" Width="1030.05" Height="18.9" Text="1. Значения коэффициентов (Экспоненциальная)" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      </DataHeaderBand>
+    </DataBand>
+    <DataBand Name="BandMultiplicativeCoefficients" Top="576.1" Width="1047.06" Height="47.25">
+      <TextObject Name="Text69" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[MultiplicativeCoefficients.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text70" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[MultiplicativeCoefficients.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text71" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[MultiplicativeCoefficients.Coefficient]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader5" Top="468.15" Width="1047.06" Height="103.95">
+        <TextObject Name="Text62" Left="9.45" Top="28.35" Width="94.5" Height="56.7" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text63" Left="103.95" Top="28.35" Width="519.75" Height="56.7" Border.Lines="All" Text="Наименование ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text64" Left="623.7" Top="28.35" Width="198.45" Height="56.7" Border.Lines="All" Text="Значение коэффициента" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text65" Left="9.45" Top="85.05" Width="94.5" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text66" Left="103.95" Top="85.05" Width="519.75" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text67" Left="623.7" Top="85.05" Width="198.45" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text68" Left="9.45" Top="9.45" Width="1030.05" Height="18.9" Text="1. Значения коэффициентов (Мультипликативная)" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      </DataHeaderBand>
+    </DataBand>
+    <DataBand Name="BandQuantitativeFactors" Top="763.65" Width="1047.06" Height="47.25" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
       <TextObject Name="Text34" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[QuantitativeFactors.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text35" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[QuantitativeFactors.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text36" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[QuantitativeFactors.MinValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text37" Left="822.15" Width="198.45" Height="47.25" Border.Lines="All" Text="[QuantitativeFactors.MaxValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader2" Top="286.85" Width="1047.06" Height="132.3">
+      <DataHeaderBand Name="DataHeader2" Top="627.35" Width="1047.06" Height="132.3">
         <TextObject Name="Text25" Left="9.45" Top="47.25" Width="94.5" Height="66.15" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text26" Left="103.95" Top="47.25" Width="519.75" Height="66.15" Border.Lines="All" Text="Наименование ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text27" Left="623.7" Top="47.25" Width="198.45" Height="66.15" Border.Lines="All" Text="Минимальное значение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -113,12 +142,12 @@
         <TextObject Name="Text33" Left="822.15" Top="113.4" Width="198.45" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <DataBand Name="BandQualityFactors" Top="608.3" Width="1047.06" Height="47.25" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+    <DataBand Name="BandQualityFactors" Top="951.2" Width="1047.06" Height="47.25" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
       <TextObject Name="Text47" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[QualityFactors.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text48" Left="103.95" Width="519.75" Height="47.25" Border.Lines="All" Text="[QualityFactors.Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text49" Left="623.7" Width="198.45" Height="47.25" Border.Lines="All" Text="[QualityFactors.Value]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text50" Left="822.15" Width="198.45" Height="47.25" Border.Lines="All" Text="[QualityFactors.Metka]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader3" Top="472.8" Width="1047.06" Height="132.3">
+      <DataHeaderBand Name="DataHeader3" Top="814.9" Width="1047.06" Height="132.3">
         <TextObject Name="Text38" Left="9.45" Top="47.25" Width="94.5" Height="66.15" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text39" Left="103.95" Top="47.25" Width="519.75" Height="66.15" Border.Lines="All" Text="Наименование ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text40" Left="623.7" Top="47.25" Width="198.45" Height="66.15" Border.Lines="All" Text="Значение ценообразующего фактора" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -130,6 +159,6 @@
         <TextObject Name="Text46" Left="822.15" Top="113.4" Width="198.45" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="658.75" Width="1047.06" Height="9.45"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="1002.45" Width="1047.06" Height="9.45"/>
   </ReportPage>
 </Report>

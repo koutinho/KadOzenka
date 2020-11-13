@@ -48,6 +48,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
+using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
 using ObjectModel.Directory.Core.LongProcess;
@@ -353,7 +354,7 @@ namespace KadOzenka.BlFrontEnd
                 var trainingInputParameters = new GeneralModelingInputParameters
                 {
                     ModelId = 46847140,
-                    ModelType = ModelType.Linear
+                    ModelType = KoAlgoritmType.Line
                 };
                 var inputRequest = new ModelingInputParameters
                 {

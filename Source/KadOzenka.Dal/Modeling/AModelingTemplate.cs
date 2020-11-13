@@ -17,13 +17,15 @@ namespace KadOzenka.Dal.Modeling
     {
         private static HttpClient _httpClient;
         protected ModelingService ModelingService { get; set; }
+        protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
         protected ILogger Logger { get; set; }
 
 
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
-            ModelingService = new ModelingService(new DictionaryService());
+            ModelingService = new ModelingService();
+            ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
             Logger = logger;
         }
@@ -87,7 +89,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected virtual void SendFailNotification(OMQueue processQueue, Exception exception, long errorId)
         {
-            var message = $"Операция завершена с ошибкой: {exception.Message}.\nПодробнее в списке процессов.\nЖурнал: {errorId}";
+            var message = $"Операция завершена с ошибкой.\n{exception.Message}\n\nПодробнее в списке процессов.\nЖурнал: {errorId}";
             NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 

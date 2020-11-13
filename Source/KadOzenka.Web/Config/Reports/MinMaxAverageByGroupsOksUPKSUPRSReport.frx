@@ -167,13 +167,13 @@ namespace FastReport
           <TableCell Name="Cell21" Border.Lines="All" Text="[Purpose]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
           <TableCell Name="Cell25"/>
         </TableRow>
-        <TableRow Name="Row4">
+        <TableRow Name="Row4" AutoSize="true">
           <TableCell Name="Cell17"/>
           <TableCell Name="Cell18"/>
           <TableCell Name="Cell22" Border.Lines="All" Text="УПКС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell26" Border.Lines="All" Text="УПРС, руб./кв.м" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row5">
+        <TableRow Name="Row5" AutoSize="true">
           <TableCell Name="Cell27" Border.Lines="All" Text="[GroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell28" Border.Lines="All" Text="[CalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell29" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>

@@ -7,24 +7,34 @@ namespace KadOzenka.Web.Models.Modeling
 	{
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }
+		public long? MarketObjectId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
-        public bool IsExcluded { get; set; }
+        public decimal? ModelingPrice { get; set; }
+        public decimal? DeviationFromPredictablePrice { get; set; }
+        public decimal? Percent { get; set; }
+		public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
+        public bool IsForControl { get; set; }
         public bool IsDirty { get; set; }
         public List<CoefficientForObject> Coefficients { get; set; }
 
 
         public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
         {
-            return new ModelMarketObjectRelationModel
+	        return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
+				MarketObjectId = entity.MarketObjectId,
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
+				ModelingPrice = entity.ModelingPrice,
+				DeviationFromPredictablePrice = entity.DeviationFromPredictablePrice,
+				Percent = entity.Percent,
                 IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
+                IsForControl = entity.IsForControl,
                 Coefficients = entity.Coefficients
             };
 		}
@@ -34,9 +44,9 @@ namespace KadOzenka.Web.Models.Modeling
 			return new ModelMarketObjectRelationDto
 			{
 				Id = model.Id,
-				CadastralNumber = model.CadastralNumber,
-				Price = model.Price,
-				IsExcluded = model.IsExcluded
+				IsExcluded = model.IsExcluded,
+				IsForTraining = model.IsForTraining,
+				IsForControl = model.IsForControl
 			};
 		}
 	}

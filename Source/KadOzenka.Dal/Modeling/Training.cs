@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Ko;
 using ObjectModel.KO;
-using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
 
@@ -18,20 +17,23 @@ namespace KadOzenka.Dal.Modeling
 {
     public class Training : AModelingTemplate
     {
+	    public DictionaryService DictionaryService { get; set; }
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
-        private OMModel Model { get; }
-        private OMTour Tour { get; }
-        private List<OMModelToMarketObjects> MarketObjectsForTraining { get; }
-        protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{Model.Name}'";
+        private OMModel GeneralModel { get; }
+        private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
+        private List<ModelAttributeRelationDto> ModelAttributes { get; set; }
+        protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
+        private string AdditionalMessage { get; set; }
 
-        public Training(string inputParametersXml, OMQueue processQueue, ILogger logger)
-            : base(processQueue, logger)
+        public Training(string inputParametersXml, OMQueue processQueue)
+            : base(processQueue, Log.ForContext<Training>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
-            Tour = ModelingService.GetModelTour(Model.GroupId);
+            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
+            ModelAttributes = new List<ModelAttributeRelationDto>();
+            DictionaryService = new DictionaryService();
         }
 
 
@@ -40,15 +42,14 @@ namespace KadOzenka.Dal.Modeling
             var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
-                //TODO CIPJSKO-526 заменить URL после правок сервиса моделирования
-                case ModelType.All:
-		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
-                case ModelType.Linear:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{Model.InternalName}";
-                case ModelType.Exponential:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{Model.InternalName}";
-                case ModelType.Multiplicative:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{Model.InternalName}";
+	            case KoAlgoritmType.None:
+		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingAllTypesUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Line:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Exp:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{GeneralModel.InternalName}";
+                case KoAlgoritmType.Multi:
+                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }
@@ -56,99 +57,22 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void PrepareData()
         {
-            AddLog($"Начата работа с моделью '{Model.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
+            AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            var marketObjects = GetMarketObjects();
-            AddLog($"Найдено {marketObjects.Count} объекта.");
+            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
+            AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
+            Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
-            ModelingService.DestroyModelMarketObjects(Model.Id);
-            AddLog("Удалены предыдущие данные.");
-
-            var modelAttributes = ModelingService.GetModelFactors(Model.Id);
-            AddLog($"Найдено {modelAttributes?.Count} атрибутов для модели.");
-            var groupedModelAttributes = modelAttributes.GroupBy(x => x.RegisterId, (k, g) => new ModelingService.GroupedModelAttributes
-            {
-	            RegisterId = (int)k,
-	            Attributes = g.ToList()
-            }).ToList();
-            var marketObjectAttributes = groupedModelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId())
-	            .SelectMany(x => x.Attributes).ToList();
-            AddLog($"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.");
-            var tourFactorsAttributes = groupedModelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
-            AddLog($"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.");
-
-            var dictionaries = ModelingService.GetDictionaries(modelAttributes);
-            AddLog($"Найдено {dictionaries?.Count} словарей для атрибутов  модели.");
-
-            var marketObjectToUnitsRelation = GetMarketObjectToUnitsRelation(marketObjects, tourFactorsAttributes.Count != 0);
-            AddLog($"Получено {marketObjectToUnitsRelation.Sum(x => x.UnitIds?.Count)} Единиц оценки для всех объектов.");
-
-            var i = 0;
-            AddLog("Обработано объектов: ");
-            var packageSize = 500;
-            var packageIndex = 0;
-            for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
-            {
-	            var marketObjectToUnitsPage = marketObjectToUnitsRelation.Skip(packageIndex * packageSize).Take(packageSize).ToList();
-                if(marketObjectToUnitsPage.Count == 0)
-                    break;
-
-                var marketObjectIds = marketObjectToUnitsPage.Select(x => x.MarketObject.Id).ToList();
-                var unitIds = marketObjectToUnitsPage.SelectMany(x => x.UnitIds).ToList();
-
-                var marketObjectCoefficients =
-	                ModelingService.GetCoefficientsFromMarketObject(marketObjectIds, dictionaries,
-		                marketObjectAttributes);
-                var unitsCoefficients =
-	                ModelingService.GetCoefficientsFromTourFactors(unitIds, dictionaries, tourFactorsAttributes);
-
-                marketObjectToUnitsPage.ForEach(marketObjectToUnitRelation =>
-                {
-	                var marketObject = marketObjectToUnitRelation.MarketObject;
-	                var units = marketObjectToUnitRelation.UnitIds;
-
-                    var isForTraining = i < marketObjects.Count / 2.0;
-	                i++;
-	                var modelToMarketObjectRelation = new OMModelToMarketObjects
-	                {
-		                ModelId = Model.Id,
-		                CadastralNumber = marketObject.CadastralNumber,
-		                Price = marketObject.PricePerMeter,
-		                IsForTraining = isForTraining
-	                };
-
-	                var currentMarketObjectCoefficients = marketObjectCoefficients.TryGetValue(marketObject.Id, out var coefficients)
-		                ? coefficients
-                        : new List<CoefficientForObject>();
-
-                    var currentUnitsCoefficients = unitsCoefficients.Where(x => units.Contains(x.Key)).SelectMany(x => x.Value).ToList();
-
-                    currentMarketObjectCoefficients.AddRange(currentUnitsCoefficients);
-
-	                modelToMarketObjectRelation.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
-	                modelToMarketObjectRelation.Save();
-
-                    //сразу сохраняем объект в список, чтобы не выкачивать их при обработке и отправке запроса на сервер
-                    if(isForTraining)
-	                    MarketObjectsForTraining.Add(modelToMarketObjectRelation);
-
-                    if (i % 100 == 0)
-		                AddLog($"{i}, ", false);
-                });
-
-                packageIndex++;
-            }
-	       
-	        AddLog($"{i}.", false);
+            MarketObjectsForTraining = ModelingService.GetIncludedModelObjects(GeneralModel.Id, true);
+            AddLog($"Найдено {MarketObjectsForTraining.Count} объекта для обучения.");
         }
 
         protected override object GetRequestForService()
         {
             RequestForService = new TrainingRequest();
 
-            var allAttributes = ModelingService.GetModelFactors(InputParameters.ModelId);
-            RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
-            RequestForService.AttributeIds.AddRange(allAttributes.Select(x => x.AttributeId));
+            RequestForService.AttributeNames.AddRange(ModelAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
+            RequestForService.AttributeIds.AddRange(ModelAttributes.Select(x => x.AttributeId));
 
             MarketObjectsForTraining.ForEach(modelObject =>
             {
@@ -157,7 +81,7 @@ namespace KadOzenka.Dal.Modeling
                     return;
 
                 var coefficients = new List<decimal?>();
-                allAttributes.ForEach(modelAttribute =>
+                ModelAttributes.ForEach(modelAttribute =>
                 {
 	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
 		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
@@ -167,165 +91,104 @@ namespace KadOzenka.Dal.Modeling
                 //TODO эта проверка будет в сервисе
                 if (coefficients.All(x => x != null))
                 {
-                    RequestForService.Coefficients.Add(coefficients);
-                    RequestForService.Prices.Add(new List<decimal>{modelObject.Price});
+	                if (modelObject.IsForTraining.GetValueOrDefault())
+	                {
+		                RequestForService.CoefficientsForTraining.Add(coefficients);
+		                RequestForService.PricesForTraining.Add(new List<decimal> { modelObject.Price });
+                    }
+	                if (modelObject.IsForControl.GetValueOrDefault())
+	                {
+		                RequestForService.CoefficientsForControl.Add(coefficients);
+		                RequestForService.PricesForControl.Add(new List<decimal> { modelObject.Price });
+                    }
+
                     RequestForService.CadastralNumbers.Add(modelObject.CadastralNumber);
                 }
             });
 
-            if (RequestForService.Coefficients.Count < 2)
-                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые)");
+            if (RequestForService.CoefficientsForControl.Count < 2)
+                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в контрольной выборке.");
+            if (RequestForService.CoefficientsForTraining.Count < 2)
+	            throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в обучающей выборке.");
 
             return RequestForService;
         }
 
-        //TODO CIPJSKO-526 добавить обработку по всем
         protected override void ProcessServiceResponse(GeneralResponse generalResponse)
         {
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(generalResponse.Data.ToString());
-            PreprocessTrainingResult(trainingResult);
+	        var trainingResults = new List<TrainingResponse>();
+
+	        var data = generalResponse.Data.ToString();
+
+            Logger.ForContext("TrainingResultFromService", data).Debug("Результаты обучения от сервиса");
+            if (InputParameters.ModelType == KoAlgoritmType.None)
+	        {
+		        trainingResults = JsonConvert.DeserializeObject<List<TrainingResponse>>(data);
+            }
+	        else
+	        {
+		        var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(data);
+		        trainingResults.Add(trainingResult);
+            }
 
             ResetPredictedPrice();
+            AddLog("Закончен сброс спрогнозированной цены.");
 
-            SaveCoefficients(trainingResult.CoefficientsForAttributes);
-            AddLog("Закончено создание меток и сохранение коэффициентов.");
+            var returnedResultType = new List<KoAlgoritmType>();
+            trainingResults.ForEach(trainingResult =>
+            {
+	            if (trainingResult == null)
+	            {
+		            var returnedTypesStr = string.Join(", ", returnedResultType.Select(x => x.GetEnumDescription()).ToArray());
 
-            var jsonTrainingResult = JsonConvert.SerializeObject(trainingResult);
-            UpdateModelTrainingResult(jsonTrainingResult);
-            AddLog("Сохранен результат обучения");
+                    AdditionalMessage = $"Сервис моделирования вернул результаты обучения для алгоритмов: {returnedTypesStr}";
+		            Logger.Error(AdditionalMessage);
+                    return;
+                }
+
+	            PreprocessTrainingResult(trainingResult);
+
+	            var trainingType = GetTrainingType(trainingResult.Type);
+	            returnedResultType.Add(trainingType);
+
+                SaveCoefficients(trainingResult.CoefficientsForAttributes, trainingType);
+	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult));
+
+	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
+            });
+
+            try
+            {
+	            if (InputParameters.ModelType == KoAlgoritmType.None)
+	            {
+		            var array = (KoAlgoritmType[])System.Enum.GetValues(typeof(KoAlgoritmType));
+		            var list = new List<KoAlgoritmType>(array);
+		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
+		            notReturnedTypes.ForEach(ResetTrainingResults);
+                }
+            }
+            catch (Exception)
+            {
+	            Logger.Error("Ошибка при сбросе результатов обучения");
+            }
         }
 
         protected override void RollBackResult()
         {
-            UpdateModelTrainingResult(null);
+	        ResetTrainingResults(InputParameters.ModelType);
+        }
+
+        protected override void SendSuccessNotification(OMQueue processQueue)
+        {
+	        var message = string.IsNullOrWhiteSpace(AdditionalMessage) 
+		        ? "Операция успешно завершена."
+		        : $"Операция частично завершена.<br>{AdditionalMessage}";
+
+	        NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
 
         #region Support Methods
-
-        private List<MarketObjectPure> GetMarketObjects()
-        {
-            var groupToMarketSegmentRelation = GetGroupToMarketSegmentRelation();
-            AddLog($"Найден тип: {groupToMarketSegmentRelation.MarketSegment_Code.GetEnumDescription()}");
-
-            //TODO ждем выполнения CIPJSKO-307
-            //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
-
-            return OMCoreObject.Where(x =>
-					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-					x.CadastralNumber != null &&
-					x.ProcessType_Code != ProcessStep.Excluded
-					//x.Id == 17812712
-					)
-                //TODO ждем выполнения CIPJSKO-307
-                //.And(territoryCondition)
-                .Select(x => new
-                {
-	                x.CadastralNumber,
-	                x.PricePerMeter
-                })
-				////TODO для тестирования
-				//.SetPackageIndex(0)
-				//.SetPackageSize(2000)
-                .Execute()
-                .GroupBy(x => new
-                {
-                    x.CadastralNumber,
-                    x.PricePerMeter
-                })
-                .Select(x => new MarketObjectPure
-                {
-                    Id = x.Max(y => y.Id),
-                    CadastralNumber = x.Key.CadastralNumber,
-                    PricePerMeter = x.Key.PricePerMeter.GetValueOrDefault()
-                }).ToList();
-        }
-
-        private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
-        {
-            var relation = OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == Model.GroupId)
-                .Select(x => x.MarketSegment_Code)
-                .Select(x => x.TerritoryType_Code)
-                .ExecuteFirstOrDefault();
-
-            if(relation == null)
-                throw new Exception($"Не найдено соотношение группы и сегмента. Id группы: '{Model.GroupId}'");
-
-            return relation;
-        }
-
-        private List<MarketObjectToUnitsRelation> GetMarketObjectToUnitsRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
-        {
-	        var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).ToList();
-	        if (cadastralNumbers.Count == 0)
-		        return new List<MarketObjectToUnitsRelation>();
-
-            var unitsDictionary = new Dictionary<string, List<long>>();
-            if (downloadUnits)
-	        {
-		        var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
-			        .Select(x => new
-			        {
-				        x.CadastralNumber,
-				        x.PropertyType_Code,
-				        x.BuildingCadastralNumber
-			        })
-			        .Execute();
-
-		        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-		        if (placementUnits.Count > 0)
-		        {
-			        ProcessPlacemenUnits(placementUnits, units);
-		        }
-
-		        unitsDictionary = units.GroupBy(x => x.CadastralNumber)
-			        .ToDictionary(k => k.Key, v => v.Select(x => x.Id).ToList());
-            }
-
-            var marketObjectToUnitsRelation = new List<MarketObjectToUnitsRelation>();
-            marketObjects.ForEach(x =>
-            {
-	            var marketObjectUnits = unitsDictionary.TryGetValue(x.CadastralNumber, out var u) ? u : new List<long>();
-
-	            marketObjectToUnitsRelation.Add(new MarketObjectToUnitsRelation
-	            {
-                    MarketObject = x,
-                    UnitIds = marketObjectUnits
-	            });
-            });
-
-            return marketObjectToUnitsRelation;
-        }
-
-        private void ProcessPlacemenUnits(List<OMUnit> placementUnits, List<OMUnit> units)
-        {
-	        AddLog($"Найдено {placementUnits.Count} Единиц оценки с типом '{PropertyTypes.Pllacement.GetEnumDescription()}'");
-
-	        var buildingCadastralNumbers = placementUnits
-		        .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
-		        .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
-	        var buildingUnits = buildingCadastralNumbers.Count > 0
-		        ? OMUnit.Where(x =>
-				        buildingCadastralNumbers.Contains(x.CadastralNumber) &&
-				        x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
-			        .Select(x => x.CadastralNumber)
-			        .Execute()
-		        : new List<OMUnit>();
-
-	        placementUnits.ForEach(placementUnit =>
-	        {
-		        if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
-		        {
-			        var currentBuildingUnits = buildingUnits.Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
-			        currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
-			        units.AddRange(buildingUnits);
-			        AddLog($"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'");
-		        }
-
-		        units.Remove(placementUnit);
-	        });
-        }
 
         /// <summary>
         /// Заменяем имена атрибутов на их Id
@@ -349,7 +212,7 @@ namespace KadOzenka.Dal.Modeling
 
         private void ResetPredictedPrice()
         {
-            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == Model.Id && x.PriceFromModel != null)
+            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == GeneralModel.Id && x.PriceFromModel != null)
                 .SelectAll().Execute();
 
             modelObjects.ForEach(x =>
@@ -359,87 +222,72 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        private void SaveCoefficients(Dictionary<string, decimal> coefficients)
+        private void SaveCoefficients(Dictionary<string, decimal> coefficients, KoAlgoritmType type)
         {
-	        var modelFactors = OMModelFactor.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
+	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
 
 	        foreach (var coefficient in coefficients)
-	        {
-		        var modelFactor = modelFactors.FirstOrDefault(x => x.FactorId == coefficient.Key.ParseToLong());
-		        if (modelFactor == null)
-			        continue;
-
-		        modelFactor.Weight = coefficient.Value;
-		        modelFactor.Save();
-		        AddLog($"Сохранение коэффициента для фактора '{coefficient.Key}'");
-
-                CreateMarkCatalog(modelFactor.FactorId);
-                AddLog($"Сохранение меток для фактора '{coefficient.Key}'");
-            }
-        }
-
-        public void CreateMarkCatalog(long? factorId)
-        {
-            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == Model.GroupId && x.FactorId == factorId).SelectAll().Execute();
-            existedMarks.ForEach(x => x.Destroy());
-
-            MarketObjectsForTraining.ForEach(modelObject =>
             {
-                var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId && !string.IsNullOrWhiteSpace(x.Value));
-                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
-                    return;
+	            var attributeId = coefficient.Key.ParseToLong();
+	            var factor = factors.FirstOrDefault(x => x.FactorId == attributeId);
+	            if (factor == null)
+		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-                var value = objectCoefficient.Value;
-                var metka = objectCoefficient.Coefficient;
+	            if (factor.Weight != coefficient.Value)
+	            {
+		            factor.Weight = coefficient.Value;
+		            factor.Save();
+	            }
 
-                new OMMarkCatalog
-                {
-                    GroupId = Model.GroupId,
-                    FactorId = factorId,
-                    ValueFactor = value,
-                    MetkaFactor = metka
-                }.Save();
-            });
-        }
-
-        private void UpdateModelTrainingResult(string trainingResult)
-        {
-            switch (InputParameters.ModelType)
-            {
-                case ModelType.Linear:
-                    Model.LinearTrainingResult = trainingResult;
-                    break;
-                case ModelType.Exponential:
-                    Model.ExponentialTrainingResult = trainingResult;
-                    break;
-                case ModelType.Multiplicative:
-                    Model.MultiplicativeTrainingResult = trainingResult;
-                    break;
-                //TODO CIPJSKO-526
-                case ModelType.All:
-	                Model.LinearTrainingResult = trainingResult;
-                    break;
-                default:
-                    throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
-            }
-
-            Model.Save();
-        }
-
-        #endregion
-
-        #region Entities
-
-        private class MarketObjectToUnitsRelation
-        {
-	        public MarketObjectPure MarketObject { get; set; }
-	        public List<long> UnitIds { get; set; }
-
-	        public MarketObjectToUnitsRelation()
-	        {
-		        UnitIds = new List<long>();
+                AddLog($"Сохранение коэффициента '{coefficient.Value}' для фактора '{attributeId}' модели '{type.GetEnumDescription()}'");
 	        }
+        }
+
+        private KoAlgoritmType GetTrainingType(string type)
+        {
+	        switch (type)
+	        {
+		        case "line":
+			        return KoAlgoritmType.Line;
+		        case "exponential":
+			        return KoAlgoritmType.Exp;
+		        case "multiplicative":
+			        return KoAlgoritmType.Multi;
+		        default:
+			        throw new Exception("Невозможно конвертировать тип модели, присланной из сервиса");
+	        }
+        }
+
+        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					GeneralModel.ExponentialTrainingResult = trainingResult;
+					break;
+				case KoAlgoritmType.Line:
+					GeneralModel.LinearTrainingResult = trainingResult;
+                    break;
+				case KoAlgoritmType.Multi:
+					GeneralModel.MultiplicativeTrainingResult = trainingResult;
+                    break;
+                case KoAlgoritmType.None:
+	                throw new Exception("Невозможно обновить результаты обучения модели, т.к. не указан её тип");
+			}
+
+			GeneralModel.Save();
+		}
+
+        private void ResetTrainingResults(KoAlgoritmType type)
+        {
+	        ModelingService.ResetTrainingResults(GeneralModel, type);
+
+	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
+	        factors.ForEach(x =>
+	        {
+		        x.Weight = 0;
+		        x.Save();
+	        });
         }
 
         #endregion

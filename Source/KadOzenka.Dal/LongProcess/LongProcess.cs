@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.LongProcess
 			return true;
 		}
 
-        protected void AddLog(OMQueue processQueue, string message, bool withNewLine = true)
+        protected void AddLog(OMQueue processQueue, string message, bool withNewLine = true, ILogger logger = null)
         {
             var previousLog = string.IsNullOrWhiteSpace(processQueue.Log) ? string.Empty : processQueue.Log;
 
@@ -42,6 +42,15 @@ namespace KadOzenka.Dal.LongProcess
 
             processQueue.Log = newLog;
             processQueue.Save();
+
+            if (logger == null)
+            {
+	            _log.Debug(message);
+            }
+            else
+            {
+				logger.Debug(message);
+			}
         }
 
         protected void SendMessage(OMQueue processQueue, string message, string subject)
