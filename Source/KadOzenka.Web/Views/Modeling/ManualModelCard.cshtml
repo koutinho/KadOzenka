@@ -127,8 +127,17 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    $(document).ready(function () {
+    // Установка стиля при загрузке меток из файла
+    var mutConfig = { childList: true, subtree: true };
+    var mutationFunction = function (mutList, observer) {
+        var targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
 
+
+    $(document).ready(function () {
         $('#toolbar').kendoToolBar({
             items: [
                 {
@@ -295,6 +304,12 @@
                 }
             }
         }).data('kendoUpload');
+
+        var mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
 
         $("#loadMarksCatalogFilesButton").kendoButton({
             click: uploadMarksCatalog
