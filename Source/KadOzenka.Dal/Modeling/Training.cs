@@ -151,8 +151,8 @@ namespace KadOzenka.Dal.Modeling
 	            var trainingType = GetTrainingType(trainingResult.Type);
 	            returnedResultType.Add(trainingType);
 
-                SaveCoefficients(trainingResult.CoefficientsForAttributes, trainingType);
-	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult));
+                SaveCoefficients(trainingResult.Coefficients?.CoefficientsForAttributes, trainingType);
+	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult), trainingResult.Coefficients?.A0);
 
 	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
             });
@@ -196,8 +196,11 @@ namespace KadOzenka.Dal.Modeling
         /// <param name="result"></param>
         private void PreprocessTrainingResult(TrainingResponse result)
         {
+	        if (result.Coefficients?.CoefficientsForAttributes == null)
+		        return;
+
             var newCoefficients = new Dictionary<string, decimal>();
-            var oldCoefficients = result.CoefficientsForAttributes;
+            var oldCoefficients = result.Coefficients.CoefficientsForAttributes;
 
             for (var i = 0; i < oldCoefficients.Count; i++)
             {
@@ -207,7 +210,7 @@ namespace KadOzenka.Dal.Modeling
                 newCoefficients[attributeId.ToString()] = entry.Value;
             }
 
-            result.CoefficientsForAttributes = newCoefficients;
+            result.Coefficients.CoefficientsForAttributes = newCoefficients;
         }
 
         private void ResetPredictedPrice()
@@ -258,18 +261,21 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult)
+        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult, decimal? a0)
 		{
 			switch (type)
 			{
 				case KoAlgoritmType.Exp:
 					GeneralModel.ExponentialTrainingResult = trainingResult;
+					GeneralModel.A0ForExponential = a0;
 					break;
 				case KoAlgoritmType.Line:
 					GeneralModel.LinearTrainingResult = trainingResult;
+					GeneralModel.A0 = a0;
                     break;
 				case KoAlgoritmType.Multi:
 					GeneralModel.MultiplicativeTrainingResult = trainingResult;
+					GeneralModel.A0ForMultiplicative = a0;
                     break;
                 case KoAlgoritmType.None:
 	                throw new Exception("Невозможно обновить результаты обучения модели, т.к. не указан её тип");
