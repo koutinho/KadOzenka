@@ -539,9 +539,24 @@ namespace ObjectModel.KO
         }
 
     }
+
     public partial class OMModel
     {
 	    public string InternalName => $"model_{Id}";
+
+	    public OMModel Copy()
+	    {
+            return new OMModel
+            {
+                AlgoritmType_Code = AlgoritmType_Code,
+                Formula = Formula,
+                Description = Description,
+                Name = Name,
+                GroupId = GroupId,
+                IsOksObjectType = IsOksObjectType,
+                Type_Code = Type_Code
+            };
+	    }
 
         public string GetFormulaFull(bool upks)
         {
@@ -555,7 +570,7 @@ namespace ObjectModel.KO
             if (ParentGroup == null)
                 ParentGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == GroupId).SelectAll().ExecuteFirstOrDefault();
             if (ModelFactor.Count == 0)
-                ModelFactor = OMModelFactor.Where(x => x.ModelId == this.Id).SelectAll().Execute();
+                ModelFactor = OMModelFactor.Where(x => x.ModelId == this.Id && x.AlgorithmType_Code==this.AlgoritmType_Code).SelectAll().Execute();
 
             if (ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || this.ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
@@ -634,15 +649,15 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + A0.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + A0ForExponential.ToString() + D_string + ")" + De_string;
                         else
-                            res = "exp(" + A0.ToString() + D_string + ")";
+                            res = "exp(" + A0ForExponential.ToString() + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
                         res = A0.ToString() + D_string;
                         break;
                     case KoAlgoritmType.Multi:
-                        res = GetFormulaPart(A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
+                        res = GetFormulaPart(A0ForMultiplicative.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
                         break;
                     default:
                         res = string.Empty;
@@ -678,8 +693,10 @@ namespace ObjectModel.KO
             }
             return (upks ? "УПКС=" : string.Empty) + value + res;
         }
-        private string GetFormulaPart(string val, string znak, double empty)
+        private string GetFormulaPart(string valInput, string znak, double empty)
         {
+	        var val = string.IsNullOrWhiteSpace(valInput) ? null : valInput;
+
             string res = Convert.ToDouble(val).ToString() + " " + znak + " ";
             double rval = Convert.ToDouble(val);
             if (rval == empty)
@@ -998,7 +1015,7 @@ namespace ObjectModel.KO
         }
 
         private static void GetAvgValue(ref ALLStatOKS avgKK, ref ALLStatOKS avgKR, ref ALLStatOKS avgKS, long tourId,
-            string kb, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks,
+            string kb, string kk, PropertyTypes type, List<long> calcChildGroups, DateTime estimatedate, out decimal upks,
             out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             try
@@ -1021,16 +1038,21 @@ namespace ObjectModel.KO
                 foreach (long calcChildGroup in calcChildGroups)
                 {
                     List<OMUnit> unitsKB = OMUnit.Where(x =>
-                        x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup &&
+                        x.TourId == tourId && x.GroupId == calcChildGroup &&
                         x.CadastralNumber == kb && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
                     if (unitsKB.Count > 0)
                     {
                         prFindInBuilding = true;
+                        DateTime dtmax = DateTime.MinValue;
                         foreach (OMUnit unit in unitsKB)
                         {
                             if (unit.Upks != null)
                             {
-                                upks = unit.Upks.Value;
+                                if (dtmax < unit.CreationDate.Value && unit.CreationDate.Value.Date <= estimatedate)
+                                {
+                                    upks = unit.Upks.Value;
+                                    dtmax = unit.CreationDate.Value;
+                                }
                             }
                         }
                     }
@@ -1053,7 +1075,7 @@ namespace ObjectModel.KO
                             List<OMUnit> unitsKK = OMUnit.Where(x =>
                                     x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
                                     x.GroupId == calcChildGroup && x.CadastralBlock == kk &&
-                                    x.PropertyType_Code == type)
+                                    x.PropertyType_Code == PropertyTypes.Building)
                                 .SelectAll().Execute();
                             if (unitsKK.Count > 0)
                             {
@@ -1085,7 +1107,7 @@ namespace ObjectModel.KO
 
                 #region поиск по району
 
-                if (!prFindInCadastralBlock)
+                if (!prFindInBuilding && !prFindInCadastralBlock)
                 {
                     if (!avgKR.Get(kr, PropertyTypes.Pllacement, out upks, out parentCalcObject, out parentCalcType))
                     {
@@ -1094,7 +1116,7 @@ namespace ObjectModel.KO
                         {
                             List<OMUnit> unitsKR = OMUnit.Where(x =>
                                 x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
-                                x.GroupId == calcChildGroup && x.PropertyType_Code == type &&
+                                x.GroupId == calcChildGroup && x.PropertyType_Code == PropertyTypes.Building &&
                                 x.CadastralBlock.Contains(krf)).SelectAll().Execute();
                             if (unitsKR.Count > 0)
                             {
@@ -1139,7 +1161,7 @@ namespace ObjectModel.KO
                         {
                             List<OMUnit> unitsKS = OMUnit.Where(x =>
                                 x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial &&
-                                x.GroupId == calcChildGroup && x.PropertyType_Code == type).SelectAll().Execute();
+                                x.GroupId == calcChildGroup && x.PropertyType_Code == PropertyTypes.Building).SelectAll().Execute();
                             if (unitsKS.Count > 0)
                             {
                                 foreach (OMUnit unit in unitsKS)
@@ -1217,7 +1239,7 @@ namespace ObjectModel.KO
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     long? idsquarefactor = null;
                     long? idanalogfactor = null;
@@ -1534,7 +1556,7 @@ namespace ObjectModel.KO
 
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0 + D))) * De, 2, MidpointRounding.AwayFromZero);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0ForExponential + D))) * De, 2, MidpointRounding.AwayFromZero);
                                     decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
                                     if (!unit.isExplication)
                                     {
@@ -1617,7 +1639,7 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 * Dm), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2);
                                     decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
 
                                     if (!unit.isExplication)
@@ -1811,7 +1833,7 @@ namespace ObjectModel.KO
                                 {
                                     GetAvgValue(ref avgKK, ref avgKR, ref avgKS, tourgroup.TourId,
                                         unit.BuildingCadastralNumber, unit.CadastralBlock, PropertyTypes.Pllacement,
-                                        CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                        CalcParentGroup, unit.CreationDate.Value.Date, out upksz, out calc_obj, out calc_obj_code);
                                     flatKN.Add(unit.BuildingCadastralNumber, PropertyTypes.Pllacement, upksz, calc_obj,
                                         calc_obj_code);
                                 }
@@ -2486,7 +2508,7 @@ namespace ObjectModel.KO
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     foreach (OMModelFactor weight in model.ModelFactor)
                     {
@@ -2529,7 +2551,7 @@ namespace ObjectModel.KO
                     unit.CadastralCost = 0;
                     unit.Save();
 
-                    UpdateCorrectFactor(model, etobj, unit, groupFactors, ref res);
+                    UpdateCorrectFactor(model, etobj, unit, groupFactors, factorReestrId, ref res);
                     ok = true;
                 }
 
@@ -2563,14 +2585,12 @@ namespace ObjectModel.KO
             return res;
         }
 
-        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, ref List<CalcErrorItem> errors)
+        public void UpdateCorrectFactor(OMModel model, ObjectModel.KO.OMUnit etalon, ObjectModel.KO.OMUnit child, List<ObjectModel.KO.OMGroupFactor> koeff, int factorReestrId, ref List<CalcErrorItem> errors)
         {
-            int? factorReestrId = GetFactorReestrId(this);
-            if (model != null && factorReestrId != null)
+            if (model != null)
             {
-
                 List<CalcItem> FactorChildValues = new List<CalcItem>();
-                DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId.Value);
+                DataTable dataChild = RegisterStorage.GetAttributes((int)child.Id, factorReestrId);
                 if (dataChild != null)
                 {
                     foreach (DataRow row in dataChild.Rows)
@@ -2580,7 +2600,7 @@ namespace ObjectModel.KO
                 }
 
                 List<CalcItem> FactorEtalonValues = new List<CalcItem>();
-                DataTable dataEtalon = RegisterStorage.GetAttributes((int)etalon.Id, factorReestrId.Value);
+                DataTable dataEtalon = RegisterStorage.GetAttributes((int)etalon.Id, factorReestrId);
                 if (dataEtalon != null)
                 {
                     foreach (DataRow row in dataEtalon.Rows)
@@ -2918,7 +2938,7 @@ namespace ObjectModel.KO
             if (model != null)
             {
                 if (model.ModelFactor.Count == 0)
-                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
             }
 
             if (_parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || _parent_group.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
@@ -2998,15 +3018,15 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + model.A0.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")" + De_string;
                         else
-                            res = "exp(" + model.A0.ToString() + D_string + ")";
+                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
                         res = model.A0.ToString() + D_string;
                         break;
                     case KoAlgoritmType.Multi:
-                        res = GetFormulaPart(model.A0.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
+                        res = GetFormulaPart(model.A0ForMultiplicative.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
                         break;
                     default:
                         res = string.Empty;

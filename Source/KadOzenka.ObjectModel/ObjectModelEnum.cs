@@ -10741,6 +10741,38 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип модели (222)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 222)]
+    public enum KoModelType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Ручное вычисление (1)
+		/// </summary>
+		[Description("Ручное вычисление")]
+        [EnumCode("1")]
+        [ShortTitle("Ручное вычисление")]
+        Manual = 1,
+		/// <summary>
+		/// Автоматический расчет (2)
+		/// </summary>
+		[Description("Автоматический расчет")]
+        [EnumCode("2")]
+        [ShortTitle("Автоматический расчет")]
+        Automatic = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

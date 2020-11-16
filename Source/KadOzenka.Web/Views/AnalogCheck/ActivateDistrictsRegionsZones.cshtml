@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .startCheckingButton:hover {
+            background: #6fd0d0 !important;
+            color: #fff !important;
+            cursor: pointer;
+        }
+    </style>
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script>
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/ActivateDistrictsRegionsZones", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+            .withAutomaticReconnect()
+            .build();
+
+        connection.start().then(function () { connection.invoke('GetCurrentWidgetState'); }).catch(error => { console.error(error.message); });
+        connection.onreconnected(function () { connection.invoke('GetCurrentWidgetState'); });
+
+        connection.on('SetCurrentWidgetState', function (data) {
+            var state = JSON.parse(data);
+            switch (state.buttonState)
+            {
+                case 0: //Avaliable
+                    document.getElementById("startCheckingButton").style.background = "#fff";
+                    document.getElementById("startCheckingButton").style.color = "#6fd0d0";
+                    document.getElementById("startCheckingButton").style.pointerEvents = "auto";
+                    document.getElementById("startCheckingButton").innerHTML = "Присвоить&nbsp;округа,&nbsp;районы,&nbsp;зоны";
+                    break;
+                case 1: //Loading
+                    document.getElementById("startCheckingButton").style.background = "#6fd0d0";
+                    document.getElementById("startCheckingButton").style.color = "#fff";
+                    document.getElementById("startCheckingButton").style.pointerEvents = "none";
+                    document.getElementById("startCheckingButton").innerHTML = "Загрузка<div style=\"background-image:url('../MapIcons/preloaderWhite.svg');width:22px;height:22px;background-size:22px;margin-left:10px;display:flex;\"></div>";
+                    break;
+                case 2: //Locked
+                    document.getElementById("startCheckingButton").style.background = "#6fd0d0";
+                    document.getElementById("startCheckingButton").style.color = "#fff";
+                    document.getElementById("startCheckingButton").style.pointerEvents = "none";
+                    document.getElementById("startCheckingButton").innerHTML = "В процессе<div style=\"background-image:url('../MapIcons/preloaderWhite.svg');width:22px;height:22px;background-size:22px;margin-left:10px;display:flex;\"></div>";
+                    break;
+            }
+            document.getElementById("lastChechResults").innerHTML = state.checkHistory;
+            SetProgress(state.currentProgress);
+        });
+
+        connection.on('SetCurrentProgress', function (progress) { SetProgress(progress); });
+
+        document.addEventListener("DOMContentLoaded", function (event) {
+            document.getElementById("startCheckingButton").addEventListener("click", function () {
+                connection.invoke('InitializeDistrictsRegionsZonesCheck');
+            });
+        });
+
+        function SetProgress(progress) {
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressCounter').innerHTML = `${progress}&nbsp;%`;
+            if (progress >= 100) {
+                document.getElementById('progressBar').style.width = '0%';
+                document.getElementById('progressCounter').innerHTML = '0&nbsp;%';
+            }
+        };
+
+    </script>
+</head>
+<body>
+    <div style="width: 700px; height: 110px;">
+        <div style="display: flex; align-items: center; height: 70px;">
+            <div id="progressCounter" class="current-content" style="
+            width:80px;
+            font-size:18px;
+            text-align:center">0&nbsp;%</div>
+            <div style="
+            background-color:#f1f1f1;
+            width:calc(100% - 310px)">
+                <div id="progressBar" style="height:24px;width:0%;background:#6fd0d0"></div>
+            </div>
+            <div id="startCheckingButton" class="startCheckingButton" style="
+            display: flex;
+            align-items: center;
+            height: 30px;
+            background: #fff;
+            border: 2px solid #6fd0d0;
+            margin-left: 15px;
+            margin-right: 15px;
+            text-align: center;
+            line-height: 30px;
+            padding: 0px 10px;
+            font-size: 17px;
+            font-weight: bold;
+            width: 300px;
+            justify-content: center;
+            color: #6fd0d0;">
+                Присвоить&nbsp;округа,&nbsp;районы,&nbsp;зоны
+            </div>
+        </div>
+        <div id="lastChechResults" style="
+        margin-left:30px;
+        color:darkgray;
+        height: 40px;">
+            Присвоение округов, районов, зон ещё не было запущено
+        </div>
+    </div>
+</body>
+</html>

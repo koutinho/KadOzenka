@@ -14,11 +14,13 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
@@ -50,17 +52,16 @@ namespace KadOzenka.Web.Controllers
 		public GroupFactorService GroupFactorService { get; set; }
 
 		public TourController()
-        {
-            TourFactorService = new TourFactorService();
-            TourService = new TourService(TourFactorService);
-            GroupService = new GroupService();
-            GbuObjectService = new GbuObjectService();
-            TourComplianceImportService = new TourComplianceImportService();
-            GroupFactorService = new GroupFactorService();
-
+		{
+			TourFactorService = new TourFactorService();
+			TourService = new TourService(TourFactorService);
+			GroupService = new GroupService();
+			GbuObjectService = new GbuObjectService();
+			TourComplianceImportService = new TourComplianceImportService();
+			GroupFactorService = new GroupFactorService();
 		}
 
-        #region Карточка тура
+		#region Карточка тура
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
@@ -134,17 +135,10 @@ namespace KadOzenka.Web.Controllers
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
-        }
+            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+            groupModel.ModelId = model?.Id;
 
-        [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public ActionResult MarksGrid(long groupId, long factorId)
-        {
-            //TODO переделать на модель
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
-            return View();
+            return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }
 
         #endregion
@@ -649,57 +643,19 @@ namespace KadOzenka.Web.Controllers
 				.Select(x => new SelectListItem
 				{
 					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
+					Text = $"{GroupService.ParseGroupNumber(x.ParentId, x.Number)}. {x.GroupName}"
 				});
 
 			return Json(groups);
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetParentGroup(string type, long? id)
-		{
-			KoGroupAlgoritm groupAlgoritm;
-
-			switch (type)
-			{
-				case "OKS":
-					groupAlgoritm = KoGroupAlgoritm.MainOKS;
-					break;
-				case "Parcel":
-					groupAlgoritm = KoGroupAlgoritm.MainParcel;
-					break;
-				default:
-					throw new Exception("Не выбран тип объекта");
-			}			
-
-			var groups = OMGroup.Where(x => x.GroupAlgoritm_Code == groupAlgoritm
-					&& x.Id != id)
-				.SelectAll().Execute()
-				.Select(x => new SelectListItem
-				{
-					Value = x.Id.ToString(),
-					Text = x.GroupName.ToString()
-				});
-
-			return Json(groups);
-		}
-
-		//TODO hot fix, будет исправлен в новой ветке
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetParentGroupNew(string type, long? id, long? tourId)
+		public JsonResult GetParentGroup(ObjectTypeExtended type, long? tourId)
 		{
 			if(tourId == null)
 				return Json(new List<SelectListItem>());
 
-			KoGroupAlgoritm groupAlgorithm;
-			if (type == "OKS")
-			{
-				groupAlgorithm = KoGroupAlgoritm.MainOKS;
-			}
-			else
-			{
-				groupAlgorithm = KoGroupAlgoritm.MainParcel;
-			}
+			var groupAlgorithm = type == ObjectTypeExtended.Oks ? KoGroupAlgoritm.MainOKS : KoGroupAlgoritm.MainParcel;
 
 			var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
 
@@ -714,9 +670,8 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
-		//TODO hot fix, будет исправлен в новой ветке
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetSubgroupNew(long? groupId, long? tourId)
+		public JsonResult GetSubgroup(long? groupId, long? tourId)
 		{
 			if (groupId == null || tourId == null)
 			{
@@ -731,26 +686,6 @@ namespace KadOzenka.Web.Controllers
 				{
 					Value = x.Id.ToString(),
 					Text = x.GroupName
-				});
-
-			return Json(groups);
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-		public JsonResult GetSubgroup(long? groupId)
-		{
-			if (groupId == null)
-			{
-				return Json(new List<SelectListItem> { });
-			}
-
-			var groups = OMGroup.Where(x => x.ParentId == groupId)
-				.OrderBy(x => x.GroupName)
-				.SelectAll().Execute()
-				.Select(x => new SelectListItem
-				{
-					Value = x.Id.ToString(),
-					Text = $"{GroupService.GetSubGroupNumber(x.Number)}.{x.GroupName}"
 				});
 
 			return Json(groups);
@@ -992,111 +927,7 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Метки
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-		public ActionResult MarkCatalog()
-		{			
-			return View();
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public JsonResult GetMarkCatalog(long? groupId, long? factorId)
-		{			
-			List<OMMarkCatalog> markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
-				.SelectAll().Execute();			
-
-			return Json(markCatalog);
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-		public ActionResult CreateMark(OMMarkCatalog markCatalog)
-		{
-			var id = markCatalog.Save();
-
-			//хот-фикс, чтобы работало обновление ранее созданной метки
-			//TODO нужно переписать, чтобы view работало со своей моделью, а не с моделью ОРМ
-			var newMark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-
-			return Json(newMark);
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-		public ActionResult UpdateMark(OMMarkCatalog markCatalog)
-		{
-			markCatalog.Save();
-			return Json(markCatalog);
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-		public ActionResult DeleteMark(OMMarkCatalog markCatalog)
-		{
-			markCatalog.Destroy();
-			return Json(markCatalog);
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public FileResult DownloadMarksCatalog(long groupId, long factorId)
-        {
-            var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
-
-            return File(fileStream, Helpers.Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult MarksCatalogUploading(long groupId, long factorId)
-        {
-			ViewBag.GroupId = groupId;
-			ViewBag.FactorId = factorId;
-
-			return View();
-		}
-
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
-        {
-            if (file == null)
-                throw new Exception("Не выбран файл для загрузки");
-            if (!(file.FileName.EndsWith(".xlsx") || file.FileName.EndsWith(".xls")))
-                throw new Exception("Загружен файл неправильного формата. Допустимые форматы: .xlsx и .xls");
-
-            using (var stream = file.OpenReadStream())
-            {
-                var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-                excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
-
-                var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
-                    OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
-
-                var fileName = "Справочник меток (загрузка) " + file.FileName;
-                HttpContext.Session.Set(fileName, fileStream.ToByteArray());
-
-                return Content(JsonConvert.SerializeObject(new { success = true, fileName = fileName }), "application/json");
-            }
-        }
-
-        [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DownloadExcelFile(string fileName)
-        {
-            var fileContent = HttpContext.Session.Get(fileName);
-            if (fileContent == null)
-            {
-                return new EmptyResult();
-            }
-
-            HttpContext.Session.Remove(fileName);
-            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
-
-            return File(fileContent, contentType, fileName);
-        }
-
-        #endregion
-
-        #region Факторы
+		#region Факторы
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
@@ -1189,7 +1020,7 @@ namespace KadOzenka.Web.Controllers
                 if (model.Id == -1)
                 {
 	                var existingAttr = TourFactorService.GetTourAttributes(model.TourId,
-		                model.IsSteadObjectType ? ObjectType.ZU : ObjectType.Oks);
+		                model.IsSteadObjectType ? ObjectTypeExtended.Zu : ObjectTypeExtended.Oks);
 	                if (existingAttr.Any(x => x.Name == model.Name))
 	                {
 		                return Json(new {Errors = new List<object>{ new {Message = "Фактор с данным названием уже существует"}}});
@@ -1239,6 +1070,23 @@ namespace KadOzenka.Web.Controllers
             TourFactorService.RemoveTourFactorRegisterAttribute(omAttribute.Id);
 
             return EmptyResponse();
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        public JsonResult GetTourFactorsByType(long? tourId, ObjectTypeExtended type)
+        {
+	        if (tourId == null)
+		        return Json(new List<SelectListItem>());
+
+	        var tourFactors = TourFactorService.GetTourAttributes(tourId.Value, type);
+
+			var result = tourFactors.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.Name
+			});
+
+			return Json(result);
         }
 
 		#endregion

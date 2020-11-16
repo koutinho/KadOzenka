@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
@@ -58,19 +59,23 @@ namespace KadOzenka.Dal.OutliersChecking
 			_excelFile = new ExcelFile();
 		}
 
-		public void AddNewWorksheetForSegment(MarketSegment segment, DealType dealType)
+		public void AddNewWorksheetForSegment(MarketSegment segment, DealType dealType, ObjectPropertyTypeDivision propertyTypeDivision)
 		{
-			Log.Debug("Добавление новой страницы отчета для сегмента {MarketSegment}({DealType})", segment.GetEnumDescription(), dealType.GetEnumDescription());
+			Log.Debug("Добавление новой страницы отчета для '{PropertyTypeDivision}' типа сделки '{DealType}' сегмента '{MarketSegment}'",
+				propertyTypeDivision.GetEnumDescription(),
+				dealType.GetEnumDescription(), segment.GetEnumDescription());
 
 			_currentRow = 0;
-			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName($"{dealType.GetEnumDescription()} {segment.GetEnumDescription()}"));
+			_currentWorksheet = _excelFile.Worksheets.Add(GetWorksheetName($"{segment.GetEnumDescription()}"));
 			_currentWorksheet.Cells.Style.Font.Name = "Times New Roman";
+			AddTitle(segment, dealType, propertyTypeDivision);
 			AddHeaders();
 			SetWidth();
 		}
 
-		private static string GetWorksheetName(string worksheetName)
+		private string GetWorksheetName(string name)
 		{
+			var worksheetName = $"{_excelFile.Worksheets.Count + 1} {name}";
 			return worksheetName.Length > MaxWorksheetNameLength
 				? $"{worksheetName.Substring(0, MaxWorksheetNameLength - 4)}..."
 				: worksheetName;
@@ -108,7 +113,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				int countRows = _excelFile.Worksheets[w].Rows.Count;
 				Log.ForContext("MarketSegment", _excelFile.Worksheets[w].Name)
 					.Debug("Установка стилей в Excel таблице {CountRows} x {CountColumns}", countRows, countColumns);
-				for (int i = 0; i < countRows; i++)
+				for (int i = 1; i < countRows; i++)
 				{
 					for (int j = 0; j < countColumns; j++)
 					{
@@ -144,7 +149,7 @@ namespace KadOzenka.Dal.OutliersChecking
 					}
 				}
 
-				_excelFile.Worksheets[w].Cells.GetSubrangeAbsolute(1, 0, countRows, countColumns).Sort(false).By(LocationNameColumnNumber).Apply();
+				_excelFile.Worksheets[w].Cells.GetSubrangeAbsolute(2, 0, countRows, countColumns).Sort(false).By(LocationNameColumnNumber).Apply();
 			}
 		}
 
@@ -190,12 +195,27 @@ namespace KadOzenka.Dal.OutliersChecking
 			}
 		}
 
+		private void AddTitle(MarketSegment segment, DealType dealType, ObjectPropertyTypeDivision propertyTypeDivision)
+		{
+			var mergeRow = _currentWorksheet.Cells.GetSubrangeAbsolute(_currentRow, 0, _currentRow, _headersList.Count - 1);
+			mergeRow.Merged = true;
+			mergeRow.Style.Font.Size = 250;
+			mergeRow.Style.Font.Weight = 600;
+			mergeRow.Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+			mergeRow.Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+			mergeRow.Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+			mergeRow.Style.WrapText = true;
+			mergeRow.Value = $"Результат проверки на вылеты для '{propertyTypeDivision.GetEnumDescription()}' типа сделки '{dealType.GetEnumDescription()}' сегмента '{segment.GetEnumDescription()}'";
+
+			_currentRow++;
+		}
+
 		private void AddHeaders()
 		{
 			int col = 0;
 			foreach (string value in _headersList)
 			{
-				_currentWorksheet.Rows[0].Cells[col].SetValue(value);
+				_currentWorksheet.Rows[_currentRow].Cells[col].SetValue(value);
 				col++;
 			}
 

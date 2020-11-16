@@ -57,6 +57,7 @@
   <ItemGroup>
     <Folder Include="Correction\Dto\" />
     <Folder Include="Documents\Dto\" />
+    <Folder Include="Modeling\Dto\Factors\" />
     <Folder Include="Seman\" />
     <Folder Include="CommonFunctions\" />
   </ItemGroup>

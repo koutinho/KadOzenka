@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Web.Models.Task
+namespace KadOzenka.Web.Models.Modeling
 {
-    public class ModelModel
+    public class ManualModelingModel
     {
-        public long Id { get; set; }
-        public long? GroupId { get; set; }
+        public long GeneralModelId { get; set; }
         public bool IsPartial { get; set; }
 
         [Display(Name= "Наименование")]
@@ -15,6 +16,12 @@ namespace KadOzenka.Web.Models.Task
 
         [Display(Name = "Описание")]
         public string Description { get; set; }
+
+        [Display(Name = "Тип")]
+        public string Type { get; set; }
+
+        [Display(Name = "Группа")]
+        public long? GroupId { get; set; }
 
         [Display(Name = "Формула")]
         public string Formula { get; set; }
@@ -37,11 +44,11 @@ namespace KadOzenka.Web.Models.Task
 		[Display(Name = "Свободный член")]
         public decimal? A0 { get; set; }
 
-        public static ModelModel ToModel(OMModel model)
+        public static ManualModelingModel ToModel(OMModel model)
         {
-            return new ModelModel
+            return new ManualModelingModel
             {
-                Id = model.Id,
+	            GeneralModelId = model.Id,
                 GroupId = model.GroupId,
                 Name = model.Name,
                 Description = model.Description,
@@ -52,7 +59,23 @@ namespace KadOzenka.Web.Models.Task
 				CalculationType = model.CalculationType,
 				CalculationTypeCode = model.CalculationType_Code,
 				CalculationMethod = model.CalculationMethod,
-				CalculationMethodCode = model.CalculationMethod_Code
+				CalculationMethodCode = model.CalculationMethod_Code,
+                Type = model.Type_Code.GetEnumDescription()
+            };
+        }
+
+        public ModelingModelDto ToDto()
+        {
+	        return new ModelingModelDto
+            {
+		        ModelId = GeneralModelId,
+		        GroupId = GroupId,
+		        Name = Name,
+		        Description = Description,
+		        AlgorithmType = AlgorithmTypeCode,
+		        A0 = A0,
+		        CalculationType = CalculationTypeCode,
+		        CalculationMethod = CalculationMethodCode
             };
         }
     }
