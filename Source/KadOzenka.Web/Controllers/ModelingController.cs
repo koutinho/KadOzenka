@@ -351,14 +351,16 @@ namespace KadOzenka.Web.Controllers
 	        {
 		        ModelFactorsService.AddAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
-	        }
+                //TODO удалить после того, как восстановим рассчет МС
+		        ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
+            }
 	        else
 	        {
 		        ModelFactorsService.UpdateAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
             }
 
-	        ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
+	        //ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
 
             return Ok();
         }
