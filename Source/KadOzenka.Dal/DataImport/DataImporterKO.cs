@@ -75,6 +75,14 @@ namespace KadOzenka.Dal.DataImport
 					        string value = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
 					        string metka = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
 
+					        if (!string.IsNullOrWhiteSpace(metka) && !metka.TryParseToDecimal(out var _))
+					        {
+						        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, "Метку нельзя привести к числовому типу. Значение не сохранено.");
+								return;
+					        }
+
+					        var metkaNumber = metka.ParseToDecimalNullable();
+
 					        ObjectModel.KO.OMMarkCatalog existObject =
 						        objs.Find(x => x.ValueFactor.ToUpper() == value.ToUpper());
 					        bool newobj = false;
@@ -86,14 +94,14 @@ namespace KadOzenka.Dal.DataImport
 							        FactorId = factorId,
 									GroupId = groupId,
 									ValueFactor = value.ToUpper(),
-							        MetkaFactor = metka.ParseToDecimalNullable()
-						        };
+							        MetkaFactor = metkaNumber
+								};
 						        existObject.Save();
 						        newobj = true;
 					        }
 					        else
 					        {
-						        existObject.MetkaFactor = metka.ParseToDecimal();
+						        existObject.MetkaFactor = metkaNumber;
 						        existObject.Save();
 					        }
 
@@ -146,13 +154,7 @@ namespace KadOzenka.Dal.DataImport
 				        long errorId = ErrorManager.LogError(ex);
 				        lock (locked)
 				        {
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-						        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-						        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
-						        MultipleBorders.All,
-						        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+					        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 				        }
 			        }
 		        });
@@ -169,6 +171,14 @@ namespace KadOzenka.Dal.DataImport
 
 	        return streamResult;
         }
+
+        private static void AddErrorToExcel(ExcelWorksheet sheet, int rowIndex, int columnIndex, string message)
+        {
+	        sheet.Rows[rowIndex].Cells[columnIndex].SetValue(message);
+	        sheet.Rows[rowIndex].Cells[columnIndex].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+	        sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All,
+		        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+		}
 
         /// <summary>
         /// Импорт группы из Excel
