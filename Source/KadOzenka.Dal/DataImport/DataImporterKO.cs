@@ -73,9 +73,9 @@ namespace KadOzenka.Dal.DataImport
 						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 						{
 					        string value = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-					        string metka = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
+					        string metka = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString()?.TrimEnd('0');
 
-					        if (!string.IsNullOrWhiteSpace(metka) && !metka.TryParseToDecimal(out var _))
+					        if (!string.IsNullOrWhiteSpace(metka) && !metka.TryParseToDecimal(out _))
 					        {
 						        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, "Метку нельзя привести к числовому типу. Значение не сохранено.");
 								return;
