@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Web.Models.GbuObject
+﻿@using KadOzenka.Web.Controllers
+@using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
 @model long
 
@@ -23,9 +24,9 @@
             <div class="col-md-11 col-md-offset-1">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
                 {
-                    ControllerName = "Task",
-                    ActionName = "GetTemplatesFactors",
-                    Parameters = "taskId="+Model
+                    GetTemplatesActionName = nameof(TemplateController.GetTemplatesFactors),
+                    Parameters = "taskId="+Model,
+                    SaveTemplateActionName = nameof(TemplateController.SaveTemplateFactors)
                 }))
             </div>
             <div class="col-md-11 col-md-offset-1">
@@ -97,10 +98,7 @@
         });
     }
 
-    templateStorage.init(@((int)DataFormStorege.ExportFactorsByTask),
-                'SaveTemplate', 'Task',
-                'GetTemplate', 'Task',
-                fillForm, addCustomLevelsToForm);
+    templateStorage.init(@((int)DataFormStorege.ExportFactorsByTask), fillForm, addCustomLevelsToForm);
 
     function fillForm(data) {
         if (data.isOks===true) {

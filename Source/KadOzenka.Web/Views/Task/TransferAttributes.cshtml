@@ -1,9 +1,11 @@
 ﻿@using System.Collections
 @using KadOzenka.Dal.GbuObject.Dto
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
@@ -85,50 +87,54 @@
         <div>
             <div class="form-group attributes-list">
                 <table id="attributesList" class="col-sm-10 col-sm-offset-2">
-                    <tr>
-                        <th>@Html.Label("Ценообразующие факторы")</th>
-                        <th>@Html.Label("Характеристики объектов")</th>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU1, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU2, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU3, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU4, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU5, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU6, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU7, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU8, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU9, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
-                    <tr>
-                        <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"])</td>
-                        <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU10, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
-                    </tr>
+                    <thead>
+	                    <tr>
+	                        <th>@Html.Label("Ценообразующие факторы")</th>
+	                        <th>@Html.Label("Характеристики объектов")</th>
+	                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU1, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU2, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU3, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU4, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU5, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU6, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU7, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU8, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU9, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"])</td>
+                            <td>@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGBU10, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -143,9 +149,9 @@
             <div class="col-sm-7 col-sm-offset-2">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
-                ControllerName = "Task",
-                ActionName = "GetTemplatesForTransferAttributes",
-                Parameters = "isCreateMode=" + Model.CreateAttributes
+                GetTemplatesActionName = nameof(TemplateController.GetTemplatesForTransferAttributes),
+                Parameters = "isCreateMode=" + Model.CreateAttributes,
+                SaveTemplateActionName = Model.MethodToSaveTemplate
             }))
             </div>
             <div class="col-sm-2 col-sm-offset-1">
@@ -203,7 +209,7 @@
         var templateContent = $("#templateRow").html();
 		var template = kendo.template(templateContent);
         var result = kendo.render(template, data);
-        $("#attributesList").children().append(result);
+        $("#attributesList tbody").children().append(result);
         var classWrapper = ".wrapper-" + localRowNumber;
         var idTour = $('#RatingTour').data('kendoDropDownList').value();
         var url = "@Url.Action("GetRowExport", "Task")";
@@ -217,6 +223,23 @@
                     fillLevelFromTemplate(attributeGbuElement, "kendoDropDownTree", localRowNumber, idAttributeGbu);
                 }
                 kendo.ui.progress($('body'), false);
+                addSelectionHandlersForDropDowns();
+            });
+    }
+
+    async function addNewRows(startRowNumber, rowCount, rowValues) {
+        if (rowCount === 0)
+            return;
+        var objectType = getObjectType();
+        if (objectType === -1)
+            return;
+
+        var idTour = $('#RatingTour').data('kendoDropDownList').value();
+        await $.post("@Url.Action("GetRowExports", "Task")",
+            { startRowNumber: startRowNumber, rowCount: rowCount, rowValues: rowValues, tourId: idTour, objectType: objectType},
+            function(data) {
+                $("#attributesList tbody").append(data);
+                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
                 addSelectionHandlersForDropDowns();
             });
     }
@@ -327,31 +350,12 @@
         $('#@nameof(Model.IsOks)').on('change', setVisibilityForAdditionalFiltersForOks);
         $('#execute').on('click', transferAttributes);
 
-        @if (Model.CreateAttributes)
-        {<Text>
-        beforeLoad();
-        </Text>}
-
-        templateStorage.init(0,
-            '@Model.MethodToSaveTemplate', "Task",
-            '@Model.MethodToGetTemplate', "Task",
-            fillForm, addCustomLevelsToForm);
+        templateStorage.init(@((int) DataFormStorege.TransferAttributesWithoutCreate), null, addCustomLevelsToForm, fillForm);
 
         setVisibilityForAdditionalFiltersForOks();
     });
 
-
-
-
-
-    function beforeLoad() {
-        $('[id^="IdAttributeKO"]').parents(".col-sm-5").hide();
-        var gbuCells = $('[id^="IdAttributeGBU"]').parents(".col-sm-5");
-        gbuCells.removeClass("col-sm-5").addClass("col-sm-10 col-sm-offset-2");
-    }
-
-
-    function initTasksList() {
+    async function initTasksList(event, successCallback) {
         var tourId = $('#@nameof(Model.RatingTour)').val();
         var dataSource = new kendo.data.DataSource({
             transport: {
@@ -362,10 +366,13 @@
 				}
 			}
         });
-        var tasksMultiSelect = $("#@nameof(Model.TaskFilter)").data("kendoMultiSelect");
-        if (tasksMultiSelect) {
+
+        await dataSource.fetch(function() {
+            var tasksMultiSelect = $("#@nameof(Model.TaskFilter)").data("kendoMultiSelect");
             tasksMultiSelect.setDataSource(dataSource);
-        }
+            if (successCallback)
+                successCallback();
+        });
     }
 
 
@@ -384,14 +391,14 @@
         return '@ObjectTypeExtended.Zu';
     }
 
-    function initKoAttributes() {
+    async function initKoAttributes(event, successCallback) {
         var objectType = getObjectType();
         var tourId = $('#RatingTour').val();
         var koAttributesSource = objectType === -1
             ? null
             : new kendo.data.DataSource({
 			transport: {
-				read: {
+                read: {
 					url: '@Url.Action("GetKoAttributes", "Task")',
 					data: { tourId: tourId, objectType: objectType },
 					dataType: 'json'
@@ -400,12 +407,16 @@
             });
         if (koAttributesSource) {
             //загружаем атрибуты для каждого дроп-дауна только один раз
-            koAttributesSource.fetch(function() {
+            await koAttributesSource.fetch(function() {
                 var data = koAttributesSource.data();
                 initDropDownListForKoAttributes(data);
+                if (successCallback)
+                    successCallback();
             });
         } else {
             initDropDownListForKoAttributes(null);
+            if (successCallback)
+                successCallback();
         }
     }
     function initDropDownListForKoAttributes(data) {
@@ -425,10 +436,11 @@
 		if (!formObject) {
 			return formObject;
 		}
-		var exportAttribute = [];
+        var exportAttribute = [];
+        var formObjectKeys = Object.keys(formObject);
 		for (var i = 1; i < rowNumber; i++) {
-			var nameKo = 'IdAttributeKO_' + i;
-			var nameGbu = 'IdAttributeGbu_' + i;
+            var nameKo = formObjectKeys.find(key => key.includes('IdAttributeKO_' + i));
+            var nameGbu = formObjectKeys.find(key => key.includes('IdAttributeGbu_' + i));
             exportAttribute.push({
 				IdAttributeGbu: formObject[nameGbu],
 				IdAttributeKO: formObject[nameKo]
@@ -443,7 +455,7 @@
     function transferAttributes() {
         var objectType = getObjectType();
         if (objectType === -1)
-            return; 
+            return;
 		var form = $('form');
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
@@ -472,23 +484,23 @@
     }
 
 
-    function fillForm(data) {
+    async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         rowNumber = 1;
+        var taskValues = [];
+        var koAttributes = {};
+        var additionalCustomLevels = [];
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
             if (elementName === '@(nameof(Model.RatingTour))') {
                 var tourDropDownList = $('#@(nameof(Model.RatingTour))').data("kendoDropDownList");
                 tourDropDownList.value(elementValue || '');
-                tourDropDownList.trigger('change');
             }
 
             if (elementName.includes('@(nameof(Model.TaskFilter))')) {
-                var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-                currentValue.push([elementValue]);
-                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
+                taskValues.push([elementValue]);
             }
 
             if (elementName === '@(nameof(Model.IsOks))') {
@@ -512,19 +524,30 @@
             }
 
             if (elementName.startsWith('IdAttributeKO')) {
-                var kendoDropDownList = $('#' + elementName).data('kendoDropDownList');
-                if (kendoDropDownList) {
-                    kendoDropDownList.value(elementValue || '');
-                    kendoDropDownList.trigger('change');
-                }
+                koAttributes[elementName] = elementValue;
             }
 
             if (elementName.startsWith('@(nameof(Model.ExportAttribute))')) {
                 var additionalCustomLevel = elementValue;
-                addNewRow(rowNumber, additionalCustomLevel.IdAttributeKO, additionalCustomLevel.IdAttributeGbu);
+                additionalCustomLevels.push(additionalCustomLevel);
                 rowNumber++;
             }
         });
+
+        return await Promise.all([
+            initTasksList(null, () => $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(taskValues)),
+            initKoAttributes(null, () => {
+                for (var elementName in koAttributes) {
+                    var elementValue = koAttributes[elementName];
+                    var kendoDropDownList = $('#' + elementName).data('kendoDropDownList');
+                    if (kendoDropDownList) {
+                        kendoDropDownList.value(elementValue || '');
+                        kendoDropDownList.trigger('change');
+                    }
+                }
+            }),
+            addNewRows(1, rowNumber - 1, additionalCustomLevels)
+        ]);
     }
 
 

@@ -214,142 +214,9 @@ namespace KadOzenka.Web.Controllers
 		}
 		#endregion
 
-		#region Getting Templates
-		
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public List<SelectListItem> GetTemplatesGrouping()
-        {
-            return _templateService.GetTemplates(DataFormStorege.Normalisation)
-                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-        }
+		#region Harmonization
 
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public List<SelectListItem> GetTemplatesUnloadingForm()
-        {
-            return _templateService.GetTemplates(DataFormStorege.UnloadingFromDict)
-                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public List<SelectListItem> GetTemplatesHarmonization()
-        {
-            return _templateService.GetTemplates(DataFormStorege.Harmonization)
-                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public List<SelectListItem> GetTemplatesHarmonizationCOD()
-        {
-            return _templateService.GetTemplates(DataFormStorege.HarmonizationCOD)
-                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public List<SelectListItem> GetTemplatesEstimated()
-        {
-            return _templateService.GetTemplates(DataFormStorege.EstimatedGroup)
-                .Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult GetTemplatesOneGroup(int id)
-		{
-			if (id == 0)
-			{
-				return Json(new { error = "Ид равен 0" });
-
-			}
-
-			try
-			{
-				var storage = OMDataFormStorage.Where(x =>
-						x.Id == id)
-					.SelectAll().ExecuteFirstOrDefault();
-
-				if (storage != null && storage.FormType_Code == DataFormStorege.Normalisation)
-				{
-					var nObj = storage.Data.DeserializeFromXml<GroupingObject>();
-					return Json(new { data = JsonConvert.SerializeObject(nObj) });
-				}
-
-				if (storage != null && storage.FormType_Code == DataFormStorege.Harmonization)
-				{
-					var hObj = storage.Data.DeserializeFromXml<HarmonizationViewModel>();
-					return Json(new { data = JsonConvert.SerializeObject(hObj) });
-				}
-
-				if (storage != null && storage.FormType_Code == DataFormStorege.HarmonizationCOD)
-				{
-					var hcObj = storage.Data.DeserializeFromXml<HarmonizationCODViewModel>();
-					return Json(new { data = JsonConvert.SerializeObject(hcObj) });
-				}
-
-				if (storage != null && storage.FormType_Code == DataFormStorege.UnloadingFromDict)
-				{
-					var unObj = storage.Data.DeserializeFromXml<UnloadingFromDicViewModel>();
-					return Json(new {data = JsonConvert.SerializeObject(unObj) });
-				}
-
-			    if (storage != null && storage.FormType_Code == DataFormStorege.EstimatedGroup)
-			    {
-			        var unObj = storage.Data.DeserializeFromXml<EstimatedGroupViewModel>();
-			        return Json(new { data = JsonConvert.SerializeObject(unObj) });
-			    }
-
-            }
-
-			catch (Exception e)
-			{
-				return Json(new { error = $"Ошибка: {e.Message}" });
-			}
-
-			return Json(new { error = "Не найдено соответсвующего типа формы" });
-		}
-
-		#endregion
-
-		#region Save Template
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateGroupingObject(string nameTemplate, bool isCommon, [FromForm]GroupingObject model)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Normalisation, model.SerializeToXml());
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationViewModel viewModel)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Harmonization, viewModel.SerializeToXml());
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationCODViewModel viewModel)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateUnloading(string nameTemplate, bool isCommon, [FromForm]UnloadingFromDicViewModel viewModel)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
-		}
-
-	    [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, bool isCommon, [FromForm]EstimatedGroupViewModel model)
-	    {
-	        return SaveTemplate(nameTemplate, isCommon, DataFormStorege.EstimatedGroup, model.SerializeToXml());
-	    }
-
-        #endregion
-
-        #region Harmonization
-
-        [HttpGet]
+		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION)]
 		public ActionResult Harmonization()
 		{
@@ -408,7 +275,8 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-        public ActionResult GetRowWithNewLevelForHarmonization([FromForm] int rowNumber)
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRowWithNewLevelForHarmonization([FromForm] int rowNumber)
         {
             ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
@@ -421,9 +289,30 @@ namespace KadOzenka.Web.Controllers
             return PartialView("/Views/GbuObject/Partials/PartialNewHarmonizationRow.cshtml", model);
         }
 
-        #endregion
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRowsWithNewLevelForHarmonization(int startRowNumber, int rowCount, int?[] rowValues)
+        {
+	        ViewData["TreeAttributes"] = GetGbuAttributesTree();
+	        ViewData["StartRowNumber"] = startRowNumber;
+	        ViewData["RowCount"] = rowCount;
 
-        #region HarmonizationCOD
+	        var models = new List<PartialNewHarmonizationLevel>();
+	        for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+	        {
+		        models.Add(new PartialNewHarmonizationLevel
+		        {
+			        RowNumber = rowNumber,
+			        LevelNumber = HarmonizationViewModel.NumberOfConstantLevelsInHarmonization + rowNumber,
+					AttributeId = rowValues[i]
+		        });
+	        }
+
+	        return PartialView("/Views/GbuObject/Partials/PartialNewHarmonizationRows.cshtml", models);
+        }
+
+		#endregion
+
+		#region HarmonizationCOD
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
@@ -602,6 +491,32 @@ namespace KadOzenka.Web.Controllers
 
 			ViewData["RowNumber"] = rowNumber.ToString();
 			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult GetRows(int startRowNumber, int rowCount, int[] rowValues)
+		{
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
+			ViewData["StartRowNumber"] = startRowNumber;
+			ViewData["RowCount"] = rowCount;
+
+			var models = new List<PartialAttribute>();
+			for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+			{
+				models.Add(new PartialAttribute {Attributes = rowValues[i]});
+			}
+
+			return PartialView("/Views/GbuObject/Partials/PartialNewRows.cshtml", models);
 		}
 
 		#endregion

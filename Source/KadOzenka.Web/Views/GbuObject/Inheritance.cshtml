@@ -1,4 +1,7 @@
-﻿@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Controllers
+@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
 
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
@@ -17,8 +20,7 @@
 				@Html.CustomLabel("Тур оценки")
 			</div>
 			<div class="col-sm-4">
-				@(Html.Kendo().DropDownList()
-											.Name("RatingTour")
+				@(Html.Kendo().DropDownListFor(x => x.RatingTour)
 											.DataTextField("Text")
 											.DataValueField("Value")
 											.DataSource(data => data.Read("GetRatingTours", "GbuObject"))
@@ -37,11 +39,11 @@
 									.Filter("contains")
 									.DataSource(source =>
 									{
-										source.Read(read =>
-										{
-											read.Action("GetTasksByTour", "Task").Data("handlerData");
-										})
-											.ServerFiltering(false);
+                                        source.Read(read =>
+                                        {
+                                            read.Action("GetTasksByTour", "Task").Data("handlerData");
+                                        })
+                                        .ServerFiltering(false);
 									}))
 			</div>
 		</div>
@@ -103,11 +105,19 @@
 				<a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-12">
-				<button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
-			</div>
-		</div>
+        <div class="form-group">
+            <div class="col-sm-8">
+                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int)DataFormStorege.Inheritance,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateInheritance)
+            }))
+            </div>
+            <div class="col-sm-2 col-sm-offset-1">
+                <button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
+            </div>
+        </div>
 	</div>
 }
 <script type="text/x-kendo-template" id="templateRow">
@@ -116,42 +126,69 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
+    var minCustomRowNumber =  @Model.Attributes.Count || 0;
+    var currentRowNumber = @Model.Attributes.Count || 0;
+    var setTaskFilterValuesFromTemplate = false;
+    var taskFilterValuesFromTemplate = [];
 
-	var rowNumber = @Model.Attributes.Count + 1 || 0;
+    function addNewRow(rowNumber) {
+        kendo.ui.progress($('body'), true);
 
-	function addNewRow(e) {
-		e.preventDefault();
-		kendo.ui.progress($('body'), true);
-		var data = [{ rowNumber }];
-
-		var templateContent = $("#templateRow").html();
-		var template = kendo.template(templateContent);
-
-		var result = kendo.render(template, data);
-
-		$("#wrapperCustomRow").append(result);
-
-		var classWrapper = ".wrapper-" + rowNumber;
-
-		var url = "@Url.Action("GetRow", "GbuObject")";
-		$(classWrapper).load(url, { rowNumber: rowNumber }, function (response) {
-			$(classWrapper).show(500);
-			$("html, body").animate({ scrollTop: $(document).height() }, "slow");
-			rowNumber++;
-            kendo.ui.progress($('body'), false);
+        var classWrapper = generateCustomRowFromTemplate(rowNumber);
+        $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
+            $(classWrapper).show(250);
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
             addSelectionHandlersForDropDowns();
-		});
-	}
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+    async function addNewRows(startRowNumber, rowCount, rowValues) {
+        if (rowCount === 0)
+            return;
+
+        var rowRange = `${startRowNumber}-${startRowNumber + rowCount - 1}`;
+        var classWrapper = generateCustomRowFromTemplate(rowRange);
+        await $.post("@Url.Action("GetRows", "GbuObject")",
+            { startRowNumber: startRowNumber, rowCount: rowCount, rowValues: rowValues },
+            function(data) {
+                $(classWrapper).append(data);
+                $(classWrapper).show(250);
+                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                addSelectionHandlersForDropDowns();
+            });
+    }
+
+    function generateCustomRowFromTemplate(rowNumber) {
+        var data = [{ rowNumber }];
+
+        var templateContent = $("#templateRow").html();
+        var template = kendo.template(templateContent);
+        var result = kendo.render(template, data);
+        $("#wrapperCustomRow").append(result);
+        var classWrapper = `.wrapper-${rowNumber}`;
+
+        return classWrapper;
+    }
+
 	function handlerData() {
 		return {
 			tourId: $('#RatingTour').data('kendoDropDownList').value()
 		}
 	}
 
-	function dropdownlist_select(e) {
-		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
+    function tourdropdownlist_select(e) {
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
 		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
-	}
+    }
+
+    function taskFiltermultiselect_dataBound(e) {
+        if (setTaskFilterValuesFromTemplate) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(taskFilterValuesFromTemplate);
+            setTaskFilterValuesFromTemplate = false;
+            taskFilterValuesFromTemplate = [];
+        }
+    }
 
 	function getDataSource() {
         return $.find('[class^=Attributes_]').map(d => $(d).data('kendoDropDownTree'));
@@ -188,9 +225,7 @@
             e.preventDefault();
             return;
         }
-
         clearTreeStates();
-
         var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
         var arr = getSelectedValues();
         if (arr.includes(dataItem.value)) {
@@ -213,22 +248,105 @@
                 d.treeview.bind('select', e => updateSelected(e));
             }
         );
-
         updateStates();
-
         var clearButtons = $.find('[class^=clear-button-Attributes]');
-
         clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+	}
+
+
+    function addCustomLevelsToForm(formObject) {
+        if (!formObject) {
+            return formObject;
+		}
+        var attributes = [];
+        Object.keys(formObject).forEach(function (key) {
+            if (key.includes('Attributes')) {
+                attributes.push(formObject[key]);
+                delete formObject[key];
+            }
+        });
+        attributes = attributes.filter(function (val) { return !!val});
+        return Object.assign({}, formObject, { Attributes: attributes });
     }
+
+
+    function clearCustomLevels() {
+        var existedCustomLevels = $("div[class^='wrapper-']");
+        existedCustomLevels.each(function () {
+            this.remove();
+        });
+        currentRowNumber = minCustomRowNumber;
+    }
+
+    async function fillForm(data) {
+        $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        clearCustomLevels();
+        var customRowValues = [];
+        data.forEach(function (val) {
+            var elementName = Object.keys(val)[0];
+            var elementValue = val[elementName];
+            if (elementName === '@(nameof(Model.RatingTour))') {
+                var tourDropDownList = $('#' + elementName).data("kendoDropDownList");
+                tourDropDownList.value(elementValue || '');
+                tourDropDownList.trigger('change');
+            }
+
+            if (elementName.includes('@(nameof(Model.TaskFilter))')) {
+                setTaskFilterValuesFromTemplate = true;
+                taskFilterValuesFromTemplate.push([elementValue]);
+            }
+
+            if (elementName === '@(nameof(Model.CadastralBlockToParcel))' ||
+                elementName === '@(nameof(Model.ParcelToBuilding))' ||
+                elementName === '@(nameof(Model.CadastralBlockToBuilding))' ||
+                elementName === '@(nameof(Model.ParcelToConstruction))' ||
+                elementName === '@(nameof(Model.CadastralBlockToConstruction))' ||
+                elementName === '@(nameof(Model.ParcelToUncomplited))' ||
+                elementName === '@(nameof(Model.CadastralBlockToUncomplited))' ||
+                elementName === '@(nameof(Model.BuildToFlat))') {
+                $(`input[name='${elementName}']`).prop("checked", elementValue);
+                if (elementValue) {
+                    $(`input[name='${elementName}']`).trigger('change');
+                }
+            }
+
+            if (elementName === '@nameof(Model.ParentCadastralNumberAttribute)') {
+                var kendoDropDownTree = $(`#${elementName}`).data('kendoDropDownTree');
+                kendoDropDownTree.value(elementValue || '');
+                kendoDropDownTree.trigger('change');
+            }
+
+            if (elementName.startsWith('@nameof(Model.Attributes)')) {
+                var predefinedKendoDropDownTree = $(`#${elementName}_`).data('kendoDropDownTree');
+                if (predefinedKendoDropDownTree) {
+                    predefinedKendoDropDownTree.value(elementValue || '');
+                    predefinedKendoDropDownTree.trigger('change');
+                } else {
+                    customRowValues.push(elementValue);
+                    currentRowNumber++;
+                }
+            }
+        });
+
+        return await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
+    }
+
+
+
 
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
 
-		$('#addRow').on('click', addNewRow);
-		$("#RatingTour").data('kendoDropDownList').bind('change', dropdownlist_select);
-		$("#RatingTour").data('kendoDropDownList').bind('dataBound', dropdownlist_select);
+        $('#addRow').on('click', (e) => {
+            e.preventDefault();
+            addNewRow(currentRowNumber);
+            currentRowNumber++;
+        });
+		$("#RatingTour").data('kendoDropDownList').bind('change', tourdropdownlist_select);
+        $("#RatingTour").data('kendoDropDownList').bind('dataBound', tourdropdownlist_select);
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').bind('dataBound', taskFiltermultiselect_dataBound);
 
-		$('input[type=radio]').change(function() {
+        $('input[type=radio]').change(function() {
 			$('input[type=radio]:checked').not(this).prop('checked', false);
 		});
 
@@ -237,18 +355,8 @@
 				var form = $('form');
 				var formObject = Common.Functions.FormToObject(form);
 				formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-
-				var attributes = [];
-				Object.keys(formObject).forEach(function (key) {
-					if (key.includes('Attributes')) {
-						attributes.push(formObject[key]);
-						delete formObject[key];
-					}
-				});
-				attributes = attributes.filter(function (val) { return !!val});
-				var data = Object.assign({}, formObject, { Attributes: attributes });
-
-				$.post(form.attr('action'), data).done(function(response) {
+                var data = addCustomLevelsToForm(formObject);
+                $.post(form.attr('action'), data).done(function(response) {
 					if (response.Errors) {
                         var errors = getErrors(response.Errors);
 						Common.ShowError(errors);
@@ -263,6 +371,8 @@
 				    kendo.ui.progress($('body'), false);
 				});
 			});
-	});
+
+		templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
+    });
 
 </script>

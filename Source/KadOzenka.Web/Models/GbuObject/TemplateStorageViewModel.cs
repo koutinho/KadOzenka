@@ -2,10 +2,9 @@
 {
 	public class TemplateStorageViewModel
 	{
-		public string ControllerName { get; set; }
+		public string GetTemplatesActionName { get; set; }
+		public string SaveTemplateActionName { get; set; }
 
-		public string ActionName { get; set; }
-
-        public string Parameters { get; set; }
+		public string Parameters { get; set; }
     }
 }

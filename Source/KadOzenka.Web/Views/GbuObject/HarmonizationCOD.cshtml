@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Dal.GbuObject.Dto
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
@@ -263,10 +264,11 @@
         <div class="form-group">
             <div class="col-sm-7">
                 @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-                    {
-                        ControllerName = "GbuObject",
-                        ActionName = "GetTemplatesHarmonizationCOD"
-                    }))
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int)DataFormStorege.HarmonizationCOD,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateHarmonizationCODObject)
+            }))
             </div>
             <div class="col-sm-1 col-sm-offset-1">
                 <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
@@ -321,13 +323,15 @@
     <script src="~/js/harmonization.js"></script>
     <script type="text/javascript">
         var urlForNewCustomLevel = '@Url.Action("GetRowWithNewLevelForHarmonization", "GbuObject")';
+        var urlForNewCustomLevels = '@Url.Action("GetRowsWithNewLevelForHarmonization", "GbuObject")';
         globalRowNumber = 1;
 
-        function fillForm(data) {
+        async function fillForm(data) {
             $('#valuesFilter').getKendoMultiSelect().value([]);
             $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
             clearCustomLevels();
             globalRowNumber = 1;
+            var customRowValues = [];
 
             data.forEach(function (val) {
                 if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
@@ -341,8 +345,8 @@
 
                 if (Object.keys(val)[0].includes('@(nameof(Model.AdditionalCustomLevels))')) {
                     var additionalCustomLevel = val[Object.keys(val)[0]];
+                    customRowValues.push(additionalCustomLevel.AttributeId);
                     globalRowNumber = additionalCustomLevel.RowNumber + 1;
-                    addNewCustomLevel(urlForNewCustomLevel, additionalCustomLevel.RowNumber, additionalCustomLevel.AttributeId);
                 }
 
                 if (Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
@@ -460,6 +464,8 @@
                 $('#SelectAllObject').prop('checked');
             selectAllObjectChanged(isSelectAllObjectsChecked);
             onPropertyTypeChange();
+
+            return await addNewCustomLevels(urlForNewCustomLevels, 1, globalRowNumber - 1, customRowValues);
         }
 
         function changeDataActualAvailability(isDataActualUsed) {
@@ -610,10 +616,7 @@
             });
             $('input[name="@nameof(Model.PropertyType)"]').on('change', onPropertyTypeChange);
 
-            templateStorage.init(@((int)DataFormStorege.HarmonizationCOD),
-                "SaveTemplateHarmonizationCODObject", "GbuObject",
-                "GetTemplatesOneGroup", "GbuObject",
-                fillForm, addCustomLevelsToForm);
+            templateStorage.init(@((int)DataFormStorege.HarmonizationCOD), null, addCustomLevelsToForm, fillForm);
 
 
             function onDataBound(e) {
