@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Dal.GbuObject.Dto
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
@@ -237,10 +238,11 @@
         <div class="form-group">
             <div class="col-sm-7">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-                {
-                    ControllerName = "GbuObject",
-                    ActionName = "GetTemplatesHarmonization"
-                }))
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int)DataFormStorege.Harmonization,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateHarmonizationObject)
+            }))
             </div>
             <div class="col-sm-1 col-sm-offset-1">
                 <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
@@ -580,10 +582,7 @@
         });
         $('input[name="@nameof(Model.PropertyType)"]').on('change', onPropertyTypeChange);
 
-        templateStorage.init(@((int)DataFormStorege.Harmonization),
-            "SaveTemplateHarmonizationObject", "GbuObject",
-            "GetTemplatesOneGroup", "GbuObject",
-            null, addCustomLevelsToForm, fillForm);
+        templateStorage.init(@((int)DataFormStorege.Harmonization), null, addCustomLevelsToForm, fillForm);
 
 
 

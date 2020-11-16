@@ -1,6 +1,7 @@
 ﻿@using System.Collections
 @using DevExpress.DataProcessing
 @using FastReport.Fonts
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
@@ -405,8 +406,9 @@
     <div class="col-sm-7">
         @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
-                ControllerName = "GbuObject",
-                ActionName = "GetTemplatesGrouping"
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int)DataFormStorege.Normalisation,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
             }))
         </div>
 
@@ -655,7 +657,7 @@
                 changeTaskFilterAvailability(this.checked);
             });
 
-		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+		templateStorage.init(@((int)DataFormStorege.Normalisation), fillForm);
 
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');

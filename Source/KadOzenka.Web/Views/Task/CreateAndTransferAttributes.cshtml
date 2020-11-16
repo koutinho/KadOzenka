@@ -1,7 +1,9 @@
 ﻿@using KadOzenka.Dal.GbuObject.Dto
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
@@ -83,11 +85,11 @@
         <div class="form-group">
             <div class="col-sm-7 col-sm-offset-2">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-                {
-                    ControllerName = "Task",
-                    ActionName = "GetTemplatesForTransferAttributes",
-                    Parameters = "isCreateMode=" + Model.CreateAttributes
-                }))
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplatesForTransferAttributes),
+                Parameters = "isCreateMode=" + Model.CreateAttributes,
+                SaveTemplateActionName = Model.MethodToSaveTemplate
+            }))
             </div>
             <div class="col-sm-2 col-sm-offset-1">
                 @(Html.Kendo().Button()
@@ -226,10 +228,7 @@
 
         $('#execute').on('click', transferAttributes);
 
-        templateStorage.init(0,
-            '@Model.MethodToSaveTemplate', "Task",
-            '@Model.MethodToGetTemplate', "Task",
-            null, addCustomLevelsToForm, fillForm);
+        templateStorage.init(@((int) DataFormStorege.TransferAttributesWithCreate), null, addCustomLevelsToForm, fillForm);
 
         setVisibilityForAdditionalFiltersForOks();
     });

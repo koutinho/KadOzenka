@@ -355,56 +355,6 @@ namespace KadOzenka.Web.Controllers
 	        return PartialView("/Views/Task/PartialTransferAttributeRows.cshtml", rowValues);
         }
 
-		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-        public List<SelectListItem> GetTemplatesForTransferAttributes(bool isCreateMode)
-        {
-            var formType = isCreateMode
-                ? DataFormStorege.TransferAttributesWithCreate
-                : DataFormStorege.TransferAttributesWithoutCreate;
-
-            return TemplateService.GetTemplates(formType)
-                .Select(x => new SelectListItem(x.TemplateName ?? string.Empty, x.Id.ToString())).ToList();
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-        public JsonResult SaveTemplateForTransferAttributesWithCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel)
-        {
-            return SaveTemplate(nameTemplate, isCommon, DataFormStorege.TransferAttributesWithCreate, viewModel.SerializeToXml());
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
-        public JsonResult SaveTemplateForTransferAttributesWithoutCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel)
-        {
-            return SaveTemplate(nameTemplate, isCommon, DataFormStorege.TransferAttributesWithoutCreate, viewModel.SerializeToXml());
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-        public JsonResult GetTemplateForTransferAttributes(int id)
-        {
-            if (id == 0)
-                return new JsonResult(Ok());
-
-            var storage = OMDataFormStorage.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			if (storage == null)
-			{
-				_log.Warning("Не найдено хранилище шаблонов с id={TemplateId}", id);
-				throw new Exception($"Не найдено хранилище шаблонов с Id='{id}'");
-			}
-			else
-			{
-				_log.ForContext("FormType", storage.FormType)
-					.ForContext("FormType_Code", storage.FormType_Code)
-					.Debug(new Exception(storage.Data),"Получение шаблона переноса атрибутов");
-			}
-
-            var viewModel = storage.Data.DeserializeFromXml<ExportAttributesModel>();
-
-            return Json(new { data = JsonConvert.SerializeObject(viewModel) });
-        }
-
-
         #region Support Methods
 
         private IEnumerable<SelectListItem> MapToSelectListItems(List<TaskDocumentInfoDto> tasks)
@@ -1285,8 +1235,6 @@ namespace KadOzenka.Web.Controllers
             }
         }
 
-        private const string TourSeparator = "$";
-
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public FileResult DownloadFactorExportResult(long taskId, string dt)
@@ -1298,60 +1246,7 @@ namespace KadOzenka.Web.Controllers
 	            $"{taskId}_{dateTime:ddMMyyyy}_FactorsExport.xlsx");
         }
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetTemplate(int id)
-        {
-	        if (id == 0)
-	        {
-		        return Json(new { error = "Ид равен 0" });
-	        }
-
-	        try
-	        {
-		        var storage = OMDataFormStorage.Where(x =>
-				        x.Id == id)
-			        .SelectAll().ExecuteFirstOrDefault();
-
-		        if (storage != null && storage.FormType_Code == DataFormStorege.ExportFactorsByTask)
-		        {
-			        var nObj = storage.Data.DeserializeFromXml<FactorsDownloadByTaskModel>();
-			        return Json(new { data = JsonConvert.SerializeObject(nObj) });
-		        }
-	        }
-
-	        catch (Exception e)
-	        {
-		        return Json(new { error = $"Ошибка: {e.Message}" });
-	        }
-
-	        return Json(new { error = "Шаблон не найден" });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public List<SelectListItem> GetTemplatesFactors(long taskId)
-        {
-	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-	        if (task == null) throw new ArgumentNullException($"Задача с id {taskId} не найдена");
-
-	        return TemplateService.GetTemplates(DataFormStorege.ExportFactorsByTask)
-		        .Where(x=>x.TemplateName.StartsWith(task.TourId+TourSeparator))
-		        .Select(x => new SelectListItem(x.TemplateName?.Split(TourSeparator,2)?[1] ?? "", x.Id.ToString())).ToList();
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult SaveTemplate(string nameTemplate, bool isCommon, [FromForm]long taskId, [FromForm]bool isOks, [FromForm]string[] selectedAttributes)
-        {
-	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-	        if (task == null) throw new ArgumentNullException($"Задача с id {taskId} не найдена");
-
-	        var obj = new FactorsDownloadByTaskModel{ TaskId = taskId,isOks = isOks, Attributes = selectedAttributes};
-	        return SaveTemplate(task.TourId+TourSeparator+nameTemplate, isCommon, DataFormStorege.ExportFactorsByTask, obj.SerializeToXml());
-        }
-
-		#endregion
+        #endregion
 
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult GetTaskObjects(long taskId)

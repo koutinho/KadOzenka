@@ -42,9 +42,8 @@ namespace KadOzenka.Web.Models.Task
 		public bool CreateAttributes { get; set; }
 
         public string MethodToSaveTemplate => CreateAttributes
-            ? nameof(TaskController.SaveTemplateForTransferAttributesWithCreate)
-            : nameof(TaskController.SaveTemplateForTransferAttributesWithoutCreate);
-        public string MethodToGetTemplate => nameof(TaskController.GetTemplateForTransferAttributes);
+            ? nameof(TemplateController.SaveTemplateForTransferAttributesWithCreate)
+            : nameof(TemplateController.SaveTemplateForTransferAttributesWithoutCreate);
 
         [Control("KO", 1)]
         public long? IdAttributeKO1 { get; set; }

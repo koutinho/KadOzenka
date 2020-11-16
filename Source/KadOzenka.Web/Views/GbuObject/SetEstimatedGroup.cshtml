@@ -1,4 +1,5 @@
 ﻿@using System.Collections
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
@@ -54,8 +55,9 @@
 			<div class="col-sm-7">
 				@( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
 			{
-				ControllerName = "GbuObject",
-				ActionName = "GetTemplatesEstimated"
+			    GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+			    Parameters = "formStorageType=" + (int)DataFormStorege.EstimatedGroup,
+			    SaveTemplateActionName = nameof(TemplateController.SaveTemplateEstimatedGroupObject)
 			}))
 			</div>
 
@@ -94,7 +96,7 @@
 	}
 
 	$(document).ready(function() {
-        templateStorage.init(@((int) DataFormStorege.EstimatedGroup), "SaveTemplateEstimatedGroupObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+		templateStorage.init(@((int) DataFormStorege.EstimatedGroup), fillForm);
 
 		$('#execute').on('click', function() {
 			kendo.ui.progress($('body'), true);

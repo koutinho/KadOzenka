@@ -1,139 +1,178 @@
-﻿@model KadOzenka.Web.Models.GbuObject.TemplateStorageViewModel
+﻿@using KadOzenka.Web.Controllers
+@using Microsoft.AspNetCore.Mvc
+@model KadOzenka.Web.Models.GbuObject.TemplateStorageViewModel
 
-<div style="display: flex">
-	<button style="float: left" id="showSelectedTemplate" class="k-button" type="button">Загрузить шаблон</button>
-	<button style="float: left; margin-left: 4px;" id="showSaveForm" class="k-button" type="button">Сохранить шаблон</button>
-	<div class="template-name-wrapper"  style="display: none; flex-grow: 0.8">
-		<div style="display: flex; padding-left: 4px;">
-			@Html.Kendo().TextBox().Name("templateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" })
-            <div style="padding: 1% 2% 0 2%">
-                @Html.Kendo().CheckBox().Name("isCommon").Label("Общий")
+    <div style="display: flex">
+        @(Html.Kendo().ButtonGroup()
+            .Name("formTemplatesButtonGroup")
+            .Items(t =>
+            {
+                t.Add().Icon("upload").HtmlAttributes(new { @class= "uploadItem" });
+                t.Add().Icon("plus-circle").HtmlAttributes(new { @class = "createItem" });
+                t.Add().Icon("save").HtmlAttributes(new { @class = "saveItem" });
+                t.Add().Icon("delete").HtmlAttributes(new { @class = "deleteItem" });
+            })
+            )
+        <div class="upload-template-wrapper" style="display: none; flex-grow: 0.8">
+            <div style="display: flex; padding-left: 4px;">
+                @(Html.Kendo().DropDownList()
+                    .Name("uploadTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                <button style="float: left; margin-left: 4px; min-width: 90px;" id="uploadTemplate" class="k-button" type="button">Загрузить</button>
             </div>
-            <button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button"><i class="fas fa-check"></i></button>
-		</div>
-	</div>
-	<div class="template-select-wrapper"  style="display: none; flex-grow: 0.8">
-		<div style="display: flex; padding-left: 4px;">
-			@(Html.Kendo().DropDownList()
-				.Name("selectedTemplate")
-				.DataTextField("Text")
-				.DataValueField("Value")
-				.DataSource(source => {
-					                      source.Read(read =>
-					                      {
-                                              if(string.IsNullOrWhiteSpace(Model.Parameters))
-						                        read.Action(Model.ActionName, Model.ControllerName);
-                                              else
-                                                  read.Action(Model.ActionName, Model.ControllerName).Data("parseInputParametersToDownloadTemplates");
-					                      }); 
-				})
-				.OptionLabel(null))
-			<button style="float: left; margin-left: 4px;" id="select" class="k-button" type="button"><i class="fas fa-check"></i></button>
-		</div>
-	</div>
-</div>
+        </div>
+        <div class="create-template-wrapper" style="display: none; flex-grow: 0.8">
+            <div style="display: flex; padding-left: 4px;">
+                @Html.Kendo().TextBox().Name("newTemplateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" })
+                <div style="padding: 1% 2% 0 2%">
+                    @Html.Kendo().CheckBox().Name("isCommonNew").Label("Общий")
+                </div>
+                <button style="float: left; margin-left: 4px; min-width: 90px;" id="createTemplate" class="k-button" type="button">Создать</button>
+            </div>
+        </div>
+        <div class="save-template-wrapper" style="display: none; flex-grow: 0.8">
+            <div style="display: flex; padding-left: 4px;">
+                @(Html.Kendo().DropDownList()
+                    .Name("saveTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                @Html.Kendo().TextBox().Name("existTemplateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" }).Enable(false)
+                <div style="padding: 1% 2% 0 2%">
+                    @Html.Kendo().CheckBox().Name("isCommonExist").Label("Общий").Enable(false)
+                </div>
+                <button disabled="true" style="float: left; margin-left: 4px; min-width: 90px;" id="saveTemplate" class="k-button" type="button">Сохранить</button>
+            </div>
+        </div>
+        <div class="remove-template-wrapper" style="display: none; flex-grow: 0.8">
+            <div style="display: flex; padding-left: 4px;">
+                @(Html.Kendo().DropDownList()
+                .Name("removeTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                <button style="float: left; margin-left: 4px; min-width: 90px;" id="removeTemplate" class="k-button" type="button">Удалить</button>
+            </div>
+        </div>
+    </div>
 
-<script type="text/javascript">
-	var templateStorage = templateStorage ||
-	(function($) {
-		var obj = {
-			actionNameUrlSaveTemplate: null,
-			controllerNameUrlSaveTemplate: null,
-			actionNameUrlSelectedTemplate: null,
-			controllerNameUrlSelectedTemplate: null,
-			currentFormType: 0,
-			setDataForm: null,
+    <script type="text/javascript">
+    var templateStorage = templateStorage ||
+    (function ($) {
+
+        var obj = {
+            currentFormType: 0,
+            setDataForm: null,
             setDataFormAsync: null,
             additionalFormObjectMapping: null,
-            init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback, additionalFormObjectMapping, callbackAsync) {
-                if (!actionNameUrlSaveTemplate ||
-					!controllerNameUrlSaveTemplate ||
-					!actionNameUrlSelectedTemplate ||
-					!controllerNameUrlSelectedTemplate ||
-                    (!callback && !callbackAsync)) {
-					return;
-				}
-				this.currentFormType = typeForm;
-				this.actionNameUrlSaveTemplate = actionNameUrlSaveTemplate;
-				this.controllerNameUrlSaveTemplate = controllerNameUrlSaveTemplate;
-				this.actionNameUrlSelectedTemplate = actionNameUrlSelectedTemplate;
-				this.controllerNameUrlSelectedTemplate = controllerNameUrlSelectedTemplate;
-				this.setDataForm = callback;
+            templatesDataSource: null,
+            init: function (typeForm, callback, additionalFormObjectMapping, callbackAsync) {
+                if (!callback && !callbackAsync) {
+                    return;
+                }
+                this.currentFormType = typeForm;
+                this.setDataForm = callback;
                 this.setDataFormAsync = callbackAsync;
                 this.additionalFormObjectMapping = additionalFormObjectMapping;
-				this.subscribers();
-			},
-			subscribers: function () {
-				var self = this;
-				$('#showSaveForm').on('click',
-					function () {
-						$('.template-select-wrapper').hide();
-						$('.template-name-wrapper').show(500);
-					});
-
-				$('#showSelectedTemplate').on('click', function () {
-					$('.template-name-wrapper').hide();
-					$('.template-select-wrapper').show(500);
-				});
-
-
-				$('#templateName').keydown(function () {
-					$(this).removeClass('error');
+                this.refreshData()
+                    .then(() => {
+                        this.subscribers();
+                    });
+            },
+            refreshData: async function () {
+                var data = parseInputParametersToDownloadTemplates();
+                var templatesDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: '@Url.Action(Model.GetTemplatesActionName, "Template")',
+                            dataType: 'json',
+                            data: data
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "Value",
+                            fields: {
+                                Value: {editable: false },
+                                Text: { editable: false },
+                                IsCommon: { type: "boolean", editable: false }
+                            }
+                        }
+                    },
                 });
 
+                await templatesDataSource.fetch(function () {
+                    var data = this.data();
+                    $('[name$="TemplateDropDownList"]').each(function () {
+                        $(this).data("kendoDropDownList").setDataSource(data);
+                    });
+                });
+            },
+            subscribers: function () {
+                var self = this;
 
-				$('#save').on('click',
-					function () {
-						if ($('#templateName').val() === "") {
-							Common.ShowError("Имя шаблона обязательно для заполнения");
-							$('#templateName').addClass('error');
-							return;
-						}
-						$('.template-name-wrapper').hide(500);
+                $("#formTemplatesButtonGroup").kendoButtonGroup({
+                    select: function (e) {
+                        if (e.indices == 0) {
+                            $('.upload-template-wrapper').show(500);
+                            $('.create-template-wrapper').hide();
+                            $('.save-template-wrapper').hide();
+                            $('.remove-template-wrapper').hide();
 
-						var form = $('form');
-                        var formObject = Common.Functions.FormToObject(form);
-                        if ($("#valuesFilter").data('kendoMultiSelect')) {
-							formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
-						}
-						kendo.ui.progress($('body'), true);
-
-                        if (self.additionalFormObjectMapping) {
-                            formObject = self.additionalFormObjectMapping(formObject);
+                        } else if (e.indices == 1) {
+                            $('.upload-template-wrapper').hide();
+                            $('.create-template-wrapper').show(500);
+                            $('.save-template-wrapper').hide();
+                            $('.remove-template-wrapper').hide();
+                        } else if (e.indices == 2){
+                            $('.upload-template-wrapper').hide();
+                            $('.create-template-wrapper').hide();
+                            $('.save-template-wrapper').show(500);
+                            $('.remove-template-wrapper').hide();
+                        } else if (e.indices == 3){
+                            $('.upload-template-wrapper').hide();
+                            $('.create-template-wrapper').hide();
+                            $('.save-template-wrapper').hide();
+                            $('.remove-template-wrapper').show(500);
                         }
+                    }
+                });
 
-						var url = "/" + self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate +
-                            "?nameTemplate=" + $('#templateName').val() + "&isCommon=" + $("#isCommon").is(':checked');
+                $("#formTemplatesButtonGroup .uploadItem").kendoTooltip({
+                    content: function(e){
+                        return "Загрузить шаблон";
+                    }
+                });
+                $("#formTemplatesButtonGroup .createItem").kendoTooltip({
+                    content: function (e) {
+                        return "Создать шаблон";
+                    }
+                });
+                $("#formTemplatesButtonGroup .saveItem").kendoTooltip({
+                    content: function (e) {
+                        return "Сохранить в шаблон";
+                    }
+                });
+                $("#formTemplatesButtonGroup .deleteItem").kendoTooltip({
+                    content: function (e) {
+                        return "Удалить шаблон";
+                    }
+                });
 
-                        $.post(url, formObject).done(function (response) {
-							kendo.ui.progress($('body'), false);
-							if (response.Error) {
-								kendo.ui.progress($('body'), false);
-								Common.ShowError(response.Error);
-								return;
-							}
-							if (response.success) {
-								kendo.ui.progress($('body'), false);
-								Common.ShowMessage("Выполнено");
-								$('#templateName').val("");
-                                $("#isCommon").prop("checked", false);
-								$('#selectedTemplate').data("kendoDropDownList").dataSource.read();
-								$('#selectedTemplate').data("kendoDropDownList").refresh();
-							}
-						});
-					});
+                $('#newTemplateName').keydown(function () {
+                    $(this).removeClass('error');
+                });
+                $('#existTemplateName').keydown(function () {
+                    $(this).removeClass('error');
+                });
+
+                $('#saveTemplateDropDownList').data('kendoDropDownList').bind('dataBound', saveTemplateChanged);
+                $('#saveTemplateDropDownList').data('kendoDropDownList').bind('change', saveTemplateChanged);
 
 
-				$('#select').on('click',
-					function() {
-						var url = "/" + self.controllerNameUrlSelectedTemplate + "/" + self.actionNameUrlSelectedTemplate + "?id=" + $('#selectedTemplate').data("kendoDropDownList").value();
-						kendo.ui.progress($('body'), true);
+                $('#uploadTemplate').on('click',
+                    function() {
+                        var url = '@Url.Action("GetTemplate", "Template")' + "?id=" + $('#uploadTemplateDropDownList').data("kendoDropDownList").value();
+                        kendo.ui.progress($('body'), true);
                         $.get(url).done(function(response) {
                                 if (response.error) {
                                     kendo.ui.progress($('body'), false);
                                     Common.ShowError(response.Error);
                                     return;
-							}
+                                }
                                 if (response.data && (self.setDataForm || self.setDataFormAsync)) {
                                     if (self.setDataForm) {
                                         self.setDataForm(self.parseData(response.data));
@@ -153,34 +192,139 @@
                                 Common.ShowError(response.responseText);
                             });
                     });
-			},
+
+                $('#createTemplate').on('click',
+                    function () {
+                        if ($('#newTemplateName').val() === "") {
+                            Common.ShowError("Имя шаблона обязательно для заполнения");
+                            $('#newTemplateName').addClass('error');
+                            return;
+                        }
+                        $('.create-template-wrapper').hide(500);
+                        $("#formTemplatesButtonGroup").data('kendoButtonGroup').select(10);
+
+                        var form = $('form');
+                        var formObject = Common.Functions.FormToObject(form);
+                        if ($("#valuesFilter").data('kendoMultiSelect')) {
+                            formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+                        }
+                        kendo.ui.progress($('body'), true);
+
+                        if (self.additionalFormObjectMapping) {
+                            formObject = self.additionalFormObjectMapping(formObject);
+                        }
+
+                        var url = '@Url.Action(Model.SaveTemplateActionName, "Template")' +  "?nameTemplate=" + $('#newTemplateName').val() + "&isCommon=" + $("#isCommonNew").is(':checked');
+
+                        $.post(url, formObject).done(function (response) {
+                            kendo.ui.progress($('body'), false);
+                            if (response.Error) {
+                                Common.ShowError(response.Error);
+                                return;
+                            }
+                            if (response.success) {
+                                Common.ShowMessage("Шаблон создан");
+                                $('#newTemplateName').val("");
+                                $("#isCommonNew").prop("checked", false);
+                                self.refreshData();
+                            }
+                        });
+                    });
+
+                 $('#saveTemplate').on('click',
+                    function () {
+                        if ($('#existTemplateName').val() === "") {
+                            Common.ShowError("Имя шаблона обязательно для заполнения");
+                            $('#existTemplateName').addClass('error');
+                            return;
+                        }
+                        $('.save-template-wrapper').hide(500);
+                        $("#formTemplatesButtonGroup").data('kendoButtonGroup').select(10);
+
+                        var form = $('form');
+                        var formObject = Common.Functions.FormToObject(form);
+                        if ($("#valuesFilter").data('kendoMultiSelect')) {
+                            formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+                        }
+                        kendo.ui.progress($('body'), true);
+
+                        if (self.additionalFormObjectMapping) {
+                            formObject = self.additionalFormObjectMapping(formObject);
+                        }
+
+                        var id = $('#saveTemplateDropDownList').data('kendoDropDownList').value();
+                        var url = '@Url.Action(Model.SaveTemplateActionName, "Template")' + "?nameTemplate=" + $('#existTemplateName').val() + "&isCommon=" + $("#isCommonExist").is(':checked') + "&id=" + id;
+
+                        $.post(url, formObject).done(function (response) {
+                            kendo.ui.progress($('body'), false);
+                            if (response.Error) {
+                                Common.ShowError(response.Error);
+                                return;
+                            }
+                            if (response.success) {
+                                Common.ShowMessage("Шаблон сохранен");
+                                $('#saveTemplateDropDownList').data("kendoDropDownList").value('');
+                                self.refreshData();
+                            }
+                        });
+                    });
+
+                $('#removeTemplate').on('click',
+                    function() {
+                        var removedTemplateId = $('#removeTemplateDropDownList').data("kendoDropDownList").value();
+                        if (!removedTemplateId)
+                            return;
+
+                        $('.remove-template-wrapper').hide(500);
+                        $("#formTemplatesButtonGroup").data('kendoButtonGroup').select(10);
+                        var url = '@Url.Action("RemoveTemplate", "Template")' + "?id=" + removedTemplateId;
+                        kendo.ui.progress($('body'), true);
+                        $.get(url).done(function(response) {
+                                if (response.error) {
+                                    Common.ShowError(response.Error);
+                                    return;
+                                }
+
+                                if (response.success) {
+                                    Common.ShowMessage("Шаблон удален");
+                                    self.refreshData();
+                                }
+                            })
+                            .fail(function(response) {
+                                Common.ShowError(response.responseText);
+                            })
+                            .always(function(response) {
+                                kendo.ui.progress($('body'), false);
+                            });
+                    });
+            },
             parseData: function (data) {
                 //парс простых типов данных
                 function parseSample(obj) {
-					return Object.keys(obj).map(function (str) {
-						if (typeof (obj[str]) !== "object" || obj[str] === null) {
-							var a = {};
-							a[str] = obj[str];
-							return a;
-						}
-						return null;
-					}).filter(val => !!val);
-				}
+                    return Object.keys(obj).map(function (str) {
+                        if (typeof (obj[str]) !== "object" || obj[str] === null) {
+                            var a = {};
+                            a[str] = obj[str];
+                            return a;
+                        }
+                        return null;
+                    }).filter(val => !!val);
+                }
 
                 //парс сложных типов данных (объектов и массивов из простых типов данных)
-				function parseTwoLevel(obj) {
-					var res = [];
+                function parseTwoLevel(obj) {
+                    var res = [];
                     Object.keys(obj).forEach(function (str) {
                         if (typeof (obj[str]) === "object" && obj[str] !== null) {
                             parseSample(obj[str]).forEach(function(val) {
                                 var a = {};
                                 var strTmp = str + '_' + Object.keys(val)[0];
                                 a[strTmp] = val[Object.keys(val)[0]];
-								res.push(a);
-							});
-						}
-					});
-					return res;
+                                res.push(a);
+                            });
+                        }
+                    });
+                    return res;
                 }
 
                 //парс сложных типов данных (массивов из объектов)
@@ -215,9 +359,9 @@
 
                 return [...parseSample(jsonObj), ...parseTwoLevel(jsonObj), ...parseThirdLevel(jsonObj)];
             }
-		}
-		return obj;
-        })($);
+        }
+        return obj;
+    })($);
 
 
 
@@ -229,11 +373,31 @@
             params[parameter[0]] = parameter[1];
         });
         return params;
-	}
+    }
 
     function setFormDataComplete() {
         kendo.ui.progress($('body'), false);
-        $('.template-select-wrapper').hide(500);
-        Common.ShowMessage("Данные заполнены");
+        $('.upload-template-wrapper').hide(500);
+        $("#formTemplatesButtonGroup").data('kendoButtonGroup').select(10);
+        Common.ShowMessage("Шаблон загружен");
+        }
+
+        function saveTemplateChanged() {
+            var dataItem = $('#saveTemplateDropDownList').data("kendoDropDownList").dataItem();
+            if (!dataItem) {
+                $('#existTemplateName').addClass("k-state-disabled");
+                $('#existTemplateName').attr("disabled", true);
+                $("#isCommonExist").attr("disabled", true);
+                $('#saveTemplate').attr("disabled", true);
+                $('#existTemplateName').val("");
+                $("#isCommonExist").prop("checked", false);
+            } else {
+                $('#existTemplateName').removeClass("k-state-disabled");
+                $('#existTemplateName').attr("disabled", false);
+                $("#isCommonExist").attr("disabled", false);
+                $('#saveTemplate').attr("disabled", false);
+                $('#existTemplateName').val(dataItem.Text);
+                $("#isCommonExist").prop("checked", dataItem.IsCommon);
+            }
     }
-</script>
+    </script>

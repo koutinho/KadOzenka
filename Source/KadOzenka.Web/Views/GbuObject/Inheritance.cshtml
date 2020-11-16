@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Controllers
+@using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
@@ -107,10 +108,11 @@
         <div class="form-group">
             <div class="col-sm-8">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-                     {
-                         ControllerName = "GbuObject",
-                         ActionName = "GetTemplatesInheritance"
-                     }))
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int)DataFormStorege.Inheritance,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateInheritance)
+            }))
             </div>
             <div class="col-sm-2 col-sm-offset-1">
                 <button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
@@ -370,9 +372,7 @@
 				});
 			});
 
-		templateStorage.init(@((int)DataFormStorege.Inheritance),
-			"SaveTemplateInheritance", "GbuObject",
-            "GetTemplatesOneGroup", "GbuObject", null, addCustomLevelsToForm, fillForm);
+		templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
     });
 
 </script>
