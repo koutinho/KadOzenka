@@ -568,7 +568,7 @@ namespace KadOzenka.Dal.Modeling
         public static decimal? CalculatePercent(decimal? calculatedPrice, decimal? initialPrice)
         {
 	        decimal? percent = null;
-	        if (calculatedPrice != null && initialPrice.GetValueOrDefault() != 1)
+	        if (calculatedPrice != null && initialPrice.GetValueOrDefault() != 0)
 	        {
 		        percent = (calculatedPrice / initialPrice.GetValueOrDefault() - 1) * 100;
 	        }
