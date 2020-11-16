@@ -44,9 +44,9 @@ namespace KadOzenka.Web.Helpers
 
 			string onFiltering =
 				$@"
-function onFiltering{className}(e) {{debugger; 
+function onFiltering{className}(e) {{
 	e.preventDefault(); 
-	var query = e.filter.value;
+	var query = e instanceof Array && e[0] ? '' : e.filter.value;
 	if(query)
 		query = query.toLowerCase();
 	var dataSource = e.sender.dataSource;
@@ -81,7 +81,10 @@ function filter{className}(dataSource, query) {{
                     $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} if('{onSelectEvent}'){{{onSelectEvent}.call({{e}});}}}}";
             var script = "<script>" +
                          onChange + onFiltering +
-						 $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value(''); $('input.{className}').data('kendoDropDownTree').trigger('change')}}" +
+						 $@"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value('');  
+							$('input.{className}').data('kendoDropDownTree').trigger('change'); 
+							$('input.{className}').data('kendoDropDownTree').filterInput.val('');
+							$('input.{className}').data('kendoDropDownTree').trigger('filtering', [ true ]);}}" +
                          $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
 						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
                          onSelected + "</script>";
