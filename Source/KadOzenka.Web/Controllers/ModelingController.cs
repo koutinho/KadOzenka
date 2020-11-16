@@ -3,7 +3,6 @@ using System.Linq;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Modeling;
 using System.Collections.Generic;
 using System.Reflection;
 using Core.ErrorManagment;
@@ -33,11 +32,7 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using System.IO;
-using System.Threading;
-using KadOzenka.Dal.LongProcess.ExpressScore;
 using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -158,19 +153,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
 		public JsonResult AddModel(ModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
-
-			var exists = OMModel.Where(x =>
-				x.Name == modelingModel.Name
-			    && x.GroupId == modelingModel.GroupId)
-				.Select(x=>x.Id)
-				.ExecuteFirstOrDefault();
-			if (exists != null)
-				return Json(new { Errors = new List<object>{ new { Message = "Модель с таким названием уже существует для данной группы"} }});
 
 			var modelDto = ModelingModel.FromModel(modelingModel);
 			ModelingService.AddModel(modelDto);
