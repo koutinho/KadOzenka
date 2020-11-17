@@ -16,16 +16,18 @@ namespace KadOzenka.Dal.Tasks
 		}
 
 
+		
+
 		public long? GetCadastralDataCadastralQuarterAttributeId()
 		{
-			var attributeSettings = GetSetting(KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute);
+			var attributeSettings = GetSetting(KoAttributeTypeForSettings.CadastralQuarter);
 
 			return attributeSettings?.AttributeId;
 		}
 
 		public long? GetCadastralDataBuildingCadastralNumberAttributeId()
 		{
-			var attributeSettings = GetSetting(KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute);
+			var attributeSettings = GetSetting(KoAttributeTypeForSettings.BuildingCadastralNumber);
 
 			return attributeSettings?.AttributeId;
 		}
@@ -34,20 +36,20 @@ namespace KadOzenka.Dal.Tasks
 		{
 			ValidateAttributes(cadastralQuarterAttrId, buildingCadastralNumberAttrId);
 
-			UpdateAttributeSetting(cadastralQuarterAttrId, KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute);
-			UpdateAttributeSetting(buildingCadastralNumberAttrId, KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute);
+			UpdateAttributeSetting(cadastralQuarterAttrId, KoAttributeTypeForSettings.CadastralQuarter);
+			UpdateAttributeSetting(buildingCadastralNumberAttrId, KoAttributeTypeForSettings.BuildingCadastralNumber);
 		}
 
 
 		#region Support Methods
 
-		private void UpdateAttributeSetting(long? attributeId, KoUpdateCadastralDataAttributeType attributeType)
+		private void UpdateAttributeSetting(long? attributeId, KoAttributeTypeForSettings attributeType)
 		{
 			var attributeSetting = GetSetting(attributeType);
 
 			if (attributeSetting == null)
 			{
-				attributeSetting = new OMUpdateCadastralDataAttributeSettings
+				attributeSetting = new OMSystemAttributeSettings
 				{
 					AttributeUsingType_Code = attributeType
 				};
@@ -57,9 +59,9 @@ namespace KadOzenka.Dal.Tasks
 			attributeSetting.Save();
 		}
 
-		private OMUpdateCadastralDataAttributeSettings GetSetting(KoUpdateCadastralDataAttributeType type)
+		private OMSystemAttributeSettings GetSetting(KoAttributeTypeForSettings type)
 		{
-			return OMUpdateCadastralDataAttributeSettings.Where(x => x.AttributeUsingType_Code == type)
+			return OMSystemAttributeSettings.Where(x => x.AttributeUsingType_Code == type)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 		}
