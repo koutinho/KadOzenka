@@ -7,6 +7,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 {
@@ -15,12 +16,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
         protected readonly UpksService UpksService;
 		protected readonly UprsService UprsService;
 		protected readonly UpksAndUprsService UpksAndUprsService;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public BaseMinMaxAverageByGroupsReport()
 		{
             UpksService = new UpksService(StatisticalDataService);
             UprsService = new UprsService(StatisticalDataService);
             UpksAndUprsService = new UpksAndUprsService(UpksService, UprsService);
+            _logger = Log.ForContext<BaseMinMaxAverageByGroupsReport>();
         }
 
 
@@ -51,7 +55,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
 		}
 
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -69,9 +73,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 switch (reportType)
                 {
                     case "По группам":
+	                    Logger.Debug("По группам");
                         dataTable = GetDataByGroups(taskIdList, zuOksObjectType == "ОКС");
                         break;
                     case "По группам и подгруппам":
+	                    Logger.Debug("По группам и подгруппам");
                         dataTable = GetDataByGroupsAndSubgroups(taskIdList, zuOksObjectType == "ОКС");
                         break;
                     default:
@@ -82,9 +88,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
                 dataSet.Tables.Add(dataTitleTable);
             }
 
-            GC.Collect();
-
-			return dataSet;
+            return dataSet;
 		}
 
         protected string PreprocessGroupName(string name)

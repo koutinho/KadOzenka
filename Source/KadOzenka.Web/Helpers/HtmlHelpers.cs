@@ -42,14 +42,49 @@ namespace KadOzenka.Web.Helpers
 					$"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); " +
 					$"$('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
 
-		    string onSelected =
+			string onFiltering =
+				$@"
+function onFiltering{className}(e) {{
+	e.preventDefault(); 
+	var query = e instanceof Array && e[0] ? '' : e.filter.value;
+	if(query)
+		query = query.toLowerCase();
+	var dataSource = e.sender.dataSource;
+	filter{className}(dataSource, query);
+}}
+function filter{className}(dataSource, query) {{
+	var hasVisibleChildren = false;
+	var data = dataSource instanceof kendo.data.HierarchicalDataSource && dataSource.data();
+
+	for (var i = 0; i < data.length; i++) {{
+		var item = data[i];
+		var text = item.text.toLowerCase();
+		var itemVisible =
+			query === '' || text.indexOf(query) >= 0;
+		var anyVisibleChildren = filter{className}(item.children, query);
+		hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
+		item.hidden = (!item.hasChildren && !itemVisible) || (item.hasChildren && !anyVisibleChildren);
+	}}
+
+	if (data) {{
+		dataSource.filter({{ field: 'hidden', operator: 'neq', value: true }});
+	}}
+
+	return hasVisibleChildren;
+}}
+";
+
+			string onSelected =
 		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
             if (onSelectEvent != null)
                 onSelected =
                     $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} if('{onSelectEvent}'){{{onSelectEvent}.call({{e}});}}}}";
             var script = "<script>" +
-                         onChange +
-						 $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value(''); $('input.{className}').data('kendoDropDownTree').trigger('change')}}" +
+                         onChange + onFiltering +
+						 $@"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value('');  
+							$('input.{className}').data('kendoDropDownTree').trigger('change'); 
+							$('input.{className}').data('kendoDropDownTree').filterInput.val('');
+							$('input.{className}').data('kendoDropDownTree').trigger('filtering', [ true ]);}}" +
                          $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
 						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
                          onSelected + "</script>";
@@ -75,7 +110,7 @@ namespace KadOzenka.Web.Helpers
 				.Filter(filter)
 				.BindTo(dataSource)
 				.Events(x =>
-					x.Change($"onChange{className}").Select($"onSelected{className}")
+					x.Change($"onChange{className}").Select($"onSelected{className}").Filtering($"onFiltering{className}")
 				)
 				.ClearButton(false)
 				.Value(modelExplorer.Model?.ToString());

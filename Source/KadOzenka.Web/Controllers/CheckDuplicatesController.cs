@@ -21,6 +21,7 @@ namespace KadOzenka.Web.Controllers
         {
             public double Area { get; set; }
             public double Price { get; set; }
+            public int Market { get; set; }
             public bool InProgress { get; set; }
         }
 
@@ -29,7 +30,7 @@ namespace KadOzenka.Web.Controllers
         public JsonResult StartDuplicatesChecking()
         {
             Data data = JsonConvert.DeserializeObject<Data>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
-            new Thread(() => { new Duplicates(data.Area, data.Price).Detect(logData:false); }).Start();
+            new Thread(() => { new Duplicates(data.Area, data.Price, data.Market).Detect(logData:false); }).Start();
             Duplicates.InProgress = data.InProgress;
             return Json(new { type = "started" });
         }

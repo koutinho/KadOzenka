@@ -65,13 +65,6 @@
 		<div class="col-sm-12">
 			<p>Аналоги (@Model.Analogs.Count)</p>
 		</div>
-		@*<div class="col-sm-12" style="padding: 0">
-			<div style="height: auto">
-				<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content($"~/RegistersView/MarketObjectCard?Transition=1&{ViewBag.Filter}")"
-				     data-param-Pageable="true" data-param-Scrollable="true" data-param-EsId="@ViewBag.EsId"
-				     data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid100"></div>
-			</div>
-		</div>*@
 		<div id="resultGrid"></div>
 	</div>
 </div>
@@ -83,7 +76,6 @@
 </script>
 
 <script type="text/javascript">
-	debugger;
 	var reportId = "@Model.ReportId";
 	var dataGrid = null;
 	var data = null;
@@ -153,7 +145,6 @@
 	}
 
 	function onDataBound(e) {
-		debugger;
 		for (var i = 1; i < this.columns.length; i++) {
 			this.autoFitColumn(this.columns[i]);
 		}
@@ -230,22 +221,28 @@
 					analogIds: checked,
 					expressScoreId
 				}
-				kendo.ui.progress($('#successDialog'), true);
+				progressLoader.loader($('#successDialog'), true);
 
-				$.post("@Url.Action("RecalculateAnalog", "ExpressScore")", data).done(function (data) {
+				var jqxhrReload  =  $.ajax({
+					url: "@Url.Action("RecalculateAnalog", "ExpressScore")",
+					data,
+					method: 'post',
+					headers: { 'connection-signalr-id': connectionSignalRId }
+				});
+
+				jqxhrReload.done(function (data) {
 					if (data.Errors) {
 						var errors = getErrors(data.Errors);
 						Common.ShowError(errors);
 					}
 					if (data.success) {
-						debugger;
 						updateCost(data.success.cost, data.success.squareCost);
 						updateReportId(data.success.reportId);
 							Common.ShowMessage("Перерасчет успешно выполнен.");
 					}
 
 				}).always(function() {
-					kendo.ui.progress($('#successDialog'), false);
+					progressLoader.loader($('#successDialog'), false);
 				});
 			});
 	});

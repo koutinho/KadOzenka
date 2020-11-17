@@ -5,6 +5,7 @@
         public static ModelingProcessConfig Current => Core.ConfigParam.Configuration.GetParam<ModelingProcessConfig>("ModelingProcessConfig");
 
         public string TrainingBaseUrl { get; set; }
+        public string TrainingAllTypesUrl { get; set; }
         public string TrainingLinearTypeUrl { get; set; }
         public string TrainingExponentialTypeUrl { get; set; }
         public string TrainingMultiplicativeTypeUrl { get; set; }

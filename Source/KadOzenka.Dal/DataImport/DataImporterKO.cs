@@ -8,8 +8,10 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.Dto;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Common;
 using ObjectModel.Directory;
@@ -30,7 +32,8 @@ namespace KadOzenka.Dal.DataImport
         /// factorId - Идентификатор фактора
         /// deleteOld - Признак удаления старых данных
         /// </summary>
-        public static Stream ImportDataMarkerFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, long groupId, long factorId, bool deleteOld)
+        public static Stream ImportDataMarkerFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, 
+	        long groupId, long factorId, bool deleteOld)
         {
 			var import = CreateDataFileImport(excelFile, registerViewId, mainRegisterId);
 			MemoryStream streamResult = new MemoryStream();
@@ -50,28 +53,35 @@ namespace KadOzenka.Dal.DataImport
 			        MaxDegreeOfParallelism = 10
 		        };
 
-		        int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
-		        mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 		        mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 			        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 
-		        List<ObjectModel.KO.OMMarkCatalog> objs = ObjectModel.KO.OMMarkCatalog
-			        .Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
+		        var objs = new ModelFactorsService().GetMarks(groupId, factorId);
 		        if (deleteOld)
 		        {
 			        Parallel.ForEach(objs, options, obj => { obj.Destroy(); });
 			        objs.Clear();
 		        }
-
-		        Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		        var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 		        {
 			        try
 			        {
-				        if (row.Index != 0) //все, кроме заголовков
-				        {
+						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
+						{
 					        string value = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-					        string metka = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
+					        string metka = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString()?.TrimEnd('0');
+
+					        if (!string.IsNullOrWhiteSpace(metka) && !metka.TryParseToDecimal(out _))
+					        {
+						        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, "Метку нельзя привести к числовому типу. Значение не сохранено.");
+								return;
+					        }
+
+					        var metkaNumber = metka.ParseToDecimalNullable();
 
 					        ObjectModel.KO.OMMarkCatalog existObject =
 						        objs.Find(x => x.ValueFactor.ToUpper() == value.ToUpper());
@@ -82,16 +92,16 @@ namespace KadOzenka.Dal.DataImport
 						        {
 							        Id = -1,
 							        FactorId = factorId,
-							        GroupId = groupId,
-							        ValueFactor = value.ToUpper(),
-							        MetkaFactor = metka.ParseToDecimalNullable()
-						        };
+									GroupId = groupId,
+									ValueFactor = value.ToUpper(),
+							        MetkaFactor = metkaNumber
+								};
 						        existObject.Save();
 						        newobj = true;
 					        }
 					        else
 					        {
-						        existObject.MetkaFactor = metka.ParseToDecimal();
+						        existObject.MetkaFactor = metkaNumber;
 						        existObject.Save();
 					        }
 
@@ -144,13 +154,7 @@ namespace KadOzenka.Dal.DataImport
 				        long errorId = ErrorManager.LogError(ex);
 				        lock (locked)
 				        {
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-						        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-						        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
-						        MultipleBorders.All,
-						        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+					        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 				        }
 			        }
 		        });
@@ -167,6 +171,14 @@ namespace KadOzenka.Dal.DataImport
 
 	        return streamResult;
         }
+
+        private static void AddErrorToExcel(ExcelWorksheet sheet, int rowIndex, int columnIndex, string message)
+        {
+	        sheet.Rows[rowIndex].Cells[columnIndex].SetValue(message);
+	        sheet.Rows[rowIndex].Cells[columnIndex].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+	        sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All,
+		        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+		}
 
         /// <summary>
         /// Импорт группы из Excel
@@ -209,9 +221,9 @@ namespace KadOzenka.Dal.DataImport
 			        MaxDegreeOfParallelism = 10
 		        };
 
-		        int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+		        int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
-		        mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 		        mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 			        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 		        List<ObjectModel.KO.OMGroup> parcelGroup =
@@ -223,13 +235,13 @@ namespace KadOzenka.Dal.DataImport
 		        var groupAttributeFromTourSettings =
 			        TourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(),
 				        KoAttributeUsingType.CodeGroupAttribute);
-
-		        Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		        var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 		        {
 			        try
 			        {
-				        if (row.Index != 0) //все, кроме заголовков
-				        {
+						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
+						{
 					        string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
 					        string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
 					        bool findGroup = false;
@@ -359,9 +371,9 @@ namespace KadOzenka.Dal.DataImport
 	                MaxDegreeOfParallelism = 10
 	            };
 
-	            int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
-	            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 	            mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 	            List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
 	            List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
@@ -372,13 +384,13 @@ namespace KadOzenka.Dal.DataImport
 	            {
 	                Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
 	            }
-
-	            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+	            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 	            {
 	                try
 	                {
-	                    if (row.Index != 0) //все, кроме заголовков
-	                    {
+						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
+						{
 	                        string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
 	                        string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
 	                        bool findGroup = false;

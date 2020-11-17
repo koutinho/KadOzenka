@@ -6,10 +6,13 @@ using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Register;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.DataExport;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Declarations;
+using ObjectModel.Directory.Common;
+using ObjectModel.Market;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -68,12 +71,16 @@ namespace KadOzenka.Dal.DataImport
 			}
 		}
 
-		public static void SendResultNotification(OMImportDataLog import)
+		public static void SendResultNotification(OMImportDataLog import, string subject = null)
 		{
+			if (string.IsNullOrEmpty(subject))
+				subject =
+					$"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int) import.MainRegisterId).Description} от ({import.DateCreated.GetString()})";
+
 			new MessageService().SendMessages(new MessageDto
 			{
 				Addressers = new MessageAddressersDto { UserIds = new long[] { import.UserId } },
-				Subject = $"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int)import.MainRegisterId).Description} от ({import.DateCreated.GetString()})",
+				Subject = subject,
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}
 <a href=""/DataImport/DownloadImportResultFile?importId={import.Id}"">Скачать результат</a>
@@ -94,6 +101,36 @@ namespace KadOzenka.Dal.DataImport
 			}
 
 			return extension;
+		}
+
+		public static OMImportDataLog CreateDataFileImport(Stream fileStream, string fileName, long mainRegisterId, string registerViewId)
+		{
+			var import = new OMImportDataLog
+			{
+				UserId = SRDSession.GetCurrentUserId().Value,
+				DateCreated = DateTime.Now,
+				Status_Code = ImportStatus.Added,
+				DataFileTitle = GetDataFileTitle(fileName),
+				FileExtension = GetFileExtension(fileName),
+				MainRegisterId = mainRegisterId,
+				RegisterViewId = registerViewId
+			};
+			import.Save();
+
+			import.DataFileName = GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(fileStream, FileStorageName, import.DateCreated, import.DataFileName);
+			import.Save();
+
+			return import;
+		}
+
+		public static void SaveResultFile(OMImportDataLog import, Stream streamResult)
+		{
+			import.ResultFileTitle = GetFileResultTitleFromDataTitle(import);
+			import.ResultFileName = GetStorageResultFileName(import.Id);
+			import.DateFinished = DateTime.Now;
+			FileStorageManager.Save(streamResult, FileStorageName, import.DateFinished.Value, import.ResultFileName);
+			import.Save();
 		}
 	}
 }

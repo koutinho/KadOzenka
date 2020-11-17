@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.ExpressScore
 		{
 			try
 			{
-				RequiredMatrixValueStrings = new string[column + 1, row];
+				RequiredMatrixValueStrings = new string[column + 1/*Названия факторов*/, row];
 				ColumnNameIndex = column;
 				CurrentRowRequiredParam = 0;
 				CurrentColumnRequiredParam = 0;

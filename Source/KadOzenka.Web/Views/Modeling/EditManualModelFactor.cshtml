@@ -1,0 +1,132 @@
+﻿@model KadOzenka.Web.Models.Modeling.ManualFactorModel
+
+@using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
+{
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.GeneralModelId)
+    <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Фактор")
+            </div>
+            <div class="col-sm-9">
+                @Html.Kendo().DropDownListFor(x => x.FactorId).HtmlAttributes(new {style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Коэффициент")
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoNumericTextBoxFor(x => x.B0, precision: 5, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Вес фактора")
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoNumericTextBoxFor(x => x.Weight, precision: 15, isReadonly: false)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Деление на фактор")
+            </div>
+            <div class="col-sm-9">
+                @Html.CheckBoxFor(x => x.SignDiv)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Суммировать фактор")
+            </div>
+            <div class="col-sm-9">
+                @Html.CheckBoxFor(x => x.SignAdd)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Использовать метку")
+            </div>
+            <div class="col-sm-9">
+                @Html.CheckBoxFor(x => x.SignMarket)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2 col-sm-offset-8">
+                <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-default btn-block" id="save">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#save').on('click', saveFactor);
+
+        $('#cancel').on('click', function () {
+            Common.UI.CloseWindow('editFactorWindow', window.parent);
+        });
+
+        initAttributes();
+    });
+
+
+
+    function saveFactor(e) {
+        e.preventDefault();
+        var form = $('#updateFactorForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function () {
+                Common.ShowMessage('Сохранение выполнено');
+                Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function initAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetFactorsForManualModel", "Modeling")',
+            data: { modelId: '@Model.GeneralModelId' },
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                var attribute = $('#@nameof(Model.FactorId)').kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    dataSource: data,
+                    filter: "contains"
+                }).data("kendoDropDownList");
+                if('@Model.FactorId')
+                    attribute.value('@Model.FactorId');
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+</script>

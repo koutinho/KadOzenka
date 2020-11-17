@@ -35,35 +35,7 @@ namespace KadOzenka.Web.Controllers
             });
         }
 
-        protected JsonResult SaveTemplate(string nameTemplate, bool isCommon, DataFormStorege formType, string serializeData)
-        {
-	        if (string.IsNullOrEmpty(nameTemplate))
-	        {
-		        return Json(new { Error = "Сохранение не выполнено. Имя шаблона обязательное поле" });
-	        }
-
-	        try
-	        {
-		        var userId = isCommon ? (int?) null : SRDSession.GetCurrentUserId().GetValueOrDefault();
-
-                new OMDataFormStorage
-		        {
-			        UserId = userId,
-			        FormType_Code = formType,
-			        Data = serializeData,
-			        TemplateName = nameTemplate,
-                    IsCommon = isCommon
-		        }.Save();
-	        }
-	        catch (Exception e)
-	        {
-		        return Json(new { Error = $"Сохранение не выполнено. Подробности в журнале ошибок. Ошибка: {e.Message}" });
-	        }
-
-	        return Json(new { success = true });
-        }
-
-        protected JsonResult SendErrorMessage(string errorMessage)
+		protected JsonResult SendErrorMessage(string errorMessage)
         {
 	        return Json(new
 	        {

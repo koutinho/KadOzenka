@@ -6,27 +6,39 @@ using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
     public class UniformReport : DataCompositionByCharacteristicsBaseReport
 	{
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
+
+		public UniformReport()
+		{
+			_logger = Log.ForContext<UniformReport>();
+		}
+
 		protected override string TemplateName(NameValueCollection query)
         {
             return "PricingFactorsCompositionUniformReport";
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query).ToList();
 
-            var operations = GetOperations<ReportItem>(taskIds);
+            var operations = GetOperations<ReportItem>(taskIds, Logger);
+            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
-            var dataSet = new DataSet();
+			Logger.Debug("Начато формирование таблиц");
+			var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
             dataSet.Tables.Add(itemTable);
+            Logger.Debug("Закончено формирование таблиц");
 
-            return dataSet;
+			return dataSet;
         }
 
 

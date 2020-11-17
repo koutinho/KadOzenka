@@ -8,17 +8,22 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class MinMaxAverageUPKSByAdministrativeDistrictsReport : StatisticalDataReport
 	{
 		private readonly MinMaxAverageUPKSByAdministrativeDistrictsService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public MinMaxAverageUPKSByAdministrativeDistrictsReport()
 		{
 			_service = new MinMaxAverageUPKSByAdministrativeDistrictsService(new GbuCodRegisterService());
+			_logger = Log.ForContext<MinMaxAverageUPKSByAdministrativeDistrictsReport>();
 		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -32,12 +37,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetReportType(GetQueryParam<string>("ReportType", query));
-			var dataSet = new DataSet();
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
+			var dataSet = new DataSet();
 			using (DataTable dataTitleTable = new DataTable("Common"))
             {
 				dataTitleTable.Columns.Add("Title");
@@ -56,6 +62,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 					dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 					var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
+					Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+					Logger.Debug("Начато формирование таблиц");
 					foreach (var unitDto in data)
 					{
 						dataTable.Rows.Add(unitDto.AdditionalName, unitDto.Name, unitDto.ObjectsCount, unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
@@ -65,6 +74,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 					dataSet.Tables.Add(dataTable);
 					dataSet.Tables.Add(dataTitleTable);
+					Logger.Debug("Закончено формирование таблиц");
 				}
 			}
 

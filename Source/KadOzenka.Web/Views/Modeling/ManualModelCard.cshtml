@@ -1,0 +1,566 @@
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Modeling.ManualModelingModel
+<!-- Модальное окно для загрузки справочника меток -->
+@using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
+{
+    <div id="uploadMarksCatalogModal" style="display: none;  padding: 2%;">
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-9">
+                    <label for="isDeleteAllCheckBox">Загрузка с удалением имеющихся данных</label>
+                </div>
+                <div class="col-sm-2">
+                    <input name="isDeleteAllCheckBox" id="isDeleteAllCheckBox" type="checkbox" />
+                </div>
+            </div>
+            <div class="form-group">
+                <input name="marksCatalogFiles" id="marksCatalogFiles" type="file" aria-label="files" accept=".xls,.xlsx" />
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 col-sm-offset-9">
+                    <button id="loadMarksCatalogFilesButton" type="button">Загрузить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!--Основное окно с информацией о модели -->
+@using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(x => x.GeneralModelId)
+    <div id="toolbar"></div>
+    <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+        <div style="margin: 1%;">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Name)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Description)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Type)
+                </div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().DropDownListFor(m => m.Type)
+                        .DataTextField("Name")
+                        .DataValueField("Name")
+                        .Enable(false))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.GroupId)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListFor(x => x.GroupId, "GetAllGroups", "Tour", isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false, withoutNull: true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.CalculationTypeCode, true)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
+                </div>
+            </div>
+            <div class="form-group" id="modelCalculationMethod" style="display: none;">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.CalculationMethodCode, true)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+                </div>
+            </div>
+        </div>
+
+        <div style="border: 1px solid #cccdcf; padding: 1%;">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Formula)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.A0)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+                </div>
+            </div>
+
+            <div style="padding-top: 2%;">
+                <div id="factorToolbar"></div>
+            </div>
+            <div style="display: flex;">
+                <div style="align-items: stretch">
+                    <div id="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
+<script>
+    // Установка стиля при загрузке меток из файла
+    var mutConfig = { childList: true, subtree: true };
+    var mutationFunction = function (mutList, observer) {
+        var targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Обновить" },
+                    icon: 'refresh',
+                    click: UpdateView
+                },
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Сохранить" },
+                    icon: 'save',
+                    click: UpdateModel
+                }
+            ]
+        });
+        $('#factorToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'add-factor',
+                    text: '',
+                    attributes: { title: "Добавить" },
+                    icon: 'add'
+                },
+                {
+                    type: 'button',
+                    id: 'edit-factor',
+                    text: '',
+                    attributes: { title: "Изменить" },
+                    icon: 'edit'
+                },
+                {
+                    type: 'button',
+                    id: 'remove-factor',
+                    text: '',
+                    attributes: { title: "Удалить" },
+                    icon: 'delete'
+                },
+                {
+                    type: 'button',
+                    id: 'show-marks',
+                    text: '',
+                    attributes: { title: "Метки" },
+                    icon: 'clock'
+                },
+                {
+                    type: 'button',
+                    id: 'upload-marks-catalog',
+                    text: '',
+                    attributes: { title: "Загрузить справочник меток" },
+                    icon: 'upload'
+                },
+                {
+                    type: 'button',
+                    id: 'download-marks-catalog',
+                    text: '',
+                    attributes: { title: "Выгрузить справочник меток" },
+                    icon: 'download'
+                }
+            ]
+        });
+        $(".k-toolbar [title]").kendoTooltip({
+            position:"top"
+        });
+
+
+        var gridDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetModelAttributes", "Modeling")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: getDataForModelAttributesDownloader,
+                    dataType: 'json'
+                }
+            }
+        });
+        $('#grid').kendoGrid({
+            dataSource: gridDataSource,
+            columns: [
+                {
+                    field: 'AttributeName',
+                    title: 'Фактор',
+                    width: "40%"
+                },
+                {
+                    field: 'SignDiv',
+                    title: 'Деление',
+                    template: "#=SignDiv ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'SignAdd',
+                    title: 'Сумма',
+                    template: "#=SignAdd ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'SignMarket',
+                    title: 'Метка',
+                    template: "#=SignMarket ? 'Да' : 'Нет'#"
+                },
+                {
+                    field: 'B0',
+                    title: 'Коэф.'
+                },
+                {
+                    field: 'Coefficient',
+                    title: 'Вес'
+                }
+            ],
+            width: '100%',
+            scrollable: true,
+            selectable: true
+        });
+        $('#grid').data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                return e.target.text();
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+
+
+        $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', onTypeChanged);
+
+        $('#CalculationTypeCode').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
+        onCalculationTypeChanged();
+
+        $("#grid").data("kendoGrid").bind('change', onGridChanged);
+        $("#grid").data("kendoGrid").bind('dataBound', onGridChanged);
+
+
+        $('#add-factor').on('click', addFactor);
+        $('#edit-factor').on('click', editFactor);
+        $('#remove-factor').on('click', deleteFactor);
+
+
+        $('#show-marks').on('click', showMarks);
+        $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
+        $('#download-marks-catalog').on('click', downloadMarksCatalog);
+
+
+        $('#marksCatalogFiles').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Выбрать Файл'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function (e) {
+                if (e.operation === "upload") {
+                    Common.ShowMessage("Данные загружены успешно");
+                }
+            },
+            error: function (e) {
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            }
+        }).data('kendoUpload');
+
+        var mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
+
+        $("#loadMarksCatalogFilesButton").kendoButton({
+            click: uploadMarksCatalog
+        });
+    });
+
+
+
+
+
+    function onCalculationTypeChanged() {
+        var dropdownList = $('#CalculationTypeCode').data('kendoDropDownList');
+		if (!dropdownList)
+			return;
+		var calculationType = dropdownList.value();
+		if (calculationType == '@KoCalculationType.Comparative.GetEnumCode()') {
+			$("#modelCalculationMethod").show();
+		} else {
+			$("#modelCalculationMethod").hide();
+		}
+    }
+
+
+    function UpdateView() {
+        @{
+            if (!Model.IsPartial)
+            {
+                <text>location.reload();</text>
+            }
+            else
+            {
+                <text>
+                    //метод из TourCard
+                    UpdateMainContent();
+                </text>
+            }
+        }
+	}
+
+
+	function UpdateModel() {
+		var form = $('#saveModelForm');
+		var formObject = Common.Functions.FormToObject(form);
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: form.attr('method'),
+			url: form.attr('action'),
+			data: formObject,
+			success: function (e) {
+				kendo.ui.progress($('body'), false);
+				Common.ShowMessage('Сохранено');
+				UpdateView();
+			},
+			error: function (e) {
+				kendo.ui.progress($('body'), false);
+				Common.ShowError(e.responseText);
+			}
+		});
+    }
+
+
+    function getDataForModelAttributesDownloader() {
+        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
+        return { modelId: '@Model.GeneralModelId', type: modelType }
+    }
+
+
+    function getSelectedRowInFactorsGrid() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
+    }
+
+
+    function onTypeChanged() {
+        var algType = this.value();
+        $.ajax({
+            url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
+            type: 'POST',
+            success: function (e) {
+                $('#Formula').val(e.formula);
+            },
+            error: function (e) {
+                Common.ShowError(e.responseText);
+            }
+        });
+    }
+
+
+    function onGridChanged() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length == 0) {
+            $('#edit-factor').addClass('k-state-disabled');
+            $('#remove-factor').addClass('k-state-disabled');
+            $('#show-marks').addClass('k-state-disabled');
+            $('#download-marks-catalog').addClass('k-state-disabled');
+            $('#upload-marks-catalog').addClass('k-state-disabled');
+        }
+        else {
+            $('#edit-factor').removeClass('k-state-disabled');
+            $('#remove-factor').removeClass('k-state-disabled');
+            $('#show-marks').removeClass('k-state-disabled');
+            $('#download-marks-catalog').removeClass('k-state-disabled');
+            $('#upload-marks-catalog').removeClass('k-state-disabled');
+        }
+    }
+
+
+    function addFactor() {
+        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
+        Common.UI.ShowWindow('Редактирование фактора',
+            '@Url.Action("EditManualModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
+            'editFactorWindow',
+            function (e, param) {
+                if (param == true) {
+                    UpdateView();
+                }
+            },
+            800, 400);
+    }
+
+
+    function editFactor() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            Common.UI.ShowWindow('Редактирование фактора',
+                '@Url.Action("EditManualModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.GeneralModelId',
+                'editFactorWindow',
+                function (e, param) {
+                    if (param == true) {
+                        UpdateView();
+                    }
+                },
+                800, 400
+            );
+        }
+    }
+
+
+    function deleteFactor() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            Common.UI.ShowConfirm({
+                title: '',
+                content: 'Удалить фактор?',
+                onSuccess: function () {
+                    kendo.ui.progress($('body'), true);
+                    $.ajax({
+                        url: '@Url.Action("DeleteModelFactor", "Modeling")',
+                        type: 'POST',
+                        data: { id: selectedRowData.Id },
+                        success: function (response) {
+                            if (response.Success) {
+                                Common.ShowMessage(response.Success);
+                                UpdateView();
+                            }
+                        },
+                        error: function (response) {
+                            Common.ShowError(response.responseText);
+                        },
+                        complete: function() {
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+
+    function showMarks() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var factorId = selectedRowData.AttributeId;
+            Common.UI.ShowWindow('Метки',
+                '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId,
+                'editFactorWindow',
+                function (e) {},
+                800, 400);
+        }
+    }
+
+
+    function downloadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var factorId = selectedRowData.AttributeId;
+            window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId);
+        }
+    }
+
+
+    function showModalToUploadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            $("#marksCatalogFiles").getKendoUpload().removeAllFiles();
+            var modal = $("#uploadMarksCatalogModal");
+            ShowModal(modal, '50%', '30%');
+        }
+    }
+
+
+    function uploadMarksCatalog() {
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        if (selectedRowData) {
+            var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
+            if (files.length === 0) {
+                Common.ShowError("Файл не выбран");
+                return;
+            }
+            var formData = new FormData();
+            formData.append('file', files[0].rawFile);
+            formData.append('groupId', '@Model.GroupId');
+            formData.append('factorId', selectedRowData.AttributeId);
+            formData.append('isDeleteOld', $("#isDeleteAllCheckBox").is(":checked"));
+            kendo.ui.progress($('#uploadMarksCatalogModal'), true);
+            $.ajax({
+                url: '@Url.Action("UploadMarksCatalog", "Modeling")',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
+                    } else {
+                        Common.ShowError("Не удалось загрузить выбранный файл");
+                    }
+                },
+                error: function(e) {
+                    Common.ShowError(e.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('#uploadMarksCatalogModal'), false);
+                    $("#uploadMarksCatalogModal").data("kendoWindow").close();
+                }
+            });
+        }
+    }
+</script>
+
+
+<style>
+    .factor-buttons button {
+        width: 10rem;
+        margin-bottom: 5px !important;
+        display: block;
+    }
+</style>

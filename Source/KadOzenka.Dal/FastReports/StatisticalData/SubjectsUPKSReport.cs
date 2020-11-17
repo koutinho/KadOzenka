@@ -6,16 +6,20 @@ using System.IO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class SubjectsUPKSReport : StatisticalDataReport
 	{
 		private readonly SubjectsUPKSService _subjectsUPKSService;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
 
 		public SubjectsUPKSReport()
 		{
 			_subjectsUPKSService = new SubjectsUPKSService(StatisticalDataService);
+			_logger = Log.ForContext<SubjectsUPKSReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -32,10 +36,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			}
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetQueryParam<string>("ReportType", query);
+			Logger.Debug("Тип отчета {ReportType}", reportType);
 
 			DataSet data;
 			switch (reportType)
@@ -66,6 +71,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.ObjectsCount,
@@ -78,6 +86,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}
@@ -96,8 +105,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(string));
 			
-
 			var data = _subjectsUPKSService.GetSubjectsUPKSByTypeAndPurposeData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.PropertyType, unitDto.Purpose, unitDto.HasPurpose, unitDto.ObjectsCount,
@@ -110,6 +121,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

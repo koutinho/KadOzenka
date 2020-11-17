@@ -269,7 +269,7 @@
                             var listView = $("#listView").data('kendoListView');
                             listView.dataSource.add({
                                 IsKey: false,
-                                IsReadOnly: false,
+                                IsReadOnly: isForGbuObjects || isForUnits,
                                 ColumnName: listBoxData.Name,
                                 ColumnId: listBoxData.Id,
                                 ColumnUid: listBoxData.uid,
@@ -656,7 +656,7 @@
                     query === "" || text.indexOf(query) >= 0;
                 var anyVisibleChildren = filter(item.children, query);
                 hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
-                item.hidden = !itemVisible && !anyVisibleChildren;
+                item.hidden = (!item.hasChildren && !itemVisible) || (item.hasChildren && !anyVisibleChildren);
             }
 
             if (data) {

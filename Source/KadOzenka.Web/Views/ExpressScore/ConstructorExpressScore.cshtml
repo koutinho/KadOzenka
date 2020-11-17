@@ -102,6 +102,16 @@
 		}
 	}
 
+
+	function selectDictionary(e) {
+		var defaultValueControl = $(e.sender.element).closest('fieldset').find('[id^="DefaultValueCostFactor"]').data("kendoDropDownList");
+		if (defaultValueControl) {
+			var dataSource = defaultValueControl.dataSource;
+			dataSource.transport.options.read.url = dataSource.transport.options.read.url.split('?')[0] + `?dictionaryId=${e.dataItem.Value}`;
+			dataSource.read();
+		};
+	}
+
 	function handlerChangeSegment(e) {
 		var index = this.select().index(),
 			dataItem = this.dataSource.view()[index];

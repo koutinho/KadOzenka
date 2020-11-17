@@ -606,6 +606,30 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 81 Реестр хранения настроек гбу атрибута
+    /// </summary>
+    public partial class OMAttributeSettings
+    {
+
+        public OMAttributeSettings()
+        {
+
+            AttributeId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAttributeSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -1576,12 +1600,6 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (207 Модель типизированная)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Ko.OMModelTypified> ModelTypified { get; set; }
-
-        /// <summary>
         /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
@@ -1594,44 +1612,10 @@ namespace ObjectModel.KO
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
-            ModelTypified = new List<ObjectModel.Ko.OMModelTypified>();
-
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 
         }
         public OMModel(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная
-    /// </summary>
-    public partial class OMModelTypified
-    {
-
-
-        /// <summary>
-        /// Ссылка на (210 Факторы модели)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
-        public OMModelTypified()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
-
-        }
-        public OMModelTypified(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -3341,55 +3325,6 @@ namespace ObjectModel.ES
 namespace ObjectModel.ES
 {
     /// <summary>
-    /// 601 Экспресс оценка. Год постройки
-    /// </summary>
-    public partial class OMYearConstruction
-    {
-
-        public OMYearConstruction()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMYearConstruction(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 602 Экспресс оценка. Площадь помещений
-    /// </summary>
-    public partial class OMSquare
-    {
-
-        public OMSquare()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSquare(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-
-namespace ObjectModel.ES
-{
-    /// <summary>
     /// 608 Связь экспресс оценки и объектов аналогов
     /// </summary>
     public partial class OMEsToMarketCoreObject
@@ -3485,30 +3420,6 @@ namespace ObjectModel.Es
 
         }
         public OMSettingsParams(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 612 Экспресс оценка. Значения объекта оценки
-    /// </summary>
-    public partial class OMTargetObjectValue
-    {
-
-        public OMTargetObjectValue()
-        {
-
-            UnitId = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMTargetObjectValue(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

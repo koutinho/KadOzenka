@@ -7,6 +7,7 @@ using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
@@ -15,10 +16,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
     public class PreviousToursReport : StatisticalDataReport
     {
         private PreviousToursService PreviousToursService { get; set; }
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
 
         public PreviousToursReport()
         {
             PreviousToursService = new PreviousToursService();
+            _logger = Log.ForContext<PreviousToursReport>();
         }
 
         protected override string TemplateName(NameValueCollection query)
@@ -31,19 +35,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             GroupFilter.InitializeFilterValues(StatisticalDataType.PricingFactorsCompositionForPreviousTours, initialization, filterValues);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
-
             var groupId = GetGroupIdFromFilter(query);
 
             var reportInfo = PreviousToursService.GetReportInfo(taskIds, groupId);
+            Logger.Debug("Найдено {Count} объектов", reportInfo.Items?.Count);
 
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(reportInfo.Items, reportInfo.ColumnTitles);
             var commonTable = GetCommonDataTable(reportInfo.Title);
             dataSet.Tables.Add(itemTable);
             dataSet.Tables.Add(commonTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }

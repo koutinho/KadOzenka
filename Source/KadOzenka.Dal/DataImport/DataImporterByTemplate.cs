@@ -102,6 +102,14 @@ namespace KadOzenka.Dal.DataImport
 		
 		public bool Test() => true;
 
+		public static void ValidateColumns(List<DataExportColumn> columns)
+		{
+			if (columns.All(x => x.IsKey))
+			{
+				throw new Exception("Не указаны неключевые поля");
+			}
+		}
+
 		public static long AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName,
             Stream templateFile, List<DataExportColumn> columns, long? documentId)
         {
@@ -129,29 +137,38 @@ namespace KadOzenka.Dal.DataImport
 			return import.Id;
         }
 
-        public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile,
+		public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile,
             List<DataExportColumn> columns, long? documentId, out bool success)
         {
             var mainWorkSheet = excelFile.Worksheets[0];
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var usedRowCount = lastUsedRowIndex + 1;
+			if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
+	            throw new Exception("В указанном файле отсутствуют данные");
+
+			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 100
             };
-            int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+            int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
             mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
             mainWorkSheet.Rows[0].Cells[maxColumns + 1].SetValue("Создание объекта");
             List<string> columnNames = new List<string>();
-            for (int i = 0; i < maxColumns; i++) columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+            for (int i = 0; i < maxColumns; i++)
+            {
+				if(mainWorkSheet.Rows[0].Cells[i].Value != null)
+					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+            }
 
             var register = OMRegister.Where(x => x.RegisterId == mainRegisterId).Select(x => x.AllpriTable).ExecuteFirstOrDefault();
             bool isAllpri = !string.IsNullOrEmpty(register.AllpriTable);
 
             if (isAllpri)
-                success = ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, documentId);
+                success = ProcessAllpri(columns, mainWorkSheet, options, lastUsedRowIndex, maxColumns, columnNames, documentId);
             else
-                success = ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
+                success = ProcessNotAllpri(columns, mainWorkSheet, options, lastUsedRowIndex, maxColumns, columnNames, mainRegisterId);
 
             MemoryStream stream = new MemoryStream();
             excelFile.Save(stream, SaveOptions.XlsxDefault);
@@ -160,26 +177,27 @@ namespace KadOzenka.Dal.DataImport
         }
 
         private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
-			ParallelOptions options, int maxColumns, List<string> columnNames, long? documentId)
+			ParallelOptions options, int lastUsedRowIndex, int maxColumns, List<string> columnNames, long? documentId)
 		{
             var success = true;
             OMInstance doc = OMInstance.Where(x => x.Id == documentId).SelectAll().Execute().FirstOrDefault();
             var docDate = doc.ApproveDate;
-
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
 				try
 				{
-					if (row.Index != 0) //все, кроме заголовков
+					if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 					{
 						long objectId = -1;
                         var isNewObject = false;
 
 						//ключ - кадастровый номер, колонка №2						
-						string cadastralNumber = row.Cells[1].Value.ToString();
+						string cadastralNumber = row.Cells[1].Value?.ToString();
+						if (string.IsNullOrEmpty(cadastralNumber))
+							throw new Exception("Не указан кадастровый номер");
+
 						OMMainObject mainObject = OMMainObject.Where(x => x.CadastralNumber == cadastralNumber)
 							.Select(x => x.Id).ExecuteFirstOrDefault();
-
 						if (mainObject == null)
 						{
 							mainObject = new OMMainObject
@@ -228,7 +246,10 @@ namespace KadOzenka.Dal.DataImport
 									case RegisterAttributeType.DECIMAL:
                                         gbuObjectAttribute.NumValue = value.ParseToDecimalNullable();
 										break;
-                                    case RegisterAttributeType.STRING:
+									case RegisterAttributeType.BOOLEAN:
+										gbuObjectAttribute.NumValue = value.ParseToBoolean()? 1 : 0;
+										break;
+									case RegisterAttributeType.STRING:
                                         gbuObjectAttribute.StringValue = value == null ? "" : value.ToString();
 										break;
 									case RegisterAttributeType.DATE:
@@ -246,13 +267,20 @@ namespace KadOzenka.Dal.DataImport
                             if(isNewObject)
 						        mainWorkSheet.Rows[row.Index].Cells[maxColumns + 1].SetValue("Объект создан");
 						}
+						success = true;
 					}
 				}
 				catch (Exception ex)
-                {
-                    success = false;
-                    long errorId = ErrorManager.LogError(ex);
-					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+				{
+					if (ex.Message != "Не указан кадастровый номер")
+	                {
+		                long errorId = ErrorManager.LogError(ex);
+		                mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+					}
+					else
+					{
+						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message}");
+					}
 				}
 			});
 
@@ -260,17 +288,17 @@ namespace KadOzenka.Dal.DataImport
 		}
 
 		private static bool ProcessNotAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
-			ParallelOptions options, int maxColumns, List<string> columnNames, int mainRegisterId)
+			ParallelOptions options, int lastUsedRowIndex, int maxColumns, List<string> columnNames, int mainRegisterId)
 		{
 		    var success = true;
 		    var errorCount = 0;
 		    var handledObjects = new Dictionary<int, RegisterObject>();
 		    object locked = new object();
-            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		    Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
 				{
-					if (row.Index != 0) //все, кроме заголовков
+					if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 					{
 						// Найти ИД объекта по ключевым полям					
 						List<QSCondition> conditions = new List<QSCondition>();
@@ -444,6 +472,6 @@ namespace KadOzenka.Dal.DataImport
 		    }
 
 		    return success;
-        }		
+        }
 	}
 }

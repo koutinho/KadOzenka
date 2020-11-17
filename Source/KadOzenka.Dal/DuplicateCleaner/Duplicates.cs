@@ -7,6 +7,11 @@ using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
 
 using Newtonsoft.Json;
+using Core.Register;
+using ObjectModel.Directory;
+using Core.Shared.Extensions;
+using Core.Shared.Misc;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace KadOzenka.Dal.DuplicateCleaner
 {
@@ -18,6 +23,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
         private static bool inProgress = false;
         private double areaDelta = 0.01;
         private double priceDelta = 0.05;
+        private int selectedMarket = 0;
 
         public double AreaDelta
         {
@@ -29,6 +35,12 @@ namespace KadOzenka.Dal.DuplicateCleaner
         {
             get => priceDelta;
             set => priceDelta = value >= 1 ? value / 100 : value;
+        }
+
+        public int SelectedMarket
+        {
+            get => selectedMarket;
+            set => selectedMarket = value;
         }
 
         public static double CurrentProgress
@@ -45,10 +57,11 @@ namespace KadOzenka.Dal.DuplicateCleaner
 
         public Duplicates() { }
 
-        public Duplicates(double areaDelta, double priceDelta)
+        public Duplicates(double areaDelta, double priceDelta, int selectedMarket)
         {
             AreaDelta = areaDelta;
             PriceDelta = priceDelta;
+            SelectedMarket = selectedMarket;
         }
 
         readonly List<OMCoreObject> AllObjects =
@@ -56,7 +69,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
                             x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate)
-                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
+                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code, x.Market_Code, x.Market, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
                 .Execute()
                 .ToList();
 
@@ -109,33 +122,33 @@ namespace KadOzenka.Dal.DuplicateCleaner
             ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
-	    private List<List<OMCoreObject>> SplitListByPersent<T>(List<OMCoreObject> list)
+        private List<List<OMCoreObject>> SplitListByPersent<T>(List<OMCoreObject> list)
 		{
-            List<List<OMCoreObject>> result = new List<List<OMCoreObject>>();
+            List<List<OMCoreObject>> buffer = new List<List<OMCoreObject>>(), result = new List<List<OMCoreObject>>();
             OMCoreObject FEL = list.ElementAt(0);
             int counter = 0;
-            result.Add(new List<OMCoreObject>());
+            buffer.Add(new List<OMCoreObject>());
             list.ForEach(x =>
             {
                 if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * Convert.ToDecimal(1 - AreaDelta) &&
                     FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 - PriceDelta) &&
                     FEL.Price.GetValueOrDefault() <= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 + PriceDelta))
-                    result.ElementAt(counter).Add(x);
+                    buffer.ElementAt(counter).Add(x);
                 else
                 {
                     FEL = x;
                     counter++;
-                    result.Add(new List<OMCoreObject>());
-                    result.ElementAt(counter).Add(FEL);
+                    buffer.Add(new List<OMCoreObject>());
+                    buffer.ElementAt(counter).Add(FEL);
                 }
             });
-            result.ForEach(x => x.Sort((y, z) => DateTime.Compare(z.ParserTime.GetValueOrDefault(), y.ParserTime.GetValueOrDefault())));
+            buffer.ForEach(x => result.Add(x.OrderBy(y => y.Market_Code != (MarketTypes)SelectedMarket).ThenByDescending(y => y.ParserTime.GetValueOrDefault()).ToList()));
             return result;
         }
 
         public static string GetCurrentProgress()
         {
-            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => true).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
+            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => x.AreaDelta != null && x.PriceDelta != null).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
             return JsonConvert.SerializeObject(new
             {
                 checkDate = history == null ? null : history.CheckDate?.ToString("yyyy.MM.dd HH:mm:ss"),
@@ -148,6 +161,14 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 currentProgress = CurrentProgress,
                 inProgress = InProgress
             });
+        }
+
+        public static string GetListOfMarkets()
+        {
+            List<object> result = new List<object>();
+            foreach (MarketTypes marketType in MarketTypes.GetValues(typeof(MarketTypes)).Cast<MarketTypes>().Take(4))
+                result.Add(new { value=(int)marketType, description=marketType.GetEnumDescription()});
+            return JsonConvert.SerializeObject(new { ListOfMarkets = result });
         }
 
     }

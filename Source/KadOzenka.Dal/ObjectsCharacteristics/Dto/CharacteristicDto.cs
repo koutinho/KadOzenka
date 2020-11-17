@@ -9,5 +9,6 @@ namespace KadOzenka.Dal.ObjectsCharacteristics.Dto
         public long RegisterId { get; set; }
         public RegisterAttributeType Type { get; set; }
         public long? ReferenceId { get; set; }
+        public bool UseParentAttributeForPlacement { get; set; }
     }
 }

@@ -1044,13 +1044,15 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupParcel_2016,
                         A0 = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForExponential = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForMultiplicative = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
                         Formula = NullConvertor.ToString(myOleDbDataReader["sub_formula"]),
                         AlgoritmType_Code = (KoAlgoritmType)NullConvertor.DBToInt64(myOleDbDataReader["type_formula"]),
                         Description = "-",
                         Name = "-"
                     };
                     koGroup.Save();
-                    LoadGroupParcelModelFactor_2016(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup.Id);
+                    LoadGroupParcelModelFactor_2016(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup);
                     count++;
                     Console.WriteLine(count);
                 }
@@ -1078,13 +1080,15 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2016,
                         A0 = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForExponential = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForMultiplicative = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
                         Formula = NullConvertor.ToString(myOleDbDataReader["sub_formula"]),
                         AlgoritmType_Code = (KoAlgoritmType)NullConvertor.DBToInt64(myOleDbDataReader["type_formula"]),
                         Description = "-",
                         Name = "-"
                     };
                     koGroup.Save();
-                    LoadGroupOKSModelFactor_2016(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup.Id);
+                    LoadGroupOKSModelFactor_2016(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup);
                     count++;
                     Console.WriteLine(count);
                 }
@@ -1092,7 +1096,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
-        public static void LoadGroupParcelModelFactor_2016(long ms_id_subgroup, long id_model)
+        public static void LoadGroupParcelModelFactor_2016(long ms_id_subgroup, ObjectModel.KO.OMModel model)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_Parcel_2016"]))
             {
@@ -1112,12 +1116,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         B0 = NullConvertor.DBToDecimal(myOleDbDataReader["B0"]),
                         FactorId = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) * 100 + OffsetFactorParcel_2016,
-                        ModelId = id_model,
+                        ModelId = model.Id,
                         Weight = NullConvertor.DBToDecimal(myOleDbDataReader["WEIGHT_FACTOR"]),
                         SignAdd = NullConvertor.DBToInt64(myOleDbDataReader["PRADD"]) == 1,
                         SignDiv = NullConvertor.DBToInt64(myOleDbDataReader["PRDIV"]) == 1,
                         SignMarket = NullConvertor.DBToInt64(myOleDbDataReader["PR_METKA"]) == 1,
                         MarkerId = -1,
+                        AlgorithmType_Code = model.AlgoritmType_Code,
+                        AlgorithmType = model.AlgoritmType,
                     };
                     koGroup.Save();
                     count++;
@@ -1127,7 +1133,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
-        public static void LoadGroupOKSModelFactor_2016(long ms_id_subgroup, long id_model)
+        public static void LoadGroupOKSModelFactor_2016(long ms_id_subgroup, ObjectModel.KO.OMModel model)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2016"]))
             {
@@ -1147,12 +1153,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         B0 = NullConvertor.DBToDecimal(myOleDbDataReader["B0"]),
                         FactorId = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) * 100 + OffsetFactorOKS_2016,
-                        ModelId = id_model,
+                        ModelId = model.Id,
                         Weight = NullConvertor.DBToDecimal(myOleDbDataReader["WEIGHT_FACTOR"]),
                         SignAdd = NullConvertor.DBToInt64(myOleDbDataReader["PRADD"]) == 1,
                         SignDiv = NullConvertor.DBToInt64(myOleDbDataReader["PRDIV"]) == 1,
                         SignMarket = NullConvertor.DBToInt64(myOleDbDataReader["PR_METKA"]) == 1,
                         MarkerId = -1,
+                        AlgorithmType_Code = model.AlgoritmType_Code,
+                        AlgorithmType = model.AlgoritmType,
                     };
                     koGroup.Save();
                     count++;
@@ -1462,13 +1470,15 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupParcel_2018,
                         A0 = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForExponential = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForMultiplicative = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
                         Formula = NullConvertor.ToString(myOleDbDataReader["sub_formula"]),
                         AlgoritmType_Code = (KoAlgoritmType)NullConvertor.DBToInt64(myOleDbDataReader["type_formula"]),
                         Description = "-",
                         Name = "-"
                     };
                     koGroup.Save();
-                    LoadGroupParcelModelFactor_2018(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup.Id);
+                    LoadGroupParcelModelFactor_2018(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup);
                     count++;
                     Console.WriteLine(count);
                 }
@@ -1496,13 +1506,15 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2018,
                         A0 = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForExponential = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
+                        A0ForMultiplicative = NullConvertor.DBToDecimal(myOleDbDataReader["A0"]),
                         Formula = NullConvertor.ToString(myOleDbDataReader["sub_formula"]),
                         AlgoritmType_Code = (KoAlgoritmType)NullConvertor.DBToInt64(myOleDbDataReader["type_formula"]),
                         Description = "-",
                         Name = "-"
                     };
                     koGroup.Save();
-                    LoadGroupOKSModelFactor_2018(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup.Id);
+                    LoadGroupOKSModelFactor_2018(NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]), koGroup);
                     count++;
                     Console.WriteLine(count);
                 }
@@ -1510,7 +1522,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
-        public static void LoadGroupParcelModelFactor_2018(long ms_id_subgroup, long id_model)
+        public static void LoadGroupParcelModelFactor_2018(long ms_id_subgroup, ObjectModel.KO.OMModel model)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_Parcel_2018"]))
             {
@@ -1530,12 +1542,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         B0 = NullConvertor.DBToDecimal(myOleDbDataReader["B0"]),
                         FactorId = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) * 100 + OffsetFactorParcel_2018,
-                        ModelId = id_model,
+                        ModelId = model.Id,
                         Weight = NullConvertor.DBToDecimal(myOleDbDataReader["WEIGHT_FACTOR"]),
                         SignAdd = NullConvertor.DBToInt64(myOleDbDataReader["PRADD"]) == 1,
                         SignDiv = NullConvertor.DBToInt64(myOleDbDataReader["PRDIV"]) == 1,
                         SignMarket = NullConvertor.DBToInt64(myOleDbDataReader["PR_METKA"]) == 1,
                         MarkerId = -1,
+                        AlgorithmType_Code = model.AlgoritmType_Code,
+                        AlgorithmType = model.AlgoritmType,
                     };
                     koGroup.Save();
                     count++;
@@ -1545,7 +1559,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
-        public static void LoadGroupOKSModelFactor_2018(long ms_id_subgroup, long id_model)
+        public static void LoadGroupOKSModelFactor_2018(long ms_id_subgroup, ObjectModel.KO.OMModel model)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2018"]))
             {
@@ -1565,12 +1579,13 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Id = -1,
                         B0 = NullConvertor.DBToDecimal(myOleDbDataReader["B0"]),
                         FactorId = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) * 100 + OffsetFactorOKS_2018,
-                        ModelId = id_model,
+                        ModelId = model.Id,
                         Weight = NullConvertor.DBToDecimal(myOleDbDataReader["WEIGHT_FACTOR"]),
                         SignAdd = NullConvertor.DBToInt64(myOleDbDataReader["PRADD"]) == 1,
                         SignDiv = NullConvertor.DBToInt64(myOleDbDataReader["PRDIV"]) == 1,
                         SignMarket = NullConvertor.DBToInt64(myOleDbDataReader["PR_METKA"]) == 1,
-                        MarkerId = -1,
+                        AlgorithmType_Code = model.AlgoritmType_Code,
+                        AlgorithmType = model.AlgoritmType,
                     };
                     koGroup.Save();
                     count++;
@@ -2409,9 +2424,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             ks.IdTour = 2018;
             ks.CalcAllGroups = false;
             ks.CalcGroups = new List<long>();
-            ks.CalcGroups.Add(100044);//200003
+            ks.CalcGroups.Add(100018);//200003  100044
             ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(36663016);//36661332
+            ks.TaskFilter.Add(36748449);//36661332  3663016
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }

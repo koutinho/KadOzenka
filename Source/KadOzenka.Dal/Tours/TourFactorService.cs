@@ -6,6 +6,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours.Dto;
@@ -28,15 +29,29 @@ namespace KadOzenka.Dal.Tours
             RegisterAttributeService = new RegisterAttributeService();
         }
 
-        public List<OMAttribute> GetTourAttributes(long tourId, ObjectType objectType)
+        public List<OMAttribute> GetTourAttributes(long tourId, ObjectTypeExtended objectType)
         {
-            var existedTourFactorRegisters = objectType == ObjectType.ZU
-                ? OMTourFactorRegister
-                    .Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
-                    .SelectAll().Execute()
-                : OMTourFactorRegister
-                    .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
-                    .SelectAll().Execute();
+	        List<OMTourFactorRegister> existedTourFactorRegisters;
+	        switch (objectType)
+	        {
+		        case ObjectTypeExtended.Oks:
+			        existedTourFactorRegisters = OMTourFactorRegister
+                        .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+				        .SelectAll().Execute();
+                    break;
+		        case ObjectTypeExtended.Zu:
+			        existedTourFactorRegisters = OMTourFactorRegister
+                        .Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+				        .SelectAll().Execute();
+			        break;
+                case ObjectTypeExtended.Both:
+			        existedTourFactorRegisters = OMTourFactorRegister
+				        .Where(x => x.TourId == tourId)
+				        .SelectAll().Execute();
+			        break;
+                default:
+			        throw new ArgumentOutOfRangeException(nameof(objectType), objectType, null);
+	        }
 
             if (existedTourFactorRegisters.Count == 0)
                 return new List<OMAttribute>();
@@ -50,8 +65,8 @@ namespace KadOzenka.Dal.Tours
 
         public List<OMAttribute> GetTourAllAttributes(long tourId)
         {
-	        var result = GetTourAttributes(tourId, ObjectType.Oks);
-            result.AddRange(GetTourAttributes(tourId, ObjectType.ZU));
+	        var result = GetTourAttributes(tourId, ObjectTypeExtended.Oks);
+            result.AddRange(GetTourAttributes(tourId, ObjectTypeExtended.Zu));
 
             return result;
         }

@@ -348,6 +348,23 @@ namespace KadOzenka.Dal.DataImport
 
             SaveAttributeValueWithCheck(attributeValue);
         }
+        public static void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                NumValue=(value?1:0)
+            };
+
+            SaveAttributeValueWithCheck(attributeValue);
+        }
 
 
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -523,7 +540,7 @@ namespace KadOzenka.Dal.DataImport
 
                         var changedProperties = new UnitChangedProperties
                         {
-	                        IsNameChanged = !prNameObjectCheck,
+                            IsNameChanged = !prNameObjectCheck,
                             IsPurposeOksChanged = !prAssignationObjectCheck,
                             IsSquareChanged = !squareDidNotChange,
                             IsBuildYearChanged = !prYearBuiltObjectCheck,
@@ -579,6 +596,25 @@ namespace KadOzenka.Dal.DataImport
                                 }
                             }
                         }
+                        #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        //if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        //{
+                        //    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!prWallObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
+                        //if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        //{
+                        //    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        //}
                         #endregion
                     }
                     #endregion
@@ -642,6 +678,13 @@ namespace KadOzenka.Dal.DataImport
                             koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
                         }
                     }
+                    #endregion
+
+                    #region Признаки для формирования заданий ЦОД
+                    //SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    //SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
                 }
 
@@ -1699,22 +1742,42 @@ namespace KadOzenka.Dal.DataImport
 
                         var changedProperties = new UnitChangedProperties
                         {
-	                        IsNameChanged = !nameDidNotChange,
-	                        IsPurposeOksChanged = !purposeOksDidNotChange,
-	                        IsSquareChanged = !squareDidNotChange,
-	                        IsBuildYearChanged = !buildYearDidNotChange,
-	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
-	                        IsFloorsCountChanged = !floorsCountDidNotChange,
-	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange
+                            IsNameChanged = !nameDidNotChange,
+                            IsPurposeOksChanged = !purposeOksDidNotChange,
+                            IsSquareChanged = !squareDidNotChange,
+                            IsBuildYearChanged = !buildYearDidNotChange,
+                            IsCommissioningYearChanged = !commissioningYearDidNotChange,
+                            IsFloorsCountChanged = !floorsCountDidNotChange,
+                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
+                            IsWallMaterialChanged = !wallMaterialDidNotChange,
+                            IsAddressChanged = !addressDidNotChange,
+                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
+                            IsLocationChanged = !locationDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
+
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && purposeOksDidNotChange && nameDidNotChange)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+                        }
+                        #endregion
+
                     }
 
                     #endregion
+
+
                 }
                 //Если данные о прошлой оценке не найдены
                 else
@@ -1748,7 +1811,7 @@ namespace KadOzenka.Dal.DataImport
 
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                    
+
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
                     #endregion
@@ -1850,6 +1913,7 @@ namespace KadOzenka.Dal.DataImport
                     CadastralCostPre = 0,
                     Upks = 0,
                     UpksPre = 0,
+                    BuildingCadastralNumber=current.CadastralNumberOKS
                 };
                 koUnit.Save();
             }
@@ -2008,6 +2072,23 @@ namespace KadOzenka.Dal.DataImport
 	                        IsLocationChanged = !locationDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+                        #region Наследование
+                        if (!prCheckObr)
+                        {
+                            //Признак не поменялся ли тип объекта?
+                            bool prTypeObjectCheck = lastUnit.PropertyType_Code == koUnit.PropertyType_Code;
+
+                            //Если не было изменений типа, наименования и назначения и не было обращения
+                            if (prTypeObjectCheck && purposeOksDidNotChange && nameDidNotChange)
+                            {
+                                #region Наследование группы и подгруппы предыдущего объекта
+                                koUnit.GroupId = lastUnit.GroupId;
+                                koUnit.Save();
+                                #endregion
+                            }
+                        }
+                        #endregion
                     }
                     #endregion
                 }
@@ -2146,6 +2227,7 @@ namespace KadOzenka.Dal.DataImport
                     CadastralCostPre = 0,
                     Upks = 0,
                     UpksPre = 0,
+                    BuildingCadastralNumber=current.CadastralNumberOKS
                 };
                 koUnit.Save();
             }

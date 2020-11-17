@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
@@ -28,10 +29,17 @@
         </div>
         <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.GroupId)
+                @Html.CustomLabelFor(x => x.Type)
             </div>
             <div class="col-sm-9">
-               <div id="groups"></div>
+                @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: false, withoutNull: true)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2" id="algorithmTypeLabel" >
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
             </div>
         </div>
         <div class="form-group">
@@ -54,8 +62,16 @@
             </div>
         </div>
         <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.GroupId)
+            </div>
+            <div class="col-sm-9">
+               <div id="groups"></div>
+            </div>
+        </div>
+        <div class="form-group">
             <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("SaveModel", "Сохранить")
+                @Html.KendoButton("saveModel", "Сохранить")
             </div>
         </div>
     </div>
@@ -65,7 +81,11 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
-        $("#SaveModel").on('click', SaveModel);
+        onModelTypeChanged();
+
+        $('#@nameof(Model.Type)').data('kendoDropDownList').bind('change', onModelTypeChanged);
+
+        $("#saveModel").on('click', saveModel);
 	});
 
 
@@ -99,7 +119,7 @@
     }
 
 
-    function SaveModel() {
+    function saveModel() {
 		kendo.ui.progress($('body'), true);
 		var form = $('#saveModelForm');
         var formObject = Common.Functions.FormToObject(form);
@@ -125,7 +145,17 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-	}
+    }
+
+
+    function onModelTypeChanged() {
+        var modelType = $('#@nameof(Model.Type)').data('kendoDropDownList').value();
+        if (modelType == '@((int)KoModelType.Manual)') {
+            $("#algorithmTypeLabel").text("Алгоритм расчета");
+        } else {
+            $("#algorithmTypeLabel").text("Алгоритм для рассчета Кадастровой стоимости");
+        }
+    }
 
 
 	function CloseMainWindow() {

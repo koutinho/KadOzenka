@@ -56,25 +56,27 @@ namespace KadOzenka.Dal.GbuObject
             return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, isLight);
         }
 
-        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, 
-            DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
 		{
-            if(objectIds == null || objectIds.Count == 0)
-                return new List<GbuObjectAttribute>();
+            if(objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
 
             var uniqueObjectIds = objectIds.Distinct().ToList();
             var attributes = inputAttributes?.Distinct().ToList();
             if (sources == null)
 			{
-				List<int> registerIds = attributes != null && attributes.Count > 0 ?
-					RegisterCache.RegisterAttributes.Values.Where(x => attributes.Contains(x.Id)).Select(x => x.RegisterId).ToList() :
+				List<int> registerIds = attributes != null && attributes.Count > 0 ? 
+					RegisterCache.RegisterAttributes.Values
+						.Where(x => attributes.Contains(x.Id))
+						.Select(x => x.RegisterId)
+						.ToList() : 
 					null;
-
+				
 				var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
-
-                sources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
-					x.Id != mainRegister.Id &&
-					(registerIds == null || registerIds.Contains(x.Id))).Select(x => (long)x.Id).ToList();
+                
+				sources = RegisterCache.Registers.Values
+						.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && (registerIds == null || registerIds.Contains(x.Id)))
+						.Select(x => (long)x.Id)
+						.ToList();
 			}
 
             var uniqueSources = sources.Distinct().ToList();
@@ -91,21 +93,12 @@ namespace KadOzenka.Dal.GbuObject
 					{
 						var propName = "StringValue";
 
-						if (postfix == "NUM")
-						{
-							propName = "NumValue";
-						}
-						else if (postfix == "DT")
-						{
-							propName = "DtValue";
-						}
+						if (postfix == "NUM") propName = "NumValue";
+						else if (postfix == "DT") propName = "DtValue";
 
 						var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName, registerData, isLight);
 
-						if (attributes != null && attributes.Count > 0)
-						{
-							sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
-						}
+						if (attributes != null && attributes.Count > 0) sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
 
 						if (dateS != null || dateOt != null)
 						{
@@ -114,7 +107,6 @@ namespace KadOzenka.Dal.GbuObject
 
 							sql = $"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
 						}
-
 						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 					}
 				}
@@ -127,10 +119,7 @@ namespace KadOzenka.Dal.GbuObject
 
 					foreach (var attributeData in attributesData)
 					{
-						if (attributeData.IsPrimaryKey)
-						{
-							continue;
-						}
+						if (attributeData.IsPrimaryKey) continue;
 
 						var propName = "StringValue";
                         switch (attributeData.Type)
@@ -157,12 +146,10 @@ namespace KadOzenka.Dal.GbuObject
 
 							sql = $"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
 						}
-
 						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 					}
 				}
             }
-
 			return result;
 		}
 

@@ -8,8 +8,9 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
-using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 {
@@ -20,6 +21,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             RegisterAttributeType.INTEGER,
             RegisterAttributeType.DECIMAL
         };
+        private readonly ILogger _logger;
+        protected override ILogger Logger => _logger;
+
+        public CalculationParamsReport()
+        {
+	        _logger = Log.ForContext<CalculationParamsReport>();
+        }
 
         protected override string TemplateName(NameValueCollection query)
         {
@@ -31,28 +39,41 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             GroupFilter.InitializeFilterValues(StatisticalDataType.CalculationParams, initialization, filterValues);
         }
 
-        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var groupId = GetGroupIdFromFilter(query);
 
             var model = ModelService.GetModelEntityByGroupId(groupId);
+            Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model.Id, groupId);
 
-            var factors = GetFactors(model.Id);
+            var factors = GetFactors(model);
+            Logger.Debug("Найдено {FactorsCount} Факторов для модели", factors?.Count);
 
-            var quantitativeFactors = GetQuantitativeFactors(factors, groupId);
-            var qualityFactors = GetQualityFactors(factors, groupId);
+            var generalFactors = factors.FirstOrDefault()?.Factors ?? new List<ModelFactor>();
+            
+            var quantitativeFactors = GetQuantitativeFactors(generalFactors, groupId);
+            Logger.Debug("Найдено {MarksForQuantitativeFactorsCount} меток для количественных факторов", quantitativeFactors?.Count);
 
+            var qualityFactors = GetQualityFactors(generalFactors, groupId);
+            Logger.Debug("Найдено {MarksForQualityFactorsCount} меток для качественных факторов", qualityFactors?.Count);
+
+            Logger.Debug("Начато формирование таблиц");
             var dataSet = new DataSet();
 
             var modelTable = GetModelDataTable(model);
-            var coefficientsTable = GetCoefficientsDataTable(factors);
+            var linearCoefficientsTable = GetCoefficientsDataTable(KoAlgoritmType.Line, "Linear", factors);
+            var exponentialCoefficientsTable = GetCoefficientsDataTable(KoAlgoritmType.Exp, "Exponential", factors);
+            var multiplicativeCoefficientsTable = GetCoefficientsDataTable(KoAlgoritmType.Multi, "Multiplicative", factors);
             var quantitativeFactorsTable = GetQuantitativeFactorsDataTable(quantitativeFactors);
             var qualityFactorsTable = GetQualityFactorsDataTable(qualityFactors);
 
             dataSet.Tables.Add(modelTable);
-            dataSet.Tables.Add(coefficientsTable);
+            dataSet.Tables.Add(linearCoefficientsTable);
+            dataSet.Tables.Add(exponentialCoefficientsTable);
+            dataSet.Tables.Add(multiplicativeCoefficientsTable);
             dataSet.Tables.Add(quantitativeFactorsTable);
             dataSet.Tables.Add(qualityFactorsTable);
+            Logger.Debug("Закончено формирование таблиц");
 
             return dataSet;
         }
@@ -66,46 +87,86 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             dataTable.Columns.Add("Formula");
             dataTable.Columns.Add("Type");
+            dataTable.Columns.Add("AlgorithmType");
 
             dataTable.Rows.Add(model.Formula, 
+                model.Type_Code.GetEnumDescription(),
                 model.AlgoritmType_Code.GetEnumDescription());
 
             return dataTable;
         }
 
-        private DataTable GetCoefficientsDataTable(List<ModelFactor> factors)
+        private DataTable GetCoefficientsDataTable(KoAlgoritmType type, string prefix, List<GroupedFactors> groupedFactors)
         {
-            var dataTable = new DataTable("Coefficients");
+	        var dataTable = new DataTable(prefix + "Coefficients");
 
-            dataTable.Columns.Add("Number");
-            dataTable.Columns.Add("Name");
-            dataTable.Columns.Add("Coefficient");
+	        dataTable.Columns.Add("Number");
+	        dataTable.Columns.Add("Name");
+	        dataTable.Columns.Add("Coefficient");
 
-            for (var i = 0; i < factors.Count; i++)
-            {
-                dataTable.Rows.Add(i + 1,
-                    factors[i].FactorName,
-                    factors[i].B0);
-            }
+	        var factors = groupedFactors.FirstOrDefault(x => x.AlgorithmType == type)?.Factors;
+	        for (var i = 0; i < factors?.Count; i++)
+	        {
+		        dataTable.Rows.Add(i + 1,
+			        factors[i].FactorName,
+			        factors[i].Weight);
+	        }
 
-            return dataTable;
+	        return dataTable;
         }
 
-        private List<ModelFactor> GetFactors(long modelId)
+        private List<GroupedFactors> GetFactors(OMModel model)
 		{
-			var query = ModelService.GetModelFactorsQuery(modelId);
+			var query = ModelFactorsService.GetModelFactorsQuery(model.Id);
 
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactor.Type)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactor.FactorId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactor.FactorName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelFactor.B0)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelFactor.Weight)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelFactor.AlgorithmType)));
 
-			return query.ExecuteQuery<ModelFactor>();
-        }
+			var factors = new List<ModelFactor>();
+			var table = query.ExecuteQuery();
+            //сделано через ExecuteQuery, потому что в query.ExecuteQuery<ModelFactor> есть ошибка
+            //из-за которой данные выкачиваются неправильно (некоторые поля меняются местами)
+            for (var i = 0; i < table.Rows.Count; i++)
+			{
+				var row = table.Rows[i];
+
+				var type = row[nameof(ModelFactor.Type)].ParseToLong();
+				var factorId = row[nameof(ModelFactor.FactorId)].ParseToLong();
+				var factorName = row[nameof(ModelFactor.FactorName)].ParseToStringNullable();
+				var weight = row[nameof(ModelFactor.Weight)].ParseToDecimalNullable();
+				var algorithmType = row[nameof(ModelFactor.AlgorithmType)].ParseToLongNullable();
+
+				factors.Add(new ModelFactor
+                {
+	                Type = type,
+	                FactorId = factorId,
+	                FactorName = factorName,
+	                Weight = weight,
+	                AlgorithmType = algorithmType == null ? KoAlgoritmType.None : (KoAlgoritmType)algorithmType
+                });
+			}
+
+            //для совместимости с уже ранее созданнами моделями (не через блок "Справочники моделирования")
+            if (factors.All(x => x.AlgorithmType == KoAlgoritmType.None))
+            {
+                factors.ForEach(x => x.AlgorithmType = model.AlgoritmType_Code);
+            }
+
+            return factors.GroupBy(x => x.AlgorithmType).Select(g => new GroupedFactors
+			{
+				AlgorithmType = g.Key, 
+				Factors = g.ToList()
+			}).ToList();
+		}
 
         private List<QuantitativeFactor> GetQuantitativeFactors(List<ModelFactor> factors, long groupId)
         {
             var quantitativeFactors = factors.Where(x => QuantitativeTypes.Contains((RegisterAttributeType)x.Type)).ToList();
+            Logger.Debug("Найдено {QuantitativeFactorsCount} количественных факторов", quantitativeFactors.Count);
+            
             var factorIds = quantitativeFactors.Select(x => x.FactorId).ToList();
             if (factorIds.Count <= 0)
                 return new List<QuantitativeFactor>();
@@ -163,6 +224,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         private List<QualityFactor> GetQualityFactors(List<ModelFactor> factors, long groupId)
         {
             var qualityFactors = factors.Where(x => !QuantitativeTypes.Contains((RegisterAttributeType)x.Type)).ToList();
+            Logger.Debug("Найдено {QuantitativeFactorsCount} качественных факторов", qualityFactors.Count);
+
             var factorIds = qualityFactors.Select(x => x.FactorId).ToList();
             if (factorIds.Count <= 0)
                 return new List<QualityFactor>();
@@ -213,13 +276,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         #region Entities
 
+        public class GroupedFactors
+        {
+	        public KoAlgoritmType AlgorithmType { get; set; }
+	        public List<ModelFactor> Factors { get; set; }
+        }
+
         public class ModelFactor
         {
-	        public long Id { get; set; }
+	        //public long Id { get; set; }
 	        public long FactorId { get; set; }
 	        public string FactorName { get; set; }
 	        public long Type { get; set; }
-	        public decimal B0 { get; set; }
+	        public decimal? B0 { get; set; }
+	        public KoAlgoritmType AlgorithmType { get; set; }
+	        public decimal? Weight { get; set; }
         }
 
         private class QuantitativeFactor

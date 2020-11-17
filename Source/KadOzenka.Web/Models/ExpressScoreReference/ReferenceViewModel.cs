@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Core.SRD;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 
 namespace KadOzenka.Web.Models.ExpressScoreReference
 {
-    public class ReferenceViewModel
+    public class ReferenceViewModel : IValidatableObject
     {
         public long Id { get; set; }
 
@@ -27,8 +28,12 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
 
         public bool ShowItems { get; set; }
 
-
         public bool IsEdit { get; set; }
+
+        /// <summary>
+        /// Признак что справочник интервальный
+        /// </summary>
+        public bool UseInterval { get; set; }
 
         public static ReferenceViewModel FromEntity(OMEsReference entity, bool valueTypeCanBeChanged = false, bool showItems = false)
         {
@@ -50,8 +55,17 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 ValueType = entity.ValueType_Code,
                 ValueTypeCanBeChanged = valueTypeCanBeChanged,
                 ShowItems = showItems,
+                UseInterval = entity.UseInterval.GetValueOrDefault(),
                 IsEdit = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.EXPRESSSCORE_REFERENCES_EDIT)
             };
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+	        if (UseInterval && ValueType == ReferenceItemCodeType.String)
+	        {
+                yield return new ValidationResult(@"Интервальный справочник не может быть типа ""Строка""");
+	        }
         }
     }
 }

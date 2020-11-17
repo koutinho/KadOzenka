@@ -30,7 +30,7 @@
 		    </Parameters>
 	    </Button>
 
-	    <Button Caption="Присвоить оценочную группу" NavigateURL="/GbuObject/SetEstimatedGroup" SRDFunctionTag="GBU.OBJECTS.SET_ESTIMATED_GROUP" Icon="fas fa-donate" WindowHeight="300" WindowWidth="1100">
+	    <Button Caption="Присвоить оценочную группу" NavigateURL="/GbuObject/SetEstimatedGroup" SRDFunctionTag="GBU.OBJECTS.SET_ESTIMATED_GROUP" Icon="fas fa-donate" WindowHeight="400" WindowWidth="1100">
 	    </Button>
 
 		<Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/DataImport" WindowHeight="800" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.DATA_IMPORT" Icon="fas fa-arrow-circle-down">

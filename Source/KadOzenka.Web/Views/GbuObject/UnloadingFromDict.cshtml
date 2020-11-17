@@ -1,4 +1,5 @@
 ﻿@using System.Collections
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
@@ -121,8 +122,9 @@
 		<div class="col-sm-7">
 			@( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
 				{
-					ControllerName = "GbuObject",
-					ActionName = "GetTemplatesUnloadingForm"
+				    GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+				    Parameters = "formStorageType=" + (int)DataFormStorege.UnloadingFromDict,
+				    SaveTemplateActionName = nameof(TemplateController.SaveTemplateUnloading)
 				}))
 		</div>
 
@@ -241,7 +243,7 @@
 				});
 			}
 
-			templateStorage.init(@((int)DataFormStorege.UnloadingFromDict), "SaveTemplateUnloading", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+			templateStorage.init(@((int)DataFormStorege.UnloadingFromDict), fillForm);
 
 			$('#execute').on('click',
 				function () {

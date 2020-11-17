@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
 using System.Threading;
+using Core.ErrorManagment;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Market;
@@ -13,12 +14,16 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
+using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.MarketObjects;
 using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
+using KadOzenka.Dal.OutliersChecking.Dto;
 using KadOzenka.Web.Attributes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -120,24 +125,14 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
         public ActionResult ActivateProcess()
         {
-            if (AddressesDetector.IsProcessAdditable())
-            {
-                AddressesDetector.AddProcessToQueue();
-                return Content("Присвоение зон, районов, округов");
-            }
-            else return Content("Процесс уже добавлен в очередь или выполняется");
+            return View("~/Views/AnalogCheck/ActivateDistrictsRegionsZones.cshtml");
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_COORDINATES)]
         public ActionResult ActivateCoordinates()
         {
-            if (CoordinatesJoiner.IsProcessAdditable())
-            {
-                CoordinatesJoiner.AddProcessToQueue();
-                return Content("Присвоение координат");
-            }
-            else return Content("Процесс уже добавлен в очередь или выполняется");
+            return View("~/Views/AnalogCheck/ActivateCoordinates.cshtml");
         }
 
         #region Correction By Date
@@ -552,7 +547,7 @@ namespace KadOzenka.Web.Controllers
 
         #region Outliers Checking
 
-
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult GetMarketSegmentList()
         {
 	        var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
@@ -562,6 +557,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult OutliersSettings(bool isPartialView = false)
         {
 	        ViewBag.isPartialView = isPartialView;
@@ -569,6 +565,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public JsonResult GetOutliersSettingsCoefficients()
         {
 	        var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
@@ -577,6 +574,7 @@ namespace KadOzenka.Web.Controllers
             return Json(models);
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
         {
 	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
@@ -585,6 +583,45 @@ namespace KadOzenka.Web.Controllers
 	        return Json(new[] { model });
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        public IActionResult OutliersCheckingSettingsImport()
+        {
+	        return View(new OutliersSettingsImportModel());
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        public IActionResult OutliersCheckingSettingsImport(IFormFile file, OutliersSettingsImportModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return GenerateMessageNonValidModel();
+            }
+
+            object returnedData;
+            try
+            {
+	            using (var stream = file.OpenReadStream())
+	            {
+		            var settingDto = viewModel.ToDto(file);
+		            var importId = OutliersCheckingSettingsService.ImportOutliersCheckingSettingsFromExcel(stream, settingDto);
+		            returnedData = new
+		            {
+			            importId
+		            };
+	            }
+            }
+            catch (Exception ex)
+            {
+	            ErrorManager.LogError(ex);
+	            return BadRequest();
+            }
+
+            return Content(JsonConvert.SerializeObject(returnedData), "application/json");
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult PerformOutliersChecking(MarketSegment? segment)
         {
             ////For testing

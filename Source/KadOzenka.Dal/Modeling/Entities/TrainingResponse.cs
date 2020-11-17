@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.Modeling.Entities
     public class TrainingResponse
     {
         [JsonProperty("coef")]
-        public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }
+        public Coefficients Coefficients { get; set; }
 
         [JsonProperty("accuracy_score")]
         public AccuracyScore AccuracyScore { get; set; }
@@ -17,8 +17,20 @@ namespace KadOzenka.Dal.Modeling.Entities
         [JsonProperty("model")]
         public string Model { get; set; }
 
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
         [JsonProperty("images")]
         public Images Images { get; set; }
+    }
+
+    public class Coefficients
+    {
+	    [JsonProperty("factors")]
+	    public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }
+
+	    [JsonProperty("free_member")]
+        public decimal A0 { get; set; }
     }
 
     public class AccuracyScore

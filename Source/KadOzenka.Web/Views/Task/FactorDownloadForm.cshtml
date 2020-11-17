@@ -1,12 +1,16 @@
-﻿@model long
+﻿@using KadOzenka.Web.Controllers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
+@model long
 
 @{
     ViewData["Title"] = "Конфигуратор выгрузки факторов";
 }
-
+@using (Html.BeginForm("FactorDownloadForm", "Task", FormMethod.Post))
+{
     <div class="col-md-12" id="configuratorForm">
         <div class="form-group">
-            <div class="col-md-10 col-md-offset-1">
+            <div class="col-md-11 col-md-offset-1">
                 <h4>Конфигуратор выгрузки факторов</h4>
                 <input type="radio" name="type" id="zu" class="k-radio" checked="checked">
                 <label class="k-radio-label" for="zu">Земельные участки</label>
@@ -15,13 +19,23 @@
                 <br/>
                 <button id="exportButton" class="k-button">Запустить выгрузку</button>
                 <br/>
-                <input id="search" class="k-textbox"/>
             </div>
-            <div class="col-md-10 col-md-offset-1">
+            <br/>
+            <div class="col-md-11 col-md-offset-1">
+                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+                {
+                    GetTemplatesActionName = nameof(TemplateController.GetTemplatesFactors),
+                    Parameters = "taskId="+Model,
+                    SaveTemplateActionName = nameof(TemplateController.SaveTemplateFactors)
+                }))
+            </div>
+            <div class="col-md-11 col-md-offset-1">
+                <input id="search" class="k-textbox"/>
                 <div id="treeview"></div>
             </div>
         </div>
     </div>
+}
 <style>
     .k-checkbox-label:before{
         top: -5px;
@@ -45,10 +59,10 @@
 
     $(document).ready(function () {
         getAttributes();
-        $("#zu").change(onChange);
-        $("#oks").change(onChange);
+        $('#zu').change(onChange);
+        $('#oks').change(onChange);
     });
-    function getAttributes() {
+    function getAttributes(callback) {
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
@@ -70,6 +84,10 @@
                 });
                 const tV = treeView.getKendoTreeView();
                 tV.setDataSource(dataList);
+                if (callback!=null)
+                    {
+                        callback();
+                    }
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
@@ -80,7 +98,54 @@
         });
     }
 
-    const treeView = $("#treeview").kendoTreeView({
+    templateStorage.init(@((int)DataFormStorege.ExportFactorsByTask), fillForm, addCustomLevelsToForm);
+
+    function fillForm(data) {
+        if (data.isOks===true) {
+            $('#oks').prop('checked',true);
+        }
+        else {
+            $('#zu').prop('checked',true);
+        }
+
+        getAttributes(function (){
+            var attributes = [];
+            data.forEach(function (val){
+                if (Object.keys(val)[0].startsWith('Attributes')){
+                    if (Number(Object.values(val)>1000)){
+                        attributes.push(Object.values(val)[0]);
+                    }
+                }
+            });
+
+            var treeView = $('#treeview').data('kendoTreeView');
+
+            var nodes = treeView.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
+
+            attributes.forEach(function (attr){
+                var item = nodes.find(x=>x.Value==attr);
+                if (item!=null){
+                    var node = treeView.dataSource.getByUid(item.uid);
+                    node.set('checked',true);
+                }
+
+            });
+        });
+    }
+
+    function addCustomLevelsToForm(formObject)
+    {
+        if (!formObject) {
+            return formObject;
+        }
+        var checkedNodes = [];
+        var treeView = $('#treeview').data('kendoTreeView');
+        checkedNodeValues(treeView.dataSource.view(), checkedNodes);
+        var isOks = isOksSelected();
+        return Object.assign({}, formObject, { taskId, isOks, selectedAttributes: checkedNodes });
+    }
+
+    const treeView = $('#treeview').kendoTreeView({
         checkboxes: {
             checkChildren: true
         },
@@ -98,7 +163,7 @@
             button.enable(false);
 
             var checkedNodes = [],
-                treeView = $("#treeview").data('kendoTreeView');
+                treeView = $('#treeview').data('kendoTreeView');
             // убираем фильтрацию для корректной отправки атрибутов
             var search = $('#search');
             search.val('');
@@ -121,9 +186,9 @@
         }
     });
 
-    $("#search").on("input", function() {
+    $("#search").on('input', function() {
           var query = this.value.toLowerCase();
-          var dataSource = $("#treeview").data("kendoTreeView").dataSource;
+          var dataSource = $('#treeview').data('kendoTreeView').dataSource;
 
           filter(dataSource, query);
         });
@@ -165,20 +230,20 @@
     }
 
     function checkedNodeValues(nodes, checkedNodes) {
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i].checked) {
-                    checkedNodes.push(nodes[i].Value);
-                }
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].checked) {
+                checkedNodes.push(nodes[i].Value);
+            }
 
-                if (nodes[i].hasChildren) {
-                    checkedNodeValues(nodes[i].children.view(), checkedNodes);
-                }
+            if (nodes[i].hasChildren) {
+                checkedNodeValues(nodes[i].children.view(), checkedNodes);
             }
         }
+    }
 
     function onCheck() {
         var checkedNodes = [],
-            treeView = $("#treeview").data("kendoTreeView");
+            treeView = $('#treeview').data('kendoTreeView');
 
         checkedNodeValues(treeView.dataSource.view(), checkedNodes);
 

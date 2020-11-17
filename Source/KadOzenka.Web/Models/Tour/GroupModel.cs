@@ -10,6 +10,7 @@ namespace KadOzenka.Web.Models.Tour
 	{
 		public long? Id { get; set; }
 		public long? RatingTourId { get; set; }
+		public long? ModelId { get; set; }
         public GroupType GroupType { get; set; }
 
         public string ObjType { get; set; }

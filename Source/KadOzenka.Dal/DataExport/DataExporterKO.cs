@@ -29,6 +29,7 @@ using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using SaveOptions = GemBox.Document.SaveOptions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Modeling;
 using Serilog;
 
 namespace KadOzenka.Dal.DataExport
@@ -195,13 +196,7 @@ namespace KadOzenka.Dal.DataExport
             //}
 
             var row = 1;
-            var markers = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
-	            .Select(x => new
-	            {
-                    x.MetkaFactor,
-                    x.ValueFactor
-	            })
-	            .Execute();
+            var markers = new ModelFactorsService().GetMarks(groupId, factorId);
 
             foreach (var marker in markers)
             {
@@ -794,7 +789,7 @@ namespace KadOzenka.Dal.DataExport
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code==model.AlgoritmType_Code).SelectAll().Execute();
 
                     int countCurr = 0;
                     int countAll = model.ModelFactor.Count();
@@ -1002,7 +997,7 @@ namespace KadOzenka.Dal.DataExport
                     if (model != null)
                     {
                         if (model.ModelFactor.Count == 0)
-                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                            model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
                         foreach (OMModelFactor factor_model in model.ModelFactor)
                         {
                             bool findf = false;
@@ -2442,7 +2437,7 @@ namespace KadOzenka.Dal.DataExport
             }
 
             if (model.ModelFactor.Count == 0)
-                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -4245,7 +4240,7 @@ namespace KadOzenka.Dal.DataExport
                         if (model_calc != null)
                         {
                             if (model_calc.ModelFactor.Count == 0)
-                                model_calc.ModelFactor = OMModelFactor.Where(x => x.ModelId == model_calc.Id).SelectAll().Execute();
+                                model_calc.ModelFactor = OMModelFactor.Where(x => x.ModelId == model_calc.Id && x.AlgorithmType_Code == model_calc.AlgoritmType_Code).SelectAll().Execute();
 
                             foreach (OMModelFactor factor in model_calc.ModelFactor)
                             {
@@ -4307,7 +4302,7 @@ namespace KadOzenka.Dal.DataExport
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     foreach (OMModelFactor factor in model.ModelFactor)
                     {
@@ -5035,7 +5030,7 @@ namespace KadOzenka.Dal.DataExport
 		    {
 			    var export = new OMExportByTemplates
 			    {
-				    UserId = SRDSession.GetCurrentUserId().Value,
+				    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
 				    FileResultTitle = nameReport,

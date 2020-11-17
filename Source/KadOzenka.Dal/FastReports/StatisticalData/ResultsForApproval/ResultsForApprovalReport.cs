@@ -4,15 +4,20 @@ using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 {
 	public class ResultsForApprovalReport : StatisticalDataReport
 	{
 		private readonly ResultsForApprovalService _service;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
+
 		public ResultsForApprovalReport()
 		{
 			_service = new ResultsForApprovalService(StatisticalDataService, new GbuCodRegisterService());
+			_logger = Log.ForContext<ResultsForApprovalReport>();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -20,7 +25,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			return nameof(ResultsForApprovalReport);
 		}
 
-		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
 
@@ -34,7 +39,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			dataTable.Columns.Add("CadastralCost");
 
 			var data = _service.GetResultsForApprovalData(taskIdList);
+			Logger.Debug("Найдено {Count} объектов", data?.Count);
 
+			Logger.Debug("Начато формирование таблиц");
 			var i = 1;
 			foreach (var unitDto in data)
 			{
@@ -48,6 +55,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsForApproval
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
 		}

@@ -474,6 +474,24 @@ namespace ObjectModel.Gbu
 }
 
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 81 Реестр хранения настроек гбу атрибута
+    /// </summary>
+    public partial class OMAttributeSettings
+    {
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -635,24 +653,6 @@ namespace ObjectModel.KO
 }
 
 
-namespace ObjectModel.Ko
-{
-    /// <summary>
-    /// 207 Модель типизированная
-    /// </summary>
-    public partial class OMModelTypified
-    {
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -684,13 +684,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (207 Модель типизированная)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Ko.OMModelTypified ParentModelTypified { get; set; }
 
         /// <summary>
         /// Ссылка на (211 Справочник меток)

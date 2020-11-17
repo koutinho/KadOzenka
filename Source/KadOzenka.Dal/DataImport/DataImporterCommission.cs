@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 
 namespace KadOzenka.Dal.DataImport
@@ -36,8 +37,8 @@ namespace KadOzenka.Dal.DataImport
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-
+				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 				//mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 				//	SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
@@ -46,7 +47,7 @@ namespace KadOzenka.Dal.DataImport
 				{
 					try
 					{
-						if (row.Index != 0) //все, кроме заголовков
+						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 						{
 
 							string kn = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();

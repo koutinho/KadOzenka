@@ -1,4 +1,5 @@
-﻿<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+﻿@using KadOzenka.Dal.GbuObject.Dto
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
         <div class="col-sm-3">
             @Html.CustomLabel("Тур оценки")
@@ -25,10 +26,17 @@
         </div>
         <div class="col-sm-9">
             <div class="radio-inline">
-                <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
+                @(Html.Kendo().RadioButton()
+                    .Name("ObjectType")
+                    .Label("ОКС")
+                    .Value((int)ObjectTypeExtended.Oks)
+                    .Checked(true))
             </div>
             <div class="radio-inline">
-                <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+                @(Html.Kendo().RadioButton()
+                    .Name("ObjectType")
+                    .Label("Земельные участки")
+                    .Value((int)ObjectTypeExtended.Zu))
             </div>
         </div>
     </div>
@@ -45,7 +53,7 @@
                 .Filter(FilterType.Contains)
                 .DataSource(source =>
                 {
-                    source.Read(read => read.Action("GetParentGroupNew", "Tour").Data("getParametersForGroup"));
+                    source.Read(read => read.Action("GetParentGroup", "Tour").Data("getParametersForGroup"));
                 })
                 .Events(e =>
                 {
@@ -67,7 +75,7 @@
                 .Filter(FilterType.Contains)
                 .DataSource(source =>
                 {
-                    source.Read(read => read.Action("GetSubgroupNew", "Tour").Data("getParametersForSubGroup"));
+                    source.Read(read => read.Action("GetSubgroup", "Tour").Data("getParametersForSubGroup"));
                 })
                 .Events(e =>
                 {
@@ -89,13 +97,12 @@
                 .Filter(FilterType.Contains)
                 .DataSource(source =>
                 {
-                    source.Read(read => read.Action("GetFactorsNew", "Task").Data("getParametersForFactor"));
+                    source.Read(read => read.Action("GetTourFactorsByType", "Tour").Data("getParametersForFactor"));
                 })
                 .Events(e =>
                 {
                     e.Cascade("reloadGrid");
-                })
-                )
+                }))
         </div>
     </div>
     <div class="form-group">
@@ -108,28 +115,28 @@
 <script>
     $(document).ready(function () {
         var groupId = $('#Subgroup').val();
-        var factorId = $('#Factor').val();            
+        var factorId = $('#Factor').val();
 
         var gridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Tour")',
+                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
                     data: { groupId, factorId },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Tour")',                         
+                    url: '@Url.Action("CreateMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Tour")',                    
+                    url: '@Url.Action("UpdateMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark", "Tour")',                        
+                    url: '@Url.Action("DeleteMark", "Modeling")',
                     type: 'POST',
                     dataType: 'json'
                 }
@@ -154,19 +161,19 @@
                         Id: { editable: false, nullable: true },
                         GroupId: { editable: false},
                         FactorId: { editable: false },
-                        ValueFactor: { validation: {
+                        Value: { validation: {
                             valuefactorvalidation: function (input) {
-                                if (input.is("[name='ValueFactor']") && input.val() == "") {
+                                if (input.is("[name='Value']") && input.val() == "") {
                                     input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
                                     return false;
                                 }
                                 return true;
                             }
                         } },
-                        MetkaFactor: {
+                        Metka: {
                             validation: {
                                 metkafactorvalidation: function (input) {
-                                    if (input.is("[name='MetkaFactor']") && input.val() == "") {
+                                    if (input.is("[name='Metka']") && input.val() == "") {
                                         input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
                                         return false;
                                     }
@@ -199,18 +206,15 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'ValueFactor',
+                    field: 'Value',
                     title: 'Значение',
-                    headerAttributes: {                            
-                        style: "text-align: center;"
-                    }
-                }, {
-                    field: 'MetkaFactor',
+                    headerAttributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'Metka',
                     title: 'Метка',
-                    headerAttributes: {
-                        style: "text-align: center;"
-                    },
-                    //по умолчанию точность новой метки - 2 знака после запятой, 
+                    headerAttributes: { style: "text-align: center;" },
+                    //по умолчанию точность новой метки - 2 знака после запятой,
                     //переопределяем это
                     editor: function (container, options) {
                         $('<input name="' + options.field + '"/>')
@@ -251,12 +255,19 @@
                     e.model.GroupId = $('#Subgroup').val();
                     e.model.FactorId = $('#Factor').val();
                 }
+            },
+            save: function (e) {
+                //из-за неправильного разделителя значение в контроллер приходит пустое
+                //была попытка установить culture для kendoNumericTextBox - не сработало
+                var initialValue = e.model.Metka.toString();
+                var replacedValue = initialValue.replace(".", ",");
+                e.model.Metka = replacedValue;
             }
         });
 
 
-        $('[name="ObjType"]').on('dataBound', reloadGroupsAndFactors);
-        $('[name="ObjType"]').on('change', reloadGroupsAndFactors);
+        $('[name="ObjectType"]').on('dataBound', reloadGroupsAndFactors);
+        $('[name="ObjectType"]').on('change', reloadGroupsAndFactors);
 
         $('#grid').data("kendoGrid").bind('dataBound', SetAddButtonEnabled);
         $('#grid').data("kendoGrid").bind('change', SetAddButtonEnabled);
@@ -285,15 +296,13 @@
         $("#grid").data("kendoGrid").dataSource.filter({});
         GridInit();
         SetAddButtonEnabled();
-    }   
+    }
 
 
     function getParametersForGroup() {
-        var parentType = "";
-        if ($('input[name="ObjType"]:checked').length != 0)
-            parentType = $('input[name="ObjType"]:checked')[0].id;
+        var objectType = $('input[name="ObjectType"]:checked').val();
         return {
-            type: parentType,
+            type: objectType,
             id: '',
             tourId: $('#RatingTour').val()
         }
@@ -307,12 +316,9 @@
     }
 
     function getParametersForFactor() {
-        var parentType = "";
-        if ($('input[name="ObjType"]:checked').length != 0) {
-            parentType = $('input[name="ObjType"]:checked')[0].id;
-        }
+        var objectType = $('input[name="ObjectType"]:checked').val();
         return {
-            type: parentType,
+            type: objectType,
             tourId: $('#RatingTour').val()
         }
     }
@@ -330,7 +336,7 @@
         var groupId = $('#Subgroup').val();
         var factorId = $('#Factor').val();
         if (groupId == '' || factorId == '') {
-            $('.k-grid-add').addClass('k-state-disabled'); 
+            $('.k-grid-add').addClass('k-state-disabled');
         }
         else {
             $('.k-grid-add').removeClass('k-state-disabled');

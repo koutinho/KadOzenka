@@ -39,22 +39,25 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using Core.Main.FileStorages;
 using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
+using ObjectModel.Directory;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
+using ObjectModel.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
 
 namespace KadOzenka.BlFrontEnd
 {
-
 	class Program
 	{
-
 		static void Main(string[] args)
 		{
 			BuildQsXml.BuildSudApproveStatus();
@@ -216,8 +219,12 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
 			consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
 			consoleHelper.AddCommand("292", "История", () =>
-			{
-				List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
+			{ //36855837
+
+				ObjectModel.KO.OMUnit tmp = ObjectModel.KO.OMUnit.Where(x => x.Id == 36855837).SelectAll().ExecuteFirstOrDefault();
+
+				List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory(tmp);
+				//List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
 				foreach (ObjectModel.KO.HistoryUnit history in histories) Console.WriteLine(history.ToString());
 			});
 
@@ -347,7 +354,7 @@ namespace KadOzenka.BlFrontEnd
                 var trainingInputParameters = new GeneralModelingInputParameters
                 {
                     ModelId = 46847140,
-                    ModelType = ModelType.Linear
+                    ModelType = KoAlgoritmType.Line
                 };
                 var inputRequest = new ModelingInputParameters
                 {
@@ -475,6 +482,40 @@ namespace KadOzenka.BlFrontEnd
 					ObjType = ObjectTypeExtended.Both
 				}, queue);
 			});
+
+            consoleHelper.AddCommand("560", "Тест сервиса отчетов", () =>
+            {
+	            var reportService = new GbuReportService();
+	            var numberOfColumns = 2;
+	            var numberOfRows = 200;
+	            var columns = Enumerable.Range(0, numberOfColumns).Select(x => new GbuReportService.Column
+	            {
+		            Header = $"Header {x}",
+		            Index = x,
+		            Width = 2
+	            }).ToList();
+
+				Enumerable.Range(0, numberOfRows).ForEach(x =>
+				{
+					var row = reportService.GetCurrentRow();
+					columns.ForEach(column =>
+					{
+						reportService.AddValue($"value {x}.{column.Index}", column.Index, row);
+					});
+				});
+
+				reportService.SetStyle();
+				var reportId = reportService.SaveReport("Test");
+
+				var export = OMExportByTemplates
+					.Where(x => x.Id == reportId)
+					.SelectAll()
+					.Execute()
+					.FirstOrDefault();
+
+				var pathToFile = FileStorageManager.GetFullFileName(DataExporterCommon.FileStorageName,
+					export.DateFinished.Value, export.ResultFileName);
+            });
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));

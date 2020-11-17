@@ -194,8 +194,9 @@ namespace KadOzenka.Web.Controllers
                 ColumnName = x.ColumnName,
                 IsKey = x.IsKey
             }).ToList();
+			DataImporterByTemplate.ValidateColumns(columns);
 
-            model.Document.ProcessDocument();
+			model.Document.ProcessDocument();
 
             if (model.IsBackgroundDownload)
             {

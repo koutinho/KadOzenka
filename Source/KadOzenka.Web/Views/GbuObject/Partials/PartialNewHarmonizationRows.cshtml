@@ -1,0 +1,20 @@
+﻿@using KadOzenka.Web.Helpers
+@model List<KadOzenka.Web.Models.GbuObject.PartialNewHarmonizationLevel>
+@{
+    var startRowNumber = (int)ViewData["StartRowNumber"];
+    var rowCount = (int)ViewData["RowCount"];
+}
+@for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
+{
+    <fieldset class="attrLevelFieldset">
+        @Html.Hidden("LevelNumber_" + Model[i].RowNumber, Model[i].LevelNumber)
+        @Html.Hidden("RowNumber_" + Model[i].RowNumber, Model[i].RowNumber)
+        <legend>@Model[i].LevelNumber уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListTreeWithButton(m => m[i].AttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + Model[i].RowNumber)
+        </div>
+    </fieldset>
+}

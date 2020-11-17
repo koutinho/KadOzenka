@@ -239,8 +239,9 @@
             const registerViewId = '@((string)ViewBag.RegisterViewId)';
             const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
             const isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+            const isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
 
-			$("#filter").on("input", function () {
+            $("#filter").on("input", function () {
 				var query = this.value.toLowerCase();
                 const treeView = $("#treeview").data("kendoTreeView");
 
@@ -286,7 +287,7 @@
 							var listView = $("#listView").data('kendoListView');
 							listView.dataSource.add({
                                 IsKey: false,
-                                IsReadOnly: false,
+                                IsReadOnly: isForGbuObjects,
 								ColumnName: listBoxData.Name,
 								ColumnId: listBoxData.Id,
 								ColumnUid: listBoxData.uid,
@@ -682,7 +683,7 @@
 					query === "" || text.indexOf(query) >= 0;
 				var anyVisibleChildren = filter(item.children, query);
 				hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
-				item.hidden = !itemVisible && !anyVisibleChildren;
+                item.hidden = (!item.hasChildren && !itemVisible) || (item.hasChildren && !anyVisibleChildren);
 			}
 
 			if (data) {

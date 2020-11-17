@@ -74,8 +74,21 @@
 			var treeList = $("#treeList").data("kendoTreeView");
             var row = treeList.select();
             if (row.length > 0) {
-                var data = treeList.dataItem(row);                
-				window.open('@Url.Action("Model", "Task")' + '?groupId=' + data.Id + "&isPartial=false");
+				var data = treeList.dataItem(row);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetModelIdByGroup", "Modeling")',
+                    data: { groupId: data.Id },
+                    success: function (response) {
+                        if (response) {
+                            window.open('@Url.Action("ModelCard", "Modeling")' + '?modelId=' + response + "&isPartial=false");
+                        }
+                    },
+                    error: function (response) {
+                        console.log('response', response);
+                        Common.ShowError("Модель для группы не найдена");
+                    }
+                });
             }
         });
 

@@ -41,7 +41,7 @@
         <span>Модель группы</span>
         <div>
             <div class="row">
-                <div class="form-horizontal" style="margin-top: 10px">
+                <div class="form-horizontal" style="margin: 2%">
                     <div class="form-group col-sm-12">
                         <div id="modelContent">
 
@@ -90,6 +90,13 @@
 </div>
 
 <style>
+    #groupSubCard_panelbar {
+        width: 99% !important;
+    }
+    .k-link .k-header {
+        margin: 0;
+    }
+
     .panelbar {
         border: none;
     }
@@ -261,8 +268,8 @@
 		kendo.ui.progress($('#modelContent'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("Model", "Task")',
-			data: { 'groupId': '@Model.Id', isPartial : true },
+            url: '@Url.Action("ModelCard", "Modeling")',
+			data: { 'modelId': '@Model.ModelId', isPartial : true },
             success: function (response) {
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);
