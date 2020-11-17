@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -2440,11 +2441,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     int countAll = files.Length;
                     int count = 0;
+                    var token = new CancellationTokenSource().Token;
                     foreach (string file in files)
                     {
                         count++;
                         FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task, token);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }
@@ -2460,11 +2462,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     int countAll = files.Length;
                     int count = 0;
+                    var token = new CancellationTokenSource().Token;
                     foreach (string file in files)
                     {
                         count++;
                         FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task, token);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }

@@ -17,11 +17,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport
 {
     public class DataImporterGkn
     {
+	    private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGkn>();
+
         //Объект-блокиратор для многопоточки
         private static object locked = new object();
         //ID фактора Материал стен итоговый
@@ -137,9 +140,9 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value);
+            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
         /// <summary>
@@ -148,132 +151,223 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value);
+            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
-        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetExcelObject(excelFile);
-
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
-
-            CountXmlBuildings = GknItems.Buildings.Count;
-            CountXmlParcels = GknItems.Parcels.Count;
-            CountXmlConstructions = GknItems.Constructions.Count;
-            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
-            CountXmlFlats = GknItems.Flats.Count;
-            CountXmlCarPlaces = GknItems.CarPlaces.Count;
-            CountImportBuildings = 0;
-            CountImportParcels = 0;
-            CountImportConstructions = 0;
-            CountImportUncompliteds = 0;
-            CountImportFlats = 0;
-            CountImportCarPlaces = 0;
-            AreCountersInitialized = true;
-
-            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken, GknItems);
         }
         
-        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);
+            ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken, GknItems);
+        }
 
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
+        private void ImportDataGkn(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
+	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
+        {
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
 
-            CountXmlBuildings = GknItems.Buildings.Count;
-            CountXmlParcels = GknItems.Parcels.Count;
-            CountXmlConstructions = GknItems.Constructions.Count;
-            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
-            CountXmlFlats = GknItems.Flats.Count;
-            CountXmlCarPlaces = GknItems.CarPlaces.Count;
-            CountImportBuildings = 0;
-            CountImportParcels = 0;
-            CountImportConstructions = 0;
-            CountImportUncompliteds = 0;
-            CountImportFlats = 0;
-            CountImportCarPlaces = 0;
-            AreCountersInitialized = true;
+	        ParallelOptions options = new ParallelOptions
+	        {
+		        CancellationToken = cancellationToken,
+		        MaxDegreeOfParallelism = 10
+	        };
 
-            Parallel.ForEach(GknItems.Buildings, options, item => {
-                try
-                {
-                    ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Parcels, options, item => {
-                try
-                {
-                    ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Constructions, options, item => {
-                try
-                {
-                    ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Uncompliteds, options, item => {
-                try
-                {
-                    ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Flats, options, item => {
-                try
-                {
-                    ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.CarPlaces, options, item => {
-                try
-                {
-                    ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
+	        CountXmlBuildings = GknItems.Buildings.Count;
+	        CountXmlParcels = GknItems.Parcels.Count;
+	        CountXmlConstructions = GknItems.Constructions.Count;
+	        CountXmlUncompliteds = GknItems.Uncompliteds.Count;
+	        CountXmlFlats = GknItems.Flats.Count;
+	        CountXmlCarPlaces = GknItems.CarPlaces.Count;
+	        CountImportBuildings = 0;
+	        CountImportParcels = 0;
+	        CountImportConstructions = 0;
+	        CountImportUncompliteds = 0;
+	        CountImportFlats = 0;
+	        CountImportCarPlaces = 0;
+	        AreCountersInitialized = true;
+	        Log.ForContext("TaskId", idTask)
+		        .ForContext("CountXmlBuildings", CountXmlBuildings)
+		        .ForContext("CountXmlParcels", CountXmlParcels)
+		        .ForContext("CountXmlConstructions", CountXmlConstructions)
+		        .ForContext("CountXmlUncompliteds", CountXmlUncompliteds)
+		        .ForContext("CountXmlFlats", CountXmlFlats)
+		        .ForContext("CountXmlCarPlaces", CountXmlCarPlaces)
+		        .Debug("Получены данные для импорта из ГКН");
 
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Buildings, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId).Error(ex, "Ошибка импорта данных ГКН во время загрузки Зданий");
+			        }
+		        });
+            }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Зданий");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Зданий завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Parcels, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Участков");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Участков");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Участков завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Constructions, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Сооружений");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Сооружений");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Сооружений завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Uncompliteds, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId).Error(ex,
+					        "Ошибка импорта данных ГКН во время загрузки Объектов незавершенного строительства");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning(
+			        "Импорт данных ГКН был отменен во время загрузки Объектов незавершенного строительства");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Объектов незавершенного строительства завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Flats, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Помещений");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Помещений");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Помещений завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.CarPlaces, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Машино-мест");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Машино-мест");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Машино-мест завершен");
         }
 
         //TODO перенести в общий сервис, например, GbuObjectService
