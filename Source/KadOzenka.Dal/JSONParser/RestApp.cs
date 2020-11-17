@@ -14,12 +14,8 @@ namespace KadOzenka.Dal.JSONParser
     public class RestApp
     {
 
-        public int GetRestData(string JSON)
-        {
-            int used = Int32.Parse(JObject.Parse(JSON)["data"]["api_limit"]["used"].ToString());
-            int of = Int32.Parse(JObject.Parse(JSON)["data"]["api_limit"]["of"].ToString());
-            return of - used;
-        }
+        public int GetRestData(string JSON) => 
+            Int32.Parse(JObject.Parse(JSON)["data"]["api_limit"]["of"].ToString()) - Int32.Parse(JObject.Parse(JSON)["data"]["api_limit"]["used"].ToString());
 
         public List<OMCoreObject> ParseCoreObject(string JSON, ref int CCTR, ref int ECTR)
         {
