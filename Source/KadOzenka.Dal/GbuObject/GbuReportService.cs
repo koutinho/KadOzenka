@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
@@ -17,8 +18,8 @@ namespace KadOzenka.Dal.GbuObject
 	public class GbuReportService
 	{
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={ReportId}";
-		public CellStyle WarningCellStyle { get; private set; }
-		public CellStyle ErrorCellStyle { get; private set; }
+		public CellStyle WarningCellStyle { get; }
+		public CellStyle ErrorCellStyle { get; }
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		private const int MaxRowsCountInSheet = 1000000;
 
@@ -98,6 +99,12 @@ namespace KadOzenka.Dal.GbuObject
 
 			_headers = values;
 			CurrentRow.Index++;
+		}
+
+		public void AddHeaders(List<Column> columns)
+		{
+			var headers = columns.Select(x => x.Header).ToList();
+			AddHeaders(headers);
 		}
 
 		public void AddValue(string value, int column, Row row, CellStyle cellStyle = null)
@@ -185,6 +192,14 @@ namespace KadOzenka.Dal.GbuObject
 			{
 				_columnsWidth.Add(new Column { Index = column, Width = width });
 			}
+		}
+
+
+		public void SetIndividualWidth(List<Column> columns)
+		{
+			_log.Verbose("Установка ширины для нескольких столбцов");
+
+			columns.ForEach(x => { SetIndividualWidth(x.Index, x.Width); });
 		}
 
 		public long SaveReport(string fileName, long? mainRegisterId = null, string registerViewId = null)

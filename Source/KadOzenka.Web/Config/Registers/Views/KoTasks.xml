@@ -45,7 +45,7 @@
 
         <Button Caption="Перенос оценочной группы" SRDFunctionTag="KO.TASKS" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
           <DropDownButtons>
-            <!--<Button Caption="Выполнить перенос" NavigateURL="~/Task/UpdateEvaluativeGroup" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="150" WindowWidth="800">
+            <Button Caption="Выполнить перенос группы" NavigateURL="~/Task/UpdateEvaluativeGroup" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="150" WindowWidth="800">
               <Parameters>
                 <Parameter Key="taskId" Value="[ObjectID]" />
               </Parameters>
@@ -56,8 +56,8 @@
                   </Conditions>
                 </ConditionGroup>
               </ConditionGroups>
-            </Button>-->
-            <Button Caption="Настройка атрибутов" NavigateURL="~/Task/UpdateEvaluativeGroupSettings" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="300" WindowWidth="1000" Icon="fas fa-wrench" />
+            </Button>
+            <Button Caption="Настройка атрибута" NavigateURL="~/Task/UpdateEvaluativeGroupSettings" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="300" WindowWidth="1000" Icon="fas fa-wrench" />
           </DropDownButtons>
         </Button>
     </Buttons>

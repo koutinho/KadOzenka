@@ -801,6 +801,24 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroup(long taskId)
+		{
+			var taskName = TaskService.GetTemplateForTaskName(taskId);
+
+			////TODO код для отладки
+			//new UpdateEvaluativeGroupLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = taskId
+			//}, new CancellationToken());
+			UpdateEvaluativeGroupLongProcess.AddProcessToQueue(taskId);
+
+			return Content($"Процесс Переноса оценочной группы для задания на оценку '{taskName}' успешно добавлен в очередь");
+		}
+
 		#endregion Перенос Оценочной группы
 
 
