@@ -14560,6 +14560,113 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 266 Реестр с настройками атрибутов для общепользовательских операций (KO_SYSTEM_ATTRIBUTE_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 266)]
+    [Serializable]
+    public partial class OMSystemAttributeSettings : OMBaseClass<OMSystemAttributeSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _attributeusingtype;
+        /// <summary>
+        /// 26600200 Тип использования атрибута (ATTRIBUTE_USING_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600200)]
+        public string AttributeUsingType
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType");
+                return _attributeusingtype;
+            }
+            set
+            {
+                _attributeusingtype = value;
+                NotifyPropertyChanged("AttributeUsingType");
+            }
+        }
+
+
+        private KoAttributeTypeForSettings _attributeusingtype_Code;
+        /// <summary>
+        /// 26600200 Тип использования атрибута (справочный код) (ATTRIBUTE_USING_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600200)]
+        public KoAttributeTypeForSettings AttributeUsingType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType_Code");
+                return this._attributeusingtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_attributeusingtype))
+                    {
+                         _attributeusingtype = descr;
+                    }
+                }
+                else
+                {
+                     _attributeusingtype = descr;
+                }
+
+                this._attributeusingtype_Code = value;
+                NotifyPropertyChanged("AttributeUsingType");
+                NotifyPropertyChanged("AttributeUsingType_Code");
+            }
+        }
+
+
+        private long? _attributeid;
+        /// <summary>
+        /// 26600300 Идентификатор атрибута (ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600300)]
+        public long? AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

@@ -16,7 +16,12 @@ namespace KadOzenka.Dal.Tasks
 		}
 
 
-		
+		public long? GetEvaluativeGroupAttributeId()
+		{
+			var attributeSettings = GetSetting(KoAttributeTypeForSettings.EvaluativeGroup);
+
+			return attributeSettings?.AttributeId;
+		}
 
 		public long? GetCadastralDataCadastralQuarterAttributeId()
 		{
@@ -38,6 +43,16 @@ namespace KadOzenka.Dal.Tasks
 
 			UpdateAttributeSetting(cadastralQuarterAttrId, KoAttributeTypeForSettings.CadastralQuarter);
 			UpdateAttributeSetting(buildingCadastralNumberAttrId, KoAttributeTypeForSettings.BuildingCadastralNumber);
+		}
+
+		public void UpdateEvaluativeGroupAttributeSettings(long? evaluativeGroupAttributeId)
+		{
+			if (!evaluativeGroupAttributeId.HasValue)
+				throw new Exception("Не указан атрибут для оценочной группы");
+
+			ValidateAttribute(evaluativeGroupAttributeId.Value);
+
+			UpdateAttributeSetting(evaluativeGroupAttributeId, KoAttributeTypeForSettings.EvaluativeGroup);
 		}
 
 

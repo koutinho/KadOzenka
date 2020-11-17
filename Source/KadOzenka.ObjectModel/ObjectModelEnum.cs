@@ -10773,6 +10773,38 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип атрибута (для различных системных настроек) (223)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 223)]
+    public enum KoAttributeTypeForSettings : long
+    {
+		/// <summary>
+		/// Атрибут кадастрового квартала (1)
+		/// </summary>
+		[Description("Атрибут кадастрового квартала")]
+        [EnumCode("1")]
+        [ShortTitle("Атрибут кадастрового квартала")]
+        CadastralQuarter = 1,
+		/// <summary>
+		/// Атрибут кадастрового номера здания (2)
+		/// </summary>
+		[Description("Атрибут кадастрового номера здания")]
+        [EnumCode("2")]
+        [ShortTitle("Атрибут кадастрового номера здания")]
+        BuildingCadastralNumber = 2,
+		/// <summary>
+		/// Атрибут оценочной группы (3)
+		/// </summary>
+		[Description("Атрибут оценочной группы")]
+        [EnumCode("3")]
+        [ShortTitle("Атрибут оценочной группы")]
+        EvaluativeGroup = 3,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

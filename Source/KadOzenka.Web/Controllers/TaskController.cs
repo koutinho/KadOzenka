@@ -743,17 +743,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult UpdateCadastralDataAttributeSettings()
 		{
-			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			var model = new UpdateTaskCadastralDataAttributeSettingsModel();
 			model.CadastralQuarterGbuAttributeId =
@@ -781,6 +771,37 @@ namespace KadOzenka.Web.Controllers
 
 
 		#endregion Актуализация кадастровых данных
+
+
+		#region Перенос Оценочной группы
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroupSettings()
+		{
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
+
+			var model = new UpdateEvaluativeGroupSettingsModel
+			{
+				EvaluativeGroupGbuAttributeId = SystemAttributeSettingsService.GetEvaluativeGroupAttributeId()
+			};
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroupSettings(UpdateEvaluativeGroupSettingsModel model)
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			SystemAttributeSettingsService.UpdateEvaluativeGroupAttributeSettings(model.EvaluativeGroupGbuAttributeId);
+
+			return Ok();
+		}
+
+		#endregion Перенос Оценочной группы
 
 
 		#region Изменения в атрибутах

@@ -2362,6 +2362,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 266 Реестр с настройками атрибутов для общепользовательских операций
+    /// </summary>
+    public partial class OMSystemAttributeSettings
+    {
+
+        public OMSystemAttributeSettings()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSystemAttributeSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
