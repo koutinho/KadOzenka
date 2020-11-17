@@ -60,7 +60,7 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
 		public GroupCalculationSettingsService GroupCalculationSettingsService { get; set; }
 		public RegisterAttributeService RegisterAttributeService { get; set; }
-		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
+		public SystemAttributeSettingsService SystemAttributeSettingsService { get; set; }
 		public TemplateService TemplateService { get; set; }
 		public FactorSettingsService FactorSettingsService { get; set; }
 
@@ -73,7 +73,7 @@ namespace KadOzenka.Web.Controllers
             GroupService = new GroupService();
             GroupCalculationSettingsService = new GroupCalculationSettingsService();
 			RegisterAttributeService = new RegisterAttributeService();
-            UpdateCadastralDataService = new UpdateCadastralDataService();
+            SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
             FactorSettingsService = new FactorSettingsService();
 		}
@@ -757,8 +757,8 @@ namespace KadOzenka.Web.Controllers
 
 			var model = new UpdateTaskCadastralDataAttributeSettingsModel();
 			model.CadastralQuarterGbuAttributeId =
-				UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
-			model.BuildingCadastralNumberGbuAttributeId = UpdateCadastralDataService
+				SystemAttributeSettingsService.GetCadastralDataCadastralQuarterAttributeId();
+			model.BuildingCadastralNumberGbuAttributeId = SystemAttributeSettingsService
 				.GetCadastralDataBuildingCadastralNumberAttributeId();
 
 			return View(model);
@@ -773,7 +773,7 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
+			SystemAttributeSettingsService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
 				model.BuildingCadastralNumberGbuAttributeId);
 
 			return Json(new { Success = "Сохранено успешно" });

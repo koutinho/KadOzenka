@@ -6,31 +6,26 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tasks
 {
-	public class UpdateCadastralDataService
+	public class SystemAttributeSettingsService
 	{
 		private GbuObjectService GbuObjectService { get; set; }
 
-		public UpdateCadastralDataService()
+		public SystemAttributeSettingsService()
 		{
 			GbuObjectService = new GbuObjectService();
 		}
 
+
 		public long? GetCadastralDataCadastralQuarterAttributeId()
 		{
-			var attributeSettings = OMUpdateCadastralDataAttributeSettings.Where(x =>
-					x.AttributeUsingType_Code == KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+			var attributeSettings = GetSetting(KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute);
 
 			return attributeSettings?.AttributeId;
 		}
 
 		public long? GetCadastralDataBuildingCadastralNumberAttributeId()
 		{
-			var attributeSettings = OMUpdateCadastralDataAttributeSettings.Where(x =>
-					x.AttributeUsingType_Code == KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+			var attributeSettings = GetSetting(KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute);
 
 			return attributeSettings?.AttributeId;
 		}
@@ -39,28 +34,34 @@ namespace KadOzenka.Dal.Tasks
 		{
 			ValidateAttributes(cadastralQuarterAttrId, buildingCadastralNumberAttrId);
 
-			UpdateAttributeSetting(cadastralQuarterAttrId,
-				KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute);
-			UpdateAttributeSetting(buildingCadastralNumberAttrId,
-				KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute);
+			UpdateAttributeSetting(cadastralQuarterAttrId, KoUpdateCadastralDataAttributeType.CadastralQuarterAttribute);
+			UpdateAttributeSetting(buildingCadastralNumberAttrId, KoUpdateCadastralDataAttributeType.BuildingCadastralNumberAttribute);
 		}
+
+
+		#region Support Methods
 
 		private void UpdateAttributeSetting(long? attributeId, KoUpdateCadastralDataAttributeType attributeType)
 		{
-			var attributeSetting = OMUpdateCadastralDataAttributeSettings.Where(x =>
-					x.AttributeUsingType_Code == attributeType)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+			var attributeSetting = GetSetting(attributeType);
 
 			if (attributeSetting == null)
 			{
-				attributeSetting = new OMUpdateCadastralDataAttributeSettings();
-				attributeSetting.AttributeUsingType_Code =
-					attributeType;
+				attributeSetting = new OMUpdateCadastralDataAttributeSettings
+				{
+					AttributeUsingType_Code = attributeType
+				};
 			}
 
 			attributeSetting.AttributeId = attributeId;
 			attributeSetting.Save();
+		}
+
+		private OMUpdateCadastralDataAttributeSettings GetSetting(KoUpdateCadastralDataAttributeType type)
+		{
+			return OMUpdateCadastralDataAttributeSettings.Where(x => x.AttributeUsingType_Code == type)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 		}
 
 		private void ValidateAttributes(long? cadastralQuarterAttrId, long? buildingCadastralNumberAttrId)
@@ -83,5 +84,7 @@ namespace KadOzenka.Dal.Tasks
 			if (attribute == null)
 				throw new Exception($"Не найден ГБУ атрибут с ИД '{attributeId}'");
 		}
+
+		#endregion
 	}
 }

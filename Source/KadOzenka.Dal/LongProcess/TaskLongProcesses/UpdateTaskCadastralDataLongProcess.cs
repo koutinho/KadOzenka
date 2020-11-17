@@ -28,13 +28,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return LongProcessManager.AddTaskToQueue(LongProcessName, OMTask.GetRegisterId(), taskId);
 		}
 
-		private UpdateCadastralDataService UpdateCadastralDataService { get; }
+		private SystemAttributeSettingsService SystemAttributeSettingsService { get; }
 		private GbuObjectService GbuObjectService { get; }
 		private TaskService TaskService { get; }
 
 		public UpdateTaskCadastralDataLongProcess()
 		{
-			UpdateCadastralDataService = new UpdateCadastralDataService();
+			SystemAttributeSettingsService = new SystemAttributeSettingsService();
 			GbuObjectService = new GbuObjectService();
 			TaskService = new TaskService();
 		}
@@ -256,9 +256,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private void SetupInitialSettings(long taskId)
 		{
-			var cadastralQuarterAttrId = UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
+			var cadastralQuarterAttrId = SystemAttributeSettingsService.GetCadastralDataCadastralQuarterAttributeId();
 			_cadastralQuarterAttrId = cadastralQuarterAttrId;
-			var buildingCadastralNumberAttrId = UpdateCadastralDataService.GetCadastralDataBuildingCadastralNumberAttributeId();
+			var buildingCadastralNumberAttrId = SystemAttributeSettingsService.GetCadastralDataBuildingCadastralNumberAttributeId();
 			_buildingCadastralNumberAttrId = buildingCadastralNumberAttrId;
 			_taskName = TaskService.GetTemplateForTaskName(taskId);
 

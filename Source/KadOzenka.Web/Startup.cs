@@ -93,7 +93,7 @@ namespace CIPJS
 	        services.AddTransient<StatisticsReportsExportService>();
 	        services.AddTransient<TourService>();
 	        services.AddTransient<RegisterAttributeService>();
-	        services.AddTransient<UpdateCadastralDataService>();
+	        services.AddTransient<SystemAttributeSettingsService>();
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
