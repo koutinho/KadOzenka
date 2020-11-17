@@ -999,6 +999,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult EditTourFactorObjectCard(TourFactorObjectModel model)
         {
@@ -1019,12 +1020,15 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.Id == -1)
                 {
+	                /// TODO: Убрать после доработки бд
 	                var existingAttr = TourFactorService.GetTourAttributes(model.TourId,
 		                model.IsSteadObjectType ? ObjectTypeExtended.Zu : ObjectTypeExtended.Oks);
 	                if (existingAttr.Any(x => x.Name == model.Name))
 	                {
 		                return Json(new {Errors = new List<object>{ new {Message = "Фактор с данным названием уже существует"}}});
 	                }
+	                ///
+
 	                model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
                 }
                 else
