@@ -6,6 +6,12 @@
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
             <div class="col-sm-12">
+                <span class="k-icon k-i-warning"></span>
+                <span>Максимальный размер файла - 10 МБ.</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
                 <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
             </div>
         </div>
@@ -561,7 +567,7 @@
         upload.clearAllFiles();
         upload.removeAllFiles();
         var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '50%', '20%', "Загрузка объектов модели");
+        ShowModal(modal, '50%', '15%', "Загрузка объектов модели");
     }
 
 
