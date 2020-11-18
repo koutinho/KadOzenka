@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Configuration;
 using System.Collections.Generic;
+using Serilog;
 
 namespace KadOzenka.Dal.WebRequest
 {
@@ -14,16 +15,23 @@ namespace KadOzenka.Dal.WebRequest
         private string restAppCIANLink = ConfigurationManager.AppSettings["restAppCIANLink"];
         private string restAppAvitoLink = ConfigurationManager.AppSettings["restAppAvitoLink"];
         private string restAppTimeTemplate = ConfigurationManager.AppSettings["restAppTimeTmp"];
+        static readonly ILogger _log = Log.ForContext<RestApp>();
 
         public string GetMetaInfoDataValues(string login, string token) => 
             new StreamReader(System.Net.WebRequest.Create(string.Format(metaInfoLink, login, token)).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
 
-        public string GetCIANDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2, string login, string token) =>
-            new StreamReader(
-                System.Net.WebRequest.Create(string.Format(restAppCIANLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
-                .GetResponse()
-                .GetResponseStream(),Encoding.UTF8)
-                .ReadToEnd();
+        public string GetCIANDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2, string login, string token)
+        {
+                _log
+                    .ForContext("Method", "GetCIANDataByMultipleValues")
+                    .Debug("Попытка получения данных от RestApp");
+                return 
+                    new StreamReader(
+                        System.Net.WebRequest.Create(string.Format(restAppCIANLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
+                        .GetResponse()
+                        .GetResponseStream(), Encoding.UTF8)
+                    .ReadToEnd();
+        }
 
         public string GetAvitoDataByMultipleValues(string regionId, string categoryId, DateTime date1, DateTime date2, string login, string token) => 
             new StreamReader(
