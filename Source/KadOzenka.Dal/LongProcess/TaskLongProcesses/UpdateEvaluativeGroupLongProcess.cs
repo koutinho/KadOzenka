@@ -9,8 +9,12 @@ using Core.Register.LongProcessManagment;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.TD;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
 
@@ -23,6 +27,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private SystemAttributeSettingsService SystemAttributeSettingsService { get; }
 		private GbuObjectService GbuObjectService { get; }
 		private TaskService TaskService { get; }
+		private GroupService GroupService { get; }
 		private GbuReportService ReportService { get; }
 		private GbuReportService.Column CadastralNumberColumn { get; set; }
 		private GbuReportService.Column AttributeValueColumn { get; set; }
@@ -36,6 +41,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			GbuObjectService = new GbuObjectService();
 			TaskService = new TaskService();
 			ReportService = new GbuReportService();
+			GroupService = new GroupService();
 		}
 
 
@@ -61,24 +67,24 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				return;
 			}
 
-			var taskName = string.Empty;
+			var task = new TaskPure();
 			try
 			{
-				_log.Debug("Начат перенос оценочной группы для задания на оценку {TaskId}", taskId);
+				_log.Debug("Начат перенос оценочной группы для задания на оценку с ИД {TaskId}", taskId);
 
-				taskName = TaskService.GetTemplateForTaskName(taskId.Value);
+				task = GetTask(taskId.Value);
 
 				var evaluativeGroupAttribute = GetEvaluativeGroupAttribute();
 
 				GenerateReportColumns(evaluativeGroupAttribute);
 
-				Run(taskId.Value, evaluativeGroupAttribute);
+				Run(task, evaluativeGroupAttribute);
 
 				ReportService.SetStyle();
-				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{taskName}'", OMTask.GetRegisterId(), "KoTasks");
+				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{task.Name}'", OMTask.GetRegisterId(), "KoTasks");
 
 				var message = "Операция успешно завершена.<br>" + $@"<a href=""{ReportService.UrlToDownload}"">Скачать результат</a>";
-				SendMessage(processQueue, message, GetMessageSubject(taskName));
+				SendMessage(processQueue, message, GetMessageSubject(task.Name));
 				WorkerCommon.SetProgress(processQueue, 100);
 
 				_log.Debug("Закончен перенос оценочной группы для задания на оценку {TaskId}", taskId);
@@ -86,7 +92,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			catch(Exception ex)
 			{
 				var errorId = ErrorManager.LogError(ex);
-				SendMessage(processQueue, $"Операция завершена с ошибкой: {ex.Message}.<br>(Подробнее в журнале: {errorId})", GetMessageSubject(taskName));
+				SendMessage(processQueue, $"Операция завершена с ошибкой: {ex.Message}.<br>(Подробнее в журнале: {errorId})", GetMessageSubject(task.Name));
 				_log.Error(ex, "Ошибка при переносе оценочной группы");
 				
 				throw;
@@ -95,6 +101,37 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 
 		#region Support Methods
+
+		private TaskPure GetTask(long taskId)
+		{
+			var task = OMTask.Where(x => x.Id == taskId).Select(x => new
+			{
+				x.TourId,
+				x.DocumentId,
+				x.NoteType,
+				x.EstimationDate
+			}).ExecuteFirstOrDefault();
+			if (task == null)
+				throw new Exception($"Не найдено Задание на оценку с ИД '{taskId}'");
+			if (task.TourId == null)
+				throw new Exception($"У Задания на оценку с ИД '{taskId}' не проставлен Тур");
+
+			var document = OMInstance.Where(x => x.Id == task.DocumentId).Select(x => new
+			{
+				x.CreateDate,
+				x.RegNumber
+			}).ExecuteFirstOrDefault();
+			
+			var taskName = TaskService.GetTemplateForTaskName(task.EstimationDate, document?.CreateDate,
+				document?.RegNumber, task.NoteType);
+
+			return new TaskPure
+			{
+				Id = task.Id,
+				Name = taskName, 
+				TourId = task.TourId.Value
+			};
+		}
 
 		private RegisterAttribute GetEvaluativeGroupAttribute()
 		{
@@ -108,6 +145,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			_log.ForContext("EvaluativeGroupAttributeId", evaluativeGroupAttribute.Id)
 				.ForContext("EvaluativeGroupAttributeName", evaluativeGroupAttribute.Name)
+				.ForContext("EvaluativeGroupRegisterId", evaluativeGroupAttribute.RegisterId)
+				.ForContext("EvaluativeGroupRegisterName", evaluativeGroupAttribute.RegisterName)
 				.Debug("Найден ГБУ-атрибут с оценочной группой");
 
 			return evaluativeGroupAttribute;
@@ -146,19 +185,18 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ReportService.SetIndividualWidth(columns);
 		}
 
-		private void Run(long taskId, RegisterAttribute evaluativeGroupAttribute)
+		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute)
 		{
-			var units = GetUnits(taskId);
-			_log.Debug("Найдено {UnitsCount} единиц оценки с непроставленной группой", units.Count);
+			var units = GetUnits(task.Id);
 
 			var gbuEvaluativeGroupValues = GbuObjectService.GetAllAttributes(
-				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(), null,
+				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(), 
+				new List<long> {evaluativeGroupAttribute.RegisterId},
 				new List<long> {evaluativeGroupAttribute.Id}, 
 				DateTime.Now.GetEndOfTheDay(), isLight: true);
 			_log.Debug("Найдено {GbuEvaluativeGroupValuesCount} значений ГБУ-атрибутов", gbuEvaluativeGroupValues.Count);
 
-			var groups = GetGroups(gbuEvaluativeGroupValues);
-			_log.Debug("Найдено {GroupsCount} групп по номерам из ГБУ", groups.Count);
+			var tourGroupsInfo = GetGroups(task.TourId);
 
 			_locked = new object();
 			var cancelTokenSource = new CancellationTokenSource();
@@ -170,65 +208,76 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			Parallel.ForEach(units, options, unit =>
 			{
-				UpdateUnitGroup(gbuEvaluativeGroupValues, unit, groups);
+				UpdateUnitGroup(gbuEvaluativeGroupValues, unit, tourGroupsInfo);
 			});
 		}
 
 		private List<OMUnit> GetUnits(long taskId)
 		{
-			return OMUnit.Where(x => x.TaskId == taskId && x.GroupId == null && x.ObjectId != null)
+			var units = OMUnit.Where(x => x.TaskId == taskId && (x.GroupId == null || x.GroupId == -1) && x.ObjectId != null)
 				.Select(x => new
 				{
 					x.CadastralNumber,
 					x.ObjectId,
-					x.GroupId
+					x.GroupId,
+					x.PropertyType_Code
 				})
 				.Execute();
+
+			_log.Debug("Найдено {UnitsCount} единиц оценки с непроставленной группой", units.Count);
+
+			return units;
 		}
 
-		private List<OMGroup> GetGroups(List<GbuObjectAttribute> gbuEvaluativeGroupValues)
+		private TourGroupsInfo GetGroups(long tourId)
 		{
-			var allGroupNumbers = gbuEvaluativeGroupValues.Select(x => x.GetValueInString()).Distinct()
-				.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+			var allGroupsInTour = GroupService.GetGroupsTreeForTour(tourId);
+			_log.Debug("Найдено {GroupsCount} групп для Тура {TourId}", allGroupsInTour.Count, tourId);
 
-			_log.ForContext("GroupNumbers", allGroupNumbers, destructureObjects: true)
-				.Debug("Найдено {AllGroupNumbersCount} уникальных номеров групп из ГБУ", allGroupNumbers.Count);
+			var oksGroups = GetGroups(allGroupsInTour, KoGroupAlgoritm.MainOKS);
+			var zuGroups = GetGroups(allGroupsInTour, KoGroupAlgoritm.MainParcel);
 
-			if (allGroupNumbers.Count > 0)
+			return new TourGroupsInfo
 			{
-				return OMGroup.Where(x => allGroupNumbers.Contains(x.Number)).Select(x => new
-				{
-					x.GroupName,
-					x.Number
-				}).Execute();
-			}
-
-			return new List<OMGroup>();
+				OksGroups = oksGroups,
+				OksSubGroups = oksGroups.SelectMany(x => x.Items).ToList(),
+				ZuGroups = zuGroups,
+				ZuSubGroups = zuGroups.SelectMany(x => x.Items).ToList()
+			};
 		}
 
-		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, List<OMGroup> groups)
+		private List<GroupTreeDto> GetGroups(List<GroupTreeDto> allGroupsInTour, KoGroupAlgoritm type)
 		{
-			OMGroup group = null;
+			return allGroupsInTour.Where(x => x.Id == (int)type).SelectMany(x => x.Items).ToList();
+		}
+
+		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)
+		{
+			GroupTreeDto group = null;
 			var groupNumberFromAttribute = string.Empty;
 			try
 			{
-				groupNumberFromAttribute = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)
-					?.GetValueInString();
+				groupNumberFromAttribute = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
+				
 				if (!string.IsNullOrWhiteSpace(groupNumberFromAttribute))
 				{
-					group = groups.FirstOrDefault(x => x.Number == groupNumberFromAttribute);
+					group = unit.PropertyType_Code == PropertyTypes.Stead
+						? GetGroup(groupNumberFromAttribute, allGroupsInTour.ZuGroups, allGroupsInTour.ZuSubGroups)
+						: GetGroup(groupNumberFromAttribute, allGroupsInTour.OksGroups, allGroupsInTour.OksSubGroups);
+
 					unit.GroupId = group?.Id;
 					unit.Save();
 
 					_log.ForContext("ObjectId", unit.ObjectId)
 						.ForContext("UnitId", unit.Id)
+						.ForContext("UnitCadastralNumber", unit.CadastralNumber)
 						.ForContext("NewGroupId", unit.GroupId)
 						.Debug("Обновление единицы оценки {UnitCadastralNumber}", unit.CadastralNumber);
 				}
 
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, @group);
+					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group);
 				}
 			}
 			catch (Exception exception)
@@ -236,19 +285,28 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var errorId = ErrorManager.LogError(exception);
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, @group,
-						$"Ошибка, подробнее в журнале {errorId}");
+					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group, $"Ошибка, подробнее в журнале {errorId}");
 				}
 
 				_log.Error(exception, "Ошибка при обработке юнита во время переноса оценочной группы");
 			}
 		}
 
-		private void AddRowToReport(string cadastralNumber, string groupNumberFromAttribute, OMGroup group, string errorMessage = null)
+		private GroupTreeDto GetGroup(string number, List<GroupTreeDto> groups, List<GroupTreeDto> subgroups)
+		{
+			var resultGroup = groups.FirstOrDefault(x => x.CombinedNumber == number);
+			if (resultGroup != null) 
+				return resultGroup;
+
+			var resultSubgroup = subgroups.FirstOrDefault(x => x.CombinedNumber == number);
+			return resultSubgroup;
+		}
+
+		private void AddRowToReport(string cadastralNumber, string groupNumberFromAttribute, GroupTreeDto group, string errorMessage = null)
 		{
 			var row = ReportService.GetCurrentRow();
 
-			var fullGroupName = group == null ? string.Empty : $"{group.Number}. {group.GroupName}";
+			var fullGroupName = group == null ? string.Empty : group.GroupName;
 
 			ReportService.AddValue(cadastralNumber, CadastralNumberColumn.Index, row);
 			ReportService.AddValue(groupNumberFromAttribute, AttributeValueColumn.Index, row);
@@ -260,12 +318,32 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-
 		private string GetMessageSubject(string taskName)
 		{
 			var baseMessage = "Результат переноса оценочной группы";
 
 			return string.IsNullOrWhiteSpace(taskName) ? baseMessage : $"{baseMessage} для задания на оценку '{taskName}'";
+		}
+
+		#endregion
+
+
+		#region Entities
+
+		private class TaskPure
+		{
+			public long Id { get; set; }
+			public string Name { get; set; }
+			public long TourId { get; set; }
+		}
+
+		private class TourGroupsInfo
+		{
+			public List<GroupTreeDto> OksGroups { get; set; }
+			public List<GroupTreeDto> OksSubGroups { get; set; }
+			public List<GroupTreeDto> ZuGroups { get; set; }
+			public List<GroupTreeDto> ZuSubGroups { get; set; }
+
 		}
 
 		#endregion

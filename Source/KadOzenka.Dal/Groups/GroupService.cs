@@ -159,6 +159,7 @@ namespace KadOzenka.Dal.Groups
                         {
                             Id = group.Id,
                             GroupName = $"{group.CombinedNumber}. {group.GroupName}",
+                            CombinedNumber = group.CombinedNumber,
                             GroupType = group.GroupType,
                             TourId = tourId,
                             Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id)
@@ -167,6 +168,7 @@ namespace KadOzenka.Dal.Groups
                                 {
                                     Id = subGroup.Id,
                                     GroupName = $"{subGroup.CombinedNumber}. {subGroup.GroupName}",
+                                    CombinedNumber = subGroup.CombinedNumber,
                                     GroupType = subGroup.GroupType,
                                     TourId = tourId
                                 }).ToList()
