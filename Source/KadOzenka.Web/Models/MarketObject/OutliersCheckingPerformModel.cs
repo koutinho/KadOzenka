@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
+using KadOzenka.Dal.OutliersChecking;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.MarketObject
@@ -30,16 +31,16 @@ namespace KadOzenka.Web.Models.MarketObject
 				segment = (MarketSegment) Segment;
 			}
 
-			var propertyTypes = new List<PropertyTypesCIPJS>();
+			var propertyTypes = new List<ObjectPropertyTypeDivision>();
 			if (AllPropertyTypes)
 			{
-				propertyTypes = System.Enum.GetValues(typeof(PropertyTypesCIPJS)).Cast<PropertyTypesCIPJS>().ToList();
+				propertyTypes = System.Enum.GetValues(typeof(ObjectPropertyTypeDivision)).Cast<ObjectPropertyTypeDivision>().ToList();
 			}
 			else
 			{
 				foreach (var propertyType in PropertyTypes)
 				{
-					propertyTypes.Add((PropertyTypesCIPJS) propertyType);
+					propertyTypes.Add((ObjectPropertyTypeDivision) propertyType);
 				}
 			}
 

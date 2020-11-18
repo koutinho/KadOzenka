@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.OutliersChecking
 			_outliersCheckingReport = new OutliersCheckingReport();
 		}
 
-		public long PerformOutliersChecking(MarketSegment? segment, List<PropertyTypesCIPJS> propertyTypes)
+		public long PerformOutliersChecking(MarketSegment? segment, List<ObjectPropertyTypeDivision> propertyTypes)
 		{
 			Log.Debug($"Старт процедуры Проверки на выбросы {(segment.HasValue ? $"для сегмента {segment.GetEnumDescription()}" : "для всех сегментов")}");
 
@@ -86,10 +86,27 @@ namespace KadOzenka.Dal.OutliersChecking
 			return _outliersCheckingReport.SaveReport();
 		}
 
-		private void SetPropertyTypes(List<PropertyTypesCIPJS> propertyTypes)
+		private void SetPropertyTypes(List<ObjectPropertyTypeDivision> propertyTypeDivisions)
 		{
-			if(propertyTypes.IsEmpty())
+			if(propertyTypeDivisions.IsEmpty())
 				throw new Exception("Не заданы виды объектов недвижимости");
+
+			var propertyTypes = new List<PropertyTypesCIPJS>();
+			foreach (var propertyTypeDivision in propertyTypeDivisions)
+			{
+				switch (propertyTypeDivision)
+				{
+					case ObjectPropertyTypeDivision.LandArea:
+						propertyTypes.Add(PropertyTypesCIPJS.LandArea);
+						break;
+					case ObjectPropertyTypeDivision.BuildingsAndPlacements:
+						propertyTypes.AddRange(new[]{ PropertyTypesCIPJS.Buildings, PropertyTypesCIPJS.Placements });
+						break;
+					case ObjectPropertyTypeDivision.ConstructionsAndOthers:
+						propertyTypes.Add(PropertyTypesCIPJS.OtherAndMore);
+						break;
+				}
+			}
 
 			PropertyTypes = propertyTypes;
 		}
@@ -122,7 +139,6 @@ namespace KadOzenka.Dal.OutliersChecking
 				var constructionsAndOthers = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.OtherAndMore).ToList();
 				ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.ConstructionsAndOthers, constructionsAndOthers);
 			}
-				
 
 			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
 				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)

@@ -557,11 +557,9 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult GetMarketPropertyTypeList()
+        public ActionResult GetMarketPropertyTypeDivisionsList()
         {
-	        var exceptions = new List<long> { (long)PropertyTypesCIPJS.None };
-	        var propertyTypes = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypesCIPJS), exceptions: exceptions);
-
+	        var propertyTypes = Helpers.EnumExtensions.GetSelectList(typeof(ObjectPropertyTypeDivision));
 	        return Content(JsonConvert.SerializeObject(propertyTypes), "application/json");
         }
 
