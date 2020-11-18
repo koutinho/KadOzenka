@@ -648,6 +648,15 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult MarksCatalogUploading(long groupId, long factorId)
+        {
+	        ViewBag.GroupId = groupId;
+	        ViewBag.FactorId = factorId;
+
+	        return View();
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public FileResult DownloadMarksCatalog(long groupId, long factorId)
         {
             var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);

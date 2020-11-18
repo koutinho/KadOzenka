@@ -205,7 +205,7 @@
                 var groupId = '@((long)ViewBag.GroupId)';
                 var factorId = data.FactorId;
                 Common.UI.ShowWindow('Метки',
-                    '@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
+                    '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId,
                     'editGroupFactorWindow',
                     function (e) {},
                     800, 400);
@@ -220,7 +220,7 @@
                 var groupId = '@((long)ViewBag.GroupId)';
                 var factorId = data.FactorId;
                 Common.UI.ShowWindow('Загрузка меток',
-                    '@Url.Action("MarksCatalogUploading", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
+                    '@Url.Action("MarksCatalogUploading", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId,
                     null,
                     function(e) {},
                     800, 400);
@@ -234,7 +234,7 @@
                 var data = grid.dataItem(row);
                 var groupId = '@((long)ViewBag.GroupId)';
                 var factorId = data.FactorId;
-                window.open('@Url.Action("DownloadMarksCatalog", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+                window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + groupId + '&factorId=' + factorId);
             }
         });
     });
