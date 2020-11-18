@@ -47,7 +47,8 @@ namespace KadOzenka.Web.Models.MarketObject
 			return new OutliersCheckingProcessSettings
 			{
 				Segment = segment,
-				PropertyTypes = propertyTypes
+				PropertyTypes = propertyTypes,
+				AllPropertyTypes = AllPropertyTypes
 			};
 		}
 	}

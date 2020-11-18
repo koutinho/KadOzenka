@@ -6150,6 +6150,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _propertytypesmapping;
+        /// <summary>
+        /// 11901100 Список используемых видов объекта недвижимости (PROPERTY_TYPES_MAPPING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11901100)]
+        public string PropertyTypesMapping
+        {
+            get
+            {
+                CheckPropertyInited("PropertyTypesMapping");
+                return _propertytypesmapping;
+            }
+            set
+            {
+                _propertytypesmapping = value;
+                NotifyPropertyChanged("PropertyTypesMapping");
+            }
+        }
+
     }
 }
 

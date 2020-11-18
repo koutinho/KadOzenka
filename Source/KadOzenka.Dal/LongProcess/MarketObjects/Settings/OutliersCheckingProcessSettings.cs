@@ -8,5 +8,6 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects.Settings
 	{
 		public MarketSegment? Segment { get; set; }
 		public List<ObjectPropertyTypeDivision> PropertyTypes { get; set; }
+		public bool AllPropertyTypes { get; set; }
 	}
 }

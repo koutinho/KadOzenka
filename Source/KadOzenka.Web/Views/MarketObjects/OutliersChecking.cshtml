@@ -32,7 +32,7 @@
         </div>
         <div class="col-sm-5" style="display: flex;">
             <div>
-                <label for="outliers-settings-object-type" style="align-self: center; padding-right: 10px;">Вид объекта недвижимости</label>
+                <label for="outliers-settings-object-type" style="align-self: center; padding-right: 10px;">Виды объектов недвижимости</label>
             </div>
             <div id="outliers-settings-object-type" style="display: flex; width: 100%;">
                 <div style="padding-right: 10px;">
@@ -58,33 +58,42 @@
         <fieldset class="last-outliers-checking-fieldset">
             <legend>Последняя проверка</legend>
             <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Сегмент: <label class="last-outliers-checking-value last-outliers-checking-segment"></label></p>
-                </div>
-                <div class="col-sm-8">
-                    <p class="last-outliers-checking">Статус: <label class="last-outliers-checking-value last-outliers-checking-status"></label></p>
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата создания: <label class="last-outliers-checking-value last-outliers-checking-date-created"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата запуска: <label class="last-outliers-checking-value last-outliers-checking-date-started"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата завершения: <label class="last-outliers-checking-value last-outliers-checking-date-finished"></label></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Сегмент: <label class="last-outliers-checking-value last-outliers-checking-segment"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Виды объектов недвижимости: <label class="last-outliers-checking-value last-outliers-checking-property-types"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Статус: <label class="last-outliers-checking-value last-outliers-checking-status"></label></p>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Обработано объектов: <label class="last-outliers-checking-value last-outliers-checking-total-objects-count"></label></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата создания: <label class="last-outliers-checking-value last-outliers-checking-date-created"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата запуска: <label class="last-outliers-checking-value last-outliers-checking-date-started"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата завершения: <label class="last-outliers-checking-value last-outliers-checking-date-finished"></label></p>
+                    </div>
                 </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Исключенных объектов: <label class="last-outliers-checking-value last-outliers-checking-excluded-objects-count"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <div class="last-outliers-checking-value last-outliers-checking-report"></div>
+            </div>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Обработано объектов: <label class="last-outliers-checking-value last-outliers-checking-total-objects-count"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Исключенных объектов: <label class="last-outliers-checking-value last-outliers-checking-excluded-objects-count"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="last-outliers-checking-value last-outliers-checking-report"></div>
+                    </div>
                 </div>
             </div>
         </fieldset>
@@ -317,6 +326,7 @@
             $('.last-outliers-checking-section').show();
 
             processLabelValue($('.last-outliers-checking-segment'), data.LastMarketSegment, 'Для всех сегментов');
+            processLabelValue($('.last-outliers-checking-property-types'), data.LastPropertyTypes, 'Для всех видов');
             processLabelValue($('.last-outliers-checking-status'), data.LastStatus);
             processLabelDateValue($('.last-outliers-checking-date-created'), data.LastDateCreated);
             processLabelDateValue($('.last-outliers-checking-date-started'), data.LastDateStarted);

@@ -641,6 +641,9 @@ namespace KadOzenka.Web.Controllers
             //{
             //    DateCreated = DateTime.Now,
             //    Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+            //    PropertyTypesMapping = !settings.AllPropertyTypes
+	           //     ? JsonConvert.SerializeObject(settings.PropertyTypes)
+	           //     : null,
             //};
             //if (settings.Segment.HasValue)
             //    history.MarketSegment_Code = settings.Segment.Value;
