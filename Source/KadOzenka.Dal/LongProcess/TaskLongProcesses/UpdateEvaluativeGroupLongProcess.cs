@@ -34,6 +34,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private GbuReportService.Column GroupNameColumn { get; set; }
 		private GbuReportService.Column ErrorColumn { get; set; }
 		private object _locked;
+		public int MaxCount;
+		public int CurrentCount;
 
 		public UpdateEvaluativeGroupLongProcess()
 		{
@@ -78,7 +80,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				GenerateReportColumns(evaluativeGroupAttribute);
 
-				Run(task, evaluativeGroupAttribute);
+				PerformOperation(processQueue, cancellationToken, task, evaluativeGroupAttribute);
 
 				ReportService.SetStyle();
 				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{task.Name}'", OMTask.GetRegisterId(), "KoTasks");
@@ -185,9 +187,35 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ReportService.SetIndividualWidth(columns);
 		}
 
+		private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
+			RegisterAttribute evaluativeGroupAttribute)
+		{
+			var cancelProgressCounterSource = new CancellationTokenSource();
+			var cancelProgressCounterToken = cancelProgressCounterSource.Token;
+			var progressCounterTask = Task.Run(() =>
+			{
+				while (true)
+				{
+					if (cancelProgressCounterToken.IsCancellationRequested)
+					{
+						break;
+					}
+
+					LogProgress(MaxCount, CurrentCount, processQueue);
+				}
+			}, cancelProgressCounterToken);
+
+			Run(task, evaluativeGroupAttribute);
+
+			cancelProgressCounterSource.Cancel();
+			progressCounterTask.Wait(cancellationToken);
+			cancelProgressCounterSource.Dispose();
+		}
+
 		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute)
 		{
 			var units = GetUnits(task.Id);
+			MaxCount = units.Count;
 
 			var gbuEvaluativeGroupValues = GbuObjectService.GetAllAttributes(
 				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(), 
@@ -253,6 +281,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)
 		{
+			lock (_locked)
+			{
+				CurrentCount++;
+			}
+
 			GroupTreeDto group = null;
 			var groupNumberFromAttribute = string.Empty;
 			try
