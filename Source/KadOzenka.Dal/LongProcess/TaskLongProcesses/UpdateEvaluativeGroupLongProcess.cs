@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				GenerateReportColumns(evaluativeGroupAttribute);
 
-				UpdateUnitGroup(taskId.Value, evaluativeGroupAttribute);
+				Run(taskId.Value, evaluativeGroupAttribute);
 
 				ReportService.SetStyle();
 				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{taskName}'", OMTask.GetRegisterId(), "KoTasks");
@@ -146,7 +146,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ReportService.SetIndividualWidth(columns);
 		}
 
-		private void UpdateUnitGroup(long taskId, RegisterAttribute evaluativeGroupAttribute)
+		private void Run(long taskId, RegisterAttribute evaluativeGroupAttribute)
 		{
 			var units = GetUnits(taskId);
 			_log.Debug("Найдено {UnitsCount} единиц оценки с непроставленной группой", units.Count);
@@ -170,45 +170,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			Parallel.ForEach(units, options, unit =>
 			{
-				OMGroup group = null;
-				var groupNumberFromAttribute = string.Empty;
-				try
-				{
-					groupNumberFromAttribute = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
-					if (!string.IsNullOrWhiteSpace(groupNumberFromAttribute))
-					{
-						group = groups.FirstOrDefault(x => x.Number == groupNumberFromAttribute);
-						unit.GroupId = group?.Id;
-						unit.Save();
-
-						_log.ForContext("ObjectId", unit.ObjectId)
-							.ForContext("UnitId", unit.Id)
-							.ForContext("NewGroupId", unit.GroupId)
-							.Debug("Обновление единицы оценки {UnitCadastralNumber}", unit.CadastralNumber);
-					}
-
-					lock (_locked)
-					{
-						AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group);
-					}
-				}
-				catch (Exception exception)
-				{
-					var errorId = ErrorManager.LogError(exception);
-					lock (_locked)
-					{
-						AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group, $"Ошибка, подробнее в журнале {errorId}");
-					}
-
-					_log.Error(exception, "Ошибка при обработке юнита во время переноса оценочной группы");
-				}
+				UpdateUnitGroup(gbuEvaluativeGroupValues, unit, groups);
 			});
 		}
 
-
 		private List<OMUnit> GetUnits(long taskId)
 		{
-			return OMUnit.Where(x => x.TaskId == taskId && (x.GroupId == null || x.GroupId == -1) && x.ObjectId != null)
+			return OMUnit.Where(x => x.TaskId == taskId && x.GroupId == null && x.ObjectId != null)
 				.Select(x => new
 				{
 					x.CadastralNumber,
@@ -236,6 +204,44 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			return new List<OMGroup>();
+		}
+
+		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, List<OMGroup> groups)
+		{
+			OMGroup group = null;
+			var groupNumberFromAttribute = string.Empty;
+			try
+			{
+				groupNumberFromAttribute = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)
+					?.GetValueInString();
+				if (!string.IsNullOrWhiteSpace(groupNumberFromAttribute))
+				{
+					group = groups.FirstOrDefault(x => x.Number == groupNumberFromAttribute);
+					unit.GroupId = group?.Id;
+					unit.Save();
+
+					_log.ForContext("ObjectId", unit.ObjectId)
+						.ForContext("UnitId", unit.Id)
+						.ForContext("NewGroupId", unit.GroupId)
+						.Debug("Обновление единицы оценки {UnitCadastralNumber}", unit.CadastralNumber);
+				}
+
+				lock (_locked)
+				{
+					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, @group);
+				}
+			}
+			catch (Exception exception)
+			{
+				var errorId = ErrorManager.LogError(exception);
+				lock (_locked)
+				{
+					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, @group,
+						$"Ошибка, подробнее в журнале {errorId}");
+				}
+
+				_log.Error(exception, "Ошибка при обработке юнита во время переноса оценочной группы");
+			}
 		}
 
 		private void AddRowToReport(string cadastralNumber, string groupNumberFromAttribute, OMGroup group, string errorMessage = null)
