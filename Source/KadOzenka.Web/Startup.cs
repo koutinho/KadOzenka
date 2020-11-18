@@ -128,9 +128,8 @@ namespace CIPJS
 
             services.AddMemoryCache();
 
-            var keysFolder = Path.Combine(Environment.CurrentDirectory, "temp-keys");
+            var keysFolder = Path.Combine(Environment.CurrentDirectory, "Config", "temp-keys");
             services.AddDataProtection()
-                .SetApplicationName("CIPJS_KO")
                 .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
                 .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
