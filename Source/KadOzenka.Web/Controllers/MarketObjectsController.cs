@@ -556,6 +556,15 @@ namespace KadOzenka.Web.Controllers
 	        return Content(JsonConvert.SerializeObject(segments), "application/json");
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        public ActionResult GetMarketPropertyTypeList()
+        {
+	        var exceptions = new List<long> { (long)PropertyTypesCIPJS.None };
+	        var propertyTypes = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypesCIPJS), exceptions: exceptions);
+
+	        return Content(JsonConvert.SerializeObject(propertyTypes), "application/json");
+        }
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public ActionResult OutliersSettings(bool isPartialView = false)
@@ -622,10 +631,14 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult PerformOutliersChecking(MarketSegment? segment)
+        public ActionResult PerformOutliersChecking(OutliersCheckingPerformModel model)
         {
+	        if (!ModelState.IsValid)
+	        {
+		        return GenerateMessageNonValidModel();
+	        }
             ////For testing
-            //var settings = new OutliersCheckingProcessSettings { Segment = segment };
+            //var settings = model.ToSettings();
             //var history = new OMOutliersCheckingHistory
             //{
             //    DateCreated = DateTime.Now,
@@ -642,7 +655,7 @@ namespace KadOzenka.Web.Controllers
             //    ObjectId = history.Id
             //}, new CancellationToken());
 
-            OutliersCheckingLongProcess.AddProcessToQueue(new OutliersCheckingProcessSettings {Segment = segment});
+            OutliersCheckingLongProcess.AddProcessToQueue(model.ToSettings());
 
             return Ok();
         }

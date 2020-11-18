@@ -98,7 +98,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 					}
 				}, cancelToken);
 
-				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment);
+				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment, settings.PropertyTypes);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
