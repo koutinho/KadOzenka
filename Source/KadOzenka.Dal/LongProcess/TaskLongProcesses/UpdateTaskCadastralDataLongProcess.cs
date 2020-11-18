@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 	{
 		public const string LongProcessName = "UpdateTaskCadastralData";
 
-		private readonly ILogger _log = Log.ForContext<HarmonizationProcess>();
+		private readonly ILogger _log = Log.ForContext<UpdateTaskCadastralDataLongProcess>();
 
 		public static long AddProcessToQueue(long taskId)
 		{

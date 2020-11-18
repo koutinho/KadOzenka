@@ -177,6 +177,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
 		public JsonResult AddModel(AutomaticModelingModel modelingModel)
 		{
@@ -192,7 +193,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				ModelingService.AddManualModel(modelDto);
             }
-			
+
 			return Json(new {Message = "Сохранение выполнено"});
 		}
 
@@ -266,7 +267,7 @@ namespace KadOzenka.Web.Controllers
 			//		Mode = ModelingMode.Training,
 			//		InputParametersXml = inputParameters.SerializeToXml()
 			//	}.SerializeToXml()
-			//}, new CancellationToken()); 
+			//}, new CancellationToken());
 			ModelingProcess.AddProcessToQueue(new ModelingInputParameters
 			{
 				Mode = ModelingMode.Training,
@@ -555,7 +556,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditManualModelFactor(ManualFactorModel manualFactorModel)
         {
             var dto = manualFactorModel.ToDto();
-            
+
             var model = ModelingService.GetModelEntityById(manualFactorModel.GeneralModelId);
             dto.Type = model.AlgoritmType_Code;
 
@@ -644,6 +645,15 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService.DeleteMark(markCatalog.Id);
 
             return Json(markCatalog);
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult MarksCatalogUploading(long groupId, long factorId)
+        {
+	        ViewBag.GroupId = groupId;
+	        ViewBag.FactorId = factorId;
+
+	        return View();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]

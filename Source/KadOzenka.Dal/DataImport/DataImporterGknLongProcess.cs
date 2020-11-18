@@ -51,16 +51,23 @@ namespace KadOzenka.Dal.DataImport
 			import.Save();
 
 			////TODO код для отладки
+			//var cancelSource = new CancellationTokenSource();
+			//var cancelToken = cancelSource.Token;
+			//Task.Factory.StartNew(() =>
+			//{
+			//	Thread.Sleep(7000);
+			//	cancelSource.Cancel();
+			//});
 			//new DataImporterGknLongProcess().StartProcess(new OMProcessType
-			//	{
-			//		Description = "debug test"
-			//	},
+			//{
+			//	Description = "debug test"
+			//},
 			//	new OMQueue
 			//	{
 			//		Status_Code = Status.Added,
 			//		UserId = SRDSession.GetCurrentUserId(),
 			//		ObjectId = import.Id
-			//	}, new CancellationToken());
+			//	}, cancelToken);
 
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 		}
@@ -194,7 +201,7 @@ namespace KadOzenka.Dal.DataImport
 				import.DateFinished = DateTime.Now;
 				import.Save();
 
-                WorkerCommon.SetProgress(processQueue, 100);
+				WorkerCommon.SetProgress(processQueue, 100);
             }
 			catch (Exception ex)
 			{
@@ -205,14 +212,14 @@ namespace KadOzenka.Dal.DataImport
 				import.Save();
 
                 throw;
-            }			
+            }
 
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
 			task.Status_Code = ObjectModel.Directory.KoTaskStatus.Ready;
 			task.Save();
 
-			// Отправка уведомления о завершении загрузки
-			SendResultNotification(import);
+				// Отправка уведомления о завершении загрузки
+			SendResultNotification(import, cancellationToken.IsCancellationRequested);
 
 			Log.Information("Финиш фонового процесса: {Description}.", processType.Description);
 		}
@@ -222,7 +229,7 @@ namespace KadOzenka.Dal.DataImport
 			return true;
 		}
 
-		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
+		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
 		{
 			Log.Information("Начат импорт из xml для задачи с Id {TaskId}", objectId);
 
@@ -240,10 +247,10 @@ namespace KadOzenka.Dal.DataImport
 		            CollectStatistic(dataLog, dataImporterGkn, cancelToken);
 		        }, cancelToken);
 
-		        dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+		        dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task, processCancellationToken);
                 cancelSource.Cancel();
 
-		        t.Wait(cancellationToken);
+		        t.Wait(1000);
 		        cancelSource.Dispose();
             }
 		    catch (Exception ex)
@@ -256,7 +263,7 @@ namespace KadOzenka.Dal.DataImport
             Log.Information("Импорт из xml завершен");
 		}
 
-        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
+        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
         {
 	        Log.Information("Начат импорт из xlsx для задачи с Id {TaskId}", objectId);
 
@@ -275,10 +282,10 @@ namespace KadOzenka.Dal.DataImport
                     CollectStatistic(dataLog, dataImporterGkn, cancelToken);
                 }, cancelToken);
 
-                dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task);
+                dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task, processCancellationToken);
                 cancelSource.Cancel();
 
-                t.Wait(cancellationToken);
+                t.Wait(1000);
                 cancelSource.Dispose();
             }
             catch (Exception ex)
@@ -341,13 +348,13 @@ namespace KadOzenka.Dal.DataImport
 	        }
 	    }
 
-        internal static void SendResultNotification(OMImportDataLog import)
-		{
-			new MessageService().SendMessages(new MessageDto
+        internal static void SendResultNotification(OMImportDataLog import, bool processWasStopped)
+        {
+	        new MessageService().SendMessages(dto: new MessageDto
 			{
 				Addressers = new MessageAddressersDto{UserIds = new [] { import.UserId } },
 				Subject = $"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int)import.MainRegisterId).Description} от ({import.DateCreated.GetString()})",
-				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
+				Message = $@"Загрузка файла ""{import.DataFileName}"" была {(processWasStopped ? "остановлена" : "завершена")}.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}
 <a href=""/Task/TaskCard?TaskId={import.ObjectId}"">Перейти к заданию на оценку</a>
 <a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",

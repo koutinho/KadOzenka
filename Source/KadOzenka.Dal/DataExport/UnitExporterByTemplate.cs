@@ -8,10 +8,7 @@ namespace KadOzenka.Dal.DataExport
     {
         public override void ValidateColumns(List<DataExportColumn> columns)
         {
-            if (columns.All(x => x.IsKey == false))
-            {
-                throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-            }
+	        base.ValidateColumns(columns);
 
             var maxKeyCount = 2;
             if (columns.Count(x => x.IsKey) > maxKeyCount)
