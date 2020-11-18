@@ -40,6 +40,7 @@ using KadOzenka.Dal.Groups;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace CIPJS
@@ -126,6 +127,12 @@ namespace CIPJS
             services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 
             services.AddMemoryCache();
+
+            var keysFolder = Path.Combine(Environment.CurrentDirectory, "temp-keys");
+            services.AddDataProtection()
+                .SetApplicationName("CIPJS_KO")
+                .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+                .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
             var cultureInfo = new CultureInfo("ru-RU");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
