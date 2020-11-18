@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -79,6 +83,7 @@ namespace KadOzenka.Web.SignalR
 				LastDateFinished = historyProcess?.DateFinished,
 				LastStatus = historyProcess?.Status,
 				LastMarketSegment = historyProcess?.MarketSegment,
+				LastPropertyTypes = historyProcess != null ? GetPropertyTypesString(historyProcess) : null,
 				LastTotalObjectsCount = historyProcess?.TotalObjectsCount,
 				LastExcludedObjectsCount = historyProcess?.ExcludedObjectsCount,
 				LastReportDownloadLink = historyProcess != null && historyProcess.ExportId.HasValue 
@@ -117,6 +122,13 @@ namespace KadOzenka.Web.SignalR
 				return 0;
 
 			return (long)Math.Round(((double)currentProcess.CurrentHandledObjectsCount.Value / currentProcess.TotalObjectsCount.Value) * 100);
+		}
+
+		private static string GetPropertyTypesString(OMOutliersCheckingHistory history)
+		{
+			return !string.IsNullOrEmpty(history.PropertyTypesMapping) 
+				? string.Join(", ", JsonConvert.DeserializeObject<List<ObjectPropertyTypeDivision>>(history.PropertyTypesMapping).Select(x => x.GetEnumDescription()))
+				: null;
 		}
 	}
 }
