@@ -4779,25 +4779,15 @@ namespace KadOzenka.Dal.DataExport
                 List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value,
                     null,
                     new List<long> { transferAttribute.GbuId },
-                    _date);
+                    _date, isLight:true);
 
                 if (attribs.Count > 0)
                 {
-                    foreach (GbuObjectAttribute attrib in attribs)
-                    {
-                        if (attrib.NumValue.ToString() == _value)
-                        {
-                            var gbuAttribute = new GbuObjectService().GetGbuAttributes().FirstOrDefault(x => x.Id == transferAttribute.GbuId);
-                            if (gbuAttribute != null)
-                            {
-                                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == gbuAttribute.RegisterId);
-                                if (attribute_source != null)
-                                {
-                                    source_out = attribute_source.Description;
-                                }
-                            }
-                        }
-                    }
+	                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribs.First().RegisterData.Id);
+	                if (attribute_source != null)
+	                {
+		                source_out = attribute_source.Description;
+	                }
                 }
             }
 
