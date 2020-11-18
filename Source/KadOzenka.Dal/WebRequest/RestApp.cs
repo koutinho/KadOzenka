@@ -20,19 +20,15 @@ namespace KadOzenka.Dal.WebRequest
         public string GetMetaInfoDataValues(string login, string token) => 
             new StreamReader(System.Net.WebRequest.Create(string.Format(metaInfoLink, login, token)).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
 
-        public string GetCIANDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2, string login, string token)
+        public string GetCIANDataByMultipleValues(string link)
         {
-            _log
-                .ForContext("Method", "GetCIANDataByMultipleValues")
-                .Debug("Попытка получения данных от RestApp");
             string result = string.Empty;
             try
             {
-                result = new StreamReader(
-                        System.Net.WebRequest.Create(string.Format(restAppCIANLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
-                        .GetResponse()
-                        .GetResponseStream(), Encoding.UTF8)
-                    .ReadToEnd();
+                _log
+                    .ForContext("Method", "GetCIANDataByMultipleValues")
+                    .Debug("Попытка получения данных от RestApp");
+                result = new StreamReader(System.Net.WebRequest.Create(link).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
             }
             catch (Exception ex) 
             {
@@ -49,6 +45,9 @@ namespace KadOzenka.Dal.WebRequest
                 .GetResponse()
                 .GetResponseStream(), Encoding.UTF8)
                 .ReadToEnd();
+
+        public string FormCianLink(string regionId, string dealId, DateTime dateStart, DateTime dateEnd, string login, string token) =>
+            string.Format(restAppCIANLink, login, token, dealId.ToString(), regionId.ToString(), dateStart.ToString(restAppTimeTemplate), dateEnd.ToString(restAppTimeTemplate));
 
     }
 

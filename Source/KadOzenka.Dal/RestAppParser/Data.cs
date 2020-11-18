@@ -26,6 +26,7 @@ namespace KadOzenka.Dal.RestAppParser
         {
             Data.login = login;
             Data.token = token;
+            RestApp SO = new RestApp();
             AllObjects = new List<OMCoreObject>();
             LastUpdateDate =
                    OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian && x.ParserTime != null)
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.RestAppParser
                                .ExecuteFirstOrDefault()
                                .ParserTime
                                .GetValueOrDefault();
-            restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues(login, token));
+            restData = new JSONParser.RestApp().GetRestData(SO.GetMetaInfoDataValues(login, token));
         }
 
         public void Detect()
@@ -50,6 +51,7 @@ namespace KadOzenka.Dal.RestAppParser
             List<string> links = new List<string>();
             int RACOR = 0, RAERR = 0, SCUR = 0, SCOR = 0, SERR = 0, SDUB = 0;
             bool EXCEPTION = false;
+            RestApp SO = new RestApp();
             while (LastUpdateDate < DateTime.Today)
             {
                 DateTime currentTime = LastUpdateDate.AddSeconds(1);
@@ -58,11 +60,10 @@ namespace KadOzenka.Dal.RestAppParser
                 {
                     foreach (string deal in dealTypes)
                     {
+                        string link = SO.FormCianLink(region, deal, currentTime, LastUpdateDate, login, token);
                         try
                         {
-                            //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
-                            List<OMCoreObject> coreObjs = 
-                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetCIANDataByMultipleValues(region, deal, currentTime, LastUpdateDate, login, token), ref RACOR, ref RAERR);
+                            List<OMCoreObject> coreObjs = new JSONParser.RestApp().ParseCoreObject(SO.GetCIANDataByMultipleValues(link), ref RACOR, ref RAERR);
                             AllObjects.AddRange(coreObjs);
                             _log
                                 .ForContext("RestObjects", restData)
