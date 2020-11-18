@@ -161,6 +161,9 @@
         $.ajax({
             url: '@Url.Action("GetObjectsForModel", "Modeling", new {modelId = Model.Id})',
             success: function (result) {
+                if (!result.successfulModels || result.successfulModels.length == 0) {
+                    $("#uploadBtn").addClass('k-state-disabled');
+                }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
                     setIsForTrainingCheckboxForSuccessfulObjects, setIsForControlCheckboxForSuccessfulObjects,
