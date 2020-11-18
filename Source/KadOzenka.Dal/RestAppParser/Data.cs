@@ -15,17 +15,17 @@ namespace KadOzenka.Dal.RestAppParser
     public class Data
     {
 
-        private static string login { get; set; }
-        private static string token { get; set; }
+        private static string Login { get; set; }
+        private static string Token { get; set; }
         private static List<OMCoreObject> AllObjects { get; set; }
         private static DateTime LastUpdateDate { get; set; }
-        private static int restData { get; set; }
+        private static int RestData { get; set; }
         static readonly ILogger _log = Log.ForContext<Data>();
 
         public Data(string login, string token)
         {
-            Data.login = login;
-            Data.token = token;
+            Login = login;
+            Token = token;
             RestApp SO = new RestApp();
             AllObjects = new List<OMCoreObject>();
             LastUpdateDate =
@@ -35,14 +35,14 @@ namespace KadOzenka.Dal.RestAppParser
                                .ExecuteFirstOrDefault()
                                .ParserTime
                                .GetValueOrDefault();
-            restData = new JSONParser.RestApp().GetRestData(SO.GetMetaInfoDataValues(login, token));
+            RestData = new JSONParser.RestApp().GetRestData(SO.GetMetaInfoDataValues(login, token));
         }
 
         public void Detect()
         {
             _log
-                .ForContext("Логин", login)
-                .ForContext("Токен", token)
+                .ForContext("Логин", Login)
+                .ForContext("Токен", Token)
                 .ForContext("Дата последнего обновления", LastUpdateDate.ToString())
                 .Debug("Обращение к RestApp");
             string[] regionIDs = ConfigurationManager.AppSettings["restAppRegionIDsCIAN"].Split(',');
@@ -60,32 +60,32 @@ namespace KadOzenka.Dal.RestAppParser
                 {
                     foreach (string deal in dealTypes)
                     {
-                        string link = SO.FormCianLink(region, deal, currentTime, LastUpdateDate, login, token);
+                        string link = SO.FormCianLink(region, deal, currentTime, LastUpdateDate, Login, Token);
                         try
                         {
                             List<OMCoreObject> coreObjs = new JSONParser.RestApp().ParseCoreObject(SO.GetCIANDataByMultipleValues(link), ref RACOR, ref RAERR);
                             AllObjects.AddRange(coreObjs);
                             _log
-                                .ForContext("RestObjects", restData)
+                                .ForContext("RestObjects", RestData)
                                 .ForContext("RegionId", region)
                                 .ForContext("DealId", deal)
                                 .ForContext("StartTime", currentTime)
                                 .ForContext("EndTime", LastUpdateDate)
-                                .ForContext("Login", login)
-                                .ForContext("Token", token)
+                                .ForContext("Login", Login)
+                                .ForContext("Token", Token)
                                 .ForContext("Link", link)
                                 .Debug("Получение данных с RestApp. Корректно {CorrenctObjectsCount}. С ошибкой {ErrorObjectsCount}.", RACOR, RAERR);
                         }
                         catch (Exception ex)
                         {
                             _log
-                                .ForContext("RestObjects", restData)
+                                .ForContext("RestObjects", RestData)
                                 .ForContext("RegionId", region)
                                 .ForContext("DealId", deal)
                                 .ForContext("StartTime", currentTime)
                                 .ForContext("EndTime", LastUpdateDate)
-                                .ForContext("Login", login)
-                                .ForContext("Token", token)
+                                .ForContext("Login", Login)
+                                .ForContext("Token", Token)
                                 .ForContext("Link", link)
                                 .Error(ex, "Ошибка при получении данных с RestApp");
                             EXCEPTION = true; 
@@ -96,13 +96,13 @@ namespace KadOzenka.Dal.RestAppParser
                 if (EXCEPTION) break;
             }
             _log
-                .ForContext("Login", login)
-                .ForContext("Token", token)
+                .ForContext("Login", Login)
+                .ForContext("Token", Token)
                 .Debug("Получение данных из сторонних источников завершено");
             AllObjects = AllObjects.GroupBy(x => x.Url).Select(x => x.First()).ToList();
             _log
-                .ForContext("Login", login)
-                .ForContext("Token", token)
+                .ForContext("Login", Login)
+                .ForContext("Token", Token)
                 .ForContext("UniqueCount", AllObjects.Count)
                 .Debug("Проверка полученных данных на дублирование");
             AllObjects.ForEach(x =>
