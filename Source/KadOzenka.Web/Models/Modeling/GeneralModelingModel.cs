@@ -9,6 +9,7 @@ namespace KadOzenka.Web.Models.Modeling
     public class GeneralModelingModel
     {
 	    public long Id { get; set; }
+		public bool IsCreationMode { get; set; }
 
 	    [Display(Name = "Имя")]
 	    [Required(ErrorMessage = "Не заполнено Имя")]

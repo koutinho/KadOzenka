@@ -81,7 +81,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
         public ActionResult AddModel()
         {
-	        var model = new GeneralModelingModel();
+	        var model = new GeneralModelingModel
+	        {
+		        IsCreationMode = true
+            };
 
 	        return View(model);
         }
