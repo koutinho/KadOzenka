@@ -490,38 +490,67 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public void ImportModelObjectsFromExcel(ExcelFile file)
+        public ExcludeModelObjectsFromCalculationResult ExcludeModelObjectsFromCalculation(ExcelFile file)
         {
             const int idColumnIndex = 0;
             const int isExcludedColumnIndex = 1;
 
             var rows = file.Worksheets[0].Rows;
-            var dictionary = new Dictionary<long, bool>();
+            var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             for (var i = 1; i < rows.Count; i++)
             {
                 var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
-                if (id == null || id == 0)
-                    continue;
+                var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
 
-                var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ToString();
-                var isExcluded = isExcludedStr?.ToLower() == "да";
-
-                dictionary[id.Value] = isExcluded;
+                modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
+                {
+                    Id = id,
+                    IsExcluded = isExcludedStr?.ToLower() == "да",
+                    RowIndexInFile = i
+                });
             }
 
-            var modelObjects = OMModelToMarketObjects.Where(x => dictionary.Keys.Contains(x.Id))
-                .Select(x => x.IsExcluded)
-                .Execute();
-
-            foreach (var keyValuePair in dictionary)
+            var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
+            if (modelObjectsIds.Count == 0)
             {
-                var modelObject = modelObjects.FirstOrDefault(x => x.Id == keyValuePair.Key);
-                if (modelObject == null || modelObject.IsExcluded.GetValueOrDefault() == keyValuePair.Value)
-                    continue;
-
-                modelObject.IsExcluded = keyValuePair.Value;
-                modelObject.Save();
+	            return new ExcludeModelObjectsFromCalculationResult();
             }
+
+            var result = new ExcludeModelObjectsFromCalculationResult
+            {
+                TotalCount = modelObjectsFromExcel.Count
+            };
+
+            var modelObjects = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
+	            .Select(x => x.IsExcluded)
+	            .Execute();
+            foreach (var modelObjectFromExcel in modelObjectsFromExcel)
+            {
+	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
+	            if (modelObject == null)
+	            {
+		            result.ErrorRowIndexes.Add(modelObjectFromExcel.RowIndexInFile);
+		            continue;
+	            }
+
+	            if (modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded)
+	            {
+		            result.UnchangedObjectsCount++;
+		            continue;
+	            }
+	            
+	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
+	            modelObject.Save();
+	            result.UpdatedObjectsCount++;
+            }
+
+            if (result.ErrorObjectsCount > 0)
+            {
+	            var stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
+	            result.File = stream;
+            }
+
+            return result;
         }
 
         public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
@@ -578,6 +607,30 @@ namespace KadOzenka.Dal.Modeling
 
 
         #region Support Methods
+
+        private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
+        {
+	        var resultFile = new ExcelFile();
+	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
+	        sheet.Cells.Style.Font.Name = "Times New Roman";
+
+            //копируем заголовки
+            var generalRowCounter = 0;
+            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[0]);
+
+            for (var i = 0; i < errorRowIndexes.Count; i++)
+            {
+	            generalRowCounter++;
+	            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[errorRowIndexes[i]]);
+	            errorRowIndexes[i]++;
+            }
+
+            var stream = new MemoryStream();
+	        resultFile.Save(stream, SaveOptions.XlsxDefault);
+	        stream.Seek(0, SeekOrigin.Begin);
+
+	        return stream;
+        }
 
         private void AddRowToExcel(ExcelWorksheet sheet, int row, object[] values)
         {
@@ -715,6 +768,28 @@ namespace KadOzenka.Dal.Modeling
 	        public decimal? ModelingPrice { get; set; }
 	        public decimal? Percent { get; set; }
         }
+
+        public class ModelObjectsFromExcelData
+        {
+	        public long? Id { get; set; }
+	        public bool IsExcluded { get; set; }
+	        public int RowIndexInFile { get; set; }
+        }
+
+        public class ExcludeModelObjectsFromCalculationResult
+		{
+			public int TotalCount { get; set; }
+			public int UpdatedObjectsCount { get; set; }
+			public int UnchangedObjectsCount { get; set; }
+			public int ErrorObjectsCount => ErrorRowIndexes.Count;
+			public List<int> ErrorRowIndexes { get; set; }
+			public MemoryStream File { get; set; }
+
+			public ExcludeModelObjectsFromCalculationResult()
+			{
+				ErrorRowIndexes = new List<int>();
+			}
+		}
 
         #endregion
     }

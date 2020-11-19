@@ -904,7 +904,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ImportModelObjectsFromExcel(IFormFile file)
+        public ActionResult ExcludeModelObjectsFromCalculation(IFormFile file)
         {
             if (file == null)
                 throw new Exception("Не выбран файл");
@@ -915,9 +915,20 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            ModelingService.ImportModelObjectsFromExcel(excelFile);
+            var excludeResult = ModelingService.ExcludeModelObjectsFromCalculation(excelFile);
+            
+            var fileName = string.Empty;
+            if (excludeResult.File != null)
+            {
+	            fileName = $"Не найденные объекты: {file.FileName}";
+	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
+            }
 
-            return new JsonResult(new { Message = "Данные сохранены."});
+            return Content(JsonConvert.SerializeObject(new
+            {
+	            excludeResult.TotalCount, excludeResult.UpdatedObjectsCount, excludeResult.UnchangedObjectsCount,
+	            excludeResult.ErrorObjectsCount, excludeResult.ErrorRowIndexes, fileName
+            }), "application/json");
         }
 
         #endregion

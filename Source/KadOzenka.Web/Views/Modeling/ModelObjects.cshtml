@@ -1,22 +1,66 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
+
 <!-- Модальное окно для загрузки Excel-файла -->
 <div id="downloadFilesModalWnd" style="display: none; padding: 2%;">
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
-            <div class="col-sm-12">
-                <span class="k-icon k-i-warning"></span>
-                <span>Максимальный размер файла - 10 МБ.</span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-12">
+            <div class="col-sm-12" style="padding-top: 5%;">
                 <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
             </div>
         </div>
     </div>
 </div>
+
+<!-- Модальное окно с результатами исключения объектов из расчета после загрузки Excel-файла -->
+<div id="excludeModelObjectsFromCalculationResult" style="display: none; padding: 2%;">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Всего объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="totalCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Обновлено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="updatedObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Неизменено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="unchangedObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Не найдено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="errorObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group" id="errorRowIndexesBlock" style="display: none;">
+                <div class="col-sm-6">
+                    <span>Строки с не найденными объектами:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="errorRowIndexes"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
@@ -567,7 +611,7 @@
         upload.clearAllFiles();
         upload.removeAllFiles();
         var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '50%', '15%', "Загрузка объектов модели");
+        ShowModal(modal, '25%', '14%', "Загрузка объектов модели");
     }
 
 
@@ -580,13 +624,30 @@
             },
             async: {
                 autoUpload: true,
-                saveUrl: '@Url.Action("ImportModelObjectsFromExcel", "Modeling")'
+                saveUrl: '@Url.Action("ExcludeModelObjectsFromCalculation", "Modeling")'
             },
             validation: {
                 allowedExtensions: ['.xls', '.xlsx']
             },
             success: function (data) {
-                Common.ShowMessage(data.response.Message);
+                var response = data.response;
+                if (response) {
+                    $("#totalCount").text(response.TotalCount);
+                    $("#updatedObjectsCount").text(response.UpdatedObjectsCount);
+                    $("#unchangedObjectsCount").text(response.UnchangedObjectsCount);
+                    $("#errorObjectsCount").text(response.ErrorObjectsCount);
+                    if (response.ErrorObjectsCount > 0) {
+                        $("#errorRowIndexes").text(response.ErrorRowIndexes);
+                        $("#errorRowIndexesBlock").show();
+                    }
+                    var modalWithResult = $("#excludeModelObjectsFromCalculationResult");
+                    ShowModal(modalWithResult, '33%', '25%', "Результат загрузки объектов модели (исключение из расчета)");
+                    if (response.fileName) {
+                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
+                    }
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
                 var modal = $('#downloadFilesModalWnd');
                 modal.data("kendoWindow").close();
             },
