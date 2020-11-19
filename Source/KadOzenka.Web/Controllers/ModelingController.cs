@@ -179,12 +179,12 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
-		public JsonResult AddModel(AutomaticModelingModel modelingModel)
+		public JsonResult AddModel(GeneralModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
-			var modelDto = AutomaticModelingModel.FromModel(modelingModel);
+			var modelDto = modelingModel.ToDto();
 			if (modelDto.Type == KoModelType.Automatic)
 			{
 				ModelingService.AddAutomaticModel(modelDto);
@@ -204,7 +204,7 @@ namespace KadOzenka.Web.Controllers
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
-			var modelDto = AutomaticModelingModel.FromModel(modelingModel);
+			var modelDto = modelingModel.ToDto();
 			var isModelChanged = ModelingService.UpdateAutomaticModel(modelDto);
 
             return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
@@ -214,7 +214,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult CheckIsModelChanged(AutomaticModelingModel modelingModel)
 		{
-            var dto = AutomaticModelingModel.FromModel(modelingModel);
+            var dto = modelingModel.ToDto();
             var isModelChanged = ModelingService.IsModelChanged(dto.ModelId, dto);
 
             return Json(isModelChanged);

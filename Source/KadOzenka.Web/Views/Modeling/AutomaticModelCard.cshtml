@@ -66,10 +66,10 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.CalculationType)
+                        @Html.CustomLabelFor(x => x.CalculationTypeStr)
                     </div>
                     <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CalculationType)
+                        @(Html.Kendo().DropDownListFor(m => m.CalculationTypeStr)
                             .DataTextField("Name")
                             .DataValueField("Name")
                             .Enable(false))

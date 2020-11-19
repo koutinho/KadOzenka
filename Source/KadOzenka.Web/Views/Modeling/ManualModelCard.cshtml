@@ -1,5 +1,6 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ManualModelingModel
+
 <!-- Модальное окно для загрузки справочника меток -->
 @using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
 {
@@ -25,10 +26,11 @@
     </div>
 }
 
+
 <!--Основное окно с информацией о модели -->
 @using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
 {
-    @Html.HiddenFor(x => x.GeneralModelId)
+    @Html.HiddenFor(x => x.Id)
     <div id="toolbar"></div>
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
         <div style="margin: 1%;">
@@ -50,10 +52,10 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.Type)
+                    @Html.CustomLabelFor(x => x.TypeStr)
                 </div>
                 <div class="col-sm-10">
-                    @(Html.Kendo().DropDownListFor(m => m.Type)
+                    @(Html.Kendo().DropDownListFor(m => m.TypeStr)
                         .DataTextField("Name")
                         .DataValueField("Name")
                         .Enable(false))
@@ -69,18 +71,18 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+                    @Html.CustomLabelFor(x => x.AlgorithmType)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false, withoutNull: true)
+                    @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.CalculationTypeCode, true)
+                    @Html.CustomLabelFor(x => x.CalculationType, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: false)
                 </div>
             </div>
             <div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -122,6 +124,7 @@
         </div>
     </div>
 }
+
 
 
 <script src="~/js/common-modals.js"></script>
@@ -264,19 +267,17 @@
         });
 
 
-        $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', onTypeChanged);
+        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onTypeChanged);
 
-        $('#CalculationTypeCode').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
+        $('#@nameof(Model.CalculationType)').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
         onCalculationTypeChanged();
 
         $("#grid").data("kendoGrid").bind('change', onGridChanged);
         $("#grid").data("kendoGrid").bind('dataBound', onGridChanged);
 
-
         $('#add-factor').on('click', addFactor);
         $('#edit-factor').on('click', editFactor);
         $('#remove-factor').on('click', deleteFactor);
-
 
         $('#show-marks').on('click', showMarks);
         $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
@@ -321,7 +322,7 @@
 
 
     function onCalculationTypeChanged() {
-        var dropdownList = $('#CalculationTypeCode').data('kendoDropDownList');
+        var dropdownList = $('#@nameof(Model.CalculationType)').data('kendoDropDownList');
 		if (!dropdownList)
 			return;
 		var calculationType = dropdownList.value();
@@ -372,8 +373,8 @@
 
 
     function getDataForModelAttributesDownloader() {
-        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
-        return { modelId: '@Model.GeneralModelId', type: modelType }
+        var modelType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
+        return { modelId: '@Model.Id', type: modelType }
     }
 
 
@@ -390,7 +391,7 @@
     function onTypeChanged() {
         var algType = this.value();
         $.ajax({
-            url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.GeneralModelId&algType=' + algType,
+            url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.Id&algType=' + algType,
             type: 'POST',
             success: function (e) {
                 $('#Formula').val(e.formula);
@@ -423,9 +424,9 @@
 
 
     function addFactor() {
-        var modelType = $('#@nameof(Model.AlgorithmTypeCode)').data('kendoDropDownList').value();
+        var modelType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
         Common.UI.ShowWindow('Редактирование фактора',
-            '@Url.Action("EditManualModelFactor", "Modeling")' + '?generalModelId=@Model.GeneralModelId' + '&type=' + modelType,
+            '@Url.Action("EditManualModelFactor", "Modeling")' + '?generalModelId=@Model.Id' + '&type=' + modelType,
             'editFactorWindow',
             function (e, param) {
                 if (param == true) {
@@ -440,7 +441,7 @@
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
             Common.UI.ShowWindow('Редактирование фактора',
-                '@Url.Action("EditManualModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.GeneralModelId',
+                '@Url.Action("EditManualModelFactor", "Modeling")' + '?id=' + selectedRowData.Id + '&generalModelId=@Model.Id',
                 'editFactorWindow',
                 function (e, param) {
                     if (param == true) {
