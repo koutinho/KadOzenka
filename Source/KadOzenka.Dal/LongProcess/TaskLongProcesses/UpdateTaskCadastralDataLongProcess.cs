@@ -129,7 +129,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				_log.ForContext("BuildingCadastralNumberDictionaryCount", buildingCadastralNumberDictionary.Count)
 					.Debug("Добавлены значения в словарь данных для кадастровых номеров зданий");
 
-				var placementGbuObjIds = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement)
+				var placementGbuObjIds = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement || x.PropertyType_Code == PropertyTypes.Parking)
 					.Select(x => x.ObjectId.Value).Distinct().ToList();
 				buildingCadastralNumberDictionaryForPlacements = GetBuildingCadastralNumberDictionaryForPlacements(placementGbuObjIds,
 					gbuAttrValues, currentDate, buildingCadastralNumberDictionary);
