@@ -37,81 +37,29 @@
             <span>Основные данные</span>
             <div class="form-horizontal col-sm-12" style="padding: 2%">
                 <div id="mainToolbar"></div>
-                <div class="form-group" style="padding-top: 1%">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.Name)
-                    </div>
-                    <div class="col-sm-9">
-                        @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.Description)
-                    </div>
-                    <div class="col-sm-9">
-                        @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.TypeStr)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.TypeStr)
+                <div style="padding-top: 2%">
+                    @{
+                        await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
+                    }
+
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CalculationTypeStr)
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().DropDownListFor(m => m.CalculationTypeStr)
                             .DataTextField("Name")
                             .DataValueField("Name")
                             .Enable(false))
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.CalculationTypeStr)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.CalculationTypeStr)
-                            .DataTextField("Name")
-                            .DataValueField("Name")
-                            .Enable(false))
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.AlgorithmTypeForCadastralPriceCalculation)
-                    </div>
-                    <div class="col-sm-9">
-                        @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: false, withoutNull: true)
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.GroupId)
-                    </div>
-                    <div class="col-sm-9">
-                        <div id="groups"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.TourId)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().DropDownListFor(m => m.TourId)
-                            .DataTextField("Text")
-                            .DataValueField("Value")
-                            .Filter(FilterType.Contains)
-                            .DataSource(source =>
-                            {
-                                source.Read("GetRatingTours", "Tour");
-                            }))
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.LabelFor(x => x.ObjectType)
-                    </div>
-                    <div class="col-sm-9">
-                        @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
+
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.LabelFor(x => x.ObjectType)
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
                             .Label(ObjectType.Oks.GetEnumDescription())
                             .Value((int)ObjectType.Oks)
                             .Checked(Model.ObjectType == ObjectType.Oks))
@@ -120,6 +68,7 @@
                             .Value((int)ObjectType.ZU)
                             .Checked(Model.ObjectType == ObjectType.ZU)
                             .HtmlAttributes(new { style = "padding-left:1%;" }))
+                        </div>
                     </div>
                 </div>
             </div>
@@ -342,22 +291,10 @@
                 onModelTypeSelect(e);
             }
         });
-        $('#@nameof(Model.TourId)').on('change', onTourChange);
-        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onAlgorithmTypeChange);
 
-        initGroups('@Model.GroupId');
+        $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onAlgorithmTypeChange);
     });
 
-
-
-    function onTourChange() {
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
-        var initialTourId = '@Model.TourId';
-        if (selectedTour !== initialTourId) {
-            initGroups();
-        }
-        validateModelChanges();
-    }
 
 
     function validateModelChanges() {
@@ -381,54 +318,6 @@
     function changeUIForCleanModel() {
         $('#updateModelBtn').css({ backgroundColor: "" });
         $('#addAttributeBtn').removeClass('k-state-disabled');
-    }
-
-
-    function initGroups(groupId) {
-        kendo.ui.progress($('body'), true);
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: '@Url.Action("GetGroups", "Modeling")',
-                    data: { tourId: selectedTour},
-                    dataType: 'json'
-                }
-            }
-        });
-        dataSource.fetch(function () {
-            var data = dataSource.data();
-            var groups = $('#groups').data("kendoDropDownList");
-            if (groups) {
-                groups.setDataSource(dataSource);
-                groups.value(-1);
-            }
-            else {
-                groups = $("#groups").kendoDropDownList({
-                    dataTextField: 'Text',
-                    dataValueField: 'Value',
-                    dataSource: { data: data },
-                    filter: "contains"
-                }).data("kendoDropDownList");
-            }
-            if (groupId) {
-                //костыль из-за интеграции с уже существующими моделями, т.к. для их групп
-                //может быть не проставлено соотношение
-                var isContainsGroup = data.some(function(item) {
-                    return item.Value === groupId;
-                });
-                if (!isContainsGroup) {
-                    var groupName = '@Html.Raw(Model.GroupName)';
-                    Common.ShowError("Не найдено соотношение группы '" + groupName + "' и сегмента.");
-                    dataSource.add({
-                        Text: groupName,
-                        Value: groupId
-                    });
-                }
-                groups.value(groupId);
-            }
-        });
-        kendo.ui.progress($('body'), false);
     }
 
 
@@ -561,7 +450,6 @@
 
     function getFormObject(form) {
         var formObject = Common.Functions.FormToObject(form);
-        formObject.GroupId = $('#groups').data("kendoDropDownList").value();
         return formObject;
     }
 

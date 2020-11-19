@@ -72,8 +72,10 @@ namespace KadOzenka.Dal.Modeling
                     x.AlgoritmType_Code,
                     x.CalculationType_Code,
                     x.A0,
-                    x.A0ForLinearTypeInPreviousTour
-		        }).ExecuteFirstOrDefault();
+                    x.A0ForLinearTypeInPreviousTour,
+                    x.Formula,
+                    x.CalculationMethod_Code
+                }).ExecuteFirstOrDefault();
 
 	        if (model == null)
 				throw new Exception($"Не найдена модель с Id='{modelId}'");
@@ -94,10 +96,12 @@ namespace KadOzenka.Dal.Modeling
 		        GroupName = model.ParentGroup.GroupName,
 		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
                 Type = model.Type_Code,
-                AlgorithmType = model.AlgoritmType_Code,
+                AlgorithmTypeForCadastralPriceCalculation = model.AlgoritmType_Code,
                 CalculationType = model.CalculationType_Code,
                 A0 = model.A0,
-                A0ForPreviousTour = model.A0ForLinearTypeInPreviousTour
+                A0ForPreviousTour = model.A0ForLinearTypeInPreviousTour,
+                Formula = model.Formula,
+                CalculationMethod = model.CalculationMethod_Code
             };
         }
 
@@ -149,7 +153,7 @@ namespace KadOzenka.Dal.Modeling
 		        Description = modelDto.Description,
 		        GroupId = modelDto.GroupId,
 		        CalculationType_Code = KoCalculationType.Comparative,
-		        AlgoritmType_Code = modelDto.AlgorithmType,
+		        AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
 		        Type_Code = KoModelType.Automatic,
                 Formula = "-"
 	        };
@@ -166,7 +170,7 @@ namespace KadOzenka.Dal.Modeling
 		        Name = modelDto.Name,
 		        Description = modelDto.Description,
 		        GroupId = modelDto.GroupId,
-		        AlgoritmType_Code = modelDto.AlgorithmType,
+		        AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
 		        Type_Code = KoModelType.Manual
 	        };
 
@@ -190,7 +194,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
                 existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-                switch (modelDto.AlgorithmType)
+                switch (modelDto.AlgorithmTypeForCadastralPriceCalculation)
                 {
                     case KoAlgoritmType.None:
 	                case KoAlgoritmType.Line:
@@ -231,12 +235,12 @@ namespace KadOzenka.Dal.Modeling
 
             using (var ts = new TransactionScope())
             {
-	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmType)
+	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmTypeForCadastralPriceCalculation)
 	            {
 		            var factors = ModelFactorsService.GetFactors(modelDto.ModelId, existedModel.AlgoritmType_Code);
 		            factors.ForEach(x =>
 		            {
-			            x.AlgorithmType_Code = modelDto.AlgorithmType;
+			            x.AlgorithmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
 			            x.Save();
 		            });
 	            }
@@ -244,7 +248,7 @@ namespace KadOzenka.Dal.Modeling
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
 	            existedModel.GroupId = modelDto.GroupId;
-	            existedModel.AlgoritmType_Code = modelDto.AlgorithmType;
+	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
 	            existedModel.A0 = modelDto.A0;
 
 	            existedModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
@@ -731,7 +735,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (isModelExists)
 		        message.AppendLine("Модель для данной группы уже существует");
 
-	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmType == KoAlgoritmType.None)
+	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmTypeForCadastralPriceCalculation == KoAlgoritmType.None)
 		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
 	        if (message.Length != 0)

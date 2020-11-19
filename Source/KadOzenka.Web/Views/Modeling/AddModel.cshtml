@@ -11,64 +11,9 @@
                 </a>
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.Name)
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.Description)
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.Type)
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: false, withoutNull: true)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2" id="algorithmTypeLabel" >
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoEnumDropDownListFor(x => x.AlgorithmType, isReadonly: false, withoutNull: true)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.TourId)
-            </div>
-            <div class="col-sm-9">
-                @(Html.Kendo().DropDownListFor(m => m.TourId)
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .Filter(FilterType.Contains)
-                    .DataSource(source =>
-                    {
-                        source.Read("GetRatingTours", "Tour");
-                    })
-                    .Events(e =>
-                    {
-                        e.Change("onTourChange").DataBound("onTourChange");
-                    }))
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.GroupId)
-            </div>
-            <div class="col-sm-9">
-               <div id="groups"></div>
-            </div>
-        </div>
+        @{
+            await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
+        }
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
                 @Html.KendoButton("saveModel", "Сохранить")
@@ -89,36 +34,6 @@
 	});
 
 
-
-    function onTourChange() {
-        kendo.ui.progress($('body'), true);
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: '@Url.Action("GetGroups", "Modeling")',
-                    data: { tourId: selectedTour},
-                    dataType: 'json'
-                }
-            }
-        });
-        var groups = $('#groups').data("kendoDropDownList");
-        if (groups) {
-            groups.setDataSource(dataSource);
-            groups.value(-1);
-        }
-        else {
-            $("#groups").kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource: dataSource,
-                filter: "contains"
-            });
-        }
-        kendo.ui.progress($('body'), false);
-    }
-
-
     function saveModel() {
 		kendo.ui.progress($('body'), true);
 		var form = $('#saveModelForm');
@@ -135,7 +50,7 @@
 					return;
 				} else {
 					Common.ShowMessage(response.Message);
-					CloseMainWindow();
+					closeMainWindow();
 				}
 			},
 			error: function (response) {
@@ -158,7 +73,7 @@
     }
 
 
-	function CloseMainWindow() {
+	function closeMainWindow() {
 		setTimeout(function () {
 			//Common.UI.CloseWindow('registerModalWindow', window.parent);
 			window.parent.parent.location.reload();

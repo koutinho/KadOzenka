@@ -68,18 +68,43 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => new
-	        {
-                x.Type_Code,
-                x.GroupId
-	        }).ExecuteFirstOrDefault();
-
+	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
 		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial});
 	        }
 
-	        return RedirectToAction(nameof(ManualModelCard), new {groupId = model?.GroupId, isPartial});
+	        return RedirectToAction(nameof(ManualModelCard), new { modelId, isPartial});
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
+        public ActionResult AddModel()
+        {
+	        var model = new GeneralModelingModel();
+
+	        return View(model);
+        }
+
+        [HttpPost]
+        [JsonExceptionHandler]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
+        public JsonResult AddModel(GeneralModelingModel modelingModel)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var modelDto = modelingModel.ToDto();
+	        if (modelDto.Type == KoModelType.Automatic)
+	        {
+		        ModelingService.AddAutomaticModel(modelDto);
+	        }
+	        else
+	        {
+		        ModelingService.AddManualModel(modelDto);
+	        }
+
+	        return Json(new { Message = "Сохранение выполнено" });
         }
 
         [HttpGet]
@@ -169,35 +194,7 @@ namespace KadOzenka.Web.Controllers
             return Json(groups);
         }
 
-        [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
-		public ActionResult AddModel()
-		{
-            return View();
-		}
-
-		[HttpPost]
-		[JsonExceptionHandler]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
-		public JsonResult AddModel(GeneralModelingModel modelingModel)
-		{
-			if (!ModelState.IsValid)
-				return GenerateMessageNonValidModel();
-
-			var modelDto = modelingModel.ToDto();
-			if (modelDto.Type == KoModelType.Automatic)
-			{
-				ModelingService.AddAutomaticModel(modelDto);
-            }
-			else
-			{
-				ModelingService.AddManualModel(modelDto);
-            }
-
-			return Json(new {Message = "Сохранение выполнено"});
-		}
-
-		[HttpPost]
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public JsonResult UpdateModel(AutomaticModelingModel modelingModel)
 		{
@@ -457,9 +454,9 @@ namespace KadOzenka.Web.Controllers
         #region Карточка ручной модели
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ManualModelCard(long groupId, bool isPartial)
+        public ActionResult ManualModelCard(long modelId, bool isPartial)
         {
-            var modelDto = ModelingService.GetModelEntityByGroupId(groupId);
+            var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
 
             if (isPartial)

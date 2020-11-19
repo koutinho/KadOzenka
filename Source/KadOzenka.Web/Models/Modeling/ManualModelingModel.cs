@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -20,22 +20,24 @@ namespace KadOzenka.Web.Models.Modeling
         public KoCalculationMethod CalculationMethodCode { get; set; }
 
 		
-        public static ManualModelingModel ToModel(OMModel model)
+        public static ManualModelingModel ToModel(ModelingModelDto entity)
         {
-            return new ManualModelingModel
-            {
-	            Id = model.Id,
-	            Name = model.Name,
-	            Description = model.Description,
-	            Type = model.Type_Code,
-	            AlgorithmType = model.AlgoritmType_Code,
-	            CalculationType = model.CalculationType_Code,
-                //TODO Tour, objectType
-                GroupId = model.GroupId,
-                A0 = model.A0,
-                Formula = model.Formula,
-                CalculationMethodCode = model.CalculationMethod_Code
-            };
+	        return new ManualModelingModel
+	        {
+		        Id = entity.ModelId,
+		        Name = entity.Name,
+		        Description = entity.Description,
+		        Type = entity.Type,
+		        AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
+		        CalculationType = entity.CalculationType,
+		        TourId = entity.TourId,
+		        TourYear = entity.TourYear,
+				ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
+				GroupId = entity.GroupId,
+		        A0 = entity.A0,
+		        Formula = entity.Formula,
+		        CalculationMethodCode = entity.CalculationMethod
+			};
         }
 
         public override ModelingModelDto ToDto()

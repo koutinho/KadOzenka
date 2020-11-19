@@ -22,10 +22,9 @@ namespace KadOzenka.Web.Models.Modeling
 	    [Display(Name = "Тип")]
 	    public KoModelType Type { get; set; }
 
-	    [Display(Name = "Алгоритм расчета")]
-		public string AlgorithmTypeStr => AlgorithmType.GetEnumDescription();
-		[Display(Name = "Алгоритм расчета")]
-	    public KoAlgoritmType AlgorithmType { get; set; }
+	    [Display(Name = "Алгоритм для рассчета Кадастровой стоимости")]
+	    [Required(ErrorMessage = "Не выбран Алгоритм для рассчета Кадастровой стоимости")]
+	    public KoAlgoritmType AlgorithmTypeForCadastralPriceCalculation { get; set; }
 
 	    [Display(Name = "Тип расчета")]
 	    public string CalculationTypeStr => CalculationType.GetEnumDescription();
@@ -57,7 +56,7 @@ namespace KadOzenka.Web.Models.Modeling
 			    Name = Name,
 			    Description = string.IsNullOrWhiteSpace(Description) ? "-" : Description,
 			    Type = Type,
-			    AlgorithmType = AlgorithmType,
+			    AlgorithmTypeForCadastralPriceCalculation = AlgorithmTypeForCadastralPriceCalculation,
 				CalculationType = CalculationType,
 				TourId = TourId,
 				IsOksObjectType = ObjectType == ObjectType.Oks,

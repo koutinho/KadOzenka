@@ -23,9 +23,8 @@ namespace KadOzenka.Web.Models.Modeling
         [Display(Name = "Группа")]
         public string GroupName { get; set; }
 
-        [Display(Name = "Алгоритм для рассчета Кадастровой стоимости")]
-		[Required(ErrorMessage = "Не выбран Алгоритм для рассчета Кадастровой стоимости")]
-        public KoAlgoritmType AlgorithmTypeForCadastralPriceCalculation { get; set; }
+        [Display(Name = "Алгоритм расчета")]
+        public KoAlgoritmType AlgorithmType { get; set; }
 
         [Display(Name = "Свободный член из предыдущего тура")]
 		public decimal? A0ForPreviousTour { get; set; }
@@ -35,36 +34,35 @@ namespace KadOzenka.Web.Models.Modeling
 		public static AutomaticModelingModel ToModel(ModelingModelDto entity, bool hasFormedObjectArray)
 		{
 			return new AutomaticModelingModel
-            {
-                Id = entity.ModelId,
-                Name = entity.Name,
-                Description = entity.Description,
-                Type = entity.Type,
-                AlgorithmType = entity.AlgorithmType,
-                CalculationType = entity.CalculationType,
-                TourId = entity.TourId,
-                TourYear = entity.TourYear,
-                ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
-                GroupName = entity.GroupName,
-                GroupId = entity.GroupId,
-                A0 = entity.A0,
+			{
+				Id = entity.ModelId,
+				Name = entity.Name,
+				Description = entity.Description,
+				Type = entity.Type,
+				AlgorithmType = entity.AlgorithmTypeForCadastralPriceCalculation,
+				CalculationType = entity.CalculationType,
+				TourId = entity.TourId,
+				TourYear = entity.TourYear,
+				ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
+				GroupName = entity.GroupName,
+				GroupId = entity.GroupId,
+				A0 = entity.A0,
 
-                HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
-                HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
-                HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
-                HasFormedObjectArray = hasFormedObjectArray,
-                HasProcessToFormObjectArrayInQueue = CheckProcessToFormObjectArrayExistsInQueue(entity.ModelId),
-                AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmType,
-                A0ForPreviousTour = entity.A0ForPreviousTour,
-                Attributes = entity.Attributes
-            };
+				HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
+				HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
+				HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
+				HasFormedObjectArray = hasFormedObjectArray,
+				HasProcessToFormObjectArrayInQueue = CheckProcessToFormObjectArrayExistsInQueue(entity.ModelId),
+				AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
+				A0ForPreviousTour = entity.A0ForPreviousTour,
+				Attributes = entity.Attributes
+			};
         }
 
 		public override ModelingModelDto ToDto()
         {
 	        var dto = base.ToDto();
 	        
-	        dto.AlgorithmTypeForCadastralPriceCalculation = AlgorithmTypeForCadastralPriceCalculation;
 	        dto.A0ForPreviousTour = A0ForPreviousTour;
 
 	        return dto;
