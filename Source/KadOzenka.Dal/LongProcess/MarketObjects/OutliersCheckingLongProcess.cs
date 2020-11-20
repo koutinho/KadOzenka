@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 				history.ExportId = reportId;
 				history.Save();
 
-				SendSuccessEmail(processQueue, reportId);
+				SendSuccessEmail(processQueue, reportId, history);
 				Log.Information("Завершение фонового процесса: {Description}.", processType.Description);
 			}
 			catch (Exception ex)
@@ -129,10 +129,12 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 			}
 		}
 
-		private static void SendSuccessEmail(OMQueue processQueue, long reportId)
+		private static void SendSuccessEmail(OMQueue processQueue, long reportId, OMOutliersCheckingHistory history)
 		{
-			string message = "Операция успешно завершена." +
-			                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+			string message =  $@"Операция успешно завершена.
+Обработано объектов: {history.CurrentHandledObjectsCount}.
+Исключенных объектов: {history.ExcludedObjectsCount}.
+<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
 			NotificationSender.SendNotification(processQueue,
 				"Результат Процедуры проверки на вылеты", message);
