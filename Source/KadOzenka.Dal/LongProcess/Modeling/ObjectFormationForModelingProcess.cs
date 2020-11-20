@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading;
+using Core.ErrorManagment;
 using Core.Register;
+using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
@@ -15,11 +17,8 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
-using Core.Register.LongProcessManagment;
-using System.Threading;
-using Core.ErrorManagment;
 
-namespace KadOzenka.Dal.LongProcess
+namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class ObjectFormationForModelingProcess : LongProcess
     {

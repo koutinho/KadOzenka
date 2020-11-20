@@ -39,6 +39,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.Modeling;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Ko;
@@ -248,7 +249,7 @@ namespace KadOzenka.Web.Controllers
 
             var isProcessExists = AutomaticModelingModel.CheckProcessToFormObjectArrayExistsInQueue(modelId);
 			if (isProcessExists)
-				throw new Exception($"Процесс сбора данных для модели уже находится в очереди");
+				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue

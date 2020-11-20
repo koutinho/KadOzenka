@@ -1,14 +1,14 @@
 ﻿using System;
-using Core.Register.LongProcessManagment;
-using ObjectModel.Core.LongProcess;
 using System.Threading;
+using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using ObjectModel.Core.LongProcess;
 using Serilog;
 
-namespace KadOzenka.Dal.LongProcess
+namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class ModelingProcess : LongProcess
     {
