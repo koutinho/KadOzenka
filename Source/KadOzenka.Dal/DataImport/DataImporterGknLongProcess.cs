@@ -94,7 +94,9 @@ namespace KadOzenka.Dal.DataImport
 	            import.DateStarted = null;
 	            import.DateFinished = null;
 	            import.ResultMessage = null;
-                import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Added;
+	            import.TotalNumberOfObjects = null;
+	            import.NumberOfImportedObjects = null;
+				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Added;
 	            import.Save();
 
 	            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);

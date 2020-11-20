@@ -56,30 +56,19 @@ namespace KadOzenka.Dal.OutliersChecking
 			var objectsBySegments = GetObjectsBySegments(segment);
 			SetTotalObjectsCount(objectsBySegments);
 
+			var segmentsForHandling = segment.HasValue 
+				? new List<MarketSegment>{segment.Value} :
+				System.Enum.GetValues(typeof(MarketSegment)).Cast<MarketSegment>().ToList();
+			segmentsForHandling.Remove(MarketSegment.None);
+
 			Locked = new object();
-			foreach (var objectsBySegment in objectsBySegments)
+			foreach (var marketSegment in segmentsForHandling)
 			{
-				var segmentCode = objectsBySegment.Key;
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Начата обработка сегмента '{MarketSegment}'", segmentCode.GetEnumDescription());
+				var objectsBySegment = objectsBySegments.ContainsKey(marketSegment) 
+					? objectsBySegments[marketSegment] 
+					: new List<OMCoreObject>();
 
-				var saleODealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
-				var saleOSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
-				var rentDealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
-				var rentSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
-				ProcessObjectsByDealType(segmentCode, DealType.SaleDeal, saleODealObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.RentDeal, rentDealObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
-
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Обработка сегмента '{MarketSegment}' завершена", segmentCode.GetEnumDescription());
+				ProcessObjectsBySegment(marketSegment, objectsBySegment);
 			}
 
 			_outliersCheckingReport.SetStyleAndSorting();
@@ -109,6 +98,30 @@ namespace KadOzenka.Dal.OutliersChecking
 			}
 
 			PropertyTypes = propertyTypes;
+		}
+
+		private void ProcessObjectsBySegment(MarketSegment segmentCode, List<OMCoreObject> objectsBySegment)
+		{
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Начата обработка сегмента '{MarketSegment}'", segmentCode.GetEnumDescription());
+
+			var saleODealObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
+			var saleOSuggestionObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
+			var rentDealObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
+			var rentSuggestionObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
+			ProcessObjectsByDealType(segmentCode, DealType.SaleDeal, saleODealObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.RentDeal, rentDealObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
+
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Обработка сегмента '{MarketSegment}' завершена", segmentCode.GetEnumDescription());
 		}
 
 		private void ProcessObjectsByDealType(MarketSegment segmentCode, DealType dealType, List<OMCoreObject> objectsByDealType)

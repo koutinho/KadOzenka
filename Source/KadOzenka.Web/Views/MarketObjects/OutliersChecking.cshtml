@@ -38,7 +38,7 @@
                 <div style="padding-right: 10px;">
                     @(Html.Kendo().CheckBox()
                         .Name("outliersChecking_useAllPropertyTypes")
-                        .Label("Все Виды")
+                        .Label("Все виды")
                         .Checked(true))
                 </div>
                 <div style="width: 100%;">
@@ -182,6 +182,10 @@
 
     #outliers-settings-object-type .k-multiselect .k-input {
         width: 100% !important;
+    }
+
+    label[for='outliersChecking_useAllPropertyTypes'] {
+        white-space: nowrap;
     }
 </style>
 

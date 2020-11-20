@@ -23,8 +23,14 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
 
         public long RegisterId { get; set; }
 
-        [Display(Name = "Для помещений использовать родительскую характеристику")]
-        public bool UseParentAttributeForPlacement { get; set; }
+        [Display(Name = "Использовать родительскую характеристику для жилых помещений")]
+        public bool UseParentAttributeForLivingPlacement { get; set; }
+
+        [Display(Name = "Использовать родительскую характеристику для нежилых помещений")]
+        public bool UseParentAttributeForNotLivingPlacement { get; set; }
+
+        [Display(Name = "Использовать родительскую характеристику для машино-мест")]
+        public bool UseParentAttributeForCarPlace { get; set; }
 
 
         public static CharacteristicModel Map(OMAttribute attribute, OMAttributeSettings setting = null)
@@ -38,7 +44,9 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                     ? RegisterAttributeType.REFERENCE
                     : (RegisterAttributeType)attribute.Type,
                 ReferenceId = attribute.ReferenceId,
-                UseParentAttributeForPlacement = setting != null && setting.UseParentAttributeForPlacements.GetValueOrDefault()
+                UseParentAttributeForLivingPlacement = setting != null && setting.UseParentAttributeForLivingPlacements.GetValueOrDefault(),
+                UseParentAttributeForNotLivingPlacement = setting != null && setting.UseParentAttributeForNotLivingPlacements.GetValueOrDefault(),
+                UseParentAttributeForCarPlace = setting != null && setting.UseParentAttributeForCarPlace.GetValueOrDefault(),
             };
         }
 
@@ -51,7 +59,9 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                 RegisterId = model.RegisterId,
                 Type = model.Type,
                 ReferenceId = model.ReferenceId,
-                UseParentAttributeForPlacement = model.UseParentAttributeForPlacement
+                UseParentAttributeForLivingPlacement = model.UseParentAttributeForLivingPlacement,
+                UseParentAttributeForNotLivingPlacement = model.UseParentAttributeForNotLivingPlacement,
+                UseParentAttributeForCarPlace = model.UseParentAttributeForCarPlace
             };
         }
 
