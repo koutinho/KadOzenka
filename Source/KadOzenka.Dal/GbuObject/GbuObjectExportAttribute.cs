@@ -10,7 +10,6 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Newtonsoft.Json;
@@ -35,6 +34,13 @@ namespace KadOzenka.Dal.GbuObject
         private int ColumnWidth => 8;
         private int CadastralNumberColumnIndex => 0;
         private int AttributesStartColumnIndex => 1;
+
+        private enum AttributeSettingType
+        {
+	        UseParentAttributeForLivingPlacements,
+	        UseParentAttributeForNotLivingPlacements,
+	        UseParentAttributeForCarPlace
+        }
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -300,6 +306,8 @@ namespace KadOzenka.Dal.GbuObject
                 });
             }
 
+            FillPlacementPurpose(allUnits);
+
             if (settings.OksAdditionalFilters.IsPlacements)
             {
 	            return FilterPlacementObjects(allUnits, settings);
@@ -308,46 +316,56 @@ namespace KadOzenka.Dal.GbuObject
             return allUnits;
         }
 
+        private void FillPlacementPurpose(List<UnitPure> allUnits)
+        {
+	        var placements = allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList();
+	        var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
+	        var placementsAttributes = GbuObjectService.GetAllAttributes(
+			        placements.Select(x => x.ObjectId).Distinct().ToList(),
+			        new List<long> {placementPurposeAttribute.RegisterId},
+			        new List<long> {placementPurposeAttribute.Id},
+			        DateTime.Now.GetEndOfTheDay());
+
+	        foreach (var placement in placements)
+	        {
+		        var attr = placementsAttributes.FirstOrDefault(x => x.ObjectId == placement.ObjectId);
+		        if (attr != null)
+		        {
+			        placement.PlacementPurpose = attr.GetValueInString();
+		        }
+	        }
+        }
+
         private List<UnitPure> FilterPlacementObjects(List<UnitPure> allUnits, GbuExportAttributeSettings settings)
         {
 	        if (settings.OksAdditionalFilters.PlacementPurpose == PlacementPurpose.None)
 		        return allUnits;
 
-	        var placements = allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList();
-	        var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
-
-	        var placementsAttributes = GbuObjectService.GetAllAttributes(
-		        placements.Select(x => x.ObjectId).ToList(),
-		        new List<long> { placementPurposeAttribute.RegisterId },
-		        new List<long> { placementPurposeAttribute.Id },
-		        DateTime.Now.GetEndOfTheDay());
-
 	        var possibleValues = new List<string>();
-	        switch (settings.OksAdditionalFilters.PlacementPurpose)
-	        {
-		        case PlacementPurpose.Live:
-			        possibleValues.Add("Жилое");
-			        break;
-		        case PlacementPurpose.NotLive:
-			        possibleValues.Add("Нежилое");
-			        break;
-		        case PlacementPurpose.LiveAndNotLive:
-			        possibleValues.Add("Жилое");
-			        possibleValues.Add("Нежилое");
-			        break;
+            switch (settings.OksAdditionalFilters.PlacementPurpose)
+            {
+                case PlacementPurpose.Live:
+                    possibleValues.Add("Жилое");
+                    break;
+                case PlacementPurpose.NotLive:
+                    possibleValues.Add("Нежилое");
+                    break;
+                case PlacementPurpose.LiveAndNotLive:
+                    possibleValues.Add("Жилое");
+                    possibleValues.Add("Нежилое");
+                    break;
             }
 
             var resultObjectIds = allUnits.Where(x => x.ObjectType != PropertyTypes.Pllacement).Select(x => x.ObjectId).ToList();
-	        placementsAttributes.ForEach(x =>
-	        {
-		        var placementPurpose = x.GetValueInString();
-		        if (!string.IsNullOrWhiteSpace(placementPurpose) && possibleValues.Contains(placementPurpose))
-		        {
-			        resultObjectIds.Add(x.ObjectId);
-		        }
-	        });
+            allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList().ForEach(x =>
+            {
+	            if (!string.IsNullOrWhiteSpace(x.PlacementPurpose) && possibleValues.Contains(x.PlacementPurpose))
+	            {
+		            resultObjectIds.Add(x.ObjectId);
+	            }
+            });
 
-	        return allUnits.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+            return allUnits.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
         }
 
         private static QSCondition GetConditionForObjectType(GbuExportAttributeSettings settings)
@@ -394,23 +412,22 @@ namespace KadOzenka.Dal.GbuObject
 	        //Получаем все атрибуты (в т.ч. атрибуты родительского объекта для юнитов с типом 'Помещение' или 'Машино-место')
 	        var allAttributes = GbuObjectService.GetAllAttributes(objectIds, null, lstIds, DateTime.Now.GetEndOfTheDay());
 
-	        if (unit.ObjectType == PropertyTypes.Pllacement || unit.ObjectType == PropertyTypes.Parking)
+	        if (unit.ObjectType == PropertyTypes.Pllacement && unit.PlacementPurpose == "Жилое")
 	        {
-		        //Для атрибутов с настройкой 'Использовать родительский атрибут для помещений' необходимо использовать значение родительского атрибута
-		        result = new List<GbuObjectAttribute>();
-		        foreach (var attributeId in lstIds)
-		        {
-			        var useParentAttributeForPlacements = gbuAttributesWithSettings
-				        .FirstOrDefault(x => x.Item1.Id == attributeId)?.Item2?.UseParentAttributeForPlacements;
-
-			        var attribute = useParentAttributeForPlacements.GetValueOrDefault()
-						? allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ParentPlacementObjectId)
-				        : allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ObjectId);
-			        if (attribute != null)
-				        result.Add(attribute);
-				}
+		        //Для атрибутов с настройками 'Использовать родительский атрибут для жилых помещений' необходимо использовать значение родительского атрибута
+		        result = GetUnitGbuAttributesForPlacements(unit, lstIds, gbuAttributesWithSettings, allAttributes, AttributeSettingType.UseParentAttributeForLivingPlacements);
 	        }
-	        else
+	        else if (unit.ObjectType == PropertyTypes.Pllacement && unit.PlacementPurpose == "Нежилое")
+	        {
+                //Для атрибутов с настройками 'Использовать родительский атрибут для нежилых помещений' необходимо использовать значение родительского атрибута
+                result = GetUnitGbuAttributesForPlacements(unit, lstIds, gbuAttributesWithSettings, allAttributes, AttributeSettingType.UseParentAttributeForNotLivingPlacements);
+	        }
+	        else if (unit.ObjectType == PropertyTypes.Parking)
+	        {
+                //Для атрибутов с настройками 'Использовать родительский атрибут для машино-мест' необходимо использовать значение родительского атрибута
+                result = GetUnitGbuAttributesForPlacements(unit, lstIds, gbuAttributesWithSettings, allAttributes, AttributeSettingType.UseParentAttributeForCarPlace);
+            }
+            else
 	        {
 		        result = allAttributes;
 	        }
@@ -418,7 +435,40 @@ namespace KadOzenka.Dal.GbuObject
 	        return result;
         }
 
-		private static string GetWarningMessage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
+        private List<GbuObjectAttribute> GetUnitGbuAttributesForPlacements(UnitPure unit, List<long> lstIds, List<Tuple<RegisterAttribute, OMAttributeSettings>> gbuAttributesWithSettings, 
+	        List<GbuObjectAttribute> allAttributes, AttributeSettingType attributeSettingType)
+        {
+	        var result = new List<GbuObjectAttribute>();
+
+	        foreach (var attributeId in lstIds)
+	        {
+		        var attributeSettings = gbuAttributesWithSettings
+			        .FirstOrDefault(x => x.Item1.Id == attributeId)?.Item2;
+		        bool? useParentAttribute = null;
+		        switch (attributeSettingType)
+		        {
+                    case AttributeSettingType.UseParentAttributeForLivingPlacements:
+	                    useParentAttribute = attributeSettings?.UseParentAttributeForLivingPlacements;
+	                    break;
+                    case AttributeSettingType.UseParentAttributeForNotLivingPlacements:
+	                    useParentAttribute = attributeSettings?.UseParentAttributeForNotLivingPlacements;
+	                    break;
+                    case AttributeSettingType.UseParentAttributeForCarPlace:
+	                    useParentAttribute = attributeSettings?.UseParentAttributeForCarPlace;
+	                    break;
+                }
+
+		        var attribute = useParentAttribute.GetValueOrDefault()
+			        ? allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ParentPlacementObjectId)
+			        : allAttributes.FirstOrDefault(x => x.AttributeId == attributeId && x.ObjectId == unit.ObjectId);
+		        if (attribute != null)
+			        result.Add(attribute);
+	        }
+
+	        return result;
+        }
+
+        private static string GetWarningMessage(RegisterAttribute koAttributeData, RegisterAttribute gbuAttributeData)
         {
 	        return $"Типы данных не совпадают. Тип КО - '{koAttributeData.Type.GetEnumDescription()}', тип ГБУ - '{gbuAttributeData.Type.GetEnumDescription()}'";
         }
@@ -438,6 +488,7 @@ namespace KadOzenka.Dal.GbuObject
             //TODO если хотфикс будет заапрувлен, нужно убрать
             //public DateTime? CreationDate { get; set; }
             public PropertyTypes ObjectType { get; set; }
+            public string PlacementPurpose { get; set; }
         }
 
         #endregion

@@ -573,22 +573,62 @@ namespace ObjectModel.Gbu
         }
 
 
-        private bool? _useparentattributeforplacements;
+        private bool? _useparentattributeforlivingplacements;
         /// <summary>
-        /// 8100200 Использовать родительский атрибут для помещений (USE_PARENT_ATTRIBUTE_FOR_PLACEMENTS)
+        /// 8100300 Использовать родительский атрибут для жилых помещений (USE_PARENT_ATTRIBUTE_FOR_LIVING_PLACEMENTS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 8100200)]
-        public bool? UseParentAttributeForPlacements
+        [RegisterAttribute(AttributeID = 8100300)]
+        public bool? UseParentAttributeForLivingPlacements
         {
             get
             {
-                CheckPropertyInited("UseParentAttributeForPlacements");
-                return _useparentattributeforplacements;
+                CheckPropertyInited("UseParentAttributeForLivingPlacements");
+                return _useparentattributeforlivingplacements;
             }
             set
             {
-                _useparentattributeforplacements = value;
-                NotifyPropertyChanged("UseParentAttributeForPlacements");
+                _useparentattributeforlivingplacements = value;
+                NotifyPropertyChanged("UseParentAttributeForLivingPlacements");
+            }
+        }
+
+
+        private bool? _useparentattributefornotlivingplacements;
+        /// <summary>
+        /// 8100400 Использовать родительский атрибут для нежилых помещений (USE_PARENT_ATTRIBUTE_FOR_NOT_LIVING_PLACEMENTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8100400)]
+        public bool? UseParentAttributeForNotLivingPlacements
+        {
+            get
+            {
+                CheckPropertyInited("UseParentAttributeForNotLivingPlacements");
+                return _useparentattributefornotlivingplacements;
+            }
+            set
+            {
+                _useparentattributefornotlivingplacements = value;
+                NotifyPropertyChanged("UseParentAttributeForNotLivingPlacements");
+            }
+        }
+
+
+        private bool? _useparentattributeforcarplace;
+        /// <summary>
+        /// 8100500 Использовать родительский атрибут для машино-мест (USE_PARENT_ATTRIBUTE_FOR_CAR_PLACE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8100500)]
+        public bool? UseParentAttributeForCarPlace
+        {
+            get
+            {
+                CheckPropertyInited("UseParentAttributeForCarPlace");
+                return _useparentattributeforcarplace;
+            }
+            set
+            {
+                _useparentattributeforcarplace = value;
+                NotifyPropertyChanged("UseParentAttributeForCarPlace");
             }
         }
 
