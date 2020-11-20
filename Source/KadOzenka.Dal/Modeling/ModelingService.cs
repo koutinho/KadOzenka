@@ -282,14 +282,12 @@ namespace KadOzenka.Dal.Modeling
 
         #region Model Object Relations
 
-        public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
+        public List<OMModelToMarketObjects> GetMarketObjectsForModel(long modelId)
 		{
-			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
+			return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
                 .OrderBy(x => x.CadastralNumber)
                 .SelectAll()
                 .Execute();
-
-            return models.Select(ToDto).ToList();
 		}
 
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
@@ -645,22 +643,6 @@ namespace KadOzenka.Dal.Modeling
 
 
         #region Support Methods
-
-        private ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
-		{
-			return new ModelMarketObjectRelationDto
-			{
-				Id = entity.Id,
-				CadastralNumber = entity.CadastralNumber,
-                MarketObjectId = entity.MarketObjectId,
-				Price = entity.Price,
-                PriceFromModel = entity.PriceFromModel,
-                IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
-                IsForTraining = entity.IsForTraining.GetValueOrDefault(),
-                IsForControl = entity.IsForControl.GetValueOrDefault(),
-                Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
-            };
-		}
 
         private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
         {

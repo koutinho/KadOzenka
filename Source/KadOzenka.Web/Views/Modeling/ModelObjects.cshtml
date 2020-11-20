@@ -338,9 +338,17 @@
                 width: 200
             },
             {
+                title: "Единица оценки",
+                field: "UnitId",
+                template: "# if(UnitId != null){# <a href=\"/ObjectCard?ObjId=#=UnitId#&RegisterViewId=KoObjects&isVertical=true&useMasterPage=true\" target=\"_blank\"><span class=\"k-icon k-i-hyperlink-open\"></span></a> #} #",
+                sortable: false,
+                filterable: false,
+                width: 100
+            },
+            {
                 title: "Цена",
                 field: "Price",
-                template: '#: kendo.format("{0:c}", Price)#',
+                template: '#: kendo.format("{0:c}", Price) #',
                 filterable: true,
                 sortable: true
             },
