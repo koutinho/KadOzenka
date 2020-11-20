@@ -72,7 +72,7 @@ Write-Host 2. Публикация релиза
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
                 cpi -Path $site_path\* $site_dir\ -Recurse -Force
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем конфиги
-                cpi -Path $config_path\* $site_dir -Force -Verbose 
+                cpi -Path $backup_path\config\* $site_dir -Force -Verbose 
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем файлы XML
                 foreach ($item in $configXML){
                      cpi -Path $config_path\$item $site_dir\Config\Param\$item -Force -Verbose
@@ -89,6 +89,8 @@ Write-Host 2. Публикация релиза
                 foreach ($item in $service_array){
                      cpi -Path $service_path\$item $service_dir -Force -Verbose
                 }
+                $files = Get-ChildItem -Path $service_path\Config\* -Recurse 
+                cpi -Path $files  -Destination $service_dir\Config\ -Force -Verbose  
                 Start-WebSite -Name $IIS_serviceName
                 Start-WebAppPool -Name $IIS_servicePoolName
                 

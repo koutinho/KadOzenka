@@ -25,6 +25,9 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 			{
 				DateCreated = DateTime.Now,
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+				PropertyTypesMapping = !settings.AllPropertyTypes 
+					? JsonConvert.SerializeObject(settings.PropertyTypes) 
+					: null,
 			};
 			if (settings.Segment.HasValue)
 				history.MarketSegment_Code = settings.Segment.Value;
@@ -98,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 					}
 				}, cancelToken);
 
-				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment);
+				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment, settings.PropertyTypes);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();

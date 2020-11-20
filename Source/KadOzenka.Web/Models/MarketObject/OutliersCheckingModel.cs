@@ -10,6 +10,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public DateTime? LastDateFinished { get; set; }
 		public string LastStatus { get; set; }
 		public string LastMarketSegment { get; set; }
+		public string LastPropertyTypes { get; set; }
 		public long? LastTotalObjectsCount { get; set; }
 		public long? LastExcludedObjectsCount { get; set; }
 		public string LastReportDownloadLink { get; set; }

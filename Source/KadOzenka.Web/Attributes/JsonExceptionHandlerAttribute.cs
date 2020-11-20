@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Npgsql;
 
@@ -21,6 +22,7 @@ namespace KadOzenka.Web.Attributes
             switch (context.Exception)
             {
                 case PostgresException ex: return PostgresExceptionToMessage(ex);
+                case Exception ex: return BasicExceptionToMessage(ex);
                 default: return new ObjectResult("Неизвестная ошибка");
             }
         }
@@ -44,6 +46,13 @@ namespace KadOzenka.Web.Attributes
             }
 
             return new ObjectResult("[База данных] "+message);
+        }
+
+        private ObjectResult BasicExceptionToMessage(Exception ex)
+        {
+            string message = ex.Message;
+
+            return new ObjectResult("[Ошибка] "+message);
         }
     }
 }
