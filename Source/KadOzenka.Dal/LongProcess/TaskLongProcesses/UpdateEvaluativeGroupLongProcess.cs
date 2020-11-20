@@ -242,7 +242,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<OMUnit> GetUnits(long taskId)
 		{
-			var units = OMUnit.Where(x => x.TaskId == taskId && (x.GroupId == null || x.GroupId == -1) && x.ObjectId != null)
+			var possibleStatuses = new List<UnitUpdateStatus>
+			{
+				UnitUpdateStatus.GroupChange, UnitUpdateStatus.GroupAndFsChange, UnitUpdateStatus.GroupAndEgrnChange,
+				UnitUpdateStatus.GroupAndFsAndEgrnChanges
+			};
+
+			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null && possibleStatuses.Contains(x.UpdateStatus_Code))
 				.Select(x => new
 				{
 					x.CadastralNumber,
@@ -252,7 +258,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				})
 				.Execute();
 
-			_log.Debug("Найдено {UnitsCount} единиц оценки с непроставленной группой", units.Count);
+			_log.Debug("Найдено {UnitsCount} единиц оценки со статусом 'Изменение группы'", units.Count);
 
 			return units;
 		}
