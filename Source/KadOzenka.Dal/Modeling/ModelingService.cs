@@ -290,6 +290,31 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
+        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long modelId, bool isForTraining)
+        {
+	        if (isForTraining)
+	        {
+		        return OMModelToMarketObjects
+			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
+			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
+	        }
+
+	        return OMModelToMarketObjects
+		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
+		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
+        }
+
+        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
+        {
+	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
+        }
+
+        public void DestroyModelMarketObjects(long? modelId)
+        {
+	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+	        existedModelObjects.ForEach(x => x.Destroy());
+        }
+
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
 		{
 			var ids = objects.Select(x => x.Id).ToList();
@@ -610,37 +635,6 @@ namespace KadOzenka.Dal.Modeling
         #endregion
 
         #endregion
-
-
-        #region Modeling Process
-
-        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long modelId, bool isForTraining)
-        {
-	        if (isForTraining)
-	        {
-		        return OMModelToMarketObjects
-			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
-            }
-
-	        return OMModelToMarketObjects
-		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
-        }
-
-        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
-        {
-            return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
-        }
-
-        public void DestroyModelMarketObjects(long? modelId)
-        {
-            var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
-            existedModelObjects.ForEach(x => x.Destroy());
-        }
-
-        #endregion
-
 
         #region Support Methods
 

@@ -83,13 +83,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 AddLog(processQueue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: _log);
 
                 SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
-
-            }
+			}
             catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
 				SendMessage(processQueue, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})", MessageSubject);
-                _log.Error(exception, "Ошибка в ходе сбора нанных для моделирования");
+                _log.Error(exception, "Ошибка в ходе сбора данных для моделирования");
 			}
 
 			WorkerCommon.SetProgress(processQueue, 100);
