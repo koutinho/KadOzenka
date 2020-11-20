@@ -573,26 +573,6 @@ namespace ObjectModel.Gbu
         }
 
 
-        private bool? _useparentattributeforplacements;
-        /// <summary>
-        /// 8100200 Использовать родительский атрибут для помещений (USE_PARENT_ATTRIBUTE_FOR_PLACEMENTS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 8100200)]
-        public bool? UseParentAttributeForPlacements
-        {
-            get
-            {
-                CheckPropertyInited("UseParentAttributeForPlacements");
-                return _useparentattributeforplacements;
-            }
-            set
-            {
-                _useparentattributeforplacements = value;
-                NotifyPropertyChanged("UseParentAttributeForPlacements");
-            }
-        }
-
-
         private bool? _useparentattributeforlivingplacements;
         /// <summary>
         /// 8100300 Использовать родительский атрибут для жилых помещений (USE_PARENT_ATTRIBUTE_FOR_LIVING_PLACEMENTS)
