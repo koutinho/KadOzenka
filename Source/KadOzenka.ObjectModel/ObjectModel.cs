@@ -25271,6 +25271,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private long? _unitid;
+        /// <summary>
+        /// 70201100 ИД юнита, свзяанного с объектом-аналогом (unit_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201100)]
+        public long? UnitId
+        {
+            get
+            {
+                CheckPropertyInited("UnitId");
+                return _unitid;
+            }
+            set
+            {
+                _unitid = value;
+                NotifyPropertyChanged("UnitId");
+            }
+        }
+
     }
 }
 
