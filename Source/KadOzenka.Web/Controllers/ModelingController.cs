@@ -134,6 +134,7 @@ namespace KadOzenka.Web.Controllers
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
+			model.AlgorithmType = KoAlgoritmType.Line;
 
 			if (isPartial)
 			{
@@ -227,25 +228,15 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public JsonResult UpdateModel(AutomaticModelingModel modelingModel)
+		public ActionResult AutomaticModelCard(AutomaticModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
 			var modelDto = modelingModel.ToDto();
-			var isModelChanged = ModelingService.UpdateAutomaticModel(modelDto);
+			ModelingService.UpdateAutomaticModel(modelDto);
 
-            return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
-		}
-
-		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public JsonResult CheckIsModelChanged(AutomaticModelingModel modelingModel)
-		{
-            var dto = modelingModel.ToDto();
-            var isModelChanged = ModelingService.IsModelChanged(dto.ModelId, dto);
-
-            return Json(isModelChanged);
+            return Ok();
 		}
 
 		[HttpPost]
@@ -519,7 +510,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult Model(ManualModelingModel model)
+        public ActionResult ManualModelCard(ManualModelingModel model)
         {
 	        var dto = model.ToDto();
 

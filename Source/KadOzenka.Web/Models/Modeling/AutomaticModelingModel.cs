@@ -40,7 +40,6 @@ namespace KadOzenka.Web.Models.Modeling
 				Name = entity.Name,
 				Description = entity.Description,
 				Type = entity.Type,
-				AlgorithmType = entity.AlgorithmTypeForCadastralPriceCalculation,
 				CalculationType = entity.CalculationType,
 				TourId = entity.TourId,
 				TourYear = entity.TourYear,
@@ -65,6 +64,7 @@ namespace KadOzenka.Web.Models.Modeling
 	        var dto = base.ToDto();
 	        
 	        dto.A0ForPreviousTour = A0ForPreviousTour;
+	        dto.AlgorithmType = AlgorithmType;
 
 	        return dto;
         }

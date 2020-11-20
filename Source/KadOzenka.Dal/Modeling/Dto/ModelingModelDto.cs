@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.Modeling.Dto
         public long ModelId { get; set; }
         public KoModelType Type { get; set; }
         public KoAlgoritmType AlgorithmTypeForCadastralPriceCalculation { get; set; }
+        public KoAlgoritmType AlgorithmType { get; set; }
         public KoCalculationType CalculationType { get; set; }
         public KoCalculationMethod CalculationMethod { get; set; }
         public string Name { get; set; }

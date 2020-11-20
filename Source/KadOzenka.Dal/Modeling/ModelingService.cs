@@ -121,13 +121,14 @@ namespace KadOzenka.Dal.Modeling
 
         public void AddAutomaticModel(ModelingModelDto modelDto)
         {
-	        ValidateAutomaticModel(modelDto);
+	        ValidateModelDuringAddition(modelDto);
 
 	        var model = new OMModel
 	        {
 		        Name = modelDto.Name,
 		        Description = modelDto.Description,
 		        GroupId = modelDto.GroupId,
+                IsOksObjectType = modelDto.IsOksObjectType,
 		        CalculationType_Code = KoCalculationType.Comparative,
 		        AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
 		        Type_Code = KoModelType.Automatic,
@@ -139,14 +140,15 @@ namespace KadOzenka.Dal.Modeling
 
         public void AddManualModel(ModelingModelDto modelDto)
         {
-	        ValidateBaseModel(modelDto);
+	        ValidateModelDuringAddition(modelDto);
 
 	        var model = new OMModel
 	        {
 		        Name = modelDto.Name,
 		        Description = modelDto.Description,
 		        GroupId = modelDto.GroupId,
-		        AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
+		        IsOksObjectType = modelDto.IsOksObjectType,
+                AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
 		        Type_Code = KoModelType.Manual
 	        };
 
@@ -155,57 +157,38 @@ namespace KadOzenka.Dal.Modeling
 	        model.Save();
         }
 
-        public bool UpdateAutomaticModel(ModelingModelDto modelDto)
+        public void UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
-			ValidateAutomaticModel(modelDto);
+			ValidateModelDuringUpdating(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
-            var isModelChanged = IsModelChanged(existedModel, modelDto);
-
-            using (var ts = new TransactionScope())
+            existedModel.Name = modelDto.Name;
+            existedModel.Description = modelDto.Description;
+            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
+            switch (modelDto.AlgorithmType)
             {
-	            existedModel.Name = modelDto.Name;
-                existedModel.Description = modelDto.Description;
-                existedModel.GroupId = modelDto.GroupId;
-                existedModel.IsOksObjectType = modelDto.IsOksObjectType;
-                existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-                switch (modelDto.AlgorithmTypeForCadastralPriceCalculation)
-                {
-                    case KoAlgoritmType.None:
-	                case KoAlgoritmType.Line:
-	                    existedModel.A0 = modelDto.A0;
-	                    existedModel.A0ForLinearTypeInPreviousTour = modelDto.A0ForPreviousTour;
-                        break;
-	                case KoAlgoritmType.Exp:
-		                existedModel.A0ForExponential = modelDto.A0;
-		                existedModel.A0ForExponentialTypeInPreviousTour = modelDto.A0ForPreviousTour;
-                        break;
-	                case KoAlgoritmType.Multi:
-		                existedModel.A0ForMultiplicative = modelDto.A0;
-		                existedModel.A0ForMultiplicativeTypeInPreviousTour = modelDto.A0ForPreviousTour;
-                        break;
-                }
-
-                if (isModelChanged)
-                {
-	                ResetTrainingResults(existedModel, KoAlgoritmType.None);
-	                var factors = ModelFactorsService.GetFactors(existedModel.Id, KoAlgoritmType.None);
-	                factors.ForEach(x => x.Destroy());
-                    DestroyModelMarketObjects(existedModel.Id);
-                }
-
-                existedModel.Save();
-
-                ts.Complete();
+	            case KoAlgoritmType.None:
+	            case KoAlgoritmType.Line:
+		            existedModel.A0 = modelDto.A0;
+		            existedModel.A0ForLinearTypeInPreviousTour = modelDto.A0ForPreviousTour;
+		            break;
+	            case KoAlgoritmType.Exp:
+		            existedModel.A0ForExponential = modelDto.A0;
+		            existedModel.A0ForExponentialTypeInPreviousTour = modelDto.A0ForPreviousTour;
+		            break;
+	            case KoAlgoritmType.Multi:
+		            existedModel.A0ForMultiplicative = modelDto.A0;
+		            existedModel.A0ForMultiplicativeTypeInPreviousTour = modelDto.A0ForPreviousTour;
+		            break;
             }
 
-            return isModelChanged;
+            existedModel.Save();
         }
 
         public void UpdateManualModel(ModelingModelDto modelDto)
         {
-	        ValidateBaseModel(modelDto);
+	        ValidateModelDuringUpdating(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -223,7 +206,6 @@ namespace KadOzenka.Dal.Modeling
 
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
-	            existedModel.GroupId = modelDto.GroupId;
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
 	            existedModel.A0 = modelDto.A0;
 
@@ -294,24 +276,6 @@ namespace KadOzenka.Dal.Modeling
 
 			generalModel.Save();
 		}
-
-        public bool IsModelChanged(long modelId, ModelingModelDto newModel)
-        {
-	        var existedModel = GetModelEntityById(modelId);
-
-	        return IsModelChanged(existedModel, newModel);
-        }
-
-
-        #region Support
-
-        private bool IsModelChanged(OMModel existedModel, ModelingModelDto newModel)
-		{
-			return !(existedModel.GroupId == newModel.GroupId &&
-			         existedModel.IsOksObjectType == newModel.IsOksObjectType);
-		}
-
-        #endregion
 
         #endregion
 
@@ -698,7 +662,7 @@ namespace KadOzenka.Dal.Modeling
             };
 		}
 
-        private void ValidateBaseModel(ModelingModelDto modelDto)
+        private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
         {
 	        var message = new StringBuilder();
 
@@ -707,10 +671,6 @@ namespace KadOzenka.Dal.Modeling
 	        if (string.IsNullOrWhiteSpace(modelDto.Description))
 		        message.AppendLine("У модели не заполнено Описание");
 
-	        var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
-	        if (isModelExists)
-		        message.AppendLine("Модель для данной группы уже существует");
-
 	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmTypeForCadastralPriceCalculation == KoAlgoritmType.None)
 		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
@@ -718,13 +678,17 @@ namespace KadOzenka.Dal.Modeling
 		        throw new Exception(message.ToString());
         }
 
-        private void ValidateAutomaticModel(ModelingModelDto modelDto)
+        private void ValidateModelDuringAddition(ModelingModelDto modelDto)
         {
-	        ValidateBaseModel(modelDto);
+	        ValidateModelDuringUpdating(modelDto);
 
             var message = new StringBuilder();
 
-			var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
+            var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
+            if (isModelExists)
+	            message.AppendLine("Модель для данной группы уже существует");
+
+            var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
 			if(!isTourExists)
 				message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
 

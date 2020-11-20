@@ -28,7 +28,7 @@
 
 
 <!--Основное окно с информацией о модели -->
-@using (Html.BeginForm("Model", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("ManualModelCard", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(x => x.Id)
     <div id="toolbar"></div>

@@ -28,7 +28,7 @@
 </div>
 
 
-@using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
+@using (Html.BeginForm("AutomaticModelCard", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
     @Html.HiddenFor(x => x.Id)
     <ul id="ls_panelbar" class="panelbar">
@@ -127,7 +127,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    click: onUpdateModelBtnClick
+                    click: updateModel
                 },
                 {
                     type: 'button',
@@ -342,44 +342,13 @@
     }
 
 
-    function onUpdateModelBtnClick() {
-        var form = $('#updateModelModelForm');
-        var formObject = getFormObject(form);
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("CheckIsModelChanged", "Modeling")',
-            data: formObject,
-            success: function (response) {
-                if (response) {
-                    Common.UI.ShowConfirm({
-                        title: 'Обновление модели',
-                        content: 'При обновлении Группы или Типа (ОКС/ЗУ) модели будут сброшены её факторы. Вы уверены, что хотите обновить модель?',
-                        onSuccess: updateModel,
-                        onFail: function() {
-                            closeConfirmWindow($(this));
-                        }
-                    });
-                } else {
-                    updateModel();
-                }
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
-    }
-
-
     function updateModel() {
         var form = $('#updateModelModelForm');
-        var formObject = getFormObject(form);
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.GroupId = $('#groups').data("kendoDropDownList").value();
         kendo.ui.progress($('body'), true);
 		$.ajax({
-			type: 'POST',
+            type: form.attr('method'),
 			url: form.attr('action'),
 			data: formObject,
 			success: function(response) {
@@ -388,13 +357,8 @@
 					Common.ShowError(errors);
 					return;
                 } else {
-                    if (response.IsModelWasChanged) {
-                        var toolbar = $("#mainToolbar").data("kendoToolBar");
-                        toolbar.enable("#predictModelBtn", false);
-                    }
-					Common.ShowMessage(response.Message);
+                    Common.ShowMessage("Обновление выполнено");
                     reloadGrid();
-                    changeUIForCleanModel();
                 }
 			},
 			error: function(response) {
@@ -404,11 +368,6 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-    }
-
-    function getFormObject(form) {
-        var formObject = Common.Functions.FormToObject(form);
-        return formObject;
     }
 
 
