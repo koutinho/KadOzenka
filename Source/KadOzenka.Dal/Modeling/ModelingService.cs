@@ -12,6 +12,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.Oks;
 using ObjectModel.Ko;
 using Serilog;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
@@ -103,31 +104,6 @@ namespace KadOzenka.Dal.Modeling
                 Formula = model.Formula,
                 CalculationMethod = model.CalculationMethod_Code
             };
-        }
-
-        public List<GroupDto> GetGroups(long tourId)
-        {
-            var groupsInTour = OMTourGroup.Where(x => x.TourId == tourId).Select(x => x.GroupId).Execute()
-                .Select(x => x.GroupId).ToList();
-            if (groupsInTour.Count == 0)
-                return new List<GroupDto>();
-
-            var groupsToMarketSegmentInTour = OMGroupToMarketSegmentRelation
-	            .Where(x => groupsInTour.Contains(x.GroupId))
-	            .Select(x => new
-	            {
-		            x.GroupId,
-		            x.ParentGroup.GroupName,
-		            x.ParentGroup.Number
-	            })
-	            .Execute()
-	            .Select(x => new GroupDto
-	            {
-		            GroupId = x.GroupId,
-		            Name = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}"
-	            }).OrderBy(x => x.Name).ToList();
-
-            return groupsToMarketSegmentInTour;
         }
 
         public OMTour GetModelTour(long? groupId)

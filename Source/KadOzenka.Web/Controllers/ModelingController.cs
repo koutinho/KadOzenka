@@ -38,8 +38,10 @@ using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Groups;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Ko;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -50,17 +52,19 @@ namespace KadOzenka.Web.Controllers
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
+        public GroupService GroupService { get; set; }
 
 
         public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
             RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
-            ModelFactorsService modelFactorsService)
+            ModelFactorsService modelFactorsService, GroupService groupService)
         {
             ModelingService = modelingService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
             DictionaryService = dictionaryService;
             ModelFactorsService = modelFactorsService;
+            GroupService = groupService;
         }
 
 
@@ -185,16 +189,40 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetGroups(long tourId)
+        public JsonResult GetGroups(long tourId, ObjectTypeExtended objectType)
         {
-            var groups = ModelingService.GetGroups(tourId)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.GroupId.ToString(),
-                    Text = x.Name
-                });
+	        if (tourId == 0)
+		        return Json(string.Empty);
 
-            return Json(groups);
+            var groupTree = GroupService.GetTourGroupsInfo(tourId, objectType);
+
+	        var resultGroups = objectType == ObjectTypeExtended.Oks ? groupTree.OksGroups : groupTree.ZuGroups;
+	        var resultGroupsIds = resultGroups?.Select(x => x.Id);
+
+            var resultSubgroups = objectType == ObjectTypeExtended.Oks ? groupTree.OksSubGroups : groupTree.ZuSubGroups;
+            var resultSubgroupIds = resultSubgroups?.Select(x => x.Id);
+
+            var allGroupIds = resultGroupsIds?.Concat(resultSubgroupIds).ToList();
+
+            if(allGroupIds?.Count == 0)
+                return Json(string.Empty);
+
+	        var groups = OMGroupToMarketSegmentRelation
+		        .Where(x => allGroupIds.Contains(x.GroupId))
+		        .Select(x => new
+		        {
+			        x.GroupId,
+			        x.ParentGroup.GroupName,
+			        x.ParentGroup.Number
+		        })
+		        .Execute()
+		        .Select(x => new SelectListItem
+                {
+	                Value = x.GroupId.ToString(),
+	                Text = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}"
+		        }).OrderBy(x => x.Text).ToList();
+
+	        return Json(groups);
         }
 
         [HttpPost]

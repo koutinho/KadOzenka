@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
@@ -32,7 +33,7 @@ namespace KadOzenka.Web.Models.Modeling
 		        CalculationType = entity.CalculationType,
 		        TourId = entity.TourId,
 		        TourYear = entity.TourYear,
-				ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU,
+				ObjectType = entity.IsOksObjectType ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu,
 				GroupId = entity.GroupId,
 		        A0 = entity.A0,
 		        Formula = entity.Formula,

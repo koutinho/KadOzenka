@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
@@ -39,7 +40,7 @@ namespace KadOzenka.Web.Models.Modeling
 	    public long TourYear { get; set; }
 
 	    [Display(Name = "Тип")]
-	    public ObjectType ObjectType { get; set; }
+	    public ObjectTypeExtended ObjectType { get; set; }
 
 	    [Display(Name = "Группа")]
 	    [Required(ErrorMessage = "Не выбрана Группа")]
@@ -60,7 +61,7 @@ namespace KadOzenka.Web.Models.Modeling
 			    AlgorithmTypeForCadastralPriceCalculation = AlgorithmTypeForCadastralPriceCalculation,
 				CalculationType = CalculationType,
 				TourId = TourId,
-				IsOksObjectType = ObjectType == ObjectType.Oks,
+				IsOksObjectType = ObjectType == ObjectTypeExtended.Oks,
 				GroupId = GroupId,
 				A0 = A0
 		    };

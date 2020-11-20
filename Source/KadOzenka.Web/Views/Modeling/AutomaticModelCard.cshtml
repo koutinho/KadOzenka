@@ -1,5 +1,4 @@
 ﻿@using KadOzenka.Dal.Modeling.Entities
-@using KadOzenka.Dal.Oks
 @model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
 
@@ -51,23 +50,6 @@
                             .DataTextField("Name")
                             .DataValueField("Name")
                             .Enable(false))
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.LabelFor(x => x.ObjectType)
-                        </div>
-                        <div class="col-sm-10">
-                            @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                            .Label(ObjectType.Oks.GetEnumDescription())
-                            .Value((int)ObjectType.Oks)
-                            .Checked(Model.ObjectType == ObjectType.Oks))
-                        @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-                            .Label(ObjectType.ZU.GetEnumDescription())
-                            .Value((int)ObjectType.ZU)
-                            .Checked(Model.ObjectType == ObjectType.ZU)
-                            .HtmlAttributes(new { style = "padding-left:1%;" }))
                         </div>
                     </div>
                 </div>
@@ -285,7 +267,6 @@
             selectable: true
         });
 
-        $('[name="ObjectType"]').on('change', validateModelChanges);
         $("#chooseModelTypeButtons").kendoButtonGroup({
             select: function(e) {
                 onModelTypeSelect(e);
@@ -296,29 +277,6 @@
     });
 
 
-
-    function validateModelChanges() {
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
-        var initialTourId = '@Model.TourId';
-        var selectedObjectType = $('input[name="ObjectType"]:checked').val();
-        var initialObjectType = '@((int)Model.ObjectType)';
-        if (selectedObjectType !== initialObjectType || selectedTour !== initialTourId) {
-            changeUIForDirtyModel();
-        } else {
-            changeUIForCleanModel();
-        }
-    }
-
-    function changeUIForDirtyModel() {
-        $('#updateModelBtn').css({ backgroundColor: "greenyellow" });
-        $('#addAttributeBtn').addClass('k-state-disabled');
-        $('#editAttributeBtn').addClass('k-state-disabled');
-        $('#deleteAttributeBtn').addClass('k-state-disabled');
-    }
-    function changeUIForCleanModel() {
-        $('#updateModelBtn').css({ backgroundColor: "" });
-        $('#addAttributeBtn').removeClass('k-state-disabled');
-    }
 
 
     function closeConfirmWindow(e) {

@@ -26,12 +26,10 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
-        onModelTypeChanged();
-
-        $('#@nameof(Model.Type)').data('kendoDropDownList').bind('change', onModelTypeChanged);
-
         $("#saveModel").on('click', saveModel);
 	});
+
+
 
 
     function saveModel() {
@@ -60,16 +58,6 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-    }
-
-
-    function onModelTypeChanged() {
-        var modelType = $('#@nameof(Model.Type)').data('kendoDropDownList').value();
-        if (modelType == '@((int)KoModelType.Manual)') {
-            $("#algorithmTypeLabel").text("Алгоритм расчета");
-        } else {
-            $("#algorithmTypeLabel").text("Алгоритм для рассчета Кадастровой стоимости");
-        }
     }
 
 
