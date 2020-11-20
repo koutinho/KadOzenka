@@ -57,6 +57,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
             var unitsIdAttr = unitsAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
             var unitsIdColumn = new QSColumnSimple(unitsIdAttr);
 
+            var groupReg = rs.GetRegister(205);
+            var groupAttr = OMAttribute.Where(x => x.RegisterId == groupReg.RegisterId).SelectAll().Execute();
+            var groupIdAttr = groupAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
+            var groupIdColumn = new QSColumnSimple(groupIdAttr);
+
             var taskIdColumn = new QSColumnSimple(20100400);
 
             var columns = omAttr
@@ -84,6 +89,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                             ConditionType = QSConditionType.Equal,
                             LeftOperand = unitsIdColumn,
                             RightOperand = factorsIdColumn,
+                            RightOperandLevel = 1,
+                            LeftOperandLevel = 1
+                        }
+                    },
+                    new QSJoin
+                    {
+                        RegisterId = (int) groupReg.RegisterId,
+                        JoinType = QSJoinType.Left,
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = unitsIdColumn,
+                            RightOperand = groupIdColumn,
                             RightOperandLevel = 1,
                             LeftOperandLevel = 1
                         }
