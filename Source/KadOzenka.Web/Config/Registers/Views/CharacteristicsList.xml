@@ -5,6 +5,13 @@
 
   <Buttons>
     <Button Caption="Добавить" NavigateURL="/ObjectsCharacteristics/AddCharacteristic" WindowHeight="280" WindowWidth="840" NeedRefresh="true">
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="{Get:93100300}" Operation="Equal" Value="2" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
       <Parameters>
           <Parameter Key="registerId" Value="{Get:93100300}" />
       </Parameters>
@@ -17,7 +24,8 @@
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
-            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="Or"/>
+            <Condition Key="{Get:93100300}" Operation="Equal" Value="2" AndOr="Or" />
           </Conditions>
         </ConditionGroup>
       </ConditionGroups>
@@ -30,7 +38,8 @@
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
-            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="Or" />
+            <Condition Key="{Get:93100300}" Operation="Equal" Value="2" AndOr="Or" />
           </Conditions>
         </ConditionGroup>
       </ConditionGroups>
