@@ -2425,9 +2425,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             ks.IdTour = 2018;
             ks.CalcAllGroups = false;
             ks.CalcGroups = new List<long>();
-            ks.CalcGroups.Add(100018);//200003  100044
+            ks.CalcGroups.Add(100012);//200003  100044
             ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(36748449);//36661332  3663016
+            ks.TaskFilter.Add(36731960);//36661332  3663016
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }
