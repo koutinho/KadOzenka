@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Core.Register.DAL;
-using Core.Shared.Misc;
-using Core.UI.Registers.Services;
-using KadOzenka.Web.Controllers;
-using KadOzenka.Web.Extensions;
 using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
-using ObjectModel.Core.Shared;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
-using Platform.CalendarHolidays;
 
 namespace KadOzenka.Web.Models.Declarations
 {
