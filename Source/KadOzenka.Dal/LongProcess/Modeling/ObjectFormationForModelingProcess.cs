@@ -29,7 +29,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
         {
-	       
 	        ModelObjects = new List<OMModelToMarketObjects>();
         }
 
@@ -66,14 +65,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: Logger);
 
                 AddLog(processQueue, $"Начата сбор данных для модели '{Model.Name}'.", logger: Logger);
-                PrepareData(modelAttributes);
+                var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
                 AddLog(processQueue, $"Начато формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
                 CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
                 AddLog(processQueue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
 
-                SendMessage(processQueue, "Операция успешно завершена", MessageSubject);
+                SendMessage(processQueue, $"Операция успешно завершена.<br>Всего обработано объектов-аналогов: {processedMarketObjectsCount}.", MessageSubject);
 			}
             catch (Exception exception)
 			{
@@ -89,7 +88,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         #region Support Methods
 
-        private void PrepareData(List<ModelAttributePure> modelAttributes)
+        private int PrepareData(List<ModelAttributePure> modelAttributes)
         {
 	        var marketObjects = GetMarketObjects();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: Logger);
@@ -168,6 +167,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             }
 
             AddLog(Queue, $"{i}.", false, logger: Logger);
+
+            return i;
         }
 
         private List<OMModelingDictionary> GetDictionaries(List<ModelAttributePure> modelAttributes)
