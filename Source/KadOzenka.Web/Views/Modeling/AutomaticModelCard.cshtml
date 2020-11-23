@@ -162,7 +162,8 @@
                     text: '',
                     attributes: { title: "Логи" },
                     icon: 'clock',
-                    click: downloadLogs
+                    enable: false
+                    //click: downloadLogs
                 }
             ]
         });
@@ -440,9 +441,9 @@
     }
 
 
-    function downloadLogs() {
+    @*function downloadLogs() {
         window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
-    }
+    }*@
 
 
     function addAttribute() {

@@ -328,15 +328,6 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
         }
 
-        [HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public FileResult DownloadLogs(long modelId)
-        {
-            var fileStream = ModelingService.GetLogs(modelId);
-
-            return File(fileStream, Consts.ExcelContentType, $"Логи для модели {modelId}" + ".xlsx");
-        }
-
 
         #region Факторы
 

@@ -365,48 +365,6 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        public Stream GetLogs(long modelId)
-        {
-            var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
-
-            var modelMarketObjects = OMModelToMarketObjects
-                .Where(x => x.ModelId == modelId && x.Coefficients != null && x.IsExcluded.Coalesce(false) == false)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Coefficients)
-                .Execute();
-
-            var excelTemplate = new ExcelFile();
-            var mainWorkSheet = excelTemplate.Worksheets.Add("Логи");
-
-            var columnHeaders = new List<object> {"Кадастровый номер"};
-            columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
-
-            AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
-
-            var rowCounter = 1;
-            modelMarketObjects.ForEach(modelMarketObject =>
-            {
-                var coefficients = modelMarketObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                if (coefficients.All(x => string.IsNullOrWhiteSpace(x.Message)))
-                    return;
-
-                var values = new List<object> {modelMarketObject.CadastralNumber};
-
-                modelAttributes.ForEach(attribute =>
-                {
-                    var message = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Message;
-                    values.Add(message);
-                });
-
-                AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
-            });
-
-            var stream = new MemoryStream();
-            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
-        }
-
         public Stream ExportMarketObjectsToExcel(long modelId, List<long> marketObjectsIds)
         {
 	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
