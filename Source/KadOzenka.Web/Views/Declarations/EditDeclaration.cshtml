@@ -340,7 +340,14 @@
 			        { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 	        }
 
-	        $('textarea[editmode="false"]').attr("readonly", "true");
+            $('textarea[editmode="false"]').attr("readonly", "true");
+
+            $('#DateIn').bind('change', synchronizeDates);
+            $('input[type="radio"][name="Status"][value="@((long)StatusDec.Accepted)"] ').bind('change', synchronizeDates);
+            $('input[type="radio"][name="Status"][value="@((long)StatusDec.Considered)"] ').bind('change', synchronizeDates);
+            $('input[type="radio"][name="Status"][value="@((long)StatusDec.Rejection)"] ').bind('change', synchronizeDates);
+            $('#DurationDateIn').bind('change', synchronizeCheckTimeDate);
+
             $('#save').on('click',
                 function() {
                     var form = $('form');
@@ -367,24 +374,10 @@
 								var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
 								grid.dataSource.transport.options.read.url = url;
 							}
-                            if (response.data.DurationDateIn) {
-								$('#DurationDateIn').val(kendo.toString(kendo.parseDate(response.data.DurationDateIn), "dd.MM.yyyy"));
-                            } else {
-                                $('#DurationDateIn').val(null);
-                            }
-                            if (response.data.FormalCheckModel && response.data.FormalCheckModel.DateCheckPlan) {
-								$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.DateCheckPlan), "dd.MM.yyyy"));
-                            } else {
-                                $('#FormalCheckModel_DateCheckPlan').val(null);
-                            }
-                            if (response.data.FormalCheckModel && response.data.FormalCheckModel.CheckTime) {
-								$('#FormalCheckModel_CheckTime').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.CheckTime), "dd.MM.yyyy"));
-						    } else {
-                                $('#FormalCheckModel_CheckTime').val(null);
-						    }
+
 							Common.ShowMessage(response.Success);
                             $('.attachment-declaration').removeClass('hidden');
-                            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+                            var tabStrip = $("#tabstrip-wrap").data("kendoTabStrip");
                             $(".k-link:contains('Уведомления')").attr('data-content-url', '/Declarations/GetNotificationTabContent?declarationId=' + response.data.Id);
                             $(".k-link:contains('Характеристика деклараций')").attr('data-content-url', '/Declarations/GetCharacteristicTabContent?declarationId=' + response.data.Id);
                             tabStrip.reload("li:eq(2)");
@@ -501,6 +494,82 @@
                     $(displayField).val("");
                 }
             });
+        }
+
+
+        function synchronizeDates() {
+            if ($("#DurationDateIn").attr('readonly')
+                && $("#FormalCheckModel_DateCheckPlan").attr("editmode") == "false"
+                && $("#FormalCheckModel_CheckTime").attr("editmode") == "false")
+                return;
+
+            kendo.ui.progress($('body'), true);
+            var dateIn;
+            var dateInDatePicker = $("#DateIn").data('kendoDatePicker');
+            if (dateInDatePicker)
+                dateIn = kendo.toString($("#DateIn").data('kendoDatePicker').value(), 'dd.MM.yyyy');
+            var durationDateIn;
+            var durationDateInDatePicker = $("#DurationDateIn").data('kendoDatePicker');
+            if (durationDateInDatePicker)
+                durationDateIn = kendo.toString($("#DurationDateIn").data('kendoDatePicker').value(), 'dd.MM.yyyy');
+            var status = $('input:radio[name="Status"]:checked').val();
+
+            $.post('@Url.Action("GetSynchronizedDates", "Declarations")', { dateIn, durationDateIn, status})
+                .done(function (response) {
+                    if (!$("#DurationDateIn").attr('readonly')) {
+                        if (response.DurationDateIn) {
+                            $('#DurationDateIn').data('kendoDatePicker').value(kendo.parseDate(response.DurationDateIn));
+                        } else {
+                            $('#DurationDateIn').data('kendoDatePicker').value(null);
+                        }
+                    }
+
+                    if ($("#FormalCheckModel_DateCheckPlan").attr("editmode") == "true") {
+                        if (response.DateCheckPlan) {
+                            $('#FormalCheckModel_DateCheckPlan').data('kendoDatePicker').value(kendo.parseDate(response.DateCheckPlan));
+                        } else {
+                            $('#FormalCheckModel_DateCheckPlan').data('kendoDatePicker').value(null);
+                        }
+                    }
+
+                    if ($("#FormalCheckModel_CheckTime").attr("editmode") == "true") {
+                        if (response.CheckTime) {
+                            $('#FormalCheckModel_CheckTime').data('kendoDatePicker').value(kendo.parseDate(response.CheckTime));
+                        } else {
+                            $('#FormalCheckModel_CheckTime').data('kendoDatePicker').value(null);
+                        }
+                    }
+                }).fail(function(response) {
+                    Common.ShowError(response.responseText);
+                }).always(function() {
+                    kendo.ui.progress($('body'), false);
+                });
+        }
+
+        function synchronizeCheckTimeDate() {
+            if ($("#FormalCheckModel_CheckTime").attr("editmode") == "false")
+                return;
+
+            kendo.ui.progress($('body'), true);
+
+            var durationDateIn;
+            var durationDateInDatePicker = $("#DurationDateIn").data('kendoDatePicker');
+            if (durationDateInDatePicker)
+                durationDateIn = kendo.toString($("#DurationDateIn").data('kendoDatePicker').value(), 'dd.MM.yyyy');
+            var status = $('input:radio[name="Status"]:checked').val();
+
+            $.post('@Url.Action("GetSynchronizedCheckTimeDate", "Declarations")', {durationDateIn, status})
+                .done(function(response) {
+                    if (response.CheckTime) {
+                        $('#FormalCheckModel_CheckTime').data('kendoDatePicker').value(kendo.parseDate(response.CheckTime));
+                    } else {
+                        $('#FormalCheckModel_CheckTime').data('kendoDatePicker').value(null);
+                    }
+                }).fail(function(response) {
+                    Common.ShowError(response.responseText);
+                }).always(function() {
+                    kendo.ui.progress($('body'), false);
+                });
         }
     </script>
 }

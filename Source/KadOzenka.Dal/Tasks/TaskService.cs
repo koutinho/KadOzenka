@@ -302,6 +302,49 @@ namespace KadOzenka.Dal.Tasks
             return GetTemplateForTaskName(taskList.First());
         }
 
+        public Dictionary<long, string> GetTemplatesForTaskName(List<long> taskIds)
+        {
+            if(taskIds.IsEmpty())
+                return new Dictionary<long, string>();
+
+            var query = new QSQuery
+            {
+                MainRegisterID = OMTask.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIds.Distinct().Select(x => (double) x).ToList())
+                    }
+                },
+                Joins = new List<QSJoin>
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMInstance.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMTask.GetColumn(x => x.DocumentId),
+                            RightOperand = OMInstance.GetColumn(x => x.Id)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
+            };
+            query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
+            query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
+            query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
+            query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
+            query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
+            query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
+
+            var taskList = query.ExecuteQuery<TaskDocumentInfoDto>();
+
+            return taskList.ToDictionary(x => x.TaskId, GetTemplateForTaskName);
+        }
+
         public string GetTemplateForTaskName(DateTime? estimationDate, DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
         {
             return $"{estimationDate?.ToShortDateString()}, {documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";

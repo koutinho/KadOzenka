@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Transactions;
@@ -24,7 +23,7 @@ using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Declarations;
-using KadOzenka.Dal.Declarations.Dto;
+using KadOzenka.Web.Attributes;
 using ObjectModel.Core.Shared;
 using ObjectModel.SPD;
 
@@ -32,27 +31,7 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DeclarationsController : KoBaseController
     {
-		/// <summary>
-		/// Срок рассмотрения декларации в соответствии с Приказом 318 составляет 50 рабочих дней со дня поступления декларации
-		/// </summary>
-		public static int DurationWorkDaysCount => 50;
-
-		/// <summary>
-		/// Срок рассмотрения декларации составляет 5 рабочих дней со дня поступления декларации eсли заявителю отказано в рассмотрении
-		/// </summary>
-		public static int DurationWorkDaysCountForRejectedDeclaration => 5;
-
-		/// <summary>
-		/// Плановая дата рассмотрения должна быть +5 раб.дней к "Вх. дате ГБУ"
-		/// </summary>
-		public static int DateCheckPlanDaysCount => 5;
-
-		/// <summary>
-		/// "Контрольный срок" должен быть -10 рабочих дней от "Срок рассмотрения"
-		/// </summary>
-		public static int DaysDiffBetweenDateCheckTimeAndDurationDateIn => 10;
-
-		private NotificationService _notificationService;
+	    private NotificationService _notificationService;
 		private DeclarationService _declarationService;
 		public DeclarationsController()
 		{
@@ -181,6 +160,22 @@ namespace KadOzenka.Web.Controllers
 
 			CheckDeclarationPermissions(ref declarationViewModel);
 			return Json(new { Success = "Сохранено успешно", data = declarationViewModel });
+		}
+
+		[SRDFunction(Tag = ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION)]
+		public IActionResult GetSynchronizedDates(DateTime? dateIn, DateTime? durationDateIn, StatusDec? status)
+		{
+			_declarationService.CalculateSynchronizedDates(dateIn, durationDateIn, status, out var newDurationDateIn,
+				out var dateCheckPlan, out var checkTime);
+
+			return Json(new { DurationDateIn = newDurationDateIn, DateCheckPlan = dateCheckPlan, CheckTime = checkTime });
+		}
+
+		[SRDFunction(Tag = ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION)]
+		public IActionResult GetSynchronizedCheckTimeDate(DateTime? durationDateIn, StatusDec? status)
+		{
+			_declarationService.CalculateSynchronizedCheckTimeDate(durationDateIn, status, out var checkTime);
+			return Json(new { CheckTime = checkTime });
 		}
 
 		[HttpGet]
