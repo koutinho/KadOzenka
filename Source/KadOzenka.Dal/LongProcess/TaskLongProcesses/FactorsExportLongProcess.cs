@@ -56,6 +56,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
             var unitsAttr = OMAttribute.Where(x => x.RegisterId == unitsReg.RegisterId).SelectAll().Execute();
             var unitsIdAttr = unitsAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
             var unitsIdColumn = new QSColumnSimple(unitsIdAttr);
+            var unitsGroupColumn = new QSColumnSimple(20100600);
 
             var groupReg = rs.GetRegister(205);
             var groupAttr = OMAttribute.Where(x => x.RegisterId == groupReg.RegisterId).SelectAll().Execute();
@@ -100,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                         JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,
-                            LeftOperand = unitsIdColumn,
+                            LeftOperand = unitsGroupColumn,
                             RightOperand = groupIdColumn,
                             RightOperandLevel = 1,
                             LeftOperandLevel = 1
