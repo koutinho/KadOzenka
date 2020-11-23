@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.Consts;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
@@ -53,7 +54,7 @@ namespace KadOzenka.Web.Models.Modeling
 				HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
 				HasMultiplicativeTrainingResult = !string.IsNullOrWhiteSpace(entity.MultiplicativeTrainingResult),
 				HasFormedObjectArray = hasFormedObjectArray,
-				HasProcessToFormObjectArrayInQueue = CheckProcessToFormObjectArrayExistsInQueue(entity.ModelId),
+				HasProcessToFormObjectArrayInQueue = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, entity.ModelId),
 				AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
 				A0ForPreviousTour = entity.A0ForPreviousTour,
 				Attributes = entity.Attributes
@@ -69,15 +70,5 @@ namespace KadOzenka.Web.Models.Modeling
 
 	        return dto;
         }
-
-		public static bool CheckProcessToFormObjectArrayExistsInQueue(long? modelId)
-		{
-			var possibleStatuses = new List<Status> { Status.Running, Status.Added, Status.PrepareToRun };
-
-			return OMQueue.Where(x =>
-					x.ProcessTypeId == ObjectFormationForModelingProcess.ProcessId &&
-					possibleStatuses.Contains(x.Status_Code) && x.ObjectId == modelId)
-				.ExecuteExists();
-		}
     }
 }

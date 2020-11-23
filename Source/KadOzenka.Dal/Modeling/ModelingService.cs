@@ -14,6 +14,7 @@ using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Ko;
+using ObjectModel.Market;
 using Serilog;
 using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
@@ -248,41 +249,57 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+        #region Support Methods
+
+        private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
         {
-	        var model = GetModelEntityById(modelId);
-            ResetTrainingResults(model, type);
+	        var message = new StringBuilder();
+
+	        if (string.IsNullOrWhiteSpace(modelDto.Name))
+		        message.AppendLine("У модели не заполнено Имя");
+	        if (string.IsNullOrWhiteSpace(modelDto.Description))
+		        message.AppendLine("У модели не заполнено Описание");
+
+	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmTypeForCadastralPriceCalculation == KoAlgoritmType.None)
+		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
+
+	        if (message.Length != 0)
+		        throw new Exception(message.ToString());
         }
 
-        public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
-		{
-			switch (type)
-			{
-				case KoAlgoritmType.None:
-					generalModel.LinearTrainingResult = null;
-					generalModel.ExponentialTrainingResult = null;
-					generalModel.MultiplicativeTrainingResult = null;
-					break;
-				case KoAlgoritmType.Exp:
-					generalModel.ExponentialTrainingResult = null;
-					break;
-				case KoAlgoritmType.Line:
-					generalModel.LinearTrainingResult = null;
-					break;
-				case KoAlgoritmType.Multi:
-					generalModel.MultiplicativeTrainingResult = null;
-					break;
-			}
+        private void ValidateModelDuringAddition(ModelingModelDto modelDto)
+        {
+	        ValidateModelDuringUpdating(modelDto);
 
-			generalModel.Save();
-		}
+	        var message = new StringBuilder();
+
+	        var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
+	        if (isModelExists)
+		        message.AppendLine("Модель для данной группы уже существует");
+
+	        var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
+	        if (!isTourExists)
+		        message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
+
+	        if (modelDto.GroupId == 0)
+		        message.AppendLine("Для модели не выбрана группа");
+
+	        var isGroupBelongToTour = OMTourGroup.Where(x => x.TourId == modelDto.TourId && x.GroupId == modelDto.GroupId).ExecuteExists();
+	        if (!isGroupBelongToTour)
+		        message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
+
+	        if (message.Length != 0)
+		        throw new Exception(message.ToString());
+        }
+
+        #endregion
 
         #endregion
 
 
         #region Model Object Relations
 
-        public List<OMModelToMarketObjects> GetMarketObjectsForModel(long modelId)
+        public List<OMModelToMarketObjects> GetModelObjects(long modelId)
 		{
 			return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
                 .OrderBy(x => x.CadastralNumber)
@@ -290,7 +307,7 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
-        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long modelId, bool isForTraining)
+        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
         {
 	        if (isForTraining)
 	        {
@@ -636,50 +653,40 @@ namespace KadOzenka.Dal.Modeling
 
         #endregion
 
-        #region Support Methods
 
-        private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
-        {
-	        var message = new StringBuilder();
+        #region Modeling Process
 
-	        if (string.IsNullOrWhiteSpace(modelDto.Name))
-		        message.AppendLine("У модели не заполнено Имя");
-	        if (string.IsNullOrWhiteSpace(modelDto.Description))
-		        message.AppendLine("У модели не заполнено Описание");
-
-	        if (modelDto.Type == KoModelType.Manual && modelDto.AlgorithmTypeForCadastralPriceCalculation == KoAlgoritmType.None)
-		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
-
-	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
-        }
-
-        private void ValidateModelDuringAddition(ModelingModelDto modelDto)
-        {
-	        ValidateModelDuringUpdating(modelDto);
-
-            var message = new StringBuilder();
-
-            var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
-            if (isModelExists)
-	            message.AppendLine("Модель для данной группы уже существует");
-
-            var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
-			if(!isTourExists)
-				message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
-
-			if(modelDto.GroupId == 0)
-				message.AppendLine("Для модели не выбрана группа");
-
-            var isGroupBelongToTour = OMTourGroup.Where(x => x.TourId == modelDto.TourId && x.GroupId == modelDto.GroupId).ExecuteExists();
-            if (!isGroupBelongToTour)
-                message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
-
-            if (message.Length != 0)
-				throw new Exception(message.ToString());
+        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+		{
+			var model = GetModelEntityById(modelId);
+			ResetTrainingResults(model, type);
 		}
 
-        #endregion
+		public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.None:
+					generalModel.LinearTrainingResult = null;
+					generalModel.ExponentialTrainingResult = null;
+					generalModel.MultiplicativeTrainingResult = null;
+					break;
+				case KoAlgoritmType.Exp:
+					generalModel.ExponentialTrainingResult = null;
+					break;
+				case KoAlgoritmType.Line:
+					generalModel.LinearTrainingResult = null;
+					break;
+				case KoAlgoritmType.Multi:
+					generalModel.MultiplicativeTrainingResult = null;
+					break;
+			}
+
+			generalModel.Save();
+		}
+
+		#endregion
+
 
         #region Entities
 

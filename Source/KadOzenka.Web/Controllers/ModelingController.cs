@@ -24,13 +24,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.Register;
 using ObjectModel.Market;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
-using KadOzenka.Web.Helpers;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
-using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using System.IO;
 using System.Threading;
 using KadOzenka.Dal.Modeling.Dto;
@@ -39,10 +36,15 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.Consts;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Ko;
+using ObjectModel.Modeling;
+using Consts = KadOzenka.Web.Helpers.Consts;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -247,7 +249,7 @@ namespace KadOzenka.Web.Controllers
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
 
-            var isProcessExists = AutomaticModelingModel.CheckProcessToFormObjectArrayExistsInQueue(modelId);
+            var isProcessExists = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
@@ -364,26 +366,51 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult EditAutomaticModelFactor(AutomaticFactorModel factorModel)
+        public JsonResult EditAutomaticModelFactor(AutomaticFactorModel factorModel)
         {
 	        var dto = factorModel.ToDto();
 
+	        var isProcessForFactorAdditionCreated = false;
 	        if (factorModel.Id == -1)
 	        {
-		        ModelFactorsService.AddAutomaticFactor(dto);
+		        var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
+                var queue = LongProcessService.GetQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
+		        if (hasFormedObjectArray && queue != null)
+		        {
+			        var existedInputParameters = queue.Parameters.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
+			        var factor = OMModelFactor.Where(x => x.Id == existedInputParameters.FactorId).Select(x => x.FactorId).ExecuteFirstOrDefault();
+			        var attribute = factor == null ? null : RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault());
+			        throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attribute?.Name}'. Дождитесь его окончания");
+		        }
+
+                var factorId = ModelFactorsService.AddAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
-                //TODO удалить после того, как восстановим рассчет МС
-		        ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
+
+		        if (hasFormedObjectArray)
+		        {
+			        isProcessForFactorAdditionCreated = true;
+					var inputParameters = new FactorAdditionToModelObjectsInputParameters
+					{
+						ModelId = factorModel.ModelId.GetValueOrDefault(),
+						FactorId = factorId
+					};
+					////TODO код для отладки
+					//new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+					//{
+					//	Status_Code = Status.Added,
+					//	UserId = SRDSession.GetCurrentUserId(),
+					//	Parameters = inputParameters.SerializeToXml()
+					//}, new CancellationToken());
+
+					FactorAdditionToModelObjectsLongProcess.AddProcessToQueue(inputParameters);
+				}
             }
-	        else
+            else
 	        {
 		        ModelFactorsService.UpdateAutomaticFactor(dto);
-		        ModelingService.ResetTrainingResults(factorModel.ModelId, factorModel.AlgorithmType);
-            }
+	        }
 
-	        //ModelingService.DestroyModelMarketObjects(factorModel.ModelId);
-
-            return Ok();
+	        return Json(isProcessForFactorAdditionCreated);
         }
 
         [HttpPost]
@@ -395,7 +422,6 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService.DeleteAutomaticModelFactor(factor);
 
             ModelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
-            ModelingService.DestroyModelMarketObjects(factor.ModelId);
 
             return Ok();
         }
@@ -831,7 +857,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
-			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
+			var objectsDto = ModelingService.GetModelObjects(modelId);
 
             //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
             //if (model == null)

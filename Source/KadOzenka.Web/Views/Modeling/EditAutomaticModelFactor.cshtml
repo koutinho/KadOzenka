@@ -8,9 +8,9 @@
     
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group" style="padding-bottom: 1%;">
-        <div class="col-sm-9 col-sm-offset-1">
+        <div class="col-sm-8 col-sm-offset-2">
             <span class="k-icon k-i-warning"></span>
-            После сохранения изменений результаты обучения модели и массив данных будут сброшены
+            После сохранения будут сброшены результаты обучения модели
         </div>
     </div>
     @if (Model.Id != -1)
@@ -104,9 +104,13 @@
             type: form.attr('method'),
             url: form.attr('action'),
             data: formObject,
-            success: function () {
-                Common.ShowMessage('Сохранение выполнено');
-                closeWindow();
+            success: function (response) {
+                if (response) {
+                    Common.ShowMessage("Данные сохранены. Процесс сбора данных для нового фактора поставлен в очередь.");
+                } else {
+                    Common.ShowMessage('Сохранение выполнено');
+                }
+                setTimeout(closeWindow, 3500);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
