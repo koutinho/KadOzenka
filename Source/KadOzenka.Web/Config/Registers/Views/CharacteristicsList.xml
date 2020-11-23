@@ -24,8 +24,7 @@
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
-            <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="Or"/>
-            <Condition Key="{Get:93100300}" Operation="Equal" Value="2" AndOr="Or" />
+            <Condition Key="NeedSelectedRow" Operation="" Value="true"/>
           </Conditions>
         </ConditionGroup>
       </ConditionGroups>
