@@ -836,14 +836,14 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
-        public ActionResult ImportGroupDataFromExcel()
+        public ActionResult ImportDataFromExcel()
         {
-            return View(new ImportGroupDataModel());
+            return View(new ImportDataModel());
         }
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_IMPORT_GROUP_DATA_FROM_EXCEL)]
-        public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
+        public ActionResult ImportDataFromExcel(ImportDataModel viewModel)
         {
 	        if (!ModelState.IsValid)
 	        {
@@ -858,7 +858,7 @@ namespace KadOzenka.Web.Controllers
 	                var settings = viewModel.ToDto();
 					if (DataImporterKO.UseLongProcessForImportDataGroup(stream))
 	                {
-		                ImportDataGroupNumberFromExcelLongProcess.AddProcessToQueue(stream, settings);
+		                ImportDataFromExcelLongProcess.AddProcessToQueue(stream, settings);
 
 		                returnedData = new
 		                {
@@ -867,7 +867,7 @@ namespace KadOzenka.Web.Controllers
 					}
 	                else
 	                {
-		                var importId = DataImporterKO.ImportDataGroupNumberFromExcel(stream, settings);
+		                var importId = DataImporterKO.ImportDataFromExcel(stream, settings);
 
 		                returnedData = new
 		                {

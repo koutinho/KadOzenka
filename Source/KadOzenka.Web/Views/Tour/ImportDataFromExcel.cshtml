@@ -1,0 +1,275 @@
+﻿@using KadOzenka.Dal.DataImport.Dto
+@model KadOzenka.Web.Models.Tour.ImportDataModel
+
+<style>
+    #formLoad td {
+	    padding: 3px;
+	    border: 1px solid;
+    }
+    #formLoad .header {
+	    padding: 7px;
+	    text-align: center;
+	    border: 1px solid;
+	    border-top-left-radius: 5px;
+	    border-top-right-radius: 5px;
+    }
+    #formLoad table {
+			width: 100%;
+		}
+</style>
+
+@using (Html.BeginForm("ImportDataFromExcel", "Tour", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-6">
+			<div class="form-group">
+				<div class="col-sm-4">
+					@Html.CustomLabelFor(m => m.TourId)
+				</div>
+				<div class="col-sm-8">
+					@(Html.Kendo().DropDownListFor(m => m.TourId)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read(read => read.Action("GetTours", "Tour"));
+						})
+						.Events(x => x.Change("onTourChanged").DataBound("onTourChanged")))
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-4">
+					@Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Статус единицы оценки").Value(true)
+				</div>
+				<div class="col-sm-8">
+					@Html.KendoEnumDropDownListFor(m => m.UnitStatus, isReadonly: !Model.IsUnitStatusUsed)
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6" id="wrapperFormLoad">
+
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-3">
+			@Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Задания на оценку").Value(false)
+		</div>
+		<div class="col-sm-9">
+			@(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.Filter("contains")
+				.DataSource(source =>
+				{
+					source.Read(read =>
+					{
+						read.Action("GetTasksByTour", "Task").Data("getTaskData");
+					})
+						.ServerFiltering(false);
+				}).Enable(!Model.IsUnitStatusUsed))
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-6">
+			<div>
+				@Html.Kendo().RadioButtonFor(m => m.LoadTypeDocument).Label("Загрузка оценочной группы").Value(LoadType.Group).Checked(true)
+			</div>
+			<div>
+				@Html.Kendo().RadioButtonFor(m => m.LoadTypeDocument).Label("Загрузка предварительной стоимости").Value(LoadType.PreCost)
+			</div>
+			<div>
+				@Html.Kendo().RadioButtonFor(m => m.LoadTypeDocument).Label("Загрузка окончательной стоимости").Value(LoadType.EndCost)
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx"/>
+		</div>
+	</div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button class="k-button k-button-icontext" style="float: right" id="perform" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+}
+
+
+<script type="text/x-kendo-tmpl" id="formLoad">
+	<div id="formLoad">
+		<div class="header">
+			<span>Форма загрузки</span>
+		</div>
+		<div>
+			<table>
+				<tr>
+					# for (var i = 0; i < data.length; i++) { #
+					<td>#= data[i] #</td>
+					# } #
+				</tr>
+			</table>
+		</div>
+	</div>
+</script>
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    // Подсветка файла после его выбора (select в kendoUpload срабатывает раньше чем элемент создается)
+    const mutConfig = { childList: true, subtree: true };
+    const mutationFunction = function(mutList, observer) {
+        const targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
+
+    $(document).ready(function () {
+	    setFormLoad();
+        initIsUnitStatusUsedChangedHandler();
+
+        $('#file').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить файл'
+            },
+            async: {
+                autoUpload: false
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            }
+        }).data('kendoUpload');
+        const mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
+
+        $('#perform').on('click',
+            function() {
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                var files = $('#file').data('kendoUpload').getFiles();
+                if (files.length === 0) {
+                    Common.ShowError("Файл не выбран");
+                    return;
+                }
+                var formData = new FormData();
+                formData.append("viewModel.TourId", formObject.TourId);
+                formData.append("viewModel.IsUnitStatusUsed", formObject.IsUnitStatusUsed);
+                if (formObject.UnitStatus)
+                    formData.append("viewModel.UnitStatus", formObject.UnitStatus);
+                var taskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                if (taskFilter.length > 0) {
+                    for (var i = 0; i !== taskFilter.length; i++) {
+                        formData.append(`viewModel.TaskFilter[${i}]`, taskFilter[i]);
+                    }
+                }
+                formData.append("viewModel.File", files[0].rawFile);
+				formData.append("viewModel.LoadTypeDocument", formObject.LoadTypeDocument);
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        if (data.Errors) {
+                            var errors = getErrors(data.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (data.isLongProcess) {
+                            Common.ShowMessage("Импорт группы из Excel поставлен в очередь долгих процессов. По окончании импорта вы получите уведомление.");
+                        } else {
+                            window.location = '@Url.Action("DownloadImportResultFile", "DataImport")' + '?importId=' + data.importId;
+                            Common.ShowMessage("Импорт группы из Excel успешно выполнен");
+                        }
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function (data) {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            });
+		$('[name=LoadTypeDocument]').on('change', function () {
+			$('#file').data('kendoUpload').clearAllFiles();
+	        setFormLoad();
+        });
+    });
+
+    function setFormLoad() {
+	    $("#wrapperFormLoad").find('#formLoad').remove();
+		var template = kendo.template($("#formLoad").html());
+		var loadType = $('[name=LoadType]:checked').val();
+        var data;
+	    switch (loadType) {
+            case "Group": {data = ["Кадастровый номер", "Номер группы"]; break;}
+            case "PreCost":{ data = ["Кадастровый номер", "КС (предварительная)", "УПКС (предварительный)"]; break; }
+            case "EndCost":{ data = ["Кадастровый номер", "КС (окончательная)", "УПКС (окончательный)"]; break; }
+        default:
+	        data = [];
+        }
+	    var result = template(data); 
+	    $("#wrapperFormLoad").html(result);
+    }
+
+    function onTourChanged(e) {
+        $("#@nameof(Model.TaskFilter)").data('kendoMultiSelect').dataSource.read();
+        $("#@nameof(Model.TaskFilter)").data('kendoMultiSelect').refresh();
+    }
+
+    function getTaskData() {
+        return {
+            tourId: $('#@nameof(Model.TourId)').data('kendoDropDownList').value()
+        }
+    }
+
+    function initIsUnitStatusUsedChangedHandler() {
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="True"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(true);
+            }
+        });
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="False"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(false);
+            }
+        });
+    }
+
+    function changeUnitStatusAvailability(isUnitStatusUsed) {
+        if (isUnitStatusUsed) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(true);
+        } else {
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').value(0);
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(false);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+        }
+    }
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors,
+            function (index, event) {
+                var events = $.grep(result,
+                    function (e) {
+                        return event.Message === e.Message;
+                    });
+                if (events.length === 0) {
+                    result.push(event);
+                }
+            });
+
+        return result;
+    }
+</script>
