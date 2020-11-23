@@ -12,7 +12,7 @@
             opacity: "0.5"
         });
         var $containerLoader = $('<div id="myProgress" style="background-color: grey;"></div>');
-        var width = 80; //ширина полоски загрузки, проценты
+        var width = 50; //ширина полоски загрузки, проценты
         $containerLoader.css({
             position: "relative",
             top: "50%",
@@ -24,10 +24,26 @@
         $container.append($containerLoader);
         return $container;
     }
+
+    function _moveInInterval(myBar, progress, cWidth) {
+        var currentWidth = cWidth;
+        if (progress > parseFloat(currentWidth)) {
+                var idInterval = null;
+                idInterval = setInterval(() => {
+                    if (currentWidth !== progress) {
+                        currentWidth++;
+                        myBar.style.width = currentWidth + '%';
+                    } else {
+                        clearInterval(idInterval);
+                    }
+                }, 30);
+            }
+        }
  
 
     var progressLoader = {
         loader: function ($el, isShow) {
+            var self = this;
             if ($el.length > 0 && isShow) {
                 var $container = _generateContainer();
                 $el.find('#overlayLoader').remove();
@@ -35,6 +51,7 @@
             }
 
             if ($el.length > 0 && !isShow) {
+                self.move($el, 100, false);
                 $el.find('#overlayLoader').remove();
             }
         },
@@ -42,21 +59,19 @@
          * 
          * @param {any} $el джеквери элемент на котором прогресс бар
          * @param {number} progress состояние процесса
+         * @param {boolean} useInterval использовать проход по каждому проценту через setInterval
          */
-        move: function ($el, progress) {
+        move: function ($el, progress, useInterval = true) {
             if ($el.length > 0 && $el.find('#overlayLoader').length > 0) {
                 var myBar = $el.find('#myBar')[0];
                 var cWidth = myBar.style.width.replace('%','');
                 if (progress > parseFloat(cWidth)) {
-                    var idInterval = null;
-                    idInterval = setInterval(() => {
-                        if (cWidth !== progress) {
-                            cWidth++;
-                            myBar.style.width = cWidth + '%';
-                        } else {
-                            clearInterval(idInterval);
-                        }
-                    }, 100);
+                    if (useInterval) {
+                        _moveInInterval(myBar, progress, cWidth);
+                    } else {
+                        progress = progress > 100 ? 100 : progress;
+                        myBar.style.width = progress + '%';
+                    }
                 }
             }
 
