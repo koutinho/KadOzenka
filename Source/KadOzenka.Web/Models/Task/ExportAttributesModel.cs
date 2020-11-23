@@ -290,15 +290,8 @@ namespace KadOzenka.Web.Models.Task
                 : existedTourFactorRegister.RegisterId.GetValueOrDefault();
 
             OMAttribute attributeGbu = OMAttribute.Where(x => x.Id == idGbu).SelectAll().ExecuteFirstOrDefault();
-            CharacteristicDto characteristicDto = new CharacteristicDto
-            {
-                Name = attributeGbu.Name,
-                RegisterId = registerId,
-                Type = (Core.Register.RegisterAttributeType)attributeGbu.Type,
-                ReferenceId = attributeGbu.ReferenceId
-            };
-
-            long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto, true);
+            long idKo = TourFactorService.CreateTourFactorRegisterAttribute(attributeGbu.Name, registerId,
+	            (Core.Register.RegisterAttributeType) attributeGbu.Type, attributeGbu.ReferenceId);
 
             //запомнить соответствие
             OMTransferAttributes newTransferAttribute = new OMTransferAttributes

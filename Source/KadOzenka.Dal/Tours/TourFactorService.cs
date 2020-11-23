@@ -159,6 +159,9 @@ namespace KadOzenka.Dal.Tours
 
         public long CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
         {
+	        if (string.IsNullOrWhiteSpace(attributeName))
+		        throw new ArgumentException("Имя фактора не может быть пустым");
+
             long id;
             using (var ts = new TransactionScope())
             {

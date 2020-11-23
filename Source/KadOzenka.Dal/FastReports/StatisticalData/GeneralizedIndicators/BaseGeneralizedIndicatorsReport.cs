@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -43,9 +44,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			dataTable.Columns.Add("AdditionalName");
 			dataTable.Columns.Add("Name");
 			dataTable.Columns.Add("ObjectsCount", typeof(int));
-			dataTable.Columns.Add("GroupName");
+			dataTable.Columns.Add("GroupId");
 			dataTable.Columns.Add("UpksCalcType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
+
+			var groupDictionaryTable = new DataTable("GroupDictionary");
+			groupDictionaryTable.Columns.Add("GroupId");
+			groupDictionaryTable.Columns.Add("GroupName");
 
 			var areaDivisionType = GetStatisticDataAreaDivisionTypeReport(query);
 			Logger.Debug("Тип разделения {AreaDivisionType}", areaDivisionType);
@@ -61,14 +66,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 			{
 				dataTable.Rows.Add(
 					unitDto.AdditionalName, unitDto.Name,unitDto.ObjectsCount,
-					unitDto.GroupName, unitDto.UpksCalcTypeEnum.GetEnumDescription(),
+					unitDto.GroupId, unitDto.UpksCalcTypeEnum.GetEnumDescription(),
 					(unitDto.UpksCalcValue.HasValue ? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues) : (decimal?)null)
 				);
+			}
+
+			var groupDictionary = data.GroupBy(x => new {x.GroupId, x.GroupName});
+			foreach (var groupDictionaryValue in groupDictionary)
+			{
+				groupDictionaryTable.Rows.Add(groupDictionaryValue.Key.GroupId, groupDictionaryValue.Key.GroupName);
 			}
 
 			var dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			dataSet.Tables.Add(dataTitleTable);
+			dataSet.Tables.Add(groupDictionaryTable);
 			Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;

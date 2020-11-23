@@ -42,6 +42,23 @@ namespace FastReport
       table[1, 0].SetStyle(table[0, 0]);
       table[1, 0].Text = &quot;Значение&quot;;
 
+      for (int i = 2; i &lt; table.ColumnCount; i++)
+      {
+        if(!String.IsNullOrEmpty(table[i, 1].Text))  {
+          DataSourceBase groupDictionary = Report.GetDataSource(&quot;GroupDictionary&quot;);
+          groupDictionary.Init();
+          while (groupDictionary.HasMoreRows)
+          { 
+            string textName = Report.GetColumnValue(&quot;GroupDictionary.GroupId&quot;).ToString();
+            if(textName == table[i, 1].Text) {
+              
+              table[i, 1].Text = Report.GetColumnValue(&quot;GroupDictionary.GroupName&quot;).ToString();
+              break;
+            }
+            groupDictionary.Next();
+          }  
+        }    
+      }
 
       //adding new column for Data.ObjectsCount data
       TableColumn newColumn = new TableColumn();
@@ -189,16 +206,20 @@ namespace FastReport
       <Column Name="AdditionalName" DataType="System.String"/>
       <Column Name="Name" DataType="System.String"/>
       <Column Name="ObjectsCount" DataType="System.Int32"/>
-      <Column Name="GroupName" DataType="System.String"/>
+      <Column Name="GroupId" DataType="System.Int64"/>
       <Column Name="UpksCalcType" DataType="System.String"/>
       <Column Name="UpksCalcValue" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+    <BusinessObjectDataSource Name="GroupDictionary" ReferenceName="GroupDictionary" DataType="null" Enabled="true">
+      <Column Name="GroupId" DataType="System.Int64"/>
+      <Column Name="GroupName" DataType="System.String"/>
     </BusinessObjectDataSource>
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="28.35,643.74,231.09,432.69" UnlimitedHeight="true" UnlimitedWidth="true">
     <DataBand Name="BandData1" Width="1047.06" Height="212.41" Guides="0,60.52,22.72,41.62" DataSource="Data">
       <MatrixObject Name="MatrixData" Left="28.35" Width="615.39" Height="60.52" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns>
-          <Header Expression="[Data.GroupName]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.GroupId]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
           <Header Expression="[Data.Name]" Totals="false"/>
@@ -218,7 +239,7 @@ namespace FastReport
         <TableRow Name="Row2" AutoSize="true">
           <TableCell Name="Cell3" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell12" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell15" Border.Lines="All" Text="[GroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell15" Border.Lines="All" Text="[GroupId]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
         <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>

@@ -1597,8 +1597,8 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Line)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2);
-                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2, MidpointRounding.AwayFromZero);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
 
                                     if (!unit.isExplication)
                                     {
@@ -1639,8 +1639,8 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2);
-                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2, MidpointRounding.AwayFromZero);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
 
                                     if (!unit.isExplication)
                                     {
