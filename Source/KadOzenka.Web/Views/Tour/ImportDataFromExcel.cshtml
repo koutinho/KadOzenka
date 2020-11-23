@@ -208,7 +208,7 @@
     function setFormLoad() {
 	    $("#wrapperFormLoad").find('#formLoad').remove();
 		var template = kendo.template($("#formLoad").html());
-		var loadType = $('[name=LoadType]:checked').val();
+		var loadType = $('[name=LoadTypeDocument]:checked').val();
         var data;
 	    switch (loadType) {
             case "Group": {data = ["Кадастровый номер", "Номер группы"]; break;}
