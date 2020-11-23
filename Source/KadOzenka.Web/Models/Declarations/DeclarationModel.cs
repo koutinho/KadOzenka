@@ -252,36 +252,6 @@ namespace KadOzenka.Web.Models.Declarations
 
 		public static void ToEntity(DeclarationModel declarationViewModel, ref OMDeclaration entity, ref OMResult result)
 		{
-			if (declarationViewModel.DateIn != entity.DateIn ||
-			    (entity.Status_Code != (StatusDec) declarationViewModel.Status.GetValueOrDefault() &&
-			     (StatusDec) declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection))
-			{
-				if (declarationViewModel.DateIn.HasValue)
-				{
-					declarationViewModel.DurationDateIn =
-						(StatusDec) declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection
-							? CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value.AddDays(-1),
-								DeclarationsController.DurationWorkDaysCountForRejectedDeclaration)
-							: CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value.AddDays(-1),
-								DeclarationsController.DurationWorkDaysCount);
-					declarationViewModel.FormalCheckModel.DateCheckPlan = CalendarHolidays.GetDateFromWorkDays(
-						declarationViewModel.DateIn.Value.AddDays(-1),
-						DeclarationsController.DateCheckPlanDaysCount);
-				}
-				else
-				{
-					declarationViewModel.DurationDateIn = null;
-					declarationViewModel.FormalCheckModel.DateCheckPlan = null;
-				}
-			}
-			if (entity.DurationIn != declarationViewModel.DurationDateIn)
-			{
-				declarationViewModel.FormalCheckModel.CheckTime = (StatusDec)declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection
-					? declarationViewModel.DurationDateIn
-					: declarationViewModel.DurationDateIn?.GetStartWorkDate(
-						DeclarationsController.DaysDiffBetweenDateCheckTimeAndDurationDateIn - 1);
-			}
-
 			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
 			entity.Owner_Id = declarationViewModel.OwnerId;
 			entity.Agent_Id = declarationViewModel.AgentId;
