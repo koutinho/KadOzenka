@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.Consts;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;

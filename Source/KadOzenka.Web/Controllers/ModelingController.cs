@@ -36,7 +36,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.LongProcess.Consts;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using ObjectModel.Core.LongProcess;

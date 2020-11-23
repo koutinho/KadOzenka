@@ -54,8 +54,8 @@ namespace KadOzenka.Dal.LongProcess
             }
             if (inputParameters?.TaskIds == null || inputParameters.TaskIds.Count == 0) 
             {
-                WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}",
                     "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
                 return;

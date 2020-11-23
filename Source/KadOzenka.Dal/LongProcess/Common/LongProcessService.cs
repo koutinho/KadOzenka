@@ -3,7 +3,7 @@ using Core.Register.QuerySubsystem;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 
-namespace KadOzenka.Dal.LongProcess.Consts
+namespace KadOzenka.Dal.LongProcess.Common
 {
 	public class LongProcessService
 	{

@@ -49,9 +49,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			if (!modelId.HasValue)
 			{
-				var message = Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
+				var message = Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
 				WorkerCommon.SetMessage(processQueue, message);
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				SendMessage(processQueue, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов", MessageSubject);
 				return;
 			}

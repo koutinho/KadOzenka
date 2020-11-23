@@ -46,8 +46,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			var inputParameters = processQueue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
 			if (inputParameters == null || inputParameters.ModelId == 0 || inputParameters.FactorId == 0)
 			{
-				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				SendMessage(processQueue, $"Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов. {processQueue.Parameters}", GetMessageSubject());
 				return;
 			}
