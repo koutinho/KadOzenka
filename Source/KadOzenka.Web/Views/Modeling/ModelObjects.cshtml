@@ -164,6 +164,7 @@
 <script>
     var successfulObjectsGridId = "grid";
     var errorObjectsGridId = "gridForObjectsWithErrors";
+    var objectFieldPrefixForCoefficient = "Coefficient_";
 
     $(document).ready(function () {
         updateGrid();
@@ -206,7 +207,7 @@
     //    });
     //}
 
-    
+
 
     function updateGrid() {
         kendo.ui.progress($('body'), true);
@@ -238,7 +239,11 @@
     }
 
 
+
     function generateGrid(data, gridId, excludeFunc, trainingFunc, controlFunc, trainingAllFunc, controlAllFunc, saveFunc, exportFunc) {
+        var model = '@Json.Serialize(Model.Attributes)';
+        var modelAttributes = JSON.parse(model);
+        mapResponse(data, modelAttributes);
         var dataSource = new kendo.data.DataSource({
             transport:{
                 read:  function(options){
@@ -253,18 +258,7 @@
 				model: {
                     id: "Id",
                     EmptyField: "",
-					fields: {
-						Id: {editable: false, nullable: true},
-						CadastralNumber: { editable: false },
-                        Price: { type: "number", editable: false },
-                        PriceFromModel: { type: "number", editable: false },
-                        IsExcluded: { type: "boolean", editable: true },
-                        IsForTraining: { type: "boolean", editable: true },
-                        IsForControl: { type: "boolean", editable: true },
-                        ModelingPrice: { type: "number", editable: false },
-                        DeviationFromPredictablePrice: { type: "number", editable: false },
-                        Percent: { type: "number", editable: false }
-					}
+					fields: generateSchemaFields(modelAttributes)
                 },
                 data: function (response) {
                     kendo.ui.progress($('body'), false);
@@ -293,7 +287,7 @@
                     }
                 }
             },
-            columns: generateColumns(gridId),
+            columns: generateColumns(gridId, modelAttributes),
             dataSource: dataSource,
             pageable: true,
             sortable: true,
@@ -309,18 +303,57 @@
         $('#exportBtn-' + gridId).on('click', exportFunc);
     }
 
+    function mapResponse(objects, modelAttributes) {
+        //заменяем список коэффициентов на отдельные поля в объекте
+        //например, Coefficient_10004300: 15
+        $.each(objects, function (index, obj) {
+            $.each(modelAttributes, function (index, attribute) {
+                var coefficients = obj.Coefficients;
+                var coefficient = coefficients == undefined || coefficients.find(x => x.AttributeId === attribute.AttributeId) == undefined
+                    ? null
+                    : coefficients.find(x => x.AttributeId === attribute.AttributeId).Coefficient;
+                var fieldName = objectFieldPrefixForCoefficient + attribute.AttributeId;
+                obj[fieldName] = coefficient;
+            });
+        });
+    }
 
-    function generateColumns(gridId) {
-        var model = '@Json.Serialize(Model.Attributes)';
-        var modelAttributes = JSON.parse(model);
+    function generateSchemaFields(modelAttributes) {
+        var fields = {
+            Id: {editable: false, nullable: true},
+            CadastralNumber: { editable: false },
+            Price: { type: "number", editable: false },
+            PriceFromModel: { type: "number", editable: false },
+            IsExcluded: { type: "boolean", editable: true },
+            IsForTraining: { type: "boolean", editable: true },
+            IsForControl: { type: "boolean", editable: true },
+            ModelingPrice: { type: "number", editable: false },
+            DeviationFromPredictablePrice: { type: "number", editable: false },
+            Percent: { type: "number", editable: false }
+        }
+        $.each(modelAttributes, function (index, attribute) {
+            var fieldName = objectFieldPrefixForCoefficient + attribute.AttributeId;
+            fields[fieldName] = { type: "number", editable: false };
+        });
+        return fields;
+    }
+
+    function generateColumns(gridId, modelAttributes) {
         var additionalColumns = modelAttributes.map(function (attribute) {
-            var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ") == undefined " +
-                "? EmptyField " +
-                ": Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ").Coefficient";
             return {
                 title: attribute.AttributeName,
-                field: field,
-                filterable: false,
+                field: objectFieldPrefixForCoefficient + attribute.AttributeId,
+                filterable: {
+                    extra: false,
+                    operators: {
+                        number: {
+                            isnull: "Пустое",
+                            isnotnull: "Непустое",
+                            gte: "Больше",
+                            lte: "Меньше"
+                        }
+                    }
+                },
                 sortable: false
             };
         });
