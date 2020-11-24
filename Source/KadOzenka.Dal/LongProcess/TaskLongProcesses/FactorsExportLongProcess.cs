@@ -144,7 +144,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                 }
 
                 var attr = omAttr.FirstOrDefault(x => x.Id == cell.Value.ParseToLong());
-                cell.Value = attr?.Name ?? cell.Value;
+                // переименование для оценочной группы (названа как "номер")
+                if (cell.Value == (object) 20500500)
+                    cell.Value = "Оценочная группа";
+                else cell.Value = attr?.Name ?? cell.Value;
             }
 
             var ms = new MemoryStream();

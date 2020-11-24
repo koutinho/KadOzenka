@@ -98,7 +98,12 @@
 		});
 
 
-		columns = dataGrid.headers.map((item) => { return { title: item.text, field: "_" + item.dataField} });
+		columns = dataGrid.headers.map((item) => { return { title: item.text, field: getCorrectField(item.dataField)} });
+
+		function getCorrectField(dataField) {
+			if (parseInt(dataField).valueOf()) return "_" + dataField;
+			return dataField;
+		}
 	} catch (e) {
 		console.error("Ошибка при парсинге данных", e);
 	}
