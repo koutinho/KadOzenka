@@ -92,21 +92,15 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			for (var i = 0; i < modelObjects.Count; i++)
 			{
 				var modelObject = modelObjects[i];
+				var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
 
 				foreach (var attribute in attributes)
 				{
-					var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
-					if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
+					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) || objectCoefficient.Coefficient == null)
 						return;
 
-					var value = objectCoefficient.Value;
-					var metka = objectCoefficient.Coefficient;
-
-					if (metka != null)
-					{
-						ModelFactorsService.CreateMark(value, metka, attribute.AttributeId, groupId);
-					}
+					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
 				}
 			}
 		}
@@ -121,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				query.AddColumn(attribute.AttributeId, attribute.AttributeId.ToString());
 			});
 
-			var sql = query.GetSql();
+			//var sql = query.GetSql();
 
 			var coefficients = new Dictionary<long, List<CoefficientForObject>>();
 			var table = query.ExecuteQuery();
@@ -134,22 +128,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				{
 					var value = row[attribute.AttributeId.ToString()].ParseToStringNullable();
 
-					CoefficientForObject coefficient;
-					if (string.IsNullOrWhiteSpace(value))
-					{
-						coefficient = new CoefficientForObject(attribute.AttributeId)
-						{
-							Message = "Не найдено значение."
-						};
-					}
-					else
-					{
-						var dictionary = attribute.DictionaryId == null
-							? null
-							: dictionaries.FirstOrDefault(x => x.Id == attribute.DictionaryId);
+					var dictionary = attribute.DictionaryId == null
+						? null
+						: dictionaries.FirstOrDefault(x => x.Id == attribute.DictionaryId);
 
-						coefficient = CalculateCoefficientViaDictionary(value, attribute, dictionary);
-					}
+					var coefficient = CalculateCoefficient(value, attribute, dictionary);
+
 					currentCoefficients.Add(coefficient);
 				});
 
@@ -159,62 +143,56 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return coefficients;
 		}
 
-		private CoefficientForObject CalculateCoefficientViaDictionary(object value, ModelAttributePure modelAttribute, OMModelingDictionary dictionary)
+		private CoefficientForObject CalculateCoefficient(object value, ModelAttributePure modelAttribute, OMModelingDictionary dictionary)
 		{
-			var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
+			string resultValue;
+			decimal? resultCoefficient;
 
 			switch (modelAttribute.AttributeTypeCode)
 			{
 				case RegisterAttributeType.STRING:
 					{
 						if (dictionary == null)
-						{
-							coefficient.Message = GetErrorMessage("строка");
-						}
-						else
-						{
-							var stringValue = value?.ParseToString();
-							coefficient.Value = stringValue;
-							coefficient.Coefficient = DictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
-						}
+							throw new Exception(GetErrorMessage("строка"));
 
+						var stringValue = value?.ParseToString();
+						resultValue = stringValue;
+						resultCoefficient = DictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
 						break;
 					}
 				case RegisterAttributeType.DATE:
 					{
 						if (dictionary == null)
-						{
-							coefficient.Message = GetErrorMessage("дата");
-						}
-						else
-						{
-							var dateValue = value?.ParseToDateTimeNullable();
-							coefficient.Value = dateValue?.ToShortDateString();
-							coefficient.Coefficient = DictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
-						}
+							throw new Exception(GetErrorMessage("дата"));
 
+						var dateValue = value?.ParseToDateTimeNullable();
+						resultValue = dateValue?.ToShortDateString();
+						resultCoefficient = DictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
 						break;
 					}
-				//число
 				case RegisterAttributeType.INTEGER:
 				case RegisterAttributeType.DECIMAL:
 					{
 						var numberValue = value?.ParseToDecimalNullable();
 
 						var number = DictionaryService.GetCoefficientFromNumberFactor(numberValue, dictionary);
-
-						coefficient.Value = number.ToString();
-						coefficient.Coefficient = number;
+						resultValue = number.ToString();
+						resultCoefficient = number;
 						break;
 					}
 				default:
 					{
-						coefficient.Message = "Ошибка: атрибут относится к типу 'неизвестный тип'.";
-						break;
+						throw new Exception("Ошибка: атрибут относится к типу 'неизвестный тип'.");
 					}
 			}
 
-			return coefficient;
+			var coefficientObj = new CoefficientForObject(modelAttribute.AttributeId)
+			{
+				Value = resultValue, 
+				Coefficient = resultCoefficient
+			};
+
+			return coefficientObj;
 		}
 
 		private string GetErrorMessage(string type)
