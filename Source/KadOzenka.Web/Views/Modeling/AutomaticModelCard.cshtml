@@ -471,7 +471,7 @@
             success: function (response) {
                 if (response) {
                     $("#statisticContent").show();
-                    $("#statisticTotalCount").text(response.TotalCount);
+                    $("#statisticTotalCount").text(kendo.toString(response.TotalCount, "n0"));
                     if (response.Attributes) {
                         generateGridWithStatistic(response.Attributes);
                     }
@@ -502,7 +502,8 @@
                     title: 'Кол-во найденных значений',
                     field: 'Count',
                     headerAttributes: { style: "text-align: center;" },
-                    attributes: { style: "text-align: center;" }
+                    attributes: { style: "text-align: center;" },
+                    template: '#: Count == null ? "" : kendo.toString(Count, "n0") #'
                 },
                 {
                     title: '%',
