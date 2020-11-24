@@ -99,8 +99,8 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, findObj 
-											? "Указанный объект не найден" : setPreCost ? "КС (предварительная) не найдена" : "УПКС (предварительный) не найден");
+										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj 
+											? "Указанный объект не найден" : !setPreCost ? "КС (предварительная) не установлена" : "УПКС (предварительный) не установлен");
 									}
 								}
 								catch
@@ -156,11 +156,6 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
-				List<OMUnit> Objs = new List<OMUnit>();
-				foreach (long taskId in settings.TaskFilter)
-				{
-					Objs.AddRange(OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
-				}
 				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
@@ -175,7 +170,9 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							bool setPreUpks = false;
 							bool findObj = false;
 
-							OMUnit unit = Objs.Find(x => x.CadastralNumber == cadastralNumber);
+							OMUnit unit = OMUnit
+								.Where(ImportKoCommon.GetConditionByTaskAndKn(settings.TaskFilter, cadastralNumber))
+								.SelectAll().ExecuteFirstOrDefault();
 							if (unit != null)
 							{
 								findObj = true;
@@ -214,8 +211,8 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, findObj
-											? "Указанный объект не найден" : setPreCost ? "КС (предварительная) не найдена" : "УПКС (предварительный) не найден");
+										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+											? "Указанный объект не найден" : !setPreCost ? "КС (предварительная) не установлена" : "УПКС (предварительный) не установлен");
 									}
 								}
 								catch

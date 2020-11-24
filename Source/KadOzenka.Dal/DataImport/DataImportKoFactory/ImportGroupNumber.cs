@@ -118,7 +118,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
+										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
 									}
 								}
 								catch
@@ -179,11 +179,6 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				List<OMGroup> oksGroup = OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), KoGroupAlgoritm.MainOKS);
 				var groupAttributeFromTourSettings = _tourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(), KoAttributeUsingType.CodeGroupAttribute);
 
-				List<OMUnit> Objs = new List<OMUnit>();
-				foreach (long taskId in settings.TaskFilter)
-				{
-					Objs.AddRange(OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
-				}
 				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
@@ -196,7 +191,9 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							bool findGroup = false;
 							bool findObj = false;
 
-							OMUnit unit = Objs.Find(x => x.CadastralNumber == cadastralNumber);
+							OMUnit unit = OMUnit
+								.Where(ImportKoCommon.GetConditionByTaskAndKn(settings.TaskFilter, cadastralNumber))
+								.SelectAll().ExecuteFirstOrDefault(); ;
 							if (unit != null)
 							{
 								findObj = true;
@@ -249,7 +246,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									lock (locked)
 									{
 										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns,
-											findObj
+											!findObj
 												? "Указанный объект не найден"
 												: "Указанная группа не найдена");
 									}

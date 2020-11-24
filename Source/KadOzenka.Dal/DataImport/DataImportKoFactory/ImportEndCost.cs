@@ -54,10 +54,9 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							bool setCost = false;
 							bool setUpks = false;
 							bool findObj = false;
-							OMUnit unit = OMUnit
-								.Where(x => x.TourId == settings.TourId.GetValueOrDefault() &&
-											x.Status_Code == settings.UnitStatus &&
-											x.CadastralNumber == cadastralNumber).SelectAll().ExecuteFirstOrDefault();
+							OMUnit unit = OMUnit.Where(x => x.TourId == settings.TourId.GetValueOrDefault() &&
+							                                x.Status_Code == settings.UnitStatus &&
+							                                x.CadastralNumber == cadastralNumber).SelectAll().ExecuteFirstOrDefault();
 							if (unit != null)
 							{
 								findObj = true;
@@ -95,8 +94,8 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, findObj
-											? "Указанный объект не найден" : setCost ? "КС (окончательная) не найдена" : "УПКС (окончательный) не найден");
+										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+											? "Указанный объект не найден" : !setCost ? "КС (окончательная) не установлена" : "УПКС (окончательный) не установлена");
 									}
 								}
 								catch
@@ -152,11 +151,6 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
-				List<OMUnit> Objs = new List<OMUnit>();
-				foreach (long taskId in settings.TaskFilter)
-				{
-					Objs.AddRange(OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
-				}
 				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
@@ -171,19 +165,19 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							bool setUpks = false;
 							bool findObj = false;
 
-							OMUnit unit = Objs.Find(x => x.CadastralNumber == cadastralNumber);
+							OMUnit unit = OMUnit.Where(ImportKoCommon.GetConditionByTaskAndKn(settings.TaskFilter, cadastralNumber)).SelectAll().ExecuteFirstOrDefault();
 							if (unit != null)
 							{
 								findObj = true;
 								if (decimal.TryParse(cadastralCost, out var cost))
 								{
-									unit.CadastralCostPre = cost;
+									unit.CadastralCost = cost;
 									setCost = true;
 								}
 
 								if (decimal.TryParse(upks, out var upksDecimal))
 								{
-									unit.UpksPre = upksDecimal;
+									unit.Upks = upksDecimal;
 									setUpks = true;
 								}
 								unit.Save();
@@ -210,8 +204,8 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, findObj
-											? "Указанный объект не найден" : setCost ? "КС (окончательная) не найдена" : "УПКС (окончательный) не найден");
+										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+											? "Указанный объект не найден" : !setCost ? "КС (окончательная) не установлена" : "УПКС (окончательный) не установлен");
 									}
 								}
 								catch
