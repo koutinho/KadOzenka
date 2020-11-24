@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMModel Model { get; set; }
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
-        private List<OMModelToMarketObjects> ModelObjects { get; set; }
+        private List<OMModelToMarketObjects> ModelObjects { get; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
@@ -60,17 +60,16 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Model = ModelingService.GetModelEntityById(modelId);
 				Tour = ModelingService.GetModelTour(Model.GroupId);
 
-				var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(Model.Id)
-					.Select(x => new ModelAttributePure(x.AttributeId, x.DictionaryId)).ToList();
+				var modelAttributes = GetGeneralModelAttributes(Model.Id);
 				AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: Logger);
 
                 AddLog(processQueue, $"Начата сбор данных для модели '{Model.Name}'.", logger: Logger);
                 var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
-                AddLog(processQueue, $"Начато формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
                 CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
-                AddLog(processQueue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
+
+                SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 
                 SendMessage(processQueue, $"Операция успешно завершена.<br>Всего обработано объектов-аналогов: {processedMarketObjectsCount}.", MessageSubject);
 			}
@@ -204,7 +203,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			////TODO для тестирования
 			//baseQuery.SetPackageIndex(0).SetPackageSize(100);
-			//var sql = baseQuery.GetSql();
 
 			return baseQuery
                 //TODO для тестирования расчета МС и Процента

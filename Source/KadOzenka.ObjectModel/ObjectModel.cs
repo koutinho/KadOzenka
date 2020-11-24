@@ -8292,6 +8292,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _objectsstatistic;
+        /// <summary>
+        /// 20602100 Статистика по объектам модели (objects_statistic)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602100)]
+        public string ObjectsStatistic
+        {
+            get
+            {
+                CheckPropertyInited("ObjectsStatistic");
+                return _objectsstatistic;
+            }
+            set
+            {
+                _objectsstatistic = value;
+                NotifyPropertyChanged("ObjectsStatistic");
+            }
+        }
+
     }
 }
 

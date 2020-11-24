@@ -336,47 +336,18 @@ namespace KadOzenka.Web.Controllers
 	        if (modelId == 0)
 		        throw new Exception("Не передан ИД модели");
 
-	        var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+	        var statisticStr = OMModel.Where(x => x.Id == modelId)
+		        .Select(x => x.ObjectsStatistic)
+		        .ExecuteFirstOrDefault()?.ObjectsStatistic;
 
-	        var attributesDictionary = new Dictionary<long, ObjectsByAttributeStatisticModel>();
-	        attributes.ForEach(x =>
+	        if (string.IsNullOrWhiteSpace(statisticStr))
 	        {
-		        attributesDictionary[x.AttributeId] = new ObjectsByAttributeStatisticModel
-		        {
-			        AttributeName = x.AttributeName
-		        };
-	        });
-
-	        var objects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Select(x => x.Coefficients).Execute();
-            objects.ForEach(obj =>
-            {
-	            var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	            attributes.ForEach(attribute =>
-	            {
-		            var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
-		            if (attributeCoefficient == null) 
-			            return;
-
-		            attributesDictionary.TryGetValue(attribute.AttributeId, out var statistic);
-                    if (statistic != null)
-                    {
-	                    statistic.Count++;
-                    }
-	            });
-            });
-
-            decimal totalCount = objects.Count;
-            if (totalCount != 0)
-            {
-	            attributesDictionary.Values.ForEach(x =>
-	            {
-		            x.Percent = x.Count / totalCount * 100;
-	            });
+		        return Json(string.Empty);
             }
+	        
+	        var statistic = statisticStr.DeserializeFromXml<ModelingObjectsStatistic>();
 
-            var result = attributesDictionary.Values.OrderByDescending(x => x.Count).ToList();
-
-            return Json(new {TotalCount = totalCount, Attributes = result});
+	        return Json(new {statistic.TotalCount, Attributes = statistic.ObjectsByAttributeStatistics});
         }
 
 
@@ -419,13 +390,14 @@ namespace KadOzenka.Web.Controllers
                 var queue = LongProcessService.GetQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
 		        if (hasFormedObjectArray && queue != null)
 		        {
-			        var existedInputParameters = queue.Parameters.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
-			        var factor = OMModelFactor.Where(x => x.Id == existedInputParameters.FactorId).Select(x => x.FactorId).ExecuteFirstOrDefault();
-			        var attribute = factor == null ? null : RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault());
-			        throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attribute?.Name}'. Дождитесь его окончания");
+			        var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
+			        var attributeName = existedInputParameters?.AttributeId == null 
+				        ? string.Empty 
+				        : RegisterCache.GetAttributeData(existedInputParameters.AttributeId).Name;
+			        throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
 		        }
 
-                var factorId = ModelFactorsService.AddAutomaticFactor(dto);
+                ModelFactorsService.AddAutomaticFactor(dto);
 		        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
 		        if (hasFormedObjectArray)
@@ -434,7 +406,7 @@ namespace KadOzenka.Web.Controllers
 					var inputParameters = new FactorAdditionToModelObjectsInputParameters
 					{
 						ModelId = factorModel.ModelId.GetValueOrDefault(),
-						FactorId = factorId
+						AttributeId = factorModel.FactorId.GetValueOrDefault()
 					};
 					////TODO код для отладки
 					//new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue

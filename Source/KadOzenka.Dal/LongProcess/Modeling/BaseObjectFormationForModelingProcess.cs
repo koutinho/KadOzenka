@@ -5,8 +5,10 @@ using System.Threading;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -36,6 +38,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
+		}
+
+		protected List<ModelAttributePure> GetGeneralModelAttributes(long modelId)
+		{
+			return ModelFactorsService.GetGeneralModelAttributes(modelId)
+				.Select(x => new ModelAttributePure(x.AttributeId, x.DictionaryId)).ToList();
 		}
 
 		protected Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromMarketObject(List<long> objectIds, List<OMModelingDictionary> dictionaries,
@@ -83,6 +91,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected void CreateMarkCatalog(long? groupId, List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
+			AddLog(queue, "Начато формирование каталога меток", logger: Logger);
+
 			attributes.ForEach(attribute =>
 			{
 				var numberOfMarks = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
@@ -103,6 +113,59 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
 				}
 			}
+
+			AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
+		}
+
+		protected void SaveStatistic(List<OMModelToMarketObjects> objects, List<ModelAttributePure> attributes, OMModel model, OMQueue queue)
+		{
+			AddLog(queue, $"Начато формирование статистики для модели '{model.Name}'.", logger: Logger);
+
+			var attributesDictionary = new Dictionary<long, ObjectsByAttributeStatistic>();
+			attributes.ForEach(x =>
+			{
+				attributesDictionary[x.AttributeId] = new ObjectsByAttributeStatistic
+				{
+					AttributeName = x.AttributeName
+				};
+			});
+
+			objects.ForEach(obj =>
+			{
+				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				attributes.ForEach(attribute =>
+				{
+					var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
+					if (attributeCoefficient == null)
+						return;
+
+					attributesDictionary.TryGetValue(attribute.AttributeId, out var statistic);
+					if (statistic != null)
+					{
+						statistic.Count++;
+					}
+				});
+			});
+
+			decimal totalCount = objects.Count;
+			if (totalCount != 0)
+			{
+				attributesDictionary.Values.ForEach(x =>
+				{
+					x.Percent = x.Count / totalCount * 100;
+				});
+			}
+
+			var result = new ModelingObjectsStatistic
+			{
+				TotalCount = (int) totalCount,
+				ObjectsByAttributeStatistics = attributesDictionary.Values.OrderByDescending(x => x.Count).ToList()
+			};
+
+			model.ObjectsStatistic = result.SerializeToXml();
+			model.Save();
+
+			AddLog(queue, $"Закончено формирование статистики для модели '{model.Name}'.", logger: Logger);
 		}
 
 

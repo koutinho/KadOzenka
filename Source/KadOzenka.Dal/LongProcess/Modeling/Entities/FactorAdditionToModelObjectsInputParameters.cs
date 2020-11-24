@@ -3,6 +3,6 @@
 	public class FactorAdditionToModelObjectsInputParameters
 	{
 		public long ModelId { get; set; }
-		public long FactorId { get; set; }
+		public long AttributeId { get; set; }
 	}
 }

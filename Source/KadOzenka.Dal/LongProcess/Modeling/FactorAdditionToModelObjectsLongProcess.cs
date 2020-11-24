@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			Queue = processQueue;
 
 			var inputParameters = processQueue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
-			if (inputParameters == null || inputParameters.ModelId == 0 || inputParameters.FactorId == 0)
+			if (inputParameters == null || inputParameters.ModelId == 0 || inputParameters.AttributeId == 0)
 			{
 				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
@@ -55,9 +55,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			try
 			{
 				Model = ModelingService.GetModelEntityById(inputParameters.ModelId);
+				var allModelAttributes = GetGeneralModelAttributes(Model.Id);
 
-				var factor = ModelFactorsService.GetFactorById(inputParameters.FactorId);
-				Attribute = new ModelAttributePure(factor.FactorId.GetValueOrDefault(), factor.DictionaryId);
+				Attribute = allModelAttributes.First(x => x.AttributeId == inputParameters.AttributeId);
 				var attributes = new List<ModelAttributePure> { Attribute };
 				AddLog(Queue, $"Найден атрибут '{Attribute.AttributeName}'.", logger: Logger);
 
@@ -79,9 +79,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				SaveCoefficient(objects, coefficients);
 				AddLog(Queue, "Закончено сохранение коэффициентов.", logger: Logger);
 
-				AddLog(Queue, $"Начато формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
 				CreateMarkCatalog(Model.GroupId, objects, attributes, Queue);
-				AddLog(Queue, $"Закончено формирование каталога меток для модели '{Model.Name}'.", logger: Logger);
+
+				SaveStatistic(objects, allModelAttributes, Model, Queue);
 
 				SendMessage(Queue, "Операция успешно завершена", GetMessageSubject());
 			}

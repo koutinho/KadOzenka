@@ -469,10 +469,14 @@
         $.ajax({
             url: '@Url.Action("Statistic", "Modeling", new {modelId = Model.Id})',
             success: function (response) {
-                $("#statisticContent").show();
-                $("#statisticTotalCount").text(response.TotalCount);
-                if (response.Attributes) {
-                    generateGridWithStatistic(response.Attributes);
+                if (response) {
+                    $("#statisticContent").show();
+                    $("#statisticTotalCount").text(response.TotalCount);
+                    if (response.Attributes) {
+                        generateGridWithStatistic(response.Attributes);
+                    }
+                } else {
+                    Common.ShowError("Статистика не была собрана. Перезапустите сбор данных.");
                 }
             },
             error: function (response) {

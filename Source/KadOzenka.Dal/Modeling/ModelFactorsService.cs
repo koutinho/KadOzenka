@@ -224,18 +224,17 @@ namespace KadOzenka.Dal.Modeling
 			return query;
 		}
 
-		public int AddAutomaticFactor(AutomaticModelFactorDto dto)
+		public void AddAutomaticFactor(AutomaticModelFactorDto dto)
 		{
 			ValidateAutomaticFactor(dto);
 
 			var types = GetPossibleTypes(KoAlgoritmType.None);
 
-			var id = 0;
 			using (var ts = new TransactionScope())
 			{
 				types.ForEach(type =>
 				{
-					id = new OMModelFactor
+					new OMModelFactor
 					{
 						ModelId = dto.ModelId,
 						FactorId = dto.FactorId,
@@ -249,8 +248,6 @@ namespace KadOzenka.Dal.Modeling
 
 				ts.Complete();
 			}
-
-			return id;
 		}
 
 		public void UpdateAutomaticFactor(AutomaticModelFactorDto dto)
