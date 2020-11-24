@@ -71,7 +71,11 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									unit.Upks = upksDecimal;
 									setUpks = true;
 								}
-								unit.Save();
+
+								if (setCost || setUpks)
+								{
+									unit.Save();
+								}
 							}
 
 							if (setCost && setUpks)
@@ -94,8 +98,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
+										string msg = !setCost & !setUpks
+											? "КС (окончательная) не установлена и УПКС(окончательный) не установлен"
+											: !setCost
+												? "КС (окончательная) не установлена"
+												: "УПКС (окончательный) не установлен";
 										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
-											? "Указанный объект не найден" : !setCost ? "КС (окончательная) не установлена" : "УПКС (окончательный) не установлена");
+											? "Указанный объект не найден" : msg);
 									}
 								}
 								catch
@@ -180,7 +189,12 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									unit.Upks = upksDecimal;
 									setUpks = true;
 								}
-								unit.Save();
+
+								if (setCost || setUpks)
+								{
+									unit.Save();
+								}
+							
 							}
 
 
@@ -204,8 +218,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
+										string msg = !setCost & !setUpks
+											? "КС (окончательная) не установлена и УПКС(окончательный) не установлен"
+											: !setCost
+												? "КС (окончательная) не установлена"
+												: "УПКС (окончательный) не установлен";
 										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
-											? "Указанный объект не найден" : !setCost ? "КС (окончательная) не установлена" : "УПКС (окончательный) не установлен");
+											? "Указанный объект не найден" : msg);
 									}
 								}
 								catch

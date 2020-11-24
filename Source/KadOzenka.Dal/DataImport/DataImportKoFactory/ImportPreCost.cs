@@ -76,7 +76,11 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									unit.UpksPre = preUpksDecimal;
 									setPreUpks = true;
 								}
-								unit.Save();
+
+								if (setPreUpks || setPreCost)
+								{
+									unit.Save();
+								}
 							}
 
 							if (setPreCost && setPreUpks)
@@ -99,8 +103,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
+										string msg = !setPreCost & !setPreUpks
+											? "КС (предварительная) не установлена и УПКС(предварительный) не установлен"
+											: !setPreCost
+												? "КС (предварительная) не установлена"
+												: "УПКС (предварительный) не установлен";
 										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj 
-											? "Указанный объект не найден" : !setPreCost ? "КС (предварительная) не установлена" : "УПКС (предварительный) не установлен");
+											? "Указанный объект не найден" : msg);
 									}
 								}
 								catch
@@ -187,7 +196,12 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									unit.UpksPre = preUpksDecimal;
 									setPreUpks = true;
 								}
-								unit.Save();
+
+								if (setPreUpks || setPreCost)
+								{
+									unit.Save();
+								}
+							
 							}
 
 
@@ -211,8 +225,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
+										string msg = !setPreCost & !setPreUpks
+											? "КС (предварительная) не установлена и УПКС(предварительный) не установлен"
+											: !setPreCost
+												? "КС (предварительная) не установлена"
+												: "УПКС (предварительный) не установлен";
 										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
-											? "Указанный объект не найден" : !setPreCost ? "КС (предварительная) не установлена" : "УПКС (предварительный) не установлен");
+											? "Указанный объект не найден" : msg);
 									}
 								}
 								catch
