@@ -926,19 +926,19 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public IActionResult GetRegistersForFactorDownload(long taskId, bool isOks)
         {
-	        DropDownTreeItemModel BuildTreeItemModel(List<OMAttribute> attrList,string upperNodeValue, string upperNodeText)
-	        {
-		        return new DropDownTreeItemModel
-		        {
-			        Value = upperNodeValue,
-			        Text = upperNodeText,
-			        Items = attrList.Select(x => new DropDownTreeItemModel
-			        {
-				        Value = x.Id.ToString(),
-				        Text = x.Name
-			        }).ToList()
-		        };
-	        }
+            DropDownTreeItemModel BuildTreeItemModel(List<OMAttribute> attrList,string upperNodeValue, string upperNodeText)
+            {
+                return new DropDownTreeItemModel
+                {
+                    Value = upperNodeValue,
+                    Text = upperNodeText,
+                    Items = attrList.Select(x => new DropDownTreeItemModel
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    }).ToList()
+                };
+            }
 
             var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
             if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
@@ -946,7 +946,7 @@ namespace KadOzenka.Web.Controllers
             var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201);
             var taskAttrTree = BuildTreeItemModel(taskAttr, "201", "Еденица оценки");
 
-	        var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
+            var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
             if (tourAttributes.Count == 0)
                 return StatusCode(500,$"Для {(isOks?"ОКС":"ЗУ")} тура оценки {task.TourId} не найдены факторы");
 
@@ -955,6 +955,8 @@ namespace KadOzenka.Web.Controllers
             var paramsTree = BuildTreeItemModel(tourAttributes, paramsRegisterId.ToString(), "Факторы");
 
             var groupAttr = RegisterAttributeService.GetActiveRegisterAttributes(205);
+            var groupNumber = groupAttr.FirstOrDefault(x => x.Id == 20500500);
+            if (groupNumber!=null) groupNumber.Name = "Оценочная группа";
             var groupTree = BuildTreeItemModel(groupAttr, "205", "Группы/подгруппы");
 
             var treeModel = new List<DropDownTreeItemModel>
