@@ -105,12 +105,14 @@
             url: form.attr('action'),
             data: formObject,
             success: function (response) {
+                var timeout = 2000;
                 if (response) {
+                    timeout = 3500;
                     Common.ShowMessage("Данные сохранены. Процесс сбора данных для нового фактора поставлен в очередь.");
                 } else {
                     Common.ShowMessage('Сохранение выполнено');
                 }
-                setTimeout(closeWindow, 3500);
+                setTimeout(closeWindow, timeout);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
