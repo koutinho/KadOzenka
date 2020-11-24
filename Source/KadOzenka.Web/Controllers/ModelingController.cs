@@ -39,6 +39,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Ko;
@@ -326,6 +327,56 @@ namespace KadOzenka.Web.Controllers
 			});
 
 			return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
+        }
+
+        [HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public JsonResult Statistic(long modelId)
+        {
+	        if (modelId == 0)
+		        throw new Exception("Не передан ИД модели");
+
+	        var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+
+	        var attributesDictionary = new Dictionary<long, ObjectsByAttributeStatisticModel>();
+	        attributes.ForEach(x =>
+	        {
+		        attributesDictionary[x.AttributeId] = new ObjectsByAttributeStatisticModel
+		        {
+			        AttributeName = x.AttributeName
+		        };
+	        });
+
+	        var objects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Select(x => x.Coefficients).Execute();
+            objects.ForEach(obj =>
+            {
+	            var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+	            attributes.ForEach(attribute =>
+	            {
+		            var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
+		            if (attributeCoefficient == null) 
+			            return;
+
+		            attributesDictionary.TryGetValue(attribute.AttributeId, out var statistic);
+                    if (statistic != null)
+                    {
+	                    statistic.Count++;
+                    }
+	            });
+            });
+
+            decimal totalCount = objects.Count;
+            if (totalCount != 0)
+            {
+	            attributesDictionary.Values.ForEach(x =>
+	            {
+		            x.Percent = x.Count / totalCount * 100;
+	            });
+            }
+
+            var result = attributesDictionary.Values.OrderByDescending(x => x.Count).ToList();
+
+            return Json(new {TotalCount = totalCount, Attributes = result});
         }
 
 

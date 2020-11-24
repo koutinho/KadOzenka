@@ -8,24 +8,44 @@
         <div class="form-group">
             <div class="col-sm-12" style="width: 100%; padding: 1%;">
                 @(Html.Kendo().ButtonGroup()
-                                    .Name("chooseModelTypeButtons")
-                                    .Selection("single")
-                                    .Items(t =>
-                                    {
-                                        t.Add().Text(ModelType.Linear.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 60%;" });
-                                        t.Add().Text(ModelType.Exponential.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
-                                        t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
-                                        t.Add().Text(ModelType.All.GetEnumDescription())
-                                            .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
-                                    })
-                                    .HtmlAttributes(new { style = "width: 100%;" }))
+                    .Name("chooseModelTypeButtons")
+                    .Selection("single")
+                    .Items(t =>
+                    {
+                        t.Add().Text(ModelType.Linear.GetEnumDescription())
+                            .HtmlAttributes(new { id = "linearModelTypeBtn", style = "width: 60%;" });
+                        t.Add().Text(ModelType.Exponential.GetEnumDescription())
+                            .HtmlAttributes(new { id = "exponentialModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
+                        t.Add().Text(ModelType.Multiplicative.GetEnumDescription())
+                            .HtmlAttributes(new { id = "multiplicativeModelTypeBtn", style = "margin-left: 1%; width: 90%;" });
+                        t.Add().Text(ModelType.All.GetEnumDescription())
+                            .HtmlAttributes(new { id = "allModelTypeBtn", style = "margin-left: 1%; width: 60%;" });
+                    })
+                    .HtmlAttributes(new { style = "width: 100%;" }))
             </div>
         </div>
     </div>
 </div>
+
+
+<!-- Модальное окно для статистики по объектам моделирования -->
+<div id="statisticWindow" style="display: none;">
+    <div id="statisticContent" class="form-horizontal col-sm-12" style="display: none; padding: 3%;">
+        <div class="form-group">
+            <div class="col-sm-3">
+                <span>Всего объектов:</span>
+            </div>
+            <div class="col-sm-4">
+                <span id="statisticTotalCount"></span>
+            </div>
+        </div>
+        <div class="form-group" style="padding: 1%;">
+            <div id="statisticGrid">
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 @using (Html.BeginForm("AutomaticModelCard", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
@@ -111,6 +131,7 @@
 <script src="~/js/jquery.fancybox.min.js"></script>
 <script>
     var hasProcessToFormObjectArrayInQueue = '@Model.HasProcessToFormObjectArrayInQueue' === "True";
+    var hasFormedObjectArray = '@Model.HasFormedObjectArray' === "True";
 
     $(document).ready(function () {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -144,7 +165,7 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
-                    enable: '@Model.HasFormedObjectArray' === "True",
+                    enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
                 },
                 {
@@ -160,10 +181,10 @@
                     type: 'button',
                     id: 'warningsBtn',
                     text: '',
-                    attributes: { title: "Логи" },
+                    attributes: { title: "Статистика" },
                     icon: 'clock',
-                    enable: false
-                    //click: downloadLogs
+                    enable: hasFormedObjectArray,
+                    click: getStatistic
                 }
             ]
         });
@@ -441,9 +462,71 @@
     }
 
 
-    @*function downloadLogs() {
-        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
-    }*@
+    function getStatistic() {
+        var modal = $("#statisticWindow");
+        ShowModal(modal, '60%', '50%', "Статистика по объектам моделирования");
+        kendo.ui.progress($('#statisticWindow'), true);
+        $.ajax({
+            url: '@Url.Action("Statistic", "Modeling", new {modelId = Model.Id})',
+            success: function (response) {
+                $("#statisticContent").show();
+                $("#statisticTotalCount").text(response.TotalCount);
+                if (response.Attributes) {
+                    generateGridWithStatistic(response.Attributes);
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('#statisticWindow'), false);
+            }
+        });
+    }
+    function generateGridWithStatistic(attributes) {
+        $('#statisticGrid').kendoGrid({
+            dataSource: {
+                data: attributes,
+            },
+            columns: [
+                {
+                    title: 'Атрибут',
+                    field: 'AttributeName',
+                    width: "70%"
+                },
+                {
+                    title: 'Кол-во найденных значений',
+                    field: 'Count',
+                    headerAttributes: { style: "text-align: center;" },
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: '%',
+                    field: 'Percent',
+                    headerAttributes: { style: "text-align: center;" },
+                    attributes: { style: "text-align: center;" },
+                    template: '#: Percent == null ? "" : kendo.toString(Percent, "n2") #'
+                }
+            ],
+            pageable: {
+                pageSize: 5
+            },
+            width: '100%',
+            scrollable: true
+        });
+        $('#statisticGrid').data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                return e.target.text();
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+    }
+
+
+
 
 
     function addAttribute() {
