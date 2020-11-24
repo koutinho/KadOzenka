@@ -56,6 +56,12 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
             var unitsAttr = OMAttribute.Where(x => x.RegisterId == unitsReg.RegisterId).SelectAll().Execute();
             var unitsIdAttr = unitsAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
             var unitsIdColumn = new QSColumnSimple(unitsIdAttr);
+            var unitsGroupColumn = new QSColumnSimple(20100600);
+
+            var groupReg = rs.GetRegister(205);
+            var groupAttr = OMAttribute.Where(x => x.RegisterId == groupReg.RegisterId).SelectAll().Execute();
+            var groupIdAttr = groupAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
+            var groupIdColumn = new QSColumnSimple(groupIdAttr);
 
             var taskIdColumn = new QSColumnSimple(20100400);
 
@@ -84,6 +90,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                             ConditionType = QSConditionType.Equal,
                             LeftOperand = unitsIdColumn,
                             RightOperand = factorsIdColumn,
+                            RightOperandLevel = 1,
+                            LeftOperandLevel = 1
+                        }
+                    },
+                    new QSJoin
+                    {
+                        RegisterId = (int) groupReg.RegisterId,
+                        JoinType = QSJoinType.Left,
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = unitsGroupColumn,
+                            RightOperand = groupIdColumn,
                             RightOperandLevel = 1,
                             LeftOperandLevel = 1
                         }
@@ -125,7 +144,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                 }
 
                 var attr = omAttr.FirstOrDefault(x => x.Id == cell.Value.ParseToLong());
-                cell.Value = attr?.Name ?? cell.Value;
+                // переименование для оценочной группы (названа как "номер")
+                if (cell.Value == (object) 20500500)
+                    cell.Value = "Оценочная группа";
+                else cell.Value = attr?.Name ?? cell.Value;
             }
 
             var ms = new MemoryStream();

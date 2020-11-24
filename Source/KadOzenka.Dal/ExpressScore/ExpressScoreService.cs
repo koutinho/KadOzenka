@@ -1320,6 +1320,8 @@ namespace KadOzenka.Dal.ExpressScore
 				DataField = OMCoreObject.GetColumnAttributeId(x => x.Price).ToString(),
 				Text = "Цена"
 			});
+			res.Headers.Add(new Header {DataField = "specificCost", Text = "Удельная стоимость за кв.м"});
+
 			var costFactors = GetCostFactorsBySegmentType(marketSegment);
 
 			var setting = GetSetting(marketSegment);
@@ -1334,19 +1336,24 @@ namespace KadOzenka.Dal.ExpressScore
 				foreach (var analogResult in analogResults)
 				{
 					List<AttributePure> analogCostFactors = new List<AttributePure>();
+					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.CadastralNumber), Value = analogResult.Kn });
+					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Address), Value = analogResult.Address });
+					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Price), Value = analogResult.Price.ToString() });
+					analogCostFactors.AddRange(GetAnalogCostFactors(costFactors, id: (int)analogResult.Id));
+
 					List<Cell> row = new List<Cell>
 					{
 						new Cell
 						{
 							Key = "id",
 							CommonValue = analogResult.Id.ToString()
+						},
+						new Cell
+						{
+							Key = "specificCost",
+							CommonValue = analogResult.Square != 0 ? Math.Round(analogResult.Price/analogResult.Square, 2).ToString("N") : "0"
 						}
 					};
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.CadastralNumber), Value = analogResult.Kn });
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Address), Value = analogResult.Address });
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Price), Value = analogResult.Price.ToString() });
-					analogCostFactors.AddRange(GetAnalogCostFactors(costFactors, id: (int)analogResult.Id));
-
 					row.AddRange(analogCostFactors.Select(x => new Cell{Key = x.Id.ToString(), CommonValue = x.Value}));
 
 					var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(analogResult.Kn, (int)setting.TourId);

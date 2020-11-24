@@ -247,7 +247,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var possibleStatuses = new List<UnitUpdateStatus>
 			{
 				UnitUpdateStatus.GroupChange, UnitUpdateStatus.GroupAndFsChange, UnitUpdateStatus.GroupAndEgrnChange,
-				UnitUpdateStatus.GroupAndFsAndEgrnChanges
+				UnitUpdateStatus.GroupAndFsAndEgrnChanges, UnitUpdateStatus.New
 			};
 
 			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null && possibleStatuses.Contains(x.UpdateStatus_Code))

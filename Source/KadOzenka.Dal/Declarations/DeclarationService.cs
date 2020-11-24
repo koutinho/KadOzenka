@@ -1,15 +1,39 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Transactions;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.Declarations.Dto;
+using KadOzenka.Dal.Extentions;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using ObjectModel.SPD;
+using Platform.CalendarHolidays;
 
 namespace KadOzenka.Dal.Declarations
 {
 	public class DeclarationService
 	{
+		/// <summary>
+		/// Срок рассмотрения декларации в соответствии с Приказом 318 составляет 50 рабочих дней со дня поступления декларации
+		/// </summary>
+		public static int DurationWorkDaysCount => 50;
+
+		/// <summary>
+		/// Срок рассмотрения декларации составляет 5 рабочих дней со дня поступления декларации eсли заявителю отказано в рассмотрении
+		/// </summary>
+		public static int DurationWorkDaysCountForRejectedDeclaration => 5;
+
+		/// <summary>
+		/// Плановая дата рассмотрения должна быть +5 раб.дней к "Вх. дате ГБУ"
+		/// </summary>
+		public static int DateCheckPlanDaysCount => 5;
+
+		/// <summary>
+		/// "Контрольный срок" должен быть -10 рабочих дней от "Срок рассмотрения"
+		/// </summary>
+		public static int DaysDiffBetweenDateCheckTimeAndDurationDateIn => 10;
+
 		public OMSubject GetSubjectById(long subjectId)
 		{
 			return OMSubject.Where(x => x.Id == subjectId).SelectAll().ExecuteFirstOrDefault();
@@ -119,6 +143,39 @@ namespace KadOzenka.Dal.Declarations
 			}
 
 			return res;
+		}
+
+		public void CalculateSynchronizedDates(DateTime? dateIn, DateTime? prevDurationDateIn, StatusDec? status, out DateTime? durationDateIn,
+			out DateTime? dateCheckPlan, out DateTime? checkTime)
+		{
+			if (dateIn.HasValue)
+			{
+				durationDateIn =
+					status.GetValueOrDefault() == StatusDec.Rejection
+						? CalendarHolidays.GetDateFromWorkDays(dateIn.Value.AddDays(-1),
+							DurationWorkDaysCountForRejectedDeclaration)
+						: CalendarHolidays.GetDateFromWorkDays(dateIn.Value.AddDays(-1),
+							DurationWorkDaysCount);
+				dateCheckPlan = CalendarHolidays.GetDateFromWorkDays(
+					dateIn.Value.AddDays(-1),
+					DateCheckPlanDaysCount);
+			}
+			else
+			{
+				durationDateIn = null;
+				dateCheckPlan = null;
+			}
+
+			var isEditDeclarationProcessingBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
+			CalculateSynchronizedCheckTimeDate(isEditDeclarationProcessingBlock ? durationDateIn : prevDurationDateIn, status, out checkTime);
+		}
+
+		public void CalculateSynchronizedCheckTimeDate(DateTime? durationDateIn, StatusDec? status, out DateTime? checkTime)
+		{
+			checkTime = status.GetValueOrDefault() == StatusDec.Rejection
+					? durationDateIn
+					: durationDateIn?.GetStartWorkDate(DaysDiffBetweenDateCheckTimeAndDurationDateIn - 1);
 		}
 	}
 }

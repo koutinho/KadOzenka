@@ -394,19 +394,20 @@ function executeCalculate(scenarioType = null) {
         method: 'post',
         headers: { 'connection-signalr-id': connectionSignalRId }
     });
-    jqxhr.done(function (data) {
-        if (data.Errors) {
-            var errors = getErrors(data.Errors);
-            Common.ShowError(errors);
-            return;
-        }
-        $('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
-        $('.wrapper-success-dialog').html(data);
-    })
-        .fail(function (response) {
-            Common.ShowError(response.responseText);
+    jqxhr.done(function(data) {
+            if (data.Errors) {
+                var errors = getErrors(data.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            progressLoader.loader($(topBody), false);
+            $('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
+            $('.wrapper-success-dialog').html(data);
         })
-        .always(function () { progressLoader.loader($(topBody), false); });
+        .fail(function(response) {
+            progressLoader.loader($(topBody), false);
+            Common.ShowError(response.responseText);
+        });
     return;
 }
 
