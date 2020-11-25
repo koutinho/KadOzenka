@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		private DictionaryService DictionaryService { get; }
 		public const string LongProcessName = nameof(ModelDictionaryImportFromExcelLongProcess);
-		private readonly ILogger _log = Log.ForContext<ModelingProcess>();
+		private readonly ILogger _log = Log.ForContext<ModelDictionaryImportFromExcelLongProcess>();
 
 		public ModelDictionaryImportFromExcelLongProcess()
 		{

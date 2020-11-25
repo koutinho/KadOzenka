@@ -16,6 +16,7 @@ using Core.Messages;
 using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.LongProcess.Common;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
@@ -129,8 +130,8 @@ namespace KadOzenka.Dal.DataImport
 
 			if (!processQueue.ObjectId.HasValue)
 			{
-                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetMessage(processQueue, Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 return;
 			}
 
@@ -142,8 +143,8 @@ namespace KadOzenka.Dal.DataImport
 
 			if (import == null)
 			{
-                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
-                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                WorkerCommon.SetMessage(processQueue, Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
                 return;
 			}
 
