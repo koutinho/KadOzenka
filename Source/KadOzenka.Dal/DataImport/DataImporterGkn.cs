@@ -673,7 +673,7 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fswall.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Материал стен итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prWallObjectCheck) ? lastUnit : null, xmlCodeName.GetNames(current.Walls));
+                                    koUnit.AddKOFactor(id_factor, (prWallObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
 
@@ -686,29 +686,29 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fsyear.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Год постройки итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
                         }
                         #endregion
 
                         #region Признаки для формирования заданий ЦОД
-                        //if (!prNameObjectCheck || !prAssignationObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!cadastralQuartalDidNotChange || !locationDidNotChange)
-                        //{
-                        //    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!prWallObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prWallObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
                         #endregion
                     }
                     #endregion
@@ -748,37 +748,11 @@ namespace KadOzenka.Dal.DataImport
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
-                    #region Заполнение фактора Материал стен на основании данных ГКН
-                    ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
-                    if (fs != null)
-                    {
-                        if (fs.FactorId != null)
-                        {
-                            long id_factor = fs.FactorId.ParseToLong();
-                            //добавить фактор Материал стен итоговый
-                            koUnit.AddKOFactor(id_factor, null, xmlCodeName.GetNames(current.Walls));
-                        }
-                    }
-                    #endregion
-
-                    #region Заполнение фактора Год постройки
-                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
-                    if (fsyear != null)
-                    {
-                        if (fsyear.FactorId != null)
-                        {
-                            long id_factor = fsyear.FactorId.ParseToLong();
-                            //добавить фактор Год постройки итоговый
-                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
-                        }
-                    }
-                    #endregion
-
                     #region Признаки для формирования заданий ЦОД
-                    //SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
                 }
 
@@ -1019,6 +993,21 @@ namespace KadOzenka.Dal.DataImport
                         }
                         #endregion
 
+                        #region Признаки для формирования заданий ЦОД
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
+
+
+
+
                     }
                     #endregion
                 }
@@ -1056,6 +1045,12 @@ namespace KadOzenka.Dal.DataImport
                     
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 
@@ -1304,11 +1299,27 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fsyear.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Год постройки итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
                         }
                         #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
                     #endregion
                 }
@@ -1350,19 +1361,12 @@ namespace KadOzenka.Dal.DataImport
                     SaveHistoryForNewObject(koUnit);
                     #endregion
 
-                    #region Заполнение фактора Год постройки
-                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
-                    if (fsyear != null)
-                    {
-                        if (fsyear.FactorId != null)
-                        {
-                            long id_factor = fsyear.FactorId.ParseToLong();
-                            //Если в предыдущем объекте есть фактор Год постройки итоговый
-                            //его надо скопировать в новый объект, если нет, добавить надо.
-                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
-                        }
-                    }
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
+
                 }
 
                 ts.Complete();
@@ -1588,6 +1592,19 @@ namespace KadOzenka.Dal.DataImport
 	                        IsReadinessPercentageChanged = !readinessPercentageDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
 
                     #endregion
@@ -1627,6 +1644,13 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
+
                     #endregion
                 }
 
@@ -1822,7 +1846,7 @@ namespace KadOzenka.Dal.DataImport
                         var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         var purposeOksDidNotChange = CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        var useDidNotChange = CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
                         var buildYearDidNotChange = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         var commissioningYearDidNotChange = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
                         var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
@@ -1867,6 +1891,27 @@ namespace KadOzenka.Dal.DataImport
                         }
                         #endregion
 
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange || !purposeOksDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!wallMaterialDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!buildYearDidNotChange || !commissioningYearDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
+
+
                     }
 
                     #endregion
@@ -1908,6 +1953,14 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 
@@ -2183,6 +2236,26 @@ namespace KadOzenka.Dal.DataImport
                             }
                         }
                         #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange || !purposeOksDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!wallMaterialDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!buildYearDidNotChange || !commissioningYearDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
                     #endregion
                 }
@@ -2221,6 +2294,14 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 
