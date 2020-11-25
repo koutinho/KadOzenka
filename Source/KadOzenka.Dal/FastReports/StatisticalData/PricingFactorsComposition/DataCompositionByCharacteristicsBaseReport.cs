@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		protected List<T> GetOperations<T>(List<long> taskIds, ILogger logger) where T : new()
 		{
-			var runtimeResults = new List<T>();
+			var result = new List<T>();
 
 			var isCacheTableExists = DataCompositionByCharacteristicsService.IsCacheTableExists();
 			logger.ForContext("IsCacheTableExists", isCacheTableExists).Debug($"Поиск кеш-таблицы. Таблица существует {isCacheTableExists}");
@@ -47,28 +47,49 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				
 				if (tasIdsForRuntime.Count != 0)
 				{
+					logger.Debug("Начата работа в рантайме");
+
 					var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
-					logger.Debug(new Exception(runtimeSql), "Sql запрос для рантайма");
-					runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
+					var runtimeResults = GetRuntimeResults<T>(runtimeSql, logger);
+					result.AddRange(runtimeResults);
+
+					logger.Debug("Закончена работа в рантайме");
 				}
 
 				if (tasIdsForCache.Count != 0)
 				{
+					logger.Debug("Начата работа через кеш");
+
 					var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
-					logger.Debug(new Exception(cacheSql), "Sql запрос для кеша");
-					var cacheResults = QSQuery.ExecuteSql<T>(cacheSql);
-					runtimeResults.AddRange(cacheResults);
+					var cacheResults = GetRuntimeResults<T>(cacheSql, logger);
+					result.AddRange(cacheResults);
+
+					logger.Debug("Закончена работа через кеш");
 				}
 			}
 			else
 			{
 				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(taskIds);
-				logger.Debug(new Exception(runtimeSql), "Sql запрос для рантайма");
-				runtimeResults = QSQuery.ExecuteSql<T>(runtimeSql);
+				var runtimeResults = GetRuntimeResults<T>(runtimeSql, logger);
+				result.AddRange(runtimeResults);
 			}
 
-			return runtimeResults;
+			return result;
 		}
+
+
+		#region Support Methods
+
+		private List<T> GetRuntimeResults<T>(string sql, ILogger logger) where T : new()
+		{
+			logger.Debug(new Exception(sql), "Sql запрос");
+
+			var result = QSQuery.ExecuteSql<T>(sql);
+
+			return result;
+		}
+
+		#endregion
 
 
 		#region Entites
