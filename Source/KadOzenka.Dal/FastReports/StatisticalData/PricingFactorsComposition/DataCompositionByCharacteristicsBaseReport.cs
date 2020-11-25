@@ -12,7 +12,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
     public abstract class DataCompositionByCharacteristicsBaseReport : StatisticalDataReport
     {
-	    protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
+	    private const int PackageSize = 1000;
+		protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
 	    public DataCompositionByCharacteristicsBaseReport()
 	    {
@@ -32,6 +33,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 		{
 			var result = new List<T>();
 
+			var unitsCount = DataCompositionByCharacteristicsService.GetUnitsCount(taskIds);
+			logger.Debug($"Количество Единиц оценки для отчета {unitsCount}");
+
 			var isCacheTableExists = DataCompositionByCharacteristicsService.IsCacheTableExists();
 			logger.ForContext("IsCacheTableExists", isCacheTableExists).Debug($"Поиск кеш-таблицы. Таблица существует {isCacheTableExists}");
 
@@ -50,7 +54,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 					logger.Debug("Начата работа в рантайме");
 
 					var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(tasIdsForRuntime);
-					var runtimeResults = GetRuntimeResults<T>(runtimeSql, logger);
+					var runtimeResults = GetResults<T>(runtimeSql, logger);
 					result.AddRange(runtimeResults);
 
 					logger.Debug("Закончена работа в рантайме");
@@ -61,7 +65,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 					logger.Debug("Начата работа через кеш");
 
 					var cacheSql = DataCompositionByCharacteristicsService.GetSqlForCache(tasIdsForCache);
-					var cacheResults = GetRuntimeResults<T>(cacheSql, logger);
+					var cacheResults = GetResults<T>(cacheSql, logger);
 					result.AddRange(cacheResults);
 
 					logger.Debug("Закончена работа через кеш");
@@ -70,7 +74,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 			else
 			{
 				var runtimeSql = DataCompositionByCharacteristicsService.GetSqlForRuntime(taskIds);
-				var runtimeResults = GetRuntimeResults<T>(runtimeSql, logger);
+				var runtimeResults = GetResults<T>(runtimeSql, logger);
 				result.AddRange(runtimeResults);
 			}
 
@@ -80,11 +84,26 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		#region Support Methods
 
-		private List<T> GetRuntimeResults<T>(string sql, ILogger logger) where T : new()
+		private List<T> GetResults<T>(string sql, ILogger logger) where T : new()
 		{
-			logger.Debug(new Exception(sql), "Sql запрос");
+			logger.Debug(new Exception(sql), "Общий Sql запрос (без пагинации)");
 
-			var result = QSQuery.ExecuteSql<T>(sql);
+			var packageIndex = 0;
+			var result = new List<T>();
+			for (var i = packageIndex * PackageSize; i < (packageIndex + 1) * PackageSize; i++)
+			{
+				var offset = packageIndex * PackageSize;
+				var sqlWithPackage = $"{sql} \nlimit {PackageSize} offset {offset}";
+				logger.Debug(new Exception(sqlWithPackage), $"Начата обработка пакета с индексом {i}, до этого было выгружено {offset} записей");
+
+				var package = QSQuery.ExecuteSql<T>(sqlWithPackage);
+				if (package.Count == 0)
+					break;
+
+				result.AddRange(package);
+
+				packageIndex++;
+			}
 
 			return result;
 		}
