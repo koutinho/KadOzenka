@@ -183,329 +183,25 @@ namespace KadOzenka.Dal.DataImport
         /// <summary>
         /// Импорт группы из Excel
         /// </summary>
-		public static long ImportDataGroupNumberFromExcel(Stream stream, ImportDataGroupNumberFromExcelDto settings)
+		public static long ImportDataFromExcel(Stream stream, ImportDataFromExcelDto settings)
         {
 	        var import = CreateDataFileImport(stream, settings);
 	        stream.Seek(0, SeekOrigin.Begin);
 	        var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-			if (settings.IsUnitStatusUsed)
-			{
-				ImportDataGroupNumberFromExcelByUnitStatus(excelFile, settings, import);
-			}
-			else
-			{
-				ImportDataGroupNumberFromExcelByTaskFilter(excelFile, settings, import);
-			}
 
-			return import.Id;
+	        new ImportKoFactoryCreator().ExecuteImport(excelFile, settings, import);
+
+	        return import.Id;
         }
 
-		public static Stream ImportDataGroupNumberFromExcelByUnitStatus(ExcelFile excelFile,
-	        ImportDataGroupNumberFromExcelDto settings, OMImportDataLog import)
-        {
-
-	        MemoryStream streamResult = new MemoryStream();
-	        var locked = new object();
-	        try
-	        {
-		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
-		        import.DateStarted = DateTime.Now;
-		        import.Save();
-
-		        var mainWorkSheet = excelFile.Worksheets[0];
-
-		        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-		        ParallelOptions options = new ParallelOptions
-		        {
-			        CancellationToken = cancelTokenSource.Token,
-			        MaxDegreeOfParallelism = 10
-		        };
-
-		        int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-
-				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
-		        mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
-			        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-		        List<ObjectModel.KO.OMGroup> parcelGroup =
-			        ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(),
-				        ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
-		        List<ObjectModel.KO.OMGroup> oksGroup =
-			        ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(),
-				        ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
-		        var groupAttributeFromTourSettings =
-			        TourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(),
-				        KoAttributeUsingType.CodeGroupAttribute);
-		        var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
-				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
-		        {
-			        try
-			        {
-						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
-						{
-					        string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-					        string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
-					        bool findGroup = false;
-					        bool findObj = false;
-					        ObjectModel.KO.OMUnit unit = ObjectModel.KO.OMUnit
-						        .Where(x => x.TourId == settings.TourId.GetValueOrDefault() &&
-						                    x.Status_Code == settings.UnitStatus &&
-						                    x.CadastralNumber == cadastralNumber).SelectAll().ExecuteFirstOrDefault();
-					        if (unit != null)
-					        {
-						        findObj = true;
-						        if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
-						        {
-							        ObjectModel.KO.OMGroup group = parcelGroup.Find(x => x.Number == numberGroup);
-							        if (group != null)
-							        {
-								        unit.GroupId = group.Id;
-								        unit.Save();
-								        findGroup = true;
-							        }
-						        }
-						        else
-						        {
-							        ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.Number == numberGroup);
-							        if (group != null)
-							        {
-								        unit.GroupId = group.Id;
-								        unit.Save();
-								        findGroup = true;
-							        }
-						        }
-					        }
-
-					        if (findGroup && findObj)
-					        {
-						        SaveGroupAsObjectAttribute(groupAttributeFromTourSettings?.Id, unit.ObjectId,
-							        unit.TaskId, numberGroup);
-					        }
-
-					        if (findGroup)
-					        {
-						        try
-						        {
-							        lock (locked)
-							        {
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-									        .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-										        LineStyle.Thin);
-							        }
-						        }
-						        catch
-						        {
-
-						        }
-					        }
-					        else
-					        {
-						        try
-						        {
-							        lock (locked)
-							        {
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(
-									        findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-									        .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
-								        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-									        .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-										        LineStyle.Thin);
-							        }
-						        }
-						        catch
-						        {
-
-						        }
-
-					        }
-				        }
-			        }
-			        catch (Exception ex)
-			        {
-				        long errorId = ErrorManager.LogError(ex);
-				        lock (locked)
-				        {
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-						        .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-						        .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-					        mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
-						        MultipleBorders.All,
-						        SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-				        }
-			        }
-		        });
-
-		        excelFile.Save(streamResult, SaveOptions.XlsxDefault);
-		        streamResult.Seek(0, SeekOrigin.Begin);
-		        SaveResultFile(import, streamResult);
-	        }
-	        catch (Exception ex)
-	        {
-		        LogError(ex, import);
-		        throw;
-	        }
-
-	        return streamResult;
-        }
-
-		public static Stream ImportDataGroupNumberFromExcelByTaskFilter(ExcelFile excelFile, ImportDataGroupNumberFromExcelDto settings, OMImportDataLog import)
-        {
-	        MemoryStream streamResult = new MemoryStream();
-	        var locked = new object();
-			try
-	        {
-		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
-		        import.DateStarted = DateTime.Now;
-		        import.Save();
-
-				var mainWorkSheet = excelFile.Worksheets[0];
-
-	            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-	            ParallelOptions options = new ParallelOptions
-	            {
-	                CancellationToken = cancelTokenSource.Token,
-	                MaxDegreeOfParallelism = 10
-	            };
-
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-
-				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
-	            mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-	            List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
-	            List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
-	            var groupAttributeFromTourSettings = TourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(), KoAttributeUsingType.CodeGroupAttribute);
-
-	            List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
-	            foreach (long taskId in settings.TaskFilter)
-	            {
-	                Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
-	            }
-	            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
-				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
-	            {
-	                try
-	                {
-						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
-						{
-	                        string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-	                        string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
-	                        bool findGroup = false;
-	                        bool findObj = false;
-
-	                        ObjectModel.KO.OMUnit unit = Objs.Find(x=>x.CadastralNumber==cadastralNumber);
-	                        if (unit != null)
-	                        {
-	                            findObj = true;
-	                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
-	                            {
-	                                ObjectModel.KO.OMGroup group = parcelGroup.Find(x => x.Number == numberGroup);
-	                                if (group != null)
-	                                {
-	                                    unit.GroupId = group.Id;
-	                                    unit.Save();
-	                                    findGroup = true;
-	                                }
-	                            }
-	                            else
-	                            {
-	                                ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.Number == numberGroup);
-	                                if (group != null)
-	                                {
-	                                    unit.GroupId = group.Id;
-	                                    unit.Save();
-	                                    findGroup = true;
-	                                }
-	                            }
-	                        }
-
-	                        if (findGroup && findObj)
-	                        {
-	                            SaveGroupAsObjectAttribute(groupAttributeFromTourSettings?.Id, unit.ObjectId, unit.TaskId, numberGroup);
-	                        }
-
-	                        if (findGroup)
-	                        {
-	                            try
-	                            {
-		                            lock (locked)
-		                            {
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-				                            .SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-				                            .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-					                            LineStyle.Thin);
-		                            }
-	                            }
-	                            catch
-	                            {
-
-	                            }
-
-	                        }
-	                        else
-	                        {
-	                            try
-	                            {
-		                            lock (locked)
-		                            {
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(findObj
-				                            ? "Указанный объект не найден"
-				                            : "Указанная группа не найдена");
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-				                            .SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
-			                            mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders
-				                            .SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black),
-					                            LineStyle.Thin);
-		                            }
-	                            }
-	                            catch
-	                            {
-
-	                            }
-	                        }
-	                    }
-	                }
-	                catch (Exception ex)
-	                {
-	                    long errorId = ErrorManager.LogError(ex);
-	                    lock (locked)
-	                    {
-		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns]
-			                    .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern
-			                    .SetSolid(SpreadsheetColor.FromName(ColorName.Red));
-		                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(
-			                    MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-	                    }
-	                }
-	            });
-
-	            excelFile.Save(streamResult, SaveOptions.XlsxDefault);
-	            streamResult.Seek(0, SeekOrigin.Begin);
-	            SaveResultFile(import, streamResult);
-			}
-	        catch (Exception ex)
-	        {
-				LogError(ex, import);
-				throw;
-	        }
-
-	        return streamResult;
-        }
-
-		public static bool UseLongProcessForImportDataGroup(Stream fileStream)
+        public static bool UseLongProcessForImportDataGroup(Stream fileStream)
         {
 	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 	        var mainWorkSheet = excelFile.Worksheets[0];
 	        return mainWorkSheet.Rows.Count > _rowCountForBackgroundLoading;
 		}
 
-        public static OMImportDataLog CreateDataFileImport(Stream stream, ImportDataGroupNumberFromExcelDto settings)
+        public static OMImportDataLog CreateDataFileImport(Stream stream, ImportDataFromExcelDto settings)
         {
 	        stream.Seek(0, SeekOrigin.Begin);
 	        var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
@@ -516,7 +212,7 @@ namespace KadOzenka.Dal.DataImport
 
 		#region Support Methods
 
-		private static void SaveGroupAsObjectAttribute(long? attributeId, long? objectId, long? taskId, string numberGroup)
+		public static void SaveGroupAsObjectAttribute(long? attributeId, long? objectId, long? taskId, string numberGroup)
         {
             if(attributeId == null || objectId == null)
                 return;
@@ -562,7 +258,7 @@ namespace KadOzenka.Dal.DataImport
 	        return import;
         }
 
-		private static void SaveResultFile(OMImportDataLog import, MemoryStream streamResult)
+		public static void SaveResultFile(OMImportDataLog import, MemoryStream streamResult)
         {
 	        import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
 	        import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
@@ -572,7 +268,7 @@ namespace KadOzenka.Dal.DataImport
 	        import.Save();
         }
 
-        private static void LogError(Exception ex, OMImportDataLog import)
+        public static void LogError(Exception ex, OMImportDataLog import)
         {
 	        long errorId = ErrorManager.LogError(ex);
 	        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
