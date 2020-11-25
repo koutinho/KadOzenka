@@ -8292,6 +8292,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _objectsstatistic;
+        /// <summary>
+        /// 20602100 Статистика по объектам модели (objects_statistic)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602100)]
+        public string ObjectsStatistic
+        {
+            get
+            {
+                CheckPropertyInited("ObjectsStatistic");
+                return _objectsstatistic;
+            }
+            set
+            {
+                _objectsstatistic = value;
+                NotifyPropertyChanged("ObjectsStatistic");
+            }
+        }
+
     }
 }
 
@@ -25308,6 +25328,26 @@ namespace ObjectModel.Modeling
             {
                 _marketobjectid = value;
                 NotifyPropertyChanged("MarketObjectId");
+            }
+        }
+
+
+        private long? _unitid;
+        /// <summary>
+        /// 70201100 ИД юнита, свзяанного с объектом-аналогом (unit_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201100)]
+        public long? UnitId
+        {
+            get
+            {
+                CheckPropertyInited("UnitId");
+                return _unitid;
+            }
+            set
+            {
+                _unitid = value;
+                NotifyPropertyChanged("UnitId");
             }
         }
 

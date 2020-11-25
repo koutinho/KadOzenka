@@ -2491,7 +2491,7 @@ namespace ObjectModel.KO
             Parallel.ForEach(childs, options, child =>
             {
                 child.UpksPre = unit.UpksPre;
-                child.CadastralCostPre = Math.Round((child.UpksPre * child.Square).ParseToDecimal(), 2);
+                child.CadastralCostPre = Math.Round((child.UpksPre * child.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
                 child.Upks = 0;
                 child.CadastralCost = 0;
                 child.Save();

@@ -256,11 +256,25 @@ namespace KadOzenka.Dal.Modeling
 
 			var factor = GetFactorById(dto.Id);
 
-			factor.DictionaryId = dto.DictionaryId;
-			factor.Weight = dto.CurrentWeight;
-			factor.PreviousWeight = dto.PreviousWeight ?? 1;
-			
-			factor.Save();
+			using (var ts = new TransactionScope())
+			{
+				if (factor.DictionaryId != dto.DictionaryId)
+				{
+					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
+						.Select(x => x.DictionaryId).Execute();
+					factors.ForEach(x =>
+					{
+						x.DictionaryId = dto.DictionaryId;
+						x.Save();
+					});
+				}
+
+				factor.Weight = dto.CurrentWeight;
+				factor.PreviousWeight = dto.PreviousWeight ?? 1;
+				factor.Save();
+
+				ts.Complete();
+			}
 		}
 
 		public int AddManualFactor(ManualModelFactorDto dto)
@@ -288,8 +302,6 @@ namespace KadOzenka.Dal.Modeling
 		public void UpdateManualFactor(ManualModelFactorDto dto)
 		{
 			var factor = GetFactorById(dto.Id);
-
-			ValidateManualFactor(dto);
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -332,24 +344,17 @@ namespace KadOzenka.Dal.Modeling
 
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
-			if (factorDto.GeneralModelId == null)
-				throw new Exception("Не передан ИД основной модели");
-
-			if (factorDto.FactorId == null)
-				throw new Exception("Не передан ИД фактора");
+			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.Type);
 
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма для фактора");
-
-			var isTheSameAttributeExists = OMModelFactor.Where(x => x.Id != factorDto.Id &&
-					x.FactorId == factorDto.FactorId && x.ModelId == factorDto.GeneralModelId && x.AlgorithmType_Code == factorDto.Type)
-				.ExecuteExists();
-			if (isTheSameAttributeExists)
-				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData((int)factorDto.FactorId).Name}' уже был добавлен");
 		}
 
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
+			//тип алгоритма не важен, т.к. для автоматической модели существует три фактора для каждого типа алгоритма
+			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, KoAlgoritmType.Line);
+
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
 				throw new Exception($"Не найдена модель с ИД '{factor.ModelId}'");
@@ -396,6 +401,21 @@ namespace KadOzenka.Dal.Modeling
 
 			if (errors.Count > 0)
 				throw new Exception(string.Join("<br>", errors));
+		}
+
+		private void ValidateBaseFactor(long id, long? modelId, long? factorId, KoAlgoritmType type)
+		{
+			if (modelId == null)
+				throw new Exception("Не передан ИД основной модели");
+
+			if (factorId == null)
+				throw new Exception("Не передан ИД фактора");
+
+			var isTheSameAttributeExists = OMModelFactor.Where(x =>
+					x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
+				.ExecuteExists();
+			if (isTheSameAttributeExists)
+				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
 
 		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)

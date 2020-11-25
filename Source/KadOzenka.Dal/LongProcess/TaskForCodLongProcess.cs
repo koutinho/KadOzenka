@@ -33,9 +33,9 @@ namespace KadOzenka.Dal.LongProcess
 	            var taskId = processQueue.ObjectId;
 	            if (!taskId.HasValue)
 	            {
-		            var message = Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
+		            var message = Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
 		            WorkerCommon.SetMessage(processQueue, message);
-		            WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+		            WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 		            SendMessage(processQueue, message, GetMessageSubject(taskName));
 		            return;
 	            }

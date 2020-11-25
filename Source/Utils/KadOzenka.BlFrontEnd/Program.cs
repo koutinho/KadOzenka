@@ -45,6 +45,7 @@ using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;

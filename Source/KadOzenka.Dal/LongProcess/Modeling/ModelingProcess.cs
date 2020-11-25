@@ -1,14 +1,14 @@
 ﻿using System;
-using Core.Register.LongProcessManagment;
-using ObjectModel.Core.LongProcess;
 using System.Threading;
+using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using ObjectModel.Core.LongProcess;
 using Serilog;
 
-namespace KadOzenka.Dal.LongProcess
+namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class ModelingProcess : LongProcess
     {
@@ -32,8 +32,8 @@ namespace KadOzenka.Dal.LongProcess
             }
             if (string.IsNullOrWhiteSpace(inputParameters?.InputParametersXml))
             {
-                WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 NotificationSender.SendNotification(processQueue, "Моделирование",
                     "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
                 return;
