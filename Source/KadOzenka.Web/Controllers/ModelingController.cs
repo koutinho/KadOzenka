@@ -340,12 +340,9 @@ namespace KadOzenka.Web.Controllers
 		        .Select(x => x.ObjectsStatistic)
 		        .ExecuteFirstOrDefault()?.ObjectsStatistic;
 
-	        if (string.IsNullOrWhiteSpace(statisticStr))
-	        {
+	        var statistic = statisticStr?.DeserializeFromXml<ModelingObjectsStatistic>();
+	        if (statistic == null)
 		        return Json(string.Empty);
-            }
-	        
-	        var statistic = statisticStr.DeserializeFromXml<ModelingObjectsStatistic>();
 
 	        return Json(new {statistic.TotalCount, Attributes = statistic.ObjectsByAttributeStatistics});
         }
@@ -436,6 +433,19 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService.DeleteAutomaticModelFactor(factor);
 
             ModelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+
+            var model = OMModel.Where(x => x.Id == factor.ModelId)
+	            .Select(x => x.ObjectsStatistic)
+	            .ExecuteFirstOrDefault();
+
+            var statistic = model?.ObjectsStatistic?.DeserializeFromXml<ModelingObjectsStatistic>();
+            var deletedFactorStatistic = statistic?.ObjectsByAttributeStatistics.FirstOrDefault(x => x.AttributeId == factor.FactorId);
+            if (deletedFactorStatistic != null)
+            {
+	            statistic.ObjectsByAttributeStatistics.Remove(deletedFactorStatistic);
+	            model.ObjectsStatistic = statistic.SerializeToXml();
+	            model.Save();
+            }
 
             return Ok();
         }

@@ -12,6 +12,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Ko;
 using ObjectModel.Market;
@@ -326,10 +327,12 @@ namespace KadOzenka.Dal.Modeling
 	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
         }
 
-        public void DestroyModelMarketObjects(long? modelId)
+        public void DestroyModelMarketObjects(OMModel model)
         {
-	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == model.Id).Execute();
 	        existedModelObjects.ForEach(x => x.Destroy());
+	        model.ObjectsStatistic = null;
+	        model.Save();
         }
 
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)

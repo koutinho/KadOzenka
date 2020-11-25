@@ -57,6 +57,9 @@
   <ItemGroup>
     <Folder Include="Correction\Dto\" />
     <Folder Include="Documents\Dto\" />
+    <Folder Include="LongProcess\Common\" />
+    <Folder Include="LongProcess\Consts\" />
+    <Folder Include="LongProcess\Modeling\Entities\" />
     <Folder Include="Modeling\Dto\Factors\" />
     <Folder Include="Seman\" />
     <Folder Include="CommonFunctions\" />

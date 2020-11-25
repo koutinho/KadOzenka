@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        var marketObjects = GetMarketObjects();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: Logger);
 
-            ModelingService.DestroyModelMarketObjects(Model.Id);
+            ModelingService.DestroyModelMarketObjects(Model);
             AddLog(Queue, "Удалены предыдущие данные.", logger: Logger);
 
             var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId()).ToList();

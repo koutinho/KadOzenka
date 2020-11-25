@@ -126,6 +126,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				attributesDictionary[x.AttributeId] = new ObjectsByAttributeStatistic
 				{
+					AttributeId = x.AttributeId,
 					AttributeName = x.AttributeName
 				};
 			});
