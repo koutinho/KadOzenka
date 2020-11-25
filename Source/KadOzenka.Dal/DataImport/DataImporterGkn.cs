@@ -696,7 +696,6 @@ namespace KadOzenka.Dal.DataImport
                     ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                     #endregion
 
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
                     #region Признаки для формирования заданий ЦОД
@@ -977,7 +976,6 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                     
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
                     #region Признаки для формирования заданий ЦОД
@@ -1272,7 +1270,6 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
                     #endregion
 
@@ -1535,7 +1532,6 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
                     #region Признаки для формирования заданий ЦОД
@@ -1786,9 +1782,6 @@ namespace KadOzenka.Dal.DataImport
                             SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                         }
                         #endregion
-
-
-
                     }
 
                     #endregion
@@ -1826,7 +1819,6 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
                     #region Признаки для формирования заданий ЦОД
@@ -2151,7 +2143,6 @@ namespace KadOzenka.Dal.DataImport
                     //Задание на оценку
                     ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
 
-                    SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
                     #region Признаки для формирования заданий ЦОД
@@ -2290,12 +2281,6 @@ namespace KadOzenka.Dal.DataImport
             }
 
             return koUnit;
-        }
-
-        private void SetNewUnitUpdateStatus(OMUnit unit)
-        {
-	        unit.UpdateStatus_Code = UnitUpdateStatus.New;
-	        unit.Save();
         }
 
         public static void SaveHistoryForNewObject(OMUnit unit)
