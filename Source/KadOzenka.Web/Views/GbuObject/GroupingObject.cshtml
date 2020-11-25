@@ -433,6 +433,8 @@
                 || Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument')) {
                 $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
                 $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').filterInput.val('');
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('filtering', [true]);
             }
 
             if (Object.keys(val)[0].includes('IdCodJob')) {
@@ -509,6 +511,7 @@
         var isSelectAllObjectsChecked =
             $('#SelectAllObject').prop('checked');
         selectAllObjectChanged(isSelectAllObjectsChecked);
+        updateStates();
     }
 
     function changeDataActualAvailability(isDataActualUsed) {
@@ -635,6 +638,7 @@
         var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'));
 
         clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+        getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
 
     $(document).ready(function () {
