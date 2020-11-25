@@ -314,6 +314,8 @@
                 if (kendoDropDownTree) {
                     kendoDropDownTree.value(val[Object.keys(val)[0]] || '');
                     kendoDropDownTree.trigger('change');
+                    kendoDropDownTree.filterInput.val('');
+                    kendoDropDownTree.trigger('filtering', [true]);
                 }
             }
 
@@ -431,7 +433,8 @@
         selectAllObjectChanged(isSelectAllObjectsChecked);
         onPropertyTypeChange();
 
-        return await addNewCustomLevels(urlForNewCustomLevels, 1, globalRowNumber - 1, customRowValues);
+        await addNewCustomLevels(urlForNewCustomLevels, 1, globalRowNumber - 1, customRowValues);
+        updateStates();
     }
 
     function changeDataActualAvailability(isDataActualUsed) {
@@ -487,7 +490,7 @@
     }
 
     function getDataSource() {
-        return $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).map(d => $(d).data('kendoDropDownTree'));
+        return $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).concat($.find('div[class^=customLevelBlock] input[class*=Attribute]')).map(d => $(d).data('kendoDropDownTree'));
     }
 
     function getSelectedValues() {
@@ -549,9 +552,11 @@
 
         updateStates();
 
-        var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'));
+        var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'))
+            .concat($.find('div[class^=customLevelBlock] [class^=clear-button]'));
 
         clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+        getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
 
     $(document).ready(function () {
