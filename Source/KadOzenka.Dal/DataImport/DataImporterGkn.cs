@@ -81,38 +81,6 @@ namespace KadOzenka.Dal.DataImport
         /// Колличество загруженных машиномест из Xml
         /// </summary>
         public Int32 CountImportCarPlaces { get; private set; }
-        
-        private AbstractHandler _unitStatusHandler { get; set; }
-        /// <summary>
-        /// Обработчик статусов Юнита (паттерн Цепочка обязанностей)
-        /// </summary>
-        private AbstractHandler UnitStatusHandler
-        {
-	        get
-	        {
-		        if (_unitStatusHandler != null)
-			        return _unitStatusHandler;
-
-		        var groupAndFsAndCharacteristicHandler = new GroupAndFsAndCharacteristicChangesHandler();
-		        var groupAndFsCharacteristicHandler = new GroupAndFsChangesHandler();
-		        var groupAndEgrnChangesHandler = new GroupAndEgrnChangesHandler();
-
-                var groupHandler = new GroupChangesHandler();
-		        var egrnHandler = new EgrnChangesHandler();
-		        var fsHandler = new FsChangesHandler();
-
-		        groupAndFsAndCharacteristicHandler
-			        .SetNext(groupAndFsCharacteristicHandler)
-			        .SetNext(groupAndEgrnChangesHandler)
-			        .SetNext(groupHandler)
-			        .SetNext(egrnHandler)
-			        .SetNext(fsHandler);
-
-		        _unitStatusHandler = groupAndFsAndCharacteristicHandler;
-
-		        return _unitStatusHandler;
-	        }
-        }
 
         public bool AreCountersInitialized { get; private set; }
 
@@ -632,23 +600,6 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
-                        var changedProperties = new UnitChangedProperties
-                        {
-                            IsNameChanged = !prNameObjectCheck,
-                            IsPurposeOksChanged = !prAssignationObjectCheck,
-                            IsSquareChanged = !squareDidNotChange,
-                            IsBuildYearChanged = !prYearBuiltObjectCheck,
-                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
-                            IsFloorsCountChanged = !floorsCountDidNotChange,
-                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-                            IsWallMaterialChanged = !prWallObjectCheck,
-                            IsZuNumberChanged = !zuNumberDidNotChange,
-                            IsAddressChanged = !addressDidNotChange,
-                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-                            IsLocationChanged = !locationDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
-
                         #region Наследование
                         if (!prCheckObr)
                         {
@@ -964,18 +915,6 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         //var zuNumberDidNotChange = CheckChange(koUnit, ParcelAttributeId, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
-                        var changedProperties = new UnitChangedProperties
-                        {
-	                        IsNameChanged = !prNameObjectCheck,
-	                        IsTypeOfUserByDocumentsChanged = !prAssignationObjectCheck,
-	                        IsSquareChanged = !squareDidNotChange,
-	                        //IsZuNumberChanged = !zuNumberDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
-
                         #region Наследование
                         if (!prCheckObr)
                         {
@@ -1003,11 +942,6 @@ namespace KadOzenka.Dal.DataImport
                             SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                         }
                         #endregion
-
-
-
-
-
                     }
                     #endregion
                 }
@@ -1255,25 +1189,6 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
                         var wallMaterialDidNotChange = CheckChange(koUnit, WallMaterialAttributeId, KoChangeStatus.Walls, prevAttrib, curAttrib);
-
-                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
-                        var changedProperties = new UnitChangedProperties
-                        {
-	                        IsNameChanged = !prNameObjectCheck,
-                            IsPurposeOksChanged = !prAssignationObjectCheck,
-	                        IsSquareChanged = !squareDidNotChange,
-                            IsBuildYearChanged = !prYearBuiltObjectCheck,
-                            IsCommissioningYearChanged = !prYearUsedObjectCheck,
-                            IsFloorsCountChanged = !floorsCountDidNotChange,
-                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-                            IsWallMaterialChanged = !wallMaterialDidNotChange,
-                            IsZuNumberChanged = !zuNumberDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange,
-                            IsCharacteristicChanged = !squareDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
 
                         #region Наследование
                         if (!prCheckObr)
@@ -1573,27 +1488,6 @@ namespace KadOzenka.Dal.DataImport
                         var cadastralQuartalDidNotChange = CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
                         var zuNumberDidNotChange = CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
 
-                        //TODO CIPJSKO-535 площадь и характеристика имеют одинаковый Id, ждем ответа от аналитика - не ошибка ли это
-                        //параметры закомментированы по согласованию с аналитиком
-                        var changedProperties = new UnitChangedProperties
-                        {
-	                        IsNameChanged = !nameDidNotChange,
-	                        //IsPurposeOksChanged = !prAssignationObjectCheck,
-	                        IsSquareChanged = !squareDidNotChange,
-	                        //IsBuildYearChanged = !prYearBuiltObjectCheck,
-	                        //IsCommissioningYearChanged = !prYearUsedObjectCheck,
-	                        //IsFloorsCountChanged = !floorsCountDidNotChange,
-	                        //IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-	                        //IsWallMaterialChanged = !wallMaterialDidNotChange,
-	                        IsZuNumberChanged = !zuNumberDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange,
-	                        IsReadinessPercentageChanged = !readinessPercentageDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
-
-
                         #region Признаки для формирования заданий ЦОД
                         if (!nameDidNotChange)
                         {
@@ -1604,7 +1498,6 @@ namespace KadOzenka.Dal.DataImport
                             SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                         }
                         #endregion
-
                     }
 
                     #endregion
@@ -1858,22 +1751,6 @@ namespace KadOzenka.Dal.DataImport
                         CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
                         CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
 
-                        var changedProperties = new UnitChangedProperties
-                        {
-                            IsNameChanged = !nameDidNotChange,
-                            IsPurposeOksChanged = !purposeOksDidNotChange,
-                            IsSquareChanged = !squareDidNotChange,
-                            IsBuildYearChanged = !buildYearDidNotChange,
-                            IsCommissioningYearChanged = !commissioningYearDidNotChange,
-                            IsFloorsCountChanged = !floorsCountDidNotChange,
-                            IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-                            IsWallMaterialChanged = !wallMaterialDidNotChange,
-                            IsAddressChanged = !addressDidNotChange,
-                            IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-                            IsLocationChanged = !locationDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
-
                         #region Наследование
                         if (!prCheckObr)
                         {
@@ -1915,8 +1792,6 @@ namespace KadOzenka.Dal.DataImport
                     }
 
                     #endregion
-
-
                 }
                 //Если данные о прошлой оценке не найдены
                 else
@@ -2204,22 +2079,6 @@ namespace KadOzenka.Dal.DataImport
                         CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
                         CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
 
-                        var changedProperties = new UnitChangedProperties
-                        {
-	                        IsNameChanged = !nameDidNotChange,
-	                        IsPurposeOksChanged = !purposeOksDidNotChange,
-	                        IsSquareChanged = !squareDidNotChange,
-	                        IsBuildYearChanged = !buildYearDidNotChange,
-	                        IsCommissioningYearChanged = !commissioningYearDidNotChange,
-	                        IsFloorsCountChanged = !floorsCountDidNotChange,
-	                        IsUndergroundFloorsCountChanged = !undergroundFloorsCountDidNotChange,
-	                        IsWallMaterialChanged = !wallMaterialDidNotChange,
-	                        IsAddressChanged = !addressDidNotChange,
-	                        IsCadasrtalQuartalChanged = !cadastralQuartalDidNotChange,
-	                        IsLocationChanged = !locationDidNotChange
-                        };
-                        CalculateUnitUpdateStatus(changedProperties, koUnit);
-
                         #region Наследование
                         if (!prCheckObr)
                         {
@@ -2431,13 +2290,6 @@ namespace KadOzenka.Dal.DataImport
             }
 
             return koUnit;
-        }
-
-        private void CalculateUnitUpdateStatus(UnitChangedProperties changedProperties, OMUnit unit)
-        {
-	        var unitUpdateStatus = UnitStatusHandler.Handle(changedProperties);
-	        unit.UpdateStatus_Code = unitUpdateStatus;
-	        unit.Save();
         }
 
         private void SetNewUnitUpdateStatus(OMUnit unit)
