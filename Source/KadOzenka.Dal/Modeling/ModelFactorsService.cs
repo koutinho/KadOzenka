@@ -256,11 +256,25 @@ namespace KadOzenka.Dal.Modeling
 
 			var factor = GetFactorById(dto.Id);
 
-			factor.DictionaryId = dto.DictionaryId;
-			factor.Weight = dto.CurrentWeight;
-			factor.PreviousWeight = dto.PreviousWeight ?? 1;
-			
-			factor.Save();
+			using (var ts = new TransactionScope())
+			{
+				if (factor.DictionaryId != dto.DictionaryId)
+				{
+					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
+						.Select(x => x.DictionaryId).Execute();
+					factors.ForEach(x =>
+					{
+						x.DictionaryId = dto.DictionaryId;
+						x.Save();
+					});
+				}
+
+				factor.Weight = dto.CurrentWeight;
+				factor.PreviousWeight = dto.PreviousWeight ?? 1;
+				factor.Save();
+
+				ts.Complete();
+			}
 		}
 
 		public int AddManualFactor(ManualModelFactorDto dto)
