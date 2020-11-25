@@ -327,12 +327,15 @@ namespace KadOzenka.Dal.Modeling
 	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
         }
 
-        public void DestroyModelMarketObjects(OMModel model)
+        public int DestroyModelMarketObjects(OMModel model)
         {
 	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == model.Id).Execute();
 	        existedModelObjects.ForEach(x => x.Destroy());
+	        
 	        model.ObjectsStatistic = null;
 	        model.Save();
+
+	        return existedModelObjects.Count;
         }
 
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)

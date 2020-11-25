@@ -52,18 +52,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
 				return new Dictionary<long, List<CoefficientForObject>>();
 
-			var query = new QSQuery
-			{
-				MainRegisterID = OMCoreObject.GetRegisterId(),
-				Condition = new QSConditionSimple
-				{
-					ConditionType = QSConditionType.In,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-					RightOperand = new QSColumnConstant(objectIds)
-				}
-			};
-
-			return GetCoefficients(query, dictionaries, modelAttributes);
+			return GetCoefficients(OMCoreObject.GetRegisterId(), OMCoreObject.GetColumn(x => x.Id), objectIds, dictionaries, modelAttributes);
 		}
 
 		protected Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
@@ -74,19 +63,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			var registerId = modelAttributes[0].RegisterId;
 			var idAttribute = RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.IsPrimaryKey).Id;
+			var registerPrimaryKeyColumn = new QSColumnSimple((int)idAttribute);
 
-			var query = new QSQuery
-			{
-				MainRegisterID = (int)registerId,
-				Condition = new QSConditionSimple
-				{
-					ConditionType = QSConditionType.In,
-					LeftOperand = new QSColumnSimple((int)idAttribute),
-					RightOperand = new QSColumnConstant(unitIds)
-				}
-			};
-
-			return GetCoefficients(query, dictionaries, modelAttributes);
+			return GetCoefficients(registerId, registerPrimaryKeyColumn, unitIds, dictionaries, modelAttributes);
 		}
 
 		protected void CreateMarkCatalog(long? groupId, List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
@@ -140,11 +119,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					if (attributeCoefficient == null)
 						return;
 
-					attributesDictionary.TryGetValue(attribute.AttributeId, out var statistic);
-					if (statistic != null)
-					{
-						statistic.Count++;
-					}
+					attributesDictionary[attribute.AttributeId].Count++;
 				});
 			});
 
@@ -172,8 +147,20 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		#region Support Methods
 
-		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(QSQuery query, List<OMModelingDictionary> dictionaries, List<ModelAttributePure> attributes)
+		private Dictionary<long, List<CoefficientForObject>> GetCoefficients(long registerId, QSColumn registerPrimaryKeyColumn, 
+			List<long> objectIds, List<OMModelingDictionary> dictionaries, List<ModelAttributePure> attributes)
 		{
+			var query = new QSQuery
+			{
+				MainRegisterID = (int)registerId,
+				Condition = new QSConditionSimple
+				{
+					ConditionType = QSConditionType.In,
+					LeftOperand = registerPrimaryKeyColumn,
+					RightOperand = new QSColumnConstant(objectIds)
+				}
+			};
+
 			attributes.ForEach(attribute =>
 			{
 				query.AddColumn(attribute.AttributeId, attribute.AttributeId.ToString());

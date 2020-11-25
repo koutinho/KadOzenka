@@ -71,8 +71,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				AddLog(Queue, "Начат сбор коэффициентов.", logger: Logger);
 				var coefficients = Attribute.RegisterId == OMCoreObject.GetRegisterId()
-					? GetCoefficientsFromMarketObject(objects.Select(x => x.MarketObjectId.GetValueOrDefault()).Distinct().ToList(), dictionaries, attributes)
-					: GetCoefficientsFromTourFactors(objects.Select(x => x.UnitId.GetValueOrDefault()).Distinct().ToList(), dictionaries, attributes);
+					? GetCoefficientsFromMarketObject(objects.Select(x => x.MarketObjectId.GetValueOrDefault()).ToList(), dictionaries, attributes)
+					: GetCoefficientsFromTourFactors(objects.Where(x => x.UnitId != null).Select(x => x.UnitId.Value).Distinct().ToList(), dictionaries, attributes);
 				AddLog(Queue, "Закончен сбор коэффициентов.", logger: Logger);
 
 				AddLog(Queue, "Начато сохранение коэффициентов.", logger: Logger);

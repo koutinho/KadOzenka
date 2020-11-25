@@ -490,7 +490,7 @@
     function generateGridWithStatistic(attributes) {
         $('#statisticGrid').kendoGrid({
             dataSource: {
-                data: attributes,
+                data: attributes
             },
             columns: [
                 {
@@ -517,7 +517,8 @@
                 pageSize: 5
             },
             width: '100%',
-            scrollable: true
+            scrollable: true,
+            sortable: true
         });
         $('#statisticGrid').data("kendoGrid").tbody.kendoTooltip({
             filter: "td",

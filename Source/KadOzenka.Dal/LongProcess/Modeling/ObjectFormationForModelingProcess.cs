@@ -92,8 +92,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        var marketObjects = GetMarketObjects();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: Logger);
 
-            ModelingService.DestroyModelMarketObjects(Model);
-            AddLog(Queue, "Удалены предыдущие данные.", logger: Logger);
+            var numberOfDeletedModelObjects = ModelingService.DestroyModelMarketObjects(Model);
+            AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
             var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId()).ToList();
             AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: Logger);
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
             var objectsCount = marketObjects.Count * 75 / 100;
             var firstHalf = objectsCount / 2.0;
-            var packageSize = 500;
+            var packageSize = 1000;
             var packageIndex = 0;
             for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
             {
@@ -119,7 +119,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 if (marketObjectToUnitsPage.Count == 0)
                     break;
 
-                var marketObjectIds = marketObjectToUnitsPage.Select(x => x.MarketObject.Id).Distinct().ToList();
+                var marketObjectIds = marketObjectToUnitsPage.Select(x => x.MarketObject.Id).ToList();
                 var unitIds = marketObjectToUnitsPage.Where(x => x.UnitId != null).Select(x => x.UnitId.Value).Distinct().ToList();
 
                 var marketObjectCoefficients = GetCoefficientsFromMarketObject(marketObjectIds, dictionaries, marketObjectAttributes);
@@ -246,8 +246,11 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         {
             var relation = OMGroupToMarketSegmentRelation
                 .Where(x => x.GroupId == Model.GroupId)
-                .Select(x => x.MarketSegment_Code)
-                .Select(x => x.TerritoryType_Code)
+                .Select(x => new
+                {
+	                x.MarketSegment_Code,
+	                x.TerritoryType_Code
+                })
                 .ExecuteFirstOrDefault();
 
             if (relation == null)
