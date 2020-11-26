@@ -53,9 +53,7 @@ namespace KadOzenka.Dal.LongProcess
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
 
-				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(settings, _log);
-                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, _log, settings.UnitChangeStatus);
-                var urlToDownload = new ExportAttributeToKO().Run(objectChangeStatusDecorator, settings, processQueue);
+                var urlToDownload = new ExportAttributeToKO().Run(settings, processQueue);
                 //TestLongRunningProcess(settings);
 
                 cancelProgressCounterSource.Cancel();

@@ -53,9 +53,7 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancelToken);
 
-                var baseItemsGetter = new HarmonizationItemsGetter(settings, _log);
-                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<Item>(baseItemsGetter, _log, settings.UnitChangeStatus);
-				var reportId = harmonizationCOD.Run(objectChangeStatusDecorator);
+                var reportId = harmonizationCOD.Run();
 				//TestLongRunningProcess(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);

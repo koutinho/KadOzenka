@@ -302,13 +302,21 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        public long Run(AItemsGetter<Item> itemsGetter)
+        public long Run()
         {
 	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
 
             ReportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            
             _log.Debug("Получение объектов для обработки");
+
+            //добавление фильтров на лету через декоратор
+            var itemsGetter = new HarmonizationItemsGetter(BaseSetting, _log) as AItemsGetter<Item>;
+            if (BaseSetting.UnitChangeStatus?.Count != 0)
+            {
+	            itemsGetter = new GbuObjectStatusFilterDecorator<Item>(itemsGetter, _log, BaseSetting.UnitChangeStatus);
+            }
             var objects = itemsGetter.GetItems();
             _log.Debug( "Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);
 

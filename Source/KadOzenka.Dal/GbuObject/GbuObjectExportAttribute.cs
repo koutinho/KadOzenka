@@ -240,7 +240,7 @@ namespace KadOzenka.Dal.GbuObject
         }
         
         
-        public string Run(AItemsGetter<UnitPure> itemsGetter, GbuExportAttributeSettings setting, OMQueue processQueue)
+        public string Run(GbuExportAttributeSettings setting, OMQueue processQueue)
         {
 	        var reportService = new GbuReportService();
 	        GenerateReportHeaders(setting.Attributes, reportService);
@@ -268,7 +268,14 @@ namespace KadOzenka.Dal.GbuObject
        
             if (setting.TaskFilter.Count > 0)
             {
-	            var units = itemsGetter.GetItems();
+				//добавление фильтров на лету через декоратор
+				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(setting, _log) as AItemsGetter<UnitPure>;
+				if (setting.UnitChangeStatus?.Count != 0)
+				{
+					baseUnitsGetter = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, _log, setting.UnitChangeStatus);
+				}
+
+				var units = baseUnitsGetter.GetItems();
 	            MaxCount = units.Count;
                 CurrentCount = 0;
 				WorkerCommon.LogState(processQueue, $"Найдено {units.Count} единиц оценки.");
