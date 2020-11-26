@@ -128,13 +128,7 @@
             </div>
             <div class="col-sm-10">
                 @(Html.Kendo().MultiSelectFor(m => m.UnitChangeStatus)
-                    .BindTo(new List<SelectListItem>
-                    {
-                        new SelectListItem {Text= UnitChangeStatus.Group.GetEnumDescription(), Value = UnitChangeStatus.Group.GetEnumCode()},
-                        new SelectListItem {Text= UnitChangeStatus.Fs.GetEnumDescription(), Value = UnitChangeStatus.Fs.GetEnumCode()},
-                        new SelectListItem {Text= UnitChangeStatus.WallMaterial.GetEnumDescription(), Value = UnitChangeStatus.WallMaterial.GetEnumCode()},
-                        new SelectListItem {Text= UnitChangeStatus.BuildYear.GetEnumDescription(), Value = UnitChangeStatus.BuildYear.GetEnumCode()}
-                    })
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(UnitChangeStatus)))
                     .Filter(FilterType.Contains)
                     .Enable(Model.IsTaskFilterUsed))
             </div>
