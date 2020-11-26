@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.KoObject;
 using KadOzenka.Dal.Tours.Dto;
 
@@ -10,9 +12,9 @@ namespace KadOzenka.Web.Models.GbuObject
 	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
         public long? IdTask { get; set; }
 
-        /// <summary>
-		/// Result parameter.
-		/// </summary>
+        [Display(Name = "Статус Единицы оценки")]
+        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+
 		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]
 		public long? IdEstimatedSubGroup { get; set; }
 
@@ -21,6 +23,7 @@ namespace KadOzenka.Web.Models.GbuObject
             return new EstimatedGroupModel
             {
                 IdTask = IdTask.Value,
+                UnitChangeStatus = UnitChangeStatus,
                 IdCodeQuarter = paramsDto.IdCodeQuarter,
                 IdCodeGroup = paramsDto.IdCodeGroup,
                 IdTerritoryType = paramsDto.IdTerritoryType,

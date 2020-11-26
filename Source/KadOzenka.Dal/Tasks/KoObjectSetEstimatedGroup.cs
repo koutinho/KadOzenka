@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
@@ -43,6 +44,7 @@ namespace KadOzenka.Dal.KoObject
 		public long IdCodeGroup { get; set; }
 		public long IdCodeQuarter { get; set; }
 		public long IdTerritoryType { get; set; }
+		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
 		/// <summary>
 		/// Result parameter.

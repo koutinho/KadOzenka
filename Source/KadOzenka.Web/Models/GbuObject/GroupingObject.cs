@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Register;
+using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Gbu.GroupingAlgoritm;
 
 namespace KadOzenka.Web.Models.GbuObject
@@ -70,6 +72,9 @@ namespace KadOzenka.Web.Models.GbuObject
         /// </summary>
         [Display(Name = "Задания на оценку")]
 		public List<long> TaskFilter { get; set; }
+
+        [Display(Name = "Статус Единицы оценки")]
+        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
 		/// <summary>
 		/// Дата на которую делается гармонизация
@@ -165,7 +170,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				ValuesFilter = ValuesFilter ?? new List<string>(),
 				SelectAllObject = SelectAllObject,
 				DateActual = DataActual,
-				TaskFilter = TaskFilter ?? new List<long>()
+				TaskFilter = TaskFilter ?? new List<long>(),
+				UnitChangeStatus = UnitChangeStatus
 			};
 		}
 

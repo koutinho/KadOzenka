@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject.Dto;
 using Newtonsoft.Json;
-using ObjectModel.Gbu.InheritanceAttribute;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using KadOzenka.Dal.Enum;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.GbuObject.Dto
@@ -48,6 +49,11 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// Список заданий на оценку
         /// </summary>
         public List<long> TaskFilter;
+
+        /// <summary>
+        /// Стутс Единицы оценки после обновления
+        /// </summary>
+        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
         /// <summary>
         /// Фактор 1 уровня 

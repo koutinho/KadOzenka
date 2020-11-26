@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Messages;
@@ -9,8 +7,6 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using System.Threading.Tasks;
-using Core.Register;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject.Dto;
 using Serilog;
 

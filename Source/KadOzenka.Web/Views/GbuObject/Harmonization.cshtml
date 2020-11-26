@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Dal.GbuObject.Dto
+﻿@using KadOzenka.Dal.Enum
+@using KadOzenka.Dal.GbuObject.Dto
 @using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
@@ -135,6 +136,23 @@
                             })
                                 .ServerFiltering(false);
                         }))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2" style="padding-left: 4%;">
+                    @Html.CustomLabelFor(x => x.UnitChangeStatus)
+                </div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().MultiSelectFor(m => m.UnitChangeStatus)
+                        .BindTo(new List<SelectListItem>
+                        {
+                            new SelectListItem {Text= UnitChangeStatus.Group.GetEnumDescription(), Value = UnitChangeStatus.Group.GetEnumCode()},
+                            new SelectListItem {Text= UnitChangeStatus.Fs.GetEnumDescription(), Value = UnitChangeStatus.Fs.GetEnumCode()},
+                            new SelectListItem {Text= UnitChangeStatus.WallMaterial.GetEnumDescription(), Value = UnitChangeStatus.WallMaterial.GetEnumCode()},
+                            new SelectListItem {Text= UnitChangeStatus.BuildYear.GetEnumDescription(), Value = UnitChangeStatus.BuildYear.GetEnumCode()}
+                        })
+                        .Filter(FilterType.Contains)
+                        .Enable(Model.IsTaskFilterUsed))
                 </div>
             </div>
         </fieldset>
@@ -303,6 +321,7 @@
     async function fillForm(data) {
         $('#valuesFilter').getKendoMultiSelect().value([]);
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         globalRowNumber = 1;
         var customRowValues = [];
@@ -386,6 +405,13 @@
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
             }
 
+            if (Object.keys(val)[0].includes('@(nameof(Model.UnitChangeStatus))')) {
+                var element = $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect");
+                var currentUnitChangeStatusValue = element.value();
+                currentUnitChangeStatusValue.push([val[Object.keys(val)[0]]]);
+                element.value(currentUnitChangeStatusValue);
+            }
+
             if (Object.keys(val)[0] === 'PropertyType') {
                 var id = '#PropertyType_' + val[Object.keys(val)[0]];
                 $(id).prop("checked", true);
@@ -461,11 +487,14 @@
     function changeTaskFilterAvailability(isTaskFilterUsed) {
         if (isTaskFilterUsed) {
             $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+            $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").enable(true);
         } else {
-            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+            //через nameof не работает
+            disableKendoMultiSelect("TaskFilter");
+            disableKendoMultiSelect("UnitChangeStatus");
         }
     }
+
 
     function selectAllObjectChanged(checked) {
         if (checked) {

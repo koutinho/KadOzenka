@@ -11,6 +11,7 @@ using ObjectModel.Core.TD;
 using Core.ErrorManagment;
 using System.Security.Principal;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using Serilog;
 using Newtonsoft.Json;
 using ObjectModel.KO;
