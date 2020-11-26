@@ -21,7 +21,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Задание на оценку")]
 		public List<long> TaskFilter { get; set; }
 
-		[Display(Name = "Статус Единицы оценки")]
+		[Display(Name = "Статус")]
 		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
 		/// <summary>

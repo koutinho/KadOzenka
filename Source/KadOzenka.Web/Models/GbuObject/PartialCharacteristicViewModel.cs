@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
+﻿using System.ComponentModel.DataAnnotations;
 using Core.Register;
 
 namespace KadOzenka.Web.Models.GbuObject

@@ -18,7 +18,7 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
 
-        [Display(Name = "Статус Единицы оценки")]
+        [Display(Name = "Статус")]
 		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
         [Display(Name = "Объект капитального строительства")]

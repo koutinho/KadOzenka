@@ -12,7 +12,7 @@ namespace KadOzenka.Web.Models.GbuObject
 	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
         public long? IdTask { get; set; }
 
-        [Display(Name = "Статус Единицы оценки")]
+        [Display(Name = "Статус")]
         public List<UnitChangeStatus> UnitChangeStatus { get; set; }
 
 		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]

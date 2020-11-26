@@ -153,8 +153,7 @@
                 <div class="col-sm-10">
                     @(Html.Kendo().MultiSelectFor(m => m.UnitChangeStatus)
                         .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(UnitChangeStatus)))
-                        .Filter(FilterType.Contains)
-                        .Enable(Model.IsTaskFilterUsed))
+                        .Filter(FilterType.Contains))
                 </div>
             </div>
         </fieldset>
@@ -518,11 +517,9 @@
         function changeTaskFilterAvailability(isTaskFilterUsed) {
             if (isTaskFilterUsed) {
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
-                $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").enable(true);
             } else {
                 //через nameof не работает
                 disableKendoMultiSelect("TaskFilter");
-                disableKendoMultiSelect("UnitChangeStatus");
             }
         }
 

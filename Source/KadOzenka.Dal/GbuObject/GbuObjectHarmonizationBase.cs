@@ -10,11 +10,9 @@ using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using Serilog;
-using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -212,8 +210,8 @@ namespace KadOzenka.Dal.GbuObject
             }
 
             var objects = byTasks 
-                ? GetObjectsByTasks(objectType) 
-                : GetObjectsWithoutTasks(objectType);
+                ? GetUnits(objectType) 
+                : GetObjects(objectType);
 
             if (BaseSetting.PropertyType == PropertyTypes.Building)
             {
@@ -227,7 +225,7 @@ namespace KadOzenka.Dal.GbuObject
             return objects;
         }
 
-        private List<Item> GetObjectsByTasks(PropertyTypes objectType)
+        private List<Item> GetUnits(PropertyTypes objectType)
         {
 	        _log.Debug("Получение объектов по списку заданий на оценку");
             if (BaseSetting.TaskFilter == null || BaseSetting.TaskFilter.Count == 0)
@@ -255,7 +253,7 @@ namespace KadOzenka.Dal.GbuObject
             return FilterObjects(objects);
         }
 
-        private List<Item> GetObjectsWithoutTasks(PropertyTypes objectType)
+        private List<Item> GetObjects(PropertyTypes objectType)
         {
 	        _log.Debug("Получение объектов");
             var allObjects = OMMainObject.Where(x => x.ObjectType_Code == objectType && x.IsActive == true)
