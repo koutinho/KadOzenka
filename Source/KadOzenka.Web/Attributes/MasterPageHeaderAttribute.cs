@@ -10,9 +10,11 @@ namespace KadOzenka.Web.Attributes
             Controller c = context.Controller as Controller;
             var q = c?.Request.Query;
 
-            if (q!=null && q["useMasterPage"] == true)
+            if (q!=null)
             {
-                c.ViewBag.UseMasterPage = true;
+                var val = q["useMasterPage"];
+                var masterPage = val.ToString() == "true";
+                c.ViewBag.UseMasterPage = masterPage;
             }
             base.OnActionExecuting(context);
         }
