@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -32,7 +33,7 @@ namespace KadOzenka.Dal.LongProcess
 
 				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationCODSettings>();
 				_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
-				var harmonizationCOD = new HarmonizationCOD(settings);
+				var harmonizationCOD = new HarmonizationCOD(settings, _log);
 
                 var t = Task.Run(() => {
 					while (true)
@@ -52,7 +53,9 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancelToken);
 
-				var reportId = harmonizationCOD.Run();
+                var baseItemsGetter = new HarmonizationItemsGetter(settings, _log);
+                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<Item>(baseItemsGetter, _log, settings.UnitChangeStatus);
+				var reportId = harmonizationCOD.Run(objectChangeStatusDecorator);
 				//TestLongRunningProcess(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
@@ -76,7 +79,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		protected void TestLongRunningProcess(HarmonizationCODSettings setting)
 		{
-            var harmonizationCOD = new HarmonizationCOD(setting)
+            var harmonizationCOD = new HarmonizationCOD(setting, _log)
             {
                 MaxObjectsCount = 500,
                 CurrentCount = 0

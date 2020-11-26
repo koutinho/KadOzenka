@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		private GbuExportAttributeSettings Settings { get; }
 
-		public ExportAttributeToKoItemsGetter(GbuExportAttributeSettings settings)
+		public ExportAttributeToKoItemsGetter(GbuExportAttributeSettings settings, ILogger logger): base(logger)
 		{
 			Settings = settings;
 		}

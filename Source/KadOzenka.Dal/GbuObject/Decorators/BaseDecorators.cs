@@ -1,10 +1,20 @@
 ﻿using System.Collections.Generic;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject.Decorators
 {
 	public abstract class AItemsGetter<T> where T : ItemBase
-    {
-        public abstract List<T> GetItems();
+	{
+		protected ILogger Logger { get; set; }
+
+		protected AItemsGetter(ILogger logger)
+        {
+	        Logger = logger;
+
+        }
+
+
+	    public abstract List<T> GetItems();
     }
 
 
@@ -12,7 +22,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
     {
         protected AItemsGetter<T> ItemsGetter;
 
-        protected ADecorator(AItemsGetter<T> itemsGetter)
+        protected ADecorator(AItemsGetter<T> itemsGetter, ILogger logger): base(logger)
         {
 	        ItemsGetter = itemsGetter;
         }

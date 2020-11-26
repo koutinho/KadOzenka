@@ -53,8 +53,8 @@ namespace KadOzenka.Dal.LongProcess
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
 
-				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(settings);
-                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, settings.UnitChangeStatus);
+				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(settings, _log);
+                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, _log, settings.UnitChangeStatus);
                 var urlToDownload = new ExportAttributeToKO().Run(objectChangeStatusDecorator, settings, processQueue);
                 //TestLongRunningProcess(settings);
 

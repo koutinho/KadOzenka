@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -13,7 +14,7 @@ namespace KadOzenka.Dal.GbuObject
         private HarmonizationCODSettings Setting { get; }
         private List<OMCodDictionary> CodDictionaryItems { get; }
 
-        public HarmonizationCOD(HarmonizationCODSettings setting) : base(setting)
+        public HarmonizationCOD(HarmonizationCODSettings setting, ILogger logger) : base(setting, logger)
         {
             Setting = setting;
 
