@@ -94,6 +94,8 @@
 			if ($('#' + Object.keys(val)[0]).data('kendoDropDownTree')) {
 				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
 				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').filterInput.val('');
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('filtering', [true]);
             }
             if (Object.keys(val)[0].includes('IsOksObjType')) {
                 if (val[Object.keys(val)[0]]) {
