@@ -37,6 +37,7 @@ using Serilog;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
@@ -113,6 +114,7 @@ namespace CIPJS
                 {
                     opts.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser()
                         .Build()));
+                    opts.Filters.Add(new MasterPageHeaderAttribute());
                 })
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.Configure<FormOptions>(x =>
