@@ -6,7 +6,7 @@
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" SRDFunctionTag="KO.DICT.MODELS" ShowRowMenu="true">
   
   <Buttons>
-    <Button Caption="Добавить" NavigateURL="/Modeling/AddModel" WindowHeight="490" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS.ADD_MODEL" Icon="fas fa-plus"/>
+    <Button Caption="Добавить" NavigateURL="/Modeling/AddModel" WindowHeight="590" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS.ADD_MODEL" Icon="fas fa-plus"/>
     
     <Button Caption="Удалить" NavigateURL="/Modeling/ModelDelete" WindowHeight="150" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS" Icon="fas fa-trash-alt">
       <ConditionGroups>

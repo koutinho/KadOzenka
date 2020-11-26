@@ -573,22 +573,62 @@ namespace ObjectModel.Gbu
         }
 
 
-        private bool? _useparentattributeforplacements;
+        private bool? _useparentattributeforlivingplacements;
         /// <summary>
-        /// 8100200 Использовать родительский атрибут для помещений (USE_PARENT_ATTRIBUTE_FOR_PLACEMENTS)
+        /// 8100300 Использовать родительский атрибут для жилых помещений (USE_PARENT_ATTRIBUTE_FOR_LIVING_PLACEMENTS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 8100200)]
-        public bool? UseParentAttributeForPlacements
+        [RegisterAttribute(AttributeID = 8100300)]
+        public bool? UseParentAttributeForLivingPlacements
         {
             get
             {
-                CheckPropertyInited("UseParentAttributeForPlacements");
-                return _useparentattributeforplacements;
+                CheckPropertyInited("UseParentAttributeForLivingPlacements");
+                return _useparentattributeforlivingplacements;
             }
             set
             {
-                _useparentattributeforplacements = value;
-                NotifyPropertyChanged("UseParentAttributeForPlacements");
+                _useparentattributeforlivingplacements = value;
+                NotifyPropertyChanged("UseParentAttributeForLivingPlacements");
+            }
+        }
+
+
+        private bool? _useparentattributefornotlivingplacements;
+        /// <summary>
+        /// 8100400 Использовать родительский атрибут для нежилых помещений (USE_PARENT_ATTRIBUTE_FOR_NOT_LIVING_PLACEMENTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8100400)]
+        public bool? UseParentAttributeForNotLivingPlacements
+        {
+            get
+            {
+                CheckPropertyInited("UseParentAttributeForNotLivingPlacements");
+                return _useparentattributefornotlivingplacements;
+            }
+            set
+            {
+                _useparentattributefornotlivingplacements = value;
+                NotifyPropertyChanged("UseParentAttributeForNotLivingPlacements");
+            }
+        }
+
+
+        private bool? _useparentattributeforcarplace;
+        /// <summary>
+        /// 8100500 Использовать родительский атрибут для машино-мест (USE_PARENT_ATTRIBUTE_FOR_CAR_PLACE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8100500)]
+        public bool? UseParentAttributeForCarPlace
+        {
+            get
+            {
+                CheckPropertyInited("UseParentAttributeForCarPlace");
+                return _useparentattributeforcarplace;
+            }
+            set
+            {
+                _useparentattributeforcarplace = value;
+                NotifyPropertyChanged("UseParentAttributeForCarPlace");
             }
         }
 
@@ -6150,6 +6190,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _propertytypesmapping;
+        /// <summary>
+        /// 11901100 Список используемых видов объекта недвижимости (PROPERTY_TYPES_MAPPING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11901100)]
+        public string PropertyTypesMapping
+        {
+            get
+            {
+                CheckPropertyInited("PropertyTypesMapping");
+                return _propertytypesmapping;
+            }
+            set
+            {
+                _propertytypesmapping = value;
+                NotifyPropertyChanged("PropertyTypesMapping");
+            }
+        }
+
     }
 }
 
@@ -8229,6 +8289,26 @@ namespace ObjectModel.KO
             {
                 _a0formultiplicativetypeinprevioustour = value;
                 NotifyPropertyChanged("A0ForMultiplicativeTypeInPreviousTour");
+            }
+        }
+
+
+        private string _objectsstatistic;
+        /// <summary>
+        /// 20602100 Статистика по объектам модели (objects_statistic)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602100)]
+        public string ObjectsStatistic
+        {
+            get
+            {
+                CheckPropertyInited("ObjectsStatistic");
+                return _objectsstatistic;
+            }
+            set
+            {
+                _objectsstatistic = value;
+                NotifyPropertyChanged("ObjectsStatistic");
             }
         }
 
@@ -13768,113 +13848,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 261 Реестр с настройками атрибутов для Актуализации кадастровых данных (KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS)
-    /// </summary>
-    [RegisterInfo(RegisterID = 261)]
-    [Serializable]
-    public partial class OMUpdateCadastralDataAttributeSettings : OMBaseClass<OMUpdateCadastralDataAttributeSettings>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 26100100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 26100100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private string _attributeusingtype;
-        /// <summary>
-        /// 26100200 Тип использования атрибута (ATTRIBUTE_USING_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 26100200)]
-        public string AttributeUsingType
-        {
-            get
-            {
-                CheckPropertyInited("AttributeUsingType");
-                return _attributeusingtype;
-            }
-            set
-            {
-                _attributeusingtype = value;
-                NotifyPropertyChanged("AttributeUsingType");
-            }
-        }
-
-
-        private KoUpdateCadastralDataAttributeType _attributeusingtype_Code;
-        /// <summary>
-        /// 26100200 Тип использования атрибута (справочный код) (ATTRIBUTE_USING_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 26100200)]
-        public KoUpdateCadastralDataAttributeType AttributeUsingType_Code
-        {
-            get
-            {
-                CheckPropertyInited("AttributeUsingType_Code");
-                return this._attributeusingtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_attributeusingtype))
-                    {
-                         _attributeusingtype = descr;
-                    }
-                }
-                else
-                {
-                     _attributeusingtype = descr;
-                }
-
-                this._attributeusingtype_Code = value;
-                NotifyPropertyChanged("AttributeUsingType");
-                NotifyPropertyChanged("AttributeUsingType_Code");
-            }
-        }
-
-
-        private long? _attributeid;
-        /// <summary>
-        /// 26100300 Идентификатор атрибута (ATTRIBUTE_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 26100300)]
-        public long? AttributeId
-        {
-            get
-            {
-                CheckPropertyInited("AttributeId");
-                return _attributeid;
-            }
-            set
-            {
-                _attributeid = value;
-                NotifyPropertyChanged("AttributeId");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 262 Реестр с данными о процессах выгрузки результатов оценки (KO_UNLOAD_RESULT_QUEUE)
     /// </summary>
     [RegisterInfo(RegisterID = 262)]
@@ -14554,6 +14527,113 @@ namespace ObjectModel.KO
             {
                 _calculationvalue = value;
                 NotifyPropertyChanged("CalculationValue");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 266 Реестр с настройками атрибутов для общепользовательских операций (KO_SYSTEM_ATTRIBUTE_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 266)]
+    [Serializable]
+    public partial class OMSystemAttributeSettings : OMBaseClass<OMSystemAttributeSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _attributeusingtype;
+        /// <summary>
+        /// 26600200 Тип использования атрибута (ATTRIBUTE_USING_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600200)]
+        public string AttributeUsingType
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType");
+                return _attributeusingtype;
+            }
+            set
+            {
+                _attributeusingtype = value;
+                NotifyPropertyChanged("AttributeUsingType");
+            }
+        }
+
+
+        private KoAttributeTypeForSettings _attributeusingtype_Code;
+        /// <summary>
+        /// 26600200 Тип использования атрибута (справочный код) (ATTRIBUTE_USING_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600200)]
+        public KoAttributeTypeForSettings AttributeUsingType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType_Code");
+                return this._attributeusingtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_attributeusingtype))
+                    {
+                         _attributeusingtype = descr;
+                    }
+                }
+                else
+                {
+                     _attributeusingtype = descr;
+                }
+
+                this._attributeusingtype_Code = value;
+                NotifyPropertyChanged("AttributeUsingType");
+                NotifyPropertyChanged("AttributeUsingType_Code");
+            }
+        }
+
+
+        private long? _attributeid;
+        /// <summary>
+        /// 26600300 Идентификатор атрибута (ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26600300)]
+        public long? AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
             }
         }
 
@@ -25248,6 +25328,26 @@ namespace ObjectModel.Modeling
             {
                 _marketobjectid = value;
                 NotifyPropertyChanged("MarketObjectId");
+            }
+        }
+
+
+        private long? _unitid;
+        /// <summary>
+        /// 70201100 ИД юнита, свзяанного с объектом-аналогом (unit_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201100)]
+        public long? UnitId
+        {
+            get
+            {
+                CheckPropertyInited("UnitId");
+                return _unitid;
+            }
+            set
+            {
+                _unitid = value;
+                NotifyPropertyChanged("UnitId");
             }
         }
 

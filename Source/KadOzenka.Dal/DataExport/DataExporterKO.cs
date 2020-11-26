@@ -3883,21 +3883,21 @@ namespace KadOzenka.Dal.DataExport
                 #region 1. Общие сведения:
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "1. Общие сведения:", 10, HorizontalAlignment.Left, false, true);
+                DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "1. Общие сведения:", 12, HorizontalAlignment.Left, false, true);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "№ п/п",
                      "Наименование показателя",
                      "Значение, описание",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                      true, true);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "1.1",
                      "Кадастровая стоимость",
-                     _unit.CadastralCost.ToString(),
-                     10,
+                     _unit.CadastralCost.ToString()?.Replace(",", "."),
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3905,7 +3905,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.2",
                      "Дата, по состоянию на которую определена кадастровая стоимость (дата определения кадастровой стоимости)",
                      strDateApp,
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
 
@@ -3915,7 +3915,7 @@ namespace KadOzenka.Dal.DataExport
                          "1.3",
                          "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
                          "Отчет от 19.11.2018 № 2/2018 «Об итогах государственной кадастровой оценки земельных участков(категория земель «земли населенных пунктов»), расположенных на территории города Москвы по состоянию на 01.01.2018»",
-                         10,
+                         12,
                          HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                          true, false);
                 else
@@ -3923,7 +3923,7 @@ namespace KadOzenka.Dal.DataExport
                          "1.3",
                          "Реквизиты отчета об итогах государственной кадастровой оценки, составленного в соответствии со статьей 14 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
                          "Отчет от 19.11.2018 № 1/2018 «Об итогах государственной кадастровой оценки зданий, помещений, объектов незавершенного строительства, машино-мест и сооружений, расположенных на территории города Москвы по состоянию на 01.01.2018»",
-                         10,
+                         12,
                          HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                          true, false);
 
@@ -3933,7 +3933,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.4",
                      "Полный электронный адрес размещения отчета об итогах государственной кадастровой оценки в информационно - телекоммуникационной сети «Интернет»",
                      "http://cadastre.gcgs.ru/state/" + "$" + "https://rosreestr.ru/wps/portal/p/cc_ib_portal_services/cc_ib_ais_fdgko",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3941,7 +3941,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.5",
                      "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, подготовившем отчет об итогах государственной кадастровой оценки",
                      "Ковалев Д.В." + "$" + "Капитонов К.С.",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3949,7 +3949,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.6",
                      "Реквизиты акта определения кадастровой стоимости, составленного в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
                      strActReq_01_06,
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3957,7 +3957,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.7",
                      "Сведения о работнике бюджетного учреждения, созданного субъектом Российской Федерации и наделенного полномочиями, связанными с определением кадастровой стоимости, определившем кадастровую стоимость в соответствии со статьей 16 Федерального закона от 3 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке»",
                      strActReq_01_07,
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3965,7 +3965,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.8",
                      "Дата внесения сведений о кадастровой стоимости в Единый государственный реестр недвижимости",
                      "-",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3973,7 +3973,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.9",
                      "Дата подачи заявления об оспаривании кадастровой стоимости, по результатам рассмотрения которого определена кадастровая стоимость по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
                      "-",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3981,7 +3981,7 @@ namespace KadOzenka.Dal.DataExport
                      "1.10",
                      "Дата начала применения кадастровой стоимости, в том числе в случае изменения кадастровой стоимости по решению комиссии по рассмотрению споров о результатах определения кадастровой стоимости или по решению суда",
                      strActReq_01_10,
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -3994,7 +3994,7 @@ namespace KadOzenka.Dal.DataExport
                      "Телефоны:" + "$" +
                      "Для справок: +7 (495) 400-67-90, +7(495) 400-67- 68" + "$" +
                      "Единый контакт-центр: 8-800-222-2222",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4005,7 +4005,7 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
                     "2.Кадастровая стоимость объекта недвижимости определена на основании следующей информации:",
-                    10,
+                    12,
                     HorizontalAlignment.Left,
                     false, true);
                 #endregion
@@ -4016,7 +4016,7 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
                      "2.1. О характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:",
-                     10,
+                     12,
                      HorizontalAlignment.Left,
                      false, true);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4026,7 +4026,7 @@ namespace KadOzenka.Dal.DataExport
                      "№ п/п",
                      "Наименование показателя",
                      "Значение, описание",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, true);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4034,7 +4034,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.1",
                      "Кадастровый номер объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(_unit.CadastralNumber),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4042,7 +4042,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.2",
                      "Вид объекта недвижимости (земельный участок, здание, сооружение, помещение, машино-место, объект незавершенного строительства, единый недвижимый комплекс, предприятие как имущественный комплекс или иной вид)",
                      CheckNullEmpty.CheckStringOut(_unit.PropertyType),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4052,7 +4052,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.3",
                      "Адрес объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4062,15 +4062,15 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.4",
                      "Описание местоположения объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
                 DataExportCommon.SetText3Doc(document, table.Rows[idx_row],
                      "2.1.5",
                      "Площадь (для земельного участка, здания, помещения или машино-места) или иная основная характеристика (протяженность, глубина, глубина залегания, площадь, объем, высота, площадь застройки - для сооружения, объекта незавершенного строительства) объекта недвижимости",
-                     CheckNullEmpty.CheckStringOut(_unit.Square.ToString()),
-                     10,
+                     CheckNullEmpty.CheckStringOut(_unit.Square.ToString()?.Replace(",", ".")),
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4080,7 +4080,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.6",
                      "Категория земель, к которой относится земельный участок, если объектом недвижимости является земельный участок",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4090,7 +4090,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.7",
                      "Вид разрешенного использования объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4105,7 +4105,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.8",
                      "Назначение (для зданий, сооружений, помещения, единого недвижимого комплекса, предприятия как имущественного комплекса), проектируемое назначение (для объектов незавершенного строительства) объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4115,7 +4115,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.9",
                      "Этажность объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4125,7 +4125,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.10",
                      "Материал наружных стен объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4135,7 +4135,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.11",
                      "Обременения (ограничения) объекта недвижимости, использованные при определении кадастровой стоимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4145,7 +4145,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.12",
                      "Степень готовности объекта незавершенного строительства в процентах",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 value_attr = "";
@@ -4155,7 +4155,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.1.13",
                      "Иные сведения об объекте недвижимости, использованные при определении кадастровой стоимости",
                      CheckNullEmpty.CheckStringOut(value_attr),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 #endregion
@@ -4166,7 +4166,7 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
                     "2.2. О рынке недвижимости:",
-                    10,
+                    12,
                     HorizontalAlignment.Left,
                     false, true);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4175,7 +4175,7 @@ namespace KadOzenka.Dal.DataExport
                      "№ п/п",
                      "Наименование показателя",
                      "Значение, описание",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                      true, true);
 
@@ -4185,7 +4185,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.2.1",
                      "Сегмент рынка объектов недвижимости, к которому отнесен объект недвижимости",
                      CheckNullEmpty.CheckStringOut(group_unit.MarketSegment),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4193,7 +4193,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.2.2",
                      "Краткая характеристика особенностей функционирования сегмента рынка объектов недвижимости, к которому отнесен объект недвижимости (с указанием на страницы отчета об итогах государственной кадастровой оценки, где содержится полная характеристика сегмента рынка объектов недвижимости, в том числе анализ рыночной информации о ценах сделок (предложений) в таком сегменте, затрат на строительство объектов недвижимости)",
                      CheckNullEmpty.CheckStringOut(group_unit.MarketSegmentFunctioningFeatures),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4201,7 +4201,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.2.3",
                      "Характеристика ценовой зоны, в которой находится объект недвижимости, в том числе характеристика типового объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(group_unit.PriceZoneCharacteristic),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4214,7 +4214,7 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
                      "2.3. Перечень ценообразующих факторов, использованных для определения кадастровой стоимости объекта недвижимости, их значения и источники сведений о них:",
-                     10,
+                     12,
                      HorizontalAlignment.Left,
                      false, true);
 
@@ -4225,7 +4225,7 @@ namespace KadOzenka.Dal.DataExport
                      "Наименование",
                      "Значение",
                      "Источник",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                      true, true);
 
@@ -4382,17 +4382,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         jj = false;
                     }
@@ -4404,17 +4404,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", по субъекту)") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + _unit.ParentCalcNumber + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited) //subgroup.Type_SubGroup == 11)
@@ -4424,17 +4424,17 @@ namespace KadOzenka.Dal.DataExport
                     if (kk.Length == 1)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 2)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     if (kk.Length == 3)
                     {
                         formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + _unit.ParentCalcNumber + ")") +
-                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            "*Степень готовности объекта незавершенного строительства=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.Min) //subgroup.Type_SubGroup == 12)
@@ -4449,17 +4449,17 @@ namespace KadOzenka.Dal.DataExport
                         if (kk.Length == 1)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = OMGroup.GetFormulaKoeff(group_unit, true, "(Минимальное значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + ppkk + ")") +
-                                "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4467,12 +4467,12 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (!dd)
                     {
-                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     else
                     {
                         formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
-                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                            OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))
@@ -4486,19 +4486,19 @@ namespace KadOzenka.Dal.DataExport
                             formula = formula + "$$" +
                                 "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", по субъекту)") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 2)
                         {
                             formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом районе " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                         if (kk.Length == 3)
                         {
                             formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
                                 OMGroup.GetFormulaKoeff(calc_group, false, "(Среднее взвешенное по площади значение УПКС объектов, отнесенных к оценочным подгруппам: " + calc_group_num + ", в кадастровом квартале " + calc_unit.CadastralNumber + ")") +
-                                "=" + calc_unit.Upks.ToString() + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                                "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                         }
                     }
                 }
@@ -4512,7 +4512,7 @@ namespace KadOzenka.Dal.DataExport
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
                 DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0],
                      "2.4. Кадастровая стоимость объекта недвижимости определена в соответствии со следующей методологией:",
-                     10,
+                     12,
                      HorizontalAlignment.Left,
                      false, true);
                 idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -4521,7 +4521,7 @@ namespace KadOzenka.Dal.DataExport
                      "№ п/п",
                      "Наименование показателя",
                      "Значение, описание",
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                      true, true);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4529,7 +4529,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.1",
                      "Примененные подходы при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
                      CheckNullEmpty.CheckStringOut(group_unit.AppliedApproachesInCadastralCost),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4537,7 +4537,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.2",
                      "Примененные методы оценки при определении кадастровой стоимости объекта недвижимости с обоснованием их выбора",
                      CheckNullEmpty.CheckStringOut(group_unit.AppliedEvaluationMethodsInCadastralCost),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4545,7 +4545,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.3",
                      "Способ определения кадастровой стоимости объекта недвижимости (массовая или индивидуальная оценка в отношении объектов недвижимости) с обоснованием его выбора",
                      CheckNullEmpty.CheckStringOut(group_unit.CadastralCostDetermingMethod),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4553,7 +4553,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.4",
                      "Модель определения кадастровой стоимости объекта недвижимости с обоснованием ее выбора",
                      CheckNullEmpty.CheckStringOut(formula),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4561,7 +4561,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.5",
                      "Сегмент объектов недвижимости, к которому относится объект недвижимости, с обоснованием его выбора",
                      CheckNullEmpty.CheckStringOut(group_unit.ObjectsSegment),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4569,7 +4569,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.6",
                      "Группа (подгруппа) объектов недвижимости, к которой относится объект недвижимости, с обоснованием ее выбора",
                      CheckNullEmpty.CheckStringOut(group_unit.ObjectsSubgroup),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
                 idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 2, 3);
@@ -4577,7 +4577,7 @@ namespace KadOzenka.Dal.DataExport
                      "2.4.7",
                      "Краткое описание последовательности определения кадастровой стоимости объекта недвижимости",
                      CheckNullEmpty.CheckStringOut(group_unit.CadastralCostCalculationOrderDescription),
-                     10,
+                     12,
                      HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                      true, false);
 
@@ -4624,7 +4624,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.SetText2Doc(document, table.Rows[idx_row],
                     "Асоян А.С./Андреева И.В./Прусенкова О.В./Илюхин Б.В.",
                     " ",
-                    10,
+                    12,
                     HorizontalAlignment.Left, HorizontalAlignment.Right,
                     false, false);
                 #endregion
@@ -4685,7 +4685,11 @@ namespace KadOzenka.Dal.DataExport
             {
                 foreach (DataRow row in data.Rows)
                 {
-                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+	                var numberValue = row.ItemArray[7].ParseToDecimalNullable();
+                    if (numberValue.HasValue)
+	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), numberValue.ToString().Replace(",", ".")));
+                    else
+	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                 }
                 CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
                                         FactorValuesGroup.Find(x => x.FactorId == _factor_id) :
@@ -4712,7 +4716,7 @@ namespace KadOzenka.Dal.DataExport
 
                         if (mc != null)
                         {
-                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(".00000000000000000000", ".00") + ")";
+                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
                         }
                     }
                     #endregion
@@ -4775,25 +4779,15 @@ namespace KadOzenka.Dal.DataExport
                 List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value,
                     null,
                     new List<long> { transferAttribute.GbuId },
-                    _date);
+                    _date, isLight:true);
 
                 if (attribs.Count > 0)
                 {
-                    foreach (GbuObjectAttribute attrib in attribs)
-                    {
-                        if (attrib.NumValue.ToString() == _value)
-                        {
-                            var gbuAttribute = new GbuObjectService().GetGbuAttributes().FirstOrDefault(x => x.Id == transferAttribute.GbuId);
-                            if (gbuAttribute != null)
-                            {
-                                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == gbuAttribute.RegisterId);
-                                if (attribute_source != null)
-                                {
-                                    source_out = attribute_source.Description;
-                                }
-                            }
-                        }
-                    }
+	                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribs.First().RegisterData.Id);
+	                if (attribute_source != null)
+	                {
+		                source_out = attribute_source.Description;
+	                }
                 }
             }
 

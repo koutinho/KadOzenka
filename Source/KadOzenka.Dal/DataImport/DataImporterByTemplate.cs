@@ -21,6 +21,7 @@ using Core.ErrorManagment;
 using ObjectModel.Core.Shared;
 using Core.Shared.Misc;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Gbu;
@@ -35,8 +36,8 @@ namespace KadOzenka.Dal.DataImport
 		{
             if (!processQueue.ObjectId.HasValue)
             {
-                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetMessage(processQueue, Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 return;
             } 
 
@@ -47,8 +48,8 @@ namespace KadOzenka.Dal.DataImport
 				.FirstOrDefault();
             if (import == null)
             {
-                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
-                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                WorkerCommon.SetMessage(processQueue, Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
                 return;
             }
 

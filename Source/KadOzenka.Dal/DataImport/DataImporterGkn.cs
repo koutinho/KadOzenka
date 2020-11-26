@@ -17,11 +17,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport
 {
     public class DataImporterGkn
     {
+	    private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGkn>();
+
         //Объект-блокиратор для многопоточки
         private static object locked = new object();
         //ID фактора Материал стен итоговый
@@ -137,9 +140,9 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value);
+            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
         /// <summary>
@@ -148,132 +151,223 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value);
+            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
-        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetExcelObject(excelFile);
-
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
-
-            CountXmlBuildings = GknItems.Buildings.Count;
-            CountXmlParcels = GknItems.Parcels.Count;
-            CountXmlConstructions = GknItems.Constructions.Count;
-            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
-            CountXmlFlats = GknItems.Flats.Count;
-            CountXmlCarPlaces = GknItems.CarPlaces.Count;
-            CountImportBuildings = 0;
-            CountImportParcels = 0;
-            CountImportConstructions = 0;
-            CountImportUncompliteds = 0;
-            CountImportFlats = 0;
-            CountImportCarPlaces = 0;
-            AreCountersInitialized = true;
-
-            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken, GknItems);
         }
         
-        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);
+            ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken, GknItems);
+        }
 
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 10
-            };
+        private void ImportDataGkn(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
+	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
+        {
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
 
-            CountXmlBuildings = GknItems.Buildings.Count;
-            CountXmlParcels = GknItems.Parcels.Count;
-            CountXmlConstructions = GknItems.Constructions.Count;
-            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
-            CountXmlFlats = GknItems.Flats.Count;
-            CountXmlCarPlaces = GknItems.CarPlaces.Count;
-            CountImportBuildings = 0;
-            CountImportParcels = 0;
-            CountImportConstructions = 0;
-            CountImportUncompliteds = 0;
-            CountImportFlats = 0;
-            CountImportCarPlaces = 0;
-            AreCountersInitialized = true;
+	        ParallelOptions options = new ParallelOptions
+	        {
+		        CancellationToken = cancellationToken,
+		        MaxDegreeOfParallelism = 10
+	        };
 
-            Parallel.ForEach(GknItems.Buildings, options, item => {
-                try
-                {
-                    ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Parcels, options, item => {
-                try
-                {
-                    ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Constructions, options, item => {
-                try
-                {
-                    ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Uncompliteds, options, item => {
-                try
-                {
-                    ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.Flats, options, item => {
-                try
-                {
-                    ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
-            Parallel.ForEach(GknItems.CarPlaces, options, item => {
-                try
-                {
-                    ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
-                }
-                catch (Exception ex)
-                {
-                    ErrorManager.LogError(ex);
-                }
-            });
+	        CountXmlBuildings = GknItems.Buildings.Count;
+	        CountXmlParcels = GknItems.Parcels.Count;
+	        CountXmlConstructions = GknItems.Constructions.Count;
+	        CountXmlUncompliteds = GknItems.Uncompliteds.Count;
+	        CountXmlFlats = GknItems.Flats.Count;
+	        CountXmlCarPlaces = GknItems.CarPlaces.Count;
+	        CountImportBuildings = 0;
+	        CountImportParcels = 0;
+	        CountImportConstructions = 0;
+	        CountImportUncompliteds = 0;
+	        CountImportFlats = 0;
+	        CountImportCarPlaces = 0;
+	        AreCountersInitialized = true;
+	        Log.ForContext("TaskId", idTask)
+		        .ForContext("CountXmlBuildings", CountXmlBuildings)
+		        .ForContext("CountXmlParcels", CountXmlParcels)
+		        .ForContext("CountXmlConstructions", CountXmlConstructions)
+		        .ForContext("CountXmlUncompliteds", CountXmlUncompliteds)
+		        .ForContext("CountXmlFlats", CountXmlFlats)
+		        .ForContext("CountXmlCarPlaces", CountXmlCarPlaces)
+		        .Debug("Получены данные для импорта из ГКН");
 
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Buildings, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId).Error(ex, "Ошибка импорта данных ГКН во время загрузки Зданий");
+			        }
+		        });
+            }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Зданий");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Зданий завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Parcels, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Участков");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Участков");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Участков завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Constructions, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Сооружений");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Сооружений");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Сооружений завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Uncompliteds, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId).Error(ex,
+					        "Ошибка импорта данных ГКН во время загрузки Объектов незавершенного строительства");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning(
+			        "Импорт данных ГКН был отменен во время загрузки Объектов незавершенного строительства");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Объектов незавершенного строительства завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.Flats, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Помещений");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Помещений");
+	        }
+	        Log.ForContext("TaskId", idTask).Debug("Импорт Помещений завершен");
+
+	        if (cancellationToken.IsCancellationRequested)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен");
+		        return;
+	        }
+
+	        try
+	        {
+		        Parallel.ForEach(GknItems.CarPlaces, options, item =>
+		        {
+			        try
+			        {
+				        ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+			        }
+			        catch (Exception ex)
+			        {
+				        var errorId = ErrorManager.LogError(ex);
+				        Log.ForContext("ErrorId", errorId)
+					        .Error(ex, "Ошибка импорта данных ГКН во время загрузки Машино-мест");
+			        }
+		        });
+	        }
+	        catch (OperationCanceledException)
+	        {
+		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Машино-мест");
+	        }
+            Log.ForContext("TaskId", idTask).Debug("Импорт Машино-мест завершен");
         }
 
         //TODO перенести в общий сервис, например, GbuObjectService
@@ -579,7 +673,7 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fswall.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Материал стен итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prWallObjectCheck) ? lastUnit : null, xmlCodeName.GetNames(current.Walls));
+                                    koUnit.AddKOFactor(id_factor, (prWallObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
 
@@ -592,29 +686,29 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fsyear.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Год постройки итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
                         }
                         #endregion
 
                         #region Признаки для формирования заданий ЦОД
-                        //if (!prNameObjectCheck || !prAssignationObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!cadastralQuartalDidNotChange || !locationDidNotChange)
-                        //{
-                        //    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!prWallObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
-                        //if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
-                        //{
-                        //    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                        //}
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prWallObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
                         #endregion
                     }
                     #endregion
@@ -654,37 +748,11 @@ namespace KadOzenka.Dal.DataImport
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
 
-                    #region Заполнение фактора Материал стен на основании данных ГКН
-                    ObjectModel.KO.OMFactorSettings fs = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftWall).SelectAll().ExecuteFirstOrDefault();
-                    if (fs != null)
-                    {
-                        if (fs.FactorId != null)
-                        {
-                            long id_factor = fs.FactorId.ParseToLong();
-                            //добавить фактор Материал стен итоговый
-                            koUnit.AddKOFactor(id_factor, null, xmlCodeName.GetNames(current.Walls));
-                        }
-                    }
-                    #endregion
-
-                    #region Заполнение фактора Год постройки
-                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
-                    if (fsyear != null)
-                    {
-                        if (fsyear.FactorId != null)
-                        {
-                            long id_factor = fsyear.FactorId.ParseToLong();
-                            //добавить фактор Год постройки итоговый
-                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
-                        }
-                    }
-                    #endregion
-
                     #region Признаки для формирования заданий ЦОД
-                    //SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                    //SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
                 }
 
@@ -925,6 +993,21 @@ namespace KadOzenka.Dal.DataImport
                         }
                         #endregion
 
+                        #region Признаки для формирования заданий ЦОД
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
+
+
+
+
                     }
                     #endregion
                 }
@@ -962,6 +1045,12 @@ namespace KadOzenka.Dal.DataImport
                     
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 
@@ -1210,11 +1299,27 @@ namespace KadOzenka.Dal.DataImport
                                     long id_factor = fsyear.FactorId.ParseToLong();
                                     //Если в предыдущем объекте есть фактор Год постройки итоговый
                                     //его надо скопировать в новый объект, если нет, добавить надо.
-                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
+                                    koUnit.AddKOFactor(id_factor, (prYearUsedObjectCheck && prYearBuiltObjectCheck) ? lastUnit : null, string.Empty);
                                 }
                             }
                         }
                         #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!prNameObjectCheck || !prAssignationObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!prYearBuiltObjectCheck || !prYearUsedObjectCheck)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
                     #endregion
                 }
@@ -1256,19 +1361,12 @@ namespace KadOzenka.Dal.DataImport
                     SaveHistoryForNewObject(koUnit);
                     #endregion
 
-                    #region Заполнение фактора Год постройки
-                    ObjectModel.KO.OMFactorSettings fsyear = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftYear).SelectAll().ExecuteFirstOrDefault();
-                    if (fsyear != null)
-                    {
-                        if (fsyear.FactorId != null)
-                        {
-                            long id_factor = fsyear.FactorId.ParseToLong();
-                            //Если в предыдущем объекте есть фактор Год постройки итоговый
-                            //его надо скопировать в новый объект, если нет, добавить надо.
-                            koUnit.AddKOFactor(id_factor, null, string.IsNullOrEmpty(current.Years.Year_Used) ? current.Years.Year_Built : current.Years.Year_Used);
-                        }
-                    }
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
                     #endregion
+
                 }
 
                 ts.Complete();
@@ -1494,6 +1592,19 @@ namespace KadOzenka.Dal.DataImport
 	                        IsReadinessPercentageChanged = !readinessPercentageDidNotChange
                         };
                         CalculateUnitUpdateStatus(changedProperties, koUnit);
+
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
 
                     #endregion
@@ -1533,6 +1644,13 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
+
                     #endregion
                 }
 
@@ -1728,7 +1846,7 @@ namespace KadOzenka.Dal.DataImport
                         var squareDidNotChange = CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
                         var purposeOksDidNotChange = CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
                         var nameDidNotChange = CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        var useDidNotChange = CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
                         var buildYearDidNotChange = CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
                         var commissioningYearDidNotChange = CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
                         var floorsCountDidNotChange = CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
@@ -1773,6 +1891,27 @@ namespace KadOzenka.Dal.DataImport
                         }
                         #endregion
 
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange || !purposeOksDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!wallMaterialDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!buildYearDidNotChange || !commissioningYearDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
+
+
                     }
 
                     #endregion
@@ -1814,6 +1953,14 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 
@@ -2089,6 +2236,26 @@ namespace KadOzenka.Dal.DataImport
                             }
                         }
                         #endregion
+
+                        #region Признаки для формирования заданий ЦОД
+                        if (!nameDidNotChange || !purposeOksDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!cadastralQuartalDidNotChange || !locationDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!wallMaterialDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        if (!buildYearDidNotChange || !commissioningYearDidNotChange)
+                        {
+                            SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                        }
+                        #endregion
+
                     }
                     #endregion
                 }
@@ -2127,6 +2294,14 @@ namespace KadOzenka.Dal.DataImport
 
                     SetNewUnitUpdateStatus(koUnit);
                     SaveHistoryForNewObject(koUnit);
+
+                    #region Признаки для формирования заданий ЦОД
+                    SetAttributeValue_Boolean(660, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(661, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(662, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    SetAttributeValue_Boolean(663, true, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                    #endregion
+
                     #endregion
                 }
 

@@ -52,7 +52,11 @@ Write-Host 2. Публикация релиза
         $status = Get-WebAppPoolState -name $IIS_WebAppPoolName
         Write-Host $status.Value
         if ($status.Value -eq "Stopped"){
-     
+                
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы sql-скриптов
+                cpi -Path $scripts_path\* $sql_scripts_path -Force -Verbose
+                #Invoke-Expression -Command  "C:\'!Выполнение скриптов'\ppr\ExecuteSqlFiles2.exe" 
+                
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
                 foreach ($item in $config_array){
                     cpi -Path $site_dir\$item $backup_path\config -Recurse -Force -Verbose
@@ -64,11 +68,10 @@ Write-Host 2. Публикация релиза
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
                 cpi -Path $site_path\* $site_dir\ -Recurse -Force
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем конфиги
-                cpi -Path $config_path\* $site_dir -Force -Verbose 
+                cpi -Path $backup_path\config* $site_dir -Force -Verbose 
                 Start-WebSite -Name $IIS_siteName 
                 Start-WebAppPool -Name $IIS_WebAppPoolName
                
-
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы службы фоновых процессов
                 $files = Get-ChildItem -Path $service_path -Recurse -Include *.dll #| Where-Object -FilterScript {($_.LastWriteTime -gt '2020-01-01')}
                 cpi -Path $files  -Destination $service_dir -Force -Verbose 
@@ -77,12 +80,10 @@ Write-Host 2. Публикация релиза
                 foreach ($item in $service_array){
                      cpi -Path $service_path\$item $service_dir -Force -Verbose
                 }
+                $files = Get-ChildItem -Path $service_path\Config\* -Recurse 
+                cpi -Path $files  -Destination $service_dir\Config\ -Force -Verbose  
                 Start-WebSite -Name $IIS_serviceName
                 Start-WebAppPool -Name $IIS_servicePoolName
-
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы sql-скриптов
-                cpi -Path $scripts_path\* $sql_scripts_path -Force -Verbose
-                #Invoke-Expression -Command  "C:\'!Выполнение скриптов'\ppr\ExecuteSqlFiles2.exe" 
 
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Релиз опубликован
                 Invoke-WebRequest -Uri "http://localhost:40421/"

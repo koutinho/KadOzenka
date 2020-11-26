@@ -60,7 +60,7 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
 		public GroupCalculationSettingsService GroupCalculationSettingsService { get; set; }
 		public RegisterAttributeService RegisterAttributeService { get; set; }
-		public UpdateCadastralDataService UpdateCadastralDataService { get; set; }
+		public SystemAttributeSettingsService SystemAttributeSettingsService { get; set; }
 		public TemplateService TemplateService { get; set; }
 		public FactorSettingsService FactorSettingsService { get; set; }
 
@@ -73,7 +73,7 @@ namespace KadOzenka.Web.Controllers
             GroupService = new GroupService();
             GroupCalculationSettingsService = new GroupCalculationSettingsService();
 			RegisterAttributeService = new RegisterAttributeService();
-            UpdateCadastralDataService = new UpdateCadastralDataService();
+            SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
             FactorSettingsService = new FactorSettingsService();
 		}
@@ -743,22 +743,12 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public ActionResult UpdateCadastralDataAttributeSettings()
 		{
-			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			var model = new UpdateTaskCadastralDataAttributeSettingsModel();
 			model.CadastralQuarterGbuAttributeId =
-				UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
-			model.BuildingCadastralNumberGbuAttributeId = UpdateCadastralDataService
+				SystemAttributeSettingsService.GetCadastralDataCadastralQuarterAttributeId();
+			model.BuildingCadastralNumberGbuAttributeId = SystemAttributeSettingsService
 				.GetCadastralDataBuildingCadastralNumberAttributeId();
 
 			return View(model);
@@ -773,7 +763,7 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			UpdateCadastralDataService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
+			SystemAttributeSettingsService.UpdateCadastralDataAttributeSettings(model.CadastralQuarterGbuAttributeId,
 				model.BuildingCadastralNumberGbuAttributeId);
 
 			return Json(new { Success = "Сохранено успешно" });
@@ -781,6 +771,55 @@ namespace KadOzenka.Web.Controllers
 
 
 		#endregion Актуализация кадастровых данных
+
+
+		#region Перенос Оценочной группы
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroupSettings()
+		{
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
+
+			var model = new UpdateEvaluativeGroupSettingsModel
+			{
+				EvaluativeGroupGbuAttributeId = SystemAttributeSettingsService.GetEvaluativeGroupAttributeId()
+			};
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroupSettings(UpdateEvaluativeGroupSettingsModel model)
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			SystemAttributeSettingsService.UpdateEvaluativeGroupAttributeSettings(model.EvaluativeGroupGbuAttributeId);
+
+			return Ok();
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult UpdateEvaluativeGroup(long taskId)
+		{
+			var taskName = TaskService.GetTemplateForTaskName(taskId);
+
+			////TODO код для отладки
+			//new UpdateEvaluativeGroupLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = taskId
+			//}, new CancellationToken());
+			UpdateEvaluativeGroupLongProcess.AddProcessToQueue(taskId);
+
+			return Content($"Процесс Переноса оценочной группы для задания на оценку '{taskName}' успешно добавлен в очередь");
+		}
+
+		#endregion Перенос Оценочной группы
 
 
 		#region Изменения в атрибутах
@@ -887,22 +926,25 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public IActionResult GetRegistersForFactorDownload(long taskId, bool isOks)
         {
-            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-            if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
-
-            var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201)
-                .Select(x => new {x.Id, x.Name, x.ValueField, x.CodeField, x.Type});
-            var taskAttrTree =
-                new DropDownTreeItemModel
+            DropDownTreeItemModel BuildTreeItemModel(List<OMAttribute> attrList,string upperNodeValue, string upperNodeText)
+            {
+                return new DropDownTreeItemModel
                 {
-                    Value = "201",
-                    Text = "Единица оценки",
-                    Items = taskAttr.Select(x => new DropDownTreeItemModel
+                    Value = upperNodeValue,
+                    Text = upperNodeText,
+                    Items = attrList.Select(x => new DropDownTreeItemModel
                     {
                         Value = x.Id.ToString(),
                         Text = x.Name
                     }).ToList()
                 };
+            }
+
+            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+            if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
+
+            var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201);
+            var taskAttrTree = BuildTreeItemModel(taskAttr, "201", "Еденица оценки");
 
             var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
             if (tourAttributes.Count == 0)
@@ -910,19 +952,17 @@ namespace KadOzenka.Web.Controllers
 
             var tourRegister = TourFactorService.GetTourRegister(task.TourId ?? 0, isOks ? ObjectType.Oks : ObjectType.ZU);
             var paramsRegisterId = tourRegister.RegisterId;
-            var paramsTree = new DropDownTreeItemModel
-            {
-                Value = paramsRegisterId.ToString(),
-                Text = "Факторы",
-                Items = tourAttributes.Select(x => new DropDownTreeItemModel
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList()
-            };
+            var paramsTree = BuildTreeItemModel(tourAttributes, paramsRegisterId.ToString(), "Факторы");
+
+            var groupAttr = RegisterAttributeService.GetActiveRegisterAttributes(205);
+            var groupNumber = groupAttr.FirstOrDefault(x => x.Id == 20500500);
+            if (groupNumber!=null) groupNumber.Name = "Оценочная группа";
+            var groupTree = BuildTreeItemModel(groupAttr, "205", "Группы/подгруппы");
+
             var treeModel = new List<DropDownTreeItemModel>
             {
                 taskAttrTree,
+                groupTree,
                 paramsTree
             };
             return new JsonResult(treeModel);

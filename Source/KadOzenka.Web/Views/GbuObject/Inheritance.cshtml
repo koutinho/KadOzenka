@@ -191,7 +191,7 @@
     }
 
 	function getDataSource() {
-        return $.find('[class^=Attributes_]').map(d => $(d).data('kendoDropDownTree'));
+        return $.find('[class^=Attributes_]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
     }
 
     function getSelectedValues() {
@@ -249,8 +249,9 @@
             }
         );
         updateStates();
-        var clearButtons = $.find('[class^=clear-button-Attributes]');
-        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+        var clearButtons = $.find('[class^=clear-button-Attributes]').concat($.find('div[class^=wrapper-] [class^=clear-button]'));
+        clearButtons.forEach(b => b.onclick = function () { updateStates(); });
+        getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
 	}
 
 
@@ -314,6 +315,8 @@
                 var kendoDropDownTree = $(`#${elementName}`).data('kendoDropDownTree');
                 kendoDropDownTree.value(elementValue || '');
                 kendoDropDownTree.trigger('change');
+                kendoDropDownTree.filterInput.val('');
+                kendoDropDownTree.trigger('filtering', [true]);
             }
 
             if (elementName.startsWith('@nameof(Model.Attributes)')) {
@@ -321,6 +324,8 @@
                 if (predefinedKendoDropDownTree) {
                     predefinedKendoDropDownTree.value(elementValue || '');
                     predefinedKendoDropDownTree.trigger('change');
+                    predefinedKendoDropDownTree.filterInput.val('');
+                    predefinedKendoDropDownTree.trigger('filtering', [true]);
                 } else {
                     customRowValues.push(elementValue);
                     currentRowNumber++;
@@ -328,7 +333,8 @@
             }
         });
 
-        return await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
+        await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
+        updateStates();
     }
 
 

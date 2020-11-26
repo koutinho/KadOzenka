@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/09/2020 17:07:11" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ConvertNulls="false" ReportInfo.Modified="08/27/2020 10:59:03" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -41,6 +41,24 @@ namespace FastReport
       table[1, 0].ColSpan = 1;
       table[1, 0].SetStyle(table[0, 0]);
       table[1, 0].Text = &quot;Значение&quot;;
+      
+      for (int i = 2; i &lt; table.ColumnCount; i++)
+      {
+        if(!String.IsNullOrEmpty(table[i, 1].Text))  {
+          DataSourceBase groupDictionary = Report.GetDataSource(&quot;GroupDictionary&quot;);
+          groupDictionary.Init();
+          while (groupDictionary.HasMoreRows)
+          { 
+            string textName = Report.GetColumnValue(&quot;GroupDictionary.GroupId&quot;).ToString();
+            if(textName == table[i, 1].Text) {
+              
+              table[i, 1].Text = Report.GetColumnValue(&quot;GroupDictionary.GroupName&quot;).ToString();
+              break;
+            }
+            groupDictionary.Next();
+          }  
+        }    
+      }
 
 
       //adding new column for Data.ObjectsCount data
@@ -73,6 +91,55 @@ namespace FastReport
         }
           
       }
+      
+      //adding new total row     
+      int totalRowNumber = 0;
+      for (int i = 0; i &lt; table.RowCount; i++)
+      {
+        if(table[0, i].Text == &quot;Итого&quot;){
+          totalRowNumber = i;
+          break;
+        }       
+      }    
+      TableRow newRow1 = new TableRow();
+      newRow1.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow1);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      }
+      
+      TableRow newRow2 = new TableRow();
+      newRow2.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow2);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber + 1].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      }  
+      
+      TableRow newRow3 = new TableRow();
+      newRow3.AutoSize = true;
+      table.Rows.Insert(table.RowCount, newRow3);
+      for (int i = 0; i &lt; table.ColumnCount; i++)
+      { 
+        table[i, table.RowCount - 1].SetStyle(table[i, table.RowCount - 4]);
+        String text  = table[i, totalRowNumber + 2].Text;
+        table[i, table.RowCount - 1].Text = text;     
+      } 
+      
+      //set RowSpan  for new total row
+      table[0, table.RowCount - 3].RowSpan = 3;
+      table[1, table.RowCount - 3].RowSpan = 3;
+
+      //delete previous total rows
+      table.Rows.Remove(table.Rows[totalRowNumber+2]);
+      table.Rows.Remove(table.Rows[totalRowNumber + 1]);
+      table.Rows.Remove(table.Rows[totalRowNumber]); 
+      
 
       //adding new column and row for col/row numbering
       TableRow newRow = new TableRow();
@@ -132,19 +199,23 @@ namespace FastReport
       <Column Name="AdditionalName" DataType="System.String"/>
       <Column Name="Name" DataType="System.String"/>
       <Column Name="ObjectsCount" DataType="System.Int32"/>
-      <Column Name="GroupName" DataType="System.String"/>
+      <Column Name="GroupId" DataType="System.Int64"/>
       <Column Name="UpksCalcType" DataType="System.String"/>
       <Column Name="UpksCalcValue" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
+      <BusinessObjectDataSource Name="GroupDictionary" ReferenceName="GroupDictionary" DataType="null" Enabled="true">
+          <Column Name="GroupId" DataType="System.Int64"/>
+          <Column Name="GroupName" DataType="System.String"/>
+      </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="28.35,604.8,192.15,393.75" UnlimitedWidth="true">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="28.35,643.74,231.09,432.69" UnlimitedHeight="true" UnlimitedWidth="true">
     <DataBand Name="BandData1" Width="1047.06" Height="212.41" Guides="0,60.52,22.72,41.62" DataSource="Data">
-      <MatrixObject Name="MatrixData" Left="28.35" Width="576.45" Height="60.52" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
+      <MatrixObject Name="MatrixData" Left="28.35" Width="615.39" Height="60.52" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns>
-          <Header Expression="[Data.GroupName]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.GroupId]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
-          <Header Expression="[Data.Name]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.Name]" Totals="false"/>
           <Header Expression="[Data.UpksCalcType]" Sort="None" Totals="false"/>
         </MatrixRows>
         <MatrixCells>
@@ -161,12 +232,12 @@ namespace FastReport
         <TableRow Name="Row2" AutoSize="true">
           <TableCell Name="Cell3" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell12" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell15" Border.Lines="All" Text="[GroupName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell15" Border.Lines="All" Text="[GroupId]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
         <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell16" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell16" Border.Lines="All" Text="[UpksCalcValue]" NullValue=" " HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
       </MatrixObject>
     </DataBand>

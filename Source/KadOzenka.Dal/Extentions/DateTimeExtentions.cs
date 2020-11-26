@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Core.Register.DAL;
 using Platform.CalendarHolidays;
 
-namespace KadOzenka.Web.Extensions
+namespace KadOzenka.Dal.Extentions
 {
-	/// <summary>
-	/// Класс custom расширения DateTime.
-	/// </summary>
-	public static class DateTimeExtention
+	public static class DateTimeExtentions
 	{
 		public static DateTime GetStartWorkDate(this DateTime endDate, long workDaysCount)
 		{

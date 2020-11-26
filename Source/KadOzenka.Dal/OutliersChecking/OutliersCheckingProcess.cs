@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -32,6 +34,7 @@ namespace KadOzenka.Dal.OutliersChecking
 		public int TotalObjectsCount { get; private set; }
 		public int CurrentHandledObjectsCount { get; private set; }
 		public int ExcludedObjectsCount { get; private set; }
+		public List<PropertyTypesCIPJS> PropertyTypes { get; private set; }
 
 		public OutliersCheckingProcess()
 		{
@@ -39,9 +42,12 @@ namespace KadOzenka.Dal.OutliersChecking
 			_outliersCheckingReport = new OutliersCheckingReport();
 		}
 
-		public long PerformOutliersChecking(MarketSegment? segment)
+		public long PerformOutliersChecking(MarketSegment? segment, List<ObjectPropertyTypeDivision> propertyTypes)
 		{
 			Log.Debug($"Старт процедуры Проверки на выбросы {(segment.HasValue ? $"для сегмента {segment.GetEnumDescription()}" : "для всех сегментов")}");
+
+			SetPropertyTypes(propertyTypes);
+
 			Log.Debug("Получение настроек коэффициентов");
 			_outliersCheckingSettings = _outliersCheckingSettingsService.GetOutliersCheckingSettings()
 				.ToDictionary(x => x.LocationName, x => x);
@@ -50,34 +56,72 @@ namespace KadOzenka.Dal.OutliersChecking
 			var objectsBySegments = GetObjectsBySegments(segment);
 			SetTotalObjectsCount(objectsBySegments);
 
+			var segmentsForHandling = segment.HasValue 
+				? new List<MarketSegment>{segment.Value} :
+				System.Enum.GetValues(typeof(MarketSegment)).Cast<MarketSegment>().ToList();
+			segmentsForHandling.Remove(MarketSegment.None);
+
 			Locked = new object();
-			foreach (var objectsBySegment in objectsBySegments)
+			foreach (var marketSegment in segmentsForHandling)
 			{
-				var segmentCode = objectsBySegment.Key;
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Начата обработка сегмента '{MarketSegment}'", segmentCode.GetEnumDescription());
+				var objectsBySegment = objectsBySegments.ContainsKey(marketSegment) 
+					? objectsBySegments[marketSegment] 
+					: new List<OMCoreObject>();
 
-				var saleODealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
-				var saleOSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
-				var rentDealObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
-				var rentSuggestionObjects = objectsBySegment.Value.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
-				ProcessObjectsByDealType(segmentCode, DealType.SaleDeal, saleODealObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.RentDeal, rentDealObjects);
-				ProcessObjectsByDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
-
-				Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
-					.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
-					.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
-					.ForContext("ObjectsCountBySegment", objectsBySegment.Value.Count)
-					.Debug("Обработка сегмента '{MarketSegment}' завершена", segmentCode.GetEnumDescription());
+				ProcessObjectsBySegment(marketSegment, objectsBySegment);
 			}
 
 			_outliersCheckingReport.SetStyleAndSorting();
 			return _outliersCheckingReport.SaveReport();
+		}
+
+		private void SetPropertyTypes(List<ObjectPropertyTypeDivision> propertyTypeDivisions)
+		{
+			if(propertyTypeDivisions.IsEmpty())
+				throw new Exception("Не заданы виды объектов недвижимости");
+
+			var propertyTypes = new List<PropertyTypesCIPJS>();
+			foreach (var propertyTypeDivision in propertyTypeDivisions)
+			{
+				switch (propertyTypeDivision)
+				{
+					case ObjectPropertyTypeDivision.LandArea:
+						propertyTypes.Add(PropertyTypesCIPJS.LandArea);
+						break;
+					case ObjectPropertyTypeDivision.BuildingsAndPlacements:
+						propertyTypes.AddRange(new[]{ PropertyTypesCIPJS.Buildings, PropertyTypesCIPJS.Placements });
+						break;
+					case ObjectPropertyTypeDivision.ConstructionsAndOthers:
+						propertyTypes.Add(PropertyTypesCIPJS.OtherAndMore);
+						break;
+				}
+			}
+
+			PropertyTypes = propertyTypes;
+		}
+
+		private void ProcessObjectsBySegment(MarketSegment segmentCode, List<OMCoreObject> objectsBySegment)
+		{
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Начата обработка сегмента '{MarketSegment}'", segmentCode.GetEnumDescription());
+
+			var saleODealObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.SaleDeal).ToList();
+			var saleOSuggestionObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.SaleSuggestion).ToList();
+			var rentDealObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.RentDeal).ToList();
+			var rentSuggestionObjects = objectsBySegment.Where(x => x.DealType_Code == DealType.RentSuggestion).ToList();
+			ProcessObjectsByDealType(segmentCode, DealType.SaleDeal, saleODealObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.SaleSuggestion, saleOSuggestionObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.RentDeal, rentDealObjects);
+			ProcessObjectsByDealType(segmentCode, DealType.RentSuggestion, rentSuggestionObjects);
+
+			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
+				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
+				.ForContext("ObjectsCountCurrentExcluded", ExcludedObjectsCount)
+				.ForContext("ObjectsCountBySegment", objectsBySegment.Count)
+				.Debug("Обработка сегмента '{MarketSegment}' завершена", segmentCode.GetEnumDescription());
 		}
 
 		private void ProcessObjectsByDealType(MarketSegment segmentCode, DealType dealType, List<OMCoreObject> objectsByDealType)
@@ -88,12 +132,26 @@ namespace KadOzenka.Dal.OutliersChecking
 				.ForContext("ObjectsCountByDealType", objectsByDealType.Count)
 				.Debug("Начата обработка типа сделки '{DealType}' сегмента '{MarketSegment}'", dealType.GetEnumDescription(), segmentCode.GetEnumDescription());
 
-			var parcels = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea).ToList();
-			var buildingsAndPlacements = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.Buildings || x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.Placements).ToList();
-			var constructionsAndOthers = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.OtherAndMore).ToList();
-			ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.LandArea, parcels);
-			ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.BuildingsAndPlacements, buildingsAndPlacements);
-			ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.ConstructionsAndOthers, constructionsAndOthers);
+			if (PropertyTypes.Contains(PropertyTypesCIPJS.LandArea))
+			{
+				var parcels = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea).ToList();
+				ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.LandArea, parcels);
+			}
+
+			if (PropertyTypes.Contains(PropertyTypesCIPJS.Placements) ||
+			    PropertyTypes.Contains(PropertyTypesCIPJS.Buildings))
+			{
+				var buildingsAndPlacements = objectsByDealType.Where(x =>
+					x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.Buildings ||
+					x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.Placements).ToList();
+				ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.BuildingsAndPlacements, buildingsAndPlacements);
+			}
+
+			if (PropertyTypes.Contains(PropertyTypesCIPJS.OtherAndMore))
+			{
+				var constructionsAndOthers = objectsByDealType.Where(x => x.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.OtherAndMore).ToList();
+				ProcessObjectsByPropertyType(segmentCode, dealType, ObjectPropertyTypeDivision.ConstructionsAndOthers, constructionsAndOthers);
+			}
 
 			Log.ForContext("ObjectsCountTotal", TotalObjectsCount)
 				.ForContext("ObjectsCountCurrentHandled", CurrentHandledObjectsCount)
@@ -149,7 +207,8 @@ namespace KadOzenka.Dal.OutliersChecking
 				&& x.PricePerMeter != null
 				&& x.Zone != null
 				&& x.District != null
-				&& x.Neighborhood != null);
+				&& x.Neighborhood != null
+				&& PropertyTypes.Contains(x.PropertyTypesCIPJS_Code));
 
 			if (segment.HasValue)
 				query.And(x => x.PropertyMarketSegment_Code == segment.Value);

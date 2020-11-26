@@ -37,8 +37,8 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 		{
 			if (!processQueue.ObjectId.HasValue)
 			{
-                WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
                 return;
 			}
 
@@ -50,8 +50,8 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 
 			if (export == null)
 			{
-                WorkerCommon.SetMessage(processQueue, Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
-                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                WorkerCommon.SetMessage(processQueue, Common.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
                 return;
 			}
 			WorkerCommon.SetProgress(processQueue, 0);

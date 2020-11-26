@@ -5,7 +5,7 @@ $site = $IIS_siteName = $IIS_WebAppPoolName = "CIPJS_KO_TEST"
 $site2 = $IIS_siteName2 = $IIS_WebAppPoolName2 = "CIPJS_KO_TEST_AD"
 $service = $IIS_serviceName = $IIS_servicePoolName = "CIPJS_KO_TEST_LongProcessService"
 
-$backup = $true
+$backup = $false
 $backup_path = "D:\Backup_Site\$site\"
 $Server = "192.168.3.67"
 
@@ -32,16 +32,16 @@ if (Test-Path -Path $service_dir -IsValid){
     New-Item -ItemType Directory -Force -Path $service_dir 
 }
 Write-Host 1. Бэкап текущей версии
-if ($backup) {
-    Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
-        foreach ($item in $config_array){
-           # cpi -Path $site_dir\$item $backup_path\config\ -Recurse -Force -Verbose
-            cpi -Path $site_dir\$item $config_path -Recurse -Force -Verbose
-        }
 
-  
+   
+    Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап config-файлов
+        foreach ($item in $config_array){
+            cpi -Path $site_dir\$item $backup_path\config\ -Recurse -Force -Verbose
+            cpi -Path $site_dir\$item $config_path\ -Recurse -Force -Verbose
+        }
+  if ($backup) {
         cpi -Path $site_dir "$backup_path\backup\" -Recurse -Force
-        Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
+        Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап всего сайта
         compress-archive "$backup_path\backup\" $backup_path"backup_$site_$df.zip" 
     }
 
@@ -66,16 +66,14 @@ Write-Host 2. Публикация релиза
         Write-Host $status.Value
         if ($status.Value -eq "Stopped"){
      
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
-                foreach ($item in $config_array){
-                    cpi -Path $site_dir\$item $backup_path\config -Recurse -Force -Verbose
-                    cpi -Path $site_dir\$item $config_path -Recurse -Force -Verbose
-                }
-             
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем sql-скрипты
+                cpi -Path $scripts_path\* $sql_scripts_path -Force -Verbose
+            
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
                 cpi -Path $site_path\* $site_dir\ -Recurse -Force
+
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем конфиги
-                cpi -Path $config_path\* $site_dir -Force -Verbose 
+                cpi -Path $backup_path\config\* $site_dir -Force -Verbose 
                       
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы службы фоновых процессов
                 $files = Get-ChildItem -Path $service_path -Recurse -Include *.dll #| Where-Object -FilterScript {($_.LastWriteTime -gt '2020-01-01')}
@@ -85,9 +83,8 @@ Write-Host 2. Публикация релиза
                 foreach ($item in $service_array){
                      cpi -Path $service_path\$item $service_dir -Force -Verbose
                 }
-
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем sql-скрипты
-                cpi -Path $scripts_path\* $sql_scripts_path -Force -Verbose
+                $files = Get-ChildItem -Path $service_path\Config\* -Recurse 
+                cpi -Path $files  -Destination $service_dir\Config\ -Force -Verbose     
 
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Запускаем сайты и приложения
                 Start-WebAppPool -Name $IIS_servicePoolName

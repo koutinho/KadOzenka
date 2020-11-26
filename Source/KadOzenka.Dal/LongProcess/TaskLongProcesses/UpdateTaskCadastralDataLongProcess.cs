@@ -28,13 +28,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return LongProcessManager.AddTaskToQueue(LongProcessName, OMTask.GetRegisterId(), taskId);
 		}
 
-		private UpdateCadastralDataService UpdateCadastralDataService { get; }
+		private SystemAttributeSettingsService SystemAttributeSettingsService { get; }
 		private GbuObjectService GbuObjectService { get; }
 		private TaskService TaskService { get; }
 
 		public UpdateTaskCadastralDataLongProcess()
 		{
-			UpdateCadastralDataService = new UpdateCadastralDataService();
+			SystemAttributeSettingsService = new SystemAttributeSettingsService();
 			GbuObjectService = new GbuObjectService();
 			TaskService = new TaskService();
 		}
@@ -52,8 +52,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			if (!processQueue.ObjectId.HasValue)
 			{
 				_log.Warning("В фоновый процесс {ProcessType} не передан ObjectId (ИД задания на оценку)", processType.Description);
-				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				NotificationSender.SendNotification(processQueue, "Актуализация кадастровых данных",
 					"Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
 				return;
@@ -121,41 +121,43 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			var buildingCadastralNumberDictionary = new Dictionary<long, string>();
-			var buildingCadastralNumberDictionaryForPlacements = new Dictionary<long, string>();
 			if (_buildingCadastralNumberAttrId.HasValue)
 			{
 				buildingCadastralNumberDictionary = gbuAttrValues.Where(x => x.AttributeId == _buildingCadastralNumberAttrId.Value)
 					.ToDictionary(x => x.ObjectId, x => x.GetValueInString());
 				_log.ForContext("BuildingCadastralNumberDictionaryCount", buildingCadastralNumberDictionary.Count)
 					.Debug("Добавлены значения в словарь данных для кадастровых номеров зданий");
+			}
 
-				var placementGbuObjIds = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement)
+			var cadastralQuarterDictionaryForPlacements = new Dictionary<long, string>();
+			if (_cadastralQuarterAttrId.HasValue && _buildingCadastralNumberAttrId.HasValue)
+			{
+				var placementGbuObjIds = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement || x.PropertyType_Code == PropertyTypes.Parking)
 					.Select(x => x.ObjectId.Value).Distinct().ToList();
-				buildingCadastralNumberDictionaryForPlacements = GetBuildingCadastralNumberDictionaryForPlacements(placementGbuObjIds,
-					gbuAttrValues, currentDate, buildingCadastralNumberDictionary);
-				_log.ForContext("BuildingCadastralNumberDictionaryForPlacementCount", buildingCadastralNumberDictionaryForPlacements.Count)
-					.Debug("Добавлены значения в словарь данных для кадастровых номеров зданий для помещений");
+				cadastralQuarterDictionaryForPlacements = GetBuildingCadastralQuarterDictionaryForPlacements(placementGbuObjIds, currentDate, buildingCadastralNumberDictionary);
+				_log.ForContext("BuildingCadastralNumberDictionaryForPlacementCount", cadastralQuarterDictionaryForPlacements.Count)
+					.Debug("Добавлены значения в словарь данных для кадастровых кварталов зданий для помещений");
 			}
 
 			Parallel.ForEach(units, options, unit =>
 			{
 				var currentCadastralQuarter = unit.CadastralBlock;
 				var currentBuildingCadastralNumber = unit.BuildingCadastralNumber;
-				currentCadastralQuarter = cadastralQuartalDictionary.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(cadastralQuartalDictionary[unit.ObjectId.Value])
-					? cadastralQuartalDictionary[unit.ObjectId.Value]
-					: currentCadastralQuarter;
-				if (unit.PropertyType_Code == PropertyTypes.Pllacement)
+				currentBuildingCadastralNumber = buildingCadastralNumberDictionary.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(buildingCadastralNumberDictionary[unit.ObjectId.Value])
+					? buildingCadastralNumberDictionary[unit.ObjectId.Value]
+					: currentBuildingCadastralNumber;
+				if (unit.PropertyType_Code == PropertyTypes.Pllacement || unit.PropertyType_Code == PropertyTypes.Parking)
 				{
-					currentBuildingCadastralNumber =
-						buildingCadastralNumberDictionaryForPlacements.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(buildingCadastralNumberDictionaryForPlacements[unit.ObjectId.Value])
-							? buildingCadastralNumberDictionaryForPlacements[unit.ObjectId.Value]
-							: currentBuildingCadastralNumber;
+					currentCadastralQuarter =
+						cadastralQuarterDictionaryForPlacements.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(cadastralQuarterDictionaryForPlacements[unit.ObjectId.Value])
+							? cadastralQuarterDictionaryForPlacements[unit.ObjectId.Value]
+							: currentCadastralQuarter;
 				}
 				else
 				{
-					currentBuildingCadastralNumber = buildingCadastralNumberDictionary.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(buildingCadastralNumberDictionary[unit.ObjectId.Value])
-						? buildingCadastralNumberDictionary[unit.ObjectId.Value]
-						: currentBuildingCadastralNumber;
+					currentCadastralQuarter = cadastralQuartalDictionary.ContainsKey(unit.ObjectId.Value) && !string.IsNullOrEmpty(cadastralQuartalDictionary[unit.ObjectId.Value])
+						? cadastralQuartalDictionary[unit.ObjectId.Value]
+						: currentCadastralQuarter;
 				}
 
 				if (currentCadastralQuarter != unit.CadastralBlock || currentBuildingCadastralNumber != unit.BuildingCadastralNumber)
@@ -211,26 +213,24 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return reportId;
 		}
 
-		private Dictionary<long, string> GetBuildingCadastralNumberDictionaryForPlacements(List<long> placementGbuObjIds, List<GbuObjectAttribute> gbuAttrValues,
-			DateTime currentDate, Dictionary<long, string> buildingCadastralNumberDictionary)
+		private Dictionary<long, string> GetBuildingCadastralQuarterDictionaryForPlacements(List<long> placementGbuObjIds, DateTime currentDate, Dictionary<long, string> buildingCadastralNumberDictionary)
 		{
 			var result = new Dictionary<long, string>();
 
-			var placementBuildingCadastralNumbers = gbuAttrValues.Where(x =>
-				placementGbuObjIds.Contains(x.ObjectId) && x.AttributeId == _buildingCadastralNumberAttrId.Value).Select(x => x.GetValueInString()).Distinct().ToList();
+			var placementBuildingCadastralNumbers = buildingCadastralNumberDictionary.Where(x => placementGbuObjIds.Contains(x.Key))
+				.Select(x => x.Value).Distinct().ToList();
 			if (!placementBuildingCadastralNumbers.IsEmpty())
 			{
-				//По кадастровому номеру здания из гбу части ищем Объекты недвижимости
 				var buildingGbuObjects = OMMainObject
 					.Where(x => placementBuildingCadastralNumbers.Contains(x.CadastralNumber))
 					.Select(x => new {x.Id, x.CadastralNumber})
 					.Execute();
 				_log.Debug("Найдено {PlacementBuildingGbuObjectsCount} гбу объектов по кадастровому номеру здания для помещений", buildingGbuObjects.Count);
-				//Для найденных объектов недвижимости ищем значения гбу атрибута Кадастровый номер здания
-				var builgingsBuildingCadastralNumberGbuAttr = GbuObjectService.GetAllAttributes(
+
+				var builgingsCadastralQuarterGbuAttr = GbuObjectService.GetAllAttributes(
 					buildingGbuObjects.Select(x => x.Id).Distinct().ToList(), null,
-					new List<long> {_buildingCadastralNumberAttrId.Value}, currentDate, isLight: true);
-				_log.Debug("Найдено {PlacementBuildingCadastralNumberGbuAttrCount} гбу атрибутов кадастровых номеров зданий для зданий помещений", builgingsBuildingCadastralNumberGbuAttr.Count);
+					new List<long> { _cadastralQuarterAttrId.Value}, currentDate, isLight: true);
+				_log.Debug("Найдено {PlacementBuildingCadastralQuarterGbuAttrCount} гбу атрибутов кадастровых кварталов для зданий помещений", builgingsCadastralQuarterGbuAttr.Count);
 				foreach (var placementsObjId in placementGbuObjIds)
 				{
 					if (buildingCadastralNumberDictionary.ContainsKey(placementsObjId))
@@ -240,8 +240,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 							x.CadastralNumber == buildingCadastralNumber)?.Id;
 						if (buildingGbuId.HasValue)
 						{
-							var attrValue = builgingsBuildingCadastralNumberGbuAttr
-								.FirstOrDefault(x => x.Id == buildingGbuId.Value)?.GetValueInString();
+							var attrValue = builgingsCadastralQuarterGbuAttr
+								.FirstOrDefault(x => x.ObjectId == buildingGbuId.Value)?.GetValueInString();
 							if (!string.IsNullOrEmpty(attrValue))
 							{
 								result.Add(placementsObjId, attrValue);
@@ -256,9 +256,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private void SetupInitialSettings(long taskId)
 		{
-			var cadastralQuarterAttrId = UpdateCadastralDataService.GetCadastralDataCadastralQuarterAttributeId();
+			var cadastralQuarterAttrId = SystemAttributeSettingsService.GetCadastralDataCadastralQuarterAttributeId();
 			_cadastralQuarterAttrId = cadastralQuarterAttrId;
-			var buildingCadastralNumberAttrId = UpdateCadastralDataService.GetCadastralDataBuildingCadastralNumberAttributeId();
+			var buildingCadastralNumberAttrId = SystemAttributeSettingsService.GetCadastralDataBuildingCadastralNumberAttributeId();
 			_buildingCadastralNumberAttrId = buildingCadastralNumberAttrId;
 			_taskName = TaskService.GetTemplateForTaskName(taskId);
 

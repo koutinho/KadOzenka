@@ -53,7 +53,17 @@ namespace KadOzenka.Dal.LongProcess
 			}
         }
 
-        protected void SendMessage(OMQueue processQueue, string message, string subject)
+        protected void LogProgress(int maxCount, int currentCount, OMQueue processQueue)
+        {
+	        if (maxCount <= 0 || currentCount <= 0)
+		        return;
+
+	        var newProgress = (long)Math.Round(((double)currentCount / maxCount) * 100);
+	        if (newProgress != processQueue.Progress)
+		        WorkerCommon.SetProgress(processQueue, newProgress);
+        }
+
+		protected void SendMessage(OMQueue processQueue, string message, string subject)
         {
 	        new MessageService().SendMessages(new MessageDto
 	        {

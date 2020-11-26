@@ -113,9 +113,9 @@ namespace KadOzenka.Dal.Tasks
 
                 var postfix = attribute.Id;
 
-                string sql = $@"select DISTINCT object_id, value, ot from gbu_source2_a_{postfix}
-				where object_id={objectId} and change_doc_id={task.DocumentId}
-				";
+                string sql = $@"select DISTINCT ON (object_id, s, ot) object_id, value, s, ot from gbu_source2_a_{postfix}
+                    where object_id={objectId} and change_doc_id={task.DocumentId} order by ot desc limit 1
+                ";
 
                 DbCommand command = DBMngr.Main.GetSqlStringCommand(sql);
                 DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
@@ -129,7 +129,7 @@ namespace KadOzenka.Dal.Tasks
                     {
                         ObjectId = row["object_id"].ParseToLong(),
                         AttributeId = postfix.ParseToLong(),
-                        Value = row["value"].ParseToStringNullable()
+                        Value = row["value"].ParseToString()
                     });
                 }
 
@@ -142,113 +142,115 @@ namespace KadOzenka.Dal.Tasks
                         .GetAttributeData((int) attributeClass.AttributeId).Name;
 
                     sql = $@"select value from gbu_source2_a_{postfix}
-						where object_id={objectId} 
-							and ot < to_date('{oldDate.ToString("dd-MM-yyyy")}','dd-mm-yyyy')
-						order by ot desc
-						limit 1;";
+                        where object_id={objectId} 
+                            and ot < to_timestamp('{oldDate.ToString("dd-MM-yyyy HH:mm:ss")}','dd-mm-yyyy HH24:MI:ss')
+                            and change_doc_id<>{task.DocumentId}
+                        order by ot desc
+                        limit 1;";
                     command = DBMngr.Main.GetSqlStringCommand(sql);
                     attributeClass.OldValue = DBMngr.Main.ExecuteScalar(command)?.ToString();
+
+                    list.Add(attributeClass);
                 }
-                newRecords.ForEach(x=>list.Add(x));
             }
 
             return list;
         }
 
         public Stream TaskAttributeChangesToExcel(long taskId)
-		{
-			var gbuObjectService = new GbuObjectService();
-			OMTask task = OMTask.Where(x => x.Id == taskId)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+        {
+            var gbuObjectService = new GbuObjectService();
+            OMTask task = OMTask.Where(x => x.Id == taskId)
+                .SelectAll()
+                .ExecuteFirstOrDefault();
 
-			if (task == null)
-			{
-				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
-			}
+            if (task == null)
+            {
+                throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+            }
 
-			var units = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
+            var units = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
 
-			var objectIdList = units.Where(x => x.ObjectId.HasValue).Select(x=>x.ObjectId.Value).ToList();
-			// список кадастровых номеров
-			var objectCadNumList = units.Select(x => new {x.ObjectId, x.CadastralNumber});
-			// список всех изменений атрибутов по списку объектов
-			var attributesList = gbuObjectService.GetAllAttributes(objectIdList);
-			// атрибуты с привязкой к КН
-			var res = objectCadNumList.Join(attributesList, x => x.ObjectId, y => y.ObjectId, (x, y) => new
-			{
-				x.CadastralNumber,
-				x.ObjectId,
-				Value = GetVal(y.NumValue, y.DtValue, y.StringValue),
-				y.AttributeId,
-				AttrName = y.AttributeData.Name,
-				y.Ot,
-				y.S,
-				y.ChangeDocId,
-				y.ChangeDate
-			});
+            var objectIdList = units.Where(x => x.ObjectId.HasValue).Select(x=>x.ObjectId.Value).ToList();
+            // список кадастровых номеров
+            var objectCadNumList = units.Select(x => new {x.ObjectId, x.CadastralNumber});
+            // список всех изменений атрибутов по списку объектов
+            var attributesList = gbuObjectService.GetAllAttributes(objectIdList);
+            // атрибуты с привязкой к КН
+            var res = objectCadNumList.Join(attributesList, x => x.ObjectId, y => y.ObjectId, (x, y) => new
+            {
+                x.CadastralNumber,
+                x.ObjectId,
+                Value = GetVal(y.NumValue, y.DtValue, y.StringValue),
+                y.AttributeId,
+                AttrName = y.AttributeData.Name,
+                y.Ot,
+                y.S,
+                y.ChangeDocId,
+                y.ChangeDate
+            });
 
-			// лист с данными по выбранному документу
-			var changeDoc = res.Where(x => x.ChangeDocId == task.DocumentId).ToList();
+            // лист с данными по выбранному документу
+            var changeDoc = res.Where(x => x.ChangeDocId == task.DocumentId).ToList();
 
-			var doc = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+            var doc = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
 
-			// лист с данными по всем атрибутам, фильтр до даты документа
-			var allAttrib = res.Where(x => x.Ot < (doc.ApproveDate ?? doc.CreateDate))
-				.Where(x=>x.Value!=null)
-				.OrderByDescending(x=>x.Ot)
-				.GroupBy(x=>x.AttributeId)
-				.Select(x=>x.FirstOrDefault())
-				.ToList();
+            // лист с данными по всем атрибутам, фильтр до даты документа
+            var allAttrib = res.Where(x => x.Ot < (doc.ApproveDate ?? doc.CreateDate))
+                .Where(x=>x.Value!=null)
+                .OrderByDescending(x=>x.Ot)
+                .GroupBy(x=>x.AttributeId)
+                .Select(x=>x.FirstOrDefault())
+                .ToList();
 
-			var history =
-				(from cDoc in changeDoc
-				join attr in allAttrib
-					on (cDoc.AttributeId, cDoc.ObjectId) equals (attr.AttributeId, attr.ObjectId)
-					into intermediateResult
-				from inRes in intermediateResult.DefaultIfEmpty()
-				select new
-				{
-					cDoc,
-					OldValue = inRes?.Value ?? String.Empty
-				}).ToList();
+            var history =
+                (from cDoc in changeDoc
+                join attr in allAttrib
+                    on (cDoc.AttributeId, cDoc.ObjectId) equals (attr.AttributeId, attr.ObjectId)
+                    into intermediateResult
+                from inRes in intermediateResult.DefaultIfEmpty()
+                select new
+                {
+                    cDoc,
+                    OldValue = inRes?.Value ?? String.Empty
+                }).ToList();
 
-			var excelFile = new ExcelFile();
-			excelFile.Worksheets.Add("Изменения");
-			var sheet = excelFile.Worksheets[0];
+            var excelFile = new ExcelFile();
+            excelFile.Worksheets.Add("Изменения");
+            var sheet = excelFile.Worksheets[0];
 
-			DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
-			var rowCounter = 1;
+            DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
+            var rowCounter = 1;
 
-			foreach (var attribute in history)
-			{
-				DataExportCommon.AddRow(sheet,rowCounter,new object[]
-				{
-					attribute.cDoc.CadastralNumber,
-					attribute.cDoc.AttrName,
-					attribute.OldValue,
-					attribute.cDoc.Value
-				});
-				rowCounter++;
-			}
+            foreach (var attribute in history)
+            {
+                DataExportCommon.AddRow(sheet,rowCounter,new object[]
+                {
+                    attribute.cDoc.CadastralNumber,
+                    attribute.cDoc.AttrName,
+                    attribute.OldValue,
+                    attribute.cDoc.Value
+                });
+                rowCounter++;
+            }
 
-			var ms = new MemoryStream();
-			excelFile.Save(ms,SaveOptions.XlsxDefault);
-			ms.Seek(0, SeekOrigin.Begin);
-			return ms;
+            var ms = new MemoryStream();
+            excelFile.Save(ms,SaveOptions.XlsxDefault);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
 
-			string GetVal(decimal? dec, DateTime? dt, string str)
-			{
-				if (dec.HasValue) return dec.ToString();
-				if (dt.HasValue) return dt.ToString();
-				return str;
-			}
-		}
+            string GetVal(decimal? dec, DateTime? dt, string str)
+            {
+                if (dec.HasValue) return dec.ToString();
+                if (dt.HasValue) return dt.ToString();
+                return str;
+            }
+        }
 
         public bool CheckIfInitial(long taskId)
         {
-	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-	        return task.NoteType_Code == KoNoteType.Initial;
+            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+            return task.NoteType_Code == KoNoteType.Initial;
         }
 
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)
@@ -258,46 +260,89 @@ namespace KadOzenka.Dal.Tasks
 
         public string GetTemplateForTaskName(long taskId)
         {
-	        var query = new QSQuery
-	        {
-		        MainRegisterID = OMTask.GetRegisterId(),
-		        Condition = new QSConditionGroup
-		        {
-			        Type = QSConditionGroupType.And,
-			        Conditions = new List<QSCondition>
-			        {
-				        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.Equal, taskId)
-			        }
-		        },
+            var query = new QSQuery
+            {
+                MainRegisterID = OMTask.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.Equal, taskId)
+                    }
+                },
                 Joins = new List<QSJoin>
-		        {
-			        new QSJoin
-			        {
-				        RegisterId = OMInstance.GetRegisterId(),
-				        JoinCondition = new QSConditionSimple
-				        {
-					        ConditionType = QSConditionType.Equal,
-					        LeftOperand = OMTask.GetColumn(x => x.DocumentId),
-					        RightOperand = OMInstance.GetColumn(x => x.Id)
-				        },
-				        JoinType = QSJoinType.Inner
-			        }
-		        }
-	        };
-	        query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
-	        query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
-	        query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMInstance.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMTask.GetColumn(x => x.DocumentId),
+                            RightOperand = OMInstance.GetColumn(x => x.Id)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
+            };
+            query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
+            query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
+            query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
             query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
-	        query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
-	        query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
+            query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
+            query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
 
-	        var taskList =  query.ExecuteQuery<TaskDocumentInfoDto>();
-	        if (taskList.IsEmpty())
-	        {
-		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
-	        }
+            var taskList =  query.ExecuteQuery<TaskDocumentInfoDto>();
+            if (taskList.IsEmpty())
+            {
+                throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
+            }
 
-	        return GetTemplateForTaskName(taskList.First());
+            return GetTemplateForTaskName(taskList.First());
+        }
+
+        public Dictionary<long, string> GetTemplatesForTaskName(List<long> taskIds)
+        {
+            if(taskIds.IsEmpty())
+                return new Dictionary<long, string>();
+
+            var query = new QSQuery
+            {
+                MainRegisterID = OMTask.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIds.Distinct().Select(x => (double) x).ToList())
+                    }
+                },
+                Joins = new List<QSJoin>
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMInstance.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMTask.GetColumn(x => x.DocumentId),
+                            RightOperand = OMInstance.GetColumn(x => x.Id)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
+            };
+            query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
+            query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
+            query.AddColumn(OMTask.GetColumn(x => x.EstimationDate, nameof(TaskDocumentInfoDto.EstimationDate)));
+            query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
+            query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
+            query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
+
+            var taskList = query.ExecuteQuery<TaskDocumentInfoDto>();
+
+            return taskList.ToDictionary(x => x.TaskId, GetTemplateForTaskName);
         }
 
         public string GetTemplateForTaskName(DateTime? estimationDate, DateTime? documentCreationDate, string documentRegNumber, string koNoteType)

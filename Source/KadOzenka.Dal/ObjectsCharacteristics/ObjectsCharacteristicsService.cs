@@ -111,7 +111,10 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
                     characteristicDto.RegisterId, characteristicDto.Type, withValueField, characteristicDto.ReferenceId);
                 id = omAttribute.Id;
-                CreateOrUpdateCharacteristicSetting(id, characteristicDto.UseParentAttributeForPlacement);
+                CreateOrUpdateCharacteristicSetting(id, 
+	                characteristicDto.UseParentAttributeForLivingPlacement,
+	                characteristicDto.UseParentAttributeForNotLivingPlacement,
+	                characteristicDto.UseParentAttributeForCarPlace);
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
                 RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
@@ -127,7 +130,10 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             ValidateCharacteristic(characteristicDto);
 
             RegisterAttributeService.RenameRegisterAttribute(characteristicDto.Id, characteristicDto.Name);
-            CreateOrUpdateCharacteristicSetting(characteristicDto.Id, characteristicDto.UseParentAttributeForPlacement);
+            CreateOrUpdateCharacteristicSetting(characteristicDto.Id,
+	            characteristicDto.UseParentAttributeForLivingPlacement,
+	            characteristicDto.UseParentAttributeForNotLivingPlacement,
+	            characteristicDto.UseParentAttributeForCarPlace);
         }
 
         public void DeleteCharacteristic(long characteristicId)
@@ -152,7 +158,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             }.Save();
         }
 
-        private void CreateOrUpdateCharacteristicSetting(long attributeId, bool useParentAttributeForPlacements)
+        private void CreateOrUpdateCharacteristicSetting(long attributeId, bool useParentAttributeForLivingPlacement, bool useParentAttributeForNotLivingPlacement, bool useParentAttributeForCarPlace)
         {
             var settings = OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
             if (settings == null)
@@ -163,7 +169,9 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 	            };
             }
 
-            settings.UseParentAttributeForPlacements = useParentAttributeForPlacements;
+            settings.UseParentAttributeForLivingPlacements = useParentAttributeForLivingPlacement;
+            settings.UseParentAttributeForNotLivingPlacements = useParentAttributeForNotLivingPlacement;
+            settings.UseParentAttributeForCarPlace = useParentAttributeForCarPlace;
             settings.Save();
         }
 

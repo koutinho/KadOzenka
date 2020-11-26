@@ -7,6 +7,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }
 		public long? MarketObjectId { get; set; }
+		public long? UnitId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
         public decimal? DeviationFromPredictablePrice => ModelingService.CalculatePercent(PriceFromModel, Price);

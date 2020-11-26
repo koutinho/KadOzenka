@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 
@@ -13,8 +15,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 	public class CalculateCadastralPriceLongProcess : LongProcess
 	{
 		public const string LongProcessName = "CalculateCadastralPrice";
-		private static readonly int KnColumn = 0;
-		private static readonly int ErrorColumn = 1;
+		private static readonly int GroupColumn = 0;
+		private static readonly int TaskColumn = 1;
+		private static readonly int PropertyTypeColumn = 2;
+		private static readonly int KnColumn = 3;
+		private static readonly int ErrorColumn = 4;
 
 		public static long AddProcessToQueue(KOCalcSettings settings)
 		{
@@ -45,23 +50,52 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private long PerformProc(KOCalcSettings settings)
 		{
-			var reportService = new GbuReportService();
-			reportService.AddHeaders(new List<string> {"КН", "Ошибка"});
-
 			var result = OMGroup.CalculateSelectGroup(settings);
+			var reportId = FormReport(result);
 
+			return reportId;
+		}
+
+		private static long FormReport(List<CalcErrorItem> result)
+		{
+			var reportService = new GbuReportService();
+			reportService.AddHeaders(new List<string> { "Оценочная группа", "Задание на оценку", "Тип объекта", "КН", "Ошибка"});
+
+			var groupData = new Dictionary<long, string>();
+			var taskData = new Dictionary<long, string>();
+			var groupIds = result.Where(x => x.GroupId.HasValue).Select(x => x.GroupId.Value).ToList();
+			if (!groupIds.IsEmpty())
+			{
+				groupData = OMGroup.Where(x => groupIds.Contains(x.Id)).Select(x => x.Number).Execute()
+					.ToDictionary(x => x.Id, x => x.Number);
+			}
+			var taskIds = result.Where(x => x.TaskId.HasValue).Select(x => x.TaskId.Value).ToList();
+			if (!taskIds.IsEmpty())
+			{
+				taskData = new TaskService().GetTemplatesForTaskName(taskIds);
+			}
+			
 			foreach (var errorItem in result)
 			{
 				var row = reportService.GetCurrentRow();
+				if (groupData.ContainsKey(errorItem.GroupId.GetValueOrDefault()))
+					reportService.AddValue(groupData[errorItem.GroupId.GetValueOrDefault()], GroupColumn, row);
+
+				if (taskData.ContainsKey(errorItem.TaskId.GetValueOrDefault()))
+					reportService.AddValue(taskData[errorItem.TaskId.GetValueOrDefault()], TaskColumn, row);
+
+				reportService.AddValue(errorItem.PropertyType, PropertyTypeColumn, row);
 				reportService.AddValue(errorItem.CadastralNumber, KnColumn, row);
 				reportService.AddValue(errorItem.Error, ErrorColumn, row);
 			}
 
 			reportService.SetStyle();
+			reportService.SetIndividualWidth(GroupColumn, 3);
+			reportService.SetIndividualWidth(TaskColumn, 4);
+			reportService.SetIndividualWidth(PropertyTypeColumn, 5);
 			reportService.SetIndividualWidth(KnColumn, 4);
 			reportService.SetIndividualWidth(ErrorColumn, 5);
 			var reportId = reportService.SaveReport("Отчет по итогам расчета кадастровой стоимости");
-
 			return reportId;
 		}
 	}

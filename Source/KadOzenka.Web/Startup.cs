@@ -40,6 +40,7 @@ using KadOzenka.Dal.Groups;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace CIPJS
@@ -76,23 +77,23 @@ namespace CIPJS
             services.AddTransient<GbuObjectService>();
             services.AddTransient<TaskService>();
             services.AddTransient<TourFactorService>();
-            services.AddTransient<GbuLongProcessesService>();
-            services.AddSingleton<GbuCurrentLongProcessesListenerService>();
-            services.AddTransient<ScoreCommonService>();
-            services.AddTransient<ExpressScoreService>();
-            services.AddTransient<ExpressScoreReferenceService>();
-            services.AddTransient<ViewRenderService>();
-            services.AddTransient<ModelingService>();
-            services.AddTransient<MapBuildingService>();
-            services.AddTransient<DashboardWidgetService>();
-            services.AddTransient<StatisticsReportsService>();
-            services.AddTransient<StatisticsReportsExportService>();
-            services.AddTransient<TourService>();
-            services.AddTransient<RegisterAttributeService>();
-            services.AddTransient<UpdateCadastralDataService>();
-            services.AddTransient<TemplateService>();
-            services.AddTransient<GroupService>();
-            services.AddTransient<DocumentService>();
+	        services.AddTransient<GbuLongProcessesService>();
+	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
+	        services.AddTransient<ScoreCommonService>();
+			services.AddTransient<ExpressScoreService>();
+	        services.AddTransient<ExpressScoreReferenceService>();
+	        services.AddTransient<ViewRenderService>();
+	        services.AddTransient<ModelingService>();
+	        services.AddTransient<MapBuildingService>();
+	        services.AddTransient<DashboardWidgetService>();
+	        services.AddTransient<StatisticsReportsService>();
+	        services.AddTransient<StatisticsReportsExportService>();
+	        services.AddTransient<TourService>();
+	        services.AddTransient<RegisterAttributeService>();
+	        services.AddTransient<SystemAttributeSettingsService>();
+	        services.AddTransient<TemplateService>();
+	        services.AddTransient<GroupService>();
+	        services.AddTransient<DocumentService>();
 	        services.AddTransient<ModelFactorsService>();
             services.AddSingleton<KoUnloadResultsListenerService>();
             services.AddSingleton<OutliersCheckingListenerService>();
@@ -126,6 +127,11 @@ namespace CIPJS
             services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 
             services.AddMemoryCache();
+
+            string keysFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "temp-keys");
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+                .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
             var cultureInfo = new CultureInfo("ru-RU");
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;

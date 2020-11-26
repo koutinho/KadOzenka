@@ -209,7 +209,7 @@
         var templateContent = $("#templateRow").html();
 		var template = kendo.template(templateContent);
         var result = kendo.render(template, data);
-        $("#attributesList tbody").children().append(result);
+        $("#attributesList tbody").append(result);
         var classWrapper = ".wrapper-" + localRowNumber;
         var idTour = $('#RatingTour').data('kendoDropDownList').value();
         var url = "@Url.Action("GetRowExport", "Task")";
@@ -253,7 +253,7 @@
     }
 
     function getDataSource() {
-        return $.find('[class^=IdAttributeG]').map(d => $(d).data('kendoDropDownTree'));
+        return $.find('[class^=IdAttributeG]').concat($.find('tr[class^=wrapper-] input[class*=IdAttributeG]')).map(d => $(d).data('kendoDropDownTree'));
     }
 
     function getSelectedValues() {
@@ -311,8 +311,9 @@
             }
         );
         updateStates();
-        var clearButtons = $.find('[class^=clear-button-IdAttributeG]');
-        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
+        var clearButtons = $.find('[class^=clear-button-IdAttributeG]').concat($.find('tr[class^=wrapper-] td:nth-of-type(2) [class^=clear-button-]'));
+        clearButtons.forEach(b => b.onclick = function () { updateStates(); });
+        getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
 
 
@@ -420,14 +421,8 @@
         }
     }
     function initDropDownListForKoAttributes(data) {
-        $('[name^="IdAttributeKO"]').each(function() {
-            $(this).kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: " ",
-                filter: "contains",
-                dataSource: { data: data }
-            });
+        $('[name^="IdAttributeKO"]').each(function () {
+            $(this).data("kendoDropDownList").setDataSource(data);
         });
     }
 
@@ -520,6 +515,8 @@
                 if (kendoDropDownTree) {
                     kendoDropDownTree.value(elementValue || '');
                     kendoDropDownTree.trigger('change');
+                    kendoDropDownTree.filterInput.val('');
+                    kendoDropDownTree.trigger('filtering', [true]);
                 }
             }
 
@@ -534,7 +531,7 @@
             }
         });
 
-        return await Promise.all([
+        await Promise.all([
             initTasksList(null, () => $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(taskValues)),
             initKoAttributes(null, () => {
                 for (var elementName in koAttributes) {
@@ -548,6 +545,7 @@
             }),
             addNewRows(1, rowNumber - 1, additionalCustomLevels)
         ]);
+        updateStates();
     }
 
 

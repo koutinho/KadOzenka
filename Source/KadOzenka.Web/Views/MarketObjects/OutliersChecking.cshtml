@@ -1,4 +1,5 @@
-﻿
+﻿@using KadOzenka.Web.Models.MarketObject
+
 
 <div class="form-horizontal col-sm-12">
     <div class="form-group">
@@ -14,7 +15,7 @@
         </div>
     </div>
     <div class="form-group" style="margin-bottom: 0px;">
-        <div class="col-sm-offset-3 col-sm-1">
+        <div class="col-sm-1">
             @(Html.Kendo().Button()
                 .Name("OutliersSettingsBtn")
                 .IconClass("k-icon k-i-gear outliers-settings-button")
@@ -25,11 +26,27 @@
                 .Content("Настройка коэффициентов"))
 
         </div>
-        <div class="col-sm-4" style="display: flex;">
+        <div class="col-sm-3" style="display: flex;">
             <label for="outliers-settings-segment-dropdown" style="align-self: center; padding-right: 10px;">Сегмент</label>
             <input id="outliers-settings-segment-dropdown" />
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-5" style="display: flex;">
+            <div>
+                <label for="outliers-settings-object-type" style="align-self: center; padding-right: 10px;">Виды объектов недвижимости</label>
+            </div>
+            <div id="outliers-settings-object-type" style="display: flex; width: 100%;">
+                <div style="padding-right: 10px;">
+                    @(Html.Kendo().CheckBox()
+                        .Name("outliersChecking_useAllPropertyTypes")
+                        .Label("Все виды")
+                        .Checked(true))
+                </div>
+                <div style="width: 100%;">
+                    <select id="outliersChecking_propertyTypesFilter" multiple="multiple"></select>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
             <button class="k-button perform-checking-button" style="display: none">Выполнить проверку на вылеты</button>
             <div class="outliers-settings-loading" style="display: none">
                 <label class="outliers-settings-loading-label"></label>
@@ -41,33 +58,42 @@
         <fieldset class="last-outliers-checking-fieldset">
             <legend>Последняя проверка</legend>
             <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Сегмент: <label class="last-outliers-checking-value last-outliers-checking-segment"></label></p>
-                </div>
-                <div class="col-sm-8">
-                    <p class="last-outliers-checking">Статус: <label class="last-outliers-checking-value last-outliers-checking-status"></label></p>
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата создания: <label class="last-outliers-checking-value last-outliers-checking-date-created"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата запуска: <label class="last-outliers-checking-value last-outliers-checking-date-started"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Дата завершения: <label class="last-outliers-checking-value last-outliers-checking-date-finished"></label></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Сегмент: <label class="last-outliers-checking-value last-outliers-checking-segment"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Виды объектов недвижимости: <label class="last-outliers-checking-value last-outliers-checking-property-types"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Статус: <label class="last-outliers-checking-value last-outliers-checking-status"></label></p>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-12">
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Обработано объектов: <label class="last-outliers-checking-value last-outliers-checking-total-objects-count"></label></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата создания: <label class="last-outliers-checking-value last-outliers-checking-date-created"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата запуска: <label class="last-outliers-checking-value last-outliers-checking-date-started"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Дата завершения: <label class="last-outliers-checking-value last-outliers-checking-date-finished"></label></p>
+                    </div>
                 </div>
-                <div class="col-sm-4">
-                    <p class="last-outliers-checking">Исключенных объектов: <label class="last-outliers-checking-value last-outliers-checking-excluded-objects-count"></label></p>
-                </div>
-                <div class="col-sm-4">
-                    <div class="last-outliers-checking-value last-outliers-checking-report"></div>
+            </div>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Обработано объектов: <label class="last-outliers-checking-value last-outliers-checking-total-objects-count"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="last-outliers-checking">Исключенных объектов: <label class="last-outliers-checking-value last-outliers-checking-excluded-objects-count"></label></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="last-outliers-checking-value last-outliers-checking-report"></div>
+                    </div>
                 </div>
             </div>
         </fieldset>
@@ -153,6 +179,14 @@
     .last-outliers-checking-report a {
         font-weight: bold;
     }
+
+    #outliers-settings-object-type .k-multiselect .k-input {
+        width: 100% !important;
+    }
+
+    label[for='outliersChecking_useAllPropertyTypes'] {
+        white-space: nowrap;
+    }
 </style>
 
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
@@ -188,14 +222,46 @@
             optionLabel: " "
         });
 
+        $("#outliersChecking_propertyTypesFilter").kendoMultiSelect({
+            dataTextField: 'Text',
+            dataValueField: 'Value',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Html.Raw(Url.Action("GetMarketPropertyTypeDivisionsList", "MarketObjects"))',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            enable: false
+        });
+
+        $('#outliersChecking_useAllPropertyTypes').on('change', function () {
+            if (this.checked) {
+                $('#outliersChecking_propertyTypesFilter').data("kendoMultiSelect").value([]);
+                $('#outliersChecking_propertyTypesFilter').data("kendoMultiSelect").enable(false);
+            } else {
+                $('#outliersChecking_propertyTypesFilter').data("kendoMultiSelect").enable(true);
+            }
+        });
+
         $('.perform-checking-button').click(() => {
             kendo.ui.progress($('body'), true);
             var segment = $("#outliers-settings-segment-dropdown").data('kendoDropDownList').value();
-
+            var allPropertyTypes = $('#outliersChecking_useAllPropertyTypes').prop("checked");
+            var propertyTypes = $('#outliersChecking_propertyTypesFilter').data("kendoMultiSelect").value();
             $.ajax({
                 type: 'POST',
                 url:  '@Url.Action("PerformOutliersChecking", "MarketObjects")',
-                data: { segment },
+                data: { segment, allPropertyTypes, propertyTypes },
+                success: function(response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
+                },
                 error: function (response) {
                     Common.ShowError(response.responseText);
                 },
@@ -264,6 +330,7 @@
             $('.last-outliers-checking-section').show();
 
             processLabelValue($('.last-outliers-checking-segment'), data.LastMarketSegment, 'Для всех сегментов');
+            processLabelValue($('.last-outliers-checking-property-types'), data.LastPropertyTypes, 'Для всех видов');
             processLabelValue($('.last-outliers-checking-status'), data.LastStatus);
             processLabelDateValue($('.last-outliers-checking-date-created'), data.LastDateCreated);
             processLabelDateValue($('.last-outliers-checking-date-started'), data.LastDateStarted);

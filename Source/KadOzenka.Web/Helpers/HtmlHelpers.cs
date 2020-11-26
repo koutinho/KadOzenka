@@ -50,7 +50,10 @@ function onFiltering{className}(e) {{
 	if(query)
 		query = query.toLowerCase();
 	var dataSource = e.sender.dataSource;
+	if(query == '')
+		clearDataSource{className}(dataSource);
 	filter{className}(dataSource, query);
+	e.sender.trigger('onFiltered');
 }}
 function filter{className}(dataSource, query) {{
 	var hasVisibleChildren = false;
@@ -71,6 +74,24 @@ function filter{className}(dataSource, query) {{
 	}}
 
 	return hasVisibleChildren;
+}}
+
+function clearDataSource{className}(dataSource) {{
+	var data = dataSource._data;
+	if(data && data.length > 0){{
+		for(var i = 0; i < data.length; i++){{
+			data[i].dirty = false;
+			data[i].dirtyFields = {{}};
+			data[i].expanded = false;
+			if(data[i].hasChildren){{
+				for(var j = 0; j < data[i].items.length; j++){{
+					data[i].items[j].dirty = false;
+					data[i].items[j].dirtyFields = {{}};
+					data[i].items[j].selected = false;
+				}}
+			}}
+		}}
+	}}
 }}
 ";
 

@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -2424,9 +2425,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             ks.IdTour = 2018;
             ks.CalcAllGroups = false;
             ks.CalcGroups = new List<long>();
-            ks.CalcGroups.Add(100018);//200003  100044
+            ks.CalcGroups.Add(100012);//200003  100044
             ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(36748449);//36661332  3663016
+            ks.TaskFilter.Add(36731960);//36661332  3663016
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }
@@ -2440,11 +2441,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     int countAll = files.Length;
                     int count = 0;
+                    var token = new CancellationTokenSource().Token;
                     foreach (string file in files)
                     {
                         count++;
                         FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task, token);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }
@@ -2460,11 +2462,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     int countAll = files.Length;
                     int count = 0;
+                    var token = new CancellationTokenSource().Token;
                     foreach (string file in files)
                     {
                         count++;
                         FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task, token);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using ObjectModel.Directory;
@@ -159,6 +160,7 @@ namespace KadOzenka.Dal.Groups
                         {
                             Id = group.Id,
                             GroupName = $"{group.CombinedNumber}. {group.GroupName}",
+                            CombinedNumber = group.CombinedNumber,
                             GroupType = group.GroupType,
                             TourId = tourId,
                             Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id)
@@ -167,6 +169,7 @@ namespace KadOzenka.Dal.Groups
                                 {
                                     Id = subGroup.Id,
                                     GroupName = $"{subGroup.CombinedNumber}. {subGroup.GroupName}",
+                                    CombinedNumber = subGroup.CombinedNumber,
                                     GroupType = subGroup.GroupType,
                                     TourId = tourId
                                 }).ToList()
@@ -186,6 +189,26 @@ namespace KadOzenka.Dal.Groups
 	        });
 
 	        return models;
+        }
+
+        public TourGroupsInfo GetTourGroupsInfo(long tourId, ObjectTypeExtended objectType)
+        {
+	        var allGroupsInTour = GetGroupsTreeForTour(tourId);
+
+            var oksGroups = objectType == ObjectTypeExtended.Oks || objectType == ObjectTypeExtended.Both 
+	            ? allGroupsInTour.Where(x => x.Id == (int)KoGroupAlgoritm.MainOKS).SelectMany(x => x.Items).ToList()
+	            : null;
+            var zuGroups = objectType == ObjectTypeExtended.Zu || objectType == ObjectTypeExtended.Both
+	            ? allGroupsInTour.Where(x => x.Id == (int) KoGroupAlgoritm.MainParcel).SelectMany(x => x.Items).ToList()
+	            : null;
+
+	        return new TourGroupsInfo
+	        {
+		        OksGroups = oksGroups,
+		        OksSubGroups = oksGroups?.SelectMany(x => x.Items).ToList(),
+		        ZuGroups = zuGroups,
+		        ZuSubGroups = zuGroups?.SelectMany(x => x.Items).ToList()
+	        };
         }
 
         public List<OMGroup> GetGroupsByTasks(List<long> taskIds)

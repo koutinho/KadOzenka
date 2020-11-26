@@ -1,5 +1,5 @@
 ﻿
-@using (Html.BeginForm("UploadMarksCatalog", "Tour", FormMethod.Post))
+@using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post))
 {
     <div id="uploadMarksCatalogModal" style=" padding: 2%;">
         <div class="form-horizontal col-sm-12">
@@ -65,7 +65,7 @@
 
                 kendo.ui.progress($('#uploadMarksCatalogModal'), true);
                 $.ajax({
-                    url: '@Url.Action("UploadMarksCatalog", "Tour")',
+                    url: '@Url.Action("UploadMarksCatalog", "Modeling")',
                     type: 'POST',
                     data: formData,
                     cache: false,
@@ -73,7 +73,7 @@
                     processData: false,
                     success: function (response) {
                         if (response.success) {
-                            window.location = '@Url.Action("DownloadExcelFile", "Tour")' + "?fileName=" + response.fileName;
+                            window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
                         } else {
                             Common.ShowError("Не удалось загрузить выбранный файл");
                         }

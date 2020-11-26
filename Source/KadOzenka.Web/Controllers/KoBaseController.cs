@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.SRD;
 using Core.UI.Registers.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Common;
-using ObjectModel.Directory.Common;
 using Core.Register.Enums;
 using Microsoft.AspNetCore.Http;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.KoBase;
+using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
 
 namespace KadOzenka.Web.Controllers
@@ -105,6 +104,21 @@ namespace KadOzenka.Web.Controllers
                     Text = $"{x.RegNumber} {x.Description}",
                     Value = x.Id
                 }).ToList();
+        }
+
+        protected IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
+        {
+	        return new GbuObjectService().GetGbuAttributesTree()
+		        .Select(x => new DropDownTreeItemModel
+		        {
+			        Value = Guid.NewGuid().ToString(),
+			        Text = x.Text,
+			        Items = x.Items.Select(y => new DropDownTreeItemModel
+			        {
+				        Value = y.Value,
+				        Text = y.Text
+			        }).ToList()
+		        }).AsEnumerable();
         }
     }
 }

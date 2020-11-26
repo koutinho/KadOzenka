@@ -25,6 +25,9 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 			{
 				DateCreated = DateTime.Now,
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+				PropertyTypesMapping = !settings.AllPropertyTypes 
+					? JsonConvert.SerializeObject(settings.PropertyTypes) 
+					: null,
 			};
 			if (settings.Segment.HasValue)
 				history.MarketSegment_Code = settings.Segment.Value;
@@ -39,8 +42,8 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 
 			if (!processQueue.ObjectId.HasValue)
 			{
-				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				return;
 			}
 
@@ -50,8 +53,8 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 				.FirstOrDefault();
 			if (history == null)
 			{
-				WorkerCommon.SetMessage(processQueue, Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoUnloadResultQueue);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoUnloadResultQueue);
 				return;
 			}
 
@@ -98,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 					}
 				}, cancelToken);
 
-				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment);
+				var reportId = outliersCheckingProcess.PerformOutliersChecking(settings.Segment, settings.PropertyTypes);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
@@ -112,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 				history.ExportId = reportId;
 				history.Save();
 
-				SendSuccessEmail(processQueue, reportId);
+				SendSuccessEmail(processQueue, reportId, history);
 				Log.Information("Завершение фонового процесса: {Description}.", processType.Description);
 			}
 			catch (Exception ex)
@@ -126,10 +129,12 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 			}
 		}
 
-		private static void SendSuccessEmail(OMQueue processQueue, long reportId)
+		private static void SendSuccessEmail(OMQueue processQueue, long reportId, OMOutliersCheckingHistory history)
 		{
-			string message = "Операция успешно завершена." +
-			                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+			string message =  $@"Операция успешно завершена.
+Обработано объектов: {history.CurrentHandledObjectsCount}.
+Исключенных объектов: {history.ExcludedObjectsCount}.
+<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
 			NotificationSender.SendNotification(processQueue,
 				"Результат Процедуры проверки на вылеты", message);

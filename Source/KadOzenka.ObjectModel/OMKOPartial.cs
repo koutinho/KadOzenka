@@ -21,6 +21,9 @@ namespace ObjectModel.KO
     {
         public string CadastralNumber;
         public string Error;
+        public string PropertyType;
+        public long? GroupId;
+        public long? TaskId;
     }
 
     public class ALLTmpItem
@@ -1343,7 +1346,7 @@ namespace ObjectModel.KO
 	                                        error = true;
 	                                        lock (res)
 	                                        {
-		                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+		                                        res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
 	                                        }
                                         }
 
@@ -1365,7 +1368,7 @@ namespace ObjectModel.KO
                                                 error = true;
                                                 lock (res)
                                                 {
-                                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue });
+                                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue });
                                                 }
                                             }
 
@@ -1397,7 +1400,7 @@ namespace ObjectModel.KO
                                                 error = true;
                                                 lock (res)
                                                 {
-                                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + factorValue });
+                                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + factorValue });
                                                 }
                                             }
 
@@ -1474,7 +1477,7 @@ namespace ObjectModel.KO
 	                                        error = true;
 	                                        lock (res)
 	                                        {
-		                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+		                                        res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
 	                                        }
                                         }
 
@@ -1497,7 +1500,7 @@ namespace ObjectModel.KO
                                                 error = true;
                                                 lock (res)
                                                 {
-                                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue });
+                                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue });
                                                 }
                                             }
 
@@ -1523,7 +1526,7 @@ namespace ObjectModel.KO
                                                 error = true;
                                                 lock (res)
                                                 {
-                                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + factorValue });
+                                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + factorValue });
                                                 }
                                             }
 
@@ -1597,8 +1600,8 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Line)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2);
-                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2, MidpointRounding.AwayFromZero);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
 
                                     if (!unit.isExplication)
                                     {
@@ -1639,8 +1642,8 @@ namespace ObjectModel.KO
                                 }
                                 if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
                                 {
-                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2);
-                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0ForMultiplicative * Dm), 2, MidpointRounding.AwayFromZero);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
 
                                     if (!unit.isExplication)
                                     {
@@ -1717,7 +1720,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -1770,7 +1773,7 @@ namespace ObjectModel.KO
                             {
                                 lock (res)
                                 {
-                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                                 }
                             }
 
@@ -1843,9 +1846,9 @@ namespace ObjectModel.KO
                                 lock (res)
                                 {
                                     if (unit.CadastralBlock.IsNullOrEmpty())
-                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                        res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                                     if (unit.BuildingCadastralNumber.IsNullOrEmpty())
-                                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового номера здания для помещения" });
+                                        res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового номера здания для помещения" });
                                 }
                             }
 
@@ -1913,7 +1916,7 @@ namespace ObjectModel.KO
                             {
                                 lock (res)
                                 {
-                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                                 }
                             }
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
@@ -1969,7 +1972,7 @@ namespace ObjectModel.KO
                             {
                                 lock (res)
                                 {
-                                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                                 }
                             }
 
@@ -2022,7 +2025,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2069,7 +2072,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2119,7 +2122,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2166,7 +2169,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2219,7 +2222,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2274,7 +2277,7 @@ namespace ObjectModel.KO
                         {
                             lock (res)
                             {
-                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
+                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение кадастрового квартала" });
                             }
                         }
 
@@ -2368,7 +2371,7 @@ namespace ObjectModel.KO
                                     {
                                         lock (res)
                                         {
-                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t6 });
+                                            res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t6 });
                                         }
 
                                     }
@@ -2390,7 +2393,7 @@ namespace ObjectModel.KO
                                         {
                                             lock (res)
                                             {
-                                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t7 });
+                                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения " + t7 });
                                             }
                                         }
 
@@ -2399,7 +2402,7 @@ namespace ObjectModel.KO
                                     {
                                         lock (res)
                                         {
-                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName});
+                                            res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName});
                                         }
                                     }
                                 }
@@ -2416,7 +2419,7 @@ namespace ObjectModel.KO
                                         d = 0;
                                         lock (res)
                                         {
-                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
+                                            res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
                                         }
                                     }
                                     koeff = d;
@@ -2432,7 +2435,7 @@ namespace ObjectModel.KO
                                             d = 0;
                                             lock (res)
                                             {
-                                                res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
+                                                res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Неверное значение фактора " + factorName + ": " + t6 });
                                             }
                                         }
                                         koeff = d;
@@ -2441,7 +2444,7 @@ namespace ObjectModel.KO
                                     {
                                         lock (res)
                                         {
-                                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                            res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
                                         }
                                     }
 
@@ -2454,7 +2457,7 @@ namespace ObjectModel.KO
                     {
                         lock (res)
                         {
-                            res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Значение коэффициента для фактора " + factorName + " равно 0" });
+                            res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Значение коэффициента для фактора " + factorName + " равно 0" });
                         }
                     }
                 }
@@ -2465,7 +2468,7 @@ namespace ObjectModel.KO
                 upks = 0;
                 lock (res)
                 {
-                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение УПКС" });
+                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение УПКС" });
                 }
 
             }
@@ -2488,7 +2491,7 @@ namespace ObjectModel.KO
             Parallel.ForEach(childs, options, child =>
             {
                 child.UpksPre = unit.UpksPre;
-                child.CadastralCostPre = Math.Round((child.UpksPre * child.Square).ParseToDecimal(), 2);
+                child.CadastralCostPre = Math.Round((child.UpksPre * child.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
                 child.Upks = 0;
                 child.CadastralCost = 0;
                 child.Save();
@@ -2535,7 +2538,7 @@ namespace ObjectModel.KO
             {
                 lock (res)
                 {
-                    res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение группы" });
+                    res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Отсутствует значение группы" });
                 }
             }
             else
@@ -2578,7 +2581,7 @@ namespace ObjectModel.KO
                 {
                     lock (res)
                     {
-                        res.Add(new CalcErrorItem() { CadastralNumber = unit.CadastralNumber, Error = "Эталонный объект для объекта " + unit.CadastralNumber + " в квартале " + unit.CadastralBlock + " не найден" });
+                        res.Add(new CalcErrorItem() { GroupId = unit.GroupId, TaskId = unit.TaskId, PropertyType = unit.PropertyType, CadastralNumber = unit.CadastralNumber, Error = "Эталонный объект для объекта " + unit.CadastralNumber + " в квартале " + unit.CadastralBlock + " не найден" });
                     }
                 }
             }
@@ -2629,14 +2632,14 @@ namespace ObjectModel.KO
                                 {
                                     lock (errors)
                                     {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
+                                        errors.Add(new CalcErrorItem() { GroupId = child.GroupId, TaskId = child.TaskId, PropertyType = child.PropertyType, CadastralNumber = child.CadastralNumber, Error = "У эталонного объекта отсутствует значение фактора " + factorName });
                                     }
                                 }
                                 if (fv_ch == null)
                                 {
                                     lock (errors)
                                     {
-                                        errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
+                                        errors.Add(new CalcErrorItem() { GroupId = child.GroupId, TaskId = child.TaskId, PropertyType = child.PropertyType, CadastralNumber = child.CadastralNumber, Error = "У объекта отсутствует значение фактора " + factorName });
                                     }
                                 }
 
@@ -2667,7 +2670,7 @@ namespace ObjectModel.KO
                                             kk = 0;
                                             lock (errors)
                                             {
-                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
+                                                errors.Add(new CalcErrorItem() { GroupId = etalon.GroupId, TaskId = etalon.TaskId, PropertyType = etalon.PropertyType, CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_et.Value + "\"" });
                                             }
                                         }
 
@@ -2686,7 +2689,7 @@ namespace ObjectModel.KO
                                             kk = 0;
                                             lock (errors)
                                             {
-                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
+                                                errors.Add(new CalcErrorItem() { GroupId = child.GroupId, TaskId = child.TaskId, PropertyType = child.PropertyType, CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение метки фактора " + factorName + " для значения \"" + fv_ch.Value + "\"" });
                                             }
                                         }
 
@@ -2707,7 +2710,7 @@ namespace ObjectModel.KO
                                             kk = 0;
                                             lock (errors)
                                             {
-                                                errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                                errors.Add(new CalcErrorItem() { GroupId = child.GroupId, TaskId = child.TaskId, PropertyType = child.PropertyType, CadastralNumber = child.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
                                             }
                                         }
                                         else
@@ -2716,7 +2719,7 @@ namespace ObjectModel.KO
                                             kk = 0;
                                             lock (errors)
                                             {
-                                                errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
+                                                errors.Add(new CalcErrorItem() { GroupId = etalon.GroupId, TaskId = etalon.TaskId, PropertyType = etalon.PropertyType, CadastralNumber = etalon.CadastralNumber, Error = "Отсутствует значение фактора " + factorName });
                                             }
                                         }
                                         else
@@ -2727,7 +2730,7 @@ namespace ObjectModel.KO
                                             {
                                                 lock (errors)
                                                 {
-                                                    errors.Add(new CalcErrorItem() { CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
+                                                    errors.Add(new CalcErrorItem() { GroupId = child.GroupId, TaskId = child.TaskId, PropertyType = child.PropertyType, CadastralNumber = child.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_ch.Value });
                                                 }
                                             }
 
@@ -2736,7 +2739,7 @@ namespace ObjectModel.KO
                                             {
                                                 lock (errors)
                                                 {
-                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
+                                                    errors.Add(new CalcErrorItem() { GroupId = etalon.GroupId, TaskId = etalon.TaskId, PropertyType = etalon.PropertyType, CadastralNumber = etalon.CadastralNumber, Error = "Неверное значение фактора " + factorName + " : " + fv_et.Value });
                                                 }
                                             }
 
@@ -2747,7 +2750,7 @@ namespace ObjectModel.KO
                                                 {
                                                     lock (errors)
                                                     {
-                                                        errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                        errors.Add(new CalcErrorItem() { GroupId = etalon.GroupId, TaskId = etalon.TaskId, PropertyType = etalon.PropertyType, CadastralNumber = etalon.CadastralNumber, Error = "Рассчитанное значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
                                                     }
                                                 }
                                             }
@@ -2756,7 +2759,7 @@ namespace ObjectModel.KO
                                                 kk = 0;
                                                 lock (errors)
                                                 {
-                                                    errors.Add(new CalcErrorItem() { CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
+                                                    errors.Add(new CalcErrorItem() { GroupId = etalon.GroupId, TaskId = etalon.TaskId, PropertyType = etalon.PropertyType, CadastralNumber = etalon.CadastralNumber, Error = "Значение корректировки для фактора " + factorName + " = 0. Значение эталонного объекта: \"" + fv_et.Value + "\", значение объекта: \"" + fv_ch.Value + "\"" });
                                                 }
                                             }
                                         }
@@ -2922,7 +2925,7 @@ namespace ObjectModel.KO
         }
         private static string GetFormulaPart(string val, string znak, double empty)
         {
-            string res = Convert.ToDouble(val).ToString() + " " + znak + " ";
+            string res = Convert.ToDouble(val).ToString()?.Replace(',', '.') + " " + znak + " ";
             double rval = Convert.ToDouble(val);
             if (rval == empty)
                 res = string.Empty;
@@ -3018,12 +3021,12 @@ namespace ObjectModel.KO
                 {
                     case KoAlgoritmType.Exp:
                         if (De_string != string.Empty)
-                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")" + De_string;
+                            res = "exp(" + model.A0ForExponential.ToString()?.Replace(',', '.')  + D_string + ")" + De_string;
                         else
-                            res = "exp(" + model.A0ForExponential.ToString() + D_string + ")";
+                            res = "exp(" + model.A0ForExponential.ToString()?.Replace(',', '.')  + D_string + ")";
                         break;
                     case KoAlgoritmType.Line:
-                        res = model.A0.ToString() + D_string;
+                        res = model.A0.ToString()?.Replace(',', '.') + D_string;
                         break;
                     case KoAlgoritmType.Multi:
                         res = GetFormulaPart(model.A0ForMultiplicative.ToString(), "*", 1) + Dm_string.TrimStart(' ').TrimStart('*').TrimStart(' ');
