@@ -1,4 +1,6 @@
-﻿using Core.Register.RegisterEntities;
+﻿using System.Linq;
+using Core.Register;
+using Core.Register.RegisterEntities;
 
 namespace KadOzenka.Dal.Registers.GbuRegistersServices
 {
@@ -181,6 +183,38 @@ namespace KadOzenka.Dal.Registers.GbuRegistersServices
         public RegisterAttribute GetObjectNameNumberAttribute()
         {
             return GetRegisterAttributeByName(RegisterId, "Наименование объекта");
+        }
+
+        /// <summary>
+        /// Аттрибут "П1. Группа" (проставляется при импорте документа для задания на оценку)
+        /// </summary>
+        public RegisterAttribute GetPGroupAttribute()
+        {
+	       return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == 660);
+        }
+
+        /// <summary>
+        /// Аттрибут "П2. ФС" (проставляется при импорте документа для задания на оценку)
+        /// </summary>
+        public RegisterAttribute GetPFsAttribute()
+        {
+	        return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == 661);
+        }
+
+        /// <summary>
+        /// Аттрибут "П3. Материал стен" (проставляется при импорте документа для задания на оценку)
+        /// </summary>
+        public RegisterAttribute GetPWallMaterialAttribute()
+        {
+	        return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == 662);
+        }
+
+        /// <summary>
+        /// Аттрибут "П4. Год постройки" (проставляется при импорте документа для задания на оценку)
+        /// </summary>
+        public RegisterAttribute GetPBuildYearAttribute()
+        {
+	        return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == 663);
         }
     }
 }

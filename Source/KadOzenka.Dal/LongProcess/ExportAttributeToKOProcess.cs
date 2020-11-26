@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using System.Threading.Tasks;
+using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using Serilog;
 
@@ -16,10 +17,6 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "ExportAttributeToKoProcess";
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKoProcess>();
-
-        public ExportAttributeToKoProcess()
-        {
-        }
 
 
 
@@ -55,7 +52,10 @@ namespace KadOzenka.Dal.LongProcess
 
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
-                var urlToDownload = new ExportAttributeToKO().Run(settings, processQueue);
+
+				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(settings);
+                var objectChangeStatusDecorator = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, settings.UnitChangeStatus);
+                var urlToDownload = new ExportAttributeToKO().Run(objectChangeStatusDecorator, settings, processQueue);
                 //TestLongRunningProcess(settings);
 
                 cancelProgressCounterSource.Cancel();
