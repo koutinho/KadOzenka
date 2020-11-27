@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Decorators;
@@ -55,10 +56,7 @@ namespace KadOzenka.Dal.GbuObject
             if (setting.TaskFilter?.Count > 0)
             {
 	            var unitsGetter = new InheritanceUnitsGetter(_log, setting) as AItemsGetter<InheritanceUnitPure>;
-	            if (setting.ObjectChangeStatus?.Count != 0)
-	            {
-		            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.ObjectChangeStatus);
-	            }
+	            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
                 var units = unitsGetter.GetItems();
                 MaxCount = units.Count;

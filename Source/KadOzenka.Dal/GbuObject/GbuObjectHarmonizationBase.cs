@@ -78,7 +78,8 @@ namespace KadOzenka.Dal.GbuObject
             var itemsGetter = new HarmonizationItemsGetter(BaseSetting, _log) as AItemsGetter<Item>;
             itemsGetter = new HarmonizationBuildingFilterDecorator<Item>(itemsGetter, _log, BaseSetting);
             itemsGetter = new HarmonizationPlacementFilterDecorator<Item>(itemsGetter, _log, BaseSetting);
-            itemsGetter = new GbuObjectStatusFilterDecorator<Item>(itemsGetter, _log, BaseSetting.ObjectChangeStatus);
+            itemsGetter = new GbuObjectStatusFilterDecorator<Item>(itemsGetter, _log, BaseSetting.ObjectChangeStatus,
+	            BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay());
 
             var objects = itemsGetter.GetItems();
             _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);

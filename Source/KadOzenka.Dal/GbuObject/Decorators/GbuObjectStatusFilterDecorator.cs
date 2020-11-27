@@ -10,11 +10,13 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 	public class GbuObjectStatusFilterDecorator<T> : ADecorator<T> where T : ItemBase
 	{
 		public List<ObjectChangeStatus> Statuses { get; set; }
+		public DateTime ActualDate { get; set; }
 
-		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<ObjectChangeStatus> statuses) 
+		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<ObjectChangeStatus> statuses, DateTime actualDate) 
 			: base(comp, logger)
 		{
 			Statuses = statuses;
+			ActualDate = actualDate;
 		}
 
 		public override List<T> GetItems()
@@ -31,8 +33,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			var statusAttributesGrouping = new GbuObjectService().GetAllAttributes(
 				allItems.Select(x => x.ObjectId).Distinct().ToList(),
 				new List<long> { RosreestrRegisterService.RegisterId },
-				attributeIds,
-				DateTime.Now.GetEndOfTheDay(), isLight: true)
+				attributeIds, ActualDate, isLight: true)
 				.GroupBy(x => x.ObjectId).ToList();
 			Logger.Debug($"Найдено {statusAttributesGrouping.Count} ОН со значениями из Росреестра");
 

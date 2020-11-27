@@ -1300,10 +1300,8 @@ namespace KadOzenka.Dal.GbuObject
             };
 
             var itemsGetter = new PriorityGroupingItemsGetter(_log, setting) as AItemsGetter<GroupingItem>;
-            if (setting.ObjectChangeStatus?.Count != 0)
-            {
-	            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus);
-            }
+            var actualDate = setting.DateActual?.Date ?? DateTime.Now.Date;
+            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus, actualDate);
 
             List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
             if (setting.IdCodJob != null)
@@ -1358,7 +1356,7 @@ namespace KadOzenka.Dal.GbuObject
 
                     try
                     {
-                        new PriorityItem().SetPriorityGroupForObject(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
+                        new PriorityItem().SetPriorityGroupForObject(setting, DictionaryItem, item, actualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
                     }
                     catch (Exception ex)
                     {

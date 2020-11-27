@@ -76,10 +76,8 @@ namespace KadOzenka.Dal.KoObject
 			locked = new object();
 
 			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
-			if (param.ObjectChangeStatus?.Count != 0)
-			{
-				unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger, param.ObjectChangeStatus);
-			}
+			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
+				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
 			var units = unitsGetter.GetItems();
 			Logger.Debug($"Найдено {units.Count} ЕО");
