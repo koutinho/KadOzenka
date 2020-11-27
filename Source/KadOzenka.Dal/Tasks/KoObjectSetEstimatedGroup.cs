@@ -7,10 +7,14 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Decorators;
+using KadOzenka.Dal.GbuObject.Dto;
+using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.KoObject
 {
@@ -57,23 +61,28 @@ namespace KadOzenka.Dal.KoObject
 
 	public class KoObjectSetEstimatedGroup
 	{
-		/// <summary>
-		/// Объект для блокировки счетчика в многопоточке
-		/// </summary>
+		private static readonly ILogger Logger = Log.ForContext<KoObjectSetEstimatedGroup>();
+
 		public static object locked;
-
-		public static int CountAllUnits;
-
 		public static int SuccessCount;
 
 
 		public static long Run(EstimatedGroupModel param)
-		{
+		{ 
+			Logger.ForContext("InputParameters", JsonConvert.SerializeObject(param)).Debug("Входные данные для Присвоения оценочной группы");
+
 			var reportService = new GbuReportService();
 			reportService.AddHeaders(new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 			locked = new object();
-			var units = OMUnit.Where(x => x.TaskId != null && x.TaskId == param.IdTask).SelectAll().Execute().ToList();
-			CountAllUnits = units.Count;
+
+			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
+			if (param.UnitChangeStatus?.Count != 0)
+			{
+				unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger, param.UnitChangeStatus);
+			}
+
+			var units = unitsGetter.GetItems();
+			Logger.Debug($"Найдено {units.Count} ЕО");
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 			ParallelOptions options = new ParallelOptions
@@ -172,6 +181,7 @@ namespace KadOzenka.Dal.KoObject
 			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
 			long reportId = reportService.SaveReport("Отчет проставления оценочной группы");
 
+			Logger.Debug("Закончена операция присвоения оценочной группы");
 			return reportId;
 		}
 
@@ -260,4 +270,48 @@ namespace KadOzenka.Dal.KoObject
 
 		#endregion
     }
+
+
+	#region Entities
+
+	public class SetEstimatedGroupUnitPure : ItemBase
+	{
+		public string CadastralNumber { get; set; }
+		public string PropertyType { get; set; }
+	}
+
+	public class InheritanceUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
+	{
+		public EstimatedGroupModel Settings { get; set; }
+
+		public InheritanceUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
+		{
+			Settings = setting;
+		}
+
+
+		public override List<SetEstimatedGroupUnitPure> GetItems()
+		{
+			if (Settings.IdTask == 0)
+				return new List<SetEstimatedGroupUnitPure>();
+
+			return OMUnit.Where(x => x.TaskId == Settings.IdTask && x.ObjectId != null)
+				.Select(x => new
+				{
+					x.ObjectId,
+					x.CadastralNumber,
+					x.PropertyType
+				})
+				.Execute()
+				.Select(x => new SetEstimatedGroupUnitPure
+				{
+					Id = x.Id,
+					ObjectId = x.ObjectId.GetValueOrDefault(),
+					CadastralNumber = x.CadastralNumber,
+					PropertyType = x.PropertyType
+				}).ToList();
+		}
+	}
+
+	#endregion
 }
