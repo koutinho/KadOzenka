@@ -5,7 +5,6 @@ using System.Linq;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Platform.Register;
@@ -102,7 +101,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		{
 			var runtimeSql = GetBasicSql(taskIds);
 
-			runtimeSql.Append("select cadastralNumber, array_remove(attributes, NULL) as attributes from data");
+			runtimeSql.Append("\nselect cadastralNumber, array_remove(attributes, NULL) as attributes from data");
 
 			return runtimeSql.ToString();
 		}
@@ -110,6 +109,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		public string GetSqlForCache(List<long> taskIds)
 		{
 			return $"select cadastral_number as cadastralNumber, attributes from {TableName} where task_id in ({string.Join(',', taskIds)})";
+		}
+
+		public int GetUnitsCount(List<long> taskIds)
+		{
+			var columnName = "count";
+			var sql = $"select count(*) as {columnName} from ko_unit unit where {GetUnitCondition(taskIds)}";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+			if (dataTable.Rows.Count <= 0) 
+				return 0;
+
+			var row = dataTable.Rows[0];
+
+			return row[columnName].ParseToInt();
 		}
 
 
@@ -179,11 +194,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 
 			sql.Append($@"] as attributes
 			from ko_unit unit
-				where unit.task_id in ({ string.Join(',', taskIds)}) and unit.PROPERTY_TYPE_CODE<>2190
-				group by unit.cadastral_number, unit.object_id
+				where {GetUnitCondition(taskIds)}
 				order by unit.cadastral_number)");
 
 			return sql;
+		}
+
+		private string GetUnitCondition(List<long> taskIds)
+		{
+			return $@" unit.task_id in ({string.Join(',', taskIds)}) and unit.PROPERTY_TYPE_CODE<>2190 
+						group by unit.cadastral_number, unit.object_id ";
 		}
 
 		#endregion

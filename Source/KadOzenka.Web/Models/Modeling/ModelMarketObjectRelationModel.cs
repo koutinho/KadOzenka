@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Modeling;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -8,6 +11,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }
 		public long? MarketObjectId { get; set; }
+		public long? UnitId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
         public decimal? ModelingPrice { get; set; }
@@ -20,23 +24,24 @@ namespace KadOzenka.Web.Models.Modeling
         public List<CoefficientForObject> Coefficients { get; set; }
 
 
-        public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
+        public static ModelMarketObjectRelationModel ToModel(OMModelToMarketObjects entity)
         {
 	        return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				MarketObjectId = entity.MarketObjectId,
+				UnitId = entity.UnitId,
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
-				ModelingPrice = entity.ModelingPrice,
-				DeviationFromPredictablePrice = entity.DeviationFromPredictablePrice,
-				Percent = entity.Percent,
-                IsExcluded = entity.IsExcluded,
-                IsForTraining = entity.IsForTraining,
-                IsForControl = entity.IsForControl,
-                Coefficients = entity.Coefficients
-            };
+				//ModelingPrice = entity.ModelingPrice,
+				DeviationFromPredictablePrice = ModelingService.CalculatePercent(entity.PriceFromModel, entity.Price),
+				//Percent = entity.Percent,
+                IsExcluded = entity.IsExcluded.GetValueOrDefault(),
+                IsForTraining = entity.IsForTraining.GetValueOrDefault(),
+                IsForControl = entity.IsForControl.GetValueOrDefault(),
+                Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
+			};
 		}
 
 		public static ModelMarketObjectRelationDto FromModel(ModelMarketObjectRelationModel model)

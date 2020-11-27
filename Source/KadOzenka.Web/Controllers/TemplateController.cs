@@ -30,7 +30,7 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetTemplates(DataFormStorege formStorageType)
 		{
 			var result = _templateService.GetTemplates(formStorageType)
-				.Select(x => new {Text = x.TemplateName ?? "", Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault()}).ToList();
+				.Select(x => new {Text = x.TemplateName ?? "", Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault()}).OrderBy(x => x.Text).ToList();
 			return Json(result);
 
 		}
@@ -42,7 +42,7 @@ namespace KadOzenka.Web.Controllers
 				? DataFormStorege.TransferAttributesWithCreate
 				: DataFormStorege.TransferAttributesWithoutCreate;
 			var result = _templateService.GetTemplates(formType)
-				.Select(x => new {Text  = x.TemplateName ?? string.Empty, Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault() }).ToList();
+				.Select(x => new {Text  = x.TemplateName ?? string.Empty, Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault() }).OrderBy(x => x.Text).ToList();
 
 			return Json(result);
 		}
@@ -55,7 +55,7 @@ namespace KadOzenka.Web.Controllers
 			if (task == null) throw new ArgumentNullException($"Задача с id {taskId} не найдена");
 			var result = _templateService.GetTemplates(DataFormStorege.ExportFactorsByTask)
 				.Where(x => x.TemplateName.StartsWith(task.TourId + TourSeparator))
-				.Select(x => new {Text = x.TemplateName?.Split(TourSeparator, 2)?[1] ?? "", Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault() }).ToList();
+				.Select(x => new {Text = x.TemplateName?.Split(TourSeparator, 2)?[1] ?? "", Value = x.Id.ToString(), IsCommon = x.IsCommon.GetValueOrDefault() }).OrderBy(x => x.Text).ToList();
 
 			return Json(result);
 		}
@@ -135,6 +135,7 @@ namespace KadOzenka.Web.Controllers
 		#region Save Template
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateGroupingObject(string nameTemplate, bool isCommon, [FromForm]GroupingObject model, long? id = null)
 		{
@@ -142,6 +143,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationViewModel viewModel, long? id = null)
 		{
@@ -149,6 +151,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationCODViewModel viewModel, long? id = null)
 		{
@@ -156,6 +159,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateUnloading(string nameTemplate, bool isCommon, [FromForm]UnloadingFromDicViewModel viewModel, long? id = null)
 		{
@@ -163,6 +167,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, bool isCommon, [FromForm]EstimatedGroupViewModel model, long? id = null)
 		{
@@ -170,6 +175,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public JsonResult SaveTemplateInheritance(string nameTemplate, bool isCommon, [FromForm] InheritanceViewModel model, long? id = null)
 		{
@@ -177,6 +183,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public JsonResult SaveTemplateForTransferAttributesWithCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel, long? id = null)
 		{
@@ -184,6 +191,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
 		public JsonResult SaveTemplateForTransferAttributesWithoutCreate(string nameTemplate, bool isCommon, [FromForm]ExportAttributesModel viewModel, long? id = null)
 		{
@@ -191,6 +199,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
+		[JsonExceptionHandler]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public JsonResult SaveTemplateFactors(string nameTemplate, bool isCommon, [FromForm]long taskId, [FromForm]bool isOks, [FromForm]string[] selectedAttributes, long? id = null)
 		{
@@ -224,20 +233,13 @@ namespace KadOzenka.Web.Controllers
 
 		private JsonResult SaveTemplate(string nameTemplate, bool isCommon, DataFormStorege formType, string serializeData, long? id = null)
 		{
-			try
+			if (id.HasValue)
 			{
-				if (id.HasValue)
-				{
-					_templateService.UpdateTemplate(id.Value, nameTemplate, isCommon, formType, serializeData);
-				}
-				else
-				{
-					_templateService.CreateTemplate(nameTemplate, isCommon, formType, serializeData);
-				}
+				_templateService.UpdateTemplate(id.Value, nameTemplate, isCommon, formType, serializeData);
 			}
-			catch (Exception e)
+			else
 			{
-				return Json(new { Error = $"Сохранение не выполнено: {e.Message}" });
+				_templateService.CreateTemplate(nameTemplate, isCommon, formType, serializeData);
 			}
 
 			return Json(new { success = true });

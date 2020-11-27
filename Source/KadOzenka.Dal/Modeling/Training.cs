@@ -83,8 +83,7 @@ namespace KadOzenka.Dal.Modeling
                 var coefficients = new List<decimal?>();
                 ModelAttributes.ForEach(modelAttribute =>
                 {
-	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
-		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
+	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId);
                     coefficients.Add(currentAttribute?.Coefficient);
                 });
 

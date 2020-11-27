@@ -96,7 +96,7 @@
             </div>
         </div>
 	}
-	<script type="text/javascript">
+<script type="text/javascript">
 		$(document).ready(function () {
 			$('#ls_panelbar').kendoPanelBar();
 
@@ -133,15 +133,13 @@
 						dataType: 'json'
 					}
 				}
-			},
-			dataBound: function () {
-				if (isEmptyOrg) {
-					$("#IdOrg").data("kendoDropDownList").value(-1);
-				}
 			}
 		});
+			if (isEmptyOrg) {
+				$("#IdOrg").data("kendoDropDownList").value(-1);
+			}
 
-		$('#IdFio').kendoDropDownList({
+			$('#IdFio').kendoDropDownList({
 			filter: "contains",
 			dataTextField: 'Name',
 			dataValueField: 'Id',
@@ -156,13 +154,11 @@
 						dataType: 'json'
 					}
 				}
-			},
-			dataBound: function () {
-				if (isEmptyFio) {
-					$("#IdFio").data("kendoDropDownList").value(-1);
-				}
 			}
-		});
+			});
+			if (isEmptyFio) {
+				$("#IdFio").data("kendoDropDownList").value(-1);
+			}
 
 		$('#IdSro').kendoDropDownList({
 			filter: "contains",
@@ -179,14 +175,12 @@
 						dataType: 'json'
 					}
 				}
-			},
-			dataBound: function () {
-				if (isEmptySro)
-				{
-					$("#IdSro").data("kendoDropDownList").value(-1);
-				}
 			}
 		});
+			if (isEmptySro)
+			{
+				$("#IdSro").data("kendoDropDownList").value(-1);
+			}
 	});
 
 	function distinctErrors(errors) {
@@ -231,7 +225,7 @@
 					var oldId = $('#@Html.IdFor(m => m.Id)').val();
 					$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
 					$('.attachment-report').removeClass('hidden');
-					
+
 					//uploadData - объект из частичного представления AttachPartialGrid
 					if (uploadData && oldId === '-1') {
 						uploadData.setObjectId(response.data.Id);
@@ -243,4 +237,4 @@
 				}
 			});
 		});
-	</script>
+</script>

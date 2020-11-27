@@ -1,16 +1,68 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
+
 <!-- Модальное окно для загрузки Excel-файла -->
 <div id="downloadFilesModalWnd" style="display: none; padding: 2%;">
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
-            <div class="col-sm-12">
+            <div class="col-sm-12" style="padding-top: 5%;">
                 <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
             </div>
         </div>
     </div>
 </div>
+
+
+<!-- Модальное окно с результатами исключения объектов из расчета после загрузки Excel-файла -->
+<div id="excludeModelObjectsFromCalculationResult" style="display: none; padding: 2%;">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Всего объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="totalCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Обновлено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="updatedObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Не изменено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="unchangedObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <span>Не найдено объектов:</span>
+                </div>
+                <div class="col-sm-4">
+                    <span id="errorObjectsCount"></span>
+                </div>
+            </div>
+            <div class="form-group" id="errorRowIndexesBlock" style="display: none;">
+                <div class="col-sm-6">
+                    <span>Строки с не найденными объектами:</span>
+                </div>
+                <div class="col-sm-6">
+                    <span id="errorRowIndexes" style="word-wrap: break-word;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
@@ -112,6 +164,7 @@
 <script>
     var successfulObjectsGridId = "grid";
     var errorObjectsGridId = "gridForObjectsWithErrors";
+    var objectFieldPrefixForCoefficient = "Coefficient_";
 
     $(document).ready(function () {
         updateGrid();
@@ -154,13 +207,16 @@
     //    });
     //}
 
-    
+
 
     function updateGrid() {
         kendo.ui.progress($('body'), true);
         $.ajax({
             url: '@Url.Action("GetObjectsForModel", "Modeling", new {modelId = Model.Id})',
             success: function (result) {
+                if (!result.successfulModels || result.successfulModels.length == 0) {
+                    $("#uploadBtn").addClass('k-state-disabled');
+                }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
                     setIsForTrainingCheckboxForSuccessfulObjects, setIsForControlCheckboxForSuccessfulObjects,
@@ -183,7 +239,11 @@
     }
 
 
+
     function generateGrid(data, gridId, excludeFunc, trainingFunc, controlFunc, trainingAllFunc, controlAllFunc, saveFunc, exportFunc) {
+        var model = '@Json.Serialize(Model.Attributes)';
+        var modelAttributes = JSON.parse(model);
+        mapResponse(data, modelAttributes);
         var dataSource = new kendo.data.DataSource({
             transport:{
                 read:  function(options){
@@ -198,18 +258,7 @@
 				model: {
                     id: "Id",
                     EmptyField: "",
-					fields: {
-						Id: {editable: false, nullable: true},
-						CadastralNumber: { editable: false },
-                        Price: { type: "number", editable: false },
-                        PriceFromModel: { type: "number", editable: false },
-                        IsExcluded: { type: "boolean", editable: true },
-                        IsForTraining: { type: "boolean", editable: true },
-                        IsForControl: { type: "boolean", editable: true },
-                        ModelingPrice: { type: "number", editable: false },
-                        DeviationFromPredictablePrice: { type: "number", editable: false },
-                        Percent: { type: "number", editable: false }
-					}
+					fields: generateSchemaFields(modelAttributes)
                 },
                 data: function (response) {
                     kendo.ui.progress($('body'), false);
@@ -238,7 +287,7 @@
                     }
                 }
             },
-            columns: generateColumns(gridId),
+            columns: generateColumns(gridId, modelAttributes),
             dataSource: dataSource,
             pageable: true,
             sortable: true,
@@ -254,18 +303,57 @@
         $('#exportBtn-' + gridId).on('click', exportFunc);
     }
 
+    function mapResponse(objects, modelAttributes) {
+        //заменяем список коэффициентов на отдельные поля в объекте
+        //например, Coefficient_10004300: 15
+        $.each(objects, function (index, obj) {
+            $.each(modelAttributes, function (index, attribute) {
+                var coefficients = obj.Coefficients;
+                var coefficient = coefficients == undefined || coefficients.find(x => x.AttributeId === attribute.AttributeId) == undefined
+                    ? null
+                    : coefficients.find(x => x.AttributeId === attribute.AttributeId).Coefficient;
+                var fieldName = objectFieldPrefixForCoefficient + attribute.AttributeId;
+                obj[fieldName] = coefficient;
+            });
+        });
+    }
 
-    function generateColumns(gridId) {
-        var model = '@Json.Serialize(Model.Attributes)';
-        var modelAttributes = JSON.parse(model);
+    function generateSchemaFields(modelAttributes) {
+        var fields = {
+            Id: {editable: false, nullable: true},
+            CadastralNumber: { editable: false },
+            Price: { type: "number", editable: false },
+            PriceFromModel: { type: "number", editable: false },
+            IsExcluded: { type: "boolean", editable: true },
+            IsForTraining: { type: "boolean", editable: true },
+            IsForControl: { type: "boolean", editable: true },
+            ModelingPrice: { type: "number", editable: false },
+            DeviationFromPredictablePrice: { type: "number", editable: false },
+            Percent: { type: "number", editable: false }
+        }
+        $.each(modelAttributes, function (index, attribute) {
+            var fieldName = objectFieldPrefixForCoefficient + attribute.AttributeId;
+            fields[fieldName] = { type: "number", editable: false };
+        });
+        return fields;
+    }
+
+    function generateColumns(gridId, modelAttributes) {
         var additionalColumns = modelAttributes.map(function (attribute) {
-            var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + " && x.Value != null) == undefined " +
-                "? EmptyField " +
-                ": Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + " && x.Value != null).Coefficient";
             return {
                 title: attribute.AttributeName,
-                field: field,
-                filterable: false,
+                field: objectFieldPrefixForCoefficient + attribute.AttributeId,
+                filterable: {
+                    extra: false,
+                    operators: {
+                        number: {
+                            isnull: "Пустое",
+                            isnotnull: "Непустое",
+                            gte: "Больше",
+                            lte: "Меньше"
+                        }
+                    }
+                },
                 sortable: false
             };
         });
@@ -285,9 +373,17 @@
                 width: 200
             },
             {
+                title: "Единица оценки",
+                field: "UnitId",
+                template: "# if(UnitId != null){# <a href=\"/ObjectCard?ObjId=#=UnitId#&RegisterViewId=KoObjects&isVertical=true&useMasterPage=true\" target=\"_blank\"><span class=\"k-icon k-i-hyperlink-open\"></span></a> #} #",
+                sortable: false,
+                filterable: false,
+                width: 100
+            },
+            {
                 title: "Цена",
                 field: "Price",
-                template: '#: kendo.format("{0:c}", Price)#',
+                template: '#: kendo.format("{0:c}", Price) #',
                 filterable: true,
                 sortable: true
             },
@@ -558,7 +654,7 @@
         upload.clearAllFiles();
         upload.removeAllFiles();
         var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '50%', '20%', "Загрузка объектов модели");
+        ShowModal(modal, '25%', '14%', "Загрузка объектов модели");
     }
 
 
@@ -571,13 +667,30 @@
             },
             async: {
                 autoUpload: true,
-                saveUrl: '@Url.Action("ImportModelObjectsFromExcel", "Modeling")'
+                saveUrl: '@Url.Action("ExcludeModelObjectsFromCalculation", "Modeling")'
             },
             validation: {
                 allowedExtensions: ['.xls', '.xlsx']
             },
             success: function (data) {
-                Common.ShowMessage(data.response.Message);
+                var response = data.response;
+                if (response) {
+                    $("#totalCount").text(response.TotalCount);
+                    $("#updatedObjectsCount").text(response.UpdatedObjectsCount);
+                    $("#unchangedObjectsCount").text(response.UnchangedObjectsCount);
+                    $("#errorObjectsCount").text(response.ErrorObjectsCount);
+                    if (response.ErrorObjectsCount > 0) {
+                        $("#errorRowIndexes").text(response.ErrorRowIndexes);
+                        $("#errorRowIndexesBlock").show();
+                    }
+                    var modalWithResult = $("#excludeModelObjectsFromCalculationResult");
+                    ShowModal(modalWithResult, '33%', '25%', "Результат загрузки объектов модели (исключение из расчета)");
+                    if (response.fileName) {
+                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
+                    }
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
                 var modal = $('#downloadFilesModalWnd');
                 modal.data("kendoWindow").close();
             },

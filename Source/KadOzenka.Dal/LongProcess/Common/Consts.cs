@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.LongProcess.Consts
+﻿namespace KadOzenka.Dal.LongProcess.Common
 {
     public static class Consts
     {

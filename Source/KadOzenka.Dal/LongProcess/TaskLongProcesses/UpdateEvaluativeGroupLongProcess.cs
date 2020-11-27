@@ -9,6 +9,7 @@ using Core.Register.LongProcessManagment;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Tasks;
@@ -63,8 +64,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var taskId = processQueue.ObjectId;
 			if (!taskId.HasValue)
 			{
-				WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				SendMessage(processQueue, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов", GetMessageSubject(null));
 				return;
 			}
@@ -224,7 +225,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				DateTime.Now.GetEndOfTheDay(), isLight: true);
 			_log.Debug("Найдено {GbuEvaluativeGroupValuesCount} значений ГБУ-атрибутов", gbuEvaluativeGroupValues.Count);
 
-			var tourGroupsInfo = GetGroups(task.TourId);
+			var tourGroupsInfo = GroupService.GetTourGroupsInfo(task.TourId, ObjectTypeExtended.Both);
+			_log.Debug("Найдены группы для Тура");
 
 			_locked = new object();
 			var cancelTokenSource = new CancellationTokenSource();
@@ -261,28 +263,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Найдено {UnitsCount} единиц оценки со статусом 'Изменение группы'", units.Count);
 
 			return units;
-		}
-
-		private TourGroupsInfo GetGroups(long tourId)
-		{
-			var allGroupsInTour = GroupService.GetGroupsTreeForTour(tourId);
-			_log.Debug("Найдено {GroupsCount} групп для Тура {TourId}", allGroupsInTour.Count, tourId);
-
-			var oksGroups = GetGroups(allGroupsInTour, KoGroupAlgoritm.MainOKS);
-			var zuGroups = GetGroups(allGroupsInTour, KoGroupAlgoritm.MainParcel);
-
-			return new TourGroupsInfo
-			{
-				OksGroups = oksGroups,
-				OksSubGroups = oksGroups.SelectMany(x => x.Items).ToList(),
-				ZuGroups = zuGroups,
-				ZuSubGroups = zuGroups.SelectMany(x => x.Items).ToList()
-			};
-		}
-
-		private List<GroupTreeDto> GetGroups(List<GroupTreeDto> allGroupsInTour, KoGroupAlgoritm type)
-		{
-			return allGroupsInTour.Where(x => x.Id == (int)type).SelectMany(x => x.Items).ToList();
 		}
 
 		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)
@@ -374,15 +354,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			public long Id { get; set; }
 			public string Name { get; set; }
 			public long TourId { get; set; }
-		}
-
-		private class TourGroupsInfo
-		{
-			public List<GroupTreeDto> OksGroups { get; set; }
-			public List<GroupTreeDto> OksSubGroups { get; set; }
-			public List<GroupTreeDto> ZuGroups { get; set; }
-			public List<GroupTreeDto> ZuSubGroups { get; set; }
-
 		}
 
 		#endregion

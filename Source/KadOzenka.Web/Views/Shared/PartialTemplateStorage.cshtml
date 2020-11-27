@@ -16,7 +16,10 @@
         <div class="upload-template-wrapper" style="display: none; flex-grow: 0.8">
             <div style="display: flex; padding-left: 4px;">
                 @(Html.Kendo().DropDownList()
-                    .Name("uploadTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                    .Name("uploadTemplateDropDownList").DataTextField("Text").DataValueField("Value")
+                    .Template("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>")
+                    .ValueTemplate("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>")
+                    )
                 <button style="float: left; margin-left: 4px; min-width: 90px;" id="uploadTemplate" class="k-button" type="button">Загрузить</button>
             </div>
         </div>
@@ -32,7 +35,9 @@
         <div class="save-template-wrapper" style="display: none; flex-grow: 0.8">
             <div style="display: flex; padding-left: 4px;">
                 @(Html.Kendo().DropDownList()
-                    .Name("saveTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                    .Name("saveTemplateDropDownList").DataTextField("Text").DataValueField("Value")
+                    .Template("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>")
+                    .ValueTemplate("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>"))
                 @Html.Kendo().TextBox().Name("existTemplateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" }).Enable(false)
                 <div style="padding: 1% 2% 0 2%">
                     @Html.Kendo().CheckBox().Name("isCommonExist").Label("Общий").Enable(false)
@@ -43,13 +48,22 @@
         <div class="remove-template-wrapper" style="display: none; flex-grow: 0.8">
             <div style="display: flex; padding-left: 4px;">
                 @(Html.Kendo().DropDownList()
-                .Name("removeTemplateDropDownList").DataTextField("Text").DataValueField("Value"))
+                .Name("removeTemplateDropDownList").DataTextField("Text").DataValueField("Value")
+                    .Template("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>")
+                    .ValueTemplate("<span><span class=\"k-state-default\">#: data.Text #</span><span class=\"k-state-default templateDropDownListCommonSpan\">#:data.IsCommon ? '(Общий)' : '' #</span></span>"))
                 <button style="float: left; margin-left: 4px; min-width: 90px;" id="removeTemplate" class="k-button" type="button">Удалить</button>
             </div>
         </div>
     </div>
 
-    <script type="text/javascript">
+<style>
+    .templateDropDownListCommonSpan {
+        float: right;
+        /*color: #999;*/
+        font-family: ui-monospace;
+    }
+</style>
+<script type="text/javascript">
     var templateStorage = templateStorage ||
     (function ($) {
 
@@ -217,7 +231,6 @@
                         var url = '@Url.Action(Model.SaveTemplateActionName, "Template")' +  "?nameTemplate=" + $('#newTemplateName').val() + "&isCommon=" + $("#isCommonNew").is(':checked');
 
                         $.post(url, formObject).done(function (response) {
-                            kendo.ui.progress($('body'), false);
                             if (response.Error) {
                                 Common.ShowError(response.Error);
                                 return;
@@ -228,6 +241,10 @@
                                 $("#isCommonNew").prop("checked", false);
                                 self.refreshData();
                             }
+                        }).fail(function(response) {
+                            Common.ShowError(response.responseText);
+                        }).always(function(response) {
+                            kendo.ui.progress($('body'), false);
                         });
                     });
 
@@ -256,7 +273,6 @@
                         var url = '@Url.Action(Model.SaveTemplateActionName, "Template")' + "?nameTemplate=" + $('#existTemplateName').val() + "&isCommon=" + $("#isCommonExist").is(':checked') + "&id=" + id;
 
                         $.post(url, formObject).done(function (response) {
-                            kendo.ui.progress($('body'), false);
                             if (response.Error) {
                                 Common.ShowError(response.Error);
                                 return;
@@ -266,6 +282,10 @@
                                 $('#saveTemplateDropDownList').data("kendoDropDownList").value('');
                                 self.refreshData();
                             }
+                        }).fail(function(response) {
+                            Common.ShowError(response.responseText);
+                        }).always(function(response) {
+                            kendo.ui.progress($('body'), false);
                         });
                     });
 
