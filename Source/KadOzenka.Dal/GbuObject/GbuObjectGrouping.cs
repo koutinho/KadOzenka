@@ -506,7 +506,7 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        private ValueItem GetDataLevelForObject(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
+        private ValueItem GetDataLevelForObject(LevelItem level, GroupingItem obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
 	        dataLevel =  new DataLevel();
@@ -566,7 +566,7 @@ namespace KadOzenka.Dal.GbuObject
             return ValueLevel;
         }
 
-        private ValueItem GetDataLevelForUnit(LevelItem level, ObjectModel.KO.OMUnit unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
+        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
 	        dataLevel = new DataLevel();
@@ -574,7 +574,7 @@ namespace KadOzenka.Dal.GbuObject
             if (level.IdFactor != null)
             {
 	            dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-	            ValueLevel = GetValueFactor(unit.ObjectId.Value, level.IdFactor, dateActual);
+	            ValueLevel = GetValueFactor(unit.ObjectId, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
@@ -629,7 +629,7 @@ namespace KadOzenka.Dal.GbuObject
             return ValueLevel;
         }
 
-        public void SetPriorityGroupForObject(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, 
+        public void SetPriorityGroupForObject(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, GroupingItem obj, 
 	        DateTime dateActual, GbuReportService reportService, Dictionary<long, long> dicColumns)
         {
 	        GbuReportService.Row currentRow;
@@ -903,7 +903,7 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        public void SetPriorityGroupForUnit(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual,
+        public void SetPriorityGroupForUnit(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, GroupingItem unit, DateTime dateActual,
 	        GbuReportService reportService, Dictionary<long, long> dicColumns)
         {
 	        GbuReportService.Row currentRow;
@@ -1022,7 +1022,7 @@ namespace KadOzenka.Dal.GbuObject
                             else
                             if (source.Contains("11")) id_doc = Doc_Id_11;
 
-                            AddValueFactor(unit.ObjectId.Value, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+                            AddValueFactor(unit.ObjectId, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
                             lock (PriorityGrouping.locked)
                             {
@@ -1089,7 +1089,7 @@ namespace KadOzenka.Dal.GbuObject
 
                                 if (setting.IdAttributeSource != null)
 								{
-									AddValueFactor(unit.ObjectId.Value, setting.IdAttributeSource, null, dateActual, strsource);
+									AddValueFactor(unit.ObjectId, setting.IdAttributeSource, null, dateActual, strsource);
 								}
                             }
                             if (setting.IdAttributeDocument != null)
@@ -1144,7 +1144,7 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-                                AddValueFactor(unit.ObjectId.Value, setting.IdAttributeDocument, null, dateActual, strsource);
+                                AddValueFactor(unit.ObjectId, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
                            
 							lock (PriorityGrouping.locked)
@@ -1259,19 +1259,30 @@ namespace KadOzenka.Dal.GbuObject
 
             if (useTask)
             {
-                List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
-                foreach (long taskId in setting.TaskFilter)
-                {
-                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.ObjectId != null).SelectAll().Execute());
-                }
-                MaxCount = Objs.Count;
+	            var units = OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && setting.TaskFilter.Contains((long) x.TaskId) && x.ObjectId != null)
+	                .Select(x => new
+	                {
+                        x.ObjectId,
+                        x.CadastralNumber,
+                        x.CreationDate
+	                })
+	                .Execute()
+	                .Select(x => new GroupingItem
+	                {
+                        Id = x.Id,
+                        ObjectId = x.ObjectId.GetValueOrDefault(),
+                        CadastralNumber = x.CadastralNumber,
+                        CreationDate = x.CreationDate
+	                }).ToList();
+                
+                MaxCount = units.Count;
 				CurrentCount = 0;
 
                 _log.ForContext("useTask", useTask)
-                    .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
+                    .ForContext("Objs_0", JsonConvert.SerializeObject(units.ElementAtOrDefault(0)))
                     .Debug("Выполнение операции группировки по Задачам на  оценку. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item =>
+                Parallel.ForEach(units, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
 
@@ -1287,19 +1298,27 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 });
 
-                Objs.Clear();
+                units.Clear();
             }
 			else
             {
-                List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
-                MaxCount = Objs.Count;
+                var objects = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead)
+	                .Select(x => x.CadastralNumber)
+	                .Execute()
+	                .Select(x => new GroupingItem
+	                {
+		                Id = x.Id,
+		                ObjectId = x.Id,
+		                CadastralNumber = x.CadastralNumber
+                    }).ToList();
+                MaxCount = objects.Count;
                 CurrentCount = 0;
 
                 _log.ForContext("useTask", useTask)
-                    .ForContext("Objs_0", JsonConvert.SerializeObject(Objs[0]))
+                    .ForContext("Objs_0", JsonConvert.SerializeObject(objects.ElementAtOrDefault(0)))
                     .Debug("Выполнение операции группировки по Объектам ГБУ. Всего {Count} объектов", MaxCount);
 
-                Parallel.ForEach(Objs, options, item =>
+                Parallel.ForEach(objects, options, item =>
                 {
                     SetThreadCurrentPrincipal(userId);
 
@@ -1315,7 +1334,7 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 });
 
-                Objs.Clear();
+                objects.Clear();
             }
 
             try
@@ -1395,4 +1414,14 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
     }
+
+    #region Entities
+
+    public class GroupingItem : ItemBase
+    {
+	    public string CadastralNumber { get; set; }
+	    public DateTime? CreationDate { get; set; }
+    }
+
+    #endregion
 }
