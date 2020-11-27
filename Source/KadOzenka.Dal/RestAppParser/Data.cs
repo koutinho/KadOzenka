@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using ObjectModel.Market;
 using KadOzenka.Dal.WebRequest;
 using Core.Register.QuerySubsystem;
+using Serilog;
 
 namespace KadOzenka.Dal.RestAppParser
 {
@@ -14,18 +15,18 @@ namespace KadOzenka.Dal.RestAppParser
     public class Data
     {
 
-        private static string login { get; set; }
-        private static string token { get; set; }
+        private static string Login { get; set; }
+        private static string Token { get; set; }
         private static List<OMCoreObject> AllObjects { get; set; }
         private static DateTime LastUpdateDate { get; set; }
-        private static int restData { get; set; }
+        private static int RestData { get; set; }
+        static readonly ILogger _log = Log.ForContext<Data>();
 
         public Data(string login, string token)
         {
-            Console.WriteLine(login);
-            Console.WriteLine(token);
-            Data.login = login;
-            Data.token = token;
+            Login = login;
+            Token = token;
+            RestApp SO = new RestApp();
             AllObjects = new List<OMCoreObject>();
             LastUpdateDate =
                    OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian && x.ParserTime != null)
@@ -34,18 +35,23 @@ namespace KadOzenka.Dal.RestAppParser
                                .ExecuteFirstOrDefault()
                                .ParserTime
                                .GetValueOrDefault();
-            restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues(login, token));
+            RestData = new JSONParser.RestApp().GetRestData(SO.GetMetaInfoDataValues(login, token));
         }
 
         public void Detect()
         {
-            Console.WriteLine($"Дата последнего обновления: {LastUpdateDate}");
+            _log
+                .ForContext("Логин", Login)
+                .ForContext("Токен", Token)
+                .ForContext("Дата последнего обновления", LastUpdateDate.ToString())
+                .Debug("Обращение к RestApp");
             string[] regionIDs = ConfigurationManager.AppSettings["restAppRegionIDsCIAN"].Split(',');
             string[] dealTypes = ConfigurationManager.AppSettings["restAppDealTypeCIAN"].Split(',');
             int delta = int.Parse(ConfigurationManager.AppSettings["restAppMinuteLimits"]);
             List<string> links = new List<string>();
             int RACOR = 0, RAERR = 0, SCUR = 0, SCOR = 0, SERR = 0, SDUB = 0;
             bool EXCEPTION = false;
+            RestApp SO = new RestApp();
             while (LastUpdateDate < DateTime.Today)
             {
                 DateTime currentTime = LastUpdateDate.AddSeconds(1);
@@ -54,23 +60,51 @@ namespace KadOzenka.Dal.RestAppParser
                 {
                     foreach (string deal in dealTypes)
                     {
+                        string link = SO.FormCianLink(region, deal, currentTime, LastUpdateDate, Login, Token);
                         try
                         {
-                            //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
-                            List<OMCoreObject> coreObjs = 
-                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetCIANDataByMultipleValues(region, deal, currentTime, LastUpdateDate, login, token), ref RACOR, ref RAERR);
+                            List<OMCoreObject> coreObjs = new JSONParser.RestApp().ParseCoreObject(SO.GetCIANDataByMultipleValues(link), ref RACOR, ref RAERR);
                             AllObjects.AddRange(coreObjs);
-                            Logger.ConsoleLog.WriteData("Получение данных из сторонних источников", restData, AllObjects.Count, RACOR, RAERR);
+                            _log
+                                .ForContext("RestObjects", RestData)
+                                .ForContext("RegionId", region)
+                                .ForContext("DealId", deal)
+                                .ForContext("StartTime", currentTime)
+                                .ForContext("EndTime", LastUpdateDate)
+                                .ForContext("Login", Login)
+                                .ForContext("Token", Token)
+                                .ForContext("Link", link)
+                                .Debug("Получение данных с RestApp. Корректно {CorrenctObjectsCount}. С ошибкой {ErrorObjectsCount}.", RACOR, RAERR);
                         }
-                        catch (Exception ex){ Console.WriteLine(ex); Console.WriteLine(ex.StackTrace); EXCEPTION = true; }
+                        catch (Exception ex)
+                        {
+                            _log
+                                .ForContext("RestObjects", RestData)
+                                .ForContext("RegionId", region)
+                                .ForContext("DealId", deal)
+                                .ForContext("StartTime", currentTime)
+                                .ForContext("EndTime", LastUpdateDate)
+                                .ForContext("Login", Login)
+                                .ForContext("Token", Token)
+                                .ForContext("Link", link)
+                                .Error(ex, "Ошибка при получении данных с RestApp");
+                            EXCEPTION = true; 
+                        }
                     }
                     if (EXCEPTION) break;
                 }
                 if (EXCEPTION) break;
             }
-            Logger.ConsoleLog.WriteFotter("Получение данных из сторонних источников завершено");
+            _log
+                .ForContext("Login", Login)
+                .ForContext("Token", Token)
+                .Debug("Получение данных из сторонних источников завершено");
             AllObjects = AllObjects.GroupBy(x => x.Url).Select(x => x.First()).ToList();
-            Console.WriteLine($"Полученные данные проверены на дублирование. Осталось записей: {AllObjects.Count}");
+            _log
+                .ForContext("Login", Login)
+                .ForContext("Token", Token)
+                .ForContext("UniqueCount", AllObjects.Count)
+                .Debug("Проверка полученных данных на дублирование");
             AllObjects.ForEach(x =>
             {
                 try
@@ -83,10 +117,21 @@ namespace KadOzenka.Dal.RestAppParser
                     else SDUB++;
                     SCUR++;
                 }
-                catch (Exception) { SERR++; }
-                Logger.ConsoleLog.WriteData("Запись данных в Postgres", AllObjects.Count, SCUR, SCOR, SERR, SDUB);
+                catch (Exception ex) 
+                {
+                    SERR++;
+                    _log
+                        .ForContext("Id", x.Id)
+                        .Error(ex, "Ошибка при сохранении объекта в БД");
+                }
             });
-            Logger.ConsoleLog.WriteFotter("Запись данных в Postgres завершена");
+            _log
+                .ForContext("AllObjectsCount", AllObjects.Count)
+                .ForContext("WrittenObjectsCount", SCUR)
+                .ForContext("CorrectObjectsCount", SCOR)
+                .ForContext("ErrorObjectsCount", SERR)
+                .ForContext("DuplicateObjectsCount", SDUB)
+                .Debug("Запись данных в БД завершена");
         }
 
     }

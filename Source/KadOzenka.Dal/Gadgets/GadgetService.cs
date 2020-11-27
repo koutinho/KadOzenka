@@ -212,10 +212,10 @@ namespace KadOzenka.Dal.Gadgets
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             data.Rows.Add("/RegistersView/GbuObjects", "Реестр объектов недвижимости", _moveToPageSymbol);
-            data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
-            data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
-            data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
-            data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
+            data.Rows.Add("/GbuObject/Harmonization?useMasterPage=true", "Выполнить гармонизацию", _moveToPageSymbol);
+            data.Rows.Add("/GbuObject/HarmonizationCOD?useMasterPage=true", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/GroupingObject?useMasterPage=true", "Выполнить нормализацию", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/Inheritance?useMasterPage=true", "Выполнить наследование", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/Documents", "Реестр документов", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/ObjectsCharacteristics", "Характеристики объектов", _moveToPageSymbol);
@@ -267,13 +267,13 @@ namespace KadOzenka.Dal.Gadgets
 
             data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", _moveToPageSymbol);
-            data.Rows.Add("/GknDataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
-            data.Rows.Add("/Task/CalculateCadastralPrice", "Произвести расчет кадастровой стоимости", _moveToPageSymbol);
+            data.Rows.Add("/GknDataImport/ImportGkn?useMasterPage=true", "Создать задание на оценку", _moveToPageSymbol);
+            data.Rows.Add("/Task/CalculateCadastralPrice?useMasterPage=true", "Произвести расчет кадастровой стоимости", _moveToPageSymbol);
             data.Rows.Add("ObjectCard?RegisterViewId=KoTours&amp;isVertical=true&amp;useMasterPage=true", "Перейти к справочнику туров", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/KoModels", "Перейти к справочнику моделей", string.Empty);
             data.Rows.Add("/RegistersView/ModelingDictionaries", "Перейти к справочникам для моделирования", string.Empty);
-            data.Rows.Add("/Task/TransferAttributes", "Перенос атрибутов", _moveToPageSymbol);
-            data.Rows.Add("/Task/CreateAndTransferAttributes", "Перенос и создание атрибутов", _moveToPageSymbol);
+            data.Rows.Add("/Task/TransferAttributes?useMasterPage=true", "Перенос атрибутов", _moveToPageSymbol);
+            data.Rows.Add("/Task/CreateAndTransferAttributes?useMasterPage=true", "Перенос и создание атрибутов", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/KoToursFactors", "Ценообразующие факторы", _moveToPageSymbol);
 
             return data;
@@ -289,7 +289,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", _moveToPageSymbol);
-            data.Rows.Add("/Declarations/EditDeclaration", "Перейти к добавлению декларации", _moveToPageSymbol);
+            data.Rows.Add("/Declarations/EditDeclaration?useMasterPage=true", "Перейти к добавлению декларации", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", _moveToPageSymbol);
@@ -308,7 +308,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", _moveToPageSymbol);
-            data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
+            data.Rows.Add("/Commission/EditCommission?useMasterPage=true", "Перейти добавлению комиссии", _moveToPageSymbol);
 
             return data;
         }
