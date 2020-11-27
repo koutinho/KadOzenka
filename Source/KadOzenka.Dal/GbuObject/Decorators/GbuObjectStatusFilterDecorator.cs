@@ -32,24 +32,20 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			var attributeIds = GetAttributeIds();
 			Logger.ForContext("AttributeIds", attributeIds, destructureObjects: true).Debug("Найдены ИД соответствующих атрибутов Росреестра");
 			
-			var statusAttributes = new GbuObjectService().GetAllAttributes(
+			var statusAttributesGrouping = new GbuObjectService().GetAllAttributes(
 				allItems.Select(x => x.ObjectId).Distinct().ToList(),
 				new List<long> { RosreestrRegisterService.RegisterId },
 				attributeIds,
 				DateTime.Now.GetEndOfTheDay(), isLight: true)
-				.GroupBy(x => x.ObjectId, (k, g) => new 
-				{
-					ObjectId = k,
-					Attributes = g.ToList()
-				}).ToList();
-			Logger.Debug($"Найдено {statusAttributes.Count} ОН со значениями из Росреестра");
+				.GroupBy(x => x.ObjectId).ToList();
+			Logger.Debug($"Найдено {statusAttributesGrouping.Count} ОН со значениями из Росреестра");
 
 			var resultObjectIds = new List<long>();
-			foreach (var statusAttribute in statusAttributes)
+			foreach (var statusAttribute in statusAttributesGrouping)
 			{
-				if (statusAttribute.Attributes.Count == attributeIds.Count && statusAttribute.Attributes.All(x => x?.GetValueInString() == "1"))
+				if (statusAttribute.Any(x => x?.GetValueInString() == "1"))
 				{
-					resultObjectIds.Add(statusAttribute.ObjectId);
+					resultObjectIds.Add(statusAttribute.Key);
 				}
 			}
 			Logger.Debug($"После фильтрации по статусам осталось {resultObjectIds.Count} объектов");
