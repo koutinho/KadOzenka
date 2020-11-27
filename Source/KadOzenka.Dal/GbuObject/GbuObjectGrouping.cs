@@ -1169,6 +1169,57 @@ namespace KadOzenka.Dal.GbuObject
         #endregion
     }
 
+
+    public class PriorityGroupingItemsGetter : AItemsGetter<GroupingItem>
+	{
+		public GroupingSettings Settings { get; set; }
+
+		public PriorityGroupingItemsGetter(ILogger logger, GroupingSettings setting) : base(logger)
+		{
+			Settings = setting;
+		}
+
+
+		public override List<GroupingItem> GetItems()
+		{
+			return Settings.TaskFilter?.Count > 0
+				? GetUnits()
+				: GetObjects();
+		}
+
+		private List<GroupingItem> GetUnits()
+		{
+			return OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && Settings.TaskFilter.Contains((long)x.TaskId) && x.ObjectId != null)
+				.Select(x => new
+				{
+					x.ObjectId,
+					x.CadastralNumber,
+					x.CreationDate
+				})
+				.Execute()
+				.Select(x => new GroupingItem
+				{
+					Id = x.Id,
+					ObjectId = x.ObjectId.GetValueOrDefault(),
+					CadastralNumber = x.CadastralNumber,
+					CreationDate = x.CreationDate
+				}).ToList();
+        }
+
+		private List<GroupingItem> GetObjects()
+		{
+			return ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead)
+				.Select(x => x.CadastralNumber)
+				.Execute()
+				.Select(x => new GroupingItem
+				{
+					Id = x.Id,
+					ObjectId = x.Id,
+					CadastralNumber = x.CadastralNumber
+				}).ToList();
+        }
+    }
+
     /// <summary>
     /// Приоритет группировки
     /// </summary>
@@ -1248,6 +1299,12 @@ namespace KadOzenka.Dal.GbuObject
                 MaxDegreeOfParallelism = 20
             };
 
+            var itemsGetter = new PriorityGroupingItemsGetter(_log, setting) as AItemsGetter<GroupingItem>;
+            if (setting.UnitChangeStatus?.Count != 0)
+            {
+	            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.UnitChangeStatus);
+            }
+
             List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
             if (setting.IdCodJob != null)
                 DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
@@ -1255,27 +1312,12 @@ namespace KadOzenka.Dal.GbuObject
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
-            var userId = SRDSession.GetCurrentUserId().Value;
+            var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
 
             if (useTask)
             {
-	            var units = OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && setting.TaskFilter.Contains((long) x.TaskId) && x.ObjectId != null)
-	                .Select(x => new
-	                {
-                        x.ObjectId,
-                        x.CadastralNumber,
-                        x.CreationDate
-	                })
-	                .Execute()
-	                .Select(x => new GroupingItem
-	                {
-                        Id = x.Id,
-                        ObjectId = x.ObjectId.GetValueOrDefault(),
-                        CadastralNumber = x.CadastralNumber,
-                        CreationDate = x.CreationDate
-	                }).ToList();
-                
-                MaxCount = units.Count;
+	            var units = itemsGetter.GetItems();
+	            MaxCount = units.Count;
 				CurrentCount = 0;
 
                 _log.ForContext("useTask", useTask)
@@ -1302,15 +1344,7 @@ namespace KadOzenka.Dal.GbuObject
             }
 			else
             {
-                var objects = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead)
-	                .Select(x => x.CadastralNumber)
-	                .Execute()
-	                .Select(x => new GroupingItem
-	                {
-		                Id = x.Id,
-		                ObjectId = x.Id,
-		                CadastralNumber = x.CadastralNumber
-                    }).ToList();
+	            var objects = itemsGetter.GetItems();
                 MaxCount = objects.Count;
                 CurrentCount = 0;
 

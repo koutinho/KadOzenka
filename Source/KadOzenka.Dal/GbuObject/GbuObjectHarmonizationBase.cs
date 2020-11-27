@@ -271,7 +271,6 @@ namespace KadOzenka.Dal.GbuObject
         private static ABaseHarmonizationSettings BaseSetting { get; set; }
         protected static GbuReportService ReportService { get; set; }
         private static GbuObjectService GbuObjectService { get; set; }
-        private static RosreestrRegisterService RosreestrRegisterService { get; set; }
 
         private RegisterAttribute _registerAttribute;
         private RegisterAttribute ResultAttribute
@@ -298,7 +297,6 @@ namespace KadOzenka.Dal.GbuObject
             _log = logger;
             ReportService = new GbuReportService();
             GbuObjectService = new GbuObjectService();
-            RosreestrRegisterService = new RosreestrRegisterService();
         }
 
 
