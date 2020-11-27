@@ -457,7 +457,8 @@ from (select
 
 		public List<GbuAttributesTreeDto> GetGbuAttributesTree()
 		{
-			return RegisterCache.Registers.Values.Where(x => GetGbuRegistersIds().Contains(x.Id)).Select(x => new GbuAttributesTreeDto
+			var gbuRegisterIds = GetGbuRegistersIds();
+			return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id)).Select(x => new GbuAttributesTreeDto
 			{
 				Text = x.Description,
 				Value = x.Id.ToString(),
