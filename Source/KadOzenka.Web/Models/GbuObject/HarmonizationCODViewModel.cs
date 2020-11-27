@@ -56,7 +56,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				DefaultValue = DefaultValue,
 				IdDocument = Document.IdDocument,
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
-				UnitChangeStatus = UnitChangeStatus,
+				ObjectChangeStatus = ObjectChangeStatus,
 				DateActual = IsDataActualUsed ? DataActual : null
 			};
 

@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		public List<long> TaskFilter { get; set; }
 
 		[Display(Name = "Статус")]
-		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Тип наследования: Кадастровый квартал -> Земельный участок
@@ -74,7 +74,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GbuInheritanceAttributeSettings
 			{
 				TaskFilter = TaskFilter,
-				UnitChangeStatus = UnitChangeStatus,
+				ObjectChangeStatus = ObjectChangeStatus,
 				Attributes = Attributes,
 				ParcelToConstruction = ParcelToConstruction,
 				ParcelToUncomplited = ParcelToUncomplited,

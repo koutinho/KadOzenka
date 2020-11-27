@@ -51,11 +51,11 @@
         
         <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.UnitChangeStatus)
+                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
             </div>
             <div class="col-sm-10">
-                @(Html.Kendo().MultiSelectFor(m => m.UnitChangeStatus)
-                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(UnitChangeStatus)))
+                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
                     .Filter(FilterType.Contains))
             </div>
         </div>
@@ -294,7 +294,7 @@
 
     async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-        $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value([]);
+        $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         var customRowValues = [];
         data.forEach(function (val) {
@@ -311,8 +311,8 @@
                 taskFilterValuesFromTemplate.push([elementValue]);
             }
 
-            if (elementName.includes('@(nameof(Model.UnitChangeStatus))')) {
-                var element = $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect");
+            if (elementName.includes('@(nameof(Model.ObjectChangeStatus))')) {
+                var element = $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect");
                 var currentValue = element.value();
                 currentValue.push([elementValue]);
                 element.value(currentValue);

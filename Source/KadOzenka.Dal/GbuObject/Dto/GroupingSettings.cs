@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// <summary>
         /// Список статусов Единиц Оценки
         /// </summary>
-        public List<UnitChangeStatus> UnitChangeStatus;
+        public List<ObjectChangeStatus> ObjectChangeStatus;
         /// <summary>
         /// Настройки 1 уровня группировки
         /// </summary>

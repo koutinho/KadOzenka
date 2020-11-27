@@ -59,7 +59,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		public List<long> TaskFilter { get; set; }
 
         [Display(Name = "Статус")]
-        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Дата на которую делается гармонизация
@@ -154,7 +154,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				SelectAllObject = SelectAllObject,
 				DateActual = DataActual,
 				TaskFilter = TaskFilter ?? new List<long>(),
-				UnitChangeStatus = UnitChangeStatus
+				ObjectChangeStatus = ObjectChangeStatus
 			};
 		}
 

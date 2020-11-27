@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.KoObject
 		public long IdCodeGroup { get; set; }
 		public long IdCodeQuarter { get; set; }
 		public long IdTerritoryType { get; set; }
-		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Result parameter.
@@ -76,9 +76,9 @@ namespace KadOzenka.Dal.KoObject
 			locked = new object();
 
 			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
-			if (param.UnitChangeStatus?.Count != 0)
+			if (param.ObjectChangeStatus?.Count != 0)
 			{
-				unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger, param.UnitChangeStatus);
+				unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger, param.ObjectChangeStatus);
 			}
 
 			var units = unitsGetter.GetItems();

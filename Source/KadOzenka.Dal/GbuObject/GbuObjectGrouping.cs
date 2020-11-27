@@ -1300,9 +1300,9 @@ namespace KadOzenka.Dal.GbuObject
             };
 
             var itemsGetter = new PriorityGroupingItemsGetter(_log, setting) as AItemsGetter<GroupingItem>;
-            if (setting.UnitChangeStatus?.Count != 0)
+            if (setting.ObjectChangeStatus?.Count != 0)
             {
-	            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.UnitChangeStatus);
+	            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus);
             }
 
             List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();

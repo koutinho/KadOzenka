@@ -55,9 +55,9 @@ namespace KadOzenka.Dal.GbuObject
             if (setting.TaskFilter?.Count > 0)
             {
 	            var unitsGetter = new InheritanceUnitsGetter(_log, setting) as AItemsGetter<InheritanceUnitPure>;
-	            if (setting.UnitChangeStatus?.Count != 0)
+	            if (setting.ObjectChangeStatus?.Count != 0)
 	            {
-		            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.UnitChangeStatus);
+		            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.ObjectChangeStatus);
 	            }
 
                 var units = unitsGetter.GetItems();

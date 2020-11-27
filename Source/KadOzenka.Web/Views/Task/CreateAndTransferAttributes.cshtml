@@ -36,11 +36,11 @@
         
         <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.UnitChangeStatus)
+                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
             </div>
             <div class="col-sm-10">
-                @(Html.Kendo().MultiSelectFor(m => m.UnitChangeStatus)
-                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(UnitChangeStatus)))
+                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
                     .Filter(FilterType.Contains))
             </div>
         </div>
@@ -331,7 +331,7 @@
 
     async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value([]);
-        $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value([]);
+        $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         var attrValues = [];
         var taskValues = [];
         data.forEach(function (val) {
@@ -346,10 +346,10 @@
                 taskValues.push([elementValue]);
             }
 
-            if (elementName.includes('@(nameof(Model.UnitChangeStatus))')) {
-                var currentValue = $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value();
+            if (elementName.includes('@(nameof(Model.ObjectChangeStatus))')) {
+                var currentValue = $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value();
                 currentValue.push([elementValue]);
-                $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value(currentValue);
+                $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value(currentValue);
             }
 
             if (elementName === '@(nameof(Model.IsOks))') {

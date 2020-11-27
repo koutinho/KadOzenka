@@ -3,7 +3,7 @@ using Core.Shared.Attributes;
 
 namespace KadOzenka.Dal.Enum
 {
-	public enum UnitChangeStatus : long
+	public enum ObjectChangeStatus : long
 	{
 		/// <summary>
 		/// Изменение группы

@@ -311,9 +311,9 @@ namespace KadOzenka.Dal.GbuObject
 
             //добавление фильтров на лету через декоратор
             var itemsGetter = new HarmonizationItemsGetter(BaseSetting, _log) as AItemsGetter<Item>;
-            if (BaseSetting.UnitChangeStatus?.Count != 0)
+            if (BaseSetting.ObjectChangeStatus?.Count != 0)
             {
-	            itemsGetter = new GbuObjectStatusFilterDecorator<Item>(itemsGetter, _log, BaseSetting.UnitChangeStatus);
+	            itemsGetter = new GbuObjectStatusFilterDecorator<Item>(itemsGetter, _log, BaseSetting.ObjectChangeStatus);
             }
             var objects = itemsGetter.GetItems();
             _log.Debug( "Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);

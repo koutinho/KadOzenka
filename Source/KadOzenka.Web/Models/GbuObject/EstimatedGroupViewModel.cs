@@ -13,7 +13,7 @@ namespace KadOzenka.Web.Models.GbuObject
         public long? IdTask { get; set; }
 
         [Display(Name = "Статус")]
-        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]
 		public long? IdEstimatedSubGroup { get; set; }
@@ -23,7 +23,7 @@ namespace KadOzenka.Web.Models.GbuObject
             return new EstimatedGroupModel
             {
                 IdTask = IdTask.Value,
-                UnitChangeStatus = UnitChangeStatus,
+                ObjectChangeStatus = ObjectChangeStatus,
                 IdCodeQuarter = paramsDto.IdCodeQuarter,
                 IdCodeGroup = paramsDto.IdCodeGroup,
                 IdTerritoryType = paramsDto.IdTerritoryType,

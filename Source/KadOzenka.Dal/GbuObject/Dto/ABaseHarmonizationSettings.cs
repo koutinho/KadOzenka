@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// <summary>
         /// Стутс Единицы оценки после обновления
         /// </summary>
-        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
         /// <summary>
         /// Фактор 1 уровня 

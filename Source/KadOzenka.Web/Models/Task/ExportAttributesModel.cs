@@ -19,7 +19,7 @@ namespace KadOzenka.Web.Models.Task
         public List<long> TaskFilter { get; set; }
 
         [Display(Name = "Статус")]
-		public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
         [Display(Name = "Объект капитального строительства")]
         public bool IsOks { get; set; }
@@ -150,7 +150,7 @@ namespace KadOzenka.Web.Models.Task
 			return new GbuExportAttributeSettings
 			{
 				TaskFilter = TaskFilter,
-				UnitChangeStatus = UnitChangeStatus,
+				ObjectChangeStatus = ObjectChangeStatus,
 				ObjType = ObjType,
 				OksAdditionalFilters = ObjType == ObjectTypeExtended.Zu
 					? new Dal.GbuObject.Dto.OksAdditionalFilters()

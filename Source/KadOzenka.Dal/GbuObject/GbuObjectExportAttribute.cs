@@ -270,9 +270,9 @@ namespace KadOzenka.Dal.GbuObject
             {
 				//добавление фильтров на лету через декоратор
 				var baseUnitsGetter = new ExportAttributeToKoItemsGetter(setting, _log) as AItemsGetter<UnitPure>;
-				if (setting.UnitChangeStatus?.Count != 0)
+				if (setting.ObjectChangeStatus?.Count != 0)
 				{
-					baseUnitsGetter = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, _log, setting.UnitChangeStatus);
+					baseUnitsGetter = new GbuObjectStatusFilterDecorator<UnitPure>(baseUnitsGetter, _log, setting.ObjectChangeStatus);
 				}
 
 				var units = baseUnitsGetter.GetItems();

@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// <summary>
         /// Список статусов Единицы оценки после обновления
         /// </summary>
-        public List<UnitChangeStatus> UnitChangeStatus;
+        public List<ObjectChangeStatus> ObjectChangeStatus;
 
         /// <summary>
         /// Тип наследования: Кадастровый квартал -> Земельный участок

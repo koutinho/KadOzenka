@@ -106,7 +106,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		public List<long> TaskFilter { get; set; }
 
         [Display(Name = "Статус")]
-        public List<UnitChangeStatus> UnitChangeStatus { get; set; }
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Дата на которую делается гармонизация
@@ -196,7 +196,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level10Attribute = Level10Attribute,
                 AdditionalLevels = MapAdditionalCustomLevels(),
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
-				UnitChangeStatus = UnitChangeStatus,
+				ObjectChangeStatus = ObjectChangeStatus,
 				DateActual = IsDataActualUsed ? DataActual: null
 			};
 

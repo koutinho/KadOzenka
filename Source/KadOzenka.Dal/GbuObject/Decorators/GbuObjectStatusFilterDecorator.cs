@@ -10,10 +10,10 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 {
 	public class GbuObjectStatusFilterDecorator<T> : ADecorator<T> where T : ItemBase
 	{
-		public List<UnitChangeStatus> Statuses { get; set; }
+		public List<ObjectChangeStatus> Statuses { get; set; }
 		public RosreestrRegisterService RosreestrRegisterService { get; set; }
 
-		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<UnitChangeStatus> statuses) 
+		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<ObjectChangeStatus> statuses) 
 			: base(comp, logger)
 		{
 			Statuses = statuses;
@@ -60,16 +60,16 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			{
 				switch (status)
 				{
-					case UnitChangeStatus.Group:
+					case ObjectChangeStatus.Group:
 						attributeIds.Add(RosreestrRegisterService.GetPGroupAttribute().Id);
 						break;
-					case UnitChangeStatus.Fs:
+					case ObjectChangeStatus.Fs:
 						attributeIds.Add(RosreestrRegisterService.GetPFsAttribute().Id);
 						break;
-					case UnitChangeStatus.WallMaterial:
+					case ObjectChangeStatus.WallMaterial:
 						attributeIds.Add(RosreestrRegisterService.GetPWallMaterialAttribute().Id);
 						break;
-					case UnitChangeStatus.BuildYear:
+					case ObjectChangeStatus.BuildYear:
 						attributeIds.Add(RosreestrRegisterService.GetPBuildYearAttribute().Id);
 						break;
 					default:
