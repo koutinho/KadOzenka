@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
-using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject.Decorators
@@ -11,26 +10,23 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 	public class GbuObjectStatusFilterDecorator<T> : ADecorator<T> where T : ItemBase
 	{
 		public List<ObjectChangeStatus> Statuses { get; set; }
-		public RosreestrRegisterService RosreestrRegisterService { get; set; }
 
 		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<ObjectChangeStatus> statuses) 
 			: base(comp, logger)
 		{
 			Statuses = statuses;
-			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 
 		public override List<T> GetItems()
 		{
 			var allItems = base.GetItems();
-			Logger.Debug($"Найдено {allItems.Count} объектов");
-			Logger.ForContext("InputParameters", Statuses, destructureObjects: true).Debug("Начало фильтрации по статусам ОН");
-
 			if (allItems.Count == 0 || Statuses == null || Statuses.Count == 0)
 				return allItems;
 
+			Logger.ForContext("InputParameters", Statuses, true).Debug($"Начало фильтрации по статусам ОН. Количество объектов до фильтрации - {allItems.Count}");
+
 			var attributeIds = GetAttributeIds();
-			Logger.ForContext("AttributeIds", attributeIds, destructureObjects: true).Debug("Найдены ИД соответствующих атрибутов Росреестра");
+			Logger.ForContext("AttributeIds", attributeIds, true).Debug("Найдены ИД соответствующих атрибутов Росреестра");
 			
 			var statusAttributesGrouping = new GbuObjectService().GetAllAttributes(
 				allItems.Select(x => x.ObjectId).Distinct().ToList(),
