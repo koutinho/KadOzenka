@@ -71,26 +71,6 @@
         <div class="form-group">
             <div class="col-sm-2">
                 <label>
-                    @(Html.Kendo().CheckBoxFor(m => m.IsValuesFilterUsed).Enable(!Model.SelectAllObject))
-                    По значению
-                </label>
-            </div>
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.IdAttributeFilter)
-            </div>
-            <div class="col-sm-4">
-                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], isReadonly: true)
-            </div>
-            <div class="col-sm-1">
-                @Html.CustomLabelFor(m => m.ValuesFilter)
-            </div>
-            <div class="col-sm-3">
-                <select id="valuesFilter" style="width: 100%;"></select>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                <label>
                     @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
                     Дата актуализации
                 </label>
@@ -435,12 +415,11 @@
 <script type="text/javascript">
 
     function fillForm(data) {
-        $('#valuesFilter').getKendoMultiSelect().value([]);
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
         $('#@(nameof(Model.UnitChangeStatus))').data("kendoMultiSelect").value([]);
         data.forEach(function (val) {
             if (Object.keys(val)[0].includes('IdFactor') || Object.keys(val)[0].includes('IdAttributeResult')
-                || Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument')) {
+                || Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument')) {
                 $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
                 $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
                 $('#' + Object.keys(val)[0]).data('kendoDropDownTree').filterInput.val('');
@@ -449,19 +428,6 @@
 
             if (Object.keys(val)[0].includes('IdCodJob')) {
                 $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
-            }
-
-            if (Object.keys(val)[0].includes('ValuesFilter')) {
-                var widget = $('#valuesFilter').getKendoMultiSelect();
-                var dataSource = widget.dataSource;
-                var newItem = {
-                    valuesFilter: val[Object.keys(val)[0]],
-                    valuesFilterName: val[Object.keys(val)[0]]
-                };
-
-                dataSource.add(newItem);
-                var newValue = newItem.valuesFilter;
-                widget.value(widget.value().concat([newValue]));
             }
 
             if (Object.keys(val)[0] === '@(nameof(Model.SelectAllObject))') {
@@ -492,16 +458,6 @@
                 }
                 $('#@(nameof(Model.IsTaskFilterUsed))').prop("checked", false);
                 changeTaskFilterAvailability(false);
-            }
-
-            if (Object.keys(val)[0] === '@(nameof(Model.IsValuesFilterUsed))') {
-                if (!!val[Object.keys(val)[0]]) {
-                    $('#@(nameof(Model.IsValuesFilterUsed))').prop("checked", true);
-                    changeValuesFilterAvailability(true);
-                    return;
-                }
-                $('#@(nameof(Model.IsValuesFilterUsed))').prop("checked", false);
-                changeValuesFilterAvailability(false);
             }
 
             if (Object.keys(val)[0] === '@(nameof(Model.DataActual))') {
@@ -540,27 +496,6 @@
         }
     }
 
-    function changeValuesFilterAvailability(isValuesFilterUsed) {
-        if (isValuesFilterUsed) {
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
-            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
-            $('#valuesFilter').data("kendoMultiSelect").enable(true);
-            Common.UI.ShowInfo({
-                content: "Вводите значения через 'Shift + Enter'",
-                onSuccess: function() {
-                    Common.UI.CloseWindow('Dashboard', window.parent);
-                }
-            });
-        } else {
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
-            $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
-            $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
-
-            $('#valuesFilter').data("kendoMultiSelect").value([]);
-            $('#valuesFilter').data("kendoMultiSelect").enable(false);
-        }
-    }
-
     function changeTaskFilterAvailability(isTaskFilterUsed) {
         if (isTaskFilterUsed) {
             $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
@@ -575,18 +510,14 @@
 
     function selectAllObjectChanged(checked) {
         if (checked) {
-            $('#IsValuesFilterUsed').prop('checked', false);
-            $('#IsValuesFilterUsed').attr("disabled", true);
             $('#IsDataActualUsed').prop('checked', false);
             $('#IsDataActualUsed').attr("disabled", true);
             $('#IsTaskFilterUsed').prop('checked', false);
             $('#IsTaskFilterUsed').attr("disabled", true);
 
             changeDataActualAvailability(false);
-            changeValuesFilterAvailability(false);
             changeTaskFilterAvailability(false);
         } else {
-            $('#IsValuesFilterUsed').attr("disabled", false);
             $('#IsDataActualUsed').attr("disabled", false);
             $('#IsTaskFilterUsed').attr("disabled", false);
         }
@@ -661,16 +592,15 @@
         getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
 
+
+
+
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
 
         $('#SelectAllObject').bind("change",
             function() {
                 selectAllObjectChanged(this.checked);
-            });
-        $('#IsValuesFilterUsed').bind("change",
-            function() {
-                changeValuesFilterAvailability(this.checked);
             });
         $('#IsDataActualUsed').bind("change",
             function() {
@@ -683,46 +613,12 @@
 
 		templateStorage.init(@((int)DataFormStorege.Normalisation), fillForm);
 
-		function onDataBound(e) {
-			$('.k-multiselect .k-input').unbind('keyup');
-            $('.k-multiselect .k-input').on('keyup', onClickEnter); 
-		}
-        function onClickEnter(e) {
-			if (e.keyCode === 13) {
-				var widget = $('#valuesFilter').getKendoMultiSelect();
-				var dataSource = widget.dataSource;
-				var input = $('.k-multiselect .k-input');
-				var value = input.val().trim();
-				if (!value || value.length === 0) {
-					return;
-				}
-				var newItem = {
-					valuesFilter: value,
-					valuesFilterName: value
-				};
 
-				dataSource.add(newItem);
-				var newValue = newItem.valuesFilter;
-				widget.value(widget.value().concat([newValue]));
-			}
-		}
-		$("#valuesFilter").kendoMultiSelect({
-			dataTextField: "valuesFilterName",
-			dataValueField: "valuesFilter",
-			enable: false,
-			dataSource: {
-				data: []
-			},
-			dataBound: onDataBound
-		});
-
-		$('#execute').on('click',
+        $('#execute').on('click',
 			function () {
 				var form = $('form');
 				var formObject = Common.Functions.FormToObject(form);
-				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
-
-				kendo.ui.progress($('body'), true);
+                kendo.ui.progress($('body'), true);
 
 			    $.post(form.attr('action'), formObject).done(function(response) {
 			            if (response.Errors) {

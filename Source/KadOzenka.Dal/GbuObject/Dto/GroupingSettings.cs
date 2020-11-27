@@ -14,19 +14,10 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// Идентификатор задания ЦОД
         /// </summary>
         public long? IdCodJob;
-
         /// <summary>
         /// Выборка по всем объектам
         /// </summary>
         public bool SelectAllObject;
-        /// <summary>
-        /// Идентификатор аттрибута - фильтра
-        /// </summary>
-        public long? IdAttributeFilter;
-        /// <summary>
-        /// Список значений фильтра
-        /// </summary>
-        public List<string> ValuesFilter;
         /// <summary>
         /// Список заданий на оценку
         /// </summary>
