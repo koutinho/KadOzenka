@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			var attributeIds = GetAttributeIds();
 			Logger.ForContext("AttributeIds", attributeIds, true).Debug("Найдены ИД соответствующих атрибутов Росреестра");
 			
-			var statusAttributesGrouping = new GbuObjectService().GetAllAttributes(
+			var statusAttributesGrouping = GbuObjectService.GetAllAttributes(
 				allItems.Select(x => x.ObjectId).ToList(),
 				new List<long> { RosreestrRegisterService.RegisterId },
 				attributeIds, ActualDate, isLight: true)
