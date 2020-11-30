@@ -195,6 +195,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			sql.Append($@"] as attributes
 			from ko_unit unit
 				where {GetUnitCondition(taskIds)}
+				group by unit.cadastral_number, unit.object_id 
 				order by unit.cadastral_number)");
 
 			return sql;
@@ -202,8 +203,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 
 		private string GetUnitCondition(List<long> taskIds)
 		{
-			return $@" unit.task_id in ({string.Join(',', taskIds)}) and unit.PROPERTY_TYPE_CODE<>2190 
-						group by unit.cadastral_number, unit.object_id ";
+			return $@" unit.task_id in ({string.Join(',', taskIds)}) and unit.PROPERTY_TYPE_CODE<>2190 ";
 		}
 
 		#endregion
