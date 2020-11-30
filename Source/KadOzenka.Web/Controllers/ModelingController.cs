@@ -212,20 +212,28 @@ namespace KadOzenka.Web.Controllers
             if(allGroupIds?.Count == 0)
                 return Json(string.Empty);
 
-	        var groups = OMGroupToMarketSegmentRelation
-		        .Where(x => allGroupIds.Contains(x.GroupId))
-		        .Select(x => new
-		        {
-			        x.GroupId,
-			        x.ParentGroup.GroupName,
-			        x.ParentGroup.Number
-		        })
-		        .Execute()
-		        .Select(x => new SelectListItem
-                {
-	                Value = x.GroupId.ToString(),
-	                Text = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}"
-		        }).OrderBy(x => x.Text).ToList();
+            var groups = OMGroupToMarketSegmentRelation
+	            .Where(x => allGroupIds.Contains(x.GroupId))
+	            .Select(x => new
+	            {
+		            x.GroupId,
+		            x.ParentGroup.GroupName,
+		            x.ParentGroup.Number
+	            })
+	            .Execute()
+	            .Select(x => new
+	            {
+		            GroupId = x.GroupId.ToString(),
+		            FullGroupName = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}",
+		            ParentGroupNumber = GroupService.GetParentGroupNumber(x.ParentGroup?.Number),
+		            SubGroupNumber = GroupService.GetSubGroupNumber(x.ParentGroup?.Number)
+	            })
+	            .OrderBy(x => x.ParentGroupNumber).ThenBy(x => x.SubGroupNumber)
+	            .Select(x => new SelectListItem
+	            {
+		            Value = x.GroupId,
+		            Text = x.FullGroupName
+	            }).ToList();
 
 	        return Json(groups);
         }
