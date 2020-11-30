@@ -9,12 +9,30 @@ namespace KadOzenka.Web.Attributes
     {
         public int StatusCode { get; set; } = 500;
 
+        public MessageType Type { get; set; } = MessageType.Preset;
+
+        public string Message { get; set; }
+
         public override void OnException(ExceptionContext context)
         {
-            var result = ExceptionToMessage(context);
+            var isAjax = context.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+            if (!isAjax) return;
+
+            ObjectResult result;
+            switch (Type)
+            {
+                case MessageType.Custom: result = new ObjectResult(Message);
+                    break;
+                case MessageType.Preset: result = ExceptionToMessage(context);
+                    break;
+                case MessageType.Default:
+                default: result = new ObjectResult(context.Exception.Message);
+                    break;
+            }
 
             result.StatusCode = StatusCode;
             context.Result = result;
+            context.ExceptionHandled = true;
         }
 
         private ObjectResult ExceptionToMessage(ExceptionContext context)
@@ -42,6 +60,8 @@ namespace KadOzenka.Web.Attributes
                 case "53200": message = "Недостаточно памяти"; break;
                 case "53300": message = "Лимит соединений исчерпан"; break;
 
+                case "57014": message = "Выполнение запроса отменено по команде пользователя"; break;
+
                 default: message = "Неизвестная ошибка"; break;
             }
 
@@ -53,6 +73,22 @@ namespace KadOzenka.Web.Attributes
             string message = ex.Message;
 
             return new ObjectResult("[Ошибка] "+message);
+        }
+
+        public enum MessageType
+        {
+            /// <summary>
+            /// Использовать описания ошибок, определённые в самом атрибуте
+            /// </summary>
+            Preset,
+            /// <summary>
+            /// Использовать сообщение из поля Message в выброшенном исключении
+            /// </summary>
+            Default,
+            /// <summary>
+            /// Использовать параметр Message атрибута
+            /// </summary>
+            Custom
         }
     }
 }
