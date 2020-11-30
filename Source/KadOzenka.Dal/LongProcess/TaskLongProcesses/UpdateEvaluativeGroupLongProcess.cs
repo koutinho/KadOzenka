@@ -12,6 +12,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.TD;
@@ -27,6 +28,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private SystemAttributeSettingsService SystemAttributeSettingsService { get; }
 		private GbuObjectService GbuObjectService { get; }
+		private RosreestrRegisterService RosreestrRegisterService { get; }
 		private TaskService TaskService { get; }
 		private GroupService GroupService { get; }
 		private GbuReportService ReportService { get; }
@@ -42,6 +44,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			SystemAttributeSettingsService = new SystemAttributeSettingsService();
 			GbuObjectService = new GbuObjectService();
+			RosreestrRegisterService = new RosreestrRegisterService();
 			TaskService = new TaskService();
 			ReportService = new GbuReportService();
 			GroupService = new GroupService();
@@ -244,13 +247,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<OMUnit> GetUnits(long taskId)
 		{
-			var possibleStatuses = new List<UnitUpdateStatus>
-			{
-				UnitUpdateStatus.GroupChange, UnitUpdateStatus.GroupAndFsChange, UnitUpdateStatus.GroupAndEgrnChange,
-				UnitUpdateStatus.GroupAndFsAndEgrnChanges, UnitUpdateStatus.New
-			};
+			_log.Debug("Начата загрузка ЕО для Задания на оценку с ИД {TaskId}", taskId);
 
-			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null && possibleStatuses.Contains(x.UpdateStatus_Code))
+			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null)
 				.Select(x => new
 				{
 					x.CadastralNumber,
@@ -260,9 +259,36 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				})
 				.Execute();
 
-			_log.Debug("Найдено {UnitsCount} единиц оценки со статусом 'Изменение группы'", units.Count);
+			_log.Debug($"Загружено {units.Count} ЕО");
 
-			return units;
+			return FilterUnits(units);
+		}
+
+		private List<OMUnit> FilterUnits(List<OMUnit> units)
+		{
+			_log.Debug("Начата фильтрация ЕО по признакам для ЦОД из Росреестра (Изменение группы)");
+
+			var group = RosreestrRegisterService.GetPGroupAttribute();
+
+			var groupAttributes = GbuObjectService.GetAllAttributes(
+				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(),
+				new List<long> { RosreestrRegisterService.RegisterId },
+				new List<long> { group.Id },
+				DateTime.Now.GetEndOfTheDay(),
+				isLight: true);
+			_log.Debug($"Найдено {groupAttributes.Count} ОН со значениями из Росреестра");
+
+			var resultObjectIds = new List<long>();
+			foreach (var groupAttribute in groupAttributes)
+			{
+				if (groupAttribute.GetValueInString() == "1")
+				{
+					resultObjectIds.Add(groupAttribute.ObjectId);
+				}
+			}
+			_log.Debug($"После фильтрации ЕО по признакам для ЦОД из Росреестра осталось {resultObjectIds.Count} объектов");
+
+			return units.Where(x => resultObjectIds.Contains(x.ObjectId.GetValueOrDefault())).ToList();
 		}
 
 		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)

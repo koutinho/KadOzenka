@@ -95,7 +95,7 @@ namespace KadOzenka.Dal.LongProcess
 
         private List<OMUnit> FilterUnits(List<OMUnit> units)
         {
-	        _log.Debug("Начата фильтрация ЕО по признакам для ЦОД из Росреестра");
+	        _log.Debug("Начата фильтрация ЕО по признакам для ЦОД из Росреестра (Изменение ФС)");
 
 	        var fs = RosreestrRegisterService.GetPFsAttribute();
 
