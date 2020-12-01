@@ -69,6 +69,10 @@
     <None Remove="Config\Param\Core.SystemCommon.Dev.xml" />
     <None Remove="Config\Param\Core.SystemCommon.Ppr.xml" />
     <None Remove="Config\Param\Core.SystemCommon.Prod.xml" />
+    <None Remove="Config\Param\DataComparingConfig.Dev.xml" />
+    <None Remove="Config\Param\DataComparingConfig.Ppr.Ppr.xml" />
+    <None Remove="Config\Param\DataComparingConfig.Ppr.Test.xml" />
+    <None Remove="Config\Param\DataComparingConfig.Prod.xml" />
     <None Remove="Config\Param\FmReportTypes.xml" />
     <None Remove="Config\Param\MapTilesConfig.Dev.xml" />
     <None Remove="Config\Param\MapTilesConfig.Ppr.Ppr.xml" />
@@ -904,6 +908,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Mfc\Upload\strah\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Ppr.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Ppr.Test.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Prod.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Param\InsurObjectFlagInsur.xml">
@@ -1823,6 +1839,10 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Dev.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Ppr.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Test.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Prod.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Dev.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Ppr.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Test.xml" />

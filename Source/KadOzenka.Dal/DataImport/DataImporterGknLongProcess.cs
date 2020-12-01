@@ -16,7 +16,9 @@ using Core.Messages;
 using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.LongProcess.Common;
+using KadOzenka.Dal.Tasks;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
@@ -255,7 +257,12 @@ namespace KadOzenka.Dal.DataImport
 
 		        t.Wait(1000);
 		        cancelSource.Dispose();
-            }
+
+		        if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
+		        {
+			        ExportTaskChanges(task);
+		        }
+		    }
 		    catch (Exception ex)
 		    {
 			    Log.Information(ex, "Импорт из xml завершен с ошибкой");
@@ -290,7 +297,12 @@ namespace KadOzenka.Dal.DataImport
 
                 t.Wait(1000);
                 cancelSource.Dispose();
-            }
+
+                if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
+                {
+	                ExportTaskChanges(task);
+                }
+			}
             catch (Exception ex)
             {
 	            Log.Information(ex, "Импорт из xlsx завершен с ошибкой");
@@ -407,6 +419,17 @@ namespace KadOzenka.Dal.DataImport
 	        return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
 	               dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
 	               dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
+	    }
+
+	    private static void ExportTaskChanges(OMTask task)
+	    {
+		    Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
+		    var svc = new TaskService();
+		    var stream = svc.TaskAttributeChangesToExcel(task.Id);
+
+		    Log.Information("Сохранение протокола изменений в директорию сравнения");
+		    stream.Seek(0, SeekOrigin.Begin);
+		    DataComparingStorageManager.SaveTaskChangesComparingData(stream, task);
 	    }
 	}
 }

@@ -377,7 +377,8 @@ namespace KadOzenka.Dal.Tasks
                     {
                         RegNumber = dto.IncomingDocument.RegNumber,
                         Description = dto.IncomingDocument.Description,
-                        CreateDate = dto.IncomingDocument.CreationDate
+                        CreateDate = dto.IncomingDocument.CreationDate,
+                        ApproveDate = dto.IncomingDocument.ApproveDate
                     };
                     var documentId = DocumentService.AddDocument(documentDto);
                     task.DocumentId = documentId;
@@ -387,6 +388,7 @@ namespace KadOzenka.Dal.Tasks
                     document.RegNumber = dto.IncomingDocument.RegNumber;
                     document.Description = dto.IncomingDocument.Description;
                     document.CreateDate = dto.IncomingDocument.CreationDate.GetValueOrDefault();
+                    document.ApproveDate = dto.IncomingDocument.ApproveDate.GetValueOrDefault();
                     document.Save();
                 }
                 task.Save();

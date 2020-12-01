@@ -7298,6 +7298,61 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _datachangescomparingstatus;
+        /// <summary>
+        /// 20300900 Статус после сравнения протоколов загрузки (CHANGES_COMPARING_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300900)]
+        public string DataChangesComparingStatus
+        {
+            get
+            {
+                CheckPropertyInited("DataChangesComparingStatus");
+                return _datachangescomparingstatus;
+            }
+            set
+            {
+                _datachangescomparingstatus = value;
+                NotifyPropertyChanged("DataChangesComparingStatus");
+            }
+        }
+
+
+        private KoDataComparingStatus _datachangescomparingstatus_Code;
+        /// <summary>
+        /// 20300900 Статус после сравнения протоколов загрузки (справочный код) (CHANGES_COMPARING_STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300900)]
+        public KoDataComparingStatus DataChangesComparingStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("DataChangesComparingStatus_Code");
+                return this._datachangescomparingstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_datachangescomparingstatus))
+                    {
+                         _datachangescomparingstatus = descr;
+                    }
+                }
+                else
+                {
+                     _datachangescomparingstatus = descr;
+                }
+
+                this._datachangescomparingstatus_Code = value;
+                NotifyPropertyChanged("DataChangesComparingStatus");
+                NotifyPropertyChanged("DataChangesComparingStatus_Code");
+            }
+        }
+
     }
 }
 
