@@ -18,6 +18,9 @@
 /Source/KadOzenka.LongProcessService/obj
 /Source/KadOzenka.LongProcessService/bin
 /Source/KadOzenka.LongProcessService/ConfigCore
+/Source/KadOzenka.LongProcessService/Config/Reports
+/Source/KadOzenka.LongProcessService/Config/SqlQueries
+/Source/KadOzenka.LongProcessService/Config/ExcelTemplates
 /Source/KadOzenka.LongProcessService/wwwroot
 /Source/KadOzenka.Dal/obj
 /Source/KadOzenka.Dal/bin
@@ -45,4 +48,4 @@
 /Source/GISStandProject/obj
 /.vs
 /Source/StartProject/obj
-/Source/Database/GeneratedScripts
+/Source/Database/GeneratedScripts/*.*

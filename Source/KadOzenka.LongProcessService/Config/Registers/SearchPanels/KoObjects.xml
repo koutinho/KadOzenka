@@ -1,7 +1,0 @@
-﻿<RootElement>
-    <ControlElement Caption="Кадастровый номер" ID="cadastral_number" OwnType="Text" AttributeNumber="20101600" QueryOperation="Like" />
-    <ControlElement Caption="Кадастровый номер здания" ID="building_cadastral_number" OwnType="Text" AttributeNumber="20102400" QueryOperation="Like" />
-    <ControlElement Caption="Кадастровый квартал" ID="cadastral_block" OwnType="Text" AttributeNumber="20101700" QueryOperation="Like"/>
-    <ControlElement Caption="Статус расчета" ID="status_repeat_calc" OwnType="Combo" AttributeNumber="20101400" ReferenceId="209" QueryOperation="Equal"/>
-    <ControlElement Caption="Тип объекта" ID="property_type" OwnType="Combo" AttributeNumber="20101800"  ReferenceId="102" QueryOperation="Equal"/>
-</RootElement>

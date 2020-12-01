@@ -12,17 +12,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--<Compile Remove="ConfigCore\**" />
     <Compile Remove="Log\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="ConfigCore\**" />
     <Content Remove="Log\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="ConfigCore\**" />
     <EmbeddedResource Remove="Log\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="ConfigCore\**" />
     <None Remove="Log\**" />
-    <None Remove="wwwroot\**" />
+    <None Remove="wwwroot\**" />-->
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <!--<Folder Include="wwwroot\" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -44,223 +48,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Config\Param\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+	<None Update="Config\SqlQueries\*">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Config\ExcelTemplates\*">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
+ 
+
+  <!--<ItemGroup>
     <Reference Include="Kendo.Mvc">
       <HintPath>..\_DLL\Kendo.Mvc.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\GbuCodDictionary.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\SudOtchetSelect.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\SudReshSelect.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Registers\SearchPanels\SudZakSelect.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsCalculationsAnalysisReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsChangesUploadingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsMarketDataInfoReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdditionalFormsResultsAnalysisReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CadastralCostDeterminationIndividuallyResultsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CadastralCostDeterminationResultsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CalculationParamsModelingResultsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CalculationParamsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\CorrectionByBargainReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\GeneralizedIndicatorsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\InfoAboutCadastralCostDeterminingMethodReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsAndSubgroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsOksUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageByGroupsZuUPKSUPRSReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByGroupsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForParcelsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForPreviousToursReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionForZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionNonuniformReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\PricingFactorsCompositionUniformReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsGroupingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\QualityPricingFactorsEncodingResultsZuReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RegisteredChangedObjectsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\RegisteredObjectsDefaultReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForBuildingsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForConstructionsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForParcelsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForParkingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForPlacementsReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsByCadastralDistrictForUncompletedBuildingReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsForApprovalReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\ResultsForApprovalUpksAverageReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\SubjectsUPKSByTypeReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\TestBackgroundReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\TestBackgroundReport2.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\UPKSAverageValuesByCadastralQuartersReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  </ItemGroup>-->
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="attrib /S &quot;ConfigCore/*.*&quot; -R&#xD;&#xA;attrib /S &quot;C:\TFSProjects\CIPJS\KadOzenka\Source\KadOzenka.LongProcessService\ConfigCore\*.*&quot; -R" />
+    <Exec Command="attrib -r &quot;$(ProjectDir)Config\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)ConfigCore\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)wwwroot\*.*&quot; /s" />
   </Target>
 
 </Project>
