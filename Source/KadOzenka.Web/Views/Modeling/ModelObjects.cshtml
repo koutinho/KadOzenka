@@ -663,14 +663,16 @@
             multiple: false,
             localization: {
                 select: 'Загрузить Файл',
-                clearSelectedFiles: 'Очистить'
+                clearSelectedFiles: 'Очистить',
+                invalidMaxFileSize: "Максимальный размер файла - 4 МБ"
             },
             async: {
                 autoUpload: true,
                 saveUrl: '@Url.Action("ExcludeModelObjectsFromCalculation", "Modeling")'
             },
             validation: {
-                allowedExtensions: ['.xls', '.xlsx']
+                allowedExtensions: ['.xls', '.xlsx'],
+                maxFileSize: 4194304 
             },
             success: function (data) {
                 var response = data.response;

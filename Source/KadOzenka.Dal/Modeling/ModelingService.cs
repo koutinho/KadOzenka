@@ -489,7 +489,18 @@ namespace KadOzenka.Dal.Modeling
 
             if (result.ErrorObjectsCount > 0)
             {
-	            var stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
+	            var stream = new MemoryStream();
+				//исключительный случай - когда не найден ни один объект из файла
+				//тогда не генерируем файл заново, а возвращаем тот же самый
+	            if (rows.Count - 1 == result.ErrorRowIndexes?.Count)
+	            {
+		            file.Save(stream, SaveOptions.XlsxDefault);
+		            stream.Seek(0, SeekOrigin.Begin);
+				}
+	            else
+	            {
+		            stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
+	            }
 	            result.File = stream;
             }
 
@@ -553,7 +564,7 @@ namespace KadOzenka.Dal.Modeling
 
         private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
         {
-	        var resultFile = new ExcelFile();
+			var resultFile = new ExcelFile();
 	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
 	        sheet.Cells.Style.Font.Name = "Times New Roman";
 

@@ -998,7 +998,7 @@ namespace KadOzenka.Web.Controllers
             var fileName = string.Empty;
             if (excludeResult.File != null)
             {
-	            fileName = $"Не найденные объекты: {file.FileName}";
+	            fileName = "Не найденные объекты.xlsx";
 	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
             }
 
