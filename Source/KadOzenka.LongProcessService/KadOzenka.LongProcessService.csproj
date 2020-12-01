@@ -51,6 +51,9 @@
     <None Update="Config\Param\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+	  <None Update="Config\Reports\*">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
 	<None Update="Config\SqlQueries\*">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>

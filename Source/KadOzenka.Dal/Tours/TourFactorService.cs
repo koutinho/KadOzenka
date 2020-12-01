@@ -56,10 +56,10 @@ namespace KadOzenka.Dal.Tours
             if (existedTourFactorRegisters.Count == 0)
                 return new List<OMAttribute>();
 
-            var registerId = existedTourFactorRegisters.First().RegisterId;
+            var registerIds = existedTourFactorRegisters.Select(x => x.RegisterId).Distinct().ToList();
 
             return OMAttribute
-                .Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false &&
+                .Where(x => registerIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false &&
                             x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
         }
 

@@ -556,7 +556,8 @@ namespace KadOzenka.Web.Controllers
 
 	        var tour = ModelingService.GetModelTour(model.GroupId);
 
-	        var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, ObjectTypeExtended.Both);
+	        var objectType = model.IsOksObjectType.GetValueOrDefault() ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu;
+	        var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, objectType);
 
 	        var result = tourAttributes.Select(x => new
 	        {
