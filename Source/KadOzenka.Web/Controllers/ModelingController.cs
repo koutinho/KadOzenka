@@ -138,7 +138,6 @@ namespace KadOzenka.Web.Controllers
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
-			model.AlgorithmType = KoAlgoritmType.Line;
 
 			if (isPartial)
 			{
@@ -579,6 +578,7 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
@@ -586,8 +586,9 @@ namespace KadOzenka.Web.Controllers
 
             model.AlgoritmType_Code = (KoAlgoritmType)algType;
             var formula = model.GetFormulaFull(true);
+            var a0 = model.GetA0();
 
-            return Json(new { formula });
+            return Json(new { formula, a0 });
         }
 
         #region Факторы

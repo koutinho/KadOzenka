@@ -353,9 +353,10 @@
         var algType = this.value();
         $.ajax({
             url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.Id&algType=' + algType,
-            type: 'POST',
+            type: 'GET',
             success: function (e) {
                 $('#Formula').val(e.formula);
+                $('#@nameof(Model.A0)').val(e.a0);
             },
             error: function (e) {
                 Common.ShowError(e.responseText);

@@ -561,6 +561,36 @@ namespace ObjectModel.KO
             };
 	    }
 
+	    public decimal? GetA0()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponential;
+			    case KoAlgoritmType.Line:
+				    return A0;
+                case KoAlgoritmType.Multi:
+				    return A0ForMultiplicative;
+		    }
+
+		    return null;
+	    }
+
+	    public decimal? GetA0ForPreviousTour()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponentialTypeInPreviousTour;
+			    case KoAlgoritmType.Line:
+				    return A0ForLinearTypeInPreviousTour;
+			    case KoAlgoritmType.Multi:
+				    return A0ForMultiplicativeTypeInPreviousTour;
+		    }
+
+		    return null;
+	    }
+
         public string GetFormulaFull(bool upks)
         {
             string str_koeff = GetFormulaKoeff(false, string.Empty);

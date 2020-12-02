@@ -52,6 +52,7 @@ namespace KadOzenka.Web.Models.Modeling
 				HasFormedObjectArray = hasFormedObjectArray,
 				HasProcessToFormObjectArrayInQueue = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, entity.ModelId),
 				AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
+				AlgorithmType = entity.AlgorithmTypeForCadastralPriceCalculation,
 				A0ForPreviousTour = entity.A0ForPreviousTour,
 				Attributes = entity.Attributes
 			};
