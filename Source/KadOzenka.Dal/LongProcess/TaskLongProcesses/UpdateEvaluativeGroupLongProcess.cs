@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				GenerateReportColumns(evaluativeGroupAttribute);
 
-				PerformOperation(processQueue, cancellationToken, task, evaluativeGroupAttribute);
+				Run(task, evaluativeGroupAttribute);
 
 				ReportService.SetStyle();
 				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{task.Name}'", OMTask.GetRegisterId(), "KoTasks");
@@ -192,30 +192,30 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ReportService.SetIndividualWidth(columns);
 		}
 
-		private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
-			RegisterAttribute evaluativeGroupAttribute)
-		{
-			var cancelProgressCounterSource = new CancellationTokenSource();
-			var cancelProgressCounterToken = cancelProgressCounterSource.Token;
-			var progressCounterTask = Task.Run(() =>
-			{
-				while (true)
-				{
-					if (cancelProgressCounterToken.IsCancellationRequested)
-					{
-						break;
-					}
+		//private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
+		//	RegisterAttribute evaluativeGroupAttribute)
+		//{
+		//	var cancelProgressCounterSource = new CancellationTokenSource();
+		//	var cancelProgressCounterToken = cancelProgressCounterSource.Token;
+		//	var progressCounterTask = Task.Run(() =>
+		//	{
+		//		while (true)
+		//		{
+		//			if (cancelProgressCounterToken.IsCancellationRequested)
+		//			{
+		//				break;
+		//			}
 
-					LogProgress(MaxCount, CurrentCount, processQueue);
-				}
-			}, cancelProgressCounterToken);
+		//			LogProgress(MaxCount, CurrentCount, processQueue);
+		//		}
+		//	}, cancelProgressCounterToken);
 
-			Run(task, evaluativeGroupAttribute);
+		//	Run(task, evaluativeGroupAttribute);
 
-			cancelProgressCounterSource.Cancel();
-			progressCounterTask.Wait(cancellationToken);
-			cancelProgressCounterSource.Dispose();
-		}
+		//	cancelProgressCounterSource.Cancel();
+		//	progressCounterTask.Wait(cancellationToken);
+		//	cancelProgressCounterSource.Dispose();
+		//}
 
 		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute)
 		{
