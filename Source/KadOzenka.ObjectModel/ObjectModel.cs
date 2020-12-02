@@ -25296,6 +25296,61 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private string _unitpropertytype;
+        /// <summary>
+        /// 70201200 Тип объекта ЕО (UNIT_PROPERTY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201200)]
+        public string UnitPropertyType
+        {
+            get
+            {
+                CheckPropertyInited("UnitPropertyType");
+                return _unitpropertytype;
+            }
+            set
+            {
+                _unitpropertytype = value;
+                NotifyPropertyChanged("UnitPropertyType");
+            }
+        }
+
+
+        private PropertyTypes _unitpropertytype_Code;
+        /// <summary>
+        /// 70201200 Тип объекта ЕО (справочный код) (UNIT_PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201200)]
+        public PropertyTypes UnitPropertyType_Code
+        {
+            get
+            {
+                CheckPropertyInited("UnitPropertyType_Code");
+                return this._unitpropertytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_unitpropertytype))
+                    {
+                         _unitpropertytype = descr;
+                    }
+                }
+                else
+                {
+                     _unitpropertytype = descr;
+                }
+
+                this._unitpropertytype_Code = value;
+                NotifyPropertyChanged("UnitPropertyType");
+                NotifyPropertyChanged("UnitPropertyType_Code");
+            }
+        }
+
     }
 }
 

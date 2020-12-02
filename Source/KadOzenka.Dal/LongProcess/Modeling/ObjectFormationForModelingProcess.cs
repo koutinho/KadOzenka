@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибутов  модели.", logger: Logger);
 
             var marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects, tourFactorsAttributes.Count != 0);
-            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.UnitId != null)} Единиц оценки для всех объектов.", logger: Logger);
+            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
 
             var i = 0;
             AddLog(Queue, "Обработано объектов: ", logger: Logger);
@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     break;
 
                 var marketObjectIds = marketObjectToUnitsPage.Select(x => x.MarketObject.Id).ToList();
-                var unitIds = marketObjectToUnitsPage.Where(x => x.UnitId != null).Select(x => x.UnitId.Value).Distinct().ToList();
+                var unitIds = marketObjectToUnitsPage.Where(x => x.Unit?.Id != null).Select(x => x.Unit.Id.Value).Distinct().ToList();
 
                 var marketObjectCoefficients = GetCoefficientsFromMarketObject(marketObjectIds, dictionaries, marketObjectAttributes);
                 var unitsCoefficients = GetCoefficientsFromTourFactors(unitIds, dictionaries, tourFactorsAttributes);
@@ -128,7 +128,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 marketObjectToUnitsPage.ForEach(marketObjectToUnitRelation =>
                 {
                     var marketObject = marketObjectToUnitRelation.MarketObject;
-                    var unitId = marketObjectToUnitRelation.UnitId;
+                    var unit = marketObjectToUnitRelation.Unit;
 
                     var isForTraining = i < firstHalf;
                     var isForControl = i >= firstHalf && i <= objectsCount;
@@ -137,7 +137,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     {
                         ModelId = Model.Id,
                         MarketObjectId = marketObject.Id,
-                        UnitId = unitId,
+                        UnitId = unit?.Id,
+                        UnitPropertyType_Code = unit?.PropertyType ?? PropertyTypes.None,
                         CadastralNumber = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
                         IsForTraining = isForTraining,
@@ -148,7 +149,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                         ? coefficients
                         : new List<CoefficientForObject>();
 
-                    var currentUnitCoefficients = unitsCoefficients.Where(x => x.Key == unitId).SelectMany(x => x.Value).ToList();
+                    var currentUnitCoefficients = unitsCoefficients.Where(x => x.Key == unit?.Id).SelectMany(x => x.Value).ToList();
 
                     currentMarketObjectCoefficients.AddRange(currentUnitCoefficients);
 
@@ -265,7 +266,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             if (cadastralNumbers.Count == 0)
                 return new List<MarketObjectToUnitRelation>();
 
-            var unitsDictionary = new Dictionary<string, long>();
+            var unitsDictionary = new Dictionary<string, UnitPure>();
             if (downloadUnits)
             {
                 var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
@@ -283,18 +284,27 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     ProcessPlacemenUnits(placementUnits, units);
                 }
 
-                unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v => v.First().Id);
+                unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
+                {
+	                var unit = v.First();
+
+	                return new UnitPure
+	                {
+		                Id = unit.Id,
+                        PropertyType = unit.PropertyType_Code
+	                };
+                });
             }
 
             var marketObjectToUnitRelation = new List<MarketObjectToUnitRelation>();
             marketObjects.ForEach(x =>
             {
-                var resultUnitId = unitsDictionary.TryGetValue(x.CadastralNumber, out var unitId) ? unitId : (long?) null;
+                var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
 
                 marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
                 {
                     MarketObject = x,
-                    UnitId = resultUnitId
+                    Unit = resultUnit
                 });
             });
 
@@ -337,9 +347,15 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         private class MarketObjectToUnitRelation
         {
-            public MarketObjectPure MarketObject { get; set; }
-            public long? UnitId { get; set; }
+	        public MarketObjectPure MarketObject { get; set; }
+	        public UnitPure Unit { get; set; }
         }
+
+        private class UnitPure
+		{
+			public long? Id { get; set; }
+			public PropertyTypes? PropertyType { get; set; }
+		}
 
         #endregion
     }

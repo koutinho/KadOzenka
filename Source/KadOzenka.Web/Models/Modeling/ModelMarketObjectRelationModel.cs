@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Directory;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -12,6 +13,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public string CadastralNumber { get; set; }
 		public long? MarketObjectId { get; set; }
 		public long? UnitId { get; set; }
+		public string UnitPropertyType { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
         public decimal? ModelingPrice { get; set; }
@@ -32,6 +34,7 @@ namespace KadOzenka.Web.Models.Modeling
 				CadastralNumber = entity.CadastralNumber,
 				MarketObjectId = entity.MarketObjectId,
 				UnitId = entity.UnitId,
+				UnitPropertyType = entity.UnitPropertyType_Code == PropertyTypes.None ? null : entity.UnitPropertyType_Code.GetEnumDescription(),
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
 				//ModelingPrice = entity.ModelingPrice,
