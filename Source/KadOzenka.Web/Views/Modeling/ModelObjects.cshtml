@@ -159,6 +159,7 @@
             <span class="k-icon k-i-download" style="padding-right: 30%"></span>
             Выгрузить
         </a>
+        <span>Показано </span><span id="filteredObjectsCount"></span><span> из </span><span id="allObjectsCount"></span>
     </div>
 </script>
 
@@ -291,6 +292,9 @@
                     }
                 }
             },
+            dataBound: function (e) {
+                $("#filteredObjectsCount").text(this.dataSource.total());
+            },
             columns: generateColumns(gridId, modelAttributes),
             dataSource: dataSource,
             pageable: true,
@@ -305,6 +309,7 @@
         $("#headerCheckboxIsForControl-" + gridId).on("click", controlAllFunc);
         $('#saveBtn-' + gridId).on('click', saveFunc);
         $('#exportBtn-' + gridId).on('click', exportFunc);
+        $("#allObjectsCount").text(data.length);
     }
 
     function mapResponse(objects, modelAttributes) {
