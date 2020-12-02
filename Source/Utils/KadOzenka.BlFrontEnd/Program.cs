@@ -46,6 +46,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.YandexParsing;
@@ -517,6 +518,18 @@ namespace KadOzenka.BlFrontEnd
 				var pathToFile = FileStorageManager.GetFullFileName(DataExporterCommon.FileStorageName,
 					export.DateFinished.Value, export.ResultFileName);
             });
+
+
+            consoleHelper.AddCommand("561", "Тест проставления оценочной группы", () =>
+            {
+	            var taskId = 15534573;
+				new UpdateEvaluativeGroupLongProcess().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId(),
+					ObjectId = taskId
+				}, new CancellationToken());
+			});
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
