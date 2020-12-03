@@ -145,6 +145,18 @@
     .k-grid-filter.k-state-active .k-icon.k-i-filter {
         color: #32CD32;
     }
+
+    .header-select-all-checkbox {
+        -ms-transform: scale(1.5); /* IE */
+        -moz-transform: scale(1.5); /* FF */
+        -webkit-transform: scale(1.5); /* Safari and Chrome */
+        -o-transform: scale(1.5); /* Opera */
+        transform: scale(1.5);
+    }
+
+    .label-select-all-checkbox {
+        padding-left: 10%
+    }
 </style>
 
 
@@ -457,20 +469,20 @@
             {
                 title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
-                headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='k-checkbox header-checkbox'>" +
-                    "<label class='k-checkbox-label' for='" + selectAllForTrainingId + "'>Признак выбора аналога в обучающую модель</label>",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
                 filterable: false,
-                sortable: false
+                sortable: true
             },
             {
                 title: "Признак выбора аналога в контрольную модель",
                 field: "IsForControl",
-                headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='k-checkbox header-checkbox'>" +
-                    "<label class='k-checkbox-label' for='" + selectAllForControlId + "'>Признак выбора аналога в контрольную модель</label>",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
                 template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
                 filterable: false,
-                sortable: false
+                sortable: true
             }
         ];
         return baseColumnsBeforeMarks.concat(additionalColumns).concat(baseColumnsAfterMarks);
@@ -546,13 +558,14 @@
 
 
     //Установка галочки для отнесения ВСЕХ объектов в Обучающую выборку
-    function selectAllObjectsForTrainingForSuccessfulObjects() {
-        selectAllObjectsForTraining(successfulObjectsGridId);
+    function selectAllObjectsForTrainingForSuccessfulObjects(e) {
+        selectAllObjectsForTraining(successfulObjectsGridId, e);
     }
     //function selectAllObjectsForTrainingForErrorObjects() {
-    //    selectAllObjectsForTraining(errorObjectsGridId);
+    //    selectAllObjectsForTraining(errorObjectsGridId, e);
     //}
-    function selectAllObjectsForTraining(gridId) {
+    function selectAllObjectsForTraining(gridId, e) {
+        e.stopPropagation();
         var grid = $("#" + gridId).data("kendoGrid");
         var headerState = $("#headerCheckboxIsForTraining-" + gridId).prop("checked");
         var data = getObjectsFromGrid(gridId);
@@ -568,13 +581,14 @@
 
 
     //Установка галочки для отнесения ВСЕХ объектов в Контрольную выборку
-    function selectAllObjectsForControlForSuccessfulObjects() {
-        selectAllObjectsForControl(successfulObjectsGridId);
+    function selectAllObjectsForControlForSuccessfulObjects(e) {
+        selectAllObjectsForControl(successfulObjectsGridId, e);
     }
     //function selectAllObjectsForControlForErrorObjects() {
-    //    selectAllObjectsForControl(errorObjectsGridId);
+    //    selectAllObjectsForControl(errorObjectsGridId, e);
     //}
-    function selectAllObjectsForControl(gridId) {
+    function selectAllObjectsForControl(gridId, e) {
+        e.stopPropagation();
         var grid = $("#" + gridId).data("kendoGrid");
         var headerState = $("#headerCheckboxIsForControl-" + gridId).prop("checked");
         var data = getObjectsFromGrid(gridId);
