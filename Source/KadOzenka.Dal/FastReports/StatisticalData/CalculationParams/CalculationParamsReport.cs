@@ -43,7 +43,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupId = GetGroupIdFromFilter(query);
 
-            var model = ModelService.GetModelEntityByGroupId(groupId);
+            var model = ModelService.GetActiveModelEntityByGroupId(groupId);
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model.Id, groupId);
 
             var factors = GetFactors(model);

@@ -12,35 +12,29 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
-using KadOzenka.Dal.Oks;
-using ObjectModel.Ko;
-using ObjectModel.Market;
 using Serilog;
-using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
+        public ModelingRepository ModelingRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService()
 		{
 			ModelFactorsService = new ModelFactorsService();
+			ModelingRepository = new ModelingRepository();
 		}
 
         #region CRUD General Model
 
-        public OMModel GetModelEntityByGroupId(long? groupId)
+        public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {
-	        if (groupId == null)
-		        throw new Exception("Не передан идентификатор Группы для поиска модели");
-
-	        var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
 	        if (model == null)
-		        throw new Exception($"Не найдена модель для Группы с id='{groupId}'");
+		        throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
 
 	        return model;
         }
@@ -264,11 +258,11 @@ namespace KadOzenka.Dal.Modeling
 			        x.Save();
 		        });
 
-		        if (model.IsActive.GetValueOrDefault())
-			        return;
-
-		        model.IsActive = true;
-		        model.Save();
+		        if (!model.IsActive.GetValueOrDefault())
+		        {
+			        model.IsActive = true;
+			        model.Save();
+				}
 
 		        ts.Complete();
 	        }
