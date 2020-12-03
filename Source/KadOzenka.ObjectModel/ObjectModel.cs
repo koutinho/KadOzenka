@@ -8257,6 +8257,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _isactive;
+        /// <summary>
+        /// 20602200 Признак выбора модели для расчета (IS_ACTIVE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602200)]
+        public bool? IsActive
+        {
+            get
+            {
+                CheckPropertyInited("IsActive");
+                return _isactive;
+            }
+            set
+            {
+                _isactive = value;
+                NotifyPropertyChanged("IsActive");
+            }
+        }
+
     }
 }
 

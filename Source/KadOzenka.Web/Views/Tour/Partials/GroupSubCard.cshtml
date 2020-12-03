@@ -54,8 +54,17 @@
                                 .BindTo(Model.Models))
                         </div>
                     </div>
+                    <div class="form-group col-sm-12" align="center">
+                        <div class="col-sm-4 col-sm-offset-4" >
+                            @(Html.Kendo().Button()
+                                .Name("makeModelActiveBtn")
+                                .Content("Сделать модель активной")
+                                .Enable(Model.Models?.Count > 0)
+                                .HtmlAttributes(new { style = "width: 100%;" }))
+                        </div>
+                    </div>
                     <div class="form-group col-sm-12">
-                        <div id="modelContent" style="padding-top: 2%;">
+                        <div id="modelMainContent" style="padding-top: 2%;">
 
                         </div>
                     </div>
@@ -127,6 +136,7 @@
         var modelDropDown = $('#@nameof(Model.ModelId)').data("kendoDropDownList");
         modelDropDown.bind('change', initModelCard);
         initModelCard();
+        $('#makeModelActiveBtn').on('click', makeModelActive);
 
         var panelbar = $('#groupSubCard_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
@@ -337,19 +347,51 @@
 
     function initModelCard() {
         var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();
-        kendo.ui.progress($('#modelContent'), true);
+        if (!modelId || modelId == 0) {
+            setModelNotFoundText();
+            return;
+        }
+        kendo.ui.progress($('#modelMainContent'), true);
         $.ajax({
             type: 'GET',
             url: '@Url.Action("ModelCard", "Modeling")',
 			data: { modelId: modelId, isPartial: true, isReadOnly: true },
             success: function (response) {
-                $('#modelContent').html(response);
+                $('#modelMainContent').html(response);
             },
-			error: function () {
-				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
+            error: function (response) {
+                Common.ShowError(response.responseText);
+                setModelNotFoundText();
             },
             complete: function () {
-                kendo.ui.progress($('#modelContent'), false);
+                kendo.ui.progress($('#modelMainContent'), false);
+            }
+        });
+    }
+    function setModelNotFoundText() {
+        $('#modelMainContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
+    }
+
+
+    function makeModelActive() {
+        var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();
+        if (!modelId || modelId == 0) {
+            Common.ShowError("Не выбрана модель из списка");
+            return;
+        }
+        kendo.ui.progress($('#Section_Model'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("MakeModelActive", "Modeling")',
+			data: { modelId: modelId },
+            success: function () {
+                Common.ShowMessage("Модель сделана активной");
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('#Section_Model'), false);
             }
         });
     }

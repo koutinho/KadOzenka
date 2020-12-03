@@ -127,6 +127,15 @@ namespace KadOzenka.Web.Controllers
 	        return Json(model?.Id);
         }
 
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult MakeModelActive(long modelId)
+        {
+	        ModelingService.MakeModelActive(modelId);
+
+	        return Ok();
+        }
+
 
         #region Карточка автоматической модели
 

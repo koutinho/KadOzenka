@@ -239,6 +239,39 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
+        public void MakeModelActive(long modelId)
+        {
+	        var model = OMModel.Where(x => x.Id == modelId)
+		        .Select(x => new
+		        {
+			        x.GroupId,
+					x.IsActive
+		        }).ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
+
+	        using (var ts = new TransactionScope())
+	        {
+		        var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+		        otherModelsForGroup.ForEach(x =>
+		        {
+			        if (!x.IsActive.GetValueOrDefault())
+				        return;
+
+			        x.IsActive = false;
+			        x.Save();
+		        });
+
+		        if (model.IsActive.GetValueOrDefault())
+			        return;
+
+		        model.IsActive = true;
+		        model.Save();
+
+		        ts.Complete();
+	        }
+        }
+
         public void DeleteModel(long modelId)
         {
 			var model = GetModelEntityById(modelId);
