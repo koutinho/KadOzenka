@@ -19,7 +19,10 @@ namespace KadOzenka.Web.Models.Modeling
 	    [Display(Name = "Описание")]
 	    public string Description { get; set; }
 
-	    [Display(Name = "Тип")]
+	    [Display(Name = "Активная модель")]
+	    public bool IsActive { get; set; }
+
+		[Display(Name = "Тип")]
 	    public string TypeStr => Type.GetEnumDescription();
 	    [Display(Name = "Тип")]
 	    public KoModelType Type { get; set; }

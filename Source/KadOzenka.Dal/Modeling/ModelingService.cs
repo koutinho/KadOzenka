@@ -81,7 +81,8 @@ namespace KadOzenka.Dal.Modeling
                     x.A0ForExponentialTypeInPreviousTour,
 					x.A0ForMultiplicativeTypeInPreviousTour,
                     x.Formula,
-                    x.CalculationMethod_Code
+                    x.CalculationMethod_Code,
+					x.IsActive
                 }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -108,8 +109,9 @@ namespace KadOzenka.Dal.Modeling
                 A0 = model.GetA0(),
                 A0ForPreviousTour = model.GetA0ForPreviousTour(),
                 Formula = model.Formula,
-                CalculationMethod = model.CalculationMethod_Code
-            };
+                CalculationMethod = model.CalculationMethod_Code,
+                IsActive = model.IsActive.GetValueOrDefault()
+			};
         }
 
         public OMTour GetModelTour(long? groupId)

@@ -45,6 +45,7 @@ namespace KadOzenka.Web.Models.Modeling
 				GroupName = entity.GroupName,
 				GroupId = entity.GroupId,
 				A0 = entity.A0,
+				IsActive = entity.IsActive,
 
 				HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
 				HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
