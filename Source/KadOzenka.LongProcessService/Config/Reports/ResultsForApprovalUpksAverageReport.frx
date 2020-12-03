@@ -139,7 +139,7 @@ namespace FastReport
           <Header Expression="[Data.GroupName]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
-          <Header Expression="[Data.Name]" Sort="None" Totals="false"/>
+          <Header Expression="[Data.Name]" Totals="false"/>
         </MatrixRows>
         <MatrixCells>
           <Cell Expression="[Data.UpksAverageWeight]"/>

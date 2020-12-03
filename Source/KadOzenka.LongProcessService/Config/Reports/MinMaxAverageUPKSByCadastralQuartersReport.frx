@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/05/2020 11:45:19" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ConvertNulls="false" ReportInfo.Modified="06/05/2020 11:45:19" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -169,7 +169,7 @@ namespace FastReport
         <TableRow Name="Row3" Height="22.72" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[CadastralQuater]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell6" Border.Lines="All" Text="[UpksCalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcValue]" Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcValue]" NullValue=" " Format="Number" Format.UseLocale="true" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
       </MatrixObject>
     </DataBand>

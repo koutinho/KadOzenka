@@ -340,7 +340,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             data.Rows.Add("/ManagementDecisionSupport/Map", "Построение тематических карт", _moveToPageSymbol);
-            data.Rows.Add("/ManagementDecisionSupport/StatisticalData", "Статистическая информация", _moveToPageSymbol);
+            data.Rows.Add("/ManagementDecisionSupport/StatisticalData?useMasterPage=true", "Статистическая информация", _moveToPageSymbol);
             // Пункт меню есть, но URL не указан на основной странице?
             data.Rows.Add("#", "Экономический анализ", _moveToPageSymbol);
             data.Rows.Add("/Report/Viewer?ReportTypeId=1007", "Количество вновь учтенных объектов недвижимости", _moveToPageSymbol);

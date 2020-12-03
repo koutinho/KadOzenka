@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/10/2020 08:58:55" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="11/30/2020 12:28:01" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -40,8 +40,8 @@ namespace FastReport
     <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="37.8">
       <TextObject Name="Text1" Left="9.45" Top="9.45" Width="1020.6" Height="18.9" Text="Результаты моделирования [Common.GroupName]" Font="Times New Roman, 14pt, style=Bold"/>
     </ReportTitleBand>
-    <DataBand Name="Data1" Top="41.8" Width="1047.06" Height="126.67" DataSource="Data">
-      <MatrixObject Name="MatrixData" Left="9.45" Width="1030.36" Height="117.22" FixedRows="2" FixedColumns="8" RepeatHeaders="false" AutoSize="false" CellsSideBySide="true" DataSource="Data" ShowTitle="true">
+    <DataBand Name="Data1" Top="41.8" Width="1047.06" Height="164.47" CanGrow="true" DataSource="Data">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="1030.36" Height="164.47" FixedRows="2" FixedColumns="8" RepeatHeaders="false" AutoSize="false" CellsSideBySide="true" DataSource="Data" ShowTitle="true">
         <MatrixColumns>
           <Header Expression="[Data.FactorName]" Totals="false"/>
         </MatrixColumns>
@@ -78,7 +78,7 @@ namespace FastReport
           <TableCell Name="Cell42" Font="Arial, 10pt"/>
           <TableCell Name="Cell45" Border.Lines="All" Text="Значения ценообразующих факторов" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row2" Height="47.25">
+        <TableRow Name="Row2" Height="94.5">
           <TableCell Name="Cell3" Border.Lines="All" Text="№п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell8" Border.Lines="All" Text="Номер кадастрового района" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell28" Border.Lines="All" Text="Вид объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -89,7 +89,7 @@ namespace FastReport
           <TableCell Name="Cell43" Border.Lines="All" Text="Кадастровая стоимость" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell46" Border.Lines="All" Text="[FactorName]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row3">
+        <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell6" Border.Lines="All" Text="[CadastralDistrict]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell29" Border.Lines="All" Text="[ObjectType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -102,6 +102,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="172.47" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="210.27" Width="1047.06" Height="47.25"/>
   </ReportPage>
 </Report>

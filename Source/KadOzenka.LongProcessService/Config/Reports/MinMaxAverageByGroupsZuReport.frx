@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/11/2020 13:26:53" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/25/2020 16:23:48" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -102,7 +102,7 @@ namespace FastReport
       <Column Name="CalcValue" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="9.45,670.95,500.85,302.4,207.9" UnlimitedWidth="true">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="9.45,670.95,500.85,302.4,207.9" UnlimitedHeight="true" UnlimitedWidth="true">
     <DataBand Name="BandData1" Width="1047.06" Height="212.41" Guides="0,88.87,32.17,69.97" DataSource="Data">
       <MatrixObject Name="MatrixData" Left="9.45" Width="661.5" Height="88.87" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="2" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns>

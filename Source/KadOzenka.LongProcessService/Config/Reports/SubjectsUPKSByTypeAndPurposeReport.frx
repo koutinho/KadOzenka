@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="07/07/2020 10:45:17" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/10/2020 16:42:42" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -100,6 +100,16 @@ namespace FastReport
           } 
         }     
       }
+      
+      for (int i = 4; i &lt; table.RowCount - 1; i++)
+      {
+        for (int j = 2; j &lt; table.ColumnCount; j++)
+        {
+          if(table[j, i].Text == string.Empty) { 
+             table[j, i].Text = &quot;-&quot;;
+          } 
+        }
+      }
 
       //adding report title
       newRow = new TableRow();
@@ -128,14 +138,14 @@ namespace FastReport
       <Column Name="HasPurpose" DataType="System.Boolean"/>
       <Column Name="ObjectsCount" DataType="System.Decimal"/>
       <Column Name="UpksCalcType" DataType="System.String"/>
-      <Column Name="UpksCalcValue" DataType="System.Decimal"/>
+      <Column Name="UpksCalcValue" DataType="System.String"/>
     </BusinessObjectDataSource>
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="9.45,472.5,302.4" UnlimitedWidth="true">
     <DataBand Name="BandData1" Width="1047.06" Height="212.41" Guides="0,79.42,22.72,60.52,41.62,18.9" DataSource="Data">
       <MatrixObject Name="MatrixData" Left="9.45" Width="463.05" Height="79.42" AfterDataEvent="MatrixData_AfterData" FixedRows="3" FixedColumns="1" RepeatHeaders="false" AutoSize="false" DataSource="Data" ShowTitle="true">
         <MatrixColumns>
-          <Header Expression="[Data.PropertyType]" Totals="false"/>
+          <Header Expression="[Data.PropertyType]" Sort="None" Totals="false"/>
           <Header Expression="[Data.Purpose]" Sort="None" Totals="false"/>
         </MatrixColumns>
         <MatrixRows>
@@ -164,6 +174,6 @@ namespace FastReport
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="216.41" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="220.41" Width="1047.06" Height="47.25"/>
   </ReportPage>
 </Report>

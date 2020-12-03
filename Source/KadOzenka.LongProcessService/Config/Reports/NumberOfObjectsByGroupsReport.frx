@@ -37,11 +37,6 @@ namespace FastReport
       int j = 0;
       for (int i = 1; i &lt; table.RowCount - 1; i++)
       {
-        if(table[0, i].Text == &quot;Без группы&quot;){
-          for(int k = 0; k &lt; table.ColumnCount; k++){
-            table[k, i].RowSpan = 2;
-          }
-        } else{
           if(table[0, i].RowSpan &gt; 1){
             groupNameRowSpan = table[0, i].RowSpan;
             groupName = table[0, i].Text;
@@ -55,8 +50,7 @@ namespace FastReport
           table[0, i].ColSpan = 1;
           table[0, i].SetStyle(table[1,i]);
           j++; 
-        }
-      }
+    }
       table[0, table.RowCount - 1].ColSpan = 1;
       table[1, table.RowCount - 1].SetStyle(table[0, table.RowCount - 1]);
       
@@ -101,8 +95,8 @@ namespace FastReport
         <MatrixCells>
           <Cell Expression="[Data.ObjectsCount]"/>
         </MatrixCells>
-        <TableColumn Name="Column1" Width="105.51" AutoSize="true"/>
-        <TableColumn Name="Column2" Width="91.85" AutoSize="true"/>
+        <TableColumn Name="Column1" Width="400.00" />
+        <TableColumn Name="Column2" Width="400.00" />
         <TableColumn Name="Column3" Width="120.15" AutoSize="true"/>
         <TableColumn Name="Column4" Width="55.22" AutoSize="true"/>
         <TableRow Name="Row1" Height="22.72" AutoSize="true">
