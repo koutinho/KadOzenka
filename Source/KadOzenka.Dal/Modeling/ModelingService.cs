@@ -284,14 +284,6 @@ namespace KadOzenka.Dal.Modeling
 
 	        var message = new StringBuilder();
 
-	        var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
-	        if (isModelExists)
-		        message.AppendLine("Модель для данной группы уже существует");
-
-	        var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
-	        if (!isTourExists)
-		        message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
-
 	        if (modelDto.GroupId == 0)
 		        message.AppendLine("Для модели не выбрана группа");
 

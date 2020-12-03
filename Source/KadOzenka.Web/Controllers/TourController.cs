@@ -135,8 +135,18 @@ namespace KadOzenka.Web.Controllers
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
-            groupModel.ModelId = model?.Id;
+            groupModel.Models = OMModel.Where(x => x.GroupId == groupId).OrderBy(x => x.Name)
+	            .Select(x => new
+	            {
+		            x.Id,
+		            x.Name
+	            })
+	            .Execute()
+	            .Select(x => new SelectListItem
+	            {
+		            Value = x.Id.ToString(),
+		            Text = x.Name
+	            }).ToList();
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }

@@ -43,7 +43,19 @@
             <div class="row">
                 <div class="form-horizontal" style="margin: 2%">
                     <div class="form-group col-sm-12">
-                        <div id="modelContent">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ModelId)
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().DropDownListFor(m => m.ModelId)
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter(FilterType.Contains)
+                                .BindTo(Model.Models))
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-12">
+                        <div id="modelContent" style="padding-top: 2%;">
 
                         </div>
                     </div>
@@ -89,6 +101,8 @@
 
 </div>
 
+
+
 <style>
     #groupSubCard_panelbar {
         width: 99% !important;
@@ -104,9 +118,16 @@
         margin: 0;
     }
 </style>
+
+
+
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        var modelDropDown = $('#@nameof(Model.ModelId)').data("kendoDropDownList");
+        modelDropDown.bind('change', initModelCard);
+        initModelCard();
+
         var panelbar = $('#groupSubCard_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
 
@@ -265,21 +286,6 @@
             }
         }
 
-		kendo.ui.progress($('#modelContent'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("ModelCard", "Modeling")',
-			data: { 'modelId': '@Model.ModelId', isPartial: true, isReadOnly: true },
-            success: function (response) {
-                $('#modelContent').html(response);
-				kendo.ui.progress($('#modelContent'), false);
-            },
-			error: function (response) {
-				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
-				kendo.ui.progress($('#modelContent'), false);
-            }
-        });
-
         kendo.ui.progress($('#groupFactorsContent'), true);
         $.ajax({
             type: 'GET',
@@ -324,6 +330,27 @@
                 }
             });
         });
-
     });
+
+
+
+
+    function initModelCard() {
+        var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();
+        kendo.ui.progress($('#modelContent'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModelCard", "Modeling")',
+			data: { modelId: modelId, isPartial: true, isReadOnly: true },
+            success: function (response) {
+                $('#modelContent').html(response);
+            },
+			error: function () {
+				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
+            },
+            complete: function () {
+                kendo.ui.progress($('#modelContent'), false);
+            }
+        });
+    }
 </script>

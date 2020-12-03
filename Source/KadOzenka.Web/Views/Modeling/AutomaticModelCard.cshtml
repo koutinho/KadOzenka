@@ -148,7 +148,6 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    hidden: isFromTourCard,
                     click: updateModel
                 },
                 {
@@ -157,7 +156,6 @@
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
                     icon: 'media-manager',
-                    hidden: isFromTourCard,
                     enable: !hasProcessToFormObjectArrayInQueue,
                     click: onFormObjectArrayBtnClick
                 },
@@ -167,7 +165,6 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
-                    hidden: isFromTourCard,
                     enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
                 },
@@ -177,7 +174,6 @@
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
-                    hidden: isFromTourCard,
                     enable: '@Model.IsModelWasTrained' === "True",
                     click: onPredictModelBtnClick
                 },
@@ -187,7 +183,6 @@
                     text: '',
                     attributes: { title: "Статистика" },
                     icon: 'clock',
-                    hidden: isFromTourCard,
                     enable: hasFormedObjectArray,
                     click: getStatistic
                 }
@@ -201,7 +196,6 @@
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
-                    hidden: isFromTourCard,
                     click: addAttribute
                 },
                 {
@@ -210,7 +204,6 @@
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
-                    hidden: isFromTourCard,
                     click: editAttribute
                 },
                 {
@@ -220,7 +213,6 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
-                    hidden: isFromTourCard,
                     click: deleteAttribute
                 }
             ]
@@ -228,6 +220,10 @@
         $(".k-toolbar [title]").kendoTooltip({
             position: "top"
         });
+        if (isFromTourCard) {
+            $('#mainToolbar').hide();
+            $('#attributesToolbar').hide();
+        }
 
         $('#grid').kendoGrid({
             dataSource: {

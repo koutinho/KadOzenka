@@ -90,10 +90,8 @@
         $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data("kendoDropDownList").enable(!isFromTourCard);
         if (isFromTourCard) {
             $('#nameTextBoxBlock').hide();
-            $('#namesDropDownListBlock').show();
         } else {
             $('#nameTextBoxBlock').show();
-            $('#namesDropDownListBlock').hide();
         }
 
         var tourIdDropDownList = $('#@nameof(Model.TourId)').data("kendoDropDownList");
@@ -109,18 +107,9 @@
 
 
 
-    function getParametersForGroup() {
-        var tourId = $('#@nameof(Model.TourId)').data("kendoDropDownList").value();
-        var objectType = $('input[name="@nameof(Model.ObjectType)"]:checked').val();
-        return {
-            tourId: tourId,
-            objectType: objectType
-        }
-    }
-
 
     function reloadGroups() {
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
+        var selectedTour = $('#@nameof(Model.TourId)').data("kendoDropDownList").value();
         var objectType = $('input[name="@nameof(Model.ObjectType)"]:checked').val();
         kendo.ui.progress($('body'), true);
         var dataSource = new kendo.data.DataSource({

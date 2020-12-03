@@ -118,7 +118,6 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    hidden: isFromTourCard,
                     click: UpdateModel
                 }
             ]
@@ -176,6 +175,9 @@
         $(".k-toolbar [title]").kendoTooltip({
             position:"top"
         });
+        if (isFromTourCard) {
+            $('#toolbar').hide();
+        }
 
 
         var gridDataSource = new kendo.data.DataSource({
