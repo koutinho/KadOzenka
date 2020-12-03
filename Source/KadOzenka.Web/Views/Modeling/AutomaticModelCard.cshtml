@@ -148,7 +148,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     click: updateModel
                 },
                 {
@@ -157,7 +157,7 @@
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
                     icon: 'media-manager',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     enable: !hasProcessToFormObjectArrayInQueue,
                     click: onFormObjectArrayBtnClick
                 },
@@ -167,7 +167,7 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
                 },
@@ -177,7 +177,7 @@
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     enable: '@Model.IsModelWasTrained' === "True",
                     click: onPredictModelBtnClick
                 },
@@ -187,7 +187,7 @@
                     text: '',
                     attributes: { title: "Статистика" },
                     icon: 'clock',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     enable: hasFormedObjectArray,
                     click: getStatistic
                 }
@@ -201,7 +201,7 @@
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     click: addAttribute
                 },
                 {
@@ -210,7 +210,7 @@
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     click: editAttribute
                 },
                 {
@@ -220,7 +220,7 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     click: deleteAttribute
                 }
             ]

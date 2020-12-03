@@ -101,8 +101,8 @@
     }
 
     $(document).ready(function () {
-        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
-        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
+        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isFromTourCard);
+        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isFromTourCard);
 
         $('#toolbar').kendoToolBar({
             items: [
@@ -118,7 +118,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    hidden: isReadOnly,
+                    hidden: isFromTourCard,
                     click: UpdateModel
                 }
             ]
@@ -131,7 +131,7 @@
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
-                    hidden: isReadOnly
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
@@ -139,7 +139,7 @@
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
-                    hidden: isReadOnly
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
@@ -147,7 +147,7 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
-                    hidden: isReadOnly
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
@@ -162,7 +162,7 @@
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
                     icon: 'upload',
-                    hidden: isReadOnly
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',

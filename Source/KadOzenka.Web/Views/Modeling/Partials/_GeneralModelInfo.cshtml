@@ -2,7 +2,7 @@
 @model KadOzenka.Web.Models.Modeling.GeneralModelingModel
 
 <div class="form-horizontal">
-    <div class="form-group">
+    <div class="form-group" id="nameTextBoxBlock">
         <div class="col-sm-2">
             @Html.CustomLabelFor(x => x.Name)
         </div>
@@ -83,11 +83,18 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     var isCreationMode = '@Model.IsCreationMode' === "True";
-    var isReadOnly = '@Model.IsFromTourCard' === "True";
+    var isFromTourCard = '@Model.IsFromTourCard' === "True";
 
     $(document).ready(function () {
         $('#@nameof(Model.Type)').data("kendoDropDownList").enable(isCreationMode);
-        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data("kendoDropDownList").enable(!isReadOnly);
+        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data("kendoDropDownList").enable(!isFromTourCard);
+        if (isFromTourCard) {
+            $('#nameTextBoxBlock').hide();
+            $('#namesDropDownListBlock').show();
+        } else {
+            $('#nameTextBoxBlock').show();
+            $('#namesDropDownListBlock').hide();
+        }
 
         var tourIdDropDownList = $('#@nameof(Model.TourId)').data("kendoDropDownList");
         tourIdDropDownList.bind("dataBound", reloadGroups);
