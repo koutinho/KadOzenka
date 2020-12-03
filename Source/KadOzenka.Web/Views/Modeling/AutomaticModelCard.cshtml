@@ -92,13 +92,13 @@
                         @Html.CustomLabelFor(x => x.A0)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
                     </div>
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(x => x.A0ForPreviousTour)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoNumericTextBoxFor(x => x.A0ForPreviousTour, isReadonly : false, precision: 14)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0ForPreviousTour).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
                     </div>
                 </div>
                 <div class="form-group">
@@ -148,6 +148,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
+                    hidden: isReadOnly,
                     click: updateModel
                 },
                 {
@@ -156,6 +157,7 @@
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
                     icon: 'media-manager',
+                    hidden: isReadOnly,
                     enable: !hasProcessToFormObjectArrayInQueue,
                     click: onFormObjectArrayBtnClick
                 },
@@ -165,6 +167,7 @@
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
+                    hidden: isReadOnly,
                     enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
                 },
@@ -174,6 +177,7 @@
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
+                    hidden: isReadOnly,
                     enable: '@Model.IsModelWasTrained' === "True",
                     click: onPredictModelBtnClick
                 },
@@ -183,6 +187,7 @@
                     text: '',
                     attributes: { title: "Статистика" },
                     icon: 'clock',
+                    hidden: isReadOnly,
                     enable: hasFormedObjectArray,
                     click: getStatistic
                 }
@@ -196,6 +201,7 @@
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
+                    hidden: isReadOnly,
                     click: addAttribute
                 },
                 {
@@ -204,6 +210,7 @@
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
+                    hidden: isReadOnly,
                     click: editAttribute
                 },
                 {
@@ -213,6 +220,7 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
+                    hidden: isReadOnly,
                     click: deleteAttribute
                 }
             ]

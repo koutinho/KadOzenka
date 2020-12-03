@@ -74,15 +74,15 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ModelCard(long modelId, bool isPartial = false)
+        public ActionResult ModelCard(long modelId, bool isPartial = false, bool isReadOnly = false)
         {
 	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
-		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial});
+		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial, isReadOnly});
 	        }
 
-	        return RedirectToAction(nameof(ManualModelCard), new { modelId, isPartial});
+	        return RedirectToAction(nameof(ManualModelCard), new {modelId, isPartial, isReadOnly});
         }
 
         [HttpGet]
@@ -132,12 +132,13 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public ActionResult AutomaticModelCard(long modelId, bool isPartial)
+		public ActionResult AutomaticModelCard(long modelId, bool isPartial, bool isReadOnly = false)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
+			model.IsReadOnly = isReadOnly;
 
 			if (isPartial)
 			{
@@ -534,10 +535,11 @@ namespace KadOzenka.Web.Controllers
         #region Карточка ручной модели
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ManualModelCard(long modelId, bool isPartial)
+        public ActionResult ManualModelCard(long modelId, bool isPartial, bool isReadOnly = false)
         {
             var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
+            model.IsReadOnly = isReadOnly;
 
             if (isPartial)
             {

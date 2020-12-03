@@ -43,7 +43,7 @@
                     @Html.CustomLabelFor(x => x.CalculationType, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: Model.IsReadOnly)
                 </div>
             </div>
             <div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -51,7 +51,7 @@
                     @Html.CustomLabelFor(x => x.CalculationMethodCode, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsReadOnly)
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
                     @Html.CustomLabelFor(x => x.A0)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+                    @Html.Kendo().TextBoxFor(x => x.A0).Enable(!Model.IsReadOnly)
                 </div>
             </div>
 
@@ -100,8 +100,10 @@
         }
     }
 
-
     $(document).ready(function () {
+        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
+        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
+
         $('#toolbar').kendoToolBar({
             items: [
                 {
@@ -116,6 +118,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
+                    hidden: isReadOnly,
                     click: UpdateModel
                 }
             ]
@@ -127,21 +130,24 @@
                     id: 'add-factor',
                     text: '',
                     attributes: { title: "Добавить" },
-                    icon: 'add'
+                    icon: 'add',
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
                     id: 'edit-factor',
                     text: '',
                     attributes: { title: "Изменить" },
-                    icon: 'edit'
+                    icon: 'edit',
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
                     id: 'remove-factor',
                     text: '',
                     attributes: { title: "Удалить" },
-                    icon: 'delete'
+                    icon: 'delete',
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
@@ -155,7 +161,8 @@
                     id: 'upload-marks-catalog',
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
-                    icon: 'upload'
+                    icon: 'upload',
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',

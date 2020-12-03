@@ -269,7 +269,7 @@
         $.ajax({
             type: 'GET',
             url: '@Url.Action("ModelCard", "Modeling")',
-			data: { 'modelId': '@Model.ModelId', isPartial : true },
+			data: { 'modelId': '@Model.ModelId', isPartial: true, isReadOnly: true },
             success: function (response) {
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);

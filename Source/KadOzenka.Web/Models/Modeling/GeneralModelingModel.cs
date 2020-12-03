@@ -2,7 +2,6 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -11,6 +10,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public long Id { get; set; }
 		public bool IsCreationMode { get; set; }
+		public bool IsReadOnly { get; set; }
 
 	    [Display(Name = "Имя")]
 	    [Required(ErrorMessage = "Не заполнено Имя")]
