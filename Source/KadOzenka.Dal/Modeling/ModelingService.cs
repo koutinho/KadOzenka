@@ -12,6 +12,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Ko;
@@ -455,7 +456,8 @@ namespace KadOzenka.Dal.Modeling
 
             var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-            for (var i = 1; i < rows.Count; i++)
+            var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
+            for (var i = 1; i < rowsCount; i++)
             {
                 var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
                 var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
@@ -507,7 +509,7 @@ namespace KadOzenka.Dal.Modeling
 	            var stream = new MemoryStream();
 				//исключительный случай - когда не найден ни один объект из файла
 				//тогда не генерируем файл заново, а возвращаем тот же самый
-	            if (rows.Count - 1 == result.ErrorRowIndexes?.Count)
+	            if (rowsCount - 1 == result.ErrorRowIndexes?.Count)
 	            {
 		            file.Save(stream, SaveOptions.XlsxDefault);
 		            stream.Seek(0, SeekOrigin.Begin);
