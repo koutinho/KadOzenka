@@ -138,7 +138,7 @@ namespace KadOzenka.Web.Controllers
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
-			model.IsReadOnly = isReadOnly;
+			model.IsFromTourCard = isReadOnly;
 
 			if (isPartial)
 			{
@@ -539,7 +539,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
-            model.IsReadOnly = isReadOnly;
+            model.IsFromTourCard = isReadOnly;
 
             if (isPartial)
             {
