@@ -43,6 +43,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Platform.Web.SignalR.UrgentMessage;
 
 namespace CIPJS
 {
@@ -75,6 +76,7 @@ namespace CIPJS
             services.AddTransient<CoreUiService>();
             services.AddTransient<RegistersService>();
             services.AddTransient<DashboardService>();
+            
             services.AddTransient<GbuObjectService>();
             services.AddTransient<TaskService>();
             services.AddTransient<TourFactorService>();
@@ -100,6 +102,7 @@ namespace CIPJS
             services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
+            services.AddSingleton<UrgentMessageService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -184,6 +187,7 @@ namespace CIPJS
                 routes.MapHub<EsHub>("/esCheckProgress");
                 routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
+                routes.MapHub<UrgentMessageHub>("/coreMessageData");
             });
 
             app.UseMvc(routes =>
