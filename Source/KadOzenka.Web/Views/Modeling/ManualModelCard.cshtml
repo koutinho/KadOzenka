@@ -70,7 +70,7 @@
                     @Html.CustomLabelFor(x => x.A0)
                 </div>
                 <div class="col-sm-10">
-                    @Html.Kendo().TextBoxFor(x => x.A0).Enable(!Model.IsFromTourCard)
+                    @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
                 </div>
             </div>
 
@@ -365,7 +365,7 @@
             type: 'GET',
             success: function (e) {
                 $('#Formula').val(e.formula);
-                $('#@nameof(Model.A0)').val(e.a0);
+                $('#@nameof(Model.A0)').data("kendoNumericTextBox").value(e.a0);
             },
             error: function (e) {
                 Common.ShowError(e.responseText);
