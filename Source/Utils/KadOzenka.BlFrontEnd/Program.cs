@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Core.Main.FileStorages;
 using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
@@ -46,6 +47,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
@@ -530,6 +532,29 @@ namespace KadOzenka.BlFrontEnd
 					ObjectId = taskId
 				}, new CancellationToken());
 			});
+
+            consoleHelper.AddCommand("562", "Тест длительного процесса для отчета 'Состав данных по характеристикам ОН'", () =>
+            {
+				//new DataCompositionByCharacteristicsReportsLongProcessViaObjects().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId()
+				//}, new CancellationToken());
+
+				//TODO тестирование отмены процесса
+				var cancelSource = new CancellationTokenSource();
+	            var cancelToken = cancelSource.Token;
+	            Task.Factory.StartNew(() =>
+	            {
+		            Thread.Sleep(21000);
+		            cancelSource.Cancel();
+	            });
+	            new DataCompositionByCharacteristicsReportsLongProcessViaObjects().StartProcess(new OMProcessType(), new OMQueue
+	            {
+		            Status_Code = Status.Added,
+		            UserId = SRDSession.GetCurrentUserId()
+	            }, cancelToken);
+            });
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
