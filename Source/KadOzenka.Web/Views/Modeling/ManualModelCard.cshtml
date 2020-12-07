@@ -43,7 +43,7 @@
                     @Html.CustomLabelFor(x => x.CalculationType, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: Model.IsFromTourCard)
                 </div>
             </div>
             <div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -51,7 +51,7 @@
                     @Html.CustomLabelFor(x => x.CalculationMethodCode, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsFromTourCard)
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
                     @Html.CustomLabelFor(x => x.A0)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+                    @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
                 </div>
             </div>
 
@@ -100,8 +100,10 @@
         }
     }
 
-
     $(document).ready(function () {
+        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isFromTourCard);
+        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isFromTourCard);
+
         $('#toolbar').kendoToolBar({
             items: [
                 {
@@ -127,21 +129,24 @@
                     id: 'add-factor',
                     text: '',
                     attributes: { title: "Добавить" },
-                    icon: 'add'
+                    icon: 'add',
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
                     id: 'edit-factor',
                     text: '',
                     attributes: { title: "Изменить" },
-                    icon: 'edit'
+                    icon: 'edit',
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
                     id: 'remove-factor',
                     text: '',
                     attributes: { title: "Удалить" },
-                    icon: 'delete'
+                    icon: 'delete',
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
@@ -155,7 +160,8 @@
                     id: 'upload-marks-catalog',
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
-                    icon: 'upload'
+                    icon: 'upload',
+                    hidden: isFromTourCard
                 },
                 {
                     type: 'button',
@@ -169,6 +175,9 @@
         $(".k-toolbar [title]").kendoTooltip({
             position:"top"
         });
+        if (isFromTourCard) {
+            $('#toolbar').hide();
+        }
 
 
         var gridDataSource = new kendo.data.DataSource({
@@ -356,7 +365,7 @@
             type: 'GET',
             success: function (e) {
                 $('#Formula').val(e.formula);
-                $('#@nameof(Model.A0)').val(e.a0);
+                $('#@nameof(Model.A0)').data("kendoNumericTextBox").value(e.a0);
             },
             error: function (e) {
                 Common.ShowError(e.responseText);

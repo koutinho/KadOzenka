@@ -5,6 +5,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
@@ -17,6 +18,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         protected readonly StatisticalDataService StatisticalDataService;
         protected readonly RosreestrRegisterService RosreestrRegisterService;
         protected readonly FactorsService FactorsService;
+        protected readonly ModelingRepository ModelingRepository;
 
         private const string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
         private const string TypeTitle = "Тип";
@@ -50,11 +52,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             FactorsService = new FactorsService();
+            ModelingRepository = new ModelingRepository();
         }
 
         public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
-            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+            var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
             var factorsByRegisters = model == null
                 ? new List<FactorsService.PricingFactors>()
                 : FactorsService.GetGroupedModelFactors(model.Id);

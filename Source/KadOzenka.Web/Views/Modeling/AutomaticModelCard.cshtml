@@ -92,13 +92,13 @@
                         @Html.CustomLabelFor(x => x.A0)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoNumericTextBoxFor(x => x.A0, isReadonly: false, precision: 14)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsFromTourCard)
                     </div>
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(x => x.A0ForPreviousTour)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoNumericTextBoxFor(x => x.A0ForPreviousTour, isReadonly : false, precision: 14)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0ForPreviousTour).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsFromTourCard)
                     </div>
                 </div>
                 <div class="form-group">
@@ -220,6 +220,10 @@
         $(".k-toolbar [title]").kendoTooltip({
             position: "top"
         });
+        if (isFromTourCard) {
+            $('#mainToolbar').hide();
+            $('#attributesToolbar').hide();
+        }
 
         $('#grid').kendoGrid({
             dataSource: {

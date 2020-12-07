@@ -25,9 +25,6 @@
         <button class="btn btn-default remove-group" style="display: block">
             Удалить
         </button>
-        <button class="btn btn-default model" style="display: block">
-            Модель
-        </button>
     </div>
 </div>
 
@@ -67,28 +64,6 @@
                     '@Url.Action("EditGroup", "Tour")' + '?id=' + data.Id,
                     'editGroupWindow',
 					DownloadGroups);
-            }
-        });
-
-        $('.model').on('click', function () {
-			var treeList = $("#treeList").data("kendoTreeView");
-            var row = treeList.select();
-            if (row.length > 0) {
-				var data = treeList.dataItem(row);
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetModelIdByGroup", "Modeling")',
-                    data: { groupId: data.Id },
-                    success: function (response) {
-                        if (response) {
-                            window.open('@Url.Action("ModelCard", "Modeling")' + '?modelId=' + response + "&isPartial=false");
-                        }
-                    },
-                    error: function (response) {
-                        console.log('response', response);
-                        Common.ShowError("Модель для группы не найдена");
-                    }
-                });
             }
         });
 
@@ -168,13 +143,11 @@
 			|| data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainParcel)') {
 			$('.edit-group').addClass('k-state-disabled');
 			$('.remove-group').addClass('k-state-disabled');
-			$('.model').addClass('k-state-disabled');
-		}
+        }
 		else {
 			$('.edit-group').removeClass('k-state-disabled');
 			$('.remove-group').removeClass('k-state-disabled');
-			$('.model').removeClass('k-state-disabled');
-		}
+        }
 	}
 
 </script>

@@ -10,6 +10,7 @@ using ObjectModel.Directory;
 using ObjectModel.Core.TD;
 using Core.ErrorManagment;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -483,26 +484,10 @@ namespace KadOzenka.Dal.GbuObject
             string CleanUp(string x)
             {
                 // Оставляем только значимые символы в строках
-                return x
-                    .Replace(" ", "")
-                    .Replace("\n","")
-                    .Replace("\r","")
-                    .ToLower();
+                return Regex.Replace(x,"\\s+","").ToLower();
             }
-
-            bool toLowerResult = dict.Value.ToLower() == val.Value.ToLower();
             bool cleanUpResult = CleanUp(dict.Value) == CleanUp(val.Value);
-
-            if (toLowerResult != cleanUpResult)
-            {
-                Log.ForContext("dictValue", JsonConvert.SerializeObject(dict))
-                    .ForContext("checkedValue", JsonConvert.SerializeObject(val))
-                    .ForContext("toLowerEquality",toLowerResult)
-                    .ForContext("cleanUpEquality",cleanUpResult)
-                    .Warning("Нормализация: Разные результаты методов сравнения значений.");
-            }
-
-            return cleanUpResult || toLowerResult;
+            return cleanUpResult;
         }
 
 
@@ -566,7 +551,7 @@ namespace KadOzenka.Dal.GbuObject
             return ValueLevel;
         }
 
-        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
+        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary,
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
 	        dataLevel = new DataLevel();

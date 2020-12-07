@@ -2,7 +2,6 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -11,6 +10,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public long Id { get; set; }
 		public bool IsCreationMode { get; set; }
+		public bool IsFromTourCard { get; set; }
 
 	    [Display(Name = "Имя")]
 	    [Required(ErrorMessage = "Не заполнено Имя")]
@@ -19,7 +19,10 @@ namespace KadOzenka.Web.Models.Modeling
 	    [Display(Name = "Описание")]
 	    public string Description { get; set; }
 
-	    [Display(Name = "Тип")]
+	    [Display(Name = "Активная модель")]
+	    public bool IsActive { get; set; }
+
+		[Display(Name = "Тип")]
 	    public string TypeStr => Type.GetEnumDescription();
 	    [Display(Name = "Тип")]
 	    public KoModelType Type { get; set; }

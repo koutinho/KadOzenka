@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Tour
@@ -10,8 +12,7 @@ namespace KadOzenka.Web.Models.Tour
 	{
 		public long? Id { get; set; }
 		public long? RatingTourId { get; set; }
-		public long? ModelId { get; set; }
-        public GroupType GroupType { get; set; }
+		public GroupType GroupType { get; set; }
 
         public string ObjType { get; set; }
 
@@ -26,6 +27,10 @@ namespace KadOzenka.Web.Models.Tour
         [Display(Name = "Номер")]
         [Required(ErrorMessage = "Не заполнен номер группы")]
         public int? Number { get; set; }
+
+        [Display(Name = "Модель")]
+        public long? ModelId { get; set; }
+        public List<SelectListItem> Models { get; set; }
 
         public bool IsReadOnly { get; set; }
 

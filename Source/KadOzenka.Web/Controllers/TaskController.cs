@@ -475,7 +475,7 @@ namespace KadOzenka.Web.Controllers
 				switch (unitFactorsShowType)
 				{
 					case UnitFactorsShowType.ModelFactors:
-						var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
+						var model = new ModelingRepository().GetActiveModelEntityByGroupId(unit.GroupId);
 						if (model != null)
 						{
 							var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
