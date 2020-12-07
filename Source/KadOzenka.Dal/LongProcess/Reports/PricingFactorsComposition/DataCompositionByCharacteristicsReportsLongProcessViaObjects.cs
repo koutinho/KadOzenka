@@ -42,7 +42,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			CreteCacheTableViaCadastralNumber();
 
 			var objectsCount = OMMainObject.Where(x => x.ObjectType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-			objectsCount = 10000;
 			Log.Debug($"Найдено {objectsCount} ОН.");
 
 			var sql = GetBasicSql().ToString();

@@ -535,26 +535,26 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("562", "Тест длительного процесса для отчета 'Состав данных по характеристикам ОН'", () =>
             {
-				//new DataCompositionByCharacteristicsReportsLongProcessViaObjects().StartProcess(new OMProcessType(), new OMQueue
+				new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId()
+				}, new CancellationToken());
+
+				////TODO тестирование отмены процесса
+				//var cancelSource = new CancellationTokenSource();
+				//var cancelToken = cancelSource.Token;
+				//Task.Factory.StartNew(() =>
+				//{
+				//	Thread.Sleep(300000);
+				//	cancelSource.Cancel();
+				//});
+				//new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
 				//{
 				//	Status_Code = Status.Added,
 				//	UserId = SRDSession.GetCurrentUserId()
-				//}, new CancellationToken());
-
-				//TODO тестирование отмены процесса
-				var cancelSource = new CancellationTokenSource();
-	            var cancelToken = cancelSource.Token;
-	            Task.Factory.StartNew(() =>
-	            {
-		            Thread.Sleep(21000);
-		            cancelSource.Cancel();
-	            });
-	            new DataCompositionByCharacteristicsReportsLongProcessViaObjects().StartProcess(new OMProcessType(), new OMQueue
-	            {
-		            Status_Code = Status.Added,
-		            UserId = SRDSession.GetCurrentUserId()
-	            }, cancelToken);
-            });
+				//}, cancelToken);
+			});
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
