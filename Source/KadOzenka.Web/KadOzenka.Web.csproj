@@ -670,6 +670,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <PackageReference Include="SerilogTimings" Version="2.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
@@ -1947,7 +1948,7 @@
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\SqlQueries\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries\&quot;&#xD;&#xA;&#xD;&#xA;if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\ExcelTemplates\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates\&quot;&#xD;&#xA;&#xD;&#xA;if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\Reports\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports\&quot;" />
+    <Exec Command="if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\SqlQueries\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries\&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\ExcelTemplates\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates\&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\Reports\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports\&quot;" />
   </Target>
 
 </Project>
