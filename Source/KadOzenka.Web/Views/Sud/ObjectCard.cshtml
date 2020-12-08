@@ -1,5 +1,6 @@
 ﻿@using Newtonsoft.Json;
 @using System.ComponentModel.DataAnnotations;
+@using KadOzenka.Web.Helpers
 
 @model KadOzenka.Web.Models.Sud.ObjectCardModel
 
@@ -7,13 +8,7 @@
 {
 	@if (Model.Id == -1)
 	{
-	    <div class="form-group">
-            <div class="col-sm-12">
-                <a href="/Help/Help?CurrentLocation=SudObjectCard" target="_blank">
-                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-                </a>
-            </div>
-        </div>
+		@Html.RenderHelpButton()
 	}
 	<input type="hidden" name="Id" value="@Model.Id" id="Id" />
 	<ul id="ls_panelbar" class="panelbar">

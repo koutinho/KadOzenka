@@ -1,5 +1,6 @@
 ﻿@using KadOzenka.Dal.ManagementDecisionSupport
 @using KadOzenka.Dal.ManagementDecisionSupport.Enums
+@using KadOzenka.Web.Helpers
 
 @model KadOzenka.Web.Models.ManagementDecisionSupport.StatisticalDataModel;
 
@@ -27,14 +28,8 @@
 </div>
 
 <div class="form-horizontal col-sm-12" style="height: 100%; padding: 1%">
-    <div class="form-group">
-        <div class="col-sm-12">
-            <a style="float: right" href="/Help/Help?CurrentLocation=StatisticalData" target="_blank">
-                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-            </a>
-        </div>
-    </div>
-    <div class="form-group">
+    @Html.RenderHelpButton()
+<div class="form-group">
         <div class="col-sm-3 tourLabel">
             @Html.CustomLabelFor("Тур оценки")
         </div>

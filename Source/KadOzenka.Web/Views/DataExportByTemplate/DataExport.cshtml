@@ -1,17 +1,12 @@
-﻿@using ObjectModel.Gbu
+﻿@using KadOzenka.Web.Helpers
+@using ObjectModel.Gbu
 @using ObjectModel.KO
 @using ObjectModel.Market
 
 <form id="exportForm">
     @if((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
     {
-        <div class="form-group" style="margin-bottom: 20px;">
-            <div class="col-sm-12">
-                <a style="float: right" href="/Help/Help?CurrentLocation=ExportGbuObjects" target="_blank">
-                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-                </a>
-            </div>
-        </div>
+        @Html.RenderHelpButton(true)
     }
     <ul id="upload_panelbar" class="panelBar">
         <li id="Section_UploadBuilding" data-expand>
