@@ -503,21 +503,30 @@ namespace KadOzenka.Dal.GbuObject
             return cleanUpResult;
         }
 
+        private static void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list, GroupingItem item)
+        {
+            var codId = list?[0].IdCodjob;
+            Log.ForContext("ValueLevel", valueLevel, true)
+                .ForContext("DataLevel", dataLevel, true)
+                .ForContext("DictionaryId",codId)
+                .Verbose("[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
+                    item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
+        }
 
-        private ValueItem GetDataLevelForObject(LevelItem level, GroupingItem obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, 
-            ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
+        private ValueItem GetDataLevelForObject(LevelItem level, GroupingItem obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
+            ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId, out DataLevel dataLevel)
         {
             dataLevel =  new DataLevel();
-            ValueItem ValueLevel = new ValueItem();
+            ValueItem valueLevel = new ValueItem();
             if (level.IdFactor != null)
             {
                 dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                   ValueLevel = GetValueFactor(obj.Id, level.IdFactor, dateActual);
+                   valueLevel = GetValueFactor(obj.Id, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
-                    if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
+                    if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        var dictionaryRecord = Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+                        var dictionaryRecord = dictionary.Find(x => CompareDictToValue(x,valueLevel));
 
                         if (dictionaryRecord != null)
                         {
@@ -526,66 +535,61 @@ namespace KadOzenka.Dal.GbuObject
                             {
                                 Code = code;
                                 dataLevel.Code = code;
-                                if (ValueLevel.IdDocument != null)
+                                if (valueLevel.IdDocument != null)
                                 {
-                                    OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                                    OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
                                     if (doc != null)
                                     {
                                         Source = doc.Description;
-                                        DocId = doc.Id;
+                                        docId = doc.Id;
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            Log.ForContext("ValueLevel", ValueLevel,true)
-                                .ForContext("Dictionary", Dictionary.Select(x=>new {x.Id, x.Code, x.Source, x.Value, x.Expert, x.IdCodjob}).ToList(),true)
-                                .ForContext("DataLevel", dataLevel,true)
-                                .Verbose(
-                                    "[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
-                                    obj.CadastralNumber, ValueLevel.AttributeName, ValueLevel.Value);
+                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,obj);
                             errorCOD = true;
-                            errorCODStr += obj.CadastralNumber + ": " + ValueLevel.AttributeName + ". Значение: " + ValueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
+                            errorCODStr += obj.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
                         }
                     }
 
                 }
                 else
                 {
-                    Code = ValueLevel.Value.Replace(" ", "");
+                    Code = valueLevel.Value.Replace(" ", "");
                     dataLevel.Code = Code;
-                    if (ValueLevel.IdDocument != null)
+                    if (valueLevel.IdDocument != null)
                     {
-                        OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                        OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
                         if (doc != null)
                         {
                             Source = doc.Description;
-                            DocId = doc.Id;
+                            docId = doc.Id;
                         }
                     }
                 }
             }
 
-            return ValueLevel;
+            return valueLevel;
         }
 
-        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary,
+        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
             ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
         {
             dataLevel = new DataLevel();
-            ValueItem ValueLevel = new ValueItem();
+            ValueItem valueLevel = new ValueItem();
             if (level.IdFactor != null)
             {
                 dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                ValueLevel = GetValueFactor(unit.ObjectId, level.IdFactor, dateActual);
+                valueLevel = GetValueFactor(unit.ObjectId, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
                     if (new Random().Next(0, 10000) > 9960)
-                        Log.Debug("Значение атрибута уровня {Value} {FactorId}", ValueLevel.Value, dataLevel.FactorId);
-                    if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
+                        Log.Debug("Значение атрибута уровня {Value} {FactorId}", valueLevel.Value, dataLevel.FactorId);
+                    if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
                     {
-                        var dictionaryRecord =  Dictionary.Find(x => CompareDictToValue(x,ValueLevel));
+                        var dictionaryRecord =  dictionary.Find(x => CompareDictToValue(x,valueLevel));
 
                         if (dictionaryRecord != null)
                         {
@@ -595,9 +599,9 @@ namespace KadOzenka.Dal.GbuObject
                                 Code = code;
                                 dataLevel.Code = code;
 
-                                if (ValueLevel.IdDocument != null)
+                                if (valueLevel.IdDocument != null)
                                 {
-                                    OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                                    OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
                                     if (doc != null)
                                     {
                                         Source = doc.Description;
@@ -608,25 +612,20 @@ namespace KadOzenka.Dal.GbuObject
                         }
                         else
                         {
-                            Log.ForContext("ValueLevel", ValueLevel,true)
-                                .ForContext("Dictionary", Dictionary.Select(x=>new {x.Id, x.Code, x.Source, x.Value, x.Expert, x.IdCodjob}).ToList(),true)
-                                .ForContext("DataLevel", dataLevel,true)
-                                .Verbose(
-                                    "[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
-                                    unit.CadastralNumber, ValueLevel.AttributeName, ValueLevel.Value);
+                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,unit);
                             errorCOD = true;
-                            errorCODStr += (unit.CadastralNumber + ": " + ValueLevel.AttributeName + ". Значение: " + ValueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine);
+                            errorCODStr += (unit.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine);
                         }
                     }
 
                 }
                 else
                 {
-                    Code = ValueLevel.Value.Replace(" ", "");
+                    Code = valueLevel.Value.Replace(" ", "");
                     dataLevel.Code = Code;
-                    if (ValueLevel.IdDocument != null)
+                    if (valueLevel.IdDocument != null)
                     {
-                        OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                        OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
                         if (doc != null)
                         {
                             Source = doc.Description;
@@ -636,7 +635,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
 
-            return ValueLevel;
+            return valueLevel;
         }
 
         public void SetPriorityGroupForObject(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, GroupingItem obj, 
