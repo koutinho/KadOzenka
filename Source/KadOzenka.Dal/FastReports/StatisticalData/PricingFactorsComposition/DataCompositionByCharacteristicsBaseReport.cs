@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
     public abstract class DataCompositionByCharacteristicsBaseReport : StatisticalDataReport
     {
 	    private const int PackageSize = 5000;
-		protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
+		protected static DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
 	    public DataCompositionByCharacteristicsBaseReport()
 	    {

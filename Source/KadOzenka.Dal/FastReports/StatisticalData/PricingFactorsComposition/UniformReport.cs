@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
@@ -25,22 +28,45 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             return "PricingFactorsCompositionUniformReport";
         }
 
-        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
+        protected DataSet GetDataCompositionByCharacteristicsReportDataNew(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query).ToList();
 
-            var operations = GetOperations<ReportItem>(taskIds, Logger);
-            Logger.Debug("Найдено {Count} объектов", operations?.Count);
+            Logger.Debug("Начата выгрузка ИД ОН из ЕО по заданиям на оценку");
+			var objectIds = OMUnit.Where(x => taskIds.Contains((long) x.TaskId)).Select(x => x.ObjectId).Execute()
+	            .Select(x => x.ObjectId).ToList();
+			Logger.Debug($"Закончена выгрузка ИД ОН из ЕО по заданиям на оценку. Найдено {objectIds.Count} ОН");
+
+			Logger.Debug("Начат сбор данных из кеш-таблицы");
+			var sql = $"select * from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} where object_id in ({string.Join(",", objectIds)})";
+			var operations = QSQuery.ExecuteSql<ReportItemNew>(sql);
+			Logger.Debug($"Закончен сбор данных из кеш-таблицы. Найдено {operations.Count} объектов");
 
 			Logger.Debug("Начато формирование таблиц");
 			var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
+            //var itemTable = GetItemDataTable(operations);
+            //dataSet.Tables.Add(itemTable);
             Logger.Debug("Закончено формирование таблиц");
 
 			return dataSet;
         }
 
+
+        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
+        {
+	        var taskIds = GetTaskIdList(query).ToList();
+
+			var operations = GetOperations<ReportItem>(taskIds, Logger);
+			Logger.Debug("Найдено {Count} объектов", operations?.Count);
+
+			Logger.Debug("Начато формирование таблиц");
+	        var dataSet = new DataSet();
+	        var itemTable = GetItemDataTable(operations);
+	        dataSet.Tables.Add(itemTable);
+	        Logger.Debug("Закончено формирование таблиц");
+
+	        return dataSet;
+        }
 
 		#region Support Methods
 
@@ -107,6 +133,67 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 
 		#region Entities
+
+		private class ReportItemNew
+		{
+			private List<Attribute> _fullAttributes;
+
+			public string CadastralNumber { get; set; }
+			public long[] Attributes { get; set; }
+			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
+
+
+			private List<Attribute> GetUniqueAttributes()
+			{
+				var objectAttributes = new List<Attribute>();
+				Attributes.ForEach(attributeId =>
+				{
+					var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == attributeId);
+					var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+					if (attribute == null || register == null)
+						return;
+
+					objectAttributes.Add(new Attribute
+					{
+						Name = attribute.Name,
+						RegisterId = register.Id,
+						RegisterName = register.Description
+					});
+				});
+
+				if (objectAttributes.Count == 0)
+					return new List<Attribute>();
+
+				var gbuAttributesExceptRosreestr = objectAttributes
+					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+				var rosreestrAttributes = objectAttributes
+					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+
+				//симметрическая разность множеств
+				var uniqueAttributes = new List<Attribute>();
+				//отбираем уникальные аттрибуты из РР
+				rosreestrAttributes.ForEach(rr =>
+				{
+					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
+						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+					if (!isSameAttributesExist)
+						uniqueAttributes.Add(rr);
+				});
+				//отбираем уникальные аттрибуты из всех источников кроме РР
+				gbuAttributesExceptRosreestr.ForEach(gbu =>
+				{
+					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
+						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+					if (!isSameAttributesExist)
+						uniqueAttributes.Add(gbu);
+				});
+
+				return uniqueAttributes;
+			}
+		}
+
 
 		private class ReportItem
 		{
