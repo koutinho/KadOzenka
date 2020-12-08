@@ -22,7 +22,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
-using DocumentFormat.OpenXml.InkML;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
@@ -133,7 +132,7 @@ namespace CIPJS
                 services.AddSingleton<OutliersCheckingListenerService>();
                 services.AddSingleton<DictionaryService>();
                 services.AddSingleton<EsHubService>();
-                services.AddSingleton<UrgentMessageService>();
+                services.AddSingleton<SignalRMessageService>();
 
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>
