@@ -107,34 +107,7 @@ namespace CIPJS
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
 
-                services.AddTransient<GbuObjectService>();
-                services.AddTransient<TaskService>();
-                services.AddTransient<TourFactorService>();
-                services.AddTransient<GbuLongProcessesService>();
-                services.AddSingleton<GbuCurrentLongProcessesListenerService>();
-                services.AddTransient<ScoreCommonService>();
-                services.AddTransient<ExpressScoreService>();
-                services.AddTransient<ExpressScoreReferenceService>();
-                services.AddTransient<ViewRenderService>();
-                services.AddTransient<ModelingService>();
-                services.AddTransient<MapBuildingService>();
-                services.AddTransient<DashboardWidgetService>();
-                services.AddTransient<StatisticsReportsService>();
-                services.AddTransient<StatisticsReportsExportService>();
-                services.AddTransient<TourService>();
-                services.AddTransient<RegisterAttributeService>();
-                services.AddTransient<SystemAttributeSettingsService>();
-                services.AddTransient<TemplateService>();
-                services.AddTransient<GroupService>();
-                services.AddTransient<DocumentService>();
-                services.AddTransient<ModelFactorsService>();
-                services.AddSingleton<KoUnloadResultsListenerService>();
-                services.AddSingleton<OutliersCheckingListenerService>();
-                services.AddSingleton<DictionaryService>();
-                services.AddSingleton<EsHubService>();
-                services.AddSingleton<SignalRMessageService>();
-
-                services.AddHttpContextAccessor();
+            services.AddHttpContextAccessor();
                 services.AddSession(options =>
                 {
                     options.Cookie.Name = "CIPJS.Session";
