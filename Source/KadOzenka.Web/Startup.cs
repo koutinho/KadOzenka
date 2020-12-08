@@ -43,7 +43,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
-using Platform.Web.SignalR.UrgentMessage;
+using Platform.Web.SignalR.Messages;
 
 namespace CIPJS
 {
@@ -102,7 +102,7 @@ namespace CIPJS
             services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
-            services.AddSingleton<UrgentMessageService>();
+            services.AddSingleton<SignalRMessageService>();
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -188,6 +188,7 @@ namespace CIPJS
                 routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                 routes.MapHub<UrgentMessageHub>("/coreMessageData");
+                routes.MapHub<NotificationMessageHub>("/coreMessagesList");
             });
 
             app.UseMvc(routes =>
