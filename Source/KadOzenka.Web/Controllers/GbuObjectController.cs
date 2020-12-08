@@ -103,7 +103,7 @@ namespace KadOzenka.Web.Controllers
 		    var obj = OMMainObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 		    var registerDtoList = GetRegisterDtoList(obj, actualDate);
 
-            return PartialView("~/Views/GbuObject/_gbuObjectCardPanelBar.cshtml", GbuObjectViewModel.FromEntity(obj, actualDate?.Date ?? DateTime.Now.Date, registerDtoList));
+            return PartialView("~/Views/GbuObject/GbuObjectCardPartials/_gbuObjectCardPanelBar.cshtml", GbuObjectViewModel.FromEntity(obj, actualDate?.Date ?? DateTime.Now.Date, registerDtoList));
 		}
 
 	    private List<RegisterDto> GetRegisterDtoList(OMMainObject obj, DateTime? actualDate)
