@@ -14,19 +14,21 @@
         <ContextHelpRow CurrentLocation="/RegistersView/GbuObjects" FileName="user_manual" Section="_Toc48809651"/>
         <ContextHelpRow CurrentLocation="/ObjectCard?RegisterViewId=GbuObjects" FileName="user_manual" Section="_Toc48809650"/>
         <ContextHelpRow CurrentLocation="/RegistersView/GbuCodJob" FileName="user_manual" Section="_Toc48809650"/>
-        <ContextHelpRow CurrentLocation="ImportGbuObjects" FileName="user_manual" Section="_Toc48809656"/>
-        <ContextHelpRow CurrentLocation="ExportGbuObjects" FileName="user_manual" Section="_Toc48809656"/>
-        <ContextHelpRow CurrentLocation="GroupingObject" FileName="user_manual" Section="_Toc48809652"/>
-        <ContextHelpRow CurrentLocation="Harmonization" FileName="user_manual" Section="_Toc48809653"/>
-        <ContextHelpRow CurrentLocation="Inheritance" FileName="user_manual" Section="_Toc48809654"/>
-        <ContextHelpRow CurrentLocation="SetEstimatedGroup" FileName="user_manual" Section="_Toc48809655"/>
+        <ContextHelpRow CurrentLocation="/DataImportByTemplate/DataImport" FileName="user_manual" Section="_Toc48809656"/>
+        <ContextHelpRow CurrentLocation="/DataExportByTemplate/DataExport" FileName="user_manual" Section="_Toc48809656"/>
+
+        <ContextHelpRow CurrentLocation="/GbuObject/GroupingObject" FileName="user_manual" Section="_Toc48809652"/>
+        <ContextHelpRow CurrentLocation="/GbuObject/Harmonization" FileName="user_manual" Section="_Toc48809653"/>
+        <ContextHelpRow CurrentLocation="/GbuObject/Inheritance" FileName="user_manual" Section="_Toc48809654"/>
+        <ContextHelpRow CurrentLocation="/GbuObject/SetEstimatedGroup" FileName="user_manual" Section="_Toc48809655"/>
+
         <ContextHelpRow CurrentLocation="/RegistersView/Documents" FileName="user_manual" Section="_Toc48809658"/>
         <ContextHelpRow CurrentLocation="/RegistersView/ObjectsCharacteristics" FileName="user_manual" Section="_Toc48809650"/>
 
         <!--Расчетная подсистема-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Ko" FileName="user_manual" Section="_Toc48809659"/>
         <ContextHelpRow CurrentLocation="/RegistersView/KoTasks" FileName="user_manual" Section="_Toc48809659"/>
-        <ContextHelpRow CurrentLocation="ImportGkn" FileName="user_manual" Section="_Toc48809659"/>
+        <ContextHelpRow CurrentLocation="/GknDataImport/ImportGkn" FileName="user_manual" Section="_Toc48809659"/>
         <ContextHelpRow CurrentLocation="/ObjectCard?RegisterViewId=KoTours" FileName="user_manual" Section="_Toc48809659"/>
         <ContextHelpRow CurrentLocation="/RegistersView/ModelingModels" FileName="user_manual" Section="_Toc48809663"/>
         <ContextHelpRow CurrentLocation="/RegistersView/KoResultSendJournal" FileName="user_manual" Section="_Toc48809659"/>
@@ -34,9 +36,9 @@
         <ContextHelpRow CurrentLocation="/RegistersView/KoObjects" FileName="user_manual" Section="_Toc48809660"/>
         <ContextHelpRow CurrentLocation="/RegistersView/KoObjectsWithoutDefaultSearchControls" FileName="user_manual" Section="_Toc48809660"/>
         <ContextHelpRow CurrentLocation="/ObjectCard?RegisterViewId=KoObjects" FileName="user_manual" Section="_Toc48809660"/>
-        <ContextHelpRow CurrentLocation="CalculateCadastralPrice" FileName="user_manual" Section="_Toc48809661"/>
-        <ContextHelpRow CurrentLocation="UnloadSettings" FileName="user_manual" Section="_Toc48809662"/>
-        <ContextHelpRow CurrentLocation="AddModel" FileName="user_manual" Section="_Toc48809663"/>
+        <ContextHelpRow CurrentLocation="/Task/CalculateCadastralPrice" FileName="user_manual" Section="_Toc48809661"/>
+        <ContextHelpRow CurrentLocation="/Tour/UnloadSettings" FileName="user_manual" Section="_Toc48809662"/>
+        <ContextHelpRow CurrentLocation="/Modeling/AddModel" FileName="user_manual" Section="_Toc48809663"/>
 
         <!--Судебные решения-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Sud" FileName="user_manual" Section="_Toc48809636"/>
@@ -46,17 +48,18 @@
         <ContextHelpRow CurrentLocation="/RegistersView/SudZak" FileName="user_manual" Section="_Toc48809641"/>
         <ContextHelpRow CurrentLocation="/RegistersView/SudResh" FileName="user_manual" Section="_Toc48809642"/>
         <ContextHelpRow CurrentLocation="/RegistersView/SudSpdRegister" FileName="user_manual" Section="_Toc48809636"/>
-        <ContextHelpRow CurrentLocation="AddEditSudOtchet" FileName="user_manual" Section="_Toc48809640"/>
-        <ContextHelpRow CurrentLocation="AddEditSudZak" FileName="user_manual" Section="_Toc48809641"/>
-        <ContextHelpRow CurrentLocation="AddEditSudResh" FileName="user_manual" Section="_Toc48809642"/>
-        <ContextHelpRow CurrentLocation="SudLoadDocument" FileName="user_manual" Section="_Toc48809637"/>
-        <ContextHelpRow CurrentLocation="SudObjectCard" FileName="user_manual" Section="_Toc48809639"/>
+        <ContextHelpRow CurrentLocation="/Sud/EditReport" FileName="user_manual" Section="_Toc48809640"/>
+        <ContextHelpRow CurrentLocation="/Sud/EditConclusion" FileName="user_manual" Section="_Toc48809641"/>
+        <ContextHelpRow CurrentLocation="/Sud/EditCourt" FileName="user_manual" Section="_Toc48809642"/>
+        <ContextHelpRow CurrentLocation="/Sud/LoadDocument" FileName="user_manual" Section="_Toc48809637"/>
+        <ContextHelpRow CurrentLocation="/Sud/ObjectCard" FileName="user_manual" Section="_Toc48809639"/>
 
         <!--Комиссии по рассмотрению споров о результатах определения кадастровой стоимости-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Commissions" FileName="user_manual" Section="_Toc48809649"/>
         <ContextHelpRow CurrentLocation="/RegistersView/CommissionCost" FileName="user_manual" Section="_Toc48809649"/>
         <ContextHelpRow CurrentLocation="/ObjectCard?RegisterViewId=CommissionCost" FileName="user_manual" Section="_Toc48809649"/>
-        <ContextHelpRow CurrentLocation="AddCommission" FileName="user_manual" Section="_Toc48809649"/>
+        <ContextHelpRow CurrentLocation="/commission/editcommission" FileName="user_manual" Section="_Toc48809649"/>
+        <ContextHelpRow CurrentLocation="/Commission/EditCommission" FileName="user_manual" Section="_Toc48809649"/>
 
         <!--Декларации-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Declarations" FileName="user_manual" Section="_Toc48809644"/>
@@ -65,8 +68,8 @@
         <ContextHelpRow CurrentLocation="/RegistersView/DeclarationsSubject" FileName="user_manual" Section="_Toc48809647"/>
         <ContextHelpRow CurrentLocation="/RegistersView/DeclarationsSignatory" FileName="user_manual" Section="_Toc48809648"/>
         <ContextHelpRow CurrentLocation="/RegistersView/DeclarationsSpdRegister" FileName="user_manual" Section="_Toc48809644"/>
-        <ContextHelpRow CurrentLocation="AddEditDeclaration" FileName="user_manual" Section="_Toc48809645"/>
-        
+        <ContextHelpRow CurrentLocation="/Declarations/EditDeclaration" FileName="user_manual" Section="_Toc48809645"/>
+
         <!--Экспресс оценка-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=Es" FileName="user_manual" Section="_Toc48809674"/>
         <ContextHelpRow CurrentLocation="/ObjectCard?RegisterViewId=EsEstimateObjectCard" FileName="user_manual" Section="_Toc48809674"/>
@@ -77,7 +80,7 @@
 
         <!--Поддержка принятия управленческих решений-->
         <ContextHelpRow CurrentLocation="/Dashboard?Subsystem=ManagementDecisionSupport" FileName="user_manual" Section="_Toc48809668"/>
-        <ContextHelpRow CurrentLocation="StatisticalData" FileName="user_manual" Section="_Toc48809669"/>
+        <ContextHelpRow CurrentLocation="/ManagementDecisionSupport/StatisticalData" FileName="user_manual" Section="_Toc48809669"/>
 
     </ContextHelpRows>
 </HelpConfiguration>

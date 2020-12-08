@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
 
 <!-- Модальное окно для настройки порядка расчета -->
 <div id="calculationSettingsModal" style="display: none; padding: 2%;">
@@ -12,13 +13,7 @@
 @using (Html.BeginForm("CalculateCadastralPrice", "Task", FormMethod.Post))
 {
 <div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
-    <div class="form-group">
-        <div class="col-sm-12">
-            <a style="float: right" href="/Help/Help?CurrentLocation=CalculateCadastralPrice" target="_blank">
-                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-            </a>
-        </div>
-    </div>
+    @Html.RenderHelpButton()
     <div class="form-group">
         <div class="col-sm-2">
             @Html.CustomLabel("Тур оценки")
