@@ -460,5 +460,21 @@ function clearDataSource{className}(dataSource) {{
 
 			return element;
 		}
+
+		public static IHtmlContent RenderHelpButton<TModel>(this IHtmlHelper<TModel> html, bool bottomMargin=false)
+		{
+			var controller = html.ViewContext.RouteData.Values["controller"];
+			var action = html.ViewContext.RouteData.Values["action"];
+			if (html.ViewBag.UseMasterPage == true) { return HtmlString.Empty; }
+			var str =
+				String.Concat($@"<div class=""form-group""", bottomMargin ? "style=\"margin-bottom: 20px;\"" : String.Empty, $@">
+						<div class=""col-sm-12"">
+						<a style=""float: right"" href=""/Help/Help?CurrentLocation=/{controller}/{action}"" target=""_blank"">
+							<span style=""font-size: 20px;"" class=""k-icon k-i-question""></span>
+						</a>
+					</div>
+				</div>");
+			return html.Raw(str);
+		}
 	}
 }

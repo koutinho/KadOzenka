@@ -1,6 +1,7 @@
 ﻿using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.Register.QuerySubsystem;
 using GemBox.Spreadsheet;
 using GemBox.Document;
 using GemBox.Document.Tables;
@@ -847,7 +848,7 @@ namespace KadOzenka.Dal.DataExport
             else
             {
                 XmlNode xnEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
-                OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -929,7 +930,7 @@ namespace KadOzenka.Dal.DataExport
             if (_subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
                 #region Statistical_Modelling
-                OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
 
                 XmlNode xnStatistical_Modelling = _xmlFile.CreateElement("Statistical_Modelling");
                 XmlNode xnGroup_Real_Estate_Modelling = _xmlFile.CreateElement("Group_Real_Estate_Modelling");
@@ -2469,7 +2470,7 @@ namespace KadOzenka.Dal.DataExport
 
         private static ResultKoUnloadSettings SaveExcel5Model(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, long _taskid, string _message)
         {
-            OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
+            OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
             {
 	            return new ResultKoUnloadSettings(true);
@@ -4275,7 +4276,7 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (calc_group != null)
                     {
-                        OMModel model_calc = OMModel.Where(x => x.GroupId == calc_group.Id).SelectAll().ExecuteFirstOrDefault();
+                        OMModel model_calc = OMModel.Where(x => x.GroupId == calc_group.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                         if (model_calc != null)
                         {
                             if (model_calc.ModelFactor.Count == 0)
@@ -4337,7 +4338,7 @@ namespace KadOzenka.Dal.DataExport
                 #endregion
 
                 #region Group
-                OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)

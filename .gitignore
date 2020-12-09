@@ -47,5 +47,6 @@
 /Source/ImagesProcessor/obj
 /Source/GISStandProject/obj
 /.vs
+/Source/.idea
 /Source/StartProject/obj
 /Source/Database/GeneratedScripts/*.*

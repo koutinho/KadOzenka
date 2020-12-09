@@ -1,6 +1,7 @@
 ﻿using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.Register.QuerySubsystem;
 using DocumentFormat.OpenXml.Drawing;
 using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
@@ -559,6 +560,36 @@ namespace ObjectModel.KO
                 IsOksObjectType = IsOksObjectType,
                 Type_Code = Type_Code
             };
+	    }
+
+	    public decimal? GetA0()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponential;
+			    case KoAlgoritmType.Line:
+				    return A0;
+                case KoAlgoritmType.Multi:
+				    return A0ForMultiplicative;
+		    }
+
+		    return null;
+	    }
+
+	    public decimal? GetA0ForPreviousTour()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponentialTypeInPreviousTour;
+			    case KoAlgoritmType.Line:
+				    return A0ForLinearTypeInPreviousTour;
+			    case KoAlgoritmType.Multi:
+				    return A0ForMultiplicativeTypeInPreviousTour;
+		    }
+
+		    return null;
 	    }
 
         public string GetFormulaFull(bool upks)
@@ -1238,7 +1269,7 @@ namespace ObjectModel.KO
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
             {
                 int? factorReestrId = GetFactorReestrId(this);
-                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2507,7 +2538,7 @@ namespace ObjectModel.KO
 
             if (factorReestrId != null)
             {
-                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2937,7 +2968,7 @@ namespace ObjectModel.KO
             #region Моделирование
             if (_parent_group == null) return res;
 
-            OMModel model = OMModel.Where(x => x.GroupId == _parent_group.Id).SelectAll().ExecuteFirstOrDefault();
+            OMModel model = OMModel.Where(x => x.GroupId == _parent_group.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
             if (model != null)
             {
                 if (model.ModelFactor.Count == 0)

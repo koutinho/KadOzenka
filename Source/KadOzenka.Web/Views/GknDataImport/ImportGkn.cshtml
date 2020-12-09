@@ -1,3 +1,4 @@
+@using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
@@ -5,13 +6,7 @@
 
 <div id="toolbar"></div>
 
-<div class="form-group">
-    <div class="col-sm-12">
-        <a style="float: right" href="/Help/Help?CurrentLocation=ImportGkn" target="_blank">
-            <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-        </a>
-    </div>
-</div>
+@Html.RenderHelpButton()
 
 <div>
     <ul id="ls_panelbar" class="panelbar">

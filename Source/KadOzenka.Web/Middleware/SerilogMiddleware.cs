@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Primitives;
 using ILogger = Serilog.ILogger;
 using Serilog.Context;
 
@@ -68,7 +69,17 @@ namespace CIPJS
                 .ForContext("UserIP", request.HttpContext.Connection.RemoteIpAddress)
                 .ForContext("Body", request.Body)
                 .ForContext("Host", request.Host);
+            if (request.Method != "POST") return result;
 
+            try
+            {
+                Dictionary<string, StringValues> list = request.Form.ToDictionary(x => x.Key, x => x.Value);
+                result = result.ForContext("FormData", list, destructureObjects: true);
+            }
+            catch (InvalidOperationException ex)
+            {
+                result.Error("Попытка прочитать данные формы, которой нет");
+            }
             return result;
         }
 

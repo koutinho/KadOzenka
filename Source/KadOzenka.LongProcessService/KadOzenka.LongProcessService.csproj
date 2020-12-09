@@ -11,8 +11,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!--<Compile Remove="ConfigCore\**" />
+  <ItemGroup><!--<Compile Remove="ConfigCore\**" />
     <Compile Remove="Log\**" />
     <Compile Remove="wwwroot\**" />
     <Content Remove="ConfigCore\**" />
@@ -24,6 +23,8 @@
     <None Remove="ConfigCore\**" />
     <None Remove="Log\**" />
     <None Remove="wwwroot\**" />-->
+  
+    <Folder Include="Config\Reports\" />
   </ItemGroup>
   <ItemGroup>
     <!--<Folder Include="wwwroot\" />-->
@@ -32,7 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.619" />
+    <PackageReference Include="Platform.Web" Version="1.0.627" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspnetcoreHttpcontext" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />

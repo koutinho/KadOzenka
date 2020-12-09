@@ -74,15 +74,15 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ModelCard(long modelId, bool isPartial = false)
+        public ActionResult ModelCard(long modelId, bool isPartial = false, bool isReadOnly = false)
         {
 	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
-		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial});
+		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial, isReadOnly});
 	        }
 
-	        return RedirectToAction(nameof(ManualModelCard), new { modelId, isPartial});
+	        return RedirectToAction(nameof(ManualModelCard), new {modelId, isPartial, isReadOnly});
         }
 
         [HttpGet]
@@ -118,13 +118,13 @@ namespace KadOzenka.Web.Controllers
 	        return Json(new { Message = "Сохранение выполнено" });
         }
 
-        [HttpGet]
+        [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetModelIdByGroup(long groupId)
+        public ActionResult MakeModelActive(long modelId)
         {
-	        var model = ModelingService.GetModelEntityByGroupId(groupId);
+	        ModelingService.MakeModelActive(modelId);
 
-	        return Json(model?.Id);
+	        return Ok();
         }
 
 
@@ -132,13 +132,13 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public ActionResult AutomaticModelCard(long modelId, bool isPartial)
+		public ActionResult AutomaticModelCard(long modelId, bool isPartial, bool isReadOnly = false)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
-			model.AlgorithmType = KoAlgoritmType.Line;
+			model.IsFromTourCard = isReadOnly;
 
 			if (isPartial)
 			{
@@ -535,10 +535,11 @@ namespace KadOzenka.Web.Controllers
         #region Карточка ручной модели
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ManualModelCard(long modelId, bool isPartial)
+        public ActionResult ManualModelCard(long modelId, bool isPartial, bool isReadOnly = false)
         {
             var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
+            model.IsFromTourCard = isReadOnly;
 
             if (isPartial)
             {
@@ -579,6 +580,7 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
@@ -586,8 +588,9 @@ namespace KadOzenka.Web.Controllers
 
             model.AlgoritmType_Code = (KoAlgoritmType)algType;
             var formula = model.GetFormulaFull(true);
+            var a0 = model.GetA0();
 
-            return Json(new { formula });
+            return Json(new { formula, a0 });
         }
 
         #region Факторы
@@ -698,11 +701,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult CreateMark(MarkModel markCatalog)
         {
-	        var model = OMModel.Where(x => x.GroupId == markCatalog.GroupId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
-	        if (model?.Type_Code == KoModelType.Automatic)
-		        throw new Exception($"Модель группы относится к типу '{KoModelType.Automatic.GetEnumDescription()}', ручная работа с метками запрещена");
-
-            var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GroupId);
+	        var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GroupId);
             markCatalog.Id = id;
 
             return Json(markCatalog);
@@ -878,10 +877,22 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public ActionResult ModelObjects(long modelId)
 		{
-            var modelDto = ModelingService.GetModelById(modelId);
-            modelDto.Attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+			var omModel = OMModel.Where(x => x.Id == modelId)
+				.Select(x => new
+				{
+                    x.Name,
+                    x.GroupId,
+					x.ParentGroup.GroupName,
+					x.ParentGroup.Number
+				}).ExecuteFirstOrDefault();
+			if (omModel == null)
+				throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
-            var model = AutomaticModelingModel.ToModel(modelDto, false);
+			var tour = ModelingService.GetModelTour(omModel.GroupId);
+
+            var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+
+            var model = ModelingObjectsModel.ToModel(omModel, tour.Year, attributes);
 
             return View(model);
 		}

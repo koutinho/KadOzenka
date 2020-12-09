@@ -2,7 +2,6 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -37,7 +36,8 @@ namespace KadOzenka.Web.Models.Modeling
 				GroupId = entity.GroupId,
 		        A0 = entity.A0,
 		        Formula = entity.Formula,
-		        CalculationMethodCode = entity.CalculationMethod
+		        CalculationMethodCode = entity.CalculationMethod,
+				IsActive = entity.IsActive
 			};
         }
 

@@ -479,7 +479,7 @@ namespace KadOzenka.Web.Controllers
 				switch (unitFactorsShowType)
 				{
 					case UnitFactorsShowType.ModelFactors:
-						var model = OMModel.Where(x => x.GroupId == unit.GroupId).ExecuteFirstOrDefault();
+						var model = new ModelingRepository().GetActiveModelEntityByGroupId(unit.GroupId);
 						if (model != null)
 						{
 							var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
@@ -985,19 +985,19 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-	            FactorsExportLongProcess.AddProcessToQueue(
-		            new FactorsExportLongProcess.FactorsDownloadParams
-		            {
-			            Attributes = attributes,
-			            TaskId = taskId,
-			            IsOks = isOks,
-			            UserId = SRDSession.GetCurrentUserId()
-		            });
-	            return Ok();
+                FactorsExportLongProcess.AddProcessToQueue(
+                    new FactorsExportLongProcess.FactorsDownloadParams
+                    {
+                        Attributes = attributes,
+                        TaskId = taskId,
+                        IsOks = isOks,
+                        UserId = SRDSession.GetCurrentUserId()
+                    });
+                return Ok();
             }
             catch
             {
-	            return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
+                return StatusCode(500, "Возникла ошибка при постановке задачи в очередь");
             }
         }
 
@@ -1008,8 +1008,7 @@ namespace KadOzenka.Web.Controllers
             var FileStorage = "DataExporterByTemplate";
             var dateTime = DateTime.Parse(dt);
             var st = FileStorageManager.GetFileStream(FileStorage, dateTime, $"{taskId}_FactorsExport.xlsx");
-            return File(st, Consts.ExcelContentType,
-	            $"{taskId}_{dateTime:ddMMyyyy}_FactorsExport.xlsx");
+            return File(st, Consts.ExcelContentType, $"{taskId}_{dateTime:ddMMyyyy}_FactorsExport.xlsx");
         }
 
         #endregion
