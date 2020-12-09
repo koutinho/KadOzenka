@@ -10780,6 +10780,31 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статус после сравнения протоколов (224)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 224)]
+    public enum KoDataComparingStatus : long
+    {
+		/// <summary>
+		/// Данные совпадают (1)
+		/// </summary>
+		[Description("Данные совпадают")]
+        [EnumCode("1")]
+        [ShortTitle("Данные совпадают")]
+        DataAreMatch = 1,
+		/// <summary>
+		/// Имеются расхождения (2)
+		/// </summary>
+		[Description("Имеются расхождения")]
+        [EnumCode("2")]
+        [ShortTitle("Имеются расхождения")]
+        ThereAreInconsistencies = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

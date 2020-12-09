@@ -1,0 +1,202 @@
+﻿@using Core.Shared.Extensions;
+@model KadOzenka.Web.Models.GbuObject.GbuObjectViewModel
+
+@{
+    int registerCounter = 0;
+}
+
+<div id="ls_panelbar" class="panelbar">
+	<div id="Section_Object" data-expand data-menu-name="Основные данные">
+		<span>Основные данные</span>
+		<div>
+			<div class="form-horizontal col-sm-12">
+				<div class="form-group"></div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						@Html.CustomLabelFor(m => m.CadastralNumber)
+					</div>
+					<div class="col-sm-3">
+						@Html.KendoTextBoxFor(m => m.CadastralNumber, isReadonly: true)
+					</div>
+					<div class="col-sm-2"></div>
+					<div class="col-sm-2">
+						@Html.CustomLabelFor(m => m.ObjectType)
+					</div>
+					<div class="col-sm-3">
+						@Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: true)
+					</div>
+				</div>
+				<div class="form-group"></div>
+				<div class="form-group"></div>
+				<div class="form-group"></div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						@Html.CustomLabelFor(m => m.DateActual, htmlAttributes: new { style = "font-weight: bold;" })
+					</div>
+					<div class="col-sm-2">
+						@Html.Kendo().DatePickerFor(m => m.DateActual).Events(x => x.Change("onDateActualChange")).Format("dd/MM/yyyy")
+					</div>
+					<div class="col-sm-3">
+						<button style="float: left" id="searchAttributes" class="k-button" type="button">Найти атрибуты</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	@{
+		foreach (var m in Model.RegisterDtoList)
+		{
+			<div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
+				<span>@(m.Name)</span>
+				@Html.HiddenFor(r => r.RegisterDtoList[registerCounter].Id)
+				<div>
+					<div class="form-horizontal col-sm-12">
+						<div class="form-group"></div>
+						@{
+							var attrCounter = 0;
+							foreach (var mRegisterAttribute in m.RegisterAttributes)
+							{
+
+								if (attrCounter % 2 == 0)
+								{
+									@Html.Raw("<div class='form-group'>")
+									@(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView", mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id } }))
+								}
+								else
+								{
+									@(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView", mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id } }))
+									@Html.Raw("</div>")
+								}
+
+								if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
+								{
+									@Html.Raw("</div>")
+								}
+								attrCounter++;
+							}
+						}
+					</div>
+				</div>
+			</div>
+			registerCounter++;
+		}
+	}
+</div>
+
+<style>
+    #ls_panelbar > div {
+        background-color: #F8F9FC
+    }
+
+    #ls_panelbar .k-item .k-link.k-state-selected {
+        color: #484848;
+    }
+
+    #ls_panelbar > div.k-state-highlight > .k-link.k-state-selected {
+        background-color: #e1e4ea;
+    }
+
+    .conclusion-link-content .k-content {
+        padding: 10px !important;
+    }
+
+    .text {
+        padding: 1em;
+        text-align: center;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-size: 1.2em;
+    }
+
+    .attrHistoryImg {
+        margin-top: .4em;
+    }
+
+    .attrHistory {
+    }
+
+    .k-tooltip-content {
+        padding-right: 0 !important;
+    }
+
+    .k-tooltip-button > a.k-icon.k-i-close {
+        padding: 2px;
+        width: 20px;
+        height: 20px;
+        border-width: 0;
+        opacity: .7;
+        border-radius: 6px;
+    }
+
+    .k-tooltip-button > a.k-icon.k-i-close:hover {
+        background-color: #e4e5ee;
+    }
+
+    .k-tooltip {
+        min-height: 30px !important;
+    }
+
+    .k-tooltip-content {
+        max-width: 800px !important;
+        max-height: 400px !important;
+        overflow: scroll !important;
+    }
+</style>
+
+<script type="text/javascript">
+        $(document).ready(function() {
+            var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+            panelbar.expand('div[data-expand]');
+
+            $('#searchAttributes').on('click',
+                () => { updatePartialArea($('#@Html.IdFor(m => m.Id)').val(), $('#DateActual').val()); }
+            );
+
+            initHistory();
+        });
+
+        function initHistory() {
+            $("span[class*='attrHistory'").each(function () {
+                var historyUrl = $(this).attr('data-History-url');
+                $(this).kendoTooltip({
+                    autoHide: false,
+                    iframe: true,
+                    content: {
+                        url: historyUrl
+                    },
+                    showOn: "click",
+                    show: onShow,
+                    requestStart: function () {
+                        kendo.ui.progress($("div[class*='k-tooltip']"), true);
+                    },
+                    contentLoad: function () {
+                        kendo.ui.progress($("div[class*='k-tooltip']"), false);
+                    },
+                    width: 800
+                });
+            });
+        }
+
+        function onShow(e) {
+            var registerId = $(e.sender.element).attr('data-Register-id');
+            var attrId = $(e.sender.element).attr('data-Attribute-id');
+            $("span[class*='attrHistory'").each(function () {
+                var currentRegisterId = $(this).attr('data-Register-id');
+                var currentAttributeId = $(this).attr('data-Attribute-id');
+                if (currentRegisterId !== registerId || (currentRegisterId === registerId && currentAttributeId !== attrId)) {
+                    var toolTip = $(this).data("kendoTooltip");
+                    toolTip.hide();
+                }
+            });
+        }
+
+        function onDateActualChange() {
+            if (this.value()) {
+                $("#searchAttributes").attr("disabled", false);
+            } else {
+                $("#searchAttributes").attr("disabled", true);
+            }
+        }
+</script>
+

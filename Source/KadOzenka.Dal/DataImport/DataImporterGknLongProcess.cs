@@ -4,6 +4,7 @@ using Core.SRD;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Core.Shared.Extensions;
@@ -16,7 +17,11 @@ using Core.Messages;
 using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.DataComparing;
+using KadOzenka.Dal.DataComparing.StorageManagers;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Common;
+using KadOzenka.Dal.Tasks;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
@@ -255,7 +260,12 @@ namespace KadOzenka.Dal.DataImport
 
 		        t.Wait(1000);
 		        cancelSource.Dispose();
-            }
+
+		        if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
+		        {
+			        ExportTaskChanges(task);
+		        }
+		    }
 		    catch (Exception ex)
 		    {
 			    Log.Information(ex, "Импорт из xml завершен с ошибкой");
@@ -290,7 +300,12 @@ namespace KadOzenka.Dal.DataImport
 
                 t.Wait(1000);
                 cancelSource.Dispose();
-            }
+
+                if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
+                {
+	                ExportTaskChanges(task);
+                }
+			}
             catch (Exception ex)
             {
 	            Log.Information(ex, "Импорт из xlsx завершен с ошибкой");
@@ -407,6 +422,14 @@ namespace KadOzenka.Dal.DataImport
 	        return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
 	               dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
 	               dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
+	    }
+
+	    private static void ExportTaskChanges(OMTask task)
+	    {
+			Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
+			var path = TaskChangesDataComparingStorageManager.GetComparingDataRsmFileFullName(task);
+			var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { task.Id }, IsDataComparingUnload = true, FileName = path};
+			DEKOChange.ExportUnitChangeToExcel(null, unloadSettings, null);
 	    }
 	}
 }

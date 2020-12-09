@@ -651,12 +651,11 @@
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.619" />
+    <PackageReference Include="Platform.Web" Version="1.0.627" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -671,6 +670,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <PackageReference Include="SerilogTimings" Version="2.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
@@ -904,6 +904,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Mfc\Upload\strah\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Ppr.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Ppr.Test.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\DataComparingConfig.Prod.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Param\InsurObjectFlagInsur.xml">
@@ -1805,9 +1817,6 @@
 	  <Content Update="wwwroot\images\Cursors\cursor_col_resize.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Update="wwwroot\lib\signalr\dist\browser\signalr.js">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	  <Content Update="wwwroot\MapIcons\arrow_left.svg">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -1823,6 +1832,10 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Dev.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Ppr.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Test.xml" />
+    <ConfigPath Remove="Config\Param\DataComparingConfig.Prod.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Dev.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Ppr.xml" />
     <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Test.xml" />
@@ -1951,7 +1964,7 @@
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\SqlQueries\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries\&quot;&#xD;&#xA;&#xD;&#xA;if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\ExcelTemplates\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates\&quot;&#xD;&#xA;&#xD;&#xA;if not exist $(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports mkdir $(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\Reports\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports\&quot;" />
+    <Exec Command="if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\SqlQueries\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries\&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\ExcelTemplates\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates\&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;&#xD;&#xA;copy /Y &quot;$(ProjectDir)Config\Reports\*&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports\&quot;" />
   </Target>
 
 </Project>

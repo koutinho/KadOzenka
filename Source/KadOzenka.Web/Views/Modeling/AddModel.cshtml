@@ -1,15 +1,10 @@
-﻿@model KadOzenka.Web.Models.Modeling.GeneralModelingModel
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Modeling.GeneralModelingModel
 
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
     <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
-        <div class="form-group">
-            <div class="col-sm-12">
-                <a style="float: right" href="/Help/Help?CurrentLocation=AddModel" target="_blank">
-                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-                </a>
-            </div>
-        </div>
+        @Html.RenderHelpButton()
         @{
             await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
         }

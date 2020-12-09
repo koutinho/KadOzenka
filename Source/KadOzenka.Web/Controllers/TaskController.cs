@@ -16,11 +16,15 @@ using ObjectModel.KO;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.DataComparing.StorageManagers;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
@@ -1062,5 +1066,41 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion Просмотр настроек факторов
+
+		#region Сравнение данных
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DownloadTaskChangesDataComparingResult(long taskId)
+		{
+			var file = TaskService.DownloadTaskChangesDataComparingResult(taskId);
+			return File(file, Consts.ExcelContentType, System.IO.Path.GetFileName(file.Name));
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DownloadTaskCadastralCostDataComparingResult(long taskId)
+		{
+			var file = TaskService.DownloadTaskCadastralCostDataComparingResult(taskId);
+			return File(file, Consts.ExcelContentType, System.IO.Path.GetFileName(file.Name));
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DownloadTaskCadastralCostFDDataComparingResult(long taskId)
+		{
+			var file = TaskService.DownloadTaskCadastralCostDataComparingResult(taskId, true);
+			return File(file, Consts.ExcelContentType, System.IO.Path.GetFileName(file.Name));
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public ActionResult ExportTaskCadastralCostFDData(long taskId)
+		{
+			KoDownloadResultProcess.AddTaskCadastralCostFDDataComparingImportToQueue(taskId);
+			return Ok("Запущено формирование FD файлов");
+		}
+
+		#endregion #region Изменения в атрибутах
 	}
 }

@@ -226,7 +226,8 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadChange)]
         public static List<ResultKoUnloadSettings> ExportUnitChangeToExcel(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings settings, SetProgress setProgress)
         {
-	        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+	        if (unloadResultQueue != null)
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
             var progressMessage = "Выгрузка изменений";
             string filename = "Список_изменений_"+DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss");
@@ -247,10 +248,14 @@ namespace KadOzenka.Dal.DataExport
             foreach (long taskId in settings.TaskFilter)
             {
 	            List<ObjectModel.KO.OMUnit> units = null;
-                if (settings.UnloadParcel)
-                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute();
+                if(settings.IsDataComparingUnload)
+	                units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
                 else
-                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
+                {
+	                units = settings.UnloadParcel 
+		                ? ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute() 
+		                : ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
+                }
 
                 var unitsCounter = 0;
                 if (units.Count > 0)
@@ -269,25 +274,42 @@ namespace KadOzenka.Dal.DataExport
 
                         unitsCounter++;
                         progress = (unitsCounter * 100 / units.Count + taskCounter * 100) / settings.TaskFilter.Count;
-                        setProgress(progress, progressMessage:progressMessage);
-                        KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
+                        setProgress?.Invoke(progress, progressMessage:progressMessage);
+                        if (unloadResultQueue != null)
+                            KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                     }
                 }
 
                 taskCounter++;
             }
 
-            long id = SaveReportDownload.SaveReportExcel(filename, excelTemplate, OMUnit.GetRegisterId());
-            //excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-            var resultFile = new ResultKoUnloadSettings
+            if (settings.IsDataComparingUnload)
             {
-	            FileId = id,
-	            FileName = filename,
-	            TaskId = settings.TaskFilter.FirstOrDefault()
-            };
-            result.Add(resultFile);
-            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-            setProgress(100, true, progressMessage);
+	            MemoryStream stream = new MemoryStream();
+	            excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+	            stream.Seek(0, SeekOrigin.Begin);
+
+                using var fs = File.Create(settings.FileName);
+                fs.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fs);
+            }
+            else
+            {
+	            long id = SaveReportDownload.SaveReportExcel(filename, excelTemplate, OMUnit.GetRegisterId());
+	            //excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+	            var resultFile = new ResultKoUnloadSettings
+	            {
+		            FileId = id,
+		            FileName = filename,
+		            TaskId = settings.TaskFilter.FirstOrDefault()
+	            };
+	            result.Add(resultFile);
+            }
+            
+
+            if (unloadResultQueue != null)
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+            setProgress?.Invoke(100, true, progressMessage);
 
             return result;
         }
@@ -307,8 +329,10 @@ namespace KadOzenka.Dal.DataExport
 	        var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по объектам";
 	        var taskCounter = 0;
 	        var progress = 0;
-            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
-            List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
+	        if (unloadResultQueue != null)
+		        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+
+	        List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
 
             string file_name = "";
             foreach (long taskId in setting.TaskFilter)
@@ -330,14 +354,25 @@ namespace KadOzenka.Dal.DataExport
                     {
                         file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
                         Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
-                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
-                        var resFile = new ResultKoUnloadSettings
+
+                        if (setting.IsDataComparingUnload)
                         {
-                            FileName = file_name,
-                            FileId = id,
-                            TaskId = taskId
-                        };
-                        res.Add(resFile);
+	                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+	                        using var fs = File.Create(fullFileName);
+	                        fs.Seek(0, SeekOrigin.Begin);
+	                        resultFile.CopyTo(fs);
+                        }
+                        else
+                        {
+	                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
+	                        var resFile = new ResultKoUnloadSettings
+	                        {
+		                        FileName = file_name,
+		                        FileId = id,
+		                        TaskId = taskId
+	                        };
+	                        res.Add(resFile);
+                        }
 
                         units_curr.Clear();
                         count_curr = 0;
@@ -346,26 +381,38 @@ namespace KadOzenka.Dal.DataExport
 
                     unitCounter++;
                     progress = (unitCounter * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
-                    setProgress(progress, progressMessage: progressMessage);
-                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
+                    setProgress?.Invoke(progress, progressMessage: progressMessage);
+                    if (unloadResultQueue != null)
+                        KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
 
                 file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
                 Stream resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
 
-				long id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
-				var koResultFile = new ResultKoUnloadSettings
-				{
-					FileName = file_name,
-					FileId = id1,
-					TaskId = taskId
-				};
-				res.Add(koResultFile);
+                if (setting.IsDataComparingUnload)
+                {
+	                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+	                using var fs = File.Create(fullFileName);
+	                fs.Seek(0, SeekOrigin.Begin);
+	                resultFile1.CopyTo(fs);
+                }
+                else
+                {
+	                long id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
+	                var koResultFile = new ResultKoUnloadSettings
+	                {
+		                FileName = file_name,
+		                FileId = id1,
+		                TaskId = taskId
+	                };
+	                res.Add(koResultFile);
+                }
 
-				taskCounter++;
+                taskCounter++;
             }
-            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-            setProgress(100, true, progressMessage);
+            if (unloadResultQueue != null)
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+            setProgress?.Invoke(100, true, progressMessage);
 
             return res;
         }
@@ -547,7 +594,9 @@ namespace KadOzenka.Dal.DataExport
         {
 	        var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
 	        var progress = 0;
-            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+	        if (unloadResultQueue != null)
+		        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+
             List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
             // Выбираем все подгруппы
             List<OMGroup> koGroups = OMGroup.Where(x => x.ParentId != -1).SelectAll().Execute();
@@ -577,23 +626,36 @@ namespace KadOzenka.Dal.DataExport
                                            + subgroup.Id.ToString().PadLeft(5, '0')
                                            + countCurr.ToString().PadLeft(5, '0');
 
-                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
-                        var fileResult = new ResultKoUnloadSettings
+                        if (setting.IsDataComparingUnload)
                         {
-	                        FileName = file_name,
-	                        FileId = id,
-	                        TaskId = taskId
-                        };
-                        res.Add(fileResult);
+	                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+	                        using var fs = File.Create(fullFileName);
+	                        fs.Seek(0, SeekOrigin.Begin);
+	                        resultFile.CopyTo(fs);
+                        }
+                        else
+                        {
+	                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
+	                        var fileResult = new ResultKoUnloadSettings
+	                        {
+		                        FileName = file_name,
+		                        FileId = id,
+		                        TaskId = taskId
+	                        };
+	                        res.Add(fileResult);
+                        }
                     }
                     taskCounter++;
-                    progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr-1) * 100) / countCurr;
-                    setProgress(progress, progressMessage: progressMessage);
-                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
+                    progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) / countCurr;
+                    setProgress?.Invoke(progress, progressMessage: progressMessage);
+                    if(unloadResultQueue != null)
+	                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
             }
-            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-            setProgress(100, true, progressMessage);
+
+            setProgress?.Invoke(100, true, progressMessage);
+            if (unloadResultQueue != null)
+	            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
 
             return res;
         }
@@ -801,7 +863,7 @@ namespace KadOzenka.Dal.DataExport
 
                         XmlNode xnEvaluative_Factor = _xmlFile.CreateElement("Evaluative_Factor");
                         DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor, "Id_Factor", factor.FactorId.ToString() + "_" + _subgroup.Id.ToString());
-                        DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor, "Type", ((attribute_factor.Type == RegisterAttributeType.STRING) & (factor.MarkCatalogs.Count > 0)) ? "1" : "2");
+                        DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor, "Type", factor.SignMarket ? "1" : "2");
                         XmlNode xnName_Factor = _xmlFile.CreateElement("Name_Factor");
                         xnName_Factor.InnerText = attribute_factor.Name;
                         xnEvaluative_Factor.AppendChild(xnName_Factor);
@@ -1019,48 +1081,25 @@ namespace KadOzenka.Dal.DataExport
                                 factor_model.FillMarkCatalogs(model);
 
                                 bool addf = false;
-                                if (attribute_factor.Type == RegisterAttributeType.STRING)
+                                if (factor_model.SignMarket)
                                 {
-                                    if (factor_model.SignMarket)
+                                    OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
+                                    if (mark != null)
                                     {
-                                        OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
-                                        if (mark != null)
-                                        {
-                                            XmlNode xnQualitative_Id = _xmlFile.CreateElement("Qualitative_Id");
-                                            xnQualitative_Id.InnerText = mark.Id.ToString();
-                                            xnCEvaluative_Factor.AppendChild(xnQualitative_Id);
-                                            addf = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        XmlNode xnQuantitative_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                        xnQuantitative_Value.InnerText = value_item.ToUpper();
-                                        xnCEvaluative_Factor.AppendChild(xnQuantitative_Value);
+                                        XmlNode xnQualitative_Id = _xmlFile.CreateElement("Qualitative_Id");
+                                        xnQualitative_Id.InnerText = mark.Id.ToString();
+                                        xnCEvaluative_Factor.AppendChild(xnQualitative_Id);
                                         addf = true;
                                     }
                                 }
                                 else
                                 {
-                                    if (factor_model.SignMarket)
-                                    {
-                                        OMMarkCatalog mark = factor_model.MarkCatalogs.Find(x => x.ValueFactor == value_item);
-                                        if (mark != null)
-                                        {
-                                            XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                            xnQuantitative_Formula_Value.InnerText = mark.Id.ToString();
-                                            xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
-                                            addf = true;
-                                        }
-                                        else
-                                        {
-                                            XmlNode xnQuantitative_Formula_Value = _xmlFile.CreateElement("Quantitative_Value");
-                                            xnQuantitative_Formula_Value.InnerText = value_item.ToUpper();
-                                            xnCEvaluative_Factor.AppendChild(xnQuantitative_Formula_Value);
-                                            addf = true;
-                                        }
-                                    }
+                                    XmlNode xnQuantitative_Value = _xmlFile.CreateElement("Quantitative_Value");
+                                    xnQuantitative_Value.InnerText = value_item.ToUpper();
+                                    xnCEvaluative_Factor.AppendChild(xnQuantitative_Value);
+                                    addf = true;
                                 }
+                               
                                 if (addf)
                                     xnCEvaluative_Factors.AppendChild(xnCEvaluative_Factor);
                             }
@@ -1085,7 +1124,7 @@ namespace KadOzenka.Dal.DataExport
 
                         XmlNode xnEvaluative_Factor_Modelling = _xmlFile.CreateElement("Evaluative_Factor_Modelling");
                         DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor_Modelling, "Id_factor", factor_model.Id.ToString() + "_" + _subgroup.Id.ToString());
-                        if (attribute_factor.Type == RegisterAttributeType.STRING)
+                        if (factor_model.SignMarket)
                         {
                             if (factor_model.MarkCatalogs.Count > 0)
                             {

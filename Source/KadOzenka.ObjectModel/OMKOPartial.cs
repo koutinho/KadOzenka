@@ -3137,6 +3137,14 @@ namespace ObjectModel.KO
         /// </summary>
         public string DirectoryName;
         /// <summary>
+        /// Наименование отчета
+        /// </summary>
+        public string FileName;
+        /// <summary>
+        /// Выгрузка для сравнения данных протоколов
+        /// </summary>
+        public bool IsDataComparingUnload;
+        /// <summary>
         /// Выгрузка изменений
         /// </summary>
         [KoUnloadResultType(KoUnloadResultType.UnloadChange)]

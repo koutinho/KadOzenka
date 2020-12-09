@@ -9,6 +9,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Ionic.Zip;
+using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -40,18 +41,72 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), unloadResultQueue.Id, setting.SerializeToXml());
 		}
 
+		public static void AddTaskCadastralCostFDDataComparingImportToQueue(long taskId)
+		{
+			var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { taskId }, IsDataComparingUnload = true};
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMTour.GetRegisterId(), null, unloadSettings.SerializeToXml());
+		}
+
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			LogContext.PushProperty("QueueId", processQueue.Id);
 			_log.Information("Старт фонового процесса: {ProcessType}", processType.Description);
 
+			var settings = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
+			_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
+
+			if (settings.IsDataComparingUnload)
+			{
+				DataComparingUnload(processQueue, settings);
+			}
+			else
+			{
+				Unload(processType, processQueue, settings);
+			}
+		}
+
+		private void DataComparingUnload(OMQueue processQueue, KOUnloadSettings settings)
+		{
+			try
+			{
+				WorkerCommon.SetProgress(processQueue, 0);
+
+				var task = OMTask.Where(x => x.Id == settings.TaskFilter.First()).SelectAll()
+					.ExecuteFirstOrDefault();
+				var path = CadastralCostDataComparingStorageManager.GetTaskRsmFolderFullPath(task);
+				var unloadSettings = new KOUnloadSettings
+					{TaskFilter = new List<long> {task.Id}, IsDataComparingUnload = true, DirectoryName = path};
+
+				DEKOGroup.ExportToXml(null, unloadSettings, null);
+				WorkerCommon.SetProgress(processQueue, 100);
+
+				NotificationSender.SendNotification(processQueue, "Выгрузка FD данных для сравнения",
+					$"Выгрузка данных в директорию сравнения '{path}' успешно завершена");
+			}
+			catch (Exception e)
+			{
+				int numberError = ErrorManager.LogError(e);
+				WorkerCommon.SetMessage(processQueue,
+					$"В результате выполнения возникли ошибки. Подробнее в Журнале ошибок. {numberError}");
+				WorkerCommon.SetProgress(processQueue, 100);
+				string msg =
+					GetMessage($"Выгрузка была завершена с ошибкой {e.Message}. Подробности в журнале ошибок {numberError}.");
+
+				NotificationSender.SendNotification(processQueue, "Выгрузка FD данных для сравнения", msg);
+
+				throw;
+			}
+		}
+
+		private void Unload(OMProcessType processType, OMQueue processQueue, KOUnloadSettings settings)
+		{
 			if (!processQueue.ObjectId.HasValue)
 			{
 				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				return;
 			}
-			
+
 			OMUnloadResultQueue unloadResultQueue = OMUnloadResultQueue
 				.Where(x => x.Id == processQueue.ObjectId)
 				.SelectAll()
@@ -60,7 +115,8 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 			if (unloadResultQueue == null)
 			{
-				WorkerCommon.SetMessage(processQueue, Common.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
+				WorkerCommon.SetMessage(processQueue,
+					Common.Consts.GetMessageForProcessInterruptedBecauseOfNoUnloadResultQueue(processQueue.ObjectId.Value));
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoUnloadResultQueue);
 				return;
 			}
@@ -73,8 +129,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				unloadResultQueue.Save();
 
 				WorkerCommon.SetProgress(processQueue, 5);
-				var settings = processQueue.Parameters.DeserializeFromXml<KOUnloadSettings>();
-				_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
+
 
 				WorkerCommon.SetProgress(processQueue, 10);
 				var res = KOUnloadResult.Unload(processQueue, unloadResultQueue, settings);
@@ -90,13 +145,15 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				string msg = GetMessage("Результат операции:", correctRes, true, zipExportId);
 
 				_log.ForContext("SendResultToReon", settings.SendResultToReon)
-					.Information("{ProcessType}: Объектов с результатом {CorrectResCount} из {ResCount}.", processType.Description, correctRes.Count, res.Count);
+					.Information("{ProcessType}: Объектов с результатом {CorrectResCount} из {ResCount}.",
+						processType.Description, correctRes.Count, res.Count);
 
-			 
+
 				if (settings.SendResultToReon)
 				{
 					_log.ForContext("SendResultToReon", settings.SendResultToReon)
-						.Information("{ProcessType}: Старт загрузки результатов в РЕОН. По {CorrectResCount} объектам.", processType.Description, correctRes.Count);
+						.Information("{ProcessType}: Старт загрузки результатов в РЕОН. По {CorrectResCount} объектам.",
+							processType.Description, correctRes.Count);
 
 					foreach (var item in correctRes.Where(x => x.FileId != 0).ToList())
 					{
@@ -106,14 +163,16 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 							TaskId = item.TaskId,
 							CreateDate = DateTime.Now,
 							ResultExportId = item.FileId
-
 						}.Save();
 					}
-					var filesCount = correctRes.Where(x => x.FileId != 0).ToList()?.Count;
-					_log.ForContext("SendResultToReon", settings.SendResultToReon).ForContext("CorrectResCount", correctRes.Count)
-						.Information("{ProcessType}: Загрузка результатов в РЕОН завершена по {FilesIdCount} объектам.", processType.Description, filesCount);
 
+					var filesCount = correctRes.Where(x => x.FileId != 0).ToList()?.Count;
+					_log.ForContext("SendResultToReon", settings.SendResultToReon)
+						.ForContext("CorrectResCount", correctRes.Count)
+						.Information("{ProcessType}: Загрузка результатов в РЕОН завершена по {FilesIdCount} объектам.",
+							processType.Description, filesCount);
 				}
+
 				WorkerCommon.SetProgress(processQueue, 90);
 
 				unloadResultQueue.DateFinished = DateTime.Now;
@@ -121,7 +180,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				unloadResultQueue.Save();
 
 				NotificationSender.SendNotification(processQueue, "Выгрузка результатов оценки", msg);
-				
+
 				var stateDescription = "Выгрузка результатов оценки успешно завершена";
 				WorkerCommon.SetProgress(processQueue, 100);
 				WorkerCommon.SetCompleteState(processQueue, stateDescription, stateDescription);
@@ -133,9 +192,11 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			catch (Exception e)
 			{
 				int numberError = ErrorManager.LogError(e);
-				WorkerCommon.SetMessage(processQueue, $"В результате выполнения возникли ошибки. Подробнее в Журнале ошибок. {numberError}");
+				WorkerCommon.SetMessage(processQueue,
+					$"В результате выполнения возникли ошибки. Подробнее в Журнале ошибок. {numberError}");
 				WorkerCommon.SetProgress(processQueue, 100);
-				string msg = GetMessage($"Выгрузка была завершена с ошибкой {e.Message}. Подробности в журнале ошибок {numberError}.");
+				string msg =
+					GetMessage($"Выгрузка была завершена с ошибкой {e.Message}. Подробности в журнале ошибок {numberError}.");
 
 				NotificationSender.SendNotification(processQueue, "Выгрузка результатов оценки", msg);
 
