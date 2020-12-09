@@ -89,7 +89,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id) 
 							(
-								select id from gbu_main_object limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+								select id from gbu_main_object where OBJECT_TYPE_CODE <> 2190 limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
 
 				var insertObjectIdsCommand = DBMngr.Main.GetSqlStringCommand(copiedObjectIdsSql);
