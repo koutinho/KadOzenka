@@ -310,6 +310,39 @@ namespace KadOzenka.Web.Models.Declarations
 					new ValidationResult(errorMessage: "Поле Тип объекта обязательное",
 						memberNames: new[] { "ObjectType" });
 			}
+
+			if (DateIn > DurationDateIn)
+			{
+				yield return
+					new ValidationResult("Входящая дата ГБУ не может быть позже Срока рассмотрения");
+			}
+			if (DateIn > FormalCheckModel.DateCheckPlan)
+			{
+				yield return
+					new ValidationResult("Входящая дата ГБУ не может быть позже Даты предварительного контроля");
+			}
+			if (DateIn > FormalCheckModel.CheckTime)
+			{
+				yield return
+					new ValidationResult("Входящая дата ГБУ не может быть позже Контрольного срока");
+			}
+
+			if (DurationDateIn < FormalCheckModel.DateCheckPlan)
+			{
+				yield return
+					new ValidationResult("Срок рассмотрения не может быть раньше Даты предварительного контроля");
+			}
+			if (DurationDateIn < FormalCheckModel.CheckTime)
+			{
+				yield return
+					new ValidationResult("Срок рассмотрения не может быть раньше Контрольного срока");
+			}
+
+			if (FormalCheckModel.DateCheckPlan > FormalCheckModel.CheckTime)
+			{
+				yield return
+					new ValidationResult("Дата предварительного контроля не может быть позже Контрольного срока");
+			}
 		}
 
 		private IEnumerable<ValidationResult> ValidateSubjectNotificationType(long? subjectId, SendUvedType? subjectUvedType, string subjectName, string subjectUvedTypeField)
