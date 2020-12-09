@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
@@ -86,21 +87,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				Log.Debug($"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
 
-				var objects = OMMainObject.Where(x => x.ObjectType_Code != PropertyTypes.CadastralQuartal)
-					.SetPackageSize(GbuMainObjectPackageSize)
-					.SetPackageIndex(i)
-					.Execute();
-				Log.Debug($"Выкачено {objects.Count} ОН для пакета.");
-
-				copiedObjectsCount += objects.Count;
-				var sqlPartWithValues = new StringBuilder();
-				objects.ForEach(x => { sqlPartWithValues.Append($"({x.Id}),"); });
-				sqlPartWithValues.Length--;
-
-				var copiedObjectIdsSql = $"INSERT INTO {TableName} (object_id) values {sqlPartWithValues}";
+				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id) 
+							(
+								select id from gbu_main_object limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+							)";
 
 				var insertObjectIdsCommand = DBMngr.Main.GetSqlStringCommand(copiedObjectIdsSql);
-				DBMngr.Main.ExecuteNonQuery(insertObjectIdsCommand);
+				copiedObjectsCount += DBMngr.Main.ExecuteNonQuery(insertObjectIdsCommand);
 
 				Log.Debug("Закончено копирование пакета.");
 
