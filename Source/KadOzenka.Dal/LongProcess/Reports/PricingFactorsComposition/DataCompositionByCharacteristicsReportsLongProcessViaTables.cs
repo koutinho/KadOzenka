@@ -85,17 +85,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				CheckCancellationToken(cancellationToken);
 
-				Log.Debug($"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
-
 				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id) 
 							(
-								select id from gbu_main_object where OBJECT_TYPE_CODE <> 2190 limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+								select id from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
 
+				Log.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
 				var insertObjectIdsCommand = DBMngr.Main.GetSqlStringCommand(copiedObjectIdsSql);
 				copiedObjectsCount += DBMngr.Main.ExecuteNonQuery(insertObjectIdsCommand);
-
-				Log.Debug("Закончено копирование пакета.");
+				Log.Debug("Закончено копирование пакета");
 
 				packageIndex++;
 			}
