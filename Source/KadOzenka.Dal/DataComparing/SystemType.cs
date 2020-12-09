@@ -1,6 +1,4 @@
 ﻿namespace KadOzenka.Dal.DataComparing
 {
-	public interface IDataComparer
-	{
-	}
+	public enum SystemType { Rsm, Pkko }
 }

@@ -31,6 +31,19 @@ namespace KadOzenka.Dal.LongProcess
             });
 		}
 
+		public static void SendNotification(string subject, string message, MessageAddressersDto messageAddresses)
+		{
+			new MessageService().SendMessages(new MessageDto
+			{
+				Addressers = messageAddresses,
+				Subject = subject,
+				Message = message,
+				IsUrgent = true,
+				IsEmail = true,
+				ExpireDate = DateTime.Now.AddHours(2)
+			});
+		}
+
         public static void SendNotification(OMQueue processQueue, string subject, string message, long roleId)
         {
             new MessageService().SendMessages(new MessageDto

@@ -14,6 +14,7 @@ using System.Transactions;
 using Core.Register;
 using Core.Shared.Misc;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;
@@ -345,7 +346,7 @@ namespace KadOzenka.Dal.Tasks
             return taskList.ToDictionary(x => x.TaskId, GetTemplateForTaskName);
         }
 
-        public string GetTemplateForTaskName(DateTime? estimationDate, DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
+        public static string GetTemplateForTaskName(DateTime? estimationDate, DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
         {
             return $"{estimationDate?.ToShortDateString()}, {documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
         }
@@ -395,6 +396,24 @@ namespace KadOzenka.Dal.Tasks
 
                 ts.Complete();
             }
+        }
+
+        public FileStream DownloadTaskChangesDataComparingResult(long taskId)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        if (task == null)
+		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
+
+	        return TaskChangesDataComparingStorageManager.GetResultFile(task);
+        }
+
+        public FileStream DownloadTaskCadastralCostDataComparingResult(long taskId, bool downloadFDResult = false)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        if (task == null)
+		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
+
+            return CadastralCostDataComparingStorageManager.GetResultFile(task, downloadFDResult);
         }
 
         #region Support Methods

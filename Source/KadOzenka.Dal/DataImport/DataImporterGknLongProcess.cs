@@ -4,6 +4,7 @@ using Core.SRD;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Core.Shared.Extensions;
@@ -17,6 +18,8 @@ using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
 using KadOzenka.Dal.DataComparing;
+using KadOzenka.Dal.DataComparing.StorageManagers;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Directory;
@@ -423,13 +426,10 @@ namespace KadOzenka.Dal.DataImport
 
 	    private static void ExportTaskChanges(OMTask task)
 	    {
-		    Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
-		    var svc = new TaskService();
-		    var stream = svc.TaskAttributeChangesToExcel(task.Id);
-
-		    Log.Information("Сохранение протокола изменений в директорию сравнения");
-		    stream.Seek(0, SeekOrigin.Begin);
-		    DataComparingStorageManager.SaveTaskChangesComparingData(stream, task);
+			Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
+			var path = TaskChangesDataComparingStorageManager.GetComparingDataRsmFileFullName(task);
+			var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { task.Id }, IsDataComparingUnload = true, FileName = path};
+			DEKOChange.ExportUnitChangeToExcel(null, unloadSettings, null);
 	    }
 	}
 }

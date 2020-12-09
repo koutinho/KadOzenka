@@ -5,6 +5,8 @@ using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.DataComparing.StorageManagers;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
@@ -52,6 +54,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			var result = OMGroup.CalculateSelectGroup(settings);
 			var reportId = FormReport(result);
+
+			var taskIds = settings.TaskFilter;
+			if (taskIds.Count > 0)
+			{
+				var tasks = OMTask.Where(x => taskIds.Contains(x.Id)).SelectAll().Execute();
+				foreach (var task in tasks)
+				{
+					var path = CadastralCostDataComparingStorageManager.GetTaskRsmFolderFullPath(task);
+					var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long>{ task.Id }, IsDataComparingUnload = true, DirectoryName = path };
+					DEKOUnit.ExportToXml(null, unloadSettings, null);
+				}
+			}
+			
 
 			return reportId;
 		}
