@@ -19,7 +19,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		public static string TableName => "data_composition_by_characteristics_by_tables";
 
 		private static readonly ILogger Log = Serilog.Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
-		public const string LongProcessName = "DataCompositionByCharacteristicsReportsLongProcess";
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
 		public DataCompositionByCharacteristicsReportsLongProcessViaTables()
@@ -31,7 +30,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public static long AddProcessToQueue()
 		{
-			return LongProcessManager.AddTaskToQueue(LongProcessName);
+			return LongProcessManager.AddTaskToQueue(nameof(DataCompositionByCharacteristicsReportsLongProcessViaTables));
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
