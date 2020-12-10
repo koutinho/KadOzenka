@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="214" LinkedRegistersList="215" DefaultLayoutId="1002141"
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false"
-              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false"
+              UseMasterPage="false" NeedOpenEmpty="false" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false"
                SearchPanel="GbuCodDictionary">
     <Buttons>
         <Button Caption="Добавить" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="380" WindowWidth="840">
