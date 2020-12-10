@@ -82,10 +82,19 @@ namespace KadOzenka.Dal.GbuObject
 			return res;
 		}
 
+		public void AddTitle(string title, int mergedCellsCount)
+		{
+			var cellRange = CurrentRow.File.Worksheets[0].Cells.GetSubrangeAbsolute(0, 0, 0, mergedCellsCount);
+			cellRange.Style.Font.Weight = ExcelFont.BoldWeight;
+			cellRange.Merged = true;
+			cellRange.Value = title;
+			CurrentRow.Index++;
+		}
+
 		public void AddHeaders(List<string> values)
 		{
-			var rowIndex = 0;
 			int columnIndex = 0;
+			var rowIndex = CurrentRow.Index;
 			var sheet = CurrentRow.File.Worksheets[0];
 			foreach (string value in values)
 			{
