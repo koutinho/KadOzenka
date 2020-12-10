@@ -261,8 +261,8 @@ namespace KadOzenka.Dal.DataImport
                                         break;
                                 }
 
-                                gbuObjectAttribute.Save();
-                            }
+                                DataImporterGkn.SaveAttributeValueWithCheck(gbuObjectAttribute);
+							}
 
 						    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
                             if(isNewObject)
