@@ -246,18 +246,32 @@ namespace KadOzenka.Dal.Modeling
 		        .Select(x => new
 		        {
 			        x.GroupId,
+					x.Type_Code,
+					x.LinearTrainingResult,
+					x.ExponentialTrainingResult,
+					x.MultiplicativeTrainingResult,
 					x.IsActive
 		        }).ExecuteFirstOrDefault();
 	        if (model == null)
 		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
-	        using (var ts = new TransactionScope())
+	        if (model.Type_Code == KoModelType.Automatic)
 	        {
-		        var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
-		        otherModelsForGroup.ForEach(x =>
-		        {
-			        if (!x.IsActive.GetValueOrDefault())
-				        return;
+		        var hasFormedObjectArray = GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
+		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
+		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
+		        if (!hasFormedObjectArray || !hasTrainingResult)
+			        throw new Exception("Невозможно активировать необученную модель");
+			}
+	        
+			using (var ts = new TransactionScope())
+			{
+				var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+				otherModelsForGroup.ForEach(x =>
+				{
+					if (!x.IsActive.GetValueOrDefault())
+						return;
 
 			        x.IsActive = false;
 			        x.Save();
