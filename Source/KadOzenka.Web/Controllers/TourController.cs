@@ -8,6 +8,7 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
@@ -135,7 +136,8 @@ namespace KadOzenka.Web.Controllers
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = OMModel.Where(x => x.GroupId == groupId).OrderBy(x => x.Name)
+			groupModel.Models = OMModel.Where(x => x.GroupId == groupId)
+				.OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
 	            .Select(x => new
 	            {
 		            x.Id,
