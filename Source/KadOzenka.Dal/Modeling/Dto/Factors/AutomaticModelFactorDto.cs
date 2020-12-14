@@ -9,7 +9,6 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public KoAlgoritmType Type { get; set; }
 		public long? FactorId { get; set; }
 		public long? DictionaryId { get; set; }
-		public decimal CurrentWeight { get; set; }
 		public decimal? PreviousWeight { get; set; }
 	}
 }

@@ -378,7 +378,27 @@
                 sortable: false
             };
         });
+        var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
+        var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsBeforeMarks = [
+            {
+                title: "Признак выбора аналога в обучающую модель",
+                field: "IsForTraining",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
+                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
+                filterable: false,
+                sortable: true
+            },
+            {
+                title: "Признак выбора аналога в контрольную модель",
+                field: "IsForControl",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
+                template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
+                filterable: false,
+                sortable: true
+            },
             {
                 title: "Исключен из расчета",
                 field: "IsExcluded",
@@ -449,8 +469,6 @@
                 sortable: true
             }
         ];
-        var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
-        var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsAfterMarks = [
             //{
             //    title: "МС",
@@ -466,24 +484,6 @@
             //    filterable: true,
             //    sortable: true
             //},
-            {
-                title: "Признак выбора аналога в обучающую модель",
-                field: "IsForTraining",
-                headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
-                    "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
-                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
-                filterable: false,
-                sortable: true
-            },
-            {
-                title: "Признак выбора аналога в контрольную модель",
-                field: "IsForControl",
-                headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
-                    "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
-                template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
-                filterable: false,
-                sortable: true
-            }
         ];
         return baseColumnsBeforeMarks.concat(additionalColumns).concat(baseColumnsAfterMarks);
     }

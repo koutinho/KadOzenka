@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="265" LinkedRegistersList="264,265" DefaultLayoutId="1000265"
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false" SearchPanel="ModelingDictionaryValues"
-              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
+              UseMasterPage="false" NeedOpenEmpty="false" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
     <Buttons>
         <Button Caption="Добавить" NavigateURL="/Modeling/DictionaryValueCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
             <Parameters>

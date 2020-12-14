@@ -1,55 +1,58 @@
 ﻿@model KadOzenka.Web.Models.GbuObject.ObjectAttributes.AttributeDto
 
+@{
+	string idCurrentControl = ViewBag?.registerId.ToString() + "_" + ViewBag?.attrCounter.ToString() as string ?? Guid.NewGuid().ToString();
+}
 <div class="col-sm-2">
 	@Html.CustomLabel(Model.Name, false)
 </div>
 <div class="col-sm-4">
 	@{
-		if (Model.IsString)
-		{
-			<div class="col-sm-10">
-				@{
-					@Html.KendoTextBoxFor(r => r.StringValue)
-				}
-			</div>
-			<div class="col-sm-2">
-				<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag.registerId)" data-Attribute-id="@(Model.Id)">
-					<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
-				</span>
-			</div>
-		}
-		else if (Model.IsNumber)
-		{
-			<div class="col-sm-10">
-				@Html.KendoTextBoxFor(r => r.NumValue, isReadonly: true)
-			</div>
-			<div class="col-sm-2">
-				<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag.registerId)" data-Attribute-id="@(Model.Id)">
-					<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
-				</span>
-			</div>
-		}
-		else if (Model.IsDate)
-		{
-			<div class="col-sm-10">
-				@Html.KendoDatePickerFor(r => r.DateValue, isReadonly: true)
-			</div>
-			<div class="col-sm-2">
-				<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag.registerId)" data-Attribute-id="@(Model.Id)">
-					<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
-				</span>
-			</div>
-		}
-		else if (Model.IsBool)
-		{
-<div class="col-sm-8">
-	@Html.KendoTextBoxFor(r => r.BoolValue)
-</div>
-			<div class="col-sm-2">
-				<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag.registerId)" data-Attribute-id="@(Model.Id)">
-					<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
-				</span>
-			</div>
-		}
+	if (Model.IsString)
+	{
+	<div class="col-sm-10">
+
+		@Html.KendoTextBoxFor(r => r.StringValue, id:idCurrentControl)
+
+	</div>
+	<div class="col-sm-2">
+		<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
+			<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
+		</span>
+	</div>
+	}
+	else if (Model.IsNumber)
+	{
+	<div class="col-sm-10">
+		@Html.KendoTextBoxFor(r => r.NumValue, isReadonly: true, id: idCurrentControl)
+	</div>
+	<div class="col-sm-2">
+		<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
+			<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
+		</span>
+	</div>
+	}
+	else if (Model.IsDate)
+	{
+	<div class="col-sm-10">
+		@Html.KendoDatePickerFor(r => r.DateValue, isReadonly: true, id: idCurrentControl)
+	</div>
+	<div class="col-sm-2">
+		<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
+			<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
+		</span>
+	</div>
+	}
+	else if (Model.IsBool)
+	{
+	<div class="col-sm-10">
+		@Html.KendoTextBoxFor(r => r.BoolValue, id: idCurrentControl)
+	</div>
+	<div class="col-sm-2">
+		<span class="attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
+			<img id="@(Model.Id)historyImg" src="/images/Icons/24x24_Help.png" class="attrHistoryImg" />
+		</span>
+	</div>
+	}
 	}
 </div>
