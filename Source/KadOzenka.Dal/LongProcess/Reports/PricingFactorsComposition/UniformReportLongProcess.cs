@@ -5,6 +5,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
@@ -13,22 +14,21 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using ObjectModel.KO;
 using Microsoft.Practices.ObjectBuilder2;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
 	public class UniformReportLongProcess : LongProcess
 	{
-		private const int PackageSize = 100000;
+		private const int PackageSize = 500000;
 		private string ReportName => "Итоговый состав данных по характеристикам объектов недвижимости";
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		private static readonly ILogger Logger = Log.ForContext<UniformReportLongProcess>();
 		private static DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
-		private GbuReportService GbuReportService { get; }
 
 		public UniformReportLongProcess()
 		{
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
-			GbuReportService = new GbuReportService();
 		}
 
 
@@ -56,23 +56,87 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				return;
 			}
 
+			var urls = new List<string>();
 			try
 			{
-				var reportItems = GetReportItems(taskIds);
+				//var reportItems = GetReportItems(taskIds);
 
-				var urlToDownloadReport = GenerateReport(reportItems);
-				
-				var message = "Операция успешно завершена." + $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
-				SendMessage(processQueue, message, MessageSubject);
+				//var urlToDownloadReport = GenerateReport(reportItems, new GbuReportService());
 
-				//TODO для тестирования
-				var a = $"https://localhost:50252{urlToDownloadReport}";
+				//var message = "Операция успешно завершена." + $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
+				//SendMessage(processQueue, message, MessageSubject);
+
+				////TODO для тестирования
+				//var a = $"https://localhost:50252{urlToDownloadReport}";
+
+				Logger.Debug("Начат фоновый процесс.");
+
+				var unitsCount = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+				Logger.Debug($"Всего в БД {unitsCount} ЕО.");
+
+				var executedItemsCount = 0;
+				var packageIndex = 0;
+				while (true)
+				{
+					if (executedItemsCount >= unitsCount)
+						break;
+
+					Logger.Debug($"Начата работа с пакетом №{packageIndex}");
+
+					using (Logger.TimeOperation($"Полная обработка пакета №{packageIndex} (сбор данных + генерация файла)"))
+					{
+						var objectIdsSubQuerySql = $@"select object_id from ko_unit 
+								where task_id in ({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE <> 2190 
+								order by object_id 
+								limit {PackageSize} offset {packageIndex * PackageSize} ";
+
+						var sql = $@"select cadastral_number as CadastralNumber, attributes 
+								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
+								where object_id in ({objectIdsSubQuerySql})";
+
+
+						List<ReportItem> currentPage;
+						using (Logger.TimeOperation($"Сбор данных для пакета №{packageIndex}"))
+						{
+							Logger.Debug(new Exception(sql),
+								$"Начат сбор данных для пакета №{packageIndex}. До этого было обработано {executedItemsCount} записей");
+
+							currentPage = QSQuery.ExecuteSql<ReportItem>(sql);
+							executedItemsCount += currentPage.Count;
+
+							Logger.Debug(new Exception(sql), $"Закончен сбор данных для пакета №{packageIndex}.");
+						}
+
+						using (Logger.TimeOperation($"Формирование файла для пакета №{packageIndex}"))
+						{
+							Logger.Debug(new Exception(sql), $"Начата запись в файл для пакета №{packageIndex}.");
+
+							var reportService = new GbuReportService();
+							var urlToDownloadReport = GenerateReport(currentPage, reportService);
+							urls.Add(urlToDownloadReport);
+
+							Logger.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{packageIndex}.");
+						}
+
+						Logger.Debug($"Закончена работа с пакетом №{packageIndex}");
+					}
+
+					packageIndex++;
+				}
+
+				SendMessageInternal(processQueue, "Операция успешно завершена.", urls);
+
+				Logger.Debug("Закончен фоновый процесс.");
+
+				////TODO для тестирования
+				//var a = $"https://localhost:50252{urlToDownloadReport}";
 			}
 			catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
 				Logger.Fatal(exception, "Ошибка построения отчета");
-				SendMessage(processQueue, $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})", MessageSubject);
+				var message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
+				SendMessageInternal(processQueue, message, urls);
 			}
 			
 			WorkerCommon.SetProgress(processQueue, 100);
@@ -80,6 +144,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 
 		#region Support Methods
+
+		private void SendMessageInternal(OMQueue processQueue, string mainMessage, List<string> urls)
+		{
+			var linksToUrls = new StringBuilder();
+			linksToUrls.AppendLine("Созданные файлы:").AppendLine();
+			urls.ForEach(url => { linksToUrls.AppendLine($@"<a href=""{url}"">Скачать результат</a>"); });
+
+			SendMessage(processQueue, mainMessage + "<br>" + linksToUrls, MessageSubject);
+		}
 
 		private List<ReportItem> GetReportItems(List<long> taskIds)
 		{
@@ -116,11 +189,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			return operations;
 		}
 
-		private string GenerateReport(List<ReportItem> reportItems)
+		private string GenerateReport(List<ReportItem> reportItems, GbuReportService reportService)
 		{
-			Logger.Debug("Начата генерация файла.");
-
-			GenerateReportHeaders(reportItems);
+			GenerateReportHeaders(reportItems, reportService);
 
 			for (var i = 0; i < reportItems.Count; i++)
 			{
@@ -135,22 +206,20 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				var values = new List<string> {(i + 1).ToString(), currentInfo.CadastralNumber};
 				values.AddRange(attributesInfo);
 
-				var row = GbuReportService.GetCurrentRow();
-				GbuReportService.AddRow(row, values);
+				var row = reportService.GetCurrentRow();
+				reportService.AddRow(row, values);
 
 				if (i % 100000 == 0)
 					Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
 			}
 
-			GbuReportService.SetStyle();
-			GbuReportService.SaveReport(ReportName);
+			reportService.SetStyle();
+			reportService.SaveReport(ReportName);
 
-			Logger.Debug("Закончена генерация файла.");
-
-			return GbuReportService.UrlToDownload;
+			return reportService.UrlToDownload;
 		}
 
-		private void GenerateReportHeaders(List<ReportItem> info)
+		private void GenerateReportHeaders(List<ReportItem> info, GbuReportService reportService)
 		{
 			var sequentialNumberColumn = new GbuReportService.Column
 			{
@@ -193,9 +262,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				columnIndex += 2;
 			}
 
-			GbuReportService.AddTitle("Итоговый состав данных по характеристикам объектов недвижимости", 4);
-			GbuReportService.AddHeaders(columns);
-			GbuReportService.SetIndividualWidth(columns);
+			reportService.AddTitle("Итоговый состав данных по характеристикам объектов недвижимости", 4);
+			reportService.AddHeaders(columns);
+			reportService.SetIndividualWidth(columns);
 		}
 
 		#endregion
