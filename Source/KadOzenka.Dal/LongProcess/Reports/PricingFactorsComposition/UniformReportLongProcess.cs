@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
 	public class UniformReportLongProcess : LongProcess
 	{
-		private const int PackageSize = 500000;
+		private const int PackageSize = 250000;
 		private string ReportName => "Итоговый состав данных по характеристикам объектов недвижимости";
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		private static readonly ILogger Logger = Log.ForContext<UniformReportLongProcess>();
