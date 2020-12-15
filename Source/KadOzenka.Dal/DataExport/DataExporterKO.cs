@@ -630,13 +630,17 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOGroup : IKoUnloadResult
     {
+	    private static readonly ILogger _log = Log.ForContext<DEKOGroup>();
+
         /// <summary>
         /// Выгрузка в XML из ObjectModel.KO.OMGroup
         /// </summary>
         [KoUnloadResultAction(KoUnloadResultType.UnloadXML2)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
+	        _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по группам");
+
+            var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
 	        var progress = 0;
 	        if (unloadResultQueue != null)
 		        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
@@ -646,19 +650,31 @@ namespace KadOzenka.Dal.DataExport
             List<OMGroup> koGroups = OMGroup.Where(x => x.ParentId != -1).SelectAll().Execute();
             int countCurr = 0;
             int countAll = koGroups.Count();
+            _log.Debug($"Найдено {countAll} подгрупп");
+
             foreach (OMGroup subgroup in koGroups)
             {
+	            _log.ForContext("SubGroupId", subgroup.Id).Debug($"Начата работа с подгруппой '{subgroup.GroupName}', №{countCurr} из {countAll}");
+
                 countCurr++;
                 string str_message = "Выгружается группа " + countCurr.ToString() + " (Id=" + subgroup.Id.ToString() + ") из " + countAll.ToString();
                 Console.WriteLine(str_message);
                 var taskCounter = 0;
                 foreach (long taskId in setting.TaskFilter)
                 {
+	                _log.Debug("Начата работа с ЗнО {TaskId}", taskId);
+
                     subgroup.Unit = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId && x.CadastralCost > 0).SelectAll().Execute();
+                    _log.ForContext("SubGroupId", subgroup.Id).ForContext("TaskId", taskId)
+	                    .Debug($"Найдено {subgroup.Unit.Count} ЕО с группой {subgroup.Id} и ЗнО {taskId}, у которых положительная Кадастровая стоимость");
 
                     if (subgroup.Unit.Count > 0)
                     {
-                        Stream resultFile = SaveXmlDocument(subgroup, str_message);
+	                    Stream resultFile;
+	                    using (_log.TimeOperation($"Формирование файла для подгруппы '{subgroup.GroupName}'"))
+	                    {
+		                    resultFile = SaveXmlDocument(subgroup, str_message);
+	                    }
 
                         OMGroup parent_group = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
                         string full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
@@ -672,14 +688,22 @@ namespace KadOzenka.Dal.DataExport
 
                         if (setting.IsDataComparingUnload)
                         {
-	                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-	                        using var fs = File.Create(fullFileName);
-	                        fs.Seek(0, SeekOrigin.Begin);
-	                        resultFile.CopyTo(fs);
+	                        using (_log.TimeOperation($"Копирование файла для сравнения '{file_name}'"))
+	                        {
+		                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+		                        using var fs = File.Create(fullFileName);
+		                        fs.Seek(0, SeekOrigin.Begin);
+		                        resultFile.CopyTo(fs);
+                            }
                         }
                         else
                         {
-	                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
+	                        long id;
+	                        using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
+	                        {
+		                        id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
+                            }
+
 	                        var fileResult = new ResultKoUnloadSettings
 	                        {
 		                        FileName = file_name,
@@ -701,6 +725,8 @@ namespace KadOzenka.Dal.DataExport
             if (unloadResultQueue != null)
 	            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
 
+            _log.Debug("Закончена выгрузка в XML результатов Кадастровой оценки по группам");
+
             return res;
         }
 
@@ -715,9 +741,16 @@ namespace KadOzenka.Dal.DataExport
             DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
             xmlFile.AppendChild(xnLandValuation);
 
-            AddXmlGeneralInfo(xmlFile, xnLandValuation);
+            using (_log.TimeOperation("Добавление общей информации в файл"))
+            {
+	            AddXmlGeneralInfo(xmlFile, xnLandValuation);
+            }
+
             Dictionary<Int64, XmlNode> dictNodes = new Dictionary<long, XmlNode>();
-            AddXmlPackage(xmlFile, xnLandValuation, _subgroup, dictNodes, _message);
+            using (_log.TimeOperation("Добавление основной информации в файл"))
+            {
+	            AddXmlPackage(xmlFile, xnLandValuation, _subgroup, dictNodes, _message);
+            }
             xmlFile.AppendChild(xnLandValuation);
 
             MemoryStream stream = new MemoryStream();
@@ -893,10 +926,15 @@ namespace KadOzenka.Dal.DataExport
             {
                 XmlNode xnEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
                 OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
+                _log.ForContext("ModelId", model?.Id).ForContext("SubgroupId", _subgroup.Id)
+	                .Debug($"Поиск активной модели для погруппы {_subgroup.GroupName}. Модель найдена - {model != null}");
                 if (model != null)
                 {
-                    if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code==model.AlgoritmType_Code).SelectAll().Execute();
+	                if (model.ModelFactor.Count == 0)
+	                {
+		                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
+		                _log.Debug($"Найдено {model.ModelFactor.Count} факторов типа {model.AlgoritmType_Code.GetEnumDescription()} для модели");
+                    }
 
                     int countCurr = 0;
                     int countAll = model.ModelFactor.Count();
@@ -971,6 +1009,7 @@ namespace KadOzenka.Dal.DataExport
             XmlNode xnAppraise = _xmlFile.CreateElement("Appraise");
             string region_rf = ConfigurationManager.AppSettings["3XML_RegionRF"];
 
+            _log.Debug($"Механизм группировки погруппы - '{_subgroup.GroupAlgoritm_Code}'");
             if (_subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
                 #region Statistical_Modelling
@@ -989,8 +1028,13 @@ namespace KadOzenka.Dal.DataExport
                 #region Real_Estates
                 XmlNode xnReal_Estates = _xmlFile.CreateElement("Real_Estates");
 
+                var currentUnitsCount = 0;
+                _log.Debug("Начата обработка ЕО подгруппы");
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
+	                if (++currentUnitsCount % 1000 == 0)
+		                _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
+
                     XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
                     DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
 
@@ -1153,6 +1197,7 @@ namespace KadOzenka.Dal.DataExport
                     xnReal_Estate.AppendChild(xnCEvaluative_Factors);
                     xnReal_Estates.AppendChild(xnReal_Estate);
                 }
+                _log.Debug("Закончена обработка ЕО подгруппы");
                 xnGroup_Real_Estate_Modelling.AppendChild(xnReal_Estates);
                 #endregion
 
@@ -1212,8 +1257,12 @@ namespace KadOzenka.Dal.DataExport
 
                 XmlNode xnReal_Estates = _xmlFile.CreateElement("Real_Estates");
 
+                var currentUnitsCount = 0;
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
+	                if (++currentUnitsCount % 1000 == 0)
+		                _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
+
                     XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
                     DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
 
