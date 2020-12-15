@@ -85,6 +85,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					if (processedItemsCount >= unitsCount)
 						break;
 
+					CheckCancellationToken(cancellationToken);
 					Logger.Debug($"Начата работа с пакетом №{packageIndex}");
 
 					using (Logger.TimeOperation($"Полная обработка пакета №{packageIndex} (сбор данных + генерация файла)"))
@@ -99,6 +100,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								where object_id in ({objectIdsSubQuerySql})";
 
 
+						CheckCancellationToken(cancellationToken);
 						List<ReportItem> currentPage;
 						using (Logger.TimeOperation($"Сбор данных для пакета №{packageIndex}"))
 						{
@@ -110,6 +112,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 							Logger.Debug(new Exception(sql), $"Закончен сбор данных для пакета №{packageIndex}.");
 						}
 
+						CheckCancellationToken(cancellationToken);
 						using (Logger.TimeOperation($"Формирование файла для пакета №{packageIndex}"))
 						{
 							Logger.Debug(new Exception(sql), $"Начата запись в файл для пакета №{packageIndex}.");
@@ -156,6 +159,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			urls.ForEach(url => { linksToUrls.AppendLine($@"<a href=""{url}"">Скачать результат</a>"); });
 
 			SendMessage(processQueue, mainMessage + "<br>" + linksToUrls, MessageSubject);
+		}
+
+		private void CheckCancellationToken(CancellationToken cancellationToken)
+		{
+			if (!cancellationToken.IsCancellationRequested)
+				return;
+
+			var message = "Формирование отчета было отменено пользователем";
+			Log.Error(message);
+			throw new Exception(message);
 		}
 
 		private List<ReportItem> GetReportItems(List<long> taskIds)
