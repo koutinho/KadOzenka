@@ -30,6 +30,7 @@
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <PackageReference Include="SerilogTimings" Version="2.3.0" />
     <PackageReference Include="sharpcompress" Version="0.24.0" />
     <PackageReference Include="SpdIntegration" Version="1.0.33" />
     

@@ -32,6 +32,7 @@ using SaveOptions = GemBox.Document.SaveOptions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -320,13 +321,16 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOUnit : IKoUnloadResult
     {
+	    private static readonly ILogger _log = Log.ForContext<DEKOUnit>();
+
         /// <summary>
         /// Экспорт в Xml - КНомер, УПКСЗ, КСтоимость. По 5000 записей. 
         /// </summary>
         [KoUnloadResultAction(KoUnloadResultType.UnloadXML1)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по объектам";
+	        _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по объектам");
+            var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по объектам";
 	        var taskCounter = 0;
 	        var progress = 0;
 	        if (unloadResultQueue != null)
@@ -337,10 +341,18 @@ namespace KadOzenka.Dal.DataExport
             string file_name = "";
             foreach (long taskId in setting.TaskFilter)
             {
-                OMTask currentTask = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).SelectAll().Execute();
+	            _log.Debug("Начата работа с ЗнО с ИД {TaskId}", taskId);
+
+                var currentTask = OMTask.Where(x => x.Id == taskId).Select(x => x.EstimationDate).ExecuteFirstOrDefault();
+                var units_all = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).Select(x => new
+                {
+	                x.CadastralNumber,
+	                x.Upks,
+	                x.CadastralCost
+                }).Execute();
                 int count_curr = 0;
                 int count_all = units_all.Count();
+                _log.Debug($"Найдено {count_all} ЕО у которых Кадастровая стоимость > 0 ");
 
                 List<OMUnit> units_curr = new List<OMUnit>();
                 int count_write = 5000;
@@ -353,18 +365,31 @@ namespace KadOzenka.Dal.DataExport
                     if (count_curr == count_write)
                     {
                         file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
-                        Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+
+                        Stream resultFile;
+                        using (_log.TimeOperation($"Формирование файла '{file_name}'"))
+                        {
+	                        resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+                        }
 
                         if (setting.IsDataComparingUnload)
                         {
-	                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-	                        using var fs = File.Create(fullFileName);
-	                        fs.Seek(0, SeekOrigin.Begin);
-	                        resultFile.CopyTo(fs);
+	                        using (_log.TimeOperation($"Копирование файла '{file_name}' для сравнения"))
+	                        {
+		                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+		                        using var fs = File.Create(fullFileName);
+		                        fs.Seek(0, SeekOrigin.Begin);
+		                        resultFile.CopyTo(fs);
+                            }
                         }
                         else
                         {
-	                        long id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
+	                        long id;
+	                        using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
+	                        {
+		                        id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
+	                        }
+
 	                        var resFile = new ResultKoUnloadSettings
 	                        {
 		                        FileName = file_name,
@@ -387,18 +412,31 @@ namespace KadOzenka.Dal.DataExport
                 }
 
                 file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
-                Stream resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+
+                Stream resultFile1;
+                using (_log.TimeOperation($"Формирование файла (оставшиеся ЕО) '{file_name}'"))
+                {
+	                resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+                }
 
                 if (setting.IsDataComparingUnload)
                 {
-	                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-	                using var fs = File.Create(fullFileName);
-	                fs.Seek(0, SeekOrigin.Begin);
-	                resultFile1.CopyTo(fs);
+	                using (_log.TimeOperation($"Копирование файла (оставшиеся ЕО) '{file_name}' для сравнения"))
+	                {
+		                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+		                using var fs = File.Create(fullFileName);
+		                fs.Seek(0, SeekOrigin.Begin);
+		                resultFile1.CopyTo(fs);
+	                }
                 }
                 else
                 {
-	                long id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
+	                long id1;
+	                using (_log.TimeOperation($"Сохранение файла (оставшиеся ЕО) '{file_name}'"))
+	                {
+		                id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
+                    }
+
 	                var koResultFile = new ResultKoUnloadSettings
 	                {
 		                FileName = file_name,
@@ -413,6 +451,8 @@ namespace KadOzenka.Dal.DataExport
             if (unloadResultQueue != null)
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress?.Invoke(100, true, progressMessage);
+
+            _log.Debug("Закончена выгрузка в XML результатов Кадастровой оценки по объектам");
 
             return res;
         }
@@ -496,9 +536,13 @@ namespace KadOzenka.Dal.DataExport
             XmlNode xn_Cadastral_Blocks = null;
             XmlNode xn_Parcels = null;
 
+            var currentUnitCount = -1;
             foreach (ObjectModel.KO.OMUnit unit in units)
             {
-                string[] arrtmp = unit.CadastralNumber.Split(':');
+	            if (++currentUnitCount % 1000 == 0)
+		            _log.ForContext("UnitId", unit.Id).Debug($"Идет обработка {currentUnitCount} ЕО из {units.Count}");
+
+	            string[] arrtmp = unit.CadastralNumber.Split(':');
                 if (arrtmp.Length == 4)
                 {
                     string kn = unit.CadastralNumber;
