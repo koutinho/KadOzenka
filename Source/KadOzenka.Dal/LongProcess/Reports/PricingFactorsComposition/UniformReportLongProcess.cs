@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
 	public class UniformReportLongProcess : LongProcess
 	{
-		private const int PackageSize = 250000;
+		private int _packageSize = 125000;
 		private string ReportName => "Итоговый состав данных по характеристикам объектов недвижимости";
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		private static readonly ILogger Logger = Log.ForContext<UniformReportLongProcess>();
@@ -33,24 +33,28 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 
 
-		public static long AddProcessToQueue(List<long> taskIds)
+		public static long AddProcessToQueue(UniformReportLongProcessInputParameters parameters)
 		{
-			if (taskIds == null)
+			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 				throw new Exception("Не переданы ИД задач");
 
-			return LongProcessManager.AddTaskToQueue(nameof(UniformReportLongProcess), parameters: taskIds.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(nameof(UniformReportLongProcess), parameters: parameters.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			WorkerCommon.SetProgress(processQueue, 0);
 
-			List<long> taskIds = null;
+			UniformReportLongProcessInputParameters parameters = null;
 			if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
 			{
-				taskIds = processQueue.Parameters.DeserializeFromXml<List<long>>();
+				parameters = processQueue.Parameters.DeserializeFromXml<UniformReportLongProcessInputParameters>();
+				if (parameters.PackageSize.GetValueOrDefault() != 0)
+				{
+					_packageSize = parameters.PackageSize.GetValueOrDefault();
+				}
 			}
-			if (taskIds == null || taskIds.Count == 0)
+			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 			{
 				SendMessage(processQueue, "Не переданы ИД задач для построения отчета", MessageSubject);
 				return;
@@ -71,14 +75,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				Logger.Debug("Начат фоновый процесс.");
 
-				var unitsCount = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
 				Logger.Debug($"Всего в БД {unitsCount} ЕО.");
 
-				var executedItemsCount = 0;
+				var processedItemsCount = 0;
 				var packageIndex = 0;
 				while (true)
 				{
-					if (executedItemsCount >= unitsCount)
+					if (processedItemsCount >= unitsCount)
 						break;
 
 					Logger.Debug($"Начата работа с пакетом №{packageIndex}");
@@ -86,9 +90,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					using (Logger.TimeOperation($"Полная обработка пакета №{packageIndex} (сбор данных + генерация файла)"))
 					{
 						var objectIdsSubQuerySql = $@"select object_id from ko_unit 
-								where task_id in ({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE <> 2190 
+								where task_id in ({string.Join(',', parameters.TaskIds)}) and PROPERTY_TYPE_CODE <> 2190 
 								order by object_id 
-								limit {PackageSize} offset {packageIndex * PackageSize} ";
+								limit {_packageSize} offset {packageIndex * _packageSize} ";
 
 						var sql = $@"select cadastral_number as CadastralNumber, attributes 
 								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
@@ -98,11 +102,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 						List<ReportItem> currentPage;
 						using (Logger.TimeOperation($"Сбор данных для пакета №{packageIndex}"))
 						{
-							Logger.Debug(new Exception(sql),
-								$"Начат сбор данных для пакета №{packageIndex}. До этого было обработано {executedItemsCount} записей");
+							Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{packageIndex}. До этого было обработано {processedItemsCount} записей");
 
 							currentPage = QSQuery.ExecuteSql<ReportItem>(sql);
-							executedItemsCount += currentPage.Count;
+							processedItemsCount += currentPage.Count;
 
 							Logger.Debug(new Exception(sql), $"Закончен сбор данных для пакета №{packageIndex}.");
 						}
@@ -115,7 +118,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 							var urlToDownloadReport = GenerateReport(currentPage, reportService);
 							urls.Add(urlToDownloadReport);
 
-							Logger.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{packageIndex}.");
+							Logger.ForContext("UrlToDownloadFile", urlToDownloadReport)
+								.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{packageIndex}.");
 						}
 
 						Logger.Debug($"Закончена работа с пакетом №{packageIndex}");
@@ -148,7 +152,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, List<string> urls)
 		{
 			var linksToUrls = new StringBuilder();
-			linksToUrls.AppendLine("Созданные файлы:").AppendLine();
+			linksToUrls.AppendLine("Созданные файлы:");
 			urls.ForEach(url => { linksToUrls.AppendLine($@"<a href=""{url}"">Скачать результат</a>"); });
 
 			SendMessage(processQueue, mainMessage + "<br>" + linksToUrls, MessageSubject);
@@ -171,7 +175,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				var objectIdsSubQuerySql = $@"select object_id from ko_unit 
 								where task_id in ({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE <> 2190 
 								order by object_id 
-								limit {PackageSize} offset {packageIndex * PackageSize} ";
+								limit {_packageSize} offset {packageIndex * _packageSize} ";
 
 				var sql = $@"select cadastral_number as CadastralNumber, attributes 
 								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
