@@ -343,11 +343,16 @@ namespace KadOzenka.Dal.DataExport
             {
 	            _log.Debug("Начата работа с ЗнО с ИД {TaskId}", taskId);
 
-                OMTask currentTask = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).SelectAll().Execute();
+                var currentTask = OMTask.Where(x => x.Id == taskId).Select(x => x.EstimationDate).ExecuteFirstOrDefault();
+                var units_all = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).Select(x => new
+                {
+	                x.CadastralNumber,
+	                x.Upks,
+	                x.CadastralCost
+                }).Execute();
                 int count_curr = 0;
                 int count_all = units_all.Count();
-                _log.Debug($"Найдено {count_all} ЕО");
+                _log.Debug($"Найдено {count_all} ЕО у которых Кадастровая стоимость > 0 ");
 
                 List<OMUnit> units_curr = new List<OMUnit>();
                 int count_write = 5000;
