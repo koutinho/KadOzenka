@@ -64,12 +64,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			try
 			{
 				//var reportItems = GetReportItems(taskIds);
-
 				//var urlToDownloadReport = GenerateReport(reportItems, new GbuReportService());
-
 				//var message = "Операция успешно завершена." + $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
 				//SendMessage(processQueue, message, MessageSubject);
-
 				////TODO для тестирования
 				//var a = $"https://localhost:50252{urlToDownloadReport}";
 
@@ -231,7 +228,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			}
 
 			reportService.SetStyle();
-			reportService.SaveReport(ReportName);
+			reportService.SaveReportZip(ReportName);
 
 			return reportService.UrlToDownload;
 		}
@@ -252,7 +249,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				Width = 4
 			};
 
-			var maxNumberOfAttributes = info.Max(x => x.Attributes?.Length) ?? 0;
+			var maxNumberOfAttributes = info.Max(x => x.FullAttributes?.Count) ?? 0;
 			var columns = new List<GbuReportService.Column>(maxNumberOfAttributes + 2) { sequentialNumberColumn, cadastralNumberColumn };
 
 			//2 - чтобы учесть колонки с номером по порядку и КН

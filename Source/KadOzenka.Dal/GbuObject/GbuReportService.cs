@@ -255,29 +255,11 @@ namespace KadOzenka.Dal.GbuObject
 
 			try
 			{
-				MemoryStream stream = new MemoryStream();
+				var stream = new MemoryStream();
 				_excelFiles[0].Save(stream, SaveOptions.XlsxDefault);
 				stream.Seek(0, SeekOrigin.Begin);
 
-				var currentDate = DateTime.Now;
-				var export = new OMExportByTemplates
-				{
-					UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-					DateCreated = currentDate,
-					DateStarted = currentDate,
-					Status = (int)ImportStatus.Added,
-					FileResultTitle = fileName,
-					FileExtension = "xlsx",
-					MainRegisterId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId(),
-					RegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects"
-				};
-				export.Save();
-
-				export.DateFinished = DateTime.Now;
-				export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-				export.Status = (long)ImportStatus.Completed;
-				FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-				export.Save();
+				var export = SaveReport(stream, fileName, "xlsx", mainRegisterId, registerViewId);
 
 				_log.ForContext("ResultFileName", export.ResultFileName)
 					.ForContext("FileId", export.Id)
@@ -295,7 +277,7 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		private long SaveReportZip(string fileName, long? mainRegisterId = null, string registerViewId = null)
+		public long SaveReportZip(string fileName, long? mainRegisterId = null, string registerViewId = null)
 		{
 			_log.Debug("Сохранение отчета через zip");
 
@@ -324,12 +306,11 @@ namespace KadOzenka.Dal.GbuObject
 					var zipStream = new MemoryStream();
 					zipFile.Save(zipStream);
 					zipStream.Seek(0, SeekOrigin.Begin);
-					var zipFileName = "Результаты переноса атрибутов";
-					var registerId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId();
-					var resultRegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects";
+					var zipFileName = $"{fileName} (архив)";
 
 					_log.Debug($"Начато сохранение zip-файла '{zipFileName}'");
-					ReportId = SaveReportDownload.SaveReport(zipFileName, zipStream, registerId, resultRegisterViewId, "zip");
+					var export = SaveReport(zipStream, zipFileName, "zip", mainRegisterId, registerViewId);
+					ReportId = export.Id;
 					_log.Debug($"Закончено сохранение zip-файла '{zipFileName}'");
 				}
 
@@ -341,6 +322,31 @@ namespace KadOzenka.Dal.GbuObject
 				ErrorManager.LogError(ex);
 				throw;
 			}
+		}
+
+		private OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension, long? mainRegisterId = null, string registerViewId = null)
+		{
+			var currentDate = DateTime.Now;
+			var export = new OMExportByTemplates
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateCreated = currentDate,
+				DateStarted = currentDate,
+				Status = (int)ImportStatus.Added,
+				FileResultTitle = fileName,
+				FileExtension = fileExtension,
+				MainRegisterId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId(),
+				RegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects"
+			};
+			export.Save();
+
+			export.DateFinished = DateTime.Now;
+			export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+			export.Status = (long)ImportStatus.Completed;
+			FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+			export.Save();
+
+			return export;
 		}
 
 		#endregion
