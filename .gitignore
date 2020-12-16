@@ -39,13 +39,7 @@
 /Source/KadOzenka.Web/KadOzenka.Web.csproj.user
 /Source/KadOzenka.Dal/ConfigCore
 /Source/KadOzenka.Dal/wwwroot
-!/Source/KadOzenka.Web/ConfigCore
-/Source/KadOzenka.Web/ConfigCore/*
-!/Source/KadOzenka.Web/ConfigCore/Registers
-/Source/KadOzenka.Web/ConfigCore/Registers/*
-!/Source/KadOzenka.Web/ConfigCore/Registers/SearchPanels
-/Source/KadOzenka.Web/ConfigCore/Registers/SearchPanels/*
-!/Source/KadOzenka.Web/ConfigCore/Registers/SearchPanels/CoreLongProcessQueue.xml
+/Source/KadOzenka.Web/ConfigCore
 /Source/KadOzenka.Web/wwwroot/PlatformCss
 /Source/KadOzenka.Web/wwwroot/PlatformJs
 /Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css
