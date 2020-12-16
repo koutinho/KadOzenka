@@ -1005,6 +1005,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public IActionResult QueueFactorDownload(long taskId, long[] attributes, bool isOks)
         {
+            if (attributes.Length == 0)
+                return StatusCode(500, "Не выбраны атрибуты для выгрузки");
             try
             {
                 FactorsExportLongProcess.AddProcessToQueue(
