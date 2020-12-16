@@ -106,9 +106,6 @@
     <Reference Include="EP.Morphology.Core">
       <HintPath>..\Utils\EP.SdkCore\EP.Morphology.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Kendo.Mvc">
-      <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

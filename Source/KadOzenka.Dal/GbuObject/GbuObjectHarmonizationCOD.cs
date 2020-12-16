@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        protected override bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute)
+        protected override bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute, GbuReportService reportService)
         {
             var sourceAttributeValueInString = sourceAttribute.GetValueInString();
             if (string.IsNullOrWhiteSpace(sourceAttributeValueInString))
@@ -44,16 +44,16 @@ namespace KadOzenka.Dal.GbuObject
                 return false;
 
             SaveGbuAttribute(item, sourceAttribute.ChangeDocId, sourceAttribute.S, sourceAttribute.Ot,
-                resValue, sourceAttribute.AttributeId);
+                resValue, sourceAttribute.AttributeId, reportService);
 
             return true;
         }
 
-        protected override void SaveFailResult(Item item)
+        protected override void SaveFailResult(Item item, GbuReportService reportService)
         {
             var errorMessageForReport = "Установлено значение по умолчанию.";
 
-            SaveGbuAttribute(item, Setting.IdDocument ?? -1, item.Date, item.Date, Setting.DefaultValue, null, errorMessageForReport);
+            SaveGbuAttribute(item, Setting.IdDocument ?? -1, item.Date, item.Date, Setting.DefaultValue, null, reportService, errorMessageForReport);
         }
     }
 }

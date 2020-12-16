@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.GbuObject
         
         public string Run(GbuExportAttributeSettings setting, OMQueue processQueue)
         {
-	        var reportService = new GbuReportService();
+	        using var reportService = new GbuReportService(ReportName);
 	        GenerateReportHeaders(setting.Attributes, reportService);
 
 	        locked = new object();
@@ -107,8 +107,7 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = 0;
             }
 
-            reportService.SetStyle();
-            reportService.SaveReport(ReportName);
+            reportService.SaveReport();
 
             return reportService.UrlToDownload;
         }

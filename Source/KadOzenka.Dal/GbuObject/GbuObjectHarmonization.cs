@@ -15,23 +15,23 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        protected override bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute)
+        protected override bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute, GbuReportService reportService)
         {
             var sourceAttributeValueInString = sourceAttribute.GetValueInString();
             if (string.IsNullOrWhiteSpace(sourceAttributeValueInString))
                 return false;
 
             SaveGbuAttribute(item, sourceAttribute.ChangeDocId, sourceAttribute.S, sourceAttribute.Ot,
-                sourceAttributeValueInString, sourceAttribute.AttributeId);
+                sourceAttributeValueInString, sourceAttribute.AttributeId, reportService);
 
             return true;
         }
 
-        protected override void SaveFailResult(Item item)
+        protected override void SaveFailResult(Item item, GbuReportService reportService)
         {
             var errorMessageForReport = "Не найдено значение.";
 
-            SaveGbuAttribute(item, -1, item.Date, item.Date, null, null, errorMessageForReport);
+            SaveGbuAttribute(item, -1, item.Date, item.Date, null, null, reportService, errorMessageForReport);
         }
     }
 }

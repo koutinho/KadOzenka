@@ -25,7 +25,6 @@ namespace KadOzenka.Dal.LongProcess
         private TaskService TaskService { get; set; }
         private DocumentService DocumentService { get; set; }
         private RosreestrDataApi ReonWebClientService { get; set; }
-        private GbuReportService GbuReportService { get; set; }
         private readonly GbuReportService.Column _taskNumberColumn;
         private readonly GbuReportService.Column _taskDateColumn;
         private readonly GbuReportService.Column _tourYearColumn;
@@ -37,7 +36,6 @@ namespace KadOzenka.Dal.LongProcess
             TaskService = new TaskService();
             DocumentService = new DocumentService();
             ReonWebClientService = new RosreestrDataApi();
-            GbuReportService = new GbuReportService();
 
             _taskNumberColumn = new GbuReportService.Column
             {
@@ -77,28 +75,29 @@ namespace KadOzenka.Dal.LongProcess
         {
             WorkerCommon.SetProgress(processQueue, 0);
 
-            GbuReportService.AddHeaders(new List<string>
+            using var reportService = new GbuReportService("Получение заданий на оценку из ИС РЕОН");
+            reportService.AddHeaders(new List<string>
             {
 	            _taskNumberColumn.Header, _taskDateColumn.Header, 
 	            _tourYearColumn.Header, _filesCountColumn.Header,
 	            _errorColumn.Header
             });
-            GbuReportService.SetIndividualWidth(_taskNumberColumn.Index, _taskNumberColumn.Width);
-            GbuReportService.SetIndividualWidth(_taskDateColumn.Index, _taskDateColumn.Width);
-            GbuReportService.SetIndividualWidth(_tourYearColumn.Index, _tourYearColumn.Width);
-            GbuReportService.SetIndividualWidth(_filesCountColumn.Index, _filesCountColumn.Width);
-            GbuReportService.SetIndividualWidth(_errorColumn.Index, _errorColumn.Width);
+            reportService.SetIndividualWidth(_taskNumberColumn.Index, _taskNumberColumn.Width);
+            reportService.SetIndividualWidth(_taskDateColumn.Index, _taskDateColumn.Width);
+            reportService.SetIndividualWidth(_tourYearColumn.Index, _tourYearColumn.Width);
+            reportService.SetIndividualWidth(_filesCountColumn.Index, _filesCountColumn.Width);
+            reportService.SetIndividualWidth(_errorColumn.Index, _errorColumn.Width);
 
             var request = GetRequest(processType);
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
-            var errorIds = ProcessResponse(response);
+            var errorIds = ProcessResponse(reportService, response);
 
             var info = errorIds.Count > 0 
                 ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-            GbuReportService.SetStyle();
-            var reportId = GbuReportService.SaveReport("Получение заданий на оценку из ИС РЕОН");
+
+            var reportId = reportService.SaveReport();
             var message = $"{info}\n" + $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
             var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
@@ -120,7 +119,7 @@ namespace KadOzenka.Dal.LongProcess
             return new TaskFromReonRequest(dateFrom, dateTo);
         }
 
-        public List<long> ProcessResponse(List<RRDataLoadModel> tasksFromResponse)
+        public List<long> ProcessResponse(GbuReportService reportService, List<RRDataLoadModel> tasksFromResponse)
         {
             var errorIds = new List<long>();
             tasksFromResponse.ForEach(task =>
@@ -144,7 +143,7 @@ namespace KadOzenka.Dal.LongProcess
                     }
 
                     var taskNumber = TaskService.GetTemplateForTaskName(task.DateAppraisal, task.DocDate, task.DocNumber, omTask.NoteType);
-                    AddRowToReport(taskNumber, omTask.CreationDate, task.TourYear, task.XmlDocUrls.Count, string.Empty);
+                    AddRowToReport(reportService, taskNumber, omTask.CreationDate, task.TourYear, task.XmlDocUrls.Count, string.Empty);
                 }
                 catch (Exception ex)
                 {
@@ -152,7 +151,7 @@ namespace KadOzenka.Dal.LongProcess
                     errorIds.Add(errorId);
 
                     var taskNumber = TaskService.GetTemplateForTaskName(task.DateAppraisal, task.DocDate, task.DocNumber, omTask?.NoteType);
-                    AddRowToReport(taskNumber, omTask?.CreationDate, task.TourYear, task.XmlDocUrls.Count,
+                    AddRowToReport(reportService, taskNumber, omTask?.CreationDate, task.TourYear, task.XmlDocUrls.Count,
                         $"Ошибка загрузки (журнал: {errorId})");
                 }
             });
@@ -223,11 +222,11 @@ namespace KadOzenka.Dal.LongProcess
             }
         }
 
-        private void AddRowToReport(string taskNumber, DateTime? taskDate, int? tourYear, int filesCount, string errorMessage)
+        private void AddRowToReport(GbuReportService reportService, string taskNumber, DateTime? taskDate, int? tourYear, int filesCount, string errorMessage)
         {
-	        var row = GbuReportService.GetCurrentRow();
+	        var row = reportService.GetCurrentRow();
 
-	        GbuReportService.AddRow(row, new List<string>
+	        reportService.AddRow(row, new List<string>
                 {taskNumber, taskDate?.ToShortDateString(), tourYear?.ToString(), filesCount.ToString(), errorMessage});
         }
 

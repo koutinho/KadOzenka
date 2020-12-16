@@ -487,27 +487,30 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("560", "Тест сервиса отчетов", () =>
             {
-	            var reportService = new GbuReportService();
-	            var numberOfColumns = 2;
-	            var numberOfRows = 200;
-	            var columns = Enumerable.Range(0, numberOfColumns).Select(x => new GbuReportService.Column
+	            long reportId = -1;
+	            using (var reportService = new GbuReportService("Test"))
 	            {
-		            Header = $"Header {x}",
-		            Index = x,
-		            Width = 2
-	            }).ToList();
+		            var numberOfColumns = 2;
+		            var numberOfRows = 200;
+		            var columns = Enumerable.Range(0, numberOfColumns).Select(x => new GbuReportService.Column
+		            {
+			            Header = $"Header {x}",
+			            Index = x,
+			            Width = 2
+		            }).ToList();
 
-				Enumerable.Range(0, numberOfRows).ForEach(x =>
-				{
-					var row = reportService.GetCurrentRow();
-					columns.ForEach(column =>
-					{
-						reportService.AddValue($"value {x}.{column.Index}", column.Index, row);
-					});
-				});
+		            Enumerable.Range(0, numberOfRows).ForEach(x =>
+		            {
+			            var row = reportService.GetCurrentRow();
+			            columns.ForEach(column =>
+			            {
+				            reportService.AddValue($"value {x}.{column.Index}", column.Index, row);
+			            });
+		            });
 
-				reportService.SetStyle();
-				var reportId = reportService.SaveReport("Test");
+		            reportId = reportService.SaveReport();
+				} 
+
 
 				var export = OMExportByTemplates
 					.Where(x => x.Id == reportId)

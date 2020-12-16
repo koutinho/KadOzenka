@@ -1,4 +1,6 @@
-﻿
+﻿@using Flurl.Util
+@using KadOzenka.Dal.ManagementDecisionSupport.Enums
+
 <form class="statisticsReportsWidget">
     <div class="form-horizontal col-sm-12">
 
@@ -25,10 +27,10 @@
                     </div>
                 </div>
                 <div class="col-sm-4 statistics-tittle-buttons-container">
-                    <a id="searchButton" class="k-button" >
+                    <a id="searchStatisticsReportsButton" class="k-button" >
                         <span class="k-icon icon-search_small"></span> Поиск
                     </a>
-                    <a id="exportButton" class="k-button">
+                    <a id="exportStatisticsReportsButton" class="k-button">
                         <span class="k-icon icon-excel"></span> Выгрузить в Excel
                     </a>
                 </div>
@@ -133,8 +135,8 @@
             animation: false
         }).data('kendoTabStrip');
 
-        $('#searchButton').click(refreshCurrentGrid);
-        $('#exportButton').click(onExportClicked);
+        $('#searchStatisticsReportsButton').click(refreshCurrentGrid);
+        $('#exportStatisticsReportsButton').click(onExportClickedStatisticsReport);
 
         createGrids();
         statisticsTabstrip.activateTab($("#importedObjectsTab"));
@@ -425,8 +427,8 @@
                         url: dataUrl,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
-                        data: getGridParams
-                    }
+                        data: getGridParams,
+                    },
                 },
                 error: function (e) {
                     if (e.xhr && e.xhr.responseText) {
@@ -453,7 +455,23 @@
                         }
                         return response;
                     }
+                },
+                requestStart: function (e) {
+                    statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children(), false);
+                    statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children().eq(statisticsTabstrip.select().index()), true);
+                    $('#searchStatisticsReportsButton').attr("disabled", "disabled");
+                    $('#exportStatisticsReportsButton').attr("disabled", "disabled");
+                    $('#searchStatisticsReportsButton').off('click');
+                    $('#exportStatisticsReportsButton').off('click');
+                },
+                requestEnd: function (e) {
+                    statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children(), true);
+                    $('#searchStatisticsReportsButton').removeAttr('disabled');
+                    $('#exportStatisticsReportsButton').removeAttr('disabled');
+                    $('#searchStatisticsReportsButton').click(refreshCurrentGrid);
+                    $('#exportStatisticsReportsButton').click(onExportClickedStatisticsReport);
                 }
+
             },
             noRecords: {
                 template: "<div style='padding: 6px 0 6px 0;'>Не найдена ни одна запись</div>"
@@ -467,13 +485,17 @@
                 alwaysVisible: false,
                 pageSize: 15
             },
-            excel: {
-                fileName: excelName,
-                allPages: true
-            },
-            excelExport: function (e) {
-                kendo.ui.progress($('.statisticsReportsWidget'), false);
-                e.workbook.fileName = getExcelFileName(excelName);
+            //excel: {
+            //    fileName: excelName,
+            //    allPages: true
+            //},
+            //excelExport: function (e) {
+            //    kendo.ui.progress($('.statisticsReportsWidget'), false);
+            //    e.workbook.fileName = getExcelFileName(excelName);
+            //},
+            dataBound: function (e) {
+                this.dateStart = periodStartPicker.value();
+                this.dateEnd = periodEndPicker.value();
             }
         });
 
@@ -497,7 +519,21 @@
         if (dateEnd) {
             dateEnd = dateEnd.toUTCString();
         }
+
         return { dateStart: dateStart, dateEnd: dateEnd };
+    }
+
+    function getGridExportParams(grid) {
+        var dateStart = grid.dateStart;
+        if (dateStart) {
+            dateStart = dateStart.toUTCString();
+        }
+        var dateEnd = grid.dateEnd;
+        if (dateEnd) {
+            dateEnd = dateEnd.toUTCString();
+        }
+
+        return { dateStart: dateStart, dateEnd: dateEnd  };
     }
 
     function onActivateTab(e) {
@@ -514,50 +550,87 @@
         $('#' + currentGrid).data('kendoGrid').dataSource.read();
     }
 
-    function getExcelFileName(excelFileName) {
-        var startDate = kendo.toString(kendo.parseDate(periodStartPicker.value()), "dd.MM.yyyy");
-        var endDate = kendo.toString(kendo.parseDate(periodEndPicker.value()), "dd.MM.yyyy");
+    function getExcelFileName(excelFileName, grid) {
+        var startDate = kendo.toString(kendo.parseDate(grid.dateStart), "dd.MM.yyyy");
+        var endDate = kendo.toString(kendo.parseDate(grid.dateEnd), "dd.MM.yyyy");
 
         return excelFileName +
             `(Период с ${startDate} по ${endDate }).xlsx`;
     }
 
-    function onExportClicked() {
-        kendo.ui.progress($('.statisticsReportsWidget'), true);
-        var url = getGridExportUrl(currentGrid);
-        var excelName = getGridExcelName(currentGrid);
-
+    function onExportClickedStatisticsReport() {
         var grid = $('#' + currentGrid).data("kendoGrid");
-        var parameterMap = grid.dataSource.transport.parameterMap;
-        var data = getGridParams();
-        data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
-        data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
-        data.pageSize = grid.dataSource.total();
-        data.page = 1;
+        var total = grid.dataSource.total();
+        if (total > 1000) {
+            Common.UI.ShowConfirm({
+                title: 'Внимание!',
+                content:
+                    'Объем выгружаемых данных слишком большой. Запустить формирование выгрузки в фоновом режиме?',
+                onSuccess: function (e) {
+                    kendo.ui.progress($('.statisticsReportsWidget'), true);
+                    var url = getGridExportUrl(currentGrid);
+                    var parameterMap = grid.dataSource.transport.parameterMap;
+                    var data = getGridExportParams(grid);
+                    data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
+                    data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
+                    data.backgroundExport = true;
+                    $.ajax({
+                        url: url,
+                        cache: false,
+                        data: data,
+                        success: function (result) {
+                            Common.UI.ShowDialog({
+                                content: 'Выгрузка успешно запущена',
+                                height: 130,
+                                icon: 'info',
+                                showCloseBtn: true
+                            });
+                        },
+                        error: function (response, textStatus, errorThrown) {
+                            Common.ShowError(response.responseText);
+                        },
+                        complete: function () {
+                            kendo.ui.progress($('.statisticsReportsWidget'), false);
+                        }
+                    });
+                }
+            });
+        } else {
+            kendo.ui.progress($('.statisticsReportsWidget'), true);
+            var url = getGridExportUrl(currentGrid);
+            var excelName = getGridExcelName(currentGrid);
+            var parameterMap = grid.dataSource.transport.parameterMap;
+            var data = getGridExportParams(grid);
+            data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
+            data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
+            data.pageSize = grid.dataSource.total();
+            data.page = 1;
 
-        $.ajax({
-            url: url,
-            cache: false,
-            data: data,
-            xhrFields: {
-                responseType: 'blob'
-            },
-            success: function(blob) {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = getExcelFileName(excelName);
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            },
-            error: function (response, textStatus, errorThrown) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function () {
-                kendo.ui.progress($('.statisticsReportsWidget'), false);
-            }});
+            $.ajax({
+                url: url,
+                cache: false,
+                data: data,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (blob) {
+                    debugger;
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = getExcelFileName(excelName, grid);
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                },
+                error: function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('.statisticsReportsWidget'), false);
+                }});
+        }
     }
 
     function getGridExportUrl(gridId) {
@@ -578,15 +651,15 @@
     function getGridExcelName(gridId) {
         switch (gridId) {
         case GridIdList.ImportedObjectsGrid:
-                return "Статистика по количеству загруженных объектов";
+                return "@Html.Raw(StatisticsReportExportType.ImportedObjects.GetEnumDescription())";
         case GridIdList.ExportedObjectsGrid:
-                return "Статистика по количеству выгруженных объектов";
+                return "@Html.Raw(StatisticsReportExportType.ExportedObjects.GetEnumDescription())";
         case GridIdList.ZoneStatisticsGrid:
-                return "Статистика по зонам";
+                return "@Html.Raw(StatisticsReportExportType.ZoneStatistics.GetEnumDescription())";
         case GridIdList.FactorStatisticsGrid:
-                return "Статистика по ценообразующим факторам";
+                return "@Html.Raw(StatisticsReportExportType.FactorStatistics.GetEnumDescription())";
         case GridIdList.GroupStatisticsGrid:
-                return "Статистика по группам";
+                return "@Html.Raw(StatisticsReportExportType.GroupStatistics.GetEnumDescription())";
         }
     }
 </script>
