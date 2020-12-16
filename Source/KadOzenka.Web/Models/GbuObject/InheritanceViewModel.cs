@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
-using ObjectModel.Gbu.InheritanceAttribute;
+using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.GbuObject.Dto;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
@@ -20,6 +20,9 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Required(ErrorMessage = "Задание на оценку обязательное поле")]
 		[Display(Name = "Задание на оценку")]
 		public List<long> TaskFilter { get; set; }
+
+		[Display(Name = "Статус")]
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Тип наследования: Кадастровый квартал -> Земельный участок
@@ -71,6 +74,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GbuInheritanceAttributeSettings
 			{
 				TaskFilter = TaskFilter,
+				ObjectChangeStatus = ObjectChangeStatus,
 				Attributes = Attributes,
 				ParcelToConstruction = ParcelToConstruction,
 				ParcelToUncomplited = ParcelToUncomplited,

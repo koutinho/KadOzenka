@@ -13,21 +13,6 @@ $site_dir = "C:\inetpub\wwwroot\$site"
 $service_dir = "C:\inetpub\wwwroot\$service"
 $sql_scripts_path = "C:\!Выполнение скриптов\dev\! Скрипты"
 
-$configXML = @(
-"Core.FileStorages.Dev.xml"
-"ModelingProcessConfig.Dev.xml"
-"Core.SystemCommon.Dev.xml"
-"Core.DataBase.Connections.Dev.xml"
-"Core.Srd.Dev.xml"
-"Postgres.Backup.Dev.xml"
-"ReonService.Dev.xml"
-"Core.LongProcess.Dev.xml"
-)
-$config_array = @("KadOzenka.Web.dll.config", "web.config", "appsettings.json")
-$service_array = @(
-    "KadOzenka.LongProcessService.deps",
-    "KadOzenka.LongProcessService.runtimeconfig"
-)
 $GeneratedScripts = @("ExportData.sql","ExportTables.sql")
 
 $release_path = "$PSScriptRoot"
@@ -37,8 +22,10 @@ $site_path =    "$release_path\site"
 $scripts_path = "$release_path\scripts"
 
 
-if (Test-Path -Path $service_dir -IsValid){ New-Item -ItemType Directory -Force -Path $service_dir }
-if (Test-Path -Path $sql_scripts_path -IsValid){ New-Item -ItemType Directory -Force -Path $sql_scripts_path }
+if (-not (Test-Path $service_dir )){ New-Item  $service_dir -Force -ItemType Directory }
+if (-not (Test-Path $sql_scripts_path )){ New-Item $sql_scripts_path -Force -ItemType Directory }
+if (-not (Test-Path $backup_path\config\site )) { New-Item $backup_path\config\site -Force -ItemType Directory }
+if (-not (Test-Path $backup_path\config\long_process )) { New-Item $backup_path\config\long_process -Force -ItemType Directory }
 
 Write-Host 2. Публикация релиза 
     
@@ -57,43 +44,28 @@ Write-Host 2. Публикация релиза
         Write-Host $status.Value
         if ($status.Value -eq "Stopped"){
      
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап
-                foreach ($item in $config_array){
-                    cpi -Path $site_dir\$item $backup_path\config -Recurse -Force -Verbose
-                    cpi -Path $site_dir\$item $config_path -Recurse -Force -Verbose
-                }
-                foreach ($item in $configXML){
-                    cpi -Path $site_dir\Config\Param\$item $backup_path\config\ -Recurse -Force -Verbose
-                    cpi -Path $site_dir\Config\Param\$item $config_path -Recurse -Force -Verbose
-                }
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап config-файлов
+                cpi -Path $site_dir\*.config, $site_dir\appsettings.json $backup_path\config\site -Force -Verbose
+                cpi -Path service_dir\*.config, service_dir\appsettings.json $backup_path\config\long_process -Force -Verbose
+              
                 if ($backup) {
                     compress-archive $site_dir $backup_path"$df.zip" 
                 }
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
                 cpi -Path $site_path\* $site_dir\ -Recurse -Force
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем конфиги
-                cpi -Path $backup_path\config\* $site_dir -Force -Verbose 
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем файлы XML
-                foreach ($item in $configXML){
-                     cpi -Path $config_path\$item $site_dir\Config\Param\$item -Force -Verbose
-                }
-                Start-WebSite -Name $IIS_siteName 
-                Start-WebAppPool -Name $IIS_WebAppPoolName
-               
-
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем config-файлы сайта
+                cpi -Path $backup_path\config\site\* $site_dir -Force -Verbose 
+             
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы службы фоновых процессов
-                $files = Get-ChildItem -Path $service_path -Recurse -Include *.dll #| Where-Object -FilterScript {($_.LastWriteTime -gt '2020-01-01')}
-                cpi -Path $files  -Destination $service_dir -Force -Verbose 
-                $files = Get-ChildItem -Path $service_path -Recurse -Include *.pdb 
-                cpi -Path $files  -Destination $service_dir -Force -Verbose                
-                foreach ($item in $service_array){
-                     cpi -Path $service_path\$item $service_dir -Force -Verbose
-                }
-                $files = Get-ChildItem -Path $service_path\Config\* -Recurse 
-                cpi -Path $files  -Destination $service_dir\Config\ -Force -Verbose  
+                cpi -Path $service_path\* $service_dir\ -Recurse -Force  
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем config-файлы фоновых процессов
+                cpi -Path $backup_path\config\long_process\* $service_dir -Force -Verbose
+
                 Start-WebSite -Name $IIS_serviceName
                 Start-WebAppPool -Name $IIS_servicePoolName
                 
+                Start-WebSite -Name $IIS_siteName 
+                Start-WebAppPool -Name $IIS_WebAppPoolName
                 #Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Переносим sql-скрипты
                 #cpi $scripts_path $sql_scripts_path
 

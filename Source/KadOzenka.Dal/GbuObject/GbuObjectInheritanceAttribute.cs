@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject.Decorators;
+using KadOzenka.Dal.GbuObject.Dto;
 using Newtonsoft.Json;
-using ObjectModel.Gbu.InheritanceAttribute;
+using ObjectModel.Directory;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
@@ -49,29 +53,28 @@ namespace KadOzenka.Dal.GbuObject
                 MaxDegreeOfParallelism = 20
             };
 
-            if (setting.TaskFilter.Count > 0)
+            if (setting.TaskFilter?.Count > 0)
             {
-                List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
-                foreach (long taskId in setting.TaskFilter)
-                {
-                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
-                    _log.Debug("Наследование атрибутов ГБУ. Загружено {Count} объектов по ЗнО {TaskId}", Objs.Count, setting.TaskFilter);
-                }
-                MaxCount = Objs.Count;
+	            var unitsGetter = new InheritanceUnitsGetter(_log, setting) as AItemsGetter<InheritanceUnitPure>;
+	            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
+
+                var units = unitsGetter.GetItems();
+                MaxCount = units.Count;
                 CurrentCount = 0;
+                _log.Debug("Наследование атрибутов ГБУ. Загружено {Count} объектов", MaxCount);
 
                 _log.ForContext("TasksId", setting.TaskFilter)
                   .Debug("Выполнение операции наследования атрибутов ГБУ по {TasksCount} заданиям на оценку. Всего {Count} объектов", setting.TaskFilter.Count, MaxCount);
 
-                Parallel.ForEach(Objs, options, item => { 
+                Parallel.ForEach(units, options, item => { 
                     RunOneUnit(item, setting, reportService);
                 });
                 _log.Debug("Операция наследования атрибутов ГБУ завершена");
 
                 CurrentCount = 0;
                 MaxCount = 0;
-                Objs.Clear();
-                _log.Debug("Переменная очищена. Записей {Count}", Objs.Count);
+                units.Clear();
+                _log.Debug("Переменная очищена. Записей {Count}", units.Count);
             }
             
             reportService.SetStyle();
@@ -84,11 +87,11 @@ namespace KadOzenka.Dal.GbuObject
             return reportId;
         }
 
-        public static void Inheritance(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode, GbuReportService reportService)
+        public static void Inheritance(InheritanceUnitPure unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode, GbuReportService reportService)
         {
             List<long> lstIds = new List<long>();
             lstIds.Add(setting.ParentCadastralNumberAttribute);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, unit.CreationDate);
+            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
             if (attribs.Count > 0)
             {
                 ObjectModel.Gbu.OMMainObject parent = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == attribs[0].StringValue && x.ObjectType_Code == typecode).SelectAll().ExecuteFirstOrDefault();
@@ -120,7 +123,7 @@ namespace KadOzenka.Dal.GbuObject
                         {
                             Id = -1,
                             AttributeId = pattrib.AttributeId,
-                            ObjectId = unit.ObjectId.Value,
+                            ObjectId = unit.ObjectId,
                             ChangeDocId = pattrib.ChangeDocId,
                             S = pattrib.S,
                             ChangeUserId = SRDSession.Current.UserID,
@@ -162,7 +165,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
         }
-        public static void RunOneUnit(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting, GbuReportService reportService)
+        public static void RunOneUnit(InheritanceUnitPure unit, GbuInheritanceAttributeSettings setting, GbuReportService reportService)
         {
             lock (locked)
             {
@@ -221,4 +224,51 @@ namespace KadOzenka.Dal.GbuObject
 			reportService.AddValue(errorMessage, 4, rowNumber);
         }
     }
+
+
+    #region Entities
+
+    public class InheritanceUnitPure : ItemBase
+    {
+	    public string CadastralNumber { get; set; }
+	    public DateTime? CreationDate { get; set; }
+	    public PropertyTypes PropertyType_Code { get; set; }
+    }
+
+    public class InheritanceUnitsGetter : AItemsGetter<InheritanceUnitPure>
+    {
+	    public GbuInheritanceAttributeSettings Settings { get; set; }
+
+	    public InheritanceUnitsGetter(ILogger logger, GbuInheritanceAttributeSettings setting) : base(logger)
+	    {
+		    Settings = setting;
+	    }
+
+
+	    public override List<InheritanceUnitPure> GetItems()
+	    {
+            if(Settings.TaskFilter == null)
+                return new List<InheritanceUnitPure>();
+
+		    return ObjectModel.KO.OMUnit.Where(x => Settings.TaskFilter.Contains((long) x.TaskId) && x.ObjectId != null)
+			    .Select(x => new
+			    {
+				    x.ObjectId,
+				    x.CadastralNumber,
+				    x.CreationDate,
+				    x.PropertyType_Code
+			    })
+			    .Execute()
+			    .Select(x => new InheritanceUnitPure
+			    {
+				    Id = x.Id,
+				    ObjectId = x.ObjectId.GetValueOrDefault(),
+				    CadastralNumber = x.CadastralNumber,
+				    CreationDate = x.CreationDate,
+				    PropertyType_Code = x.PropertyType_Code
+			    }).ToList();
+	    }
+    }
+
+    #endregion
 }

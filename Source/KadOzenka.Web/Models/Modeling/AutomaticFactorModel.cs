@@ -22,9 +22,6 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Словарь")]
 		public long? DictionaryId { get; set; }
 
-		[Display(Name = "Коэффициент")]
-		public decimal CurrentWeight { get; set; }
-
 		[Display(Name = "Коэффициент из предыдущего тура")]
 		public decimal? PreviousWeight { get; set; }
 
@@ -38,7 +35,6 @@ namespace KadOzenka.Web.Models.Modeling
 				AlgorithmType = factor.AlgorithmType_Code,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				CurrentWeight = factor.Weight,
 				PreviousWeight = factor.PreviousWeight
 			};
 		}
@@ -52,7 +48,6 @@ namespace KadOzenka.Web.Models.Modeling
 				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
-				CurrentWeight = CurrentWeight,
 				PreviousWeight = PreviousWeight
 			};
 		}

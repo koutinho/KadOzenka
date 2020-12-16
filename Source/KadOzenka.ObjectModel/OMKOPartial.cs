@@ -1,6 +1,7 @@
 ﻿using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.Register.QuerySubsystem;
 using DocumentFormat.OpenXml.Drawing;
 using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
@@ -559,6 +560,36 @@ namespace ObjectModel.KO
                 IsOksObjectType = IsOksObjectType,
                 Type_Code = Type_Code
             };
+	    }
+
+	    public decimal? GetA0()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponential;
+			    case KoAlgoritmType.Line:
+				    return A0;
+                case KoAlgoritmType.Multi:
+				    return A0ForMultiplicative;
+		    }
+
+		    return null;
+	    }
+
+	    public decimal? GetA0ForPreviousTour()
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    return A0ForExponentialTypeInPreviousTour;
+			    case KoAlgoritmType.Line:
+				    return A0ForLinearTypeInPreviousTour;
+			    case KoAlgoritmType.Multi:
+				    return A0ForMultiplicativeTypeInPreviousTour;
+		    }
+
+		    return null;
 	    }
 
         public string GetFormulaFull(bool upks)
@@ -1238,7 +1269,7 @@ namespace ObjectModel.KO
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
             {
                 int? factorReestrId = GetFactorReestrId(this);
-                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2507,7 +2538,7 @@ namespace ObjectModel.KO
 
             if (factorReestrId != null)
             {
-                OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2545,6 +2576,21 @@ namespace ObjectModel.KO
             {
                 bool ok = false;
                 ObjectModel.KO.OMUnit etobj = ObjectModel.KO.OMUnit.Where(x => x.TourId == unit.TourId && x.GroupId == unit.GroupId && x.UseAsPrototype == true && x.PropertyType_Code == unit.PropertyType_Code && x.CadastralBlock == unit.CadastralBlock && x.Status_Code == KoUnitStatus.Initial).SelectAll().ExecuteFirstOrDefault();
+                if (etobj==null)
+                {
+                    string kr = (unit.CadastralBlock.Length>=5)?unit.CadastralBlock.Substring(0, 5):"99:99";
+                    ObjectModel.KO.OMEtalon gipo = ObjectModel.KO.OMEtalon.Where(x=>x.GroupId==unit.GroupId && x.Cadastraldistrict== kr).SelectAll().ExecuteFirstOrDefault();
+                    if (gipo==null)
+                    {
+                        string krs = ((unit.CadastralBlock.Length >= 2) ? unit.CadastralBlock.Substring(0, 2) : "99")+":00";
+                        gipo = ObjectModel.KO.OMEtalon.Where(x => x.GroupId == unit.GroupId && x.Cadastraldistrict == krs).SelectAll().ExecuteFirstOrDefault();
+                    }
+                    if (gipo!=null)
+                    {
+                        etobj = ObjectModel.KO.OMUnit.Where(x => x.TourId == unit.TourId && x.GroupId == unit.GroupId && x.PropertyType_Code == unit.PropertyType_Code && x.CadastralNumber == gipo.Cadastralnumber && x.Status_Code == KoUnitStatus.Initial).SelectAll().ExecuteFirstOrDefault();
+                    }
+
+                }
                 if (etobj != null)
                 {
                     decimal cost = Math.Round(etobj.UpksPre.Value * unit.Square.Value, 2, MidpointRounding.AwayFromZero);
@@ -2557,25 +2603,6 @@ namespace ObjectModel.KO
                     UpdateCorrectFactor(model, etobj, unit, groupFactors, factorReestrId, ref res);
                     ok = true;
                 }
-
-                //if (!ok)
-                //{
-                //    ALLGipoEtalonItem gipo = ALLGipoEtalonItem.GetGipoEtalon(obj.ID_SUBGROUP, obj.KN_KK.Substring(0, 5));
-                //    if (gipo != null)
-                //    {
-                //        ALLObjectItem gobj = gipo.Object;
-                //        if (gobj != null)
-                //        {
-                //            obj.UpdateCalc(gobj.NUPKSZ_OBJECT, gobj.NUPKSZ_OBJECT * obj.SQUARE_CALC);
-                //            UpdateCorrectFactor(aSubGroup, gobj, obj, koeff, lstFact, sw1);
-                //            ok = true;
-                //        }
-                //        else
-                //        {
-                //            ok = false;
-                //        }
-                //    }
-                //}
 
                 if (!ok)
                 {
@@ -2937,7 +2964,7 @@ namespace ObjectModel.KO
             #region Моделирование
             if (_parent_group == null) return res;
 
-            OMModel model = OMModel.Where(x => x.GroupId == _parent_group.Id).SelectAll().ExecuteFirstOrDefault();
+            OMModel model = OMModel.Where(x => x.GroupId == _parent_group.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
             if (model != null)
             {
                 if (model.ModelFactor.Count == 0)
@@ -3105,6 +3132,14 @@ namespace ObjectModel.KO
         /// Путь сохранения отчетов
         /// </summary>
         public string DirectoryName;
+        /// <summary>
+        /// Наименование отчета
+        /// </summary>
+        public string FileName;
+        /// <summary>
+        /// Выгрузка для сравнения данных протоколов
+        /// </summary>
+        public bool IsDataComparingUnload;
         /// <summary>
         /// Выгрузка изменений
         /// </summary>

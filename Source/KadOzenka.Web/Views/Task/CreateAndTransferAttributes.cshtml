@@ -1,7 +1,7 @@
-﻿@using KadOzenka.Dal.GbuObject.Dto
+﻿@using KadOzenka.Dal.Enum
+@using KadOzenka.Dal.GbuObject.Dto
 @using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Models.GbuObject
-@using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
@@ -30,6 +30,17 @@
                 @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
                     .DataTextField("Text")
                     .DataValueField("Value")
+                    .Filter(FilterType.Contains))
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
                     .Filter(FilterType.Contains))
             </div>
         </div>
@@ -320,6 +331,7 @@
 
     async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').value([]);
+        $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         var attrValues = [];
         var taskValues = [];
         data.forEach(function (val) {
@@ -332,6 +344,12 @@
 
             if (elementName.includes('@(nameof(Model.TaskFilter))')) {
                 taskValues.push([elementValue]);
+            }
+
+            if (elementName.includes('@(nameof(Model.ObjectChangeStatus))')) {
+                var currentValue = $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value();
+                currentValue.push([elementValue]);
+                $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value(currentValue);
             }
 
             if (elementName === '@(nameof(Model.IsOks))') {

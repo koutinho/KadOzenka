@@ -1,4 +1,5 @@
 ﻿using KadOzenka.Dal.GbuObject.Dto;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -8,11 +9,9 @@ namespace KadOzenka.Dal.GbuObject
     public class Harmonization : GbuObjectHarmonizationBase
     {
         protected override string ReportName => "Отчет гармонизации";
-        private HarmonizationSettings Setting { get; }
 
-        public Harmonization(HarmonizationSettings setting) : base(setting)
+        public Harmonization(HarmonizationSettings setting, ILogger logger) : base(setting, logger)
         {
-            Setting = setting;
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.Enum;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.GbuObject.Dto
@@ -12,6 +13,11 @@ namespace KadOzenka.Dal.GbuObject.Dto
 		/// Список заданий на оценку
 		/// </summary>
 		public List<long> TaskFilter { get; set; }
+
+		/// <summary>
+		/// Список статусов Единиц оценки
+		/// </summary>
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Список сопоставленных атрибутов

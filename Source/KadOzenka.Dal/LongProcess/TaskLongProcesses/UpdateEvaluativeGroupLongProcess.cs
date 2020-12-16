@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
@@ -12,6 +13,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.TD;
@@ -27,6 +29,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private SystemAttributeSettingsService SystemAttributeSettingsService { get; }
 		private GbuObjectService GbuObjectService { get; }
+		private RosreestrRegisterService RosreestrRegisterService { get; }
 		private TaskService TaskService { get; }
 		private GroupService GroupService { get; }
 		private GbuReportService ReportService { get; }
@@ -42,6 +45,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			SystemAttributeSettingsService = new SystemAttributeSettingsService();
 			GbuObjectService = new GbuObjectService();
+			RosreestrRegisterService = new RosreestrRegisterService();
 			TaskService = new TaskService();
 			ReportService = new GbuReportService();
 			GroupService = new GroupService();
@@ -81,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				GenerateReportColumns(evaluativeGroupAttribute);
 
-				PerformOperation(processQueue, cancellationToken, task, evaluativeGroupAttribute);
+				Run(task, evaluativeGroupAttribute);
 
 				ReportService.SetStyle();
 				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{task.Name}'", OMTask.GetRegisterId(), "KoTasks");
@@ -188,30 +192,30 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ReportService.SetIndividualWidth(columns);
 		}
 
-		private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
-			RegisterAttribute evaluativeGroupAttribute)
-		{
-			var cancelProgressCounterSource = new CancellationTokenSource();
-			var cancelProgressCounterToken = cancelProgressCounterSource.Token;
-			var progressCounterTask = Task.Run(() =>
-			{
-				while (true)
-				{
-					if (cancelProgressCounterToken.IsCancellationRequested)
-					{
-						break;
-					}
+		//private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
+		//	RegisterAttribute evaluativeGroupAttribute)
+		//{
+		//	var cancelProgressCounterSource = new CancellationTokenSource();
+		//	var cancelProgressCounterToken = cancelProgressCounterSource.Token;
+		//	var progressCounterTask = Task.Run(() =>
+		//	{
+		//		while (true)
+		//		{
+		//			if (cancelProgressCounterToken.IsCancellationRequested)
+		//			{
+		//				break;
+		//			}
 
-					LogProgress(MaxCount, CurrentCount, processQueue);
-				}
-			}, cancelProgressCounterToken);
+		//			LogProgress(MaxCount, CurrentCount, processQueue);
+		//		}
+		//	}, cancelProgressCounterToken);
 
-			Run(task, evaluativeGroupAttribute);
+		//	Run(task, evaluativeGroupAttribute);
 
-			cancelProgressCounterSource.Cancel();
-			progressCounterTask.Wait(cancellationToken);
-			cancelProgressCounterSource.Dispose();
-		}
+		//	cancelProgressCounterSource.Cancel();
+		//	progressCounterTask.Wait(cancellationToken);
+		//	cancelProgressCounterSource.Dispose();
+		//}
 
 		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute)
 		{
@@ -244,13 +248,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<OMUnit> GetUnits(long taskId)
 		{
-			var possibleStatuses = new List<UnitUpdateStatus>
-			{
-				UnitUpdateStatus.GroupChange, UnitUpdateStatus.GroupAndFsChange, UnitUpdateStatus.GroupAndEgrnChange,
-				UnitUpdateStatus.GroupAndFsAndEgrnChanges, UnitUpdateStatus.New
-			};
+			_log.Debug("Начата загрузка ЕО для Задания на оценку с ИД {TaskId}", taskId);
 
-			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null && possibleStatuses.Contains(x.UpdateStatus_Code))
+			var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null)
 				.Select(x => new
 				{
 					x.CadastralNumber,
@@ -260,9 +260,36 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				})
 				.Execute();
 
-			_log.Debug("Найдено {UnitsCount} единиц оценки со статусом 'Изменение группы'", units.Count);
+			_log.Debug($"Загружено {units.Count} ЕО");
 
-			return units;
+			return FilterUnits(units);
+		}
+
+		private List<OMUnit> FilterUnits(List<OMUnit> units)
+		{
+			_log.Debug("Начата фильтрация ЕО по признакам для ЦОД из Росреестра (Изменение группы)");
+
+			var group = RosreestrRegisterService.GetPGroupAttribute();
+
+			var groupAttributes = GbuObjectService.GetAllAttributes(
+				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(),
+				new List<long> { RosreestrRegisterService.RegisterId },
+				new List<long> { group.Id },
+				DateTime.Now.GetEndOfTheDay(),
+				isLight: true);
+			_log.Debug($"Найдено {groupAttributes.Count} ОН со значениями из Росреестра");
+
+			var resultObjectIds = new List<long>();
+			foreach (var groupAttribute in groupAttributes)
+			{
+				if (groupAttribute.GetValueInString() == "1")
+				{
+					resultObjectIds.Add(groupAttribute.ObjectId);
+				}
+			}
+			_log.Debug($"После фильтрации ЕО по признакам для ЦОД из Росреестра осталось {resultObjectIds.Count} объектов");
+
+			return units.Where(x => resultObjectIds.Contains(x.ObjectId.GetValueOrDefault())).ToList();
 		}
 
 		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)
@@ -273,30 +300,34 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			GroupTreeDto group = null;
-			var groupNumberFromAttribute = string.Empty;
+			var groupFromGbu = string.Empty;
 			try
 			{
-				groupNumberFromAttribute = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
+				groupFromGbu = gbuEvaluativeGroupValues.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
 				
-				if (!string.IsNullOrWhiteSpace(groupNumberFromAttribute))
+				if (!string.IsNullOrWhiteSpace(groupFromGbu))
 				{
 					group = unit.PropertyType_Code == PropertyTypes.Stead
-						? GetGroup(groupNumberFromAttribute, allGroupsInTour.ZuGroups, allGroupsInTour.ZuSubGroups)
-						: GetGroup(groupNumberFromAttribute, allGroupsInTour.OksGroups, allGroupsInTour.OksSubGroups);
+						? GetGroup(groupFromGbu, allGroupsInTour.ZuGroups, allGroupsInTour.ZuSubGroups)
+						: GetGroup(groupFromGbu, allGroupsInTour.OksGroups, allGroupsInTour.OksSubGroups);
 
-					unit.GroupId = group?.Id;
-					unit.Save();
-
+					if (group != null && unit.GroupId != group.Id)
+					{
+						unit.GroupId = group.Id;
+						unit.Save();
+					}
+					
 					_log.ForContext("ObjectId", unit.ObjectId)
 						.ForContext("UnitId", unit.Id)
-						.ForContext("UnitCadastralNumber", unit.CadastralNumber)
 						.ForContext("NewGroupId", unit.GroupId)
-						.Debug("Обновление единицы оценки {UnitCadastralNumber}", unit.CadastralNumber);
+						.ForContext("NewGroupName", group?.GroupName)
+						.ForContext("GroupFromGbu", groupFromGbu)
+						.Debug("Обновление группы у ЕО '{UnitCadastralNumber}'", unit.CadastralNumber);
 				}
 
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group);
+					AddRowToReport(unit.CadastralNumber, groupFromGbu, group);
 				}
 			}
 			catch (Exception exception)
@@ -304,15 +335,25 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var errorId = ErrorManager.LogError(exception);
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupNumberFromAttribute, group, $"Ошибка, подробнее в журнале {errorId}");
+					AddRowToReport(unit.CadastralNumber, groupFromGbu, group, $"Ошибка, подробнее в журнале {errorId}");
 				}
 
 				_log.Error(exception, "Ошибка при обработке юнита во время переноса оценочной группы");
 			}
 		}
 
-		private GroupTreeDto GetGroup(string number, List<GroupTreeDto> groups, List<GroupTreeDto> subgroups)
+		private GroupTreeDto GetGroup(string groupFromGbu, List<GroupTreeDto> groups, List<GroupTreeDto> subgroups)
 		{
+			//в большинстве случаев в groupFromGbu будет только номер,
+			//но решили обработать кейс, если там будет номер + имя
+
+			var groupNumberPattern = new Regex(@"^\d+\.\s*\d*");
+			var match = groupNumberPattern.Match(groupFromGbu);
+			if (!match.Success)
+				return null;
+
+			var number = match.Value.TrimEnd(' ', '.');
+
 			var resultGroup = groups.FirstOrDefault(x => x.CombinedNumber == number);
 			if (resultGroup != null) 
 				return resultGroup;

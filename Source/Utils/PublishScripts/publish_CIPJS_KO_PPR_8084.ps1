@@ -6,19 +6,13 @@ $site2 = $IIS_siteName2 = $IIS_WebAppPoolName2 = "CIPJS_KO_PPR_AD"
 $service = $IIS_serviceName = $IIS_servicePoolName = "CIPJS_KO_PPR_LongProcessService"
 
 $backup = $true
-$backup_path = "D:\Backup_Site\$site_"
-$Server = "192.168.3.67"
-
+$backup_path = "D:\Backup_Site\$site\"
 
 $site_dir = "C:\inetpub\wwwroot\$site"
-$service_dir = "C:\CIPJSKOWindowsServicePpr\PlugIns"
+$service_dir = "C:\inetpub\wwwroot\$service"
+
 $sql_scripts_path = "C:\! Выполнение скриптов БД\Кадастровая оценка - PPR\! Скрипты"
 
-$config_array = @("KadOzenka.Web.dll.config", "web.config", "app.config", "appsettings.json")
-$service_array = @(
-    "KadOzenka.LongProcessService.deps",
-    "KadOzenka.LongProcessService.runtimeconfig"
-)
 $GeneratedScripts = @("ExportData.sql","ExportTables.sql")
 
 $release_path = "$PSScriptRoot"
@@ -27,16 +21,17 @@ $config_path =  "$release_path\config"
 $site_path =    "$release_path\site"
 $scripts_path = "$release_path\scripts"
 
-if (Test-Path -Path $service_dir -IsValid){ 
-    New-Item -ItemType Directory -Force -Path $service_dir 
-}
+if (-not (Test-Path $service_dir )){ New-Item  $service_dir -Force -ItemType Directory }
+if (-not (Test-Path $sql_scripts_path )){ New-Item $sql_scripts_path -Force -ItemType Directory }
+if (-not (Test-Path $backup_path\config\site )) { New-Item $backup_path\config\site -Force -ItemType Directory }
+if (-not (Test-Path $backup_path\config\long_process )) { New-Item $backup_path\config\long_process -Force -ItemType Directory }
+
 Write-Host 1. Бэкап текущей версии
 
     Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап config-файлов
-        foreach ($item in $config_array){
-            cpi -Path $site_dir\$item $backup_path\config\ -Recurse -Force -Verbose
-            cpi -Path $site_dir\$item $config_path\ -Recurse -Force -Verbose
-        }
+    cpi -Path $site_dir\*.config, $site_dir\appsettings.json $backup_path\config\site -Force -Verbose
+    cpi -Path service_dir\*.config, service_dir\appsettings.json $backup_path\config\long_process -Force -Verbose
+
     if ($backup) {
         cpi -Path $site_dir "$backup_path\backup\" -Recurse -Force
         Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап всего сайта
@@ -46,10 +41,15 @@ Write-Host 1. Бэкап текущей версии
 Write-Host 2. Публикация релиза 
     
     Import-Module WebAdministration
+
     Stop-WebSite  -Name $IIS_siteName
-    Stop-WebSite  -Name $IIS_siteName2
     Stop-WebAppPool -Name $IIS_WebAppPoolName
+    
+    Stop-WebSite  -Name $IIS_siteName2
     Stop-WebAppPool -Name $IIS_WebAppPoolName2
+    
+    Stop-WebSite  -Name $IIS_serviceName  
+    Stop-WebAppPool -Name $IIS_servicePoolName
 
     Write-Host $IIS_siteName
     $currentRetry = 0
@@ -58,20 +58,18 @@ Write-Host 2. Публикация релиза
         $status = Get-WebAppPoolState -name $IIS_WebAppPoolName2
         Write-Host $status.Value
         if ($status.Value -eq "Stopped"){
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем sql-скрипты
+                   Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем sql-скрипты
                 cpi -Path $scripts_path\* $sql_scripts_path -Force -Verbose
-                
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
+            
+                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Публикуем релиз сайта
                 cpi -Path $site_path\* $site_dir\ -Recurse -Force
-
-                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем конфиги
-                cpi -Path $backup_path\config\* $site_dir -Force -Verbose 
-
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем config-файлы сайта
+                cpi -Path $backup_path\config\site\* $site_dir -Force -Verbose 
+             
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Обновляем файлы службы фоновых процессов
-                foreach ($item in $service_array){
-                     cpi -Path $service_path\$item $service_dir -Force -Verbose
-                }
-                $success = $true;
+                cpi -Path $service_path\* $service_dir\ -Recurse -Force  
+                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Заменяем config-файлы фоновых процессов
+                cpi -Path $backup_path\config\long_process\* $service_dir -Force -Verbose
 
                 Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Запускаем сайты и приложения
                 Start-WebAppPool -Name $IIS_servicePoolName

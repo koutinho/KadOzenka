@@ -45,6 +45,7 @@ namespace KadOzenka.Web.Models.Modeling
 				GroupName = entity.GroupName,
 				GroupId = entity.GroupId,
 				A0 = entity.A0,
+				IsActive = entity.IsActive,
 
 				HasLinearTrainingResult = !string.IsNullOrWhiteSpace(entity.LinearTrainingResult),
 				HasExponentialTrainingResult = !string.IsNullOrWhiteSpace(entity.ExponentialTrainingResult),
@@ -52,6 +53,7 @@ namespace KadOzenka.Web.Models.Modeling
 				HasFormedObjectArray = hasFormedObjectArray,
 				HasProcessToFormObjectArrayInQueue = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, entity.ModelId),
 				AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
+				AlgorithmType = entity.AlgorithmTypeForCadastralPriceCalculation,
 				A0ForPreviousTour = entity.A0ForPreviousTour,
 				Attributes = entity.Attributes
 			};

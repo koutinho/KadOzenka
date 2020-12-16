@@ -8,6 +8,7 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
@@ -135,8 +136,19 @@ namespace KadOzenka.Web.Controllers
 			var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            var model = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
-            groupModel.ModelId = model?.Id;
+			groupModel.Models = OMModel.Where(x => x.GroupId == groupId)
+				.OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
+	            .Select(x => new
+	            {
+		            x.Id,
+		            x.Name
+	            })
+	            .Execute()
+	            .Select(x => new SelectListItem
+	            {
+		            Value = x.Id.ToString(),
+		            Text = x.Name
+	            }).ToList();
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }

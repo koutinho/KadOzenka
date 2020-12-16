@@ -8,8 +8,7 @@
             cursor: pointer;
         }
     </style>
-    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-    <script>
+	<script>
 
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/ActivateDistrictsRegionsZones", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })

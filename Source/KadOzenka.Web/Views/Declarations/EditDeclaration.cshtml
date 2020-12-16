@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Core.SRD
+﻿@using KadOzenka.Web.Helpers
+@using ObjectModel.Core.SRD
 @using ObjectModel.Declarations
 @using KadOzenka.Web.Models.Declarations
 @using ObjectModel.Directory.Declarations
@@ -17,13 +18,7 @@
     @Html.HiddenFor(m => m.SpdAppName)
     @Html.HiddenFor(m => m.SpdAppDate)
     @Html.HiddenFor(m => m.FromSpd)
-    <div class="form-group" style="margin-bottom: 20px;">
-        <div class="col-sm-12">
-            <a style="float: right" href="/Help/Help?CurrentLocation=AddEditDeclaration" target="_blank">
-                <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-            </a>
-        </div>
-    </div>
+    @Html.RenderHelpButton(true)
     <ul id="ls_panelbar" class="panelbar">
         <li id="Section_Making_Declaration" data-expand>
             <span>Подача декларации</span>

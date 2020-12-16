@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Web.Controllers
+﻿@using KadOzenka.Dal.Enum
+@using KadOzenka.Web.Controllers
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
@@ -7,13 +8,7 @@
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
 {
 	<div class="form-horizontal col-sm-12">
-        <div class="form-group">
-            <div class="col-sm-12">
-                <a style="float: right" href="/Help/Help?CurrentLocation=Inheritance" target="_blank">
-                    <span style="font-size: 20px;" class="k-icon k-i-question"></span>
-                </a>
-            </div>
-        </div>
+        @Html.RenderHelpButton()
 
 		<div class="form-group">
 			<div class="col-sm-2">
@@ -47,7 +42,19 @@
 									}))
 			</div>
 		</div>
-		<fieldset>
+        
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
+                    .Filter(FilterType.Contains))
+            </div>
+        </div>
+
+        <fieldset>
 			<legend>Тип наследования</legend>
 			<div class="form-group">
 				<div class="col-sm-6">
@@ -281,6 +288,7 @@
 
     async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+        $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         var customRowValues = [];
         data.forEach(function (val) {
@@ -295,6 +303,13 @@
             if (elementName.includes('@(nameof(Model.TaskFilter))')) {
                 setTaskFilterValuesFromTemplate = true;
                 taskFilterValuesFromTemplate.push([elementValue]);
+            }
+
+            if (elementName.includes('@(nameof(Model.ObjectChangeStatus))')) {
+                var element = $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect");
+                var currentValue = element.value();
+                currentValue.push([elementValue]);
+                element.value(currentValue);
             }
 
             if (elementName === '@(nameof(Model.CadastralBlockToParcel))' ||

@@ -12,35 +12,34 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Ko;
 using ObjectModel.Market;
 using Serilog;
-using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
+        public ModelingRepository ModelingRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
 
 		public ModelingService()
 		{
 			ModelFactorsService = new ModelFactorsService();
+			ModelingRepository = new ModelingRepository();
 		}
 
         #region CRUD General Model
 
-        public OMModel GetModelEntityByGroupId(long? groupId)
+        public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {
-	        if (groupId == null)
-		        throw new Exception("Не передан идентификатор Группы для поиска модели");
-
-	        var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
 	        if (model == null)
-		        throw new Exception($"Не найдена модель для Группы с id='{groupId}'");
+		        throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
 
 	        return model;
         }
@@ -75,9 +74,14 @@ namespace KadOzenka.Dal.Modeling
                     x.AlgoritmType_Code,
                     x.CalculationType_Code,
                     x.A0,
+					x.A0ForExponential,
+					x.A0ForMultiplicative,
                     x.A0ForLinearTypeInPreviousTour,
+                    x.A0ForExponentialTypeInPreviousTour,
+					x.A0ForMultiplicativeTypeInPreviousTour,
                     x.Formula,
-                    x.CalculationMethod_Code
+                    x.CalculationMethod_Code,
+					x.IsActive
                 }).ExecuteFirstOrDefault();
 
 	        if (model == null)
@@ -101,11 +105,12 @@ namespace KadOzenka.Dal.Modeling
                 Type = model.Type_Code,
                 AlgorithmTypeForCadastralPriceCalculation = model.AlgoritmType_Code,
                 CalculationType = model.CalculationType_Code,
-                A0 = model.A0,
-                A0ForPreviousTour = model.A0ForLinearTypeInPreviousTour,
+                A0 = model.GetA0(),
+                A0ForPreviousTour = model.GetA0ForPreviousTour(),
                 Formula = model.Formula,
-                CalculationMethod = model.CalculationMethod_Code
-            };
+                CalculationMethod = model.CalculationMethod_Code,
+                IsActive = model.IsActive.GetValueOrDefault()
+			};
         }
 
         public OMTour GetModelTour(long? groupId)
@@ -209,7 +214,18 @@ namespace KadOzenka.Dal.Modeling
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-	            existedModel.A0 = modelDto.A0;
+	            switch (modelDto.AlgorithmTypeForCadastralPriceCalculation)
+	            {
+		            case KoAlgoritmType.Exp:
+			            existedModel.A0ForExponential = modelDto.A0;
+						break;
+		            case KoAlgoritmType.Line:
+			            existedModel.A0 = modelDto.A0;
+						break;
+		            case KoAlgoritmType.Multi:
+			            existedModel.A0ForMultiplicative = modelDto.A0;
+						break;
+	            }
 
 	            existedModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
 		            ? modelDto.CalculationMethod
@@ -222,6 +238,53 @@ namespace KadOzenka.Dal.Modeling
 
                 ts.Complete();
             }
+        }
+
+        public void MakeModelActive(long modelId)
+        {
+	        var model = OMModel.Where(x => x.Id == modelId)
+		        .Select(x => new
+		        {
+			        x.GroupId,
+					x.Type_Code,
+					x.LinearTrainingResult,
+					x.ExponentialTrainingResult,
+					x.MultiplicativeTrainingResult,
+					x.IsActive
+		        }).ExecuteFirstOrDefault();
+	        if (model == null)
+		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
+
+	        if (model.Type_Code == KoModelType.Automatic)
+	        {
+		        var hasFormedObjectArray = GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
+		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
+		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
+		        if (!hasFormedObjectArray || !hasTrainingResult)
+			        throw new Exception("Невозможно активировать необученную модель");
+			}
+	        
+			using (var ts = new TransactionScope())
+			{
+				var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+				otherModelsForGroup.ForEach(x =>
+				{
+					if (!x.IsActive.GetValueOrDefault())
+						return;
+
+			        x.IsActive = false;
+			        x.Save();
+		        });
+
+		        if (!model.IsActive.GetValueOrDefault())
+		        {
+			        model.IsActive = true;
+			        model.Save();
+				}
+
+		        ts.Complete();
+	        }
         }
 
         public void DeleteModel(long modelId)
@@ -268,14 +331,6 @@ namespace KadOzenka.Dal.Modeling
 	        ValidateModelDuringUpdating(modelDto);
 
 	        var message = new StringBuilder();
-
-	        var isModelExists = OMModel.Where(x => x.Id != modelDto.ModelId && x.GroupId == modelDto.GroupId).ExecuteExists();
-	        if (isModelExists)
-		        message.AppendLine("Модель для данной группы уже существует");
-
-	        var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
-	        if (!isTourExists)
-		        message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
 
 	        if (modelDto.GroupId == 0)
 		        message.AppendLine("Для модели не выбрана группа");
@@ -440,7 +495,8 @@ namespace KadOzenka.Dal.Modeling
 
             var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-            for (var i = 1; i < rows.Count; i++)
+            var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
+            for (var i = 1; i < rowsCount; i++)
             {
                 var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
                 var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
@@ -489,7 +545,18 @@ namespace KadOzenka.Dal.Modeling
 
             if (result.ErrorObjectsCount > 0)
             {
-	            var stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
+	            var stream = new MemoryStream();
+				//исключительный случай - когда не найден ни один объект из файла
+				//тогда не генерируем файл заново, а возвращаем тот же самый
+	            if (rowsCount - 1 == result.ErrorRowIndexes?.Count)
+	            {
+		            file.Save(stream, SaveOptions.XlsxDefault);
+		            stream.Seek(0, SeekOrigin.Begin);
+				}
+	            else
+	            {
+		            stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
+	            }
 	            result.File = stream;
             }
 
@@ -553,7 +620,7 @@ namespace KadOzenka.Dal.Modeling
 
         private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
         {
-	        var resultFile = new ExcelFile();
+			var resultFile = new ExcelFile();
 	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
 	        sheet.Cells.Style.Font.Name = "Times New Roman";
 

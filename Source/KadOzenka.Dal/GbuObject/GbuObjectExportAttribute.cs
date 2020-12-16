@@ -10,6 +10,7 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Newtonsoft.Json;
@@ -22,13 +23,12 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.GbuObject
 {
-    /// <summary>
+	/// <summary>
     /// Перенос атрибутов из ГБУ в КО
     /// </summary>
     public class ExportAttributeToKO
     {
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKO>();
-        private RosreestrRegisterService RosreestrRegisterService { get; }
         private GbuObjectService GbuObjectService { get; }
         private string ReportName => "Отчет по переносу атрибутов";
         private int ColumnWidth => 8;
@@ -60,7 +60,6 @@ namespace KadOzenka.Dal.GbuObject
 
         public ExportAttributeToKO()
         {
-	        RosreestrRegisterService = new RosreestrRegisterService();
 	        GbuObjectService = new GbuObjectService();
         }
         
@@ -93,7 +92,11 @@ namespace KadOzenka.Dal.GbuObject
        
             if (setting.TaskFilter.Count > 0)
             {
-	            var units = GetUnits(setting);
+				//добавление фильтров на лету через декоратор
+				var unitsGetter = new TransferAttributeUnitsGetter(setting, _log) as AItemsGetter<UnitPure>;
+				unitsGetter = new GbuObjectStatusFilterDecorator<UnitPure>(unitsGetter, _log, setting.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
+
+				var units = unitsGetter.GetItems();
 	            MaxCount = units.Count;
                 CurrentCount = 0;
 				WorkerCommon.LogState(processQueue, $"Найдено {units.Count} единиц оценки.");
@@ -238,168 +241,6 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        private List<UnitPure> GetUnits(GbuExportAttributeSettings settings)
-        {
-	        var query = new QSQuery
-	        {
-		        MainRegisterID = OMUnit.GetRegisterId(),
-		        Condition = new QSConditionGroup
-		        {
-			        Type = QSConditionGroupType.And,
-			        Conditions = new List<QSCondition>
-			        {
-				        new QSConditionSimple
-				        {
-					        ConditionType = QSConditionType.IsNotNull, LeftOperand = OMUnit.GetColumn(x => x.ObjectId)
-				        },
-				        new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In,
-					        settings.TaskFilter.Select(x => (double) x).ToList()),
-				        GetConditionForObjectType(settings)
-			        }
-		        }
-	        };
-	        query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, nameof(UnitPure.ObjectId)));
-	        query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitPure.CadastralNumber)));
-            //query.AddColumn(OMUnit.GetColumn(x => x.CreationDate, nameof(UnitPure.CreationDate)));
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitPure.ObjectType)));
-
-            var parentObjectIsSubQuery = new QSQuery(OMMainObject.GetRegisterId())
-            {
-                Columns = new List<QSColumn>
-                {
-	                OMMainObject.GetColumn(x => x.Id)
-                },
-                Condition = new QSConditionGroup(QSConditionGroupType.And)
-                {
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMMainObject.GetColumn(x => x.ObjectType_Code), QSConditionType.In,
-	                        new List<double> {(double) PropertyTypes.Building, (double) PropertyTypes.Construction}),
-                        new QSConditionSimple(
-		                    OMMainObject.GetColumn(x => x.CadastralNumber),
-		                    QSConditionType.Equal,
-		                    OMUnit.GetColumn(x => x.BuildingCadastralNumber))
-	                    {
-		                    RightOperandLevel = 1
-	                    },
-                        new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.In,
-	                        new List<double> {(double) PropertyTypes.Pllacement, (double) PropertyTypes.Parking})
-                        {
-                            LeftOperandLevel = 1
-                        }
-                    }
-                }, PackageSize = 1
-            };
-            query.AddColumn(parentObjectIsSubQuery, nameof(UnitPure.ParentPlacementObjectId));
-
-            var allUnits = new List<UnitPure>();
-            var resultTable = query.ExecuteQuery();
-            foreach (DataRow row in resultTable.Rows)
-            {
-	            allUnits.Add(new UnitPure
-	            {
-                    Id = row[nameof(UnitPure.Id)].ParseToLong(),
-                    ObjectId = row[nameof(UnitPure.ObjectId)].ParseToLong(),
-                    ParentPlacementObjectId = row[nameof(UnitPure.ParentPlacementObjectId)].ParseToLongNullable(),
-                    CadastralNumber = row[nameof(UnitPure.CadastralNumber)].ParseToString(),
-                    ObjectType = (PropertyTypes)row[nameof(UnitPure.ObjectType)].ParseToLong()
-                });
-            }
-
-            FillPlacementPurpose(allUnits);
-
-            if (settings.OksAdditionalFilters.IsPlacements)
-            {
-	            return FilterPlacementObjects(allUnits, settings);
-            }
-
-            return allUnits;
-        }
-
-        private void FillPlacementPurpose(List<UnitPure> allUnits)
-        {
-	        var placements = allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList();
-	        var placementPurposeAttribute = RosreestrRegisterService.GetPlacementPurposeAttribute();
-	        var placementsAttributes = GbuObjectService.GetAllAttributes(
-			        placements.Select(x => x.ObjectId).Distinct().ToList(),
-			        new List<long> {placementPurposeAttribute.RegisterId},
-			        new List<long> {placementPurposeAttribute.Id},
-			        DateTime.Now.GetEndOfTheDay());
-
-	        foreach (var placement in placements)
-	        {
-		        var attr = placementsAttributes.FirstOrDefault(x => x.ObjectId == placement.ObjectId);
-		        if (attr != null)
-		        {
-			        placement.PlacementPurpose = attr.GetValueInString();
-		        }
-	        }
-        }
-
-        private List<UnitPure> FilterPlacementObjects(List<UnitPure> allUnits, GbuExportAttributeSettings settings)
-        {
-	        if (settings.OksAdditionalFilters.PlacementPurpose == PlacementPurpose.None)
-		        return allUnits;
-
-	        var possibleValues = new List<string>();
-            switch (settings.OksAdditionalFilters.PlacementPurpose)
-            {
-                case PlacementPurpose.Live:
-                    possibleValues.Add("Жилое");
-                    break;
-                case PlacementPurpose.NotLive:
-                    possibleValues.Add("Нежилое");
-                    break;
-                case PlacementPurpose.LiveAndNotLive:
-                    possibleValues.Add("Жилое");
-                    possibleValues.Add("Нежилое");
-                    break;
-            }
-
-            var resultObjectIds = allUnits.Where(x => x.ObjectType != PropertyTypes.Pllacement).Select(x => x.ObjectId).ToList();
-            allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList().ForEach(x =>
-            {
-	            if (!string.IsNullOrWhiteSpace(x.PlacementPurpose) && possibleValues.Contains(x.PlacementPurpose))
-	            {
-		            resultObjectIds.Add(x.ObjectId);
-	            }
-            });
-
-            return allUnits.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
-        }
-
-        private static QSCondition GetConditionForObjectType(GbuExportAttributeSettings settings)
-        {
-	        var propertyTypeColumn = OMUnit.GetColumn(x => x.PropertyType_Code);
-	        var additionalFiltersForOks = settings.OksAdditionalFilters.ObjectTypes;
-	        
-            if (settings.ObjType == ObjectTypeExtended.Oks)
-            {
-	            if (additionalFiltersForOks.Count == 0)
-		            return new QSConditionSimple(propertyTypeColumn, QSConditionType.NotEqual, (double)PropertyTypes.Stead);
-
-	            return new QSConditionSimple(propertyTypeColumn, QSConditionType.In, additionalFiltersForOks.Select(x => (double)x));
-            }
-
-	        if (settings.ObjType == ObjectTypeExtended.Zu)
-	        {
-		        return new QSConditionSimple(propertyTypeColumn, QSConditionType.Equal, (double)PropertyTypes.Stead);
-            }
-
-	        if (settings.ObjType == ObjectTypeExtended.Both)
-	        {
-		        if (additionalFiltersForOks.Count == 0)
-			        return null;
-
-		        var objectTypes = new List<PropertyTypes> {PropertyTypes.Stead};
-                objectTypes.AddRange(additionalFiltersForOks);
-
-                return new QSConditionSimple(propertyTypeColumn, QSConditionType.In, objectTypes.Select(x => (double)x));
-            }
-
-	        throw new ArgumentException("Не указан тип объекта");
-        }
-
         private List<GbuObjectAttribute> GetUnitGbuAttributes(UnitPure unit, List<long> lstIds, List<Tuple<RegisterAttribute, OMAttributeSettings>> gbuAttributesWithSettings)
         {
 	        List<GbuObjectAttribute> result = null;
@@ -474,23 +315,198 @@ namespace KadOzenka.Dal.GbuObject
         }
 
         #endregion
-
-
-        #region Entities
-
-        public class UnitPure
-        {
-	        public long Id { get; set; }
-	        public long ObjectId { get; set; }
-	        public long? ParentPlacementObjectId { get; set; }
-            public string CadastralNumber { get; set; }
-            //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
-            //TODO если хотфикс будет заапрувлен, нужно убрать
-            //public DateTime? CreationDate { get; set; }
-            public PropertyTypes ObjectType { get; set; }
-            public string PlacementPurpose { get; set; }
-        }
-
-        #endregion
     }
+
+    #region Entities
+
+    public class UnitPure : ItemBase
+    {
+	    //public long Id { get; set; }
+	    //public long ObjectId { get; set; }
+	    public long? ParentPlacementObjectId { get; set; }
+	    public string CadastralNumber { get; set; }
+	    //TODO раньше использовалась для получения атрибута, в качестве хотфикса поставили текущую дату
+	    //TODO если хотфикс будет заапрувлен, нужно убрать
+	    //public DateTime? CreationDate { get; set; }
+	    public PropertyTypes ObjectType { get; set; }
+	    public string PlacementPurpose { get; set; }
+    }
+
+	public class TransferAttributeUnitsGetter : AItemsGetter<UnitPure>
+	{
+		private GbuExportAttributeSettings Settings { get; }
+
+		public TransferAttributeUnitsGetter(GbuExportAttributeSettings settings, ILogger logger) : base(logger)
+		{
+			Settings = settings;
+		}
+
+
+		public override List<UnitPure> GetItems()
+		{
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple
+						{
+							ConditionType = QSConditionType.IsNotNull, LeftOperand = OMUnit.GetColumn(x => x.ObjectId)
+						},
+						new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In,
+							Settings.TaskFilter.Select(x => (double) x).ToList()),
+						GetConditionForObjectType(Settings)
+					}
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, nameof(UnitPure.ObjectId)));
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitPure.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitPure.ObjectType)));
+
+			var parentObjectIsSubQuery = new QSQuery(OMMainObject.GetRegisterId())
+			{
+				Columns = new List<QSColumn>
+				{
+					OMMainObject.GetColumn(x => x.Id)
+				},
+				Condition = new QSConditionGroup(QSConditionGroupType.And)
+				{
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(OMMainObject.GetColumn(x => x.ObjectType_Code), QSConditionType.In,
+							new List<double> {(double) PropertyTypes.Building, (double) PropertyTypes.Construction}),
+						new QSConditionSimple(OMMainObject.GetColumn(x => x.CadastralNumber), QSConditionType.Equal,
+							OMUnit.GetColumn(x => x.BuildingCadastralNumber))
+						{
+							RightOperandLevel = 1
+						},
+						new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.In,
+							new List<double> {(double) PropertyTypes.Pllacement, (double) PropertyTypes.Parking})
+						{
+							LeftOperandLevel = 1
+						}
+					}
+				},
+				PackageSize = 1
+			};
+			query.AddColumn(parentObjectIsSubQuery, nameof(UnitPure.ParentPlacementObjectId));
+
+			var allUnits = new List<UnitPure>();
+			var resultTable = query.ExecuteQuery();
+			foreach (DataRow row in resultTable.Rows)
+			{
+				allUnits.Add(new UnitPure
+				{
+					Id = row[nameof(UnitPure.Id)].ParseToLong(),
+					ObjectId = row[nameof(UnitPure.ObjectId)].ParseToLong(),
+					ParentPlacementObjectId = row[nameof(UnitPure.ParentPlacementObjectId)].ParseToLongNullable(),
+					CadastralNumber = row[nameof(UnitPure.CadastralNumber)].ParseToString(),
+					ObjectType = (PropertyTypes)row[nameof(UnitPure.ObjectType)].ParseToLong()
+				});
+			}
+
+			FillPlacementPurpose(allUnits);
+
+			if (Settings.OksAdditionalFilters.IsPlacements)
+			{
+				return FilterPlacementObjects(allUnits, Settings);
+			}
+
+			return allUnits;
+		}
+
+
+		#region Support Methods
+
+		private void FillPlacementPurpose(List<UnitPure> allUnits)
+		{
+			var placements = allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList();
+			var placementPurposeAttribute = new RosreestrRegisterService().GetPlacementPurposeAttribute();
+			var placementsAttributes = new GbuObjectService().GetAllAttributes(
+					placements.Select(x => x.ObjectId).Distinct().ToList(),
+					new List<long> { placementPurposeAttribute.RegisterId },
+					new List<long> { placementPurposeAttribute.Id },
+					DateTime.Now.GetEndOfTheDay(), isLight: true);
+
+			foreach (var placement in placements)
+			{
+				var attr = placementsAttributes.FirstOrDefault(x => x.ObjectId == placement.ObjectId);
+				if (attr != null)
+				{
+					placement.PlacementPurpose = attr.GetValueInString();
+				}
+			}
+		}
+
+		private List<UnitPure> FilterPlacementObjects(List<UnitPure> allUnits, GbuExportAttributeSettings settings)
+		{
+			if (settings.OksAdditionalFilters.PlacementPurpose == PlacementPurpose.None)
+				return allUnits;
+
+			var possibleValues = new List<string>();
+			switch (settings.OksAdditionalFilters.PlacementPurpose)
+			{
+				case PlacementPurpose.Live:
+					possibleValues.Add("Жилое");
+					break;
+				case PlacementPurpose.NotLive:
+					possibleValues.Add("Нежилое");
+					break;
+				case PlacementPurpose.LiveAndNotLive:
+					possibleValues.Add("Жилое");
+					possibleValues.Add("Нежилое");
+					break;
+			}
+
+			var resultObjectIds = allUnits.Where(x => x.ObjectType != PropertyTypes.Pllacement).Select(x => x.ObjectId).ToList();
+			allUnits.Where(x => x.ObjectType == PropertyTypes.Pllacement).ToList().ForEach(x =>
+			{
+				if (!string.IsNullOrWhiteSpace(x.PlacementPurpose) && possibleValues.Contains(x.PlacementPurpose))
+				{
+					resultObjectIds.Add(x.ObjectId);
+				}
+			});
+
+			return allUnits.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
+		}
+
+		private static QSCondition GetConditionForObjectType(GbuExportAttributeSettings settings)
+		{
+			var propertyTypeColumn = OMUnit.GetColumn(x => x.PropertyType_Code);
+			var additionalFiltersForOks = settings.OksAdditionalFilters.ObjectTypes;
+
+			if (settings.ObjType == ObjectTypeExtended.Oks)
+			{
+				if (additionalFiltersForOks.Count == 0)
+					return new QSConditionSimple(propertyTypeColumn, QSConditionType.NotEqual, (double)PropertyTypes.Stead);
+
+				return new QSConditionSimple(propertyTypeColumn, QSConditionType.In, additionalFiltersForOks.Select(x => (double)x));
+			}
+
+			if (settings.ObjType == ObjectTypeExtended.Zu)
+			{
+				return new QSConditionSimple(propertyTypeColumn, QSConditionType.Equal, (double)PropertyTypes.Stead);
+			}
+
+			if (settings.ObjType == ObjectTypeExtended.Both)
+			{
+				if (additionalFiltersForOks.Count == 0)
+					return null;
+
+				var objectTypes = new List<PropertyTypes> { PropertyTypes.Stead };
+				objectTypes.AddRange(additionalFiltersForOks);
+
+				return new QSConditionSimple(propertyTypeColumn, QSConditionType.In, objectTypes.Select(x => (double)x));
+			}
+
+			throw new ArgumentException("Не указан тип объекта");
+		}
+
+		#endregion
+	}
+
+	#endregion
 }

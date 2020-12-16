@@ -21,7 +21,7 @@
       </Parameters>
     </Button>
 
-    <Button Caption="Просмотр объектов" NavigateURL="/Modeling/ModelObjects" OpenInNewWindow="true" SRDFunctionTag="KO.DICT.MODELS.MODEL_OBJECTS" Icon="fas fa-eye">
+    <Button Caption="Просмотр объектов" NavigateURL="/Modeling/ModelObjects?useMasterPage=true" OpenInNewWindow="true" SRDFunctionTag="KO.DICT.MODELS.MODEL_OBJECTS" Icon="fas fa-eye">
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>

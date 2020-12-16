@@ -10,11 +10,12 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Oks;
-using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
@@ -24,6 +25,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
         public static void AddProcessToQueue(FactorsDownloadParams param)
         {
+            Log.ForContext("Parameters", param)
+                .Information("Постановка процесса выгрузки факторов в очередь задач");
             LongProcessManager.AddTaskToQueue(LongProcessName, parameters: param.SerializeToXml());
         }
 
@@ -40,7 +43,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
             var userId = factorsDownloadParams.UserId;
 
             var tfs = new TourFactorService();
-            var rs = new RegisterService();
 
             var omAttr = OMAttribute
                 .Where(x => x.Id > 1000 && attributes.Contains(x.Id)).SelectAll().Execute();
@@ -52,16 +54,12 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
             var factorsIdAttr = factorsAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
             var factorsIdColumn = new QSColumnSimple(factorsIdAttr);
 
-            var unitsReg = rs.GetRegister(201);
-            var unitsAttr = OMAttribute.Where(x => x.RegisterId == unitsReg.RegisterId).SelectAll().Execute();
-            var unitsIdAttr = unitsAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
-            var unitsIdColumn = new QSColumnSimple(unitsIdAttr);
-            var unitsGroupColumn = new QSColumnSimple(20100600);
+            var unitsIdColumn = OMUnit.GetColumn(x => x.Id);
+            var unitsGroupColumn = OMUnit.GetColumn(x => x.GroupId);
+            var unitsTypeColumn = OMUnit.GetColumn(x => x.PropertyType_Code);
 
-            var groupReg = rs.GetRegister(205);
-            var groupAttr = OMAttribute.Where(x => x.RegisterId == groupReg.RegisterId).SelectAll().Execute();
-            var groupIdAttr = groupAttr.OrderBy(x => x.Id).FirstOrDefault()?.Id ?? 0;
-            var groupIdColumn = new QSColumnSimple(groupIdAttr);
+            var groupReg = OMGroup.GetRegisterId();
+            var groupIdColumn = OMGroup.GetColumn(x => x.Id);
 
             var taskIdColumn = new QSColumnSimple(20100400);
 
@@ -96,7 +94,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                     },
                     new QSJoin
                     {
-                        RegisterId = (int) groupReg.RegisterId,
+                        RegisterId = groupReg,
                         JoinType = QSJoinType.Left,
                         JoinCondition = new QSConditionSimple
                         {
@@ -108,12 +106,25 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                         }
                     }
                 },
-
-                Condition = new QSConditionSimple
+                Condition = new QSConditionGroup(QSConditionGroupType.And)
                 {
-                    ConditionType = QSConditionType.Equal,
-                    LeftOperand = taskIdColumn,
-                    RightOperand = new QSColumnConstant(taskId)
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = taskIdColumn,
+                            RightOperand = new QSColumnConstant(taskId)
+                        },
+                        new QSConditionSimple
+                        {
+                            ConditionType = factorsDownloadParams.IsOks
+                                ? QSConditionType.NotEqual
+                                : QSConditionType.Equal,
+                            LeftOperand = unitsTypeColumn,
+                            RightOperand = new QSColumnConstant((int) PropertyTypes.Stead)
+                        }
+                    }
                 }
             };
 
@@ -147,6 +158,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
                 // переименование для оценочной группы (названа как "номер")
                 if (cell.Value == (object) 20500500)
                     cell.Value = "Оценочная группа";
+
                 else cell.Value = attr?.Name ?? cell.Value;
             }
 

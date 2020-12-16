@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -32,7 +33,8 @@ namespace KadOzenka.Dal.LongProcess
 
                 var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
                 _log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
-                var harmonization = new Harmonization(settings);
+                
+                var harmonization = new Harmonization(settings, _log);
 
                 var t = Task.Run(() =>
                 {
@@ -54,6 +56,7 @@ namespace KadOzenka.Dal.LongProcess
                 }, cancelToken);
 
                 var reportId = harmonization.Run();
+
                 //TestLongRunningProcess(settings);
                 cancelSource.Cancel();
                 t.Wait(cancellationToken);
@@ -77,7 +80,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		protected void TestLongRunningProcess(HarmonizationSettings setting)
 		{
-            var harmonization = new Harmonization(setting)
+            var harmonization = new Harmonization(setting, _log)
             {
                 MaxObjectsCount = 500,
                 CurrentCount = 0

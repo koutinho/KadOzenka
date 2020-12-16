@@ -7004,61 +7004,6 @@ namespace ObjectModel.KO
             }
         }
 
-
-        private string _updatestatus;
-        /// <summary>
-        /// 20102500 Статус после обновления ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20102500)]
-        public string UpdateStatus
-        {
-            get
-            {
-                CheckPropertyInited("UpdateStatus");
-                return _updatestatus;
-            }
-            set
-            {
-                _updatestatus = value;
-                NotifyPropertyChanged("UpdateStatus");
-            }
-        }
-
-
-        private UnitUpdateStatus _updatestatus_Code;
-        /// <summary>
-        /// 20102500 Статус после обновления (справочный код) (update_status)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20102500)]
-        public UnitUpdateStatus UpdateStatus_Code
-        {
-            get
-            {
-                CheckPropertyInited("UpdateStatus_Code");
-                return this._updatestatus_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_updatestatus))
-                    {
-                         _updatestatus = descr;
-                    }
-                }
-                else
-                {
-                     _updatestatus = descr;
-                }
-
-                this._updatestatus_Code = value;
-                NotifyPropertyChanged("UpdateStatus");
-                NotifyPropertyChanged("UpdateStatus_Code");
-            }
-        }
-
     }
 }
 
@@ -7350,6 +7295,156 @@ namespace ObjectModel.KO
             {
                 _estimationdate = value;
                 NotifyPropertyChanged("EstimationDate");
+            }
+        }
+
+
+        private string _datachangescomparingstatus;
+        /// <summary>
+        /// 20300900 Статус после сравнения протоколов загрузки (CHANGES_COMPARING_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300900)]
+        public string DataChangesComparingStatus
+        {
+            get
+            {
+                CheckPropertyInited("DataChangesComparingStatus");
+                return _datachangescomparingstatus;
+            }
+            set
+            {
+                _datachangescomparingstatus = value;
+                NotifyPropertyChanged("DataChangesComparingStatus");
+            }
+        }
+
+
+        private KoDataComparingStatus _datachangescomparingstatus_Code;
+        /// <summary>
+        /// 20300900 Статус после сравнения протоколов загрузки (справочный код) (CHANGES_COMPARING_STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300900)]
+        public KoDataComparingStatus DataChangesComparingStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("DataChangesComparingStatus_Code");
+                return this._datachangescomparingstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_datachangescomparingstatus))
+                    {
+                         _datachangescomparingstatus = descr;
+                    }
+                }
+                else
+                {
+                     _datachangescomparingstatus = descr;
+                }
+
+                this._datachangescomparingstatus_Code = value;
+                NotifyPropertyChanged("DataChangesComparingStatus");
+                NotifyPropertyChanged("DataChangesComparingStatus_Code");
+            }
+        }
+
+
+        private string _cadastralcostcomparingstatus;
+        /// <summary>
+        /// 20301000 Статус после сравнения протоколов кадастровой стоимости (KS_COMPARING_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20301000)]
+        public string CadastralCostComparingStatus
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostComparingStatus");
+                return _cadastralcostcomparingstatus;
+            }
+            set
+            {
+                _cadastralcostcomparingstatus = value;
+                NotifyPropertyChanged("CadastralCostComparingStatus");
+            }
+        }
+
+
+        private KoDataComparingStatus _cadastralcostcomparingstatus_Code;
+        /// <summary>
+        /// 20301000 Статус после сравнения протоколов кадастровой стоимости (справочный код) (KS_COMPARING_STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20301000)]
+        public KoDataComparingStatus CadastralCostComparingStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostComparingStatus_Code");
+                return this._cadastralcostcomparingstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_cadastralcostcomparingstatus))
+                    {
+                         _cadastralcostcomparingstatus = descr;
+                    }
+                }
+                else
+                {
+                     _cadastralcostcomparingstatus = descr;
+                }
+
+                this._cadastralcostcomparingstatus_Code = value;
+                NotifyPropertyChanged("CadastralCostComparingStatus");
+                NotifyPropertyChanged("CadastralCostComparingStatus_Code");
+            }
+        }
+
+
+        private string _changescomparingreportlink;
+        /// <summary>
+        /// 20301100 Ссылка на результат сравнения протоколов загрузки (CHANGES_COMPARING_REPORT_LINK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20301100)]
+        public string ChangesComparingReportLink
+        {
+            get
+            {
+                CheckPropertyInited("ChangesComparingReportLink");
+                return _changescomparingreportlink;
+            }
+            set
+            {
+                _changescomparingreportlink = value;
+                NotifyPropertyChanged("ChangesComparingReportLink");
+            }
+        }
+
+
+        private string _cadastralcostreportlink;
+        /// <summary>
+        /// 20301200 Ссылка на результат сравнения протоколов КС (KS_COMPARING_REPORT_LINK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20301200)]
+        public string CadastralCostReportLink
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostReportLink");
+                return _cadastralcostreportlink;
+            }
+            set
+            {
+                _cadastralcostreportlink = value;
+                NotifyPropertyChanged("CadastralCostReportLink");
             }
         }
 
@@ -8309,6 +8404,26 @@ namespace ObjectModel.KO
             {
                 _objectsstatistic = value;
                 NotifyPropertyChanged("ObjectsStatistic");
+            }
+        }
+
+
+        private bool? _isactive;
+        /// <summary>
+        /// 20602200 Признак выбора модели для расчета (IS_ACTIVE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602200)]
+        public bool? IsActive
+        {
+            get
+            {
+                CheckPropertyInited("IsActive");
+                return _isactive;
+            }
+            set
+            {
+                _isactive = value;
+                NotifyPropertyChanged("IsActive");
             }
         }
 
@@ -25348,6 +25463,61 @@ namespace ObjectModel.Modeling
             {
                 _unitid = value;
                 NotifyPropertyChanged("UnitId");
+            }
+        }
+
+
+        private string _unitpropertytype;
+        /// <summary>
+        /// 70201200 Тип объекта ЕО (UNIT_PROPERTY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201200)]
+        public string UnitPropertyType
+        {
+            get
+            {
+                CheckPropertyInited("UnitPropertyType");
+                return _unitpropertytype;
+            }
+            set
+            {
+                _unitpropertytype = value;
+                NotifyPropertyChanged("UnitPropertyType");
+            }
+        }
+
+
+        private PropertyTypes _unitpropertytype_Code;
+        /// <summary>
+        /// 70201200 Тип объекта ЕО (справочный код) (UNIT_PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70201200)]
+        public PropertyTypes UnitPropertyType_Code
+        {
+            get
+            {
+                CheckPropertyInited("UnitPropertyType_Code");
+                return this._unitpropertytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_unitpropertytype))
+                    {
+                         _unitpropertytype = descr;
+                    }
+                }
+                else
+                {
+                     _unitpropertytype = descr;
+                }
+
+                this._unitpropertytype_Code = value;
+                NotifyPropertyChanged("UnitPropertyType");
+                NotifyPropertyChanged("UnitPropertyType_Code");
             }
         }
 

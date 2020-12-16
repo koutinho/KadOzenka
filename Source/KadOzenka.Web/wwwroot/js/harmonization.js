@@ -74,3 +74,8 @@ function addCustomLevelsToForm(formObject) {
     }
     return Object.assign({}, formObject, { AdditionalCustomLevels: customLevels });
 }
+
+function disableKendoMultiSelect(name) {
+	$('#' + name).data("kendoMultiSelect").value([]);
+	$('#' + name).data("kendoMultiSelect").enable(false);
+}

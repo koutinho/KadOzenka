@@ -24,6 +24,7 @@ namespace KadOzenka.Dal.Modeling.Dto
         public string ExponentialTrainingResult { get; set; }
         public string MultiplicativeTrainingResult { get; set; }
         public bool IsOksObjectType { get; set; }
+        public bool IsActive { get; set; }
         public List<ModelAttributeRelationDto> Attributes { get; set; }
 
         public ModelingModelDto()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Directory;
 
@@ -104,6 +105,9 @@ namespace KadOzenka.Web.Models.GbuObject
         [Display(Name = "Задания на оценку")]
 		public List<long> TaskFilter { get; set; }
 
+        [Display(Name = "Статус")]
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
+
 		/// <summary>
 		/// Дата на которую делается гармонизация
 		/// </summary>
@@ -192,6 +196,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level10Attribute = Level10Attribute,
                 AdditionalLevels = MapAdditionalCustomLevels(),
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
+				ObjectChangeStatus = ObjectChangeStatus,
 				DateActual = IsDataActualUsed ? DataActual: null
 			};
 

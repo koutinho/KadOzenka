@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.Number
             }).ExecuteFirstOrDefault();
 
-            var model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);

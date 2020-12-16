@@ -5,6 +5,7 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.GroupingAlgoritm;
 

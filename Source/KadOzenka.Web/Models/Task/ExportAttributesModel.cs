@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.ObjectsCharacteristics;
-using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Controllers;
 using ObjectModel.Core.Register;
@@ -18,6 +17,10 @@ namespace KadOzenka.Web.Models.Task
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
+
+        [Display(Name = "Статус")]
+		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
+
         [Display(Name = "Объект капитального строительства")]
         public bool IsOks { get; set; }
         [Display(Name = "Земельный участок")]
@@ -147,6 +150,7 @@ namespace KadOzenka.Web.Models.Task
 			return new GbuExportAttributeSettings
 			{
 				TaskFilter = TaskFilter,
+				ObjectChangeStatus = ObjectChangeStatus,
 				ObjType = ObjType,
 				OksAdditionalFilters = ObjType == ObjectTypeExtended.Zu
 					? new Dal.GbuObject.Dto.OksAdditionalFilters()

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Core.Register;
+using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Gbu.GroupingAlgoritm;
 
 namespace KadOzenka.Web.Models.GbuObject
@@ -48,21 +49,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Выборка по всем объектам
 		/// </summary>
 		public bool SelectAllObject { get; set; } = true;
-
-		/// <summary>
-		/// Идентификатор аттрибута - фильтра
-		/// </summary>
-		[Display(Name = "Характеристика")]
-		public int? IdAttributeFilter { get; set; }
-
-		/// <summary>
-		/// Список значений фильтра
-		/// </summary>
-		[Display(Name = "Значения")]
-		public List<string> ValuesFilter { get; set; }
-
-	    public bool IsValuesFilterUsed { get; set; } = false;
-        public bool IsDataActualUsed { get; set; } = false;
+		public bool IsDataActualUsed { get; set; } = false;
 	    public bool IsTaskFilterUsed { get; set; } = false;
 
         /// <summary>
@@ -70,6 +57,9 @@ namespace KadOzenka.Web.Models.GbuObject
         /// </summary>
         [Display(Name = "Задания на оценку")]
 		public List<long> TaskFilter { get; set; }
+
+        [Display(Name = "Статус")]
+        public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
 		/// Дата на которую делается гармонизация
@@ -148,7 +138,6 @@ namespace KadOzenka.Web.Models.GbuObject
 			{
 				IdCodJob = IdCodJob,
 				IdAttributeDocument = IdAttributeDocument,
-				IdAttributeFilter = IdAttributeFilter,
 				IdAttributeResult = IdAttributeResult,
 				IdAttributeSource = IdAttributeSource,
 				Level1 = Level1.ConvertToLevelItem(),
@@ -162,10 +151,10 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level7 = Level7.ConvertToLevelItem(),
 				Level8 = Level8.ConvertToLevelItem(),
 				Level9 = Level9.ConvertToLevelItem(),
-				ValuesFilter = ValuesFilter ?? new List<string>(),
 				SelectAllObject = SelectAllObject,
 				DateActual = DataActual,
-				TaskFilter = TaskFilter ?? new List<long>()
+				TaskFilter = TaskFilter ?? new List<long>(),
+				ObjectChangeStatus = ObjectChangeStatus
 			};
 		}
 
@@ -194,23 +183,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		        }
 		    }
 
-            if (!SelectAllObject && IsValuesFilterUsed)
-			{
-				if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Список значений фильтра не может быть пустым",
-							memberNames: new[] { nameof(ValuesFilter) });
-				}
-				if (!IdAttributeFilter.HasValue)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
-							memberNames: new[] { nameof(IdAttributeFilter) });
-				}
-			}
-
-			if (IsNewAttribute)
+		    if (IsNewAttribute)
 			{
 				if (string.IsNullOrEmpty(NameNewAttribute))
 				{

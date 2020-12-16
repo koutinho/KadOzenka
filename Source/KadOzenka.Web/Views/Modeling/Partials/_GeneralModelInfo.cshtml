@@ -2,7 +2,7 @@
 @model KadOzenka.Web.Models.Modeling.GeneralModelingModel
 
 <div class="form-horizontal">
-    <div class="form-group">
+    <div class="form-group" id="nameTextBoxBlock">
         <div class="col-sm-2">
             @Html.CustomLabelFor(x => x.Name)
         </div>
@@ -15,7 +15,15 @@
             @Html.CustomLabelFor(x => x.Description)
         </div>
         <div class="col-sm-10">
-            @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+            @Html.Kendo().TextBoxFor(x => x.Description).Enable(!Model.IsFromTourCard)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.IsActive, NotSetRequired: true)
+        </div>
+        <div class="col-sm-10">
+            @Html.Kendo().CheckBoxFor(x => x.IsActive).Label(string.Empty).Enable(false)
         </div>
     </div>
     <div class="form-group">
@@ -23,7 +31,7 @@
             @Html.CustomLabelFor(x => x.Type)
         </div>
         <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: Model.IsCreationMode == false, withoutNull: true)
+            @Html.KendoEnumDropDownListFor(x => x.Type, isReadonly: !Model.IsCreationMode, withoutNull: true)
         </div>
     </div>
     <div class="form-group">
@@ -31,7 +39,7 @@
             @Html.CustomLabelFor(x => x.AlgorithmTypeForCadastralPriceCalculation)
         </div>
         <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: false, withoutNull: true)
+            @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeForCadastralPriceCalculation, isReadonly: Model.IsFromTourCard, withoutNull: true)
         </div>
     </div>
     <div class="form-group">
@@ -83,9 +91,16 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     var isCreationMode = '@Model.IsCreationMode' === "True";
+    var isFromTourCard = '@Model.IsFromTourCard' === "True";
 
     $(document).ready(function () {
         $('#@nameof(Model.Type)').data("kendoDropDownList").enable(isCreationMode);
+        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data("kendoDropDownList").enable(!isFromTourCard);
+        if (isFromTourCard) {
+            $('#nameTextBoxBlock').hide();
+        } else {
+            $('#nameTextBoxBlock').show();
+        }
 
         var tourIdDropDownList = $('#@nameof(Model.TourId)').data("kendoDropDownList");
         tourIdDropDownList.bind("dataBound", reloadGroups);
@@ -100,18 +115,9 @@
 
 
 
-    function getParametersForGroup() {
-        var tourId = $('#@nameof(Model.TourId)').data("kendoDropDownList").value();
-        var objectType = $('input[name="@nameof(Model.ObjectType)"]:checked').val();
-        return {
-            tourId: tourId,
-            objectType: objectType
-        }
-    }
-
 
     function reloadGroups() {
-        var selectedTour = $("#TourId").data("kendoDropDownList").value();
+        var selectedTour = $('#@nameof(Model.TourId)').data("kendoDropDownList").value();
         var objectType = $('input[name="@nameof(Model.ObjectType)"]:checked').val();
         kendo.ui.progress($('body'), true);
         var dataSource = new kendo.data.DataSource({
