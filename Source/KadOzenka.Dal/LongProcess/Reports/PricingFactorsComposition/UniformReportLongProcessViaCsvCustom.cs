@@ -10,14 +10,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.SRD;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using ObjectModel.KO;
 using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Common;
+using ObjectModel.Directory.Common;
+using ObjectModel.Gbu;
 using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
@@ -85,7 +91,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				{
 					while (true)
 					{
-						//if (packageIndex == 2)
+						//if (packageIndex == 1)
 						//	break;
 
 						if (processedItemsCount >= unitsCount)
@@ -276,8 +282,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					var zipFileName = $"{fileName} (архив)";
 
 					Logger.Debug($"Начато сохранение zip-файла '{zipFileName}'");
-					var a = new GbuReportService();
-					var export = a.SaveReport(zipStream, zipFileName, "zip");
+					var export = SaveReport(zipStream, zipFileName, "zip");
 					Logger.Debug($"Закончено сохранение zip-файла '{zipFileName}'");
 					return $"/DataExport/DownloadExportResult?exportId={export.Id}";
 				}
@@ -346,6 +351,31 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			//reportService.AddTitle("Итоговый состав данных по характеристикам объектов недвижимости", 4);
 			//reportService.AddHeaders(columns);
 			//reportService.SetIndividualWidth(columns);
+		}
+
+		public OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension, long? mainRegisterId = null, string registerViewId = null)
+		{
+			var currentDate = DateTime.Now;
+			var export = new OMExportByTemplates
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateCreated = currentDate,
+				DateStarted = currentDate,
+				Status = (int)ImportStatus.Added,
+				FileResultTitle = fileName,
+				FileExtension = fileExtension,
+				MainRegisterId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId(),
+				RegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects"
+			};
+			export.Save();
+
+			export.DateFinished = DateTime.Now;
+			export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+			export.Status = (long)ImportStatus.Completed;
+			FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+			export.Save();
+
+			return export;
 		}
 
 		#endregion
