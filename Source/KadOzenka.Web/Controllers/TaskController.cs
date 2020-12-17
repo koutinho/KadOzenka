@@ -970,7 +970,7 @@ namespace KadOzenka.Web.Controllers
             if (task == null) return StatusCode(500,$"Задача с идентификатором {taskId} не найдена");
 
             var taskAttr = RegisterAttributeService.GetActiveRegisterAttributes(201);
-            var taskAttrTree = BuildTreeItemModel(taskAttr, "201", "Еденица оценки");
+            var taskAttrTree = BuildTreeItemModel(taskAttr, "201", "Единица оценки");
 
             var tourAttributes = TourFactorService.GetTourAttributes(task.TourId ?? 0, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
             if (tourAttributes.Count == 0)
