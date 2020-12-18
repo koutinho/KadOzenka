@@ -171,23 +171,23 @@ namespace KadOzenka.Dal.GbuObject
 				: SaveReportZip( mainRegisterId, registerViewId);
 		}
 
-		public FileStream GetReportFile()
+		public ReportFile GetReportFile()
 		{
-			FileStream stream;
+			ReportFile file = new ReportFile();
 			if (_zipFile == null)
 			{
-				stream = new FileStream($"{_fileName}.xlsx", FileMode.Create, FileAccess.ReadWrite);
-				_curretExcelFile.Save(stream, SaveOptions.XlsxDefault);
-				stream.Seek(0, SeekOrigin.Begin);
+				file.FileName = $"{_fileName}.xlsx";
+				file.FileStream = new MemoryStream();
+				_curretExcelFile.Save(file.FileStream, SaveOptions.XlsxDefault);
+				file.FileStream.Seek(0, SeekOrigin.Begin);
 			}
 			else
 			{
-				stream = new FileStream($"{_fileName}.zip", FileMode.Create, FileAccess.ReadWrite);
-				var memoryStream = CreateZipMemoryStream();
-				memoryStream.CopyTo(stream);
+				file.FileName = $"{_fileName}.zip";
+				file.FileStream = CreateZipMemoryStream();
 			}
 
-			return stream;
+			return file;
 		}
 
 		public void Dispose()
@@ -395,6 +395,12 @@ namespace KadOzenka.Dal.GbuObject
 					File = File
 				};
 			}
+		}
+
+		public class ReportFile
+		{
+			public MemoryStream FileStream { get; set; }
+			public string FileName { get; set; }
 		}
 
 		#endregion

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using KadOzenka.Dal.GbuObject;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalReportsExport
 {
@@ -6,6 +7,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalReportsExport
 	{
 		public bool UseExportSavingToStorage { get; set; }
 		public long? ReportId { get; set; }
-		public FileStream ReportFile { get; set; }
+		public  GbuReportService.ReportFile ReportFile { get; set; }
 	}
 }

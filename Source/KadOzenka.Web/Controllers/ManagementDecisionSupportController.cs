@@ -324,8 +324,8 @@ namespace KadOzenka.Web.Controllers
 			{
 				var exportResult =
 					_statisticsReportsWidgetExportService.ExportImportedObjects(request, dateStart, dateEnd);
-				return File(exportResult.ReportFile, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.Name)),
-					System.IO.Path.GetFileName(exportResult.ReportFile.Name));
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
 			}
 		}
 
@@ -342,8 +342,8 @@ namespace KadOzenka.Web.Controllers
 			else
 			{
 				var exportResult = _statisticsReportsWidgetExportService.ExportExportedObjects(request, dateStart, dateEnd);
-				return File(exportResult.ReportFile, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.Name)),
-					System.IO.Path.GetFileName(exportResult.ReportFile.Name));
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
 			}
 		}
 
@@ -360,8 +360,8 @@ namespace KadOzenka.Web.Controllers
 			else
 			{
 				var exportResult = _statisticsReportsWidgetExportService.ExportZoneStatistics(request, dateStart, dateEnd);
-				return File(exportResult.ReportFile, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.Name)),
-					System.IO.Path.GetFileName(exportResult.ReportFile.Name));
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
 			}
 		}
 
@@ -378,8 +378,8 @@ namespace KadOzenka.Web.Controllers
 			else
 			{
 				var exportResult = _statisticsReportsWidgetExportService.ExportFactorStatistics(request, dateStart, dateEnd);
-				return File(exportResult.ReportFile, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.Name)),
-					System.IO.Path.GetFileName(exportResult.ReportFile.Name));
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
 			}
 		}
 
@@ -416,8 +416,8 @@ namespace KadOzenka.Web.Controllers
 			else
 			{
 				var exportResult = _statisticsReportsWidgetExportService.ExportGroupStatistics(request, dateStart, dateEnd);
-				return File(exportResult.ReportFile, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.Name)),
-					System.IO.Path.GetFileName(exportResult.ReportFile.Name));
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
 			}
 		}
 
