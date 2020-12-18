@@ -17975,7 +17975,7 @@ namespace ObjectModel.Sud
 
         private decimal? _rsa;
         /// <summary>
-        /// 31400800 RS_A (RS_A)
+        /// 31400800 Рыночная стоимость по судебному решению (апелляция) (RS_A)
         /// </summary>
         [RegisterAttribute(AttributeID = 31400800)]
         public decimal? RsA
@@ -17995,7 +17995,7 @@ namespace ObjectModel.Sud
 
         private decimal? _uprsa;
         /// <summary>
-        /// 31400900 UPRS_A (UPRS_A)
+        /// 31400900 Удельный показатель (апелляция) (UPRS_A)
         /// </summary>
         [RegisterAttribute(AttributeID = 31400900)]
         public decimal? UprsA
@@ -18015,7 +18015,7 @@ namespace ObjectModel.Sud
 
         private decimal? _rsk;
         /// <summary>
-        /// 31401000 RS_K (RS_K)
+        /// 31401000 Рыночная стоимость по судебному решению (кассация) (RS_K)
         /// </summary>
         [RegisterAttribute(AttributeID = 31401000)]
         public decimal? RsK
@@ -18035,7 +18035,7 @@ namespace ObjectModel.Sud
 
         private decimal? _uprsk;
         /// <summary>
-        /// 31401100 UPRS_K (UPRS_K)
+        /// 31401100 Удельный показатель (кассация) (UPRS_K)
         /// </summary>
         [RegisterAttribute(AttributeID = 31401100)]
         public decimal? UprsK
