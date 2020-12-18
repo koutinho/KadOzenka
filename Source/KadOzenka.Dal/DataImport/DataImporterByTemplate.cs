@@ -261,8 +261,8 @@ namespace KadOzenka.Dal.DataImport
                                         break;
                                 }
 
-                                gbuObjectAttribute.Save();
-                            }
+                                DataImporterGkn.SaveAttributeValueWithCheck(gbuObjectAttribute);
+							}
 
 						    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
                             if(isNewObject)
@@ -401,7 +401,9 @@ namespace KadOzenka.Dal.DataImport
 					        handledObjects.Add(row.Index, registerObject);
                         }
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
-                        lock (locked)
+						if(objectId == -1)
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns + 1].SetValue("Объект создан");
+						lock (locked)
                         {
 	                        for (int i = 0; i < maxColumns; i++)
 	                        {
@@ -441,7 +443,7 @@ namespace KadOzenka.Dal.DataImport
 		        {
 		            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
 		            {
-		                for (var i = 1; i < mainWorkSheet.Rows.Count; i++)
+		                for (var i = 1; i <= lastUsedRowIndex; i++)
 		                {
 		                    try
 		                    {
@@ -453,7 +455,8 @@ namespace KadOzenka.Dal.DataImport
 		                        long errorId = ErrorManager.LogError(ex);
 		                        mainWorkSheet.Rows[i].Cells[maxColumns]
 		                            .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-		                        for (int j = 0; j < maxColumns; j++)
+		                        mainWorkSheet.Rows[i].Cells[maxColumns + 1].SetValue(string.Empty);
+								for (int j = 0; j < maxColumns; j++)
 		                        {
 		                            mainWorkSheet.Rows[i].Cells[j].Style.FillPattern
 		                                .SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));

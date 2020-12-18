@@ -1,87 +1,88 @@
-﻿@using Core.Shared.Extensions;
-@model KadOzenka.Web.Models.GbuObject.GbuObjectViewModel
+﻿@model KadOzenka.Web.Models.GbuObject.GbuObjectViewModel
 
 @{
     int registerCounter = 0;
 }
 
 <div id="ls_panelbar" class="panelbar">
-	<div id="Section_Object" data-expand data-menu-name="Основные данные">
-		<span>Основные данные</span>
-		<div>
-			<div class="form-horizontal col-sm-12">
-				<div class="form-group"></div>
-				<div class="form-group">
-					<div class="col-sm-2">
-						@Html.CustomLabelFor(m => m.CadastralNumber)
-					</div>
-					<div class="col-sm-3">
-						@Html.KendoTextBoxFor(m => m.CadastralNumber, isReadonly: true)
-					</div>
-					<div class="col-sm-2"></div>
-					<div class="col-sm-2">
-						@Html.CustomLabelFor(m => m.ObjectType)
-					</div>
-					<div class="col-sm-3">
-						@Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: true)
-					</div>
-				</div>
-				<div class="form-group"></div>
-				<div class="form-group"></div>
-				<div class="form-group"></div>
-				<div class="form-group">
-					<div class="col-sm-2">
-						@Html.CustomLabelFor(m => m.DateActual, htmlAttributes: new { style = "font-weight: bold;" })
-					</div>
-					<div class="col-sm-2">
-						@Html.Kendo().DatePickerFor(m => m.DateActual).Events(x => x.Change("onDateActualChange")).Format("dd/MM/yyyy")
-					</div>
-					<div class="col-sm-3">
-						<button style="float: left" id="searchAttributes" class="k-button" type="button">Найти атрибуты</button>
-					</div>
-				</div>
+    <div id="Section_Object" data-expand data-menu-name="Основные данные">
+        <span>Основные данные</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.CadastralNumber)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(m => m.CadastralNumber, isReadonly: true)
+                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.ObjectType)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.DateActual, htmlAttributes: new { style = "font-weight: bold;" })
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.Kendo().DatePickerFor(m => m.DateActual).Events(x => x.Change("onDateActualChange")).Format("dd/MM/yyyy")
+                    </div>
+                    <div class="col-sm-3">
+                        <button style="float: left" id="searchAttributes" class="k-button" type="button">Найти атрибуты</button>
+                    </div>
+                </div>
 
-			</div>
-		</div>
-	</div>
-	@{
-		foreach (var m in Model.RegisterDtoList)
-		{
-			<div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
-				<span>@(m.Name)</span>
-				@Html.HiddenFor(r => r.RegisterDtoList[registerCounter].Id)
-				<div>
-					<div class="form-horizontal col-sm-12">
-						<div class="form-group"></div>
-						@{
-							var attrCounter = 0;
-							foreach (var mRegisterAttribute in m.RegisterAttributes)
-							{
+            </div>
+        </div>
+    </div>
+    @{
+        foreach (var m in Model.RegisterDtoList)
+        {
+            <div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
+                <span>@(m.Name)</span>
+                @Html.HiddenFor(r => r.RegisterDtoList[registerCounter].Id)
+                <div>
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group"></div>
+                        @{
+                            var attrCounter = 0;
+                            foreach (var mRegisterAttribute in m.RegisterAttributes)
+                            {
 
-								if (attrCounter % 2 == 0)
-								{
-									@Html.Raw("<div class='form-group'>")
-									@(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView", mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id } }))
-								}
-								else
-								{
-									@(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView", mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id } }))
-									@Html.Raw("</div>")
-								}
+                                if (attrCounter % 2 == 0)
+                                {
+                                    @Html.Raw("<div class='form-group'>")
+                                    @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
+                                    mRegisterAttribute, new ViewDataDictionary(ViewData) { { "registerId", m.Id }, { "attrCounter", attrCounter } }))
+                                }
+                                else
+                                {
+                                    @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
+                                    mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id }, { "attrCounter", attrCounter } }))
+                                    @Html.Raw("</div>")
+                                }
 
-								if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
-								{
-									@Html.Raw("</div>")
-								}
-								attrCounter++;
-							}
-						}
-					</div>
-				</div>
-			</div>
-			registerCounter++;
-		}
-	}
+                                if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
+                                {
+                                    @Html.Raw("</div>")
+                                }
+                                attrCounter++;
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            registerCounter++;
+        }
+    }
 </div>
 
 <style>
@@ -129,9 +130,9 @@
         border-radius: 6px;
     }
 
-    .k-tooltip-button > a.k-icon.k-i-close:hover {
-        background-color: #e4e5ee;
-    }
+        .k-tooltip-button > a.k-icon.k-i-close:hover {
+            background-color: #e4e5ee;
+        }
 
     .k-tooltip {
         min-height: 30px !important;

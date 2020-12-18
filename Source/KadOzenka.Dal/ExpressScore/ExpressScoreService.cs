@@ -40,6 +40,11 @@ namespace KadOzenka.Dal.ExpressScore
 		public RegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
+        private const string ToStringFormatCoeffPrecision = "0.##########";
+        private const string ToStringFormatCostPrecision = "0.##";
+        private const int MathRoundCoeffPrecision = 10;
+        private const int MathRoundCostPrecision = 2;
+
 		/// <summary>
 		/// Индекс дата словарь
 		/// </summary>
@@ -411,7 +416,7 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
 			}
-			var summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
+			var summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, MathRoundCostPrecision);
 			
 			DealType dealType = inputParam.DealType == DealTypeShort.Rent ? DealType.RentDeal : DealType.SaleDeal;
 
@@ -435,7 +440,7 @@ namespace KadOzenka.Dal.ExpressScore
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
 			SetProgressCalculate(5);
-			resultCalculate.SquareCost = Math.Round(squarePerMeterCost, 2);
+			resultCalculate.SquareCost = Math.Round(squarePerMeterCost, MathRoundCostPrecision);
 			resultCalculate.SummaryCost = summaryCost;
 			resultCalculate.Id = id;
 			resultCalculate.Address = inputParam.Address;
@@ -496,8 +501,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
-			summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, 2);
-			squarePerMeterCost = Math.Round(squarePerMeterCost, 2);
+			summaryCost = Math.Round(squarePerMeterCost * inputParam.Square, MathRoundCostPrecision);
+			squarePerMeterCost = Math.Round(squarePerMeterCost, MathRoundCostPrecision);
 
 			reportId = ReportService.GenerateReport(summaryCost, squarePerMeterCost, inputParam.DealType, inputParam.ScenarioType);
 			SetProgressCalculate(5);
@@ -523,6 +528,7 @@ namespace KadOzenka.Dal.ExpressScore
 			bool needWriteTargetObjectDataToReport = true;
 
 			var exSettingsCostFactors = GetSetting(calculateSquareCost.MarketSegment);
+
 
 
 			CostFactorsDto exCostFactors;
@@ -558,7 +564,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			GenerateLists(exCostFactors, calculateSquareCost.ScenarioType);
 
-	
+
 			double percent = 100d / calculateSquareCost.Analogs.Count;
 			//0.8 коэф, т.е расчет занимает 80% от всего
 			int progress = (int)Math.Floor(percent * 0.8);
@@ -589,7 +595,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				var text = new KeyValuePair<string,string>("Дата предложения", "");
 				var dicText = new KeyValuePair<string,string>(@" Индекс ""Дата предложения""", "");
-				
+
 				if (analog.Date != DateTime.MinValue)
 				{
 					var analogDate = new DateTime(analog.Date.Year, analog.Date.Month, 1);
@@ -610,7 +616,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				decimal kDate = indexAnalogDate.Value / indexDateEstimate.Value; // Корректировка на дату
 
-				var correctText = new KeyValuePair<string, string>(@"Корректировка на дату (Кдата)", Math.Round(kDate, 2).ToString(CultureInfo.InvariantCulture));
+				var correctText = new KeyValuePair<string, string>(@"Корректировка на дату (Кдата)", Math.Round(kDate, MathRoundCoeffPrecision).ToString(CultureInfo.InvariantCulture));
 
 				costFactorsDataForReport.Add(new Tuple<string, string>(correctText.Key, correctText.Value));
 				costTargetObjectDataForReport.Add("");
@@ -642,7 +648,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 					if (coefficient != null)
 					{
-						dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: Math.Round(coefficient.GetValueOrDefault(), 2).ToString("N"));
+						dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: Math.Round(coefficient.GetValueOrDefault(), MathRoundCoeffPrecision).ToString(ToStringFormatCoeffPrecision));
                         try
                         {
                             cost = cost * coefficient.GetValueOrDefault();
@@ -796,7 +802,7 @@ namespace KadOzenka.Dal.ExpressScore
 							_log.Warning("ЭО. Для аналога с ид {id} не найдено значение оценочного фактора {name}", analog.Id, complex.Name);
 						}
 
-						string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString("N") : analogFactor.Value?.ToString();
+						string valueToComplexName = analogFactor.NumberValue != 0 ? analogFactor.NumberValue.ToString(ToStringFormatCoeffPrecision) : analogFactor.Value?.ToString();
 
 						AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>(complex.Name, valueToComplexName));
 						string reportTargetObjVal = targetObjectFactor.ValueFromCalculateForm
@@ -821,8 +827,8 @@ namespace KadOzenka.Dal.ExpressScore
 										if (analogC == 0 || targetObjectC == 0)
 										{
 											AddReportDictValue(ref costFactorsDataForReport,
-												new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""", analogC != 0 ? analogC.ToString("N") : ""));
-											costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
+												new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""", analogC != 0 ? analogC.ToString(ToStringFormatCoeffPrecision) : ""));
+											costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString(ToStringFormatCoeffPrecision) : "");
 											AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 											costTargetObjectDataForReport.Add(complexCoefficientStr);
 											AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", "1"));
@@ -832,8 +838,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 										AddReportDictValue(ref costFactorsDataForReport,
 											new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""",
-												analogC.ToString("N")));
-										costTargetObjectDataForReport.Add(targetObjectC.ToString("N"));
+												analogC.ToString(ToStringFormatCoeffPrecision)));
+										costTargetObjectDataForReport.Add(targetObjectC.ToString(ToStringFormatCoeffPrecision));
 										AddReportDictValue(ref costFactorsDataForReport,
 											new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 										costTargetObjectDataForReport.Add(complexCoefficientStr);
@@ -842,11 +848,11 @@ namespace KadOzenka.Dal.ExpressScore
 											Math.Exp((double)(targetObjectC * complex.Coefficient.GetValueOrDefault())) /
 											Math.Exp((double)(analogC * complex.Coefficient.GetValueOrDefault()));
 
-										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
+										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString(ToStringFormatCoeffPrecision)));
 
 										try
 										{
-											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, MathRoundCoeffPrecision));
 										}
 										catch (OverflowException e)
 										{
@@ -872,9 +878,9 @@ namespace KadOzenka.Dal.ExpressScore
 										{
 											AddReportDictValue(ref costFactorsDataForReport,
 												new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""",
-													analogC != 0 ? analogC.ToString("N") : ""));
+													analogC != 0 ? analogC.ToString(ToStringFormatCoeffPrecision) : ""));
 											costTargetObjectDataForReport.Add(targetObjectC != 0
-												? targetObjectC.ToString("N")
+												? targetObjectC.ToString(ToStringFormatCoeffPrecision)
 												: "");
 											AddReportDictValue(ref costFactorsDataForReport,
 												new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
@@ -886,19 +892,19 @@ namespace KadOzenka.Dal.ExpressScore
 
 										AddReportDictValue(ref costFactorsDataForReport,
 											new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""",
-												analogC.ToString("N")));
-										costTargetObjectDataForReport.Add(targetObjectC.ToString("N"));
+												analogC.ToString(ToStringFormatCoeffPrecision)));
+										costTargetObjectDataForReport.Add(targetObjectC.ToString(ToStringFormatCoeffPrecision));
 										AddReportDictValue(ref costFactorsDataForReport,
 											new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
 										costTargetObjectDataForReport.Add(complexCoefficientStr);
 
 										var coeff = Math.Exp((double)(targetObjectC * complex.Coefficient.GetValueOrDefault())) / Math.Exp((double)(analogC * complex.Coefficient.GetValueOrDefault()));
-										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
+										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString(ToStringFormatCoeffPrecision)));
 										costTargetObjectDataForReport.Add("");
 
 										try
 										{
-											cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
+											cost = cost * Convert.ToDecimal(Math.Round(coeff, MathRoundCoeffPrecision));
 										}
 										catch (OverflowException e)
 										{
@@ -922,9 +928,9 @@ namespace KadOzenka.Dal.ExpressScore
 										{
 											AddReportDictValue(ref costFactorsDataForReport,
 												new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""",
-													analogC != 0 ? analogC.ToString("N") : ""));
+													analogC != 0 ? analogC.ToString(ToStringFormatCoeffPrecision) : ""));
 											costTargetObjectDataForReport.Add(targetObjectC != 0
-												? targetObjectC.ToString("N")
+												? targetObjectC.ToString(ToStringFormatCoeffPrecision)
 												: "");
 										}
 
@@ -938,8 +944,8 @@ namespace KadOzenka.Dal.ExpressScore
 
 									if (complex.DictionaryId != null && complex.DictionaryId != 0)
 									{
-										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""", analogC.ToString("N")));
-										costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString("N") : "");
+										AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Метка " + @"""" + complex.Name + @"""", analogC.ToString(ToStringFormatCoeffPrecision)));
+										costTargetObjectDataForReport.Add(targetObjectC != 0 ? targetObjectC.ToString(ToStringFormatCoeffPrecision) : "");
 									}
 
 									AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Степень влияния", complexCoefficientStr));
@@ -949,12 +955,12 @@ namespace KadOzenka.Dal.ExpressScore
 												Math.Exp((double)(analogC * complex.Coefficient.GetValueOrDefault()));
 
 									AddReportDictValue(ref costFactorsDataForReport,
-										new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString("N")));
+										new KeyValuePair<string, string>("Корректировка " + @"""" + complex.Name + @"""" + $" K({amountSuccessComplexFactors})", coeff.ToString(ToStringFormatCoeffPrecision)));
 									costTargetObjectDataForReport.Add("");
 
 									try
 									{
-										cost = cost * Convert.ToDecimal(Math.Round(coeff, 10));
+										cost = cost * Convert.ToDecimal(Math.Round(coeff, MathRoundCoeffPrecision));
 									}
 									catch (OverflowException e)
 									{
@@ -1001,17 +1007,17 @@ namespace KadOzenka.Dal.ExpressScore
 					continue;
 				}
 
-				res.Add(Math.Round(cost, 2));
+				res.Add(Math.Round(cost, MathRoundCostPrecision));
 				successAnalogIds.Add(analog.Id);
 
 				if (calculateSquareCost.DealTypeShort == DealTypeShort.Sale)
 				{
-					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная стоимость руб/кв.м", Math.Round(cost, 2).ToString("N")));
+					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная стоимость руб/кв.м", Math.Round(cost, MathRoundCostPrecision).ToString(ToStringFormatCostPrecision)));
 				}
 
 				if (calculateSquareCost.DealTypeShort == DealTypeShort.Rent)
 				{
-					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная арендная ставка объектов-аналогов, руб/кв.м/год", (Math.Round(cost, 2)* 12).ToString("N")));
+					AddReportDictValue(ref costFactorsDataForReport, new KeyValuePair<string, string>("Скорректированная арендная ставка объектов-аналогов, руб/кв.м/год", (Math.Round(cost, MathRoundCostPrecision)* 12).ToString(ToStringFormatCostPrecision)));
 				}
 				costTargetObjectDataForReport.Add("");
 
@@ -1027,7 +1033,7 @@ namespace KadOzenka.Dal.ExpressScore
 					return 0;
 			}
 
-			return Math.Round(res.Sum(x => x) / res.Count, 2);
+			return Math.Round(res.Sum(x => x) / res.Count, MathRoundCostPrecision);
 		}
 
         #region Support For Cost Calculation
@@ -1351,7 +1357,7 @@ namespace KadOzenka.Dal.ExpressScore
 						new Cell
 						{
 							Key = "specificCost",
-							CommonValue = analogResult.Square != 0 ? Math.Round(analogResult.Price/analogResult.Square, 2).ToString("N") : "0"
+							CommonValue = analogResult.Square != 0 ? Math.Round(analogResult.Price/analogResult.Square, MathRoundCostPrecision).ToString(ToStringFormatCostPrecision) : "0"
 						}
 					};
 					row.AddRange(analogCostFactors.Select(x => new Cell{Key = x.Id.ToString(), CommonValue = x.Value}));
@@ -1368,7 +1374,7 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 			return res;
 		}
-		#endregion{
+		#endregion
 
 
 		public string SaveSuccessExpressScore(SaveExpressScoreDto saveExpressScore,  out int id)
@@ -1524,13 +1530,13 @@ namespace KadOzenka.Dal.ExpressScore
 					ReportService.AddValueRequiredParam(analog.Kn?.ToString(CultureInfo.InvariantCulture));
 					if (dealType == DealTypeShort.Rent)
 					{
-						ReportService.AddValueRequiredParam((analog.Price * 12).ToString("N"));
-						ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
+						ReportService.AddValueRequiredParam((analog.Price * 12).ToString(ToStringFormatCostPrecision));
+						ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, MathRoundCostPrecision).ToString(ToStringFormatCostPrecision));
 					}
 					else
 					{
-						ReportService.AddValueRequiredParam((analog.Price).ToString("N"));
-						ReportService.AddValueRequiredParam(Math.Round(analog.Price / analog.Square, 2).ToString("N"));
+						ReportService.AddValueRequiredParam((analog.Price).ToString(ToStringFormatCostPrecision));
+						ReportService.AddValueRequiredParam(Math.Round(analog.Price / analog.Square, MathRoundCostPrecision).ToString(ToStringFormatCostPrecision));
 					}
 				}
 			} catch (Exception e)

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="931" DefaultLayoutId="1009312" LinkedRegistersList="931, 950, 982"
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false" SearchPanel="KoToursFactorsList"
-              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
+              UseMasterPage="false" OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
     <Buttons>
         <Button Caption="Добавить" NavigateURL="/Tour/TourFactorObjectCard" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
             <Parameters>

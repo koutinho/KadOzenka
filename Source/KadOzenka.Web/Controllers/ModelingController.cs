@@ -466,14 +466,16 @@ namespace KadOzenka.Web.Controllers
 	        var tour = ModelingService.GetModelTour(model.GroupId);
 	        var type = model.IsOksObjectType.GetValueOrDefault() ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu;
 
-	        var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, type);
-
 	        var availableAttributeTypes = new[]
 	        {
 		        Consts.IntegerAttributeType, Consts.DecimalAttributeType,
 		        Consts.StringAttributeType, Consts.DateAttributeType
 	        };
-	        var marketObjectAttributes = RegisterAttributeService
+
+            var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, type)
+	            .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
+
+            var marketObjectAttributes = RegisterAttributeService
 		        .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
 		        .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
