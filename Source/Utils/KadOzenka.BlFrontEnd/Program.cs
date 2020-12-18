@@ -535,6 +535,12 @@ namespace KadOzenka.BlFrontEnd
 			});
 
 
+            consoleHelper.AddCommand("18122020", "Исправление типа ГБУ объектов на кадастровый квартал", () =>
+            {
+	            ChangeTypeToCadastralQuarter.Perform("C:\\Genix\\data1.xlsx");
+            });
+
+
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}
     }
