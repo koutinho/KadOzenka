@@ -10,14 +10,17 @@ using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using Serilog;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
 	public class StatisticsReportsWidgetService
 	{
+		private readonly ILogger _log = Log.ForContext<StatisticsReportsWidgetService>();
 		#region StatisticsReportsWidget
 
 		public List<ZoneRegionDto> GetZoneData()
@@ -34,6 +37,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			var query = GetImportedObjectsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение загруженных объектов");
 			var result = QSQuery.ExecuteSql<UnitObjectDto>(sql);
 
 			return result;
@@ -98,6 +106,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			var query = GetExportedObjectsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение выгруженных объектов");
 			var result = QSQuery.ExecuteSql<ExportedObjectDto>(sql);
 
 			return result;
@@ -172,6 +185,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			var query = GetZoneStatisticsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по зонам");
 			var result = QSQuery.ExecuteSql<ZoneStatisticDto>(sql);
 
 			return result;
@@ -261,7 +279,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			dataSql += $" LIMIT {request.PageSize}";
 			if (request.Page > 1)
 				dataSql += $" OFFSET {(request.Page - 1) * request.PageSize}";
-
+			
+			_log.ForContext("SqlQuery", dataSql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по ценообразующим факторам");
 			var result = QSQuery.ExecuteSql<FactorStatisticDto>(dataSql);
 
 			return result;
@@ -334,6 +357,11 @@ WHERE
 		{
 			var query = GetGroupStatisticsQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по группам");
 			var result = QSQuery.ExecuteSql<GroupStatisticDto>(sql);
 
 			return result;
@@ -452,7 +480,6 @@ WHERE
 			query.GroupBy.Clear();
 			query.PackageSize = 0;
 			query.PackageIndex = 0;
-
 			return query.ExecuteCount();
 		}
 

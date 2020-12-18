@@ -7,11 +7,14 @@ using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalReportsExport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
 	public class StatisticsReportsWidgetExportService
 	{
+		private readonly ILogger _log = Log.ForContext<StatisticsReportsWidgetExportService>();
 		private readonly StatisticsReportsWidgetService _statisticsReportsWidgetService;
 
 		private List<string> _columnNameBaseList = new List<string>
@@ -27,6 +30,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		public StatisticsReportsExportResult ExportImportedObjects(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool useExportSavingToStorage = false)
 		{
+			_log.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.ForContext("UseExportSavingToStorage", useExportSavingToStorage)
+				.Debug("Выгрузка загруженных объектов");
 			var exportRequest = new ExportObjectsRequest<UnitObjectDto>
 			{
 				ExportName = StatisticsReportExportType.ImportedObjects.GetEnumDescription(),
@@ -44,6 +52,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		public StatisticsReportsExportResult ExportExportedObjects(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool useExportSavingToStorage = false)
 		{
+			_log.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.ForContext("UseExportSavingToStorage", useExportSavingToStorage)
+				.Debug("Выгрузка выгруженных объектов");
 			var columnNameList = new List<string>();
 			columnNameList.AddRange(_columnNameBaseList);
 			columnNameList.Add("Статус");
@@ -64,6 +77,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		public StatisticsReportsExportResult ExportZoneStatistics(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool useExportSavingToStorage = false)
 		{
+			_log.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.ForContext("UseExportSavingToStorage", useExportSavingToStorage)
+				.Debug("Выгрузка статистики по зонам");
 			var columnNameList = new List<string>();
 			columnNameList.AddRange(_columnNameBaseList);
 			columnNameList.Add("Зона");
@@ -84,6 +102,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		public StatisticsReportsExportResult ExportFactorStatistics(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool useExportSavingToStorage = false)
 		{
+			_log.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.ForContext("UseExportSavingToStorage", useExportSavingToStorage)
+				.Debug("Выгрузка статистики по ценообразующим факторам");
 			var columnNameList = new List<string>();
 			columnNameList.AddRange(_columnNameBaseList);
 			columnNameList.Add("Измененные факторы");
@@ -104,6 +127,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		public StatisticsReportsExportResult ExportGroupStatistics(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool useExportSavingToStorage = false)
 		{
+			_log.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.ForContext("UseExportSavingToStorage", useExportSavingToStorage)
+				.Debug("Выгрузка статистики по группам");
 			var columnNameList = new List<string>();
 			columnNameList.AddRange(_columnNameBaseList);
 			columnNameList.Add("Группа");
@@ -132,12 +160,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			var number = 1;
 			var totalDataCount = exportRequest.DataCountFunc(exportRequest.Request, exportRequest.DateStart, exportRequest.DateEnd);
+			_log.Debug("Общее количество объектов для выгрузки: {TotalDataCount}", totalDataCount);
 			var pageCount = totalDataCount / GbuReportService.MaxRowsCountInSheet;
 			for (var i = 1; i <= pageCount + 1; i++)
 			{
+				var currentPageEndNumber = i < pageCount + 1
+					? number + GbuReportService.MaxRowsCountInSheet - 1
+					: totalDataCount % GbuReportService.MaxRowsCountInSheet;
+				_log.ForContext("TotalDataCount", totalDataCount)
+					.Verbose("Получение объектов для выгрузки: с {CurrentPageStartNumber} по {CurrentPageEndNumber}", number, currentPageEndNumber);
 				exportRequest.Request.Page = i;
 				exportRequest.Request.PageSize = GbuReportService.MaxRowsCountInSheet;
 				var data = exportRequest.DataFunc(exportRequest.Request, exportRequest.DateStart, exportRequest.DateEnd);
+
+				_log.ForContext("TotalDataCount", totalDataCount)
+					.Verbose("Добавление полученных объектов в отчет: с {CurrentPageStartNumber} по {CurrentPageEndNumber}", number, currentPageEndNumber);
 				foreach (var dataRecord in data)
 				{
 					var values = dataRecord.ToRowExportObjects();
@@ -149,10 +186,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			if (exportRequest.UseExportSavingToStorage)
 			{
+				_log.ForContext("TotalDataCount", totalDataCount)
+					.Debug("Сохрание отчета в файловое хранилище");
 				result.ReportId = gbuReportService.SaveReport();
 			}
 			else
 			{
+				_log.ForContext("TotalDataCount", totalDataCount)
+					.Debug("Получение файла отчета");
 				result.ReportFile = gbuReportService.GetReportFile();
 			}
 
