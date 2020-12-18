@@ -218,7 +218,6 @@ namespace KadOzenka.Dal.GbuObject
 				: SaveReportZip(fileName, mainRegisterId, registerViewId);
 		}
 
-
 		#region Support Methods
 
 		private void CreateFile()
@@ -324,7 +323,7 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		private OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension, long? mainRegisterId = null, string registerViewId = null)
+		public OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension, long? mainRegisterId = null, string registerViewId = null)
 		{
 			var currentDate = DateTime.Now;
 			var export = new OMExportByTemplates
