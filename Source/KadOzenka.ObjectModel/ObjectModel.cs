@@ -17012,6 +17012,86 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private long? _rsa;
+        /// <summary>
+        /// 30900900 RS_A (RS_A)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900900)]
+        public long? RsA
+        {
+            get
+            {
+                CheckPropertyInited("RsA");
+                return _rsa;
+            }
+            set
+            {
+                _rsa = value;
+                NotifyPropertyChanged("RsA");
+            }
+        }
+
+
+        private long? _uprsa;
+        /// <summary>
+        /// 30901000 UPRS_A (UPRS_A)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30901000)]
+        public long? UprsA
+        {
+            get
+            {
+                CheckPropertyInited("UprsA");
+                return _uprsa;
+            }
+            set
+            {
+                _uprsa = value;
+                NotifyPropertyChanged("UprsA");
+            }
+        }
+
+
+        private long? _rsk;
+        /// <summary>
+        /// 30901100 RS_K (RS_K)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30901100)]
+        public long? RsK
+        {
+            get
+            {
+                CheckPropertyInited("RsK");
+                return _rsk;
+            }
+            set
+            {
+                _rsk = value;
+                NotifyPropertyChanged("RsK");
+            }
+        }
+
+
+        private long? _uprsk;
+        /// <summary>
+        /// 30901200 UPRS_K (UPRS_K)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30901200)]
+        public long? UprsK
+        {
+            get
+            {
+                CheckPropertyInited("UprsK");
+                return _uprsk;
+            }
+            set
+            {
+                _uprsk = value;
+                NotifyPropertyChanged("UprsK");
+            }
+        }
+
     }
 }
 
@@ -17889,6 +17969,86 @@ namespace ObjectModel.Sud
             {
                 _descr = value;
                 NotifyPropertyChanged("Descr");
+            }
+        }
+
+
+        private decimal? _rsa;
+        /// <summary>
+        /// 31400800 Рыночная стоимость по судебному решению (апелляция) (RS_A)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400800)]
+        public decimal? RsA
+        {
+            get
+            {
+                CheckPropertyInited("RsA");
+                return _rsa;
+            }
+            set
+            {
+                _rsa = value;
+                NotifyPropertyChanged("RsA");
+            }
+        }
+
+
+        private decimal? _uprsa;
+        /// <summary>
+        /// 31400900 Удельный показатель (апелляция) (UPRS_A)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400900)]
+        public decimal? UprsA
+        {
+            get
+            {
+                CheckPropertyInited("UprsA");
+                return _uprsa;
+            }
+            set
+            {
+                _uprsa = value;
+                NotifyPropertyChanged("UprsA");
+            }
+        }
+
+
+        private decimal? _rsk;
+        /// <summary>
+        /// 31401000 Рыночная стоимость по судебному решению (кассация) (RS_K)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31401000)]
+        public decimal? RsK
+        {
+            get
+            {
+                CheckPropertyInited("RsK");
+                return _rsk;
+            }
+            set
+            {
+                _rsk = value;
+                NotifyPropertyChanged("RsK");
+            }
+        }
+
+
+        private decimal? _uprsk;
+        /// <summary>
+        /// 31401100 Удельный показатель (кассация) (UPRS_K)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31401100)]
+        public decimal? UprsK
+        {
+            get
+            {
+                CheckPropertyInited("UprsK");
+                return _uprsk;
+            }
+            set
+            {
+                _uprsk = value;
+                NotifyPropertyChanged("UprsK");
             }
         }
 
