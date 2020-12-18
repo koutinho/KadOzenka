@@ -30,17 +30,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		#region ImportedObjects
 
-		public GridDataDto<UnitObjectDto> GetImportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool getTotalDataCount = true)
+		public List<UnitObjectDto> GetImportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var query = GetImportedObjectsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
 			var result = QSQuery.ExecuteSql<UnitObjectDto>(sql);
 
-			var resultData = new GridDataDto<UnitObjectDto> { Data = result };
-			if (getTotalDataCount)
-				resultData.Total = GetTotalCount(query);
-
-			return resultData;
+			return result;
 		}
 
 		public long GetImportedObjectsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
@@ -98,17 +94,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		#region ExportedObjects
 
-		public GridDataDto<ExportedObjectDto> GetExportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool getTotalDataCount = true)
+		public List<ExportedObjectDto> GetExportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var query = GetExportedObjectsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
 			var result = QSQuery.ExecuteSql<ExportedObjectDto>(sql);
 
-			var resultData = new GridDataDto<ExportedObjectDto> { Data = result };
-			if (getTotalDataCount)
-				resultData.Total = GetTotalCount(query);
-
-			return resultData;
+			return result;
 		}
 
 		public long GetExportedObjectsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
@@ -176,17 +168,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		#region ZoneStatistics
 
-		public GridDataDto<ZoneStatisticDto> GetZoneStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool getTotalDataCount = true)
+		public List<ZoneStatisticDto> GetZoneStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var query = GetZoneStatisticsDataQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
 			var result = QSQuery.ExecuteSql<ZoneStatisticDto>(sql);
 
-			var resultData = new GridDataDto<ZoneStatisticDto> { Data = result };
-			if (getTotalDataCount)
-				resultData.Total = GetTotalCount(query);
-
-			return resultData;
+			return result;
 		}
 
 		public long GetZoneStatisticsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
@@ -256,7 +244,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 		#region FactorStatistics
 
-		public GridDataDto<FactorStatisticDto> GetFactorStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool getTotalDataCount = true)
+		public List<FactorStatisticDto> GetFactorStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var mainSql = GetFactorStatisticsDataMainSql(dateStart, dateEnd);
 			var dataSql = "SELECT * FROM " + mainSql;
@@ -274,15 +262,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			if (request.Page > 1)
 				dataSql += $" OFFSET {(request.Page - 1) * request.PageSize}";
 
-			var resultData = QSQuery.ExecuteSql<FactorStatisticDto>(dataSql);
-			var result = new GridDataDto<FactorStatisticDto> { Data = resultData };
-
-			if (getTotalDataCount)
-			{
-				var countSql = "SELECT COUNT(*) as Total FROM " + mainSql;
-				AddQueryCustomFilters(ref countSql, columns, request.Filters);
-				result.Total = QSQuery.ExecuteSql<long?>(countSql).First();
-			}
+			var result = QSQuery.ExecuteSql<FactorStatisticDto>(dataSql);
 
 			return result;
 		}
@@ -350,16 +330,13 @@ WHERE
 			return total;
 		}
 
-		public GridDataDto<GroupStatisticDto> GetGroupStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd, bool getTotalDataCount = true)
+		public List<GroupStatisticDto> GetGroupStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			var query = GetGroupStatisticsQuery(request, dateStart, dateEnd);
 			var sql = GetSqlQuery(request, query);
 			var result = QSQuery.ExecuteSql<GroupStatisticDto>(sql);
-			var resultData = new GridDataDto<GroupStatisticDto> {Data = result};
-			if (getTotalDataCount)
-				resultData.Total = GetTotalCount(query);
 
-			return resultData;
+			return result;
 		}
 
 		private QSQuery GetGroupStatisticsQuery(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)

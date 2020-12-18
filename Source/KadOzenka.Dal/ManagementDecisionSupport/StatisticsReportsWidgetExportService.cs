@@ -137,7 +137,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			{
 				exportRequest.Request.Page = i;
 				exportRequest.Request.PageSize = GbuReportService.MaxRowsCountInSheet;
-				var data = exportRequest.DataFunc(exportRequest.Request, exportRequest.DateStart, exportRequest.DateEnd, false).Data;
+				var data = exportRequest.DataFunc(exportRequest.Request, exportRequest.DateStart, exportRequest.DateEnd);
 				foreach (var dataRecord in data)
 				{
 					var values = dataRecord.ToRowExportObjects();
@@ -167,7 +167,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			public DateTime? DateStart { get; set; }
 			public DateTime? DateEnd { get; set; }
 			public bool UseExportSavingToStorage { get; set; }
-			public Func<DataSourceRequestDto, DateTime?, DateTime?, bool, GridDataDto<T>> DataFunc { get; set; }
+			public Func<DataSourceRequestDto, DateTime?, DateTime?, List<T>> DataFunc { get; set; }
 			public Func<DataSourceRequestDto, DateTime?, DateTime?, long> DataCountFunc { get; set; }
 		}
 	}
