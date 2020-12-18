@@ -304,8 +304,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			};
 			AddQueryCustomFilters(ref countSql, columns, request.Filters);
 
-			//return QSQuery.ExecuteSql<GridDataDto<FactorStatisticDto>>(countSql).First().Total.GetValueOrDefault();
-			return QSQuery.ExecuteSql<long?>(countSql).First().GetValueOrDefault();
+			return QSQuery.ExecuteSql<CountDto>(countSql).First().Total;
 		}
 
 		private string GetFactorStatisticsDataMainSql(DateTime? dateStart, DateTime? dateEnd)
@@ -581,13 +580,6 @@ WHERE
 					}
 				}
 			}
-			//else
-			//{
-			//	query.OrderBy.Add(new QSOrder
-			//	{
-			//		ColumnAlias = "ID"
-			//	});
-			//}
 		}
 
 		private void AddQueryCustomFilters(ref string query, List<string> columns, List<FilterDto> filters)
@@ -651,10 +643,11 @@ WHERE
 
 				query += string.Join(",", sorts);
 			}
-			//else
-			//{
-			//	query += " ORDER BY ID";
-			//}
+		}
+
+		private class CountDto
+		{
+			public long Total { get; set; }
 		}
 
 		#endregion Helpers
