@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
+using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.MapModeling;
 using KadOzenka.Web.Attributes;
@@ -34,18 +39,20 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly MapBuildingService _mapBuildingService;
 		private readonly DashboardWidgetService _dashboardWidgetService;
-		private readonly StatisticsReportsService _statisticsReportsService;
-		private readonly StatisticsReportsExportService _statisticsReportsExportService;
+		private readonly StatisticsReportsWidgetService _statisticsReportsWidgetService;
+		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
 		private readonly TourService _tourService;
+		private readonly int dataPageSize = 30;
+		private readonly int dataCacheSize = 3000;
 
-        public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
-            DashboardWidgetService dashboardWidgetService, StatisticsReportsService statisticsReportsService,
-            StatisticsReportsExportService statisticsReportsExportService, TourService tourService)
+		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
+            DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
+            StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
-            _statisticsReportsService = statisticsReportsService;
-            _statisticsReportsExportService = statisticsReportsExportService;
+            _statisticsReportsWidgetService = statisticsReportsWidgetService;
+            _statisticsReportsWidgetExportService = statisticsReportsWidgetExportService;
             _tourService = tourService;
         }
 
@@ -109,7 +116,7 @@ namespace KadOzenka.Web.Controllers
 
 		#region StatisticsReportsWidget
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetUnitPropertyTypes()
 		{
 			var exceptions = new List<long> { (long)PropertyTypes.None };
@@ -121,42 +128,164 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetZoneTypes()
 		{
-			var types = _statisticsReportsService.GetZoneData();
+			var types = _statisticsReportsWidgetService.GetZoneData();
 			return Json(types);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetSessionKey()
+		{
+			SetNewUniqueSessionKey();
+			if (CurrentUniqueSessionKey.IsNullOrEmpty())
+			{
+				throw new Exception("Не передан уникальный ключ сессии");
+			}
+
+			return Json(CurrentUniqueSessionKey);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public ActionResult GetImportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			GridDataDto<UnitObjectDto> data = _statisticsReportsService.GetImportedObjectsData(request, dateStart, dateEnd);
+			request.PageSize = dataCacheSize;
+			request.Page = 1;
+			var data = _statisticsReportsWidgetService.GetImportedObjectsData(GetDataSourceRequest(request), dateStart, dateEnd);
+			SessionManager.Set(SessionVariablesStatisticsReports.ImportedObjectsDataReader, data.Skip(dataPageSize).ToList());
+
+			return Json(data.Take(dataPageSize).ToList());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetImportedObjectsDataCount(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = GetDataSourceRequest(filters, sorts);
+			var count = _statisticsReportsWidgetService.GetImportedObjectsDataCount(request, dateStart, dateEnd);
+			return Json(count);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetAddImportedObjectsData(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var data = GetDataFromCache(filters, sorts, currentCount, totalCount, dateStart, dateEnd,
+				SessionVariablesStatisticsReports.ImportedObjectsDataReader,
+				_statisticsReportsWidgetService.GetImportedObjectsData);
+
 			return Json(data);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetExportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			GridDataDto<ExportedObjectDto> data = _statisticsReportsService.GetExportedObjectsData(request, dateStart, dateEnd);
+			request.PageSize = dataCacheSize;
+			request.Page = 1;
+			var data = _statisticsReportsWidgetService.GetExportedObjectsData(GetDataSourceRequest(request), dateStart, dateEnd);
+			SessionManager.Set(SessionVariablesStatisticsReports.ExportedObjectsDataReader, data.Skip(dataPageSize).ToList());
+
+			return Json(data.Take(dataPageSize).ToList());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetExportedObjectsDataCount(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = GetDataSourceRequest(filters, sorts);
+			var count = _statisticsReportsWidgetService.GetExportedObjectsDataCount(request, dateStart, dateEnd);
+			return Json(count);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetAddExportedObjectsData(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var data = GetDataFromCache(filters, sorts, currentCount, totalCount, dateStart, dateEnd,
+				SessionVariablesStatisticsReports.ExportedObjectsDataReader,
+				_statisticsReportsWidgetService.GetExportedObjectsData);
+
 			return Json(data);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetZoneStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			GridDataDto<ZoneStatisticDto> data = _statisticsReportsService.GetZoneStatisticsData(request, dateStart, dateEnd);
+			request.PageSize = dataCacheSize;
+			request.Page = 1;
+			var data = _statisticsReportsWidgetService.GetZoneStatisticsData(GetDataSourceRequest(request), dateStart, dateEnd);
+			SessionManager.Set(SessionVariablesStatisticsReports.ZoneStatisticsDataReader, data.Skip(dataPageSize).ToList());
+
+			return Json(data.Take(dataPageSize).ToList());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetZoneStatisticsDataCount(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = GetDataSourceRequest(filters, sorts);
+			var count = _statisticsReportsWidgetService.GetZoneStatisticsDataCount(request, dateStart, dateEnd);
+			return Json(count);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetAddZoneStatisticsData(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var data = GetDataFromCache(filters, sorts, currentCount, totalCount, dateStart, dateEnd,
+				SessionVariablesStatisticsReports.ZoneStatisticsDataReader,
+				_statisticsReportsWidgetService.GetZoneStatisticsData);
+
 			return Json(data);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetFactorStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			GridDataDto<FactorStatisticDto> data = _statisticsReportsService.GetFactorStatisticsData(request, dateStart, dateEnd);
+			request.PageSize = dataCacheSize;
+			request.Page = 1;
+			var data = _statisticsReportsWidgetService.GetFactorStatisticsData(GetDataSourceRequest(request), dateStart, dateEnd);
+			SessionManager.Set(SessionVariablesStatisticsReports.FactorStatisticsDataReader, data.Skip(dataPageSize).ToList());
+
+			return Json(data.Take(dataPageSize).ToList());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetFactorStatisticsDataCount(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = GetDataSourceRequest(filters, sorts);
+			var count = _statisticsReportsWidgetService.GetFactorStatisticsDataCount(request, dateStart, dateEnd);
+			return Json(count);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetAddFactorStatisticsData(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var data = GetDataFromCache(filters, sorts, currentCount, totalCount, dateStart, dateEnd,
+				SessionVariablesStatisticsReports.FactorStatisticsDataReader,
+				_statisticsReportsWidgetService.GetFactorStatisticsData);
+
 			return Json(data);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
 		public JsonResult GetGroupStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			GridDataDto<GroupStatisticDto> data = _statisticsReportsService.GetGroupStatisticsData(request, dateStart, dateEnd);
+			request.PageSize = dataCacheSize;
+			request.Page = 1;
+			var data = _statisticsReportsWidgetService.GetGroupStatisticsData(GetDataSourceRequest(request), dateStart, dateEnd);
+			SessionManager.Set(SessionVariablesStatisticsReports.GroupStatisticsDataReader, data.Skip(dataPageSize).ToList());
+
+			return Json(data.Take(dataPageSize).ToList());
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetGroupStatisticsDataCount(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = GetDataSourceRequest(filters, sorts);
+			var count = _statisticsReportsWidgetService.GetGroupStatisticsDataCount(request, dateStart, dateEnd);
+			return Json(count);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public ActionResult GetAddGroupStatisticsData(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var data = GetDataFromCache(filters, sorts, currentCount, totalCount, dateStart, dateEnd,
+				SessionVariablesStatisticsReports.GroupStatisticsDataReader,
+				_statisticsReportsWidgetService.GetGroupStatisticsData);
+
 			return Json(data);
 		}
 
@@ -164,69 +293,133 @@ namespace KadOzenka.Web.Controllers
 
 		#region StatisticsReportsWidgetExport
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-		public FileResult ExportImportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+		public IActionResult ExportImportedObjects(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd, bool backgroundExport = false)
 		{
-			var request = new DataSourceRequest();
-			request.Filters = FilterDescriptorFactory.Create(filters);
-			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
-			request.PageSize = pageSize;
-			request.Page = page;
+			var request = GetDataSourceRequest(filters, sorts);
 
-			var file = _statisticsReportsExportService.ExportImportedObjects(request, dateStart, dateEnd);
-			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+			if (backgroundExport)
+			{
+				//var processType = OMProcessType.Where(x => x.ProcessName == StatisticsReportWidgetExportLongProcess.LongProcessName)
+				//	.SelectAll().ExecuteFirstOrDefault();
+				//var queue = new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	Parameters = (new StatisticsReportWidgetExportLongProcessSettings
+				//	{
+				//		DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd,
+				//		StatisticsReportExportType = StatisticsReportExportType.ImportedObjects
+				//	}).SerializeToXml()
+				//};
+				//new StatisticsReportWidgetExportLongProcess().StartProcess(processType, queue
+				//	, new CancellationTokenSource().Token);
+				//queue.Status_Code = Status.Completed;
+				//queue.EndDate = DateTime.Now;
+				//queue.Save();
+				StatisticsReportWidgetExportLongProcess.AddProcessToQueue(new StatisticsReportWidgetExportLongProcessSettings
+				{ DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd, StatisticsReportExportType = StatisticsReportExportType.ImportedObjects });
+				return Ok();
+			}
+			else
+			{
+				var exportResult =
+					_statisticsReportsWidgetExportService.ExportImportedObjects(request, dateStart, dateEnd);
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
+			}
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-		public FileResult ExportExportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		public IActionResult ExportExportedObjects(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd, bool backgroundExport = false)
 		{
-			var request = new DataSourceRequest();
-			request.Filters = FilterDescriptorFactory.Create(filters);
-			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
-			request.PageSize = pageSize;
-			request.Page = page;
-
-			var file = _statisticsReportsExportService.ExportExportedObjects(request, dateStart, dateEnd);
-			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+			var request = GetDataSourceRequest(filters, sorts);
+			if (backgroundExport)
+			{
+				StatisticsReportWidgetExportLongProcess.AddProcessToQueue(new StatisticsReportWidgetExportLongProcessSettings
+					{ DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd, StatisticsReportExportType = StatisticsReportExportType.ExportedObjects });
+				return Ok();
+			}
+			else
+			{
+				var exportResult = _statisticsReportsWidgetExportService.ExportExportedObjects(request, dateStart, dateEnd);
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
+			}
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-		public FileResult ExportZoneStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		public IActionResult ExportZoneStatistics(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd, bool backgroundExport = false)
 		{
-			var request = new DataSourceRequest();
-			request.Filters = FilterDescriptorFactory.Create(filters);
-			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
-			request.PageSize = pageSize;
-			request.Page = page;
-
-			var file = _statisticsReportsExportService.ExportZoneStatistics(request, dateStart, dateEnd);
-			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+			var request = GetDataSourceRequest(filters, sorts);
+			if (backgroundExport)
+			{
+				StatisticsReportWidgetExportLongProcess.AddProcessToQueue(new StatisticsReportWidgetExportLongProcessSettings
+					{ DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd, StatisticsReportExportType = StatisticsReportExportType.ZoneStatistics });
+				return Ok();
+			}
+			else
+			{
+				var exportResult = _statisticsReportsWidgetExportService.ExportZoneStatistics(request, dateStart, dateEnd);
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
+			}
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-		public FileResult ExportFactorStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		public IActionResult ExportFactorStatistics(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd, bool backgroundExport = false)
 		{
-			var request = new DataSourceRequest();
-			request.Filters = FilterDescriptorFactory.Create(filters);
-			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
-			request.PageSize = pageSize;
-			request.Page = page;
-
-			var file = _statisticsReportsExportService.ExportFactorStatistics(request, dateStart, dateEnd);
-			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+			var request = GetDataSourceRequest(filters, sorts);
+			if (backgroundExport)
+			{
+				StatisticsReportWidgetExportLongProcess.AddProcessToQueue(new StatisticsReportWidgetExportLongProcessSettings
+					{ DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd, StatisticsReportExportType = StatisticsReportExportType.FactorStatistics });
+				return Ok();
+			}
+			else
+			{
+				var exportResult = _statisticsReportsWidgetExportService.ExportFactorStatistics(request, dateStart, dateEnd);
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
+			}
 		}
 
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-		public FileResult ExportGroupStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		public IActionResult ExportGroupStatistics(string filters, string sorts, DateTime? dateStart, DateTime? dateEnd, bool backgroundExport = false)
 		{
-			var request = new DataSourceRequest();
-			request.Filters = FilterDescriptorFactory.Create(filters);
-			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
-			request.PageSize = pageSize;
-			request.Page = page;
+			var request = GetDataSourceRequest(filters, sorts);
+			if (backgroundExport)
+			{
+				//var processType = OMProcessType.Where(x => x.ProcessName == StatisticsReportWidgetExportLongProcess.LongProcessName)
+				//	.SelectAll().ExecuteFirstOrDefault();
+				//var queue = new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	Parameters = (new StatisticsReportWidgetExportLongProcessSettings
+				//	{
+				//		DataSourceRequest = request,
+				//		DateStart = dateStart,
+				//		DateEnd = dateEnd,
+				//		StatisticsReportExportType = StatisticsReportExportType.GroupStatistics
+				//	}).SerializeToXml()
+				//};
+				//new StatisticsReportWidgetExportLongProcess().StartProcess(processType, queue
+				//	, new CancellationTokenSource().Token);
+				//queue.Status_Code = Status.Completed;
+				//queue.EndDate = DateTime.Now;
+				//queue.Save();
 
-			var file = _statisticsReportsExportService.ExportGroupStatistics(request, dateStart, dateEnd);
-			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+				StatisticsReportWidgetExportLongProcess.AddProcessToQueue(new StatisticsReportWidgetExportLongProcessSettings
+				{ DataSourceRequest = request, DateStart = dateStart, DateEnd = dateEnd, StatisticsReportExportType = StatisticsReportExportType.GroupStatistics });
+				return Ok();
+			}
+			else
+			{
+				var exportResult = _statisticsReportsWidgetExportService.ExportGroupStatistics(request, dateStart, dateEnd);
+				return File(exportResult.ReportFile.FileStream, GetContentTypeByExtension(System.IO.Path.GetExtension(exportResult.ReportFile.FileName)),
+					System.IO.Path.GetFileName(exportResult.ReportFile.FileName));
+			}
 		}
 
 		#endregion StatisticsReportsWidgetExport
@@ -330,21 +523,136 @@ namespace KadOzenka.Web.Controllers
 		        TaskIds = model.TaskFilter.ToList()
 	        };
 
-			////TODO код для отладки
-			//new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
-			//{
-			//	Status_Code = Status.Added,
-			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = parameters.SerializeToXml()
-			//}, new CancellationToken());
+	        ////TODO код для отладки
+	        //new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+	        //{
+	        //	Status_Code = Status.Added,
+	        //	UserId = SRDSession.GetCurrentUserId(),
+	        //	Parameters = parameters.SerializeToXml()
+	        //}, new CancellationToken());
 
-			UniformReportLongProcess.AddProcessToQueue(parameters);
+	        UniformReportLongProcess.AddProcessToQueue(parameters);
 
-			return Ok();
+	        return Ok();
         }
 
 		#endregion
 
 		#endregion StatisticalData
+
+		#region Helpers
+
+		private List<T> GetDataFromCache<T>(string filters, string sorts, int currentCount, int totalCount, DateTime? dateStart,
+			DateTime? dateEnd, SessionVariable<List<T>> sessionVariable, Func<DataSourceRequestDto, DateTime?, DateTime?, List<T>> dataFunc) where T : UnitObjectDto
+		{
+			List<T> data;
+			var reader = SessionManager.Get(sessionVariable);
+			if (reader.IsEmpty() && currentCount < totalCount)
+			{
+				var request = GetDataSourceRequest(filters, sorts);
+				request.PageSize = dataCacheSize;
+				request.Page = currentCount / dataCacheSize + 1;
+				data = dataFunc(request, dateStart, dateEnd);
+				SessionManager.Set(sessionVariable,
+					data.Skip(currentCount % dataCacheSize + dataPageSize).ToList());
+				data = data.Skip(currentCount % dataCacheSize).Take(dataPageSize).ToList();
+			}
+			else
+			{
+				data = reader.Take(dataPageSize).ToList();
+				if (reader.Count >= dataPageSize)
+				{
+					reader.RemoveRange(0, dataPageSize);
+				}
+				else
+				{
+					reader.Clear();
+				}
+
+				SessionManager.Set(sessionVariable, reader);
+			}
+
+			return data;
+		}
+
+		private DataSourceRequestDto GetDataSourceRequest(string filters, string sorts, int pageSize = 0, int page = 0)
+        {
+	        var kendoRequest = new DataSourceRequest
+	        {
+		        Filters = FilterDescriptorFactory.Create(filters),
+		        Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts),
+		        PageSize = pageSize,
+		        Page = page
+	        };
+
+	        return GetDataSourceRequest(kendoRequest);
+        }
+
+        private DataSourceRequestDto GetDataSourceRequest(DataSourceRequest kendoRequest)
+        {
+	        var request = new DataSourceRequestDto();
+	        request.PageSize = kendoRequest.PageSize;
+	        request.Page = kendoRequest.Page;
+
+	        request.Sorts = new List<SortDto>();
+	        if (kendoRequest.Sorts.Any())
+	        {
+		        foreach (var kendoSort in kendoRequest.Sorts)
+		        {
+			        var sort = new SortDto();
+			        sort.Member = kendoSort.Member;
+			        sort.SortDirection = kendoSort.SortDirection == ListSortDirection.Ascending
+				        ? SortDirectionType.Ascending
+				        : SortDirectionType.Descending;
+			        request.Sorts.Add(sort);
+		        }
+	        }
+
+	        request.Filters = new List<FilterDto>();
+	        AddDataSourceRequestFilters(request.Filters, kendoRequest.Filters);
+
+	        return request;
+		}
+
+		private void AddDataSourceRequestFilters(List<FilterDto> filters, IList<IFilterDescriptor> kendoFilters)
+        {
+	        if (kendoFilters.Any())
+	        {
+		        foreach (var kendoFilter in kendoFilters)
+		        {
+			        if (kendoFilter is FilterDescriptor descriptor)
+			        {
+				        var filter = new FilterSimpleDto
+				        {
+					        Member = descriptor.Member,
+					        Value = descriptor.Value,
+					        Operator = GetFilterOperatorType(descriptor.Operator)
+				        };
+				        filters.Add(filter);
+					}
+			        else if (kendoFilter is CompositeFilterDescriptor compositeFilterDescriptor)
+			        {
+				        var filter = new FilterCompositeDto {Filters = new List<FilterDto>()};
+				        AddDataSourceRequestFilters(filter.Filters, compositeFilterDescriptor.FilterDescriptors);
+						filters.Add(filter);
+			        }
+		        }
+	        }
+		}
+
+        private FilterOperatorType GetFilterOperatorType(FilterOperator kendoOperator)
+        {
+	        switch (kendoOperator)
+	        {
+		        case FilterOperator.Contains:
+			        return FilterOperatorType.Contains;
+		        case FilterOperator.IsEqualTo:
+			        return FilterOperatorType.Equal;
+		        default:
+			        return FilterOperatorType.Equal;
+	        }
+		}
+
+		#endregion Helpers
 	}
 }

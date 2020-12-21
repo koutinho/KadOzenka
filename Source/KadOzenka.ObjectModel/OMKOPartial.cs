@@ -398,26 +398,28 @@ namespace ObjectModel.KO
                     }
                     if (ci != null)
                     {
-                        switch (attributeData.Type)
-                        {
-                            case RegisterAttributeType.INTEGER:
-                                value = ci.Value.ParseToLongNullable();
-                                break;
-                            case RegisterAttributeType.DECIMAL:
-                                value = ci.Value.ParseToDecimalNullable();
-                                break;
-                            case RegisterAttributeType.BOOLEAN:
-                                value = ci.Value.ParseToBooleanNullable();
-                                break;
-                            case RegisterAttributeType.STRING:
-                                value = ci.Value.ToString();
-                                break;
-                            case RegisterAttributeType.DATE:
-                                value = ci.Value.ParseToDateTimeNullable();
-                                break;
-                        }
+	                    value = ci.Value;
                     }
                 }
+            }
+
+            switch (attributeData.Type)
+            {
+	            case RegisterAttributeType.INTEGER:
+		            value = value.ParseToLongNullable();
+		            break;
+	            case RegisterAttributeType.DECIMAL:
+		            value = value.ParseToDecimalNullable();
+		            break;
+	            case RegisterAttributeType.BOOLEAN:
+		            value = value.ParseToBooleanNullable();
+		            break;
+	            case RegisterAttributeType.STRING:
+		            value = value.ToString();
+		            break;
+	            case RegisterAttributeType.DATE:
+		            value = value.ParseToDateTimeNullable();
+		            break;
             }
             RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
             registerObject.SetAttributeValue(factorId, value, referenceItemId);

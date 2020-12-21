@@ -1290,12 +1290,33 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static long SetPriorityGroup(GroupingSettings setting)
         {
-            var reportService =  new GbuReportService();
+            using var reportService =  new GbuReportService("Отчет нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
           
             _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
  
             reportService.AddHeaders(dataHeaderAndColumnNumber.Headers);
+            try
+            {
+	            _log.Verbose("Применение стилей SetStyle");
+	            reportService.SetIndividualWidth(KnColumn, 4);
+	            reportService.SetIndividualWidth(ResultColumn, 6);
+	            reportService.SetIndividualWidth(ValueColumn, 3);
+	            reportService.SetIndividualWidth(SourceColumn, 6);
+	            reportService.SetIndividualWidth(ErrorColumn, 5);
+
+	            foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
+	            {
+		            reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
+		            reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
+	            }
+            }
+            catch (Exception ex)
+            {
+	            _log.Error(ex, "Форматирование отчета завершилось с ошибкой");
+	            throw;
+            }
+
             long reportId = 0;
 
             ErrorMessages = new List<string>();
@@ -1380,25 +1401,12 @@ namespace KadOzenka.Dal.GbuObject
 
             try
             {
-                _log.Verbose("Применение стилей SetStyle");
-                reportService.SetStyle();
-                reportService.SetIndividualWidth(KnColumn, 4);
-                reportService.SetIndividualWidth(ResultColumn, 6);
-                reportService.SetIndividualWidth(ValueColumn, 3);
-                reportService.SetIndividualWidth(SourceColumn, 6);
-                reportService.SetIndividualWidth(ErrorColumn, 5);
-
-                foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
-                {
-                    reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
-                    reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
-                }
-                reportId = reportService.SaveReport("Отчет нормализации");
+	            reportId = reportService.SaveReport();
                 return reportId;
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Форматирование и сохранение отчета завершилось с ошибкой");
+                _log.Error(ex, "Сохранение отчета завершилось с ошибкой");
                 throw;
             }
         }

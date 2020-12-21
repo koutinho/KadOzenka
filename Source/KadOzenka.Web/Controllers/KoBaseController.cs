@@ -70,7 +70,10 @@ namespace KadOzenka.Web.Controllers
 
         protected string GetContentTypeByExtension(string fileExtension)
         {
-	        switch (fileExtension)
+	        if (!string.IsNullOrEmpty(fileExtension) && fileExtension.StartsWith("."))
+		        fileExtension = fileExtension.Remove(0, 1);
+
+            switch (fileExtension)
 	        {
                 case "xlsx":
 	                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

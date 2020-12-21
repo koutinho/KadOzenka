@@ -1,4 +1,6 @@
-﻿
+﻿@using Flurl.Util
+@using KadOzenka.Dal.ManagementDecisionSupport.Enums
+
 <form class="statisticsReportsWidget">
     <div class="form-horizontal col-sm-12">
 
@@ -25,10 +27,10 @@
                     </div>
                 </div>
                 <div class="col-sm-4 statistics-tittle-buttons-container">
-                    <a id="searchButton" class="k-button" >
+                    <a id="searchStatisticsReportsButton" class="k-button" >
                         <span class="k-icon icon-search_small"></span> Поиск
                     </a>
-                    <a id="exportButton" class="k-button">
+                    <a id="exportStatisticsReportsButton" class="k-button">
                         <span class="k-icon icon-excel"></span> Выгрузить в Excel
                     </a>
                 </div>
@@ -120,24 +122,40 @@
     var periodStartPicker, periodEndPicker;
     var statisticsTabstrip;
     var currentGrid;
+    var uniqueSessionKey;
 
     $(document).ready(function () {
-        var now = new Date();
-        periodStartPicker = createDatePicker($('#periodStart'), now);
-        periodEndPicker = createDatePicker($('#periodEnd'), now);
+        kendo.ui.progress($('.statisticsReportsWidget'), true);
+        $.ajax({
+            url: '@Html.Raw(Url.Action("GetSessionKey", "ManagementDecisionSupport"))',
+            success: function (response) {
+                uniqueSessionKey = response;
 
-        statisticsTabstrip = $('#statisticsTabstrip').kendoTabStrip({
-            activate: onActivateTab,
-            navigatable: false,
-            scrollable: false,
-            animation: false
-        }).data('kendoTabStrip');
+                var now = new Date();
+                periodStartPicker = createDatePicker($('#periodStart'), now);
+                periodEndPicker = createDatePicker($('#periodEnd'), now);
 
-        $('#searchButton').click(refreshCurrentGrid);
-        $('#exportButton').click(onExportClicked);
+                statisticsTabstrip = $('#statisticsTabstrip').kendoTabStrip({
+                    activate: onActivateTab,
+                    navigatable: false,
+                    scrollable: false,
+                    animation: false
+                }).data('kendoTabStrip');
 
-        createGrids();
-        statisticsTabstrip.activateTab($("#importedObjectsTab"));
+                $('#searchStatisticsReportsButton').click(refreshCurrentGrid);
+                $('#exportStatisticsReportsButton').click(onExportClickedStatisticsReport);
+
+                createGrids();
+                statisticsTabstrip.activateTab($("#importedObjectsTab"));
+            },
+            error: function (response, textStatus, errorThrown) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('.statisticsReportsWidget'), false);
+            }
+        });
+
     });
 
     function createDatePicker(element, value) {
@@ -425,8 +443,8 @@
                         url: dataUrl,
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
-                        data: getGridParams
-                    }
+                        data: getGridParams,
+                    },
                 },
                 error: function (e) {
                     if (e.xhr && e.xhr.responseText) {
@@ -440,19 +458,16 @@
                 serverFiltering: true,
                 serverAggregates: true,
                 schema: {
-                    data: 'Data',
-                    total: 'Total',
                     model: {
                         fields: dataFields
                     },
-                    parse: function (response) {
-                        for (var i = 0; i < response.length; i++) {
-                            var datetime = kendo.parseDate(response[i].TaskCreationDate);
-                            var date = new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), 0, 0, 0, 0);
-                            response[i].TaskCreationDate = date;
-                        }
-                        return response;
-                    }
+                    parse: parseGridDataResponse
+                },
+                requestStart: function (e) {
+                    disableWidgetActions();
+                },
+                requestEnd: function (e) {
+                    enableWidgetActions();
                 }
             },
             noRecords: {
@@ -465,15 +480,111 @@
             filterable: { mode: 'row' },
             pageable: {
                 alwaysVisible: false,
-                pageSize: 15
+                pageSize: 30
             },
-            excel: {
-                fileName: excelName,
-                allPages: true
+            dataBinding: function (e) {
+                if (e.action == "rebind") {
+                    this.dateStart = periodStartPicker.value();
+                    this.dateEnd = periodEndPicker.value();
+                    this.element.find(".k-grid-content").scrollTop(0);
+                }
             },
-            excelExport: function (e) {
-                kendo.ui.progress($('.statisticsReportsWidget'), false);
-                e.workbook.fileName = getExcelFileName(excelName);
+            dataBound: function (e) {
+                var gridThis = this;
+
+                function ifViewLoadContent(elem) {
+                    if (!elem.hasClass("ImLoaded")) {
+                        elem.addClass("ImLoaded");
+                        var $totalRows = gridThis.element
+                            .find('.k-pager-wrap.k-grid-pager .reader-mode-pager-info .grid-total-rows').text();
+                        var $currentRows = gridThis.element
+                            .find('.k-pager-wrap.k-grid-pager .reader-mode-pager-info .grid-current-rows').text();
+
+                        if ($currentRows !== $totalRows) {
+                            disableWidgetActions();
+                            kendo.ui.progress(elem.closest('div.register-grid'), true);
+                            var url = getGridAddData(currentGrid);
+                            var parameterMap = gridThis.dataSource.transport.parameterMap;
+                            var data = getGridExportParams(gridThis);
+                            data.filters = parameterMap({ filter: gridThis.dataSource.filter() }).filter;
+                            data.sorts = parameterMap({ sort: gridThis.dataSource.sort() }).sort;
+                            data.currentCount = $currentRows;
+                            data.totalCount = $totalRows;
+                            $.ajax({
+                                url: url,
+                                cache: false,
+                                data: data,
+                                success: function (response) {
+                                    if (response && response.length) {
+                                        var data = parseGridDataResponse(response);
+                                        gridThis.dataSource.data().push
+                                            .apply(gridThis.dataSource.data(), data);
+                                        gridThis.element
+                                            .find(
+                                                '.k-pager-wrap.k-grid-pager .reader-mode-pager-info .grid-current-rows')
+                                            .text(gridThis.dataSource.data().length);
+                                    }
+                                },
+                                error: function (response, textStatus, errorThrown) {
+                                    Common.ShowError(response.responseText);
+                                },
+                                complete: function () {
+                                    kendo.ui.progress($(`#${currentGrid}`).data('kendoGrid').element
+                                        .find('table[role=grid] tbody tr:last').closest('div.register-grid'),
+                                        false);
+                                    enableWidgetActions();
+                                }
+                            });
+                        }
+                    }
+                }
+
+                var scrollbarWidth = kendo.support.scrollbar();
+                var gridSelector = '#' + currentGrid;
+                $(gridSelector + ' .k-grid-pager').find('a, ul').each(function (i) {
+                    $(this).remove();
+                });
+
+                var gridEl = $(gridSelector);
+                gridEl.children('.k-grid-content').on('scroll', function (e) {
+                    if (e.target.scrollTop >= e.target.scrollHeight - e.target.offsetHeight - scrollbarWidth)
+                        ifViewLoadContent(gridThis.element.find('table[role=grid] tbody tr:last'));
+                });
+
+                var $pager = gridThis.element.find('.k-pager-wrap.k-grid-pager');
+
+                if ($pager.length) {
+                    $pager.attr('style', 'position: sticky;bottom: 0;padding-top: 1em;padding-bottom: 1em;');
+                    $pager.find('.k-pager-info.k-label').remove();
+
+                    if ($pager.find('.reader-mode-pager-info').length == 0)
+                        $pager.append('<span class="reader-mode-pager-info">Отображены записи&nbsp;<span class="grid-current-rows"></span>&nbsp;из&nbsp;<span class="grid-total-rows"></span>');
+
+                    $pager.find('.grid-current-rows').text(gridThis.dataSource.data().length);
+                    $pager.find('.grid-total-rows').html('<span class="small-loader"></span>');
+                }
+
+                disableWidgetActions();
+                var url = getGridDataCount(currentGrid);
+                var parameterMap = gridThis.dataSource.transport.parameterMap;
+                var data = getGridExportParams(gridThis);
+                data.filters = parameterMap({ filter: gridThis.dataSource.filter() }).filter;
+                data.sorts = parameterMap({ sort: gridThis.dataSource.sort() }).sort;
+                $.ajax({
+                    url: url,
+                    cache: false,
+                    data: data,
+                    success: function (response) {
+                        var $val = response ? response : 0;
+                        gridThis.element.find('.k-pager-wrap.k-grid-pager .grid-total-rows').text($val);
+                    },
+                    error: function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function () {
+                        enableWidgetActions();
+                    }
+                });
             }
         });
 
@@ -488,6 +599,33 @@
         });
     }
 
+    function parseGridDataResponse(response) {
+        for (var i = 0; i < response.length; i++) {
+            var datetime = kendo.parseDate(response[i].TaskCreationDate);
+            var date = new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), 0, 0, 0, 0);
+            response[i].TaskCreationDate = date;
+        }
+        return response;
+    }
+
+    function disableWidgetActions() {
+        statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children(), false);
+        statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children().eq(statisticsTabstrip.select().index()), true);
+        $('#searchStatisticsReportsButton').attr("disabled", "disabled");
+        $('#exportStatisticsReportsButton').attr("disabled", "disabled");
+        $('#searchStatisticsReportsButton').unbind();
+        $('#exportStatisticsReportsButton').unbind();
+    }
+
+
+    function enableWidgetActions() {
+        statisticsTabstrip.enable(statisticsTabstrip.tabGroup.children(), true);
+        $('#searchStatisticsReportsButton').removeAttr('disabled');
+        $('#exportStatisticsReportsButton').removeAttr('disabled');
+        $('#searchStatisticsReportsButton').unbind().click(refreshCurrentGrid);
+        $('#exportStatisticsReportsButton').unbind().click(onExportClickedStatisticsReport);
+    }
+
     function getGridParams() {
         var dateStart = periodStartPicker.value();
         if (dateStart) {
@@ -497,7 +635,21 @@
         if (dateEnd) {
             dateEnd = dateEnd.toUTCString();
         }
-        return { dateStart: dateStart, dateEnd: dateEnd };
+
+        return { dateStart: dateStart, dateEnd: dateEnd, uniqueSessionKey: uniqueSessionKey };
+    }
+
+    function getGridExportParams(grid) {
+        var dateStart = grid.dateStart;
+        if (dateStart) {
+            dateStart = dateStart.toUTCString();
+        }
+        var dateEnd = grid.dateEnd;
+        if (dateEnd) {
+            dateEnd = dateEnd.toUTCString();
+        }
+
+        return { dateStart: dateStart, dateEnd: dateEnd, uniqueSessionKey: uniqueSessionKey };
     }
 
     function onActivateTab(e) {
@@ -514,79 +666,148 @@
         $('#' + currentGrid).data('kendoGrid').dataSource.read();
     }
 
-    function getExcelFileName(excelFileName) {
-        var startDate = kendo.toString(kendo.parseDate(periodStartPicker.value()), "dd.MM.yyyy");
-        var endDate = kendo.toString(kendo.parseDate(periodEndPicker.value()), "dd.MM.yyyy");
+    function getExcelFileName(excelFileName, grid) {
+        var startDate = kendo.toString(kendo.parseDate(grid.dateStart), "dd.MM.yyyy");
+        var endDate = kendo.toString(kendo.parseDate(grid.dateEnd), "dd.MM.yyyy");
 
         return excelFileName +
             `(Период с ${startDate} по ${endDate }).xlsx`;
     }
 
-    function onExportClicked() {
-        kendo.ui.progress($('.statisticsReportsWidget'), true);
-        var url = getGridExportUrl(currentGrid);
-        var excelName = getGridExcelName(currentGrid);
-
+    function onExportClickedStatisticsReport() {
         var grid = $('#' + currentGrid).data("kendoGrid");
-        var parameterMap = grid.dataSource.transport.parameterMap;
-        var data = getGridParams();
-        data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
-        data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
-        data.pageSize = grid.dataSource.total();
-        data.page = 1;
+        var $totalRows = grid.element.find('.k-pager-wrap.k-grid-pager .reader-mode-pager-info .grid-total-rows').text();
+        if (!$totalRows) {
+            Common.ShowError("Дождитесь загрузки общего количества данных");
+            return;
+        }
 
-        $.ajax({
-            url: url,
-            cache: false,
-            data: data,
-            xhrFields: {
-                responseType: 'blob'
-            },
-            success: function(blob) {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = getExcelFileName(excelName);
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-            },
-            error: function (response, textStatus, errorThrown) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function () {
-                kendo.ui.progress($('.statisticsReportsWidget'), false);
-            }});
+        if ($totalRows > 1000) {
+            Common.UI.ShowConfirm({
+                title: 'Внимание!',
+                content:
+                    'Объем выгружаемых данных слишком большой. Запустить формирование выгрузки в фоновом режиме?',
+                onSuccess: function (e) {
+                    kendo.ui.progress($('.statisticsReportsWidget'), true);
+                    var url = getGridExportUrl(currentGrid);
+                    var parameterMap = grid.dataSource.transport.parameterMap;
+                    var data = getGridExportParams(grid);
+                    data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
+                    data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
+                    data.backgroundExport = true;
+                    $.ajax({
+                        url: url,
+                        cache: false,
+                        data: data,
+                        success: function (result) {
+                            Common.UI.ShowDialog({
+                                content: 'Выгрузка успешно запущена',
+                                height: 130,
+                                icon: 'info',
+                                showCloseBtn: true
+                            });
+                        },
+                        error: function (response, textStatus, errorThrown) {
+                            Common.ShowError(response.responseText);
+                        },
+                        complete: function () {
+                            kendo.ui.progress($('.statisticsReportsWidget'), false);
+                        }
+                    });
+                }
+            });
+        } else {
+            kendo.ui.progress($('.statisticsReportsWidget'), true);
+            var url = getGridExportUrl(currentGrid);
+            var excelName = getGridExcelName(currentGrid);
+            var parameterMap = grid.dataSource.transport.parameterMap;
+            var data = getGridExportParams(grid);
+            data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
+            data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
+
+            $.ajax({
+                url: url,
+                cache: false,
+                data: data,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (blob) {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = getExcelFileName(excelName, grid);
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                },
+                error: function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('.statisticsReportsWidget'), false);
+                }});
+        }
     }
 
     function getGridExportUrl(gridId) {
         switch (gridId) {
-        case GridIdList.ImportedObjectsGrid:
-                return '/ManagementDecisionSupport/ExportImportedObjects';
-        case GridIdList.ExportedObjectsGrid:
-                return '/ManagementDecisionSupport/ExportExportedObjects';
-        case GridIdList.ZoneStatisticsGrid:
-                return '/ManagementDecisionSupport/ExportZoneStatistics';
-        case GridIdList.FactorStatisticsGrid:
-                return '/ManagementDecisionSupport/ExportFactorStatistics';
-        case GridIdList.GroupStatisticsGrid:
-                return '/ManagementDecisionSupport/ExportGroupStatistics';
+            case GridIdList.ImportedObjectsGrid:
+                return '@Html.Raw(Url.Action("ExportImportedObjects", "ManagementDecisionSupport"))';
+            case GridIdList.ExportedObjectsGrid:
+                return '@Html.Raw(Url.Action("ExportExportedObjects", "ManagementDecisionSupport"))';
+            case GridIdList.ZoneStatisticsGrid:
+                return '@Html.Raw(Url.Action("ExportZoneStatistics", "ManagementDecisionSupport"))';
+            case GridIdList.FactorStatisticsGrid:
+                return '@Html.Raw(Url.Action("ExportFactorStatistics", "ManagementDecisionSupport"))';
+            case GridIdList.GroupStatisticsGrid:
+                return '@Html.Raw(Url.Action("ExportGroupStatistics", "ManagementDecisionSupport"))';
+        }
+    }
+
+    function getGridDataCount(gridId) {
+        switch (gridId) {
+            case GridIdList.ImportedObjectsGrid:
+                return '@Html.Raw(Url.Action("GetImportedObjectsDataCount", "ManagementDecisionSupport"))';
+            case GridIdList.ExportedObjectsGrid:
+                return '@Html.Raw(Url.Action("GetExportedObjectsDataCount", "ManagementDecisionSupport"))';
+            case GridIdList.ZoneStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetZoneStatisticsDataCount", "ManagementDecisionSupport"))';
+            case GridIdList.FactorStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetFactorStatisticsDataCount", "ManagementDecisionSupport"))';
+            case GridIdList.GroupStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetGroupStatisticsDataCount", "ManagementDecisionSupport"))';
+        }
+    }
+
+    function getGridAddData(gridId) {
+        switch (gridId) {
+            case GridIdList.ImportedObjectsGrid:
+                return '@Html.Raw(Url.Action("GetAddImportedObjectsData", "ManagementDecisionSupport"))';
+            case GridIdList.ExportedObjectsGrid:
+                return '@Html.Raw(Url.Action("GetAddExportedObjectsData", "ManagementDecisionSupport"))';
+            case GridIdList.ZoneStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetAddZoneStatisticsData", "ManagementDecisionSupport"))';
+            case GridIdList.FactorStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetAddFactorStatisticsData", "ManagementDecisionSupport"))';
+            case GridIdList.GroupStatisticsGrid:
+                return '@Html.Raw(Url.Action("GetAddGroupStatisticsData", "ManagementDecisionSupport"))';
         }
     }
 
     function getGridExcelName(gridId) {
         switch (gridId) {
-        case GridIdList.ImportedObjectsGrid:
-                return "Статистика по количеству загруженных объектов";
-        case GridIdList.ExportedObjectsGrid:
-                return "Статистика по количеству выгруженных объектов";
-        case GridIdList.ZoneStatisticsGrid:
-                return "Статистика по зонам";
-        case GridIdList.FactorStatisticsGrid:
-                return "Статистика по ценообразующим факторам";
-        case GridIdList.GroupStatisticsGrid:
-                return "Статистика по группам";
+            case GridIdList.ImportedObjectsGrid:
+                    return "@Html.Raw(StatisticsReportExportType.ImportedObjects.GetEnumDescription())";
+            case GridIdList.ExportedObjectsGrid:
+                    return "@Html.Raw(StatisticsReportExportType.ExportedObjects.GetEnumDescription())";
+            case GridIdList.ZoneStatisticsGrid:
+                    return "@Html.Raw(StatisticsReportExportType.ZoneStatistics.GetEnumDescription())";
+            case GridIdList.FactorStatisticsGrid:
+                    return "@Html.Raw(StatisticsReportExportType.FactorStatistics.GetEnumDescription())";
+            case GridIdList.GroupStatisticsGrid:
+                    return "@Html.Raw(StatisticsReportExportType.GroupStatistics.GetEnumDescription())";
         }
     }
 </script>

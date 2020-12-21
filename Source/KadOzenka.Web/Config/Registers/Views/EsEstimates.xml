@@ -3,11 +3,19 @@
               Description="Экспресс оценка" IsBasic="true" OpenEmpty="false" UseSubMap="true" JoinType="Left"
               ShowListsMenu="false" ShowActualDate="false"  ShowSettingsPanel="false" ShowFilterMenu="false"
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SRDFunction="EXPRESSSCORE.HISTORY" SplitterSize="40%">
-	<Tabs>
-		<Tab Caption="Аналоги" NavigateURL="/ExpressScore/AnalogObjectsCard">
-			<Parameters>
-				<Parameter Key="objectId" Value="[ObjectId]" />
-			</Parameters>
-		</Tab>
-	</Tabs>
+    <Buttons>
+        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+            </Parameters>
+        </Button>
+    </Buttons>
+    <Tabs>
+        <Tab Caption="Аналоги" NavigateURL="/ExpressScore/AnalogObjectsCard">
+            <Parameters>
+                <Parameter Key="objectId" Value="[ObjectId]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
 </RegisterView>

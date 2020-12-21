@@ -71,8 +71,13 @@ namespace KadOzenka.Dal.KoObject
 		{ 
 			Logger.ForContext("InputParameters", JsonConvert.SerializeObject(param)).Debug("Входные данные для Присвоения оценочной группы");
 
-			var reportService = new GbuReportService();
+			using var reportService = new GbuReportService("Отчет проставления оценочной группы");
 			reportService.AddHeaders(new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+			reportService.SetIndividualWidth((int)ReportColumns.KnColumn, 4);
+			reportService.SetIndividualWidth((int)ReportColumns.InputFieldColumn, 6);
+			reportService.SetIndividualWidth((int)ReportColumns.ValueColumn, 3);
+			reportService.SetIndividualWidth((int)ReportColumns.OutputFieldColumn, 6);
+			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
 			locked = new object();
 
 			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
@@ -171,13 +176,8 @@ namespace KadOzenka.Dal.KoObject
 					AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 				}
 			});
-			reportService.SetStyle();
-			reportService.SetIndividualWidth((int)ReportColumns.KnColumn, 4);
-			reportService.SetIndividualWidth((int)ReportColumns.InputFieldColumn, 6);
-			reportService.SetIndividualWidth((int)ReportColumns.ValueColumn, 3);
-			reportService.SetIndividualWidth((int)ReportColumns.OutputFieldColumn, 6);
-			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
-			long reportId = reportService.SaveReport("Отчет проставления оценочной группы");
+
+			long reportId = reportService.SaveReport();
 
 			Logger.Debug("Закончена операция присвоения оценочной группы");
 			return reportId;

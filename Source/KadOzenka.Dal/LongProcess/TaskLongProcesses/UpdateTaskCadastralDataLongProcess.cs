@@ -83,13 +83,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.ForContext("TaskId", taskId)
 				.Debug("Загружено {UnitsCount} единиц оценки для обработки", units.Count);
 
-			var reportService = new GbuReportService();
+			using var reportService = new GbuReportService("Отчет актуализация кадастровых данных");
 			reportService.AddHeaders(
 				new List<string>
 				{
 					"Кадастровый номер", "Кадастровый квартал старый", "Кадастровый квартал новый",
 					"Кадастровый номер здания старый", "Кадастровый номер здания новый"
 				});
+			_log.Debug("Настройка стилей отчета");
+			reportService.SetIndividualWidth(0, 4);
+			reportService.SetIndividualWidth(1, 4);
+			reportService.SetIndividualWidth(2, 4);
+			reportService.SetIndividualWidth(3, 4);
+			reportService.SetIndividualWidth(4, 4);
 
 			_locked = new object();
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -199,16 +205,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				unit.InheritedKOFactors(_log);
 			});
 
-			_log.Debug("Настройка стилей отчета");
-			reportService.SetStyle();
-			reportService.SetIndividualWidth(0, 4);
-			reportService.SetIndividualWidth(1, 4);
-			reportService.SetIndividualWidth(2, 4);
-			reportService.SetIndividualWidth(3, 4);
-			reportService.SetIndividualWidth(4, 4);
+
+			
 
 			_log.Debug("Сохранение отчета");
-			var reportId = reportService.SaveReport("Отчет актуализация кадастровых данных", OMTask.GetRegisterId(), "KoTasks");
+			var reportId = reportService.SaveReport( OMTask.GetRegisterId(), "KoTasks");
 
 			return reportId;
 		}

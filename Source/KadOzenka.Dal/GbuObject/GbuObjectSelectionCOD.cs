@@ -31,9 +31,7 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
-        private static GbuReportService _reportService;
-
-		#region columns for report
+        #region columns for report
 
 		/// <summary>
 		/// Номер столбца кад номера для записи в отчет
@@ -58,8 +56,13 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Выборки из справочника ЦОД");
 
-            _reportService = new GbuReportService();
-            _reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            using var reportService = new GbuReportService("Отчет выборки из справочника ЦОД по кадастровому номеру");
+            reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            reportService.SetIndividualWidth(inputFieldColumn, 6);
+            reportService.SetIndividualWidth(knColumn, 4);
+            reportService.SetIndividualWidth(valueColumn, 3);
+            reportService.SetIndividualWidth(outputFieldColumn, 6);
+            reportService.SetIndividualWidth(errorColumn, 5);
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -90,26 +93,19 @@ namespace KadOzenka.Dal.GbuObject
             MaxCount = Objs.Count;
             _log.Debug("Найдено {Count} Единиц оценки", MaxCount);
             CurrentCount = 0;
-            Parallel.ForEach(Objs, options, item => { RunOneGbu(item, setting, DictionaryItem, dt); });
+            Parallel.ForEach(Objs, options, item => { RunOneGbu(reportService, item, setting, DictionaryItem, dt); });
             CurrentCount = 0;
             MaxCount = 0;
 
-            _reportService.SetStyle();
-            _reportService.SetIndividualWidth(inputFieldColumn, 6);
-            _reportService.SetIndividualWidth(knColumn, 4);
-            _reportService.SetIndividualWidth(valueColumn, 3);
-            _reportService.SetIndividualWidth(outputFieldColumn, 6);
-            _reportService.SetIndividualWidth(errorColumn, 5);
 
-            long reportId = _reportService.SaveReport("Отчет выборки из справочника ЦОД по кадастровому номеру");
-            _reportService = null;
+            long reportId = reportService.SaveReport();
 
             _log.Debug("Закончена операция Выборки из справочника ЦОД");
 
             return reportId;
         }
 
-        public static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, CodSelectionSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem, DateTime dt)
+        public static void RunOneGbu(GbuReportService reportService, ObjectModel.Gbu.OMMainObject obj, CodSelectionSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem, DateTime dt)
         {
             lock (locked)
             {
@@ -122,8 +118,8 @@ namespace KadOzenka.Dal.GbuObject
 
             lock (locked)
             {
-                var rowReport = _reportService.GetCurrentRow();
-                AddRowToReport(rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
+                var rowReport = reportService.GetCurrentRow();
+                AddRowToReport(reportService, rowReport, obj.CadastralNumber, value, setting.IdAttributeResult.Value);
             }
 
             var attributeValue = new GbuObjectAttribute
@@ -141,14 +137,14 @@ namespace KadOzenka.Dal.GbuObject
             DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
         }
 
-        public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, string value, long resultAttribute, string errorMessage = "", string sourceName = "Справочник ЦОД")
+        public static void AddRowToReport(GbuReportService reportService, GbuReportService.Row rowNumber, string kn, string value, long resultAttribute, string errorMessage = "", string sourceName = "Справочник ЦОД")
         {
 	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-	        _reportService.AddValue(kn, knColumn, rowNumber);
-	        _reportService.AddValue(sourceName, inputFieldColumn, rowNumber);
-	        _reportService.AddValue(value, valueColumn, rowNumber);
-	        _reportService.AddValue(resultName, outputFieldColumn, rowNumber);
-	        _reportService.AddValue(errorMessage, errorColumn, rowNumber);
+	        reportService.AddValue(kn, knColumn, rowNumber);
+	        reportService.AddValue(sourceName, inputFieldColumn, rowNumber);
+	        reportService.AddValue(value, valueColumn, rowNumber);
+	        reportService.AddValue(resultName, outputFieldColumn, rowNumber);
+	        reportService.AddValue(errorMessage, errorColumn, rowNumber);
         }
 
 	}
