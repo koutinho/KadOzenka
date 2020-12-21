@@ -10,16 +10,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
+	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public class DataCompositionByCharacteristicsReportsLongProcessViaTables : LongProcess
 	{
 		private const int GbuMainObjectPackageSize = 150000;
 		public static string TableName => "data_composition_by_characteristics_by_tables";
 
-		private static readonly ILogger Log = Serilog.Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
-		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
+		private static readonly ILogger Logger = Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
+		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 
 		public DataCompositionByCharacteristicsReportsLongProcessViaTables()
 		{
@@ -35,7 +37,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			Log.Debug("Старт фонового процесса: {Description}.", processType.Description);
+			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 
 			CreteCacheTableViaObjectId();
 
@@ -43,15 +45,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			CopyAttributeIds(cancellationToken);
 
-			Log.Debug("Финиш фонового процесса: {Description}.", processType.Description);
+			Logger.Debug("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
 
 		#region Support Methods
 
-		public void CreteCacheTableViaObjectId()
+		private void CreteCacheTableViaObjectId()
 		{
-			Log.Debug("Начато создание таблицы-кеша для данных отчета.");
+			Logger.Debug("Начато создание таблицы-кеша для данных отчета.");
 
 			var sql = $@"DROP TABLE IF EXISTS {TableName};
 
@@ -66,13 +68,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			DBMngr.Main.ExecuteNonQuery(command);
 
-			Log.Debug("Закончено создание таблицы-кеша для данных отчета.");
+			Logger.Debug("Закончено создание таблицы-кеша для данных отчета.");
 		}
 
 		private void CopyObjectIdsToCacheTable(CancellationToken cancellationToken)
 		{
 			var objectsCount = OMMainObject.Where(x => x.ObjectType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-			Log.Debug($"Всего в БД {objectsCount} ОН.");
+			Logger.Debug($"Всего в БД {objectsCount} ОН.");
 
 			var copiedObjectsCount = 0;
 			var packageIndex = 0;
@@ -88,10 +90,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								select id, cadastral_number from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
 
-				Log.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
+				Logger.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
 				var insertObjectIdsCommand = DBMngr.Main.GetSqlStringCommand(copiedObjectIdsSql);
 				copiedObjectsCount += DBMngr.Main.ExecuteNonQuery(insertObjectIdsCommand);
-				Log.Debug($"Закончено копирование пакета {i}");
+				Logger.Debug($"Закончено копирование пакета {i}");
 
 				packageIndex++;
 			}
@@ -105,63 +107,65 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			{
 				CheckCancellationToken(cancellationToken);
 
-				Log.ForContext("RegisterId", register.Id)
+				using (Logger.TimeOperation($"Работа с реестром '{register.Description}' (ИД {register.Id})"))
+				{
+					Logger.ForContext("RegisterId", register.Id)
 					.Debug($"Начата работа с реестром '{register.Description}'. №{++registersCount} из {DataCompositionByCharacteristicsService.CachedRegisters.Count}");
 
-				if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
-				{
-					foreach (var postfix in postfixes)
+					if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
 					{
-						CheckCancellationToken(cancellationToken);
+						foreach (var postfix in postfixes)
+						{
+							CheckCancellationToken(cancellationToken);
 
-						var gbuTableName = $"{register.AllpriTable}_{postfix}";
+							var gbuTableName = $"{register.AllpriTable}_{postfix}";
 
-						var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
+							var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
 									--where object_id = 15880792
 									group by object_id";
 
-						var sql = $@"update {TableName} cache_table
+							var sql = $@"update {TableName} cache_table
 									set attributes = array_cat(attributes, source.newAttributes)
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-						Log.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}");
+							Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}");
 
-						var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
-						DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
+							var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
+							DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
+						}
 					}
-				}
-				else if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
-				{
-					var attributesCounter = 0;
-					var attributes = DataCompositionByCharacteristicsService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
-					foreach (var attribute in attributes)
+					else if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
 					{
-						CheckCancellationToken(cancellationToken);
+						var attributesCounter = 0;
+						var attributes = DataCompositionByCharacteristicsService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
+						foreach (var attribute in attributes)
+						{
+							CheckCancellationToken(cancellationToken);
 
-						if (attribute.IsPrimaryKey)
-							continue;
+							if (attribute.IsPrimaryKey)
+								continue;
 
-						var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
+							var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
 
-						var subQuery = $@"select object_id from {gbuTableName} 
+							var subQuery = $@"select object_id from {gbuTableName} 
 									--where object_id = 15880792
 									group by object_id";
 
-						var sql = $@"update {TableName} cache_table 
+							var sql = $@"update {TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-						Log.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
+							Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
 
-						var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
-						DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
+							var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
+							DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
+						}
 					}
 				}
 			}
 		}
-
 
 		private void CheckCancellationToken(CancellationToken cancellationToken)
 		{
@@ -169,7 +173,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				return;
 
 			var message = "Формирование кеш-таблицы было отменено пользователем";
-			Log.Error(message);
+			Logger.Error(message);
 			throw new Exception(message);
 		}
 
