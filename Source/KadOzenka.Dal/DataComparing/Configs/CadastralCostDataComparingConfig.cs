@@ -75,20 +75,17 @@ namespace KadOzenka.Dal.DataComparing.Configs
 			       System.IO.Path.GetExtension(fileName);
 		}
 
-		public string GetCostEmailMessageForTask(OMTask task, bool areUnitSetsInconsistencies, bool areUnitCostsInconsistencies)
+		public string GetCostEmailMessageForTask(OMTask task)
 		{
 			var taskName = GetTaskTemplateName(task);
 			var message = $"Результат проверки протоколов загрузки для задания на оценку '{taskName}' ({task.Id}): ";
-			if (task.CadastralCostComparingStatus_Code == KoDataComparingStatus.ThereAreInconsistencies)
+			if (task.CadastralCostComparingStatus_Code == KoDataComparingCadastralCostStatus.ThereAreUnitSetsInconsistencies 
+			    || task.CadastralCostComparingStatus_Code == KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
 			{
-				if (areUnitSetsInconsistencies)
+				message += task.CadastralCostComparingStatus_Code.GetEnumDescription() + "\n";
+				if (task.CadastralCostComparingStatus_Code ==
+				    KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
 				{
-					message += "Наборы данных для сравнения не совпадают\n";
-				}
-
-				if (areUnitCostsInconsistencies)
-				{
-					message += "Имеются несоответствия в кадастровой стоимости\n";
 					message += $@"<a href=""/Task/ExportTaskCadastralCostFDData?taskId={task.Id}"">Запустить формирование FD файлов</a>" + "\n";
 				}
 			}

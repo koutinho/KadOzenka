@@ -10783,11 +10783,18 @@ namespace ObjectModel.Directory
 namespace ObjectModel.Directory
 {
     /// <summary>
-    /// Статус после сравнения протоколов (224)
+    /// Статус после сравнения протоколов загрузки (224)
     ///</summary>
     [ReferenceInfo(ReferenceId = 224)]
-    public enum KoDataComparingStatus : long
+    public enum KoDataComparingTaskChangesStatus : long
     {
+		/// <summary>
+		/// Проверка не проводилась (0)
+		/// </summary>
+		[Description("Проверка не проводилась")]
+        [EnumCode("0")]
+        [ShortTitle("Проверка не проводилась")]
+        ComparingWasNotPerformed = 0,
 		/// <summary>
 		/// Данные совпадают (1)
 		/// </summary>
@@ -10802,6 +10809,45 @@ namespace ObjectModel.Directory
         [EnumCode("2")]
         [ShortTitle("Имеются расхождения")]
         ThereAreInconsistencies = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статус после сравнения протоколов КС (225)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 225)]
+    public enum KoDataComparingCadastralCostStatus : long
+    {
+		/// <summary>
+		/// Проверка не проводилась (0)
+		/// </summary>
+		[Description("Проверка не проводилась")]
+        [EnumCode("0")]
+        [ShortTitle("Проверка не проводилась")]
+        ComparingWasNotPerformed = 0,
+		/// <summary>
+		/// Данные совпадают (1)
+		/// </summary>
+		[Description("Данные совпадают")]
+        [EnumCode("1")]
+        [ShortTitle("Данные совпадают")]
+        DataAreMatch = 1,
+		/// <summary>
+		/// Наборы данных для сравнения не совпадают (2)
+		/// </summary>
+		[Description("Наборы данных для сравнения не совпадают")]
+        [EnumCode("2")]
+        [ShortTitle("Наборы данных для сравнения не совпадают")]
+        ThereAreUnitSetsInconsistencies = 2,
+		/// <summary>
+		/// Имеются несоответствия в кадастровой стоимости (3)
+		/// </summary>
+		[Description("Имеются несоответствия в кадастровой стоимости")]
+        [EnumCode("3")]
+        [ShortTitle("Имеются несоответствия в кадастровой стоимости")]
+        ThereAreUnitCostsInconsistencies = 3,
     }
 }
 

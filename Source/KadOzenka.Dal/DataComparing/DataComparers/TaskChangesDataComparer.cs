@@ -82,8 +82,8 @@ namespace KadOzenka.Dal.DataComparing.DataComparers
 				.Debug("Поиск и сохранение изменений для единицы оценки");
 			var task = TaskChangesDataComparingConfig.Current.GetTaskInfoFromFileName(rsmFileInfo);
 			task.DataChangesComparingStatus_Code = areProtocolsEqual
-				? KoDataComparingStatus.DataAreMatch
-				: KoDataComparingStatus.ThereAreInconsistencies;
+				? KoDataComparingTaskChangesStatus.DataAreMatch
+				: KoDataComparingTaskChangesStatus.ThereAreInconsistencies;
 			task.Save();
 
 			_log.ForContext("RsmFileName", rsmFileInfo.Name)

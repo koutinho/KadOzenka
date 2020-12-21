@@ -7319,12 +7319,12 @@ namespace ObjectModel.KO
         }
 
 
-        private KoDataComparingStatus _datachangescomparingstatus_Code;
+        private KoDataComparingTaskChangesStatus _datachangescomparingstatus_Code;
         /// <summary>
         /// 20300900 Статус после сравнения протоколов загрузки (справочный код) (CHANGES_COMPARING_STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20300900)]
-        public KoDataComparingStatus DataChangesComparingStatus_Code
+        public KoDataComparingTaskChangesStatus DataChangesComparingStatus_Code
         {
             get
             {
@@ -7374,12 +7374,12 @@ namespace ObjectModel.KO
         }
 
 
-        private KoDataComparingStatus _cadastralcostcomparingstatus_Code;
+        private KoDataComparingCadastralCostStatus _cadastralcostcomparingstatus_Code;
         /// <summary>
         /// 20301000 Статус после сравнения протоколов кадастровой стоимости (справочный код) (KS_COMPARING_STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20301000)]
-        public KoDataComparingStatus CadastralCostComparingStatus_Code
+        public KoDataComparingCadastralCostStatus CadastralCostComparingStatus_Code
         {
             get
             {
@@ -7405,46 +7405,6 @@ namespace ObjectModel.KO
                 this._cadastralcostcomparingstatus_Code = value;
                 NotifyPropertyChanged("CadastralCostComparingStatus");
                 NotifyPropertyChanged("CadastralCostComparingStatus_Code");
-            }
-        }
-
-
-        private string _changescomparingreportlink;
-        /// <summary>
-        /// 20301100 Ссылка на результат сравнения протоколов загрузки (CHANGES_COMPARING_REPORT_LINK)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20301100)]
-        public string ChangesComparingReportLink
-        {
-            get
-            {
-                CheckPropertyInited("ChangesComparingReportLink");
-                return _changescomparingreportlink;
-            }
-            set
-            {
-                _changescomparingreportlink = value;
-                NotifyPropertyChanged("ChangesComparingReportLink");
-            }
-        }
-
-
-        private string _cadastralcostreportlink;
-        /// <summary>
-        /// 20301200 Ссылка на результат сравнения протоколов КС (KS_COMPARING_REPORT_LINK)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20301200)]
-        public string CadastralCostReportLink
-        {
-            get
-            {
-                CheckPropertyInited("CadastralCostReportLink");
-                return _cadastralcostreportlink;
-            }
-            set
-            {
-                _cadastralcostreportlink = value;
-                NotifyPropertyChanged("CadastralCostReportLink");
             }
         }
 
