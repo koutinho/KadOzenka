@@ -10,18 +10,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.SRD;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
 using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Common;
+using ObjectModel.Directory.Common;
+using ObjectModel.Gbu;
 using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
+	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public class UniformReportLongProcess : LongProcess
 	{
 		private int _packageSize = 125000;
@@ -47,6 +55,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			UniformReportLongProcessInputParameters parameters = null;
@@ -64,18 +73,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				return;
 			}
 
+			if (!IsCacheTableExists())
+				throw new Exception("Не найдена таблица с данными для отчета");
+
 			var urls = new List<string>();
 			try
 			{
-				//var reportItems = GetReportItems(taskIds);
-				//var urlToDownloadReport = GenerateReport(reportItems, new GbuReportService());
-				//var message = "Операция успешно завершена." + $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
-				//SendMessage(processQueue, message, MessageSubject);
-				////TODO для тестирования
-				//var a = $"https://localhost:50252{urlToDownloadReport}";
-
-				Logger.Debug("Начат фоновый процесс (custom csv).");
-
 				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
 				Logger.Debug($"Всего в БД {unitsCount} ЕО.");
 
@@ -88,7 +91,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				var numberOfPackages = unitsCount / _packageSize + 1;
 				var processedItemsCount = 0;
-				using (Logger.TimeOperation($"Полная обработка трех пакетов"))
+				using (Logger.TimeOperation("Полная обработка всех пакетов"))
 				{
 					try
 					{
@@ -118,13 +121,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								List<ReportItem> currentPage;
 								using (Logger.TimeOperation($"Сбор данных для пакета №{i}"))
 								{
-									Logger.Debug(new Exception(sql),
-										$"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
+									Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
 
 									currentPage = QSQuery.ExecuteSql<ReportItem>(sql);
 									processedItemsCount += currentPage.Count;
-
-									Logger.Debug(new Exception(sql), $"Закончен сбор данных для пакета №{i}.");
 								}
 
 								CheckCancellationToken(cancellationToken);
@@ -152,9 +152,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				SendMessageInternal(processQueue, "Операция успешно завершена.", urls);
 
 				Logger.Debug("Закончен фоновый процесс.");
-
-				////TODO для тестирования
-				//var a = $"https://localhost:50252{urlToDownloadReport}";
 			}
 			catch (Exception exception)
 			{
@@ -169,6 +166,22 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 
 		#region Support Methods
+
+		public bool IsCacheTableExists()
+		{
+			var isExists = false;
+
+			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName}') as {nameof(isExists)}";
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+			if (dataTable.Rows.Count > 0)
+			{
+				isExists = dataTable.Rows[0][nameof(isExists)].ParseToBooleanNullable().GetValueOrDefault();
+			}
+
+			return isExists;
+		}
 
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, List<string> urls)
 		{
@@ -185,43 +198,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				return;
 
 			var message = "Формирование отчета было отменено пользователем";
-			Log.Error(message);
+			Logger.Error(message);
 			throw new Exception(message);
-		}
-
-		private List<ReportItem> GetReportItems(List<long> taskIds)
-		{
-			Logger.Debug("Начат сбор данных для отчета.");
-
-			var unitsCount = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-			Logger.Debug($"Всего в БД {unitsCount} ЕО.");
-
-			var operations = new List<ReportItem>();
-			var packageIndex = 0;
-			while (true)
-			{
-				if (operations.Count >= unitsCount)
-					break;
-
-				var objectIdsSubQuerySql = $@"select object_id from ko_unit 
-								where task_id in ({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE <> 2190 
-								order by object_id 
-								limit {_packageSize} offset {packageIndex * _packageSize} ";
-
-				var sql = $@"select cadastral_number as CadastralNumber, attributes 
-								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
-								where object_id in ({objectIdsSubQuerySql})";
-
-				Logger.Debug(new Exception(sql), $"Начата работа с пакетом №{packageIndex}. До этого было выгружено {operations.Count} записей");
-				operations.AddRange(QSQuery.ExecuteSql<ReportItem>(sql));
-				Logger.Debug($"Закончена работа с пакетом №{packageIndex}");
-
-				packageIndex++;
-			}
-
-			Logger.Debug($"Закончен сбор данных для отчета. Собрано {operations.Count} объектов");
-
-			return operations;
 		}
 
 		private string GenerateReport(List<ReportItem> reportItems)
@@ -253,22 +231,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 						Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
 				}
 
-				//WriteToStream(new List<string>{"1, 2"}, encoding, stream);
-				//WriteToStream(new List<string>{"3, 4"}, encoding, stream);
-
 				return SaveReportZip(stream, ReportName);
 			}
-
-			//reportService.SetStyle();
-			//reportService.SaveReportXlsx(ReportName, csvSaveOptions: new CsvSaveOptions(CsvType.CommaDelimited));
-
-			//return reportService.UrlToDownload;
 		}
 
 		public string SaveReportZip(MemoryStream stream, string fileName, long? mainRegisterId = null, string registerViewId = null, CsvSaveOptions csvSaveOptions = null)
 		{
-			Logger.Debug("Сохранение отчета через zip");
-
 			try
 			{
 				using (var zipFile = new ZipFile())
@@ -276,21 +244,23 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					zipFile.AlternateEncoding = Encoding.UTF8;
 					zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
-					Logger.Debug($"Начато добавление файла '{fileName}' в zip");
-					stream.Seek(0, SeekOrigin.Begin);
-					zipFile.AddEntry($"{fileName}.csv", stream);
-					Logger.Debug($"Закончено добавление файла '{fileName}' в zip");
+					using (Logger.TimeOperation($"Добавление файла '{fileName}' в zip"))
+					{
+						stream.Seek(0, SeekOrigin.Begin);
+						zipFile.AddEntry($"{fileName}.csv", stream);
+					}
 
 					var zipStream = new MemoryStream();
 					zipFile.Save(zipStream);
 					zipStream.Seek(0, SeekOrigin.Begin);
 					var zipFileName = $"{fileName} (архив)";
 
-					Logger.Debug($"Начато сохранение zip-файла '{zipFileName}'");
-					var a = new GbuReportService();
-					var export = a.SaveReport(zipStream, zipFileName, "zip");
-					Logger.Debug($"Закончено сохранение zip-файла '{zipFileName}'");
-					return $"/DataExport/DownloadExportResult?exportId={export.Id}";
+					using (Logger.TimeOperation($"Начато сохранение zip-файла '{zipFileName}'"))
+					{
+						var export = SaveReport(zipStream, zipFileName, "zip");
+						//TODO CIPJSKO-645: убрать magic string и зависимость от DataExport
+						return $"/DataExport/DownloadExportResult?exportId={export.Id}";
+					}
 				}
 			}
 			catch (Exception ex)
@@ -353,10 +323,32 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			}
 
 			return columns;
+		}
 
-			//reportService.AddTitle("Итоговый состав данных по характеристикам объектов недвижимости", 4);
-			//reportService.AddHeaders(columns);
-			//reportService.SetIndividualWidth(columns);
+		//TODO CIPJSKO-645: убрать зависимость от DataExporterCommon, нужно сохранять отчет в папку с отчетами
+		public OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension)
+		{
+			var currentDate = DateTime.Now;
+			var export = new OMExportByTemplates
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateCreated = currentDate,
+				DateStarted = currentDate,
+				Status = (int)ImportStatus.Added,
+				FileResultTitle = fileName,
+				FileExtension = fileExtension,
+				MainRegisterId = OMMainObject.GetRegisterId(),
+				RegisterViewId = "GbuObjects"
+			};
+			export.Save();
+
+			export.DateFinished = DateTime.Now;
+			export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+			export.Status = (long)ImportStatus.Completed;
+			FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
+			export.Save();
+
+			return export;
 		}
 
 		#endregion

@@ -1,263 +1,288 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Linq;
-using Core.Register.QuerySubsystem;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
-using Microsoft.Practices.ObjectBuilder2;
-using ObjectModel.KO;
-using Serilog;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Collections.Specialized;
+//using System.Data;
+//using System.Linq;
+//using System.Text;
+//using Core.Register.QuerySubsystem;
+//using Core.Shared.Extensions;
+//using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+//using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
+//using Microsoft.Practices.ObjectBuilder2;
+//using ObjectModel.Directory;
+//using ObjectModel.Gbu;
+//using ObjectModel.KO;
+//using Serilog;
 
-namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
-{
-    public class UniformReport : DataCompositionByCharacteristicsBaseReport
-	{
-		private readonly ILogger _logger;
-		protected override ILogger Logger => _logger;
+//namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
+//{
+//    public class UniformReport : DataCompositionByCharacteristicsBaseReport
+//	{
+//		private const int PackageSize = 100000;
 
-		public UniformReport()
-		{
-			_logger = Log.ForContext<UniformReport>();
-		}
+//		private readonly ILogger _logger;
+//		protected override ILogger Logger => _logger;
 
-		protected override string TemplateName(NameValueCollection query)
-        {
-            return "PricingFactorsCompositionUniformReport";
-        }
+//		public UniformReport()
+//		{
+//			_logger = Log.ForContext<UniformReport>();
+//		}
 
-        protected DataSet GetDataCompositionByCharacteristicsReportDataNew(NameValueCollection query, HashSet<long> objectList = null)
-        {
-            var taskIds = GetTaskIdList(query).ToList();
+//		protected override string TemplateName(NameValueCollection query)
+//        {
+//            return "PricingFactorsCompositionUniformReport";
+//        }
 
-            Logger.Debug("Начата выгрузка ИД ОН из ЕО по заданиям на оценку");
-			var objectIds = OMUnit.Where(x => taskIds.Contains((long) x.TaskId)).Select(x => x.ObjectId).Execute()
-	            .Select(x => x.ObjectId).ToList();
-			Logger.Debug($"Закончена выгрузка ИД ОН из ЕО по заданиям на оценку. Найдено {objectIds.Count} ОН");
+//        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
+//        {
+//            var taskIds = GetTaskIdList(query).ToList();
+           
+//            var unitsCount = OMUnit.Where(x => taskIds.Contains((long) x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+//            Logger.Debug($"Всего в БД {unitsCount} ЕО.");
 
-			Logger.Debug("Начат сбор данных из кеш-таблицы");
-			var sql = $"select * from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} where object_id in ({string.Join(",", objectIds)})";
-			var operations = QSQuery.ExecuteSql<ReportItemNew>(sql);
-			Logger.Debug($"Закончен сбор данных из кеш-таблицы. Найдено {operations.Count} объектов");
+//            var operations = new List<ReportItemNew>();
+//            var packageIndex = 0;
+//			while (true)
+//			{
+//				if (operations.Count >= unitsCount)
+//					break;
 
-			Logger.Debug("Начато формирование таблиц");
-			var dataSet = new DataSet();
-            //var itemTable = GetItemDataTable(operations);
-            //dataSet.Tables.Add(itemTable);
-            Logger.Debug("Закончено формирование таблиц");
+//				var objectIdsSubQuerySql = $@"select object_id from ko_unit 
+//								where task_id in ({string.Join(',', taskIds)}) and PROPERTY_TYPE_CODE <> 2190 
+//								order by object_id 
+//								limit {PackageSize} offset {packageIndex * PackageSize} ";
 
-			return dataSet;
-        }
+//				var sql = $@"select cadastral_number as CadastralNumber, attributes 
+//								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
+//								where object_id in ({objectIdsSubQuerySql})";
+				
+//				Logger.Debug(new Exception(sql), $"Начата работа с пакетом №{packageIndex}. До этого было выгружено {operations.Count} записей");
+//				operations.AddRange(QSQuery.ExecuteSql<ReportItemNew>(sql));
+//				Logger.Debug($"Закончена работа с пакетом №{packageIndex}");
 
+//				packageIndex++;
+//            }
 
-        protected override DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null)
-        {
-	        var taskIds = GetTaskIdList(query).ToList();
+//			Logger.Debug("Начато формирование таблиц");
+//			var dataSet = new DataSet();
+//			var itemTable = GetItemDataTable(operations);
+//			dataSet.Tables.Add(itemTable);
+//			Logger.Debug("Закончено формирование таблиц");
 
-			var operations = GetOperations<ReportItem>(taskIds, Logger);
-			Logger.Debug("Найдено {Count} объектов", operations?.Count);
+//			return dataSet;
+//        }
 
-			Logger.Debug("Начато формирование таблиц");
-	        var dataSet = new DataSet();
-	        var itemTable = GetItemDataTable(operations);
-	        dataSet.Tables.Add(itemTable);
-	        Logger.Debug("Закончено формирование таблиц");
+//   //     protected DataSet GetDataCompositionByCharacteristicsReportDataOld(NameValueCollection query, HashSet<long> objectList = null)
+//   //     {
+//	  //      var taskIds = GetTaskIdList(query).ToList();
 
-	        return dataSet;
-        }
+//			//var operations = GetOperations<ReportItem>(taskIds, Logger);
+//			//Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
-		#region Support Methods
+//			//Logger.Debug("Начато формирование таблиц");
+//	  //      var dataSet = new DataSet();
+//	  //      var itemTable = GetItemDataTable(operations);
+//	  //      dataSet.Tables.Add(itemTable);
+//	  //      Logger.Debug("Закончено формирование таблиц");
 
-		private DataTable GetItemDataTable(List<ReportItem> operations)
-        {
-            var titleForCharacteristic = "Характеристика объекта";
-            var titleForSource = "Итоговый источник информации";
-
-            var dataTable = new DataTable("Data");
-
-            dataTable.Columns.Add("Number");
-            dataTable.Columns.Add("CadastralNumber");
-            dataTable.Columns.Add("CharacteristicNameTitle");
-            dataTable.Columns.Add("CharacteristicName");
-
-            //для формирования матрицы нужен дубляж значения всех строк кроме характеристик
-            for (var i = 0; i < operations.Count; i++)
-            {
-	            var index = i + 1;
-
-				if (operations[i].FullAttributes.Count == 0)
-                {
-                    dataTable.Rows.Add(index,
-                        operations[i].CadastralNumber,
-                        $"{titleForCharacteristic} 1",
-                        string.Empty);
-
-                    dataTable.Rows.Add(index,
-                        operations[i].CadastralNumber,
-                        $"{titleForSource} 1",
-                        string.Empty);
-                }
-                else
-                {
-                    for (var j = 0; j < operations[i].FullAttributes.Count; j++)
-                    {
-                        for (var counter = 0; counter < 2; counter++)
-                        {
-                            string title, value;
-                            if (counter % 2 == 0)
-                            {
-                                title = $"{titleForCharacteristic} {j + 1}";
-                                value = operations[i].FullAttributes.ElementAtOrDefault(j)?.Name;
-                            }
-                            else
-                            {
-                                title = $"{titleForSource} {j + 1}";
-                                value = operations[i].FullAttributes.ElementAtOrDefault(j)?.RegisterName;
-                            }
-
-                            dataTable.Rows.Add(index,
-                                operations[i].CadastralNumber,
-                                title,
-                                value);
-                        }
-                    }
-                }
-            }
-
-            return dataTable;
-        }
-
-		#endregion
+//	  //      return dataSet;
+//   //     }
 
 
-		#region Entities
 
-		private class ReportItemNew
-		{
-			private List<Attribute> _fullAttributes;
+//		#region Support Methods
 
-			public string CadastralNumber { get; set; }
-			public long[] Attributes { get; set; }
-			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
+//		private DataTable GetItemDataTable(List<ReportItemNew> operations)
+//        {
+//            var titleForCharacteristic = "Характеристика объекта";
+//            var titleForSource = "Итоговый источник информации";
 
+//            var dataTable = new DataTable("Data");
 
-			private List<Attribute> GetUniqueAttributes()
-			{
-				var objectAttributes = new List<Attribute>();
-				Attributes.ForEach(attributeId =>
-				{
-					var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == attributeId);
-					var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
-					if (attribute == null || register == null)
-						return;
+//            dataTable.Columns.Add("Number");
+//            dataTable.Columns.Add("CadastralNumber");
+//            dataTable.Columns.Add("CharacteristicNameTitle");
+//            dataTable.Columns.Add("CharacteristicName");
 
-					objectAttributes.Add(new Attribute
-					{
-						Name = attribute.Name,
-						RegisterId = register.Id,
-						RegisterName = register.Description
-					});
-				});
+//            //для формирования матрицы нужен дубляж значения всех строк кроме характеристик
+//            for (var i = 0; i < operations.Count; i++)
+//            {
+//	            var index = i + 1;
 
-				if (objectAttributes.Count == 0)
-					return new List<Attribute>();
+//				if (operations[i].FullAttributes.Count == 0)
+//                {
+//                    dataTable.Rows.Add(index,
+//                        operations[i].CadastralNumber,
+//                        $"{titleForCharacteristic} 1",
+//                        string.Empty);
 
-				var gbuAttributesExceptRosreestr = objectAttributes
-					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
-				var rosreestrAttributes = objectAttributes
-					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+//                    dataTable.Rows.Add(index,
+//                        operations[i].CadastralNumber,
+//                        $"{titleForSource} 1",
+//                        string.Empty);
+//                }
+//                else
+//                {
+//                    for (var j = 0; j < operations[i].FullAttributes.Count; j++)
+//                    {
+//                        for (var counter = 0; counter < 2; counter++)
+//                        {
+//                            string title, value;
+//                            if (counter % 2 == 0)
+//                            {
+//                                title = $"{titleForCharacteristic} {j + 1}";
+//                                value = operations[i].FullAttributes.ElementAtOrDefault(j)?.Name;
+//                            }
+//                            else
+//                            {
+//                                title = $"{titleForSource} {j + 1}";
+//                                value = operations[i].FullAttributes.ElementAtOrDefault(j)?.RegisterName;
+//                            }
 
-				//симметрическая разность множеств
-				var uniqueAttributes = new List<Attribute>();
-				//отбираем уникальные аттрибуты из РР
-				rosreestrAttributes.ForEach(rr =>
-				{
-					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+//                            dataTable.Rows.Add(index,
+//                                operations[i].CadastralNumber,
+//                                title,
+//                                value);
+//                        }
+//                    }
+//                }
+//            }
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(rr);
-				});
-				//отбираем уникальные аттрибуты из всех источников кроме РР
-				gbuAttributesExceptRosreestr.ForEach(gbu =>
-				{
-					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+//            return dataTable;
+//        }
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(gbu);
-				});
-
-				return uniqueAttributes;
-			}
-		}
-
-
-		private class ReportItem
-		{
-			private List<Attribute> _fullAttributes;
-
-			public string CadastralNumber { get; set; }
-			public string[] Attributes { get; set; }
-			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
+//		#endregion
 
 
-			private List<Attribute> GetUniqueAttributes()
-			{
-				var objectAttributes = new List<Attribute>();
-				Attributes.Where(attribute => !string.IsNullOrWhiteSpace(attribute)).ForEach(attributeIdStr =>
-				{
-					foreach (var processedAttributeId in attributeIdStr.Split(','))
-					{
-						var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
-						var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
-						if (attribute == null || register == null)
-							continue;
+//		#region Entities
 
-						objectAttributes.Add(new Attribute
-						{
-							Name = attribute.Name,
-							RegisterId = register.Id,
-							RegisterName = register.Description
-						});
-					}
-				});
+//		private class ReportItemNew
+//		{
+//			private List<Attribute> _fullAttributes;
 
-				if (objectAttributes.Count == 0)
-					return new List<Attribute>();
+//			public string CadastralNumber { get; set; }
+//			public long[] Attributes { get; set; }
+//			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
 
-				var gbuAttributesExceptRosreestr = objectAttributes
-					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
-				var rosreestrAttributes = objectAttributes
-					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 
-				//симметрическая разность множеств
-				var uniqueAttributes = new List<Attribute>();
-				//отбираем уникальные аттрибуты из РР
-				rosreestrAttributes.ForEach(rr =>
-				{
-					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+//			private List<Attribute> GetUniqueAttributes()
+//			{
+//				if(Attributes == null || Attributes.Length == 0)
+//					return new List<Attribute>();
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(rr);
-				});
-				//отбираем уникальные аттрибуты из всех источников кроме РР
-				gbuAttributesExceptRosreestr.ForEach(gbu =>
-				{
-					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+//				var objectAttributes = new List<Attribute>();
+//				Attributes.ForEach(attributeId =>
+//				{
+//					var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == attributeId);
+//					var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+//					if (attribute == null || register == null)
+//						return;
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(gbu);
-				});
+//					objectAttributes.Add(new Attribute
+//					{
+//						Name = attribute.Name,
+//						RegisterId = register.Id,
+//						RegisterName = register.Description
+//					});
+//				});
 
-				return uniqueAttributes;
-			}
-		}
+//				if (objectAttributes.Count == 0)
+//					return new List<Attribute>();
 
-		#endregion
-	}
-}
+//				var gbuAttributesExceptRosreestr = objectAttributes
+//					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+//				var rosreestrAttributes = objectAttributes
+//					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+
+//				//симметрическая разность множеств
+//				var uniqueAttributes = new List<Attribute>();
+//				//отбираем уникальные аттрибуты из РР
+//				rosreestrAttributes.ForEach(rr =>
+//				{
+//					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
+//						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+//					if (!isSameAttributesExist)
+//						uniqueAttributes.Add(rr);
+//				});
+//				//отбираем уникальные аттрибуты из всех источников кроме РР
+//				gbuAttributesExceptRosreestr.ForEach(gbu =>
+//				{
+//					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
+//						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+//					if (!isSameAttributesExist)
+//						uniqueAttributes.Add(gbu);
+//				});
+
+//				return uniqueAttributes;
+//			}
+//		}
+
+
+//		private class ReportItem
+//		{
+//			private List<Attribute> _fullAttributes;
+
+//			public string CadastralNumber { get; set; }
+//			public string[] Attributes { get; set; }
+//			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
+
+
+//			private List<Attribute> GetUniqueAttributes()
+//			{
+//				var objectAttributes = new List<Attribute>();
+//				Attributes.Where(attribute => !string.IsNullOrWhiteSpace(attribute)).ForEach(attributeIdStr =>
+//				{
+//					foreach (var processedAttributeId in attributeIdStr.Split(','))
+//					{
+//						var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == processedAttributeId.ParseToLong());
+//						var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);
+//						if (attribute == null || register == null)
+//							continue;
+
+//						objectAttributes.Add(new Attribute
+//						{
+//							Name = attribute.Name,
+//							RegisterId = register.Id,
+//							RegisterName = register.Description
+//						});
+//					}
+//				});
+
+//				if (objectAttributes.Count == 0)
+//					return new List<Attribute>();
+
+//				var gbuAttributesExceptRosreestr = objectAttributes
+//					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+//				var rosreestrAttributes = objectAttributes
+//					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
+
+//				//симметрическая разность множеств
+//				var uniqueAttributes = new List<Attribute>();
+//				//отбираем уникальные аттрибуты из РР
+//				rosreestrAttributes.ForEach(rr =>
+//				{
+//					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
+//						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+//					if (!isSameAttributesExist)
+//						uniqueAttributes.Add(rr);
+//				});
+//				//отбираем уникальные аттрибуты из всех источников кроме РР
+//				gbuAttributesExceptRosreestr.ForEach(gbu =>
+//				{
+//					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
+//						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+
+//					if (!isSameAttributesExist)
+//						uniqueAttributes.Add(gbu);
+//				});
+
+//				return uniqueAttributes;
+//			}
+//		}
+
+//		#endregion
+//	}
+//}

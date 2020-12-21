@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
@@ -24,7 +26,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ObjectModel.SRD;
+using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -317,8 +319,32 @@ namespace KadOzenka.Web.Controllers
             return GetStatisticalDataReportUrl(model.Map());
         }
 
-        #endregion
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+        public IActionResult AddUniformReportLongProcessToQueue(StatisticalDataModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
 
-        #endregion StatisticalData
-    }
+	        var parameters = new UniformReportLongProcessInputParameters
+	        {
+		        TaskIds = model.TaskFilter.ToList()
+	        };
+
+			////TODO код для отладки
+			//new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = parameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			UniformReportLongProcess.AddProcessToQueue(parameters);
+
+			return Ok();
+        }
+
+		#endregion
+
+		#endregion StatisticalData
+	}
 }
