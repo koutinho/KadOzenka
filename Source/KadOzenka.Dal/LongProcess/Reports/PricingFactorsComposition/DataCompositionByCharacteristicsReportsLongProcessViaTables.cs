@@ -46,6 +46,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			CopyAttributeIds(cancellationToken);
 
+			CreteIndexOnCacheTable();
+
 			Logger.Debug("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
@@ -62,14 +64,23 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				    object_id			bigint NOT NULL,
 					cadastral_number	varchar(20) NOT NULL,
 				    attributes			bigint[]
-				);
-
-				CREATE UNIQUE INDEX ON {TableName} (object_id);";
+				);";
 
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			DBMngr.Main.ExecuteNonQuery(command);
 
 			Logger.Debug("Закончено создание таблицы-кеша для данных отчета.");
+		}
+
+		private void CreteIndexOnCacheTable()
+		{
+			using (Logger.TimeOperation("Создание индекса для кеш-таблицы"))
+			{
+				var sql = $@"CREATE UNIQUE INDEX ON {TableName} (object_id);";
+
+				var command = DBMngr.Main.GetSqlStringCommand(sql);
+				DBMngr.Main.ExecuteNonQuery(command);
+			}
 		}
 
 		private void CopyObjectIdsToCacheTable(CancellationToken cancellationToken)
