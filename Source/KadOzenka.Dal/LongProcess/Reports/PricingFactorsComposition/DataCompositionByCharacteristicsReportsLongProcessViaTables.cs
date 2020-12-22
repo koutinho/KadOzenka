@@ -63,6 +63,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				CREATE TABLE {TableName} (
 				    object_id			bigint NOT NULL,
 					cadastral_number	varchar(20) NOT NULL,
+					object_type_code	integer,
 				    attributes			bigint[]
 				);";
 
@@ -97,9 +98,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 				CheckCancellationToken(cancellationToken);
 
-				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id, cadastral_number) 
+				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id, cadastral_number, object_type_code) 
 							(
-								select id, cadastral_number from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+								select id, cadastral_number, object_type_code from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
 
 				Logger.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
