@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Platform.Register;
@@ -19,9 +20,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		public static List<RegisterAttribute> CachedAttributes { get; private set; }
 		public static long RosreestrRegisterId { get; private set; }
 
+		private readonly CancellationManager _cancellationManager;
 
-		public DataCompositionByCharacteristicsService()
+		public DataCompositionByCharacteristicsService(CancellationManager cancellationManager)
 		{
+			_cancellationManager = cancellationManager;
 			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
 			//для тестирования
@@ -75,8 +78,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var isExists = false;
 
 			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{TableName}') as {nameof(isExists)}";
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+			var dataTable = _cancellationManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+			//var command = DBMngr.Main.GetSqlStringCommand(sql);
+			//var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
 			if (dataTable.Rows.Count > 0)
 			{
@@ -116,8 +120,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var columnName = "count";
 			var sql = $"select count(*) as {columnName} from ko_unit unit where {GetUnitCondition(taskIds)}";
 
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+			var dataTable= _cancellationManager.ExecuteSqlStringToDataSet(sql)?.Tables[0];
+			//var command = DBMngr.Main.GetSqlStringCommand(sql);
+			//var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
 			if (dataTable.Rows.Count <= 0) 
 				return 0;

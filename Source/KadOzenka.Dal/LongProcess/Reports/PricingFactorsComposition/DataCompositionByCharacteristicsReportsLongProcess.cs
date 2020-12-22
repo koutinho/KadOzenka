@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Core.Register.LongProcessManagment;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Core.LongProcess;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Serilog;
@@ -14,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public DataCompositionByCharacteristicsReportsLongProcess()
 		{
-			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 		}
 
 		public static long AddProcessToQueue()
@@ -24,6 +24,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			CancellationManager cManager = new CancellationManager {BaseCancellationToken = cancellationToken};
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService(cManager);
+
 			Log.Information("Старт фонового процесса: {Description}.", processType.Description);
 
 			DataCompositionByCharacteristicsService.CreteCacheTable();

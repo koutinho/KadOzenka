@@ -5,6 +5,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.ReportingFormFormation;
 using ObjectModel.Directory;
@@ -15,24 +16,28 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 	public class ReportingFormFormationService
 	{
 		private readonly GbuObjectService _gbuObjectService;
+		private readonly CancellationManager _cancellationManager;
 
-		public ReportingFormFormationService(GbuObjectService gbuObjectService)
+		public ReportingFormFormationService(GbuObjectService gbuObjectService, CancellationManager cancellationManager)
 		{
 			_gbuObjectService = gbuObjectService;
+			_cancellationManager = cancellationManager;
+
 		}
 
 		public List<UnitDto> GetNewlyRegisteredObjects(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.New);
-			var objects = query
+			query
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.ParentTask.CreationDate)
 				.Select(x => x.StatusRepeatCalc_Code)
 				.Select(x => x.Square)
 				.Select(x => x.PropertyType_Code)
-				.Select(x => x.Status_Code)
-				.Execute();
+				.Select(x => x.Status_Code);
+		
 
+			var objects = _cancellationManager.ExecuteQuery(query);
 			return objects.Select(x => new UnitDto
 			{
 				CadastralNumber = x.CadastralNumber,
@@ -47,15 +52,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitCountByPropertyTypeDto> GetNewlyRegisteredObjectsByPropertyType(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.New);
-			var objectsByPropertyType = query
-				.GroupBy(x => x.PropertyType_Code)
-				.ExecuteSelect(x => new
-				{
-					x.PropertyType_Code,
-					ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
-				}).Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
+				query.GroupBy(x => x.PropertyType_Code);
 
-			return objectsByPropertyType;
+			var objectsByPropertyType = _cancellationManager.ExecuteSelect(query, x => new
+			{
+				x.PropertyType_Code,
+				ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
+			})?.Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
+
+			return objectsByPropertyType ?? new List<UnitCountByPropertyTypeDto>();
 		}
 
 		public List<UnitCountByTypeOfUseDto> GetNewlyRegisteredObjectsByTypeOfUse(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo, long typeOfUseAttributeId)
@@ -276,19 +281,24 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			taskCreationDateFrom = taskCreationDateFrom?.Date;
 			taskCreationDateTo = taskCreationDateTo?.GetEndOfTheDay();
-			var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo)
-				.Select(x => new UnitCountByTypeOfUseDto
-					{ TypeOfUse = GetAttribureValueString(x.AttributeValue, attribute), ObjectsCount = x.ObjectsCount }).ToList();
-
-			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, status);
-			var objectsCount = query.ExecuteCount();
-
-			if (values.Sum(x => x.ObjectsCount) < objectsCount)
+			if (!_cancellationManager.GetReportCancellationToken().IsCancellationRequested)
 			{
-				values.Add(new UnitCountByTypeOfUseDto { TypeOfUse = "Значение отсутствует", ObjectsCount = objectsCount - values.Sum(x => x.ObjectsCount) });
-			}
+				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo)
+					.Select(x => new UnitCountByTypeOfUseDto
+						{ TypeOfUse = GetAttribureValueString(x.AttributeValue, attribute), ObjectsCount = x.ObjectsCount }).ToList();
 
-			return values;
+				var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, status);
+				var objectsCount = query.ExecuteCount();
+
+				if (values.Sum(x => x.ObjectsCount) < objectsCount)
+				{
+					values.Add(new UnitCountByTypeOfUseDto { TypeOfUse = "Значение отсутствует", ObjectsCount = objectsCount - values.Sum(x => x.ObjectsCount) });
+				}
+
+				return values;
+			}
+			
+			return new List<UnitCountByTypeOfUseDto>();
 		}
 
 		private string GetAttribureValueString(object attributeValue, RegisterAttribute attribute)

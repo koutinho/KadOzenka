@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Serilog;
@@ -15,21 +16,24 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	    private const int PackageSize = 5000;
 		protected DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
 
-	    public DataCompositionByCharacteristicsBaseReport()
+		private readonly CancellationManager _cancellationQueryManager;
+		public DataCompositionByCharacteristicsBaseReport()
 	    {
-		    DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
+		    _cancellationQueryManager = new CancellationManager();
+		    DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService(_cancellationQueryManager);
 	    }
 
 
 	    protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 	    {
-		    return GetDataCompositionByCharacteristicsReportData(query, objectList);
+		    _cancellationQueryManager.BaseCancellationToken = CancellationToken.GetValueOrDefault();
+			return GetDataCompositionByCharacteristicsReportData(query, objectList);
 	    }
 
 	    protected abstract DataSet GetDataCompositionByCharacteristicsReportData(NameValueCollection query, HashSet<long> objectList = null);
 
 
-		protected List<T> GetOperations<T>(List<long> taskIds, ILogger logger) where T : new()
+		protected List<T> GetOperations<T>(List<long> taskIds, ILogger logger) where T : class, new()
 		{
 			var result = new List<T>();
 
@@ -84,7 +88,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
 		#region Support Methods
 
-		private List<T> GetResults<T>(string sql, ILogger logger) where T : new()
+		private List<T> GetResults<T>(string sql, ILogger logger) where T : class, new()
 		{
 			logger.Debug(new Exception(sql), "Общий Sql запрос (без пагинации)");
 
@@ -95,8 +99,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 				var offset = packageIndex * PackageSize;
 				var sqlWithPackage = $"{sql} \nlimit {PackageSize} offset {offset}";
 				logger.Debug(new Exception(sqlWithPackage), $"Начата обработка пакета с индексом {i}, до этого было выгружено {offset} записей");
+				var package = _cancellationQueryManager.ExecuteSql<T>(sqlWithPackage);
 
-				var package = QSQuery.ExecuteSql<T>(sqlWithPackage);
+				//var package = QSQuery.ExecuteSql<T>(sqlWithPackage);
 				if (package.Count == 0)
 					break;
 
