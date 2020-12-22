@@ -112,9 +112,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			try
 			{
 				var postfixes = new List<string> { "TXT", "NUM", "DT" };
-				var registersCount = 0;
-
-				Parallel.For(0, DataCompositionByCharacteristicsService.CachedRegisters.Count, options, i =>
+				var maxNumberOfRegisters = DataCompositionByCharacteristicsService.CachedRegisters.Count;
+				Parallel.For(0, maxNumberOfRegisters, options, i =>
 				{
 					CheckCancellationToken(cancellationToken);
 
@@ -122,7 +121,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					using (Logger.TimeOperation($"Работа с реестром '{register.Description}' (ИД {register.Id})"))
 					{
 						Logger.ForContext("RegisterId", register.Id)
-						.Debug($"Начата работа с реестром '{register.Description}'. №{++registersCount} из {DataCompositionByCharacteristicsService.CachedRegisters.Count}");
+						.Debug($"Начата работа с реестром '{register.Description}'. №{i} из {maxNumberOfRegisters}");
 
 						if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
 						{
