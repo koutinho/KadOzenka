@@ -124,7 +124,7 @@ namespace KadOzenka.Dal.LongProcess
         {
 	        _log.Information("Запущена генерация отчета");
 
-			var reportService = new GbuReportService();
+			using var reportService = new GbuReportService("Задания для ЦОД");
 
 	        var cadastralNumberColumn = new GbuReportService.Column
 	        {
@@ -149,8 +149,7 @@ namespace KadOzenka.Dal.LongProcess
 		        reportService.AddValue("Изменение ФС", statusNumberColumn.Index, row);
 	        });
 
-	        reportService.SetStyle();
-	        reportService.SaveReport("Задания для ЦОД");
+	        reportService.SaveReport();
 
 	        _log.Information("Закончена генерация отчета");
 

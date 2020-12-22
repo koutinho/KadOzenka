@@ -294,7 +294,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('COMMON_DATA_FORM_STORAGE', 'id_user')) then
-        execute 'alter table COMMON_DATA_FORM_STORAGE add "id_user" BIGINT NOT NULL';
+        execute 'alter table COMMON_DATA_FORM_STORAGE add "id_user" BIGINT';
     end if;
 end $$;
 
@@ -329,8 +329,25 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('COMMON_DATA_FORM_STORAGE', 'is_common')) then
+        execute 'alter table COMMON_DATA_FORM_STORAGE add "is_common" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('common_data_form_storage_pkey')) then
     execute 'alter table COMMON_DATA_FORM_STORAGE add constraint common_data_form_storage_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('common_data_form_storage_unique_indx')) then
+	execute 'CREATE UNIQUE INDEX common_data_form_storage_unique_indx on COMMON_DATA_FORM_STORAGE (formtype)';
   end if;
 end $$;
 --<DO>--
@@ -1100,6 +1117,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'error_id')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "error_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'last_notification_date')) then
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "last_notification_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_979_q_pk')) then
     execute 'alter table CORE_BACKGROUND_EXPORTS add constraint reg_979_q_pk primary key (id)';
   end if;
@@ -1479,6 +1514,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('core_error_log_idx')) then
 	execute 'CREATE  INDEX core_error_log_idx on CORE_ERROR_LOG (errordate)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('core_error_log_composite_idx')) then
+	execute 'CREATE  INDEX core_error_log_composite_idx on CORE_ERROR_LOG (id, errordate)';
   end if;
 end $$;
 --<DO>--
@@ -3907,6 +3950,14 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('core_register_attribute_unique_name_constraint')) then
+	execute 'CREATE UNIQUE INDEX core_register_attribute_unique_name_constraint on CORE_REGISTER_ATTRIBUTE (registerid)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('CORE_REGISTER_LOCK')) then
 		execute 'create table CORE_REGISTER_LOCK ("id" BIGINT NOT NULL)';
 	end if;
@@ -5377,6 +5428,33 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_SRD_USER', 'current_entrance_count')) then
         execute 'alter table CORE_SRD_USER add "current_entrance_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USER', 'position_for_doc')) then
+        execute 'alter table CORE_SRD_USER add "position_for_doc" VARCHAR(500)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USER', 'short_name')) then
+        execute 'alter table CORE_SRD_USER add "short_name" VARCHAR(500)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USER', 'short_name_for_doc')) then
+        execute 'alter table CORE_SRD_USER add "short_name_for_doc" VARCHAR(500)';
     end if;
 end $$;
 
@@ -7624,7 +7702,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_8')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_8" BIGINT';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_8" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -7633,7 +7711,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_HAR_OKS', 'har_9')) then
-        execute 'alter table DECLARATIONS_HAR_OKS add "har_9" BIGINT';
+        execute 'alter table DECLARATIONS_HAR_OKS add "har_9" VARCHAR(4096)';
     end if;
 end $$;
 
@@ -8868,6 +8946,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_SUBJECT', 'office_number')) then
+        execute 'alter table DECLARATIONS_SUBJECT add "office_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_505_q_pk')) then
     execute 'alter table DECLARATIONS_SUBJECT add constraint reg_505_q_pk primary key (id)';
   end if;
@@ -9071,7 +9158,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_UVED', 'rejection_reason')) then
-        execute 'alter table DECLARATIONS_UVED add "rejection_reason" VARCHAR(1024)';
+        execute 'alter table DECLARATIONS_UVED add "rejection_reason" VARCHAR';
     end if;
 end $$;
 
@@ -9107,7 +9194,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_UVED', 'annex')) then
-        execute 'alter table DECLARATIONS_UVED add "annex" VARCHAR(512)';
+        execute 'alter table DECLARATIONS_UVED add "annex" VARCHAR';
     end if;
 end $$;
 
@@ -9429,6 +9516,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'cost_calculate_factors')) then
+        execute 'alter table ES_EXPRESS_SCORE add "cost_calculate_factors" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'change_user_id')) then
+        execute 'alter table ES_EXPRESS_SCORE add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'change_date')) then
+        execute 'alter table ES_EXPRESS_SCORE add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('es_exspress_score_pkey')) then
     execute 'alter table ES_EXPRESS_SCORE add constraint es_exspress_score_pkey primary key (id)';
   end if;
@@ -9481,6 +9595,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'use_interval')) then
+        execute 'alter table ES_REFERENCE add "use_interval" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'change_user_id')) then
+        execute 'alter table ES_REFERENCE add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'change_date')) then
+        execute 'alter table ES_REFERENCE add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_609_q_pk')) then
     execute 'alter table ES_REFERENCE add constraint reg_609_q_pk primary key (id)';
   end if;
@@ -9526,6 +9667,33 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'calculation_value')) then
         execute 'alter table ES_REFERENCE_ITEM add "calculation_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'common_value')) then
+        execute 'alter table ES_REFERENCE_ITEM add "common_value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value_from')) then
+        execute 'alter table ES_REFERENCE_ITEM add "value_from" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value_to')) then
+        execute 'alter table ES_REFERENCE_ITEM add "value_to" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9611,58 +9779,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_SQUARE')) then
-		execute 'create table ES_SQUARE ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'id')) then
-        execute 'alter table ES_SQUARE add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'number')) then
-        execute 'alter table ES_SQUARE add "number" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'square_from')) then
-        execute 'alter table ES_SQUARE add "square_from" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'square_to')) then
-        execute 'alter table ES_SQUARE add "square_to" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_square_pkey')) then
-    execute 'alter table ES_SQUARE add constraint es_square_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('ES_TO_MARKET_CORE_OBJECT')) then
 		execute 'create table ES_TO_MARKET_CORE_OBJECT ("id" BIGINT NOT NULL)';
 	end if;
@@ -9700,101 +9816,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('es_to_market_core_object_pkey')) then
     execute 'alter table ES_TO_MARKET_CORE_OBJECT add constraint es_to_market_core_object_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_WALL_MATERIAL')) then
-		execute 'create table ES_WALL_MATERIAL ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'id')) then
-        execute 'alter table ES_WALL_MATERIAL add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'wall_material')) then
-        execute 'alter table ES_WALL_MATERIAL add "wall_material" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'mark')) then
-        execute 'alter table ES_WALL_MATERIAL add "mark" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_603_q_pk')) then
-    execute 'alter table ES_WALL_MATERIAL add constraint reg_603_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_YEAR_CONSTRUCTION')) then
-		execute 'create table ES_YEAR_CONSTRUCTION ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'id')) then
-        execute 'alter table ES_YEAR_CONSTRUCTION add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'number')) then
-        execute 'alter table ES_YEAR_CONSTRUCTION add "number" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'year_from')) then
-        execute 'alter table ES_YEAR_CONSTRUCTION add "year_from" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'year_to')) then
-        execute 'alter table ES_YEAR_CONSTRUCTION add "year_to" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_year_construction_pkey')) then
-    execute 'alter table ES_YEAR_CONSTRUCTION add constraint es_year_construction_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -9964,6 +9985,58 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('fm_reports_savedreport_pkey')) then
     execute 'alter table FM_REPORTS_SAVEDREPORT add constraint fm_reports_savedreport_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_ATTRIBUTE_SETTINGS')) then
+		execute 'create table GBU_ATTRIBUTE_SETTINGS ("attribute_id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'attribute_id')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'use_parent_attribute_for_living_placements')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "use_parent_attribute_for_living_placements" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'use_parent_attribute_for_not_living_placements')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "use_parent_attribute_for_not_living_placements" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'use_parent_attribute_for_car_place')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "use_parent_attribute_for_car_place" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_81_q_pk')) then
+    execute 'alter table GBU_ATTRIBUTE_SETTINGS add constraint reg_81_q_pk primary key (attribute_id)';
   end if;
 end $$;
 --<DO>--
@@ -18198,6 +18271,462 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_660')) then
+		execute 'create table gbu_source2_a_660 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'id')) then
+        execute 'alter table gbu_source2_a_660 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'object_id')) then
+        execute 'alter table gbu_source2_a_660 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'ot')) then
+        execute 'alter table gbu_source2_a_660 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 's')) then
+        execute 'alter table gbu_source2_a_660 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_660 add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'value')) then
+        execute 'alter table gbu_source2_a_660 add "value" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'change_date')) then
+        execute 'alter table gbu_source2_a_660 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_660 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_660', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_660 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_660__pk')) then
+    execute 'alter table gbu_source2_a_660 add constraint reg_2_a_660__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_660__fk_o')) then
+	execute 'alter table gbu_source2_a_660 add constraint reg_2_a_660__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_660_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_660_inx_obj_attr_id on gbu_source2_a_660 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_661')) then
+		execute 'create table gbu_source2_a_661 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'id')) then
+        execute 'alter table gbu_source2_a_661 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'object_id')) then
+        execute 'alter table gbu_source2_a_661 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'ot')) then
+        execute 'alter table gbu_source2_a_661 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 's')) then
+        execute 'alter table gbu_source2_a_661 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_661 add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'value')) then
+        execute 'alter table gbu_source2_a_661 add "value" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'change_date')) then
+        execute 'alter table gbu_source2_a_661 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_661 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_661', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_661 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_661__pk')) then
+    execute 'alter table gbu_source2_a_661 add constraint reg_2_a_661__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_661__fk_o')) then
+	execute 'alter table gbu_source2_a_661 add constraint reg_2_a_661__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_661_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_661_inx_obj_attr_id on gbu_source2_a_661 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_662')) then
+		execute 'create table gbu_source2_a_662 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'id')) then
+        execute 'alter table gbu_source2_a_662 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'object_id')) then
+        execute 'alter table gbu_source2_a_662 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'ot')) then
+        execute 'alter table gbu_source2_a_662 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 's')) then
+        execute 'alter table gbu_source2_a_662 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_662 add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'value')) then
+        execute 'alter table gbu_source2_a_662 add "value" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'change_date')) then
+        execute 'alter table gbu_source2_a_662 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_662 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_662', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_662 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_662__pk')) then
+    execute 'alter table gbu_source2_a_662 add constraint reg_2_a_662__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_662__fk_o')) then
+	execute 'alter table gbu_source2_a_662 add constraint reg_2_a_662__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_662_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_662_inx_obj_attr_id on gbu_source2_a_662 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_663')) then
+		execute 'create table gbu_source2_a_663 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'id')) then
+        execute 'alter table gbu_source2_a_663 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'object_id')) then
+        execute 'alter table gbu_source2_a_663 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'ot')) then
+        execute 'alter table gbu_source2_a_663 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 's')) then
+        execute 'alter table gbu_source2_a_663 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_663 add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'value')) then
+        execute 'alter table gbu_source2_a_663 add "value" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'change_date')) then
+        execute 'alter table gbu_source2_a_663 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_663 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_663', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_663 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_663__pk')) then
+    execute 'alter table gbu_source2_a_663 add constraint reg_2_a_663__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_663__fk_o')) then
+	execute 'alter table gbu_source2_a_663 add constraint reg_2_a_663__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_663_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_663_inx_obj_attr_id on gbu_source2_a_663 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_8')) then
 		execute 'create table gbu_source2_a_8 ("id" BIGINT NOT NULL)';
 	end if;
@@ -25584,6 +26113,76 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_FACTOR_SETTINGS')) then
+		execute 'create table KO_FACTOR_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'id')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'factor_id')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "factor_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'inheritance')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "inheritance" VARCHAR(2000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'inheritance_code')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "inheritance_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'source')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "source" VARCHAR(2000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_FACTOR_SETTINGS', 'correct_factor_id')) then
+        execute 'alter table KO_FACTOR_SETTINGS add "correct_factor_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('id')) then
+    execute 'alter table KO_FACTOR_SETTINGS add constraint id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_GROUP')) then
 		execute 'create table KO_GROUP ("id" BIGINT NOT NULL)';
 	end if;
@@ -25943,6 +26542,30 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('group_id_idx')) then
+	execute 'CREATE  INDEX group_id_idx on KO_MARK_CATALOG (group_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('factor_id_idx')) then
+	execute 'CREATE  INDEX factor_id_idx on KO_MARK_CATALOG (factor_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('value_factor_idx')) then
+	execute 'CREATE  INDEX value_factor_idx on KO_MARK_CATALOG (value_factor)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_MODEL')) then
 		execute 'create table KO_MODEL ("id" BIGINT NOT NULL)';
 	end if;
@@ -26032,8 +26655,150 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'linear_training_result')) then
+        execute 'alter table KO_MODEL add "linear_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'exponential_training_result')) then
+        execute 'alter table KO_MODEL add "exponential_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'multiplicative_training_result')) then
+        execute 'alter table KO_MODEL add "multiplicative_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'is_oks_object_type')) then
+        execute 'alter table KO_MODEL add "is_oks_object_type" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'type')) then
+        execute 'alter table KO_MODEL add "type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'a0_exponential')) then
+        execute 'alter table KO_MODEL add "a0_exponential" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'a0_multiplicative')) then
+        execute 'alter table KO_MODEL add "a0_multiplicative" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'a0_linear_previous')) then
+        execute 'alter table KO_MODEL add "a0_linear_previous" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'a0_multiplicative_previous')) then
+        execute 'alter table KO_MODEL add "a0_multiplicative_previous" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'a0_exponential_previous')) then
+        execute 'alter table KO_MODEL add "a0_exponential_previous" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'objects_statistic')) then
+        execute 'alter table KO_MODEL add "objects_statistic" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'is_active')) then
+        execute 'alter table KO_MODEL add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'change_user_id')) then
+        execute 'alter table KO_MODEL add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'change_date')) then
+        execute 'alter table KO_MODEL add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_model_unique_constraint')) then
+    execute 'alter table KO_MODEL add constraint ko_model_unique_constraint unique (name)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_206_q_pk')) then
     execute 'alter table KO_MODEL add constraint reg_206_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_model_unique_constraint')) then
+	execute 'CREATE UNIQUE INDEX ko_model_unique_constraint on KO_MODEL (name)';
   end if;
 end $$;
 --<DO>--
@@ -26129,8 +26894,173 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'dictionary_id')) then
+        execute 'alter table KO_MODEL_FACTOR add "dictionary_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'algorithm_type')) then
+        execute 'alter table KO_MODEL_FACTOR add "algorithm_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'previous_weight')) then
+        execute 'alter table KO_MODEL_FACTOR add "previous_weight" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_210_q_pk')) then
     execute 'alter table KO_MODEL_FACTOR add constraint reg_210_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_MODELING_DICTIONARIES')) then
+		execute 'create table KO_MODELING_DICTIONARIES ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'id')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'name')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'type')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'type_code')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'change_user_id')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES', 'change_date')) then
+        execute 'alter table KO_MODELING_DICTIONARIES add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_modeling_dictionaries_name_key')) then
+    execute 'alter table KO_MODELING_DICTIONARIES add constraint ko_modeling_dictionaries_name_key unique (name)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_264_q_pk')) then
+    execute 'alter table KO_MODELING_DICTIONARIES add constraint reg_264_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_modeling_dictionaries_name_key')) then
+	execute 'CREATE UNIQUE INDEX ko_modeling_dictionaries_name_key on KO_MODELING_DICTIONARIES (name)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_MODELING_DICTIONARIES_VALUES')) then
+		execute 'create table KO_MODELING_DICTIONARIES_VALUES ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES_VALUES', 'id')) then
+        execute 'alter table KO_MODELING_DICTIONARIES_VALUES add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES_VALUES', 'dictionary_id')) then
+        execute 'alter table KO_MODELING_DICTIONARIES_VALUES add "dictionary_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES_VALUES', 'value')) then
+        execute 'alter table KO_MODELING_DICTIONARIES_VALUES add "value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODELING_DICTIONARIES_VALUES', 'calculation_value')) then
+        execute 'alter table KO_MODELING_DICTIONARIES_VALUES add "calculation_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_265_q_pk')) then
+    execute 'alter table KO_MODELING_DICTIONARIES_VALUES add constraint reg_265_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -26391,8 +27321,78 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'change_user_id')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'change_date')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('ko_result_send_journal_pkey')) then
     execute 'alter table KO_RESULT_SEND_JOURNAL add constraint ko_result_send_journal_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_SYSTEM_ATTRIBUTE_SETTINGS')) then
+		execute 'create table KO_SYSTEM_ATTRIBUTE_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_SYSTEM_ATTRIBUTE_SETTINGS', 'id')) then
+        execute 'alter table KO_SYSTEM_ATTRIBUTE_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_SYSTEM_ATTRIBUTE_SETTINGS', 'attribute_using_type')) then
+        execute 'alter table KO_SYSTEM_ATTRIBUTE_SETTINGS add "attribute_using_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_SYSTEM_ATTRIBUTE_SETTINGS', 'attribute_using_type_code')) then
+        execute 'alter table KO_SYSTEM_ATTRIBUTE_SETTINGS add "attribute_using_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_SYSTEM_ATTRIBUTE_SETTINGS', 'attribute_id')) then
+        execute 'alter table KO_SYSTEM_ATTRIBUTE_SETTINGS add "attribute_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_266_q_pk')) then
+    execute 'alter table KO_SYSTEM_ATTRIBUTE_SETTINGS add constraint reg_266_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -26497,6 +27497,60 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'changes_comparing_status')) then
+        execute 'alter table KO_TASK add "changes_comparing_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'changes_comparing_status_code')) then
+        execute 'alter table KO_TASK add "changes_comparing_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'ks_comparing_status')) then
+        execute 'alter table KO_TASK add "ks_comparing_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'ks_comparing_status_code')) then
+        execute 'alter table KO_TASK add "ks_comparing_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'change_user_id')) then
+        execute 'alter table KO_TASK add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TASK', 'change_date')) then
+        execute 'alter table KO_TASK add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_203_q_pk')) then
     execute 'alter table KO_TASK add constraint reg_203_q_pk primary key (id)';
   end if;
@@ -26532,6 +27586,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_TOUR', 'year')) then
         execute 'alter table KO_TOUR add "year" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR', 'change_user_id')) then
+        execute 'alter table KO_TOUR add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR', 'change_date')) then
+        execute 'alter table KO_TOUR add "change_date" TIMESTAMP';
     end if;
 end $$;
 
@@ -26833,15 +27905,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_UNIT', 'model_id')) then
-        execute 'alter table KO_UNIT add "model_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('KO_UNIT', 'group_id')) then
         execute 'alter table KO_UNIT add "group_id" BIGINT NOT NULL';
     end if;
@@ -27042,6 +28105,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT', 'building_cadastral_number')) then
         execute 'alter table KO_UNIT add "building_cadastral_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'change_user_id')) then
+        execute 'alter table KO_UNIT add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'change_date')) then
+        execute 'alter table KO_UNIT add "change_date" TIMESTAMP';
     end if;
 end $$;
 
@@ -28052,15 +29133,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field_184')) then
-        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field_184" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field_185')) then
         execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field_185" VARCHAR(4000)';
     end if;
@@ -28197,7 +29269,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field_200')) then
-        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field_200" BIGINT';
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field_200" VARCHAR(200)';
     end if;
 end $$;
 
@@ -28781,6 +29853,2733 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688803')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688803" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688805')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688805" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688809')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688809" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688811')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688811" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688815')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688815" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688819')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688819" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688823')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688823" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688828')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688828" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688832')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688832" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47688836')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47688836" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47689140')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47689140" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47689151')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47689151" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field_184')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field_184" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47801197')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47801197" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47801199')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47801199" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field47801201')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field47801201" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089614')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089614" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089615')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089615" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089617')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089617" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089619')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089619" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089803')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089803" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089879')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089879" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089881')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089881" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089903')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089903" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48089905')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48089905" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48200459')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48200459" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48200465')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48200465" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48200473')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48200473" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48200724')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48200724" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48200991')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48200991" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48201164')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48201164" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48401096')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48401096" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402278')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402278" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402282')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402282" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402286')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402286" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402290')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402290" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402294')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402294" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402298')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402298" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402304')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402304" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402306')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402306" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402310')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402310" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402314')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402314" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402318')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402318" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402322')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402322" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402326')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402326" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402330')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402330" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402334')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402334" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402338')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402338" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402342')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402342" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402346')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402346" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402350')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402350" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402354')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402354" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402358')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402358" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402362')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402362" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402366')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402366" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402370')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402370" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402374')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402374" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402378')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402378" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402382')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402382" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402394')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402394" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402398')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402398" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402402')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402402" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402406')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402406" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402410')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402410" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402414')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402414" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402418')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402418" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402422')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402422" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402426')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402426" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402434')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402438')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402438" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402442')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402442" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402446')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402446" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402450')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402450" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402454')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402454" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402458')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402458" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402462')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402462" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402467')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402467" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402471')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402471" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402475')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402475" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402479')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402479" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402483')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402483" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402487')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402487" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402491')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402491" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402495')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402495" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402499')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402499" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402503')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402503" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402507')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402507" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402511')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402511" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402515')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402515" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402519')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402519" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402521')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402521" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402525')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402525" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402529')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402529" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402533')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402533" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402537')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402537" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402539')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402539" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402543')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402543" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402547')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402547" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402549')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402549" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402551')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402551" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402553')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402553" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402555')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402555" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402557')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402557" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402559')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402559" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402561')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402561" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402563')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402563" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402567')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402567" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402569')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402573')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402573" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402577')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402577" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402581')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402581" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402585')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402589')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402589" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402593')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402593" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402597')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402597" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402601')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402601" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402605')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402605" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402609')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402609" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402613')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402613" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402617')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402617" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402621')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402621" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402625')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402625" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402633')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402633" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402637')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402637" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402641')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402641" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402643')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402647')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402647" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402651')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402651" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402655')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402655" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402659')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402659" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402663')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402663" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402667')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402667" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402672')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402672" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402676')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402676" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402680')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402680" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402684')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402684" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402688')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402688" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402692')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402692" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402696')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402696" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402700')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402700" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402704')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402704" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402708')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402708" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402712')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402712" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402716')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402716" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402720')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402720" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402724')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402724" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402728')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402728" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402732')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402732" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402736')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402736" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402740')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402740" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402744')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402744" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402748')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402748" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402752')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402752" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402756')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402756" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402760')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402760" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402764')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402764" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402768')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402768" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402772')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402772" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402776')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402776" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402780')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402780" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402784')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402784" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402788')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402788" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402792')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402792" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402796')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402796" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402800')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402800" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402804')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402804" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402808')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402808" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402812')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402812" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402816')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402816" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402820')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402820" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402822')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402822" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402826')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402826" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402828')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402828" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402832')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402832" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402836')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402836" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402840')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402840" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402844')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402844" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402848')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402848" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402852')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402852" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402856')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402856" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402858')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402858" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402860')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402860" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402864')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402864" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402866')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402866" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402870')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402870" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402874')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402874" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402878')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402878" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402882')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402882" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402886')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402886" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402890')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402890" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402894')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402894" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402898')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402898" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402902')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402902" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402906')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402906" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402910')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402910" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402914')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402914" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402918')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402918" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402924')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402924" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402928')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402928" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402932')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402932" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402936')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402936" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402940')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402940" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402944')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402944" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402946')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402946" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402950')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402950" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402954')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402954" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402958')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402958" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402962')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402962" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402966')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402966" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402970')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402970" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402974')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402974" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402978')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402978" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402982')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402982" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402986')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402986" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402990')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402990" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402994')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402994" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48402998')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48402998" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403002')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403002" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403006')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403006" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403010')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403010" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403014')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403014" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403018')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403018" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403022')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403022" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403026')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403026" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403030')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403030" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403034')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403034" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403038')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403038" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403042')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403046')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403046" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403050')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403050" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403054')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403054" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403058')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403062')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403062" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403066')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403066" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403070')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403070" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403074')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403074" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403078')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403078" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403082')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403082" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403086')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403086" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403090')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403090" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403094')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403094" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403098')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403098" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403102')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403102" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403106')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403106" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403110')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403110" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403114')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403114" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403118')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403118" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403122')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403122" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403126')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403126" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403130')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403130" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403134')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403134" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403138')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403138" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403142')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403142" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403146')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403146" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403150')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403150" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403152')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403152" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403156')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403156" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403160')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403160" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403164')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403164" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403168')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403168" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403172')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403172" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403176')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403176" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403180')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403180" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403184')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403184" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403188')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403188" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403192')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403192" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403196')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403196" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403202')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403202" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403206')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403206" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403210')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403210" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403214')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403214" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403218')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403218" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403222')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403222" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403226')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403226" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403230')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403230" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403234')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403234" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403238')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403238" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403242')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403242" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403246')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403246" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403250')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403250" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403254')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403254" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403258')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403258" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403262')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403262" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403266')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403266" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403270')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403270" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403274')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403274" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403278')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403278" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403282')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403282" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403286')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403286" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403290')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403290" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403294')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403298')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403298" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403302')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403302" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403306')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403306" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403310')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403310" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403314')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403314" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403318')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403318" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403322')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403322" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403326')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403326" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403330')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403330" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403334')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403338')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403338" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_OKS_2018', 'field48403342')) then
+        execute 'alter table KO_UNIT_PARAMS_OKS_2018 add "field48403342" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_250_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_OKS_2018 add constraint reg_250_q_pk primary key (id)';
   end if;
@@ -29195,6 +32994,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47526329')) then
         execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47526329" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47686678')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47686678" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2016', 'field47686682')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2016 add "field47686682" NUMERIC';
     end if;
 end $$;
 
@@ -29965,6 +33782,2544 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688807')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688807" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688813')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688813" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688817')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688817" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688821')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688821" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688825')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688825" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688830')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688830" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47688834')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47688834" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47940255')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47940255" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47940334')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47940334" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47940336')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47940336" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47940338')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47940338" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47973455')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47973455" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47973457')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47973457" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field47973459')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field47973459" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48089605')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48089605" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48089607')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48089607" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48089609')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48089609" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48089611')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48089611" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48200456')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48200456" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402260')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402260" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402280')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402280" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402284')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402284" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402288')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402288" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402292')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402292" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402296')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402296" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402300')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402300" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402302')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402302" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402308')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402308" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402312')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402312" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402316')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402316" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402320')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402320" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402324')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402324" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402328')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402328" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402332')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402332" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402336')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402336" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402340')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402340" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402344')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402344" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402348')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402348" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402352')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402352" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402356')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402356" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402360')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402360" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402364')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402364" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402368')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402368" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402372')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402372" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402376')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402376" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402380')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402380" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402384')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402384" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402386')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402386" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402388')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402388" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402390')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402390" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402392')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402392" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402396')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402396" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402400')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402400" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402404')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402404" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402408')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402408" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402412')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402412" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402416')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402416" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402420')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402420" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402424')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402424" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402428')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402428" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402430')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402430" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402432')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402436')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402436" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402440')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402440" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402444')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402444" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402448')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402448" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402452')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402452" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402456')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402456" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402460')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402460" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402464')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402464" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402469')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402469" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402473')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402473" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402477')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402477" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402481')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402481" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402485')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402485" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402489')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402489" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402493')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402493" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402497')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402497" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402501')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402501" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402505')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402505" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402509')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402509" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402513')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402513" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402517')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402517" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402523')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402523" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402527')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402527" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402531')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402531" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402535')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402535" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402541')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402541" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402545')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402545" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402565')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402565" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402571')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402571" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402575')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402575" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402579')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402579" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402583')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402583" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402587')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402587" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402591')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402591" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402595')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402599')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402599" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402603')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402603" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402607')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402607" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402611')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402611" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402615')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402615" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402619')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402619" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402623')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402623" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402627')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402627" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402629')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402629" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402631')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402631" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402635')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402635" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402639')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402639" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402645')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402645" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402649')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402649" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402653')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402653" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402657')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402657" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402661')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402661" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402665')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402665" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402670')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402670" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402674')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402674" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402678')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402678" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402682')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402682" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402686')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402686" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402690')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402690" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402694')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402694" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402698')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402698" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402702')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402702" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402706')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402706" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402710')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402710" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402714')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402714" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402718')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402718" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402722')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402722" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402726')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402726" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402730')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402730" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402734')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402734" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402738')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402738" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402742')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402742" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402746')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402746" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402750')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402750" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402754')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402754" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402758')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402758" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402762')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402762" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402766')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402766" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402770')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402770" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402774')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402774" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402778')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402778" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402782')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402782" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402786')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402786" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402790')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402790" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402794')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402794" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402798')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402798" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402802')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402802" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402806')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402806" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402810')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402810" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402814')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402814" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402818')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402818" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402824')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402824" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402830')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402830" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402834')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402834" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402838')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402838" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402842')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402842" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402846')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402846" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402850')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402850" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402854')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402854" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402862')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402862" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402868')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402868" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402872')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402872" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402876')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402876" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402880')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402880" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402884')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402884" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402888')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402888" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402892')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402892" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402896')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402896" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402900')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402900" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402904')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402904" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402908')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402908" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402912')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402912" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402916')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402916" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402920')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402920" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402922')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402922" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402926')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402926" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402930')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402930" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402934')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402934" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402938')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402938" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402942')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402942" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402948')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402948" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402952')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402952" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402956')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402956" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402960')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402960" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402964')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402964" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402968')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402968" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402972')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402972" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402976')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402976" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402980')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402980" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402984')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402984" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402988')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402988" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402992')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402992" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48402996')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48402996" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403000')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403000" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403004')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403004" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403008')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403008" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403012')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403012" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403016')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403016" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403020')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403020" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403024')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403024" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403028')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403028" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403032')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403032" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403036')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403036" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403040')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403040" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403044')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403044" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403048')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403048" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403052')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403052" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403056')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403056" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403060')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403060" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403064')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403064" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403068')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403068" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403072')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403072" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403076')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403076" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403080')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403080" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403084')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403084" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403088')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403088" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403092')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403092" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403096')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403096" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403100')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403100" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403104')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403104" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403108')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403108" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403112')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403112" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403116')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403116" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403120')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403120" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403124')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403124" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403128')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403128" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403132')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403132" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403136')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403136" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403140')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403140" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403144')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403144" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403148')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403148" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403154')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403154" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403158')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403158" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403162')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403162" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403166')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403166" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403170')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403170" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403174')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403174" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403178')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403178" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403182')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403182" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403186')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403186" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403190')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403190" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403194')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403194" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403198')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403198" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403200')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403200" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403204')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403204" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403208')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403208" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403212')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403212" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403216')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403216" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403220')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403220" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403224')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403224" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403228')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403228" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403232')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403232" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403236')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403236" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403240')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403240" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403244')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403244" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403248')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403248" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403252')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403252" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403256')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403256" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403260')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403260" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403264')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403264" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403268')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403268" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403272')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403272" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403276')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403276" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403280')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403280" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403284')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403284" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403288')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403288" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403292')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403292" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403296')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403296" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403300')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403300" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403304')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403304" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403308')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403308" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403312')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403312" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403316')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403316" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403320')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403320" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403324')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403324" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403328')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403328" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403332')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403332" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403336')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403336" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403340')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403340" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_PARAMS_ZU_2018', 'field48403344')) then
+        execute 'alter table KO_UNIT_PARAMS_ZU_2018 add "field48403344" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_251_q_pk')) then
     execute 'alter table KO_UNIT_PARAMS_ZU_2018 add constraint reg_251_q_pk primary key (id)';
   end if;
@@ -30089,8 +36444,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'export_files_info')) then
-        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "export_files_info" VARCHAR(10485760)';
+    if (not core_updstru_CheckExistColumn('KO_UNLOAD_RESULT_QUEUE', 'final_archive_export_id')) then
+        execute 'alter table KO_UNLOAD_RESULT_QUEUE add "final_archive_export_id" BIGINT';
     end if;
 end $$;
 
@@ -30100,74 +36455,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_262_q_pk')) then
     execute 'alter table KO_UNLOAD_RESULT_QUEUE add constraint reg_262_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS')) then
-		execute 'create table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'id')) then
-        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_using_type')) then
-        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_using_type" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_using_type_code')) then
-        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_using_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS', 'attribute_id')) then
-        execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add "attribute_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('ko_update_cadastral_data_attr_set_attribute_using_type_code_key')) then
-    execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add constraint ko_update_cadastral_data_attr_set_attribute_using_type_code_key unique (attribute_using_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_261_q_pk')) then
-    execute 'alter table KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS add constraint reg_261_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('ko_update_cadastral_data_attr_set_attribute_using_type_code_key')) then
-	execute 'CREATE UNIQUE INDEX ko_update_cadastral_data_attr_set_attribute_using_type_code_key on KO_UPDATE_CADASTRAL_DATA_ATTR_SETTINGS (attribute_using_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -30844,6 +37131,198 @@ begin
   end if;
 end $$;
 
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_coeff_for_outliers_checking')) then
+		execute 'create table market_coeff_for_outliers_checking ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'id')) then
+        execute 'alter table market_coeff_for_outliers_checking add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'zone')) then
+        execute 'alter table market_coeff_for_outliers_checking add "zone" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'district')) then
+        execute 'alter table market_coeff_for_outliers_checking add "district" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'district_code')) then
+        execute 'alter table market_coeff_for_outliers_checking add "district_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'region')) then
+        execute 'alter table market_coeff_for_outliers_checking add "region" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'region_code')) then
+        execute 'alter table market_coeff_for_outliers_checking add "region_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'min_delta_coef')) then
+        execute 'alter table market_coeff_for_outliers_checking add "min_delta_coef" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coeff_for_outliers_checking', 'max_delta_coef')) then
+        execute 'alter table market_coeff_for_outliers_checking add "max_delta_coef" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_118_q_pk')) then
+    execute 'alter table market_coeff_for_outliers_checking add constraint reg_118_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('zone_district_region_unique_indx')) then
+	execute 'CREATE UNIQUE INDEX zone_district_region_unique_indx on market_coeff_for_outliers_checking (zone, district_code, region_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_COEFF_FOR_OUTLIERS_CHECKING')) then
+		execute 'create table MARKET_COEFF_FOR_OUTLIERS_CHECKING ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'id')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'zone')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "zone" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'district')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "district" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'district_code')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "district_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'region')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "region" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'region_code')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "region_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'min_delta_coef')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "min_delta_coef" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFF_FOR_OUTLIERS_CHECKING', 'max_delta_coef')) then
+        execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add "max_delta_coef" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_118_q_pk')) then
+    execute 'alter table MARKET_COEFF_FOR_OUTLIERS_CHECKING add constraint reg_118_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('zone_district_region_unique_indx')) then
+	execute 'CREATE UNIQUE INDEX zone_district_region_unique_indx on MARKET_COEFF_FOR_OUTLIERS_CHECKING (zone, district_code, region_code)';
+  end if;
+end $$;
 --<DO>--
 
 DO $$
@@ -31879,6 +38358,51 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'renovation')) then
+        execute 'alter table market_core_object add "renovation" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'building_line')) then
+        execute 'alter table market_core_object add "building_line" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'cct')) then
+        execute 'alter table market_core_object add "cct" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'change_user_id')) then
+        execute 'alter table market_core_object add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'change_date')) then
+        execute 'alter table market_core_object add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -32577,6 +39101,51 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'vat_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "vat_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'renovation')) then
+        execute 'alter table MARKET_CORE_OBJECT add "renovation" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'building_line')) then
+        execute 'alter table MARKET_CORE_OBJECT add "building_line" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'cct')) then
+        execute 'alter table MARKET_CORE_OBJECT add "cct" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'change_user_id')) then
+        execute 'alter table MARKET_CORE_OBJECT add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'change_date')) then
+        execute 'alter table MARKET_CORE_OBJECT add "change_date" TIMESTAMP';
     end if;
 end $$;
 
@@ -33649,6 +40218,272 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('market_indexes_for_date_correction_date_key')) then
 	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on MARKET_INDEXES_FOR_DATE_CORRECTION (date, building_cadastral_number, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_outliers_checking_history')) then
+		execute 'create table market_outliers_checking_history ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'id')) then
+        execute 'alter table market_outliers_checking_history add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'date_created')) then
+        execute 'alter table market_outliers_checking_history add "date_created" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'date_started')) then
+        execute 'alter table market_outliers_checking_history add "date_started" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'date_finished')) then
+        execute 'alter table market_outliers_checking_history add "date_finished" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'status')) then
+        execute 'alter table market_outliers_checking_history add "status" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'status_code')) then
+        execute 'alter table market_outliers_checking_history add "status_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'market_segment')) then
+        execute 'alter table market_outliers_checking_history add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'market_segment_code')) then
+        execute 'alter table market_outliers_checking_history add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'total_objects_count')) then
+        execute 'alter table market_outliers_checking_history add "total_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'current_handled_objects_count')) then
+        execute 'alter table market_outliers_checking_history add "current_handled_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'excluded_objects_count')) then
+        execute 'alter table market_outliers_checking_history add "excluded_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'export_id')) then
+        execute 'alter table market_outliers_checking_history add "export_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_outliers_checking_history', 'property_types_mapping')) then
+        execute 'alter table market_outliers_checking_history add "property_types_mapping" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_119_q_pk')) then
+    execute 'alter table market_outliers_checking_history add constraint reg_119_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_OUTLIERS_CHECKING_HISTORY')) then
+		execute 'create table MARKET_OUTLIERS_CHECKING_HISTORY ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'id')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'date_created')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "date_created" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'date_started')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "date_started" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'date_finished')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "date_finished" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'status')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "status" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'status_code')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "status_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'market_segment')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'market_segment_code')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'total_objects_count')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "total_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'current_handled_objects_count')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "current_handled_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'excluded_objects_count')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "excluded_objects_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'export_id')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "export_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_OUTLIERS_CHECKING_HISTORY', 'property_types_mapping')) then
+        execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add "property_types_mapping" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_119_q_pk')) then
+    execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add constraint reg_119_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -34760,180 +41595,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL')) then
-		execute 'create table MODELING_MODEL ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'id')) then
-        execute 'alter table MODELING_MODEL add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'name')) then
-        execute 'alter table MODELING_MODEL add "name" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'tour_id')) then
-        execute 'alter table MODELING_MODEL add "tour_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'group_id')) then
-        execute 'alter table MODELING_MODEL add "group_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'internal_name')) then
-        execute 'alter table MODELING_MODEL add "internal_name" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'linear_training_result')) then
-        execute 'alter table MODELING_MODEL add "linear_training_result" VARCHAR';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'exponential_training_result')) then
-        execute 'alter table MODELING_MODEL add "exponential_training_result" VARCHAR';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'multiplicative_training_result')) then
-        execute 'alter table MODELING_MODEL add "multiplicative_training_result" VARCHAR';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'is_oks_object_type')) then
-        execute 'alter table MODELING_MODEL add "is_oks_object_type" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_700_q_pk')) then
-    execute 'alter table MODELING_MODEL add constraint reg_700_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL_ATTRIBUTE_RELATION')) then
-		execute 'create table MODELING_MODEL_ATTRIBUTE_RELATION ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'id')) then
-        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'model_id')) then
-        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "model_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'attribute_id')) then
-        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "attribute_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'dictionary_id')) then
-        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "dictionary_id" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'coefficient')) then
-        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "coefficient" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('modeling_model_attribute_relation_idx')) then
-    execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add constraint modeling_model_attribute_relation_idx unique (model_id, attribute_id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_701_q_pk')) then
-    execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add constraint reg_701_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('modeling_model_attribute_relation_idx')) then
-	execute 'CREATE UNIQUE INDEX modeling_model_attribute_relation_idx on MODELING_MODEL_ATTRIBUTE_RELATION (model_id, attribute_id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL_TO_MARKET_OBJECTS')) then
 		execute 'create table MODELING_MODEL_TO_MARKET_OBJECTS ("id" BIGINT NOT NULL)';
 	end if;
@@ -35007,6 +41668,51 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'price_from_model')) then
         execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "price_from_model" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'is_for_control')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "is_for_control" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'market_object_id')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "market_object_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'unit_id')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "unit_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'unit_property_type')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "unit_property_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'unit_property_type_code')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "unit_property_type_code" BIGINT';
     end if;
 end $$;
 
@@ -35868,6 +42574,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('SUD_OBJECT', 'reason_for_remove')) then
         execute 'alter table SUD_OBJECT add "reason_for_remove" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_OBJECT', 'is_decision_entered_into_force')) then
+        execute 'alter table SUD_OBJECT add "is_decision_entered_into_force" BIGINT';
     end if;
 end $$;
 
@@ -36889,6 +43604,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('SUD_SUD', 'appeal_date')) then
+        execute 'alter table SUD_SUD add "appeal_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_316_q_pk')) then
     execute 'alter table SUD_SUD add constraint reg_316_q_pk primary key (id)';
   end if;
@@ -37082,6 +43806,42 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINK', 'rs_a')) then
+        execute 'alter table SUD_SUDLINK add "rs_a" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINK', 'uprs_a')) then
+        execute 'alter table SUD_SUDLINK add "uprs_a" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINK', 'rs_k')) then
+        execute 'alter table SUD_SUDLINK add "rs_k" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINK', 'uprs_k')) then
+        execute 'alter table SUD_SUDLINK add "uprs_k" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_314_q_pk')) then
     execute 'alter table SUD_SUDLINK add constraint reg_314_q_pk primary key (id)';
   end if;
@@ -37171,6 +43931,42 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('SUD_SUDLINKSTATUS', 'status')) then
         execute 'alter table SUD_SUDLINKSTATUS add "status" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINKSTATUS', 'rs_a')) then
+        execute 'alter table SUD_SUDLINKSTATUS add "rs_a" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINKSTATUS', 'uprs_a')) then
+        execute 'alter table SUD_SUDLINKSTATUS add "uprs_a" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINKSTATUS', 'rs_k')) then
+        execute 'alter table SUD_SUDLINKSTATUS add "rs_k" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDLINKSTATUS', 'uprs_k')) then
+        execute 'alter table SUD_SUDLINKSTATUS add "uprs_k" BIGINT';
     end if;
 end $$;
 

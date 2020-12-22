@@ -1,0 +1,58 @@
+﻿<RootElement>
+    <ControlElement Caption="Служба" OwnType="RadPanel" Width="0" AttributeNumber="0">
+        <children>
+
+            <ControlElement Caption="Дата последней проверки" ID="date_panel" OwnType="Panel">
+                <children>
+                    <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="97501000" QueryOperation="MoreThan" />
+                    <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="97501000" QueryOperation="LessThan" />
+                </children>
+            </ControlElement>
+
+            <ControlElement Caption="Дата последней проверки" ID="create_date" OwnType="Calendar" AttributeNumber="97501000" QueryOperation="WithinDate" DefaultValue="[CurrentDay]" />
+
+            <ControlElement Caption="Статус" ID="type" OwnType="Combo" AttributeNumber="97500900" QueryOperation="Equal" ComboBoxFilter="None" AllowItemSelection="true">
+                <CustomItems>
+                    <KeyValuePair>
+                        <Key>0</Key>
+                        <Value>Добавлен</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>1</Key>
+                        <Value>Подготовлен к запуску</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>2</Key>
+                        <Value>Выполняется</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>3</Key>
+                        <Value>Завершен успешно</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>4</Key>
+                        <Value>Завершен с ошибкой</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>5</Key>
+                        <Value>Отправлен запрос на остановку</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>6</Key>
+                        <Value>Остановлен</Value>
+                    </KeyValuePair>
+                </CustomItems>
+            </ControlElement>
+        </children>
+    </ControlElement>
+    <ControlElement Caption="Пользователь запустивший службу" OwnType="RadPanel">
+        <children>
+            <ControlElement Caption="Подразделение" ID="cbAuthorDepartment" OwnType="Combo" HasLinkedCombos="true" AttributeNumber="95000200" RegisterId="941" TextFieldAttribute="94100300" ValueFieldAttribute="94100100" QueryOperation="Equal" />
+            <ControlElement Caption="ФИО" ID="cbAuthorUser" OwnType="Combo" AttributeNumber="97500200" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" ParentFilterAttribute="95000200" QueryOperation="Equal">
+                <parentComboBox>
+                    <string>cbAuthorDepartment</string>
+                </parentComboBox>
+            </ControlElement>
+        </children>
+    </ControlElement>
+</RootElement>

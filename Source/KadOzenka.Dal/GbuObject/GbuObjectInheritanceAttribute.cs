@@ -42,8 +42,13 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Наследования");
 
-            var reportService = new GbuReportService();
+            using var reportService = new GbuReportService("Отчет наследование");
 			reportService.AddHeaders(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
+			reportService.SetIndividualWidth(1, 4);
+			reportService.SetIndividualWidth(0, 4);
+			reportService.SetIndividualWidth(2, 6);
+			reportService.SetIndividualWidth(3, 4);
+			reportService.SetIndividualWidth(4, 6);
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -77,13 +82,7 @@ namespace KadOzenka.Dal.GbuObject
                 _log.Debug("Переменная очищена. Записей {Count}", units.Count);
             }
             
-            reportService.SetStyle();
-            reportService.SetIndividualWidth(1, 4);
-            reportService.SetIndividualWidth(0, 4);
-            reportService.SetIndividualWidth(2, 6);
-            reportService.SetIndividualWidth(3, 4);
-            reportService.SetIndividualWidth(4, 6);
-            long reportId = reportService.SaveReport("Отчет наследование");
+            long reportId = reportService.SaveReport();
             return reportId;
         }
 

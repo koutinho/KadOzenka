@@ -70,7 +70,10 @@ namespace KadOzenka.Web.Controllers
 
         protected string GetContentTypeByExtension(string fileExtension)
         {
-	        switch (fileExtension)
+	        if (!string.IsNullOrEmpty(fileExtension) && fileExtension.StartsWith("."))
+		        fileExtension = fileExtension.Remove(0, 1);
+
+            switch (fileExtension)
 	        {
                 case "xlsx":
 	                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -84,6 +87,10 @@ namespace KadOzenka.Web.Controllers
 	                return "application/octet-stream";
                 case "docx":
 	                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "txt":
+	                return "text/plain";
+                case "csv":
+	                return "text/csv";
                 default:
 	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
 	        }

@@ -398,26 +398,28 @@ namespace ObjectModel.KO
                     }
                     if (ci != null)
                     {
-                        switch (attributeData.Type)
-                        {
-                            case RegisterAttributeType.INTEGER:
-                                value = ci.Value.ParseToLongNullable();
-                                break;
-                            case RegisterAttributeType.DECIMAL:
-                                value = ci.Value.ParseToDecimalNullable();
-                                break;
-                            case RegisterAttributeType.BOOLEAN:
-                                value = ci.Value.ParseToBooleanNullable();
-                                break;
-                            case RegisterAttributeType.STRING:
-                                value = ci.Value.ToString();
-                                break;
-                            case RegisterAttributeType.DATE:
-                                value = ci.Value.ParseToDateTimeNullable();
-                                break;
-                        }
+	                    value = ci.Value;
                     }
                 }
+            }
+
+            switch (attributeData.Type)
+            {
+	            case RegisterAttributeType.INTEGER:
+		            value = value.ParseToLongNullable();
+		            break;
+	            case RegisterAttributeType.DECIMAL:
+		            value = value.ParseToDecimalNullable();
+		            break;
+	            case RegisterAttributeType.BOOLEAN:
+		            value = value.ParseToBooleanNullable();
+		            break;
+	            case RegisterAttributeType.STRING:
+		            value = value.ToString();
+		            break;
+	            case RegisterAttributeType.DATE:
+		            value = value.ParseToDateTimeNullable();
+		            break;
             }
             RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
             registerObject.SetAttributeValue(factorId, value, referenceItemId);
@@ -2576,6 +2578,21 @@ namespace ObjectModel.KO
             {
                 bool ok = false;
                 ObjectModel.KO.OMUnit etobj = ObjectModel.KO.OMUnit.Where(x => x.TourId == unit.TourId && x.GroupId == unit.GroupId && x.UseAsPrototype == true && x.PropertyType_Code == unit.PropertyType_Code && x.CadastralBlock == unit.CadastralBlock && x.Status_Code == KoUnitStatus.Initial).SelectAll().ExecuteFirstOrDefault();
+                if (etobj==null)
+                {
+                    string kr = (unit.CadastralBlock.Length>=5)?unit.CadastralBlock.Substring(0, 5):"99:99";
+                    ObjectModel.KO.OMEtalon gipo = ObjectModel.KO.OMEtalon.Where(x=>x.GroupId==unit.GroupId && x.Cadastraldistrict== kr).SelectAll().ExecuteFirstOrDefault();
+                    if (gipo==null)
+                    {
+                        string krs = ((unit.CadastralBlock.Length >= 2) ? unit.CadastralBlock.Substring(0, 2) : "99")+":00";
+                        gipo = ObjectModel.KO.OMEtalon.Where(x => x.GroupId == unit.GroupId && x.Cadastraldistrict == krs).SelectAll().ExecuteFirstOrDefault();
+                    }
+                    if (gipo!=null)
+                    {
+                        etobj = ObjectModel.KO.OMUnit.Where(x => x.TourId == unit.TourId && x.GroupId == unit.GroupId && x.PropertyType_Code == unit.PropertyType_Code && x.CadastralNumber == gipo.Cadastralnumber && x.Status_Code == KoUnitStatus.Initial).SelectAll().ExecuteFirstOrDefault();
+                    }
+
+                }
                 if (etobj != null)
                 {
                     decimal cost = Math.Round(etobj.UpksPre.Value * unit.Square.Value, 2, MidpointRounding.AwayFromZero);
@@ -2588,25 +2605,6 @@ namespace ObjectModel.KO
                     UpdateCorrectFactor(model, etobj, unit, groupFactors, factorReestrId, ref res);
                     ok = true;
                 }
-
-                //if (!ok)
-                //{
-                //    ALLGipoEtalonItem gipo = ALLGipoEtalonItem.GetGipoEtalon(obj.ID_SUBGROUP, obj.KN_KK.Substring(0, 5));
-                //    if (gipo != null)
-                //    {
-                //        ALLObjectItem gobj = gipo.Object;
-                //        if (gobj != null)
-                //        {
-                //            obj.UpdateCalc(gobj.NUPKSZ_OBJECT, gobj.NUPKSZ_OBJECT * obj.SQUARE_CALC);
-                //            UpdateCorrectFactor(aSubGroup, gobj, obj, koeff, lstFact, sw1);
-                //            ok = true;
-                //        }
-                //        else
-                //        {
-                //            ok = false;
-                //        }
-                //    }
-                //}
 
                 if (!ok)
                 {

@@ -34,7 +34,6 @@ namespace KadOzenka.Dal.GbuObject
 
         protected abstract string ReportName { get; }
         private static ABaseHarmonizationSettings BaseSetting { get; set; }
-        protected static GbuReportService ReportService { get; set; }
         private static GbuObjectService GbuObjectService { get; set; }
 
         private RegisterAttribute _registerAttribute;
@@ -60,7 +59,6 @@ namespace KadOzenka.Dal.GbuObject
         {
             BaseSetting = setting;
             _log = logger;
-            ReportService = new GbuReportService();
             GbuObjectService = new GbuObjectService();
         }
 
@@ -70,8 +68,14 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
 
-            ReportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
-            
+            using var reportService = new GbuReportService(ReportName);
+            reportService.AddHeaders(new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+            reportService.SetIndividualWidth(KnColumnNumber, 4);
+            reportService.SetIndividualWidth(ResultColumnNumber, 6);
+            reportService.SetIndividualWidth(ValueColumnNumber, 3);
+            reportService.SetIndividualWidth(SourceColumnNUmber, 6);
+            reportService.SetIndividualWidth(ErrorColumnNumber, 5);
+
             _log.Debug("Получение объектов для обработки");
 
             //добавление фильтров на лету через декоратор
@@ -103,20 +107,14 @@ namespace KadOzenka.Dal.GbuObject
             _log.Debug("Обработка объектов");
             Parallel.ForEach(objects, options, obj =>
             {
-                ProcessOneObject(obj, levelsAttributesIds);
+                ProcessOneObject(obj, levelsAttributesIds, reportService);
             });
             _log.Debug("Обработка объектов завершена");
 
             _log.Debug("Настройка стилей отчета");
-            ReportService.SetStyle();
-            ReportService.SetIndividualWidth(KnColumnNumber, 4);
-            ReportService.SetIndividualWidth(ResultColumnNumber, 6);
-            ReportService.SetIndividualWidth(ValueColumnNumber, 3);
-            ReportService.SetIndividualWidth(SourceColumnNUmber, 6);
-            ReportService.SetIndividualWidth(ErrorColumnNumber, 5);
 
             _log.Debug("Сохранение отчета");
-            var reportId = ReportService.SaveReport(ReportName);
+            var reportId = reportService.SaveReport();
 
             //TODO для тестирования
             var link = $"https://localhost:50252/DataExport/DownloadExportResult?exportId={reportId}";
@@ -124,11 +122,11 @@ namespace KadOzenka.Dal.GbuObject
             return reportId;
         }
 
-        protected abstract bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute);
+        protected abstract bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute, GbuReportService reportService);
 
-        protected abstract void SaveFailResult(Item item);
+        protected abstract void SaveFailResult(Item item, GbuReportService reportService);
 
-        protected void SaveGbuAttribute(Item item, long changeDocId, DateTime s, DateTime ot, string value, long? sourceAttributeId, string errorMessageForReport = "")
+        protected void SaveGbuAttribute(Item item, long changeDocId, DateTime s, DateTime ot, string value, long? sourceAttributeId, GbuReportService reportService, string errorMessageForReport = "")
         {
             var gbuAttribute = new GbuObjectAttribute
             {
@@ -187,11 +185,11 @@ namespace KadOzenka.Dal.GbuObject
 
             lock (Locked)
             {
-                var row = ReportService.GetCurrentRow();
+                var row = reportService.GetCurrentRow();
                 var savedValue = string.IsNullOrWhiteSpace(convertingErrorMessage) ? value : string.Empty;
                 var resultErrorMessage = $"{convertingErrorMessage} {errorMessageForReport}";
 
-                AddRowToReport(row, item.CadastralNumber, sourceAttributeId ?? 0, savedValue,
+                AddRowToReport(reportService, row, item.CadastralNumber, sourceAttributeId ?? 0, savedValue,
                     BaseSetting.IdAttributeResult, resultErrorMessage);
             }
         }
@@ -226,7 +224,7 @@ namespace KadOzenka.Dal.GbuObject
             return allLevelsAttributeIds.Where(x => x != null).Select(x => x.Value).ToList();
         }
 
-        private void ProcessOneObject(Item item, List<long> levelsAttributeIds)
+        private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
         {
             lock (Locked)
             {
@@ -258,7 +256,7 @@ namespace KadOzenka.Dal.GbuObject
                             sourceAttribute.AttributeData.Name, item.ObjectId);
                 }
 
-                var isDataSaved = CopyLevelData(item, sourceAttribute);
+                var isDataSaved = CopyLevelData(item, sourceAttribute, reportService);
                 if (isDataSaved)
                 {
 	                lock (Locked)
@@ -286,7 +284,7 @@ namespace KadOzenka.Dal.GbuObject
                             "Для объекта {ItemObjectId} не найдено значение в левел атрибутах", item.ObjectId);
             }
 
-            SaveFailResult(item);
+            SaveFailResult(item, reportService);
         }
 
         private string GetErrorMessage(string value, RegisterAttributeType type)
@@ -294,15 +292,15 @@ namespace KadOzenka.Dal.GbuObject
             return $"Не удалось преобразовать значение '{value}' к типу '{type.GetEnumDescription()}'.Cохранено пустое значение.";
         }
 
-        private static void AddRowToReport(GbuReportService.Row rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        private static void AddRowToReport(GbuReportService reportService, GbuReportService.Row rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
         {
             var sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
             var resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-            ReportService.AddValue(kn, KnColumnNumber, rowNumber);
-            ReportService.AddValue(resultName, ResultColumnNumber, rowNumber);
-            ReportService.AddValue(value, ValueColumnNumber, rowNumber);
-            ReportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
-            ReportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
+            reportService.AddValue(kn, KnColumnNumber, rowNumber);
+            reportService.AddValue(resultName, ResultColumnNumber, rowNumber);
+            reportService.AddValue(value, ValueColumnNumber, rowNumber);
+            reportService.AddValue(sourceName, SourceColumnNUmber, rowNumber);
+            reportService.AddValue(errorMessage, ErrorColumnNumber, rowNumber);
         }
 
         #endregion

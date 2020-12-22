@@ -7,17 +7,20 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
-using Kendo.Mvc;
-using Kendo.Mvc.UI;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
-using FilterOperator = Kendo.Mvc.FilterOperator;
+using Serilog;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
-	public class StatisticsReportsService
+	public class StatisticsReportsWidgetService
 	{
+		private readonly ILogger _log = Log.ForContext<StatisticsReportsWidgetService>();
 		#region StatisticsReportsWidget
 
 		public List<ZoneRegionDto> GetZoneData()
@@ -28,7 +31,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			return entities.Select(x => new ZoneRegionDto { Zone = x.ZoneRegion }).DistinctBy(x => x.Zone).ToList();
 		}
 
-		public GridDataDto<UnitObjectDto> GetImportedObjectsData(DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		#region ImportedObjects
+
+		public List<UnitObjectDto> GetImportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetImportedObjectsDataQuery(request, dateStart, dateEnd);
+			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение загруженных объектов");
+			var result = QSQuery.ExecuteSql<UnitObjectDto>(sql);
+
+			return result;
+		}
+
+		public long GetImportedObjectsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetImportedObjectsDataQuery(request, dateStart, dateEnd);
+			var total = GetTotalCount(query);
+
+			return total;
+		}
+
+		private QSQuery GetImportedObjectsDataQuery(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
 
@@ -68,29 +95,36 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			HandleDataSourceRequest(query, request);
 
-			var table = query.ExecuteQuery();
-			var result = new List<UnitObjectDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new UnitObjectDto
-					{
-						ID = table.Rows[i][nameof(UnitObjectDto.ID)].ParseToLong(),
-						CadastralNumber = table.Rows[i][nameof(UnitObjectDto.CadastralNumber)].ParseToString(),
-						PropertyType = table.Rows[i][nameof(UnitObjectDto.PropertyType)].ParseToString(),
-						Square = table.Rows[i][nameof(UnitObjectDto.Square)].ParseToDecimalNullable(),
-						TaskCreationDate = table.Rows[i][nameof(UnitObjectDto.TaskCreationDate)].ParseToDateTime(),
-					};
-					result.Add(dto);
-				}
-			}
-			var total = GetTotalCount(query);
-
-			return new GridDataDto<UnitObjectDto> { Data = result, Total = total };
+			return query;
 		}
 
-		public GridDataDto<ExportedObjectDto> GetExportedObjectsData(DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		#endregion ImportedObjects
+
+		#region ExportedObjects
+
+		public List<ExportedObjectDto> GetExportedObjectsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetExportedObjectsDataQuery(request, dateStart, dateEnd);
+			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение выгруженных объектов");
+			var result = QSQuery.ExecuteSql<ExportedObjectDto>(sql);
+
+			return result;
+		}
+
+		public long GetExportedObjectsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetExportedObjectsDataQuery(request, dateStart, dateEnd);
+			var total = GetTotalCount(query);
+
+			return total;
+		}
+
+		private QSQuery GetExportedObjectsDataQuery(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
 
@@ -140,30 +174,36 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			HandleDataSourceRequest(query, request);
 
-			var table = query.ExecuteQuery();
-			var result = new List<ExportedObjectDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new ExportedObjectDto
-					{
-						ID = table.Rows[i][nameof(ExportedObjectDto.ID)].ParseToLong(),
-						CadastralNumber = table.Rows[i][nameof(ExportedObjectDto.CadastralNumber)].ParseToString(),
-						PropertyType = table.Rows[i][nameof(ExportedObjectDto.PropertyType)].ParseToString(),
-						Square = table.Rows[i][nameof(ExportedObjectDto.Square)].ParseToDecimalNullable(),
-						TaskCreationDate = table.Rows[i][nameof(ExportedObjectDto.TaskCreationDate)].ParseToDateTime(),
-						Status = table.Rows[i][nameof(ExportedObjectDto.Status)].ParseToString()
-					};
-					result.Add(dto);
-				}
-			}
-			var total = GetTotalCount(query);
-
-			return new GridDataDto<ExportedObjectDto> { Data = result, Total = total };
+			return query;
 		}
 
-		public GridDataDto<ZoneStatisticDto> GetZoneStatisticsData(DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		#endregion ExportedObjects
+
+		#region ZoneStatistics
+
+		public List<ZoneStatisticDto> GetZoneStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetZoneStatisticsDataQuery(request, dateStart, dateEnd);
+			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по зонам");
+			var result = QSQuery.ExecuteSql<ZoneStatisticDto>(sql);
+
+			return result;
+		}
+
+		public long GetZoneStatisticsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetZoneStatisticsDataQuery(request, dateStart, dateEnd);
+			var total = GetTotalCount(query);
+
+			return total;
+		}
+
+		private QSQuery GetZoneStatisticsDataQuery(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
 
@@ -215,31 +255,59 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			HandleDataSourceRequest(query, request);
 
-			var table = query.ExecuteQuery();
-			var result = new List<ZoneStatisticDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new ZoneStatisticDto
-					{
-						ID = table.Rows[i][nameof(ZoneStatisticDto.ID)].ParseToLong(),
-						CadastralNumber = table.Rows[i][nameof(ZoneStatisticDto.CadastralNumber)].ParseToString(),
-						PropertyType = table.Rows[i][nameof(ZoneStatisticDto.PropertyType)].ParseToString(),
-						Square = table.Rows[i][nameof(ZoneStatisticDto.Square)].ParseToDecimalNullable(),
-						TaskCreationDate = table.Rows[i][nameof(ZoneStatisticDto.TaskCreationDate)].ParseToDateTime(),
-						Zone = table.Rows[i][nameof(ZoneStatisticDto.Zone)].ParseToString()
-					};
-					result.Add(dto);
-				}
-			}
-
-			var total = GetTotalCount(query);
-
-			return new GridDataDto<ZoneStatisticDto> { Data = result, Total = total };
+			return query;
 		}
 
-		public GridDataDto<FactorStatisticDto> GetFactorStatisticsData(DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		#endregion ZoneStatistics
+
+		#region FactorStatistics
+
+		public List<FactorStatisticDto> GetFactorStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var mainSql = GetFactorStatisticsDataMainSql(dateStart, dateEnd);
+			var dataSql = "SELECT * FROM " + mainSql;
+			var columns = new List<string>
+			{
+				nameof(FactorStatisticDto.CadastralNumber),
+				nameof(FactorStatisticDto.PropertyType),
+				nameof(FactorStatisticDto.Square),
+				nameof(FactorStatisticDto.TaskCreationDate),
+				nameof(FactorStatisticDto.ChangedFactors),
+			};
+			AddQueryCustomFilters(ref dataSql, columns, request.Filters);
+			AddQuerySorting(ref dataSql, columns, request.Sorts);
+			dataSql += $" LIMIT {request.PageSize}";
+			if (request.Page > 1)
+				dataSql += $" OFFSET {(request.Page - 1) * request.PageSize}";
+			
+			_log.ForContext("SqlQuery", dataSql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по ценообразующим факторам");
+			var result = QSQuery.ExecuteSql<FactorStatisticDto>(dataSql);
+
+			return result;
+		}
+
+		public long GetFactorStatisticsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var mainSql = GetFactorStatisticsDataMainSql(dateStart, dateEnd);
+			var countSql = "SELECT COUNT(*) as Total FROM " + mainSql;
+			var columns = new List<string>
+			{
+				nameof(FactorStatisticDto.CadastralNumber),
+				nameof(FactorStatisticDto.PropertyType),
+				nameof(FactorStatisticDto.Square),
+				nameof(FactorStatisticDto.TaskCreationDate),
+				nameof(FactorStatisticDto.ChangedFactors),
+			};
+			AddQueryCustomFilters(ref countSql, columns, request.Filters);
+
+			return QSQuery.ExecuteSql<CountDto>(countSql).First().Total;
+		}
+
+		private string GetFactorStatisticsDataMainSql(DateTime? dateStart, DateTime? dateEnd)
 		{
 			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
 
@@ -269,46 +337,36 @@ WHERE
 	 AND
 	TaskCreationDate <= {CrossDBSQL.ToDate(dateEnd.Value.GetEndOfTheDay())}
 ";
-			var columns = new List<string>
-			{
-				nameof(FactorStatisticDto.CadastralNumber),
-				nameof(FactorStatisticDto.PropertyType),
-				nameof(FactorStatisticDto.Square),
-				nameof(FactorStatisticDto.TaskCreationDate),
-				nameof(FactorStatisticDto.ChangedFactors),
-			};
-
-			var countSql = "SELECT COUNT(*) as Total FROM " + mainSql;
-			var dataSql = "SELECT * FROM " + mainSql;
-
-			if (request != null)
-			{
-				AddQueryCustomFilters(ref dataSql, columns, request.Filters);
-				AddQueryCustomFilters(ref countSql, columns, request.Filters);
-				AddQuerySorting(ref dataSql, columns, request.Sorts);
-			}
-
-			if (request?.Page == 1 && request.PageSize > 0)
-			{
-				dataSql += $" LIMIT {request.PageSize}";
-			}
-			else if (request?.PageSize > 0)
-			{
-				dataSql = $@"
-select t2.ID,t2.CadastralNumber,t2.PropertyType,t2.Square,t2.TaskCreationDate, t2.ChangedFactors 
-from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM 
-	from ({dataSql}) t1
-) t2 where t2.QS_ROWNUM BETWEEN ({request.PageSize * (request.Page - 1) + 1}) AND ({request.PageSize * (request.Page)})
-";
-			}
-
-			var result = QSQuery.ExecuteSql<FactorStatisticDto>(dataSql);
-			var total = QSQuery.ExecuteSql<GridDataDto<FactorStatisticDto>>(countSql).First().Total;
-
-			return new GridDataDto<FactorStatisticDto> { Data = result, Total = total };
+			return mainSql;
 		}
 
-		public GridDataDto<GroupStatisticDto> GetGroupStatisticsData(DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		#endregion FactorStatistics
+
+		#region GroupStatistics
+
+		public long GetGroupStatisticsDataCount(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetGroupStatisticsQuery(request, dateStart, dateEnd);
+			var total = GetTotalCount(query);
+
+			return total;
+		}
+
+		public List<GroupStatisticDto> GetGroupStatisticsData(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var query = GetGroupStatisticsQuery(request, dateStart, dateEnd);
+			var sql = GetSqlQuery(request, query);
+			_log.ForContext("SqlQuery", sql)
+				.ForContext("Request", JsonConvert.SerializeObject(request))
+				.ForContext("DateStart", dateStart)
+				.ForContext("DateEnd", dateEnd)
+				.Debug("Получение статистики по группам");
+			var result = QSQuery.ExecuteSql<GroupStatisticDto>(sql);
+
+			return result;
+		}
+
+		private QSQuery GetGroupStatisticsQuery(DataSourceRequestDto request, DateTime? dateStart, DateTime? dateEnd)
 		{
 			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
 
@@ -382,30 +440,10 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 
 			HandleDataSourceRequest(query, request);
 
-			var table = query.ExecuteQuery();
-
-			var result = new List<GroupStatisticDto>();
-			if (table.Rows.Count != 0)
-			{
-				for (var i = 0; i < table.Rows.Count; i++)
-				{
-					var dto = new GroupStatisticDto
-					{
-						ID = table.Rows[i][nameof(GroupStatisticDto.ID)].ParseToLong(),
-						CadastralNumber = table.Rows[i][nameof(GroupStatisticDto.CadastralNumber)].ParseToString(),
-						PropertyType = table.Rows[i][nameof(GroupStatisticDto.PropertyType)].ParseToString(),
-						Square = table.Rows[i][nameof(GroupStatisticDto.Square)].ParseToDecimalNullable(),
-						TaskCreationDate = table.Rows[i][nameof(GroupStatisticDto.TaskCreationDate)].ParseToDateTime(),
-						Group = table.Rows[i][nameof(GroupStatisticDto.Group)].ParseToString(),
-						SubGroup = table.Rows[i][nameof(GroupStatisticDto.SubGroup)].ParseToString(),
-					};
-					result.Add(dto);
-				}
-			}
-			var total = GetTotalCount(query);
-
-			return new GridDataDto<GroupStatisticDto> { Data = result, Total = total };
+			return query;
 		}
+
+		#endregion  GroupStatistics
 
 		#endregion StatisticsReportsWidget
 
@@ -424,6 +462,16 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 			}
 		}
 
+		private static string GetSqlQuery(DataSourceRequestDto request, QSQuery query)
+		{
+			var sql = query.GetSql();
+			sql += $" LIMIT {request.PageSize}";
+			if (request.Page > 1)
+				sql += $" OFFSET {(request.Page - 1) * request.PageSize}";
+
+			return sql;
+		}
+
 		private long GetTotalCount(QSQuery query)
 		{
 			query.Columns.Clear();
@@ -431,32 +479,27 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 			query.GroupBy.Clear();
 			query.PackageSize = 0;
 			query.PackageIndex = 0;
-
 			return query.ExecuteCount();
 		}
 
-		private void HandleDataSourceRequest(QSQuery query, DataSourceRequest request)
+		private void HandleDataSourceRequest(QSQuery query, DataSourceRequestDto request)
 		{
 			if (request == null)
 			{
 				return;
 			}
 
-			query.PackageSize = request.PageSize;
-			query.PackageIndex = request.Page - 1;
-
 			AddQsCustomFilters(query, request.Filters);
 			AddQsSorting(query, request.Sorts);
 		}
 
-		private void AddQsCustomFilters(QSQuery query, IList<IFilterDescriptor> filters)
+		private void AddQsCustomFilters(QSQuery query, List<FilterDto> filters)
 		{
 			if (filters.Any())
 			{
 				foreach (var filter in filters)
 				{
-					var descriptor = filter as FilterDescriptor;
-					if (descriptor != null)
+					if (filter is FilterSimpleDto descriptor)
 					{
 						if (query.Columns.Any(x => x.Alias == descriptor.Member))
 						{
@@ -500,28 +543,28 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 							}
 						}
 					}
-					else if (filter is CompositeFilterDescriptor)
+					else if (filter is FilterCompositeDto)
 					{
-						AddQsCustomFilters(query, ((CompositeFilterDescriptor)filter).FilterDescriptors);
+						AddQsCustomFilters(query, ((FilterCompositeDto)filter).Filters);
 					}
 				}
 			}
 		}
 
-		private QSConditionType GetQsConditionType(FilterOperator descriptorOperator)
+		private QSConditionType GetQsConditionType(FilterOperatorType descriptorOperator)
 		{
 			switch (descriptorOperator)
 			{
-				case FilterOperator.Contains:
+				case FilterOperatorType.Contains:
 					return QSConditionType.Contains;
-				case FilterOperator.IsEqualTo:
+				case FilterOperatorType.Equal:
 					return QSConditionType.Equal;
 				default:
 					return QSConditionType.Equal;
 			}
 		}
 
-		private void AddQsSorting(QSQuery query, IList<SortDescriptor> requestSorts)
+		private void AddQsSorting(QSQuery query, List<SortDto> requestSorts)
 		{
 			if (requestSorts.Any())
 			{
@@ -531,7 +574,7 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 					{
 						query.OrderBy.Add(new QSOrder
 						{
-							Order = sortDescriptor.SortDirection == ListSortDirection.Ascending ? QSOrderType.ASC : QSOrderType.DESC,
+							Order = sortDescriptor.SortDirection == SortDirectionType.Ascending ? QSOrderType.ASC : QSOrderType.DESC,
 							ColumnAlias = sortDescriptor.Member
 						});
 					}
@@ -539,13 +582,13 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 			}
 		}
 
-		private void AddQueryCustomFilters(ref string query, List<string> columns, IList<IFilterDescriptor> filters)
+		private void AddQueryCustomFilters(ref string query, List<string> columns, List<FilterDto> filters)
 		{
 			if (filters.Any())
 			{
 				foreach (var filter in filters)
 				{
-					var descriptor = filter as FilterDescriptor;
+					var descriptor = filter as FilterSimpleDto;
 					if (descriptor != null)
 					{
 						if (columns.Any(x => x == descriptor.Member))
@@ -575,15 +618,15 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 							}
 						}
 					}
-					else if (filter is CompositeFilterDescriptor)
+					else if (filter is FilterCompositeDto)
 					{
-						AddQueryCustomFilters(ref query, columns, ((CompositeFilterDescriptor)filter).FilterDescriptors);
+						AddQueryCustomFilters(ref query, columns, ((FilterCompositeDto)filter).Filters);
 					}
 				}
 			}
 		}
 
-		private void AddQuerySorting(ref string query, List<string> columns, IList<SortDescriptor> requestSorts)
+		private void AddQuerySorting(ref string query, List<string> columns, List<SortDto> requestSorts)
 		{
 			if (requestSorts.Any())
 			{
@@ -594,12 +637,17 @@ from (select t1.*, ROW_NUMBER () OVER(order by 0) QS_ROWNUM
 					if (columns.Any(x => x == sortDescriptor.Member))
 					{
 						sorts.Add(
-							$" {sortDescriptor.Member} {(sortDescriptor.SortDirection == ListSortDirection.Ascending ? "ASC" : "DESC")} ");
+							$" {sortDescriptor.Member} {(sortDescriptor.SortDirection == SortDirectionType.Ascending ? "ASC" : "DESC")} ");
 					}
 				}
 
 				query += string.Join(",", sorts);
 			}
+		}
+
+		private class CountDto
+		{
+			public long Total { get; set; }
 		}
 
 		#endregion Helpers

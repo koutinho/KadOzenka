@@ -92,8 +92,8 @@ namespace CIPJS
 	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
 	        services.AddTransient<DashboardWidgetService>();
-	        services.AddTransient<StatisticsReportsService>();
-	        services.AddTransient<StatisticsReportsExportService>();
+	        services.AddTransient<StatisticsReportsWidgetService>();
+	        services.AddTransient<StatisticsReportsWidgetExportService>();
 	        services.AddTransient<TourService>();
 	        services.AddTransient<RegisterAttributeService>();
 	        services.AddTransient<SystemAttributeSettingsService>();

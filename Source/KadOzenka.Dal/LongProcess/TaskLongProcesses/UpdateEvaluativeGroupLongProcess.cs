@@ -32,7 +32,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private RosreestrRegisterService RosreestrRegisterService { get; }
 		private TaskService TaskService { get; }
 		private GroupService GroupService { get; }
-		private GbuReportService ReportService { get; }
 		private GbuReportService.Column CadastralNumberColumn { get; set; }
 		private GbuReportService.Column AttributeValueColumn { get; set; }
 		private GbuReportService.Column GroupNameColumn { get; set; }
@@ -47,7 +46,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			GbuObjectService = new GbuObjectService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 			TaskService = new TaskService();
-			ReportService = new GbuReportService();
 			GroupService = new GroupService();
 		}
 
@@ -82,15 +80,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				task = GetTask(taskId.Value);
 
 				var evaluativeGroupAttribute = GetEvaluativeGroupAttribute();
+				using var reportService = new GbuReportService($"Отчет по переносу оценочной группы для задания '{task.Name}'");
+				GenerateReportColumns(evaluativeGroupAttribute, reportService);
 
-				GenerateReportColumns(evaluativeGroupAttribute);
+				Run(task, evaluativeGroupAttribute, reportService);
 
-				Run(task, evaluativeGroupAttribute);
+				reportService.SaveReport( OMTask.GetRegisterId(), "KoTasks");
 
-				ReportService.SetStyle();
-				ReportService.SaveReport($"Отчет по переносу оценочной группы для задания '{task.Name}'", OMTask.GetRegisterId(), "KoTasks");
-
-				var message = "Операция успешно завершена.<br>" + $@"<a href=""{ReportService.UrlToDownload}"">Скачать результат</a>";
+				var message = "Операция успешно завершена.<br>" + $@"<a href=""{reportService.UrlToDownload}"">Скачать результат</a>";
 				SendMessage(processQueue, message, GetMessageSubject(task.Name));
 				WorkerCommon.SetProgress(processQueue, 100);
 
@@ -159,7 +156,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return evaluativeGroupAttribute;
 		}
 
-		private void GenerateReportColumns(RegisterAttribute evaluativeGroupAttribute)
+		private void GenerateReportColumns(RegisterAttribute evaluativeGroupAttribute, GbuReportService reportService)
 		{
 			CadastralNumberColumn = new GbuReportService.Column
 			{
@@ -188,8 +185,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var columns = new List<GbuReportService.Column> { CadastralNumberColumn, AttributeValueColumn, GroupNameColumn, ErrorColumn };
 
-			ReportService.AddHeaders(columns);
-			ReportService.SetIndividualWidth(columns);
+			reportService.AddHeaders(columns);
+			reportService.SetIndividualWidth(columns);
 		}
 
 		//private void PerformOperation(OMQueue processQueue, CancellationToken cancellationToken, TaskPure task,
@@ -217,7 +214,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		//	cancelProgressCounterSource.Dispose();
 		//}
 
-		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute)
+		private void Run(TaskPure task, RegisterAttribute evaluativeGroupAttribute, GbuReportService reportService)
 		{
 			var units = GetUnits(task.Id);
 			MaxCount = units.Count;
@@ -242,7 +239,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			Parallel.ForEach(units, options, unit =>
 			{
-				UpdateUnitGroup(gbuEvaluativeGroupValues, unit, tourGroupsInfo);
+				UpdateUnitGroup(gbuEvaluativeGroupValues, unit, tourGroupsInfo, reportService);
 			});
 		}
 
@@ -292,7 +289,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return units.Where(x => resultObjectIds.Contains(x.ObjectId.GetValueOrDefault())).ToList();
 		}
 
-		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour)
+		private void UpdateUnitGroup(List<GbuObjectAttribute> gbuEvaluativeGroupValues, OMUnit unit, TourGroupsInfo allGroupsInTour, GbuReportService reportService)
 		{
 			lock (_locked)
 			{
@@ -327,7 +324,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupFromGbu, group);
+					AddRowToReport(reportService, unit.CadastralNumber, groupFromGbu, group);
 				}
 			}
 			catch (Exception exception)
@@ -335,7 +332,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var errorId = ErrorManager.LogError(exception);
 				lock (_locked)
 				{
-					AddRowToReport(unit.CadastralNumber, groupFromGbu, group, $"Ошибка, подробнее в журнале {errorId}");
+					AddRowToReport(reportService, unit.CadastralNumber, groupFromGbu, group, $"Ошибка, подробнее в журнале {errorId}");
 				}
 
 				_log.Error(exception, "Ошибка при обработке юнита во время переноса оценочной группы");
@@ -362,19 +359,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return resultSubgroup;
 		}
 
-		private void AddRowToReport(string cadastralNumber, string groupNumberFromAttribute, GroupTreeDto group, string errorMessage = null)
+		private void AddRowToReport(GbuReportService reportService, string cadastralNumber, string groupNumberFromAttribute, GroupTreeDto group, string errorMessage = null)
 		{
-			var row = ReportService.GetCurrentRow();
+			var row = reportService.GetCurrentRow();
 
 			var fullGroupName = group == null ? string.Empty : group.GroupName;
 
-			ReportService.AddValue(cadastralNumber, CadastralNumberColumn.Index, row);
-			ReportService.AddValue(groupNumberFromAttribute, AttributeValueColumn.Index, row);
-			ReportService.AddValue(fullGroupName, GroupNameColumn.Index, row);
+			reportService.AddValue(cadastralNumber, CadastralNumberColumn.Index, row);
+			reportService.AddValue(groupNumberFromAttribute, AttributeValueColumn.Index, row);
+			reportService.AddValue(fullGroupName, GroupNameColumn.Index, row);
 
 			if (!string.IsNullOrWhiteSpace(errorMessage))
 			{
-				ReportService.AddValue(errorMessage, ErrorColumn.Index, row, ReportService.ErrorCellStyle);
+				reportService.AddValue(errorMessage, ErrorColumn.Index, row, reportService.ErrorCellStyle);
 			}
 		}
 

@@ -39,6 +39,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Core.Main.FileStorages;
 using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
@@ -46,6 +47,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
@@ -487,27 +489,30 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("560", "Тест сервиса отчетов", () =>
             {
-	            var reportService = new GbuReportService();
-	            var numberOfColumns = 2;
-	            var numberOfRows = 200;
-	            var columns = Enumerable.Range(0, numberOfColumns).Select(x => new GbuReportService.Column
+	            long reportId = -1;
+	            using (var reportService = new GbuReportService("Test"))
 	            {
-		            Header = $"Header {x}",
-		            Index = x,
-		            Width = 2
-	            }).ToList();
+		            var numberOfColumns = 2;
+		            var numberOfRows = 200;
+		            var columns = Enumerable.Range(0, numberOfColumns).Select(x => new GbuReportService.Column
+		            {
+			            Header = $"Header {x}",
+			            Index = x,
+			            Width = 2
+		            }).ToList();
 
-				Enumerable.Range(0, numberOfRows).ForEach(x =>
-				{
-					var row = reportService.GetCurrentRow();
-					columns.ForEach(column =>
-					{
-						reportService.AddValue($"value {x}.{column.Index}", column.Index, row);
-					});
-				});
+		            Enumerable.Range(0, numberOfRows).ForEach(x =>
+		            {
+			            var row = reportService.GetCurrentRow();
+			            columns.ForEach(column =>
+			            {
+				            reportService.AddValue($"value {x}.{column.Index}", column.Index, row);
+			            });
+		            });
 
-				reportService.SetStyle();
-				var reportId = reportService.SaveReport("Test");
+		            reportId = reportService.SaveReport();
+				} 
+
 
 				var export = OMExportByTemplates
 					.Where(x => x.Id == reportId)
@@ -530,6 +535,35 @@ namespace KadOzenka.BlFrontEnd
 					ObjectId = taskId
 				}, new CancellationToken());
 			});
+
+            consoleHelper.AddCommand("562", "Тест длительного процесса для отчета 'Состав данных по характеристикам ОН'", () =>
+            {
+				new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId()
+				}, new CancellationToken());
+
+				////TODO тестирование отмены процесса
+				//var cancelSource = new CancellationTokenSource();
+				//var cancelToken = cancelSource.Token;
+				//Task.Factory.StartNew(() =>
+				//{
+				//	Thread.Sleep(300000);
+				//	cancelSource.Cancel();
+				//});
+				//new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId()
+				//}, cancelToken);
+			});
+
+
+            consoleHelper.AddCommand("18122020", "Исправление типа ГБУ объектов на кадастровый квартал", () =>
+            {
+	            ChangeTypeToCadastralQuarter.Perform("C:\\Genix\\data1.xlsx");
+            });
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));

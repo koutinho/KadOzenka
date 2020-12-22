@@ -73,8 +73,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private static long FormReport(List<CalcErrorItem> result)
 		{
-			var reportService = new GbuReportService();
+			using var reportService = new GbuReportService("Отчет по итогам расчета кадастровой стоимости");
 			reportService.AddHeaders(new List<string> { "Оценочная группа", "Задание на оценку", "Тип объекта", "КН", "Ошибка"});
+			reportService.SetIndividualWidth(GroupColumn, 3);
+			reportService.SetIndividualWidth(TaskColumn, 4);
+			reportService.SetIndividualWidth(PropertyTypeColumn, 5);
+			reportService.SetIndividualWidth(KnColumn, 4);
+			reportService.SetIndividualWidth(ErrorColumn, 5);
 
 			var groupData = new Dictionary<long, string>();
 			var taskData = new Dictionary<long, string>();
@@ -104,13 +109,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				reportService.AddValue(errorItem.Error, ErrorColumn, row);
 			}
 
-			reportService.SetStyle();
-			reportService.SetIndividualWidth(GroupColumn, 3);
-			reportService.SetIndividualWidth(TaskColumn, 4);
-			reportService.SetIndividualWidth(PropertyTypeColumn, 5);
-			reportService.SetIndividualWidth(KnColumn, 4);
-			reportService.SetIndividualWidth(ErrorColumn, 5);
-			var reportId = reportService.SaveReport("Отчет по итогам расчета кадастровой стоимости");
+			var reportId = reportService.SaveReport();
 			return reportId;
 		}
 	}

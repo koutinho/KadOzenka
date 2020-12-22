@@ -7,13 +7,13 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	public class DataCompositionByCharacteristicsReportsLongProcess : LongProcess
+	public class DataCompositionByCharacteristicsReportsLongProcessViaUnits : LongProcess
 	{
-		private static readonly ILogger Log = Serilog.Log.ForContext<DataCompositionByCharacteristicsReportsLongProcess>();
+		private static readonly ILogger Log = Serilog.Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaUnits>();
 		public DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; set; }
-		public const string LongProcessName = nameof(DataCompositionByCharacteristicsReportsLongProcess);
+		public const string LongProcessName = "DataCompositionByCharacteristicsReportsLongProcess";
 
-		public DataCompositionByCharacteristicsReportsLongProcess()
+		public DataCompositionByCharacteristicsReportsLongProcessViaUnits()
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			var taskIds = DataCompositionByCharacteristicsService.GetLongPerformanceTasks();
 			Log.Verbose("Количество задач с большим числом юнитов {Сount}.", taskIds.Count);
-			
+
 			taskIds.ForEach(taskId =>
 			{
 				Log.Verbose("Начата обработка задачи с Id {TaskId}.", taskId);
