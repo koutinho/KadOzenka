@@ -132,7 +132,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								var gbuTableName = $"{register.AllpriTable}_{postfix}";
 
 								var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
-									--where object_id = 15880792
 									group by object_id";
 
 								var sql = $@"update {TableName} cache_table
@@ -159,16 +158,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 								var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
 
-								var subQuery = $@"select object_id from {gbuTableName} 
-									--where object_id = 15880792
-									group by object_id";
+								var subQuery = $@"select object_id from {gbuTableName} group by object_id";
 
 								var sql = $@"update {TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-								Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
+								Logger.ForContext("RegisterId", register.Id)
+									.Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
 
 								var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
 								DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
