@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.DataComparing.Configs
 			return message;
 		}
 
-		protected override string ComposeName(OMTask task, OMInstance document, bool resultFile = false)
+		protected override string ComposeName(OMTask task, OMInstance document, string fileSuffix = null)
 		{
 			return task.NoteType_Code.GetEnumDescription() + NameSeparator + document.RegNumber + NameSeparator +
 			       task.EstimationDate?.ToString(DateFormat) + NameSeparator + document.ApproveDate?.ToString(DateFormat);

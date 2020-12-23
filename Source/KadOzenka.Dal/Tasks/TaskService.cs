@@ -14,6 +14,8 @@ using System.Transactions;
 using Core.Register;
 using Core.Shared.Misc;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataComparing;
+using KadOzenka.Dal.DataComparing.Configs;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Documents;
@@ -398,23 +400,80 @@ namespace KadOzenka.Dal.Tasks
             }
         }
 
+        #region Data Comparing
+
+        public TaskDataComparingDto GetTaskDataComparingDto(long taskId)
+        {
+            var task = GetTask(taskId);
+            var dto = new TaskDataComparingDto
+            {
+                Id = taskId,
+                NoteType = task.NoteType_Code,
+                DataComparingTaskChangesStatusCode = task.DataChangesComparingStatus_Code,
+                DataComparingCadastralCostStatusCode = task.CadastralCostComparingStatus_Code
+            };
+
+            if (task.CadastralCostComparingStatus_Code ==
+               KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
+                dto.ContainsFdFilesComparingResult = CadastralCostDataComparingStorageManager.ContainsResultFdFile(task);
+
+            dto.IsTaskChangesPkkoFileUploaded = TaskChangesDataComparingStorageManager.IsTaskChangesPkkoFileUploaded(task);
+            dto.AreCostPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreCostPkkoFilesUploaded(task);
+            dto.AreFdPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreFdPkkoFilesUploaded(task);
+
+            return dto;
+        }
+
         public FileStream DownloadTaskChangesDataComparingResult(long taskId)
         {
-	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-	        if (task == null)
-		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
-
-	        return TaskChangesDataComparingStorageManager.GetResultFile(task);
+            var task = GetTask(taskId);
+            return TaskChangesDataComparingStorageManager.GetResultFile(task);
         }
 
         public FileStream DownloadTaskCadastralCostDataComparingResult(long taskId, bool downloadFDResult = false)
         {
-	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
-	        if (task == null)
-		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
-
+            var task = GetTask(taskId);
             return CadastralCostDataComparingStorageManager.GetResultFile(task, downloadFDResult);
         }
+
+        public void UploadDataComparingTaskChangesPkkoFile(long taskId, Stream stream)
+        {
+            var task = GetTask(taskId);
+            TaskChangesDataComparingStorageManager.SaveTaskChangesPkkoFile(stream, task);
+        }
+
+        public void UploadDataComparingCostPkkoFiles(long taskId, DisposableList<Stream> streamList)
+        {
+            var task = GetTask(taskId);
+            CadastralCostDataComparingStorageManager.AddNewPkkoCostFiles(task, streamList);
+        }
+
+        public void UploadDataComparingFdPkkoFiles(long taskId, DisposableList<Stream> streamList)
+        {
+            var task = GetTask(taskId);
+            CadastralCostDataComparingStorageManager.AddNewPkkoFdFiles(task, streamList);
+        }
+
+        public GbuReportService.ReportFile DownloadTaskDataComparingPkkoFile(long taskId, DataComparingFileType downloadType)
+        {
+            var task = GetTask(taskId);
+
+            GbuReportService.ReportFile file;
+            if (downloadType == DataComparingFileType.TaskChangesPkkoFile)
+            {
+                file = TaskChangesDataComparingStorageManager.GetTaskChangesPkkoFile(task);
+            }
+            else
+            {
+                file = downloadType == DataComparingFileType.CostPkkoFiles
+                    ? CadastralCostDataComparingStorageManager.GetTaskPkkoFiles(task, loadFdFiles: false)
+                    : CadastralCostDataComparingStorageManager.GetTaskPkkoFiles(task, loadCostFiles: false);
+            }
+
+            return file;
+        }
+
+        #endregion Data Comparing
 
         #region Support Methods
 
@@ -491,6 +550,15 @@ namespace KadOzenka.Dal.Tasks
                     possibleTotalCountOfObjects = taskObjectImports.Sum(x => x.TotalNumberOfObjects);
                 }
             }
+        }
+
+        private OMTask GetTask(long taskId)
+        {
+	        var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
+	        if (task == null)
+		        throw new Exception($"Не найдено задание на оценку с ИД {taskId}");
+
+	        return task;
         }
 
         #endregion

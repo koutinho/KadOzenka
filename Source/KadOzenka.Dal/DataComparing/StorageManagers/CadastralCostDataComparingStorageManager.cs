@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Core.Shared.Extensions;
+using Ionic.Zip;
 using KadOzenka.Dal.DataComparing.Configs;
-using KadOzenka.Dal.DataComparing.Files;
+using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Tasks;
 using ObjectModel.KO;
 using Serilog;
 using File = System.IO.File;
@@ -36,8 +39,8 @@ namespace KadOzenka.Dal.DataComparing.StorageManagers
 
 		public static List<string> GetTaskCostFiles(string taskFolder, string subfolder)
 		{
-			var rsmFolder = GetBaseFolder(taskFolder, subfolder);
-			return Directory.GetFiles(rsmFolder, "Task_*COST_*.xml", SearchOption.TopDirectoryOnly).ToList();
+			var folder = GetBaseFolder(taskFolder, subfolder);
+			return Directory.GetFiles(folder, "Task_*COST_*.xml", SearchOption.TopDirectoryOnly).ToList();
 		}
 
 		public static List<string> GetTaskCostFilesFromResult(string taskFolder, SystemType systemType)
@@ -52,8 +55,8 @@ namespace KadOzenka.Dal.DataComparing.StorageManagers
 
 		public static List<string> GetTaskFDFiles(string taskFolder, string subfolder)
 		{
-			var rsmFolder = GetBaseFolder(taskFolder, subfolder);
-			return Directory.GetFiles(rsmFolder, "Task_*FD_State_Cadastral_Valuation_*.xml", SearchOption.TopDirectoryOnly).ToList();
+			var folder = GetBaseFolder(taskFolder, subfolder);
+			return Directory.GetFiles(folder, "Task_*FD_State_Cadastral_Valuation_*.xml", SearchOption.TopDirectoryOnly).ToList();
 		}
 
 		public static Stream GetComparingDataFile(string fullFileName)
@@ -121,6 +124,125 @@ namespace KadOzenka.Dal.DataComparing.StorageManagers
 			foreach (var file in files)
 			{
 				File.Delete(file);
+			}
+		}
+
+		public static bool ContainsResultFdFile(OMTask task)
+		{
+			var fileFolder = GetBaseFolder(CadastralCostDataComparingConfig.Current.GetTaskFolderName(task), CadastralCostDataComparingConfig.Current.TaskResultFolder);
+			var fullFileName = Path.Combine(fileFolder, CadastralCostDataComparingConfig.Current.TaskFDResultFile);
+
+			return File.Exists(fullFileName);
+		}
+
+		public static bool AreCostPkkoFilesUploaded(OMTask task)
+		{
+			var fileFolder = GetBaseFolder(CadastralCostDataComparingConfig.Current.GetTaskFolderName(task), CadastralCostDataComparingConfig.Current.TaskPkkoFolder);
+			var fileNames = Directory.GetFiles(fileFolder, "Task_*COST_*.xml", SearchOption.TopDirectoryOnly).ToList();
+
+			return fileNames.Count > 0;
+		}
+
+		public static bool AreFdPkkoFilesUploaded(OMTask task)
+		{
+			var fileFolder = GetBaseFolder(CadastralCostDataComparingConfig.Current.GetTaskFolderName(task), CadastralCostDataComparingConfig.Current.TaskPkkoFolder);
+			var fileNames = Directory.GetFiles(fileFolder, "Task_*FD_State_Cadastral_Valuation_*.xml", SearchOption.TopDirectoryOnly).ToList();
+
+			return fileNames.Count > 0;
+		}
+
+		public static GbuReportService.ReportFile GetTaskPkkoFiles(OMTask task, bool loadCostFiles = true, bool loadFdFiles = true)
+		{
+			if (!loadCostFiles && !loadFdFiles)
+				throw new Exception("Не указан тип выгружаемых файлов (Cost, FD)");
+
+			GbuReportService.ReportFile reportFile = new GbuReportService.ReportFile();
+			var taskFolder = CadastralCostDataComparingConfig.Current.GetTaskFolderName(task);
+
+			var files = new List<string>();
+			if (loadCostFiles)
+				files.AddRange(GetTaskCostFiles(taskFolder, CadastralCostDataComparingConfig.Current.TaskPkkoFolder));
+			if (loadFdFiles)
+				files.AddRange(GetTaskFDFiles(taskFolder, CadastralCostDataComparingConfig.Current.TaskPkkoFolder));
+
+			_log.ForContext("FileNames", files)
+				.Debug("Добавление в архив ПККО фалов для {TaskFolder}({TaskId})", taskFolder, task.Id);
+			using (ZipFile zipFile = new ZipFile())
+			{
+				zipFile.AlternateEncoding = Encoding.UTF8;
+				zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+
+				foreach (var file in files)
+				{
+					_log.Verbose("Добавление файла {FileName} в архив", file);
+					zipFile.AddFile(file, string.Empty);
+				}
+
+				var stream = new MemoryStream();
+				zipFile.Save(stream);
+				stream.Seek(0, SeekOrigin.Begin);
+				reportFile.FileStream = stream;
+				reportFile.FileName = loadCostFiles && loadFdFiles
+					? $"Данные ПККО {taskFolder}.zip"
+					: $"Данные ПККО {taskFolder} ({(loadCostFiles ? "COST" : "")}{(loadFdFiles ? "FD" : "")} файлы).zip";
+			}
+
+			return reportFile;
+		}
+
+		public static void AddNewPkkoCostFiles(OMTask task, DisposableList<Stream> streamList)
+		{
+			var taskFolder = CadastralCostDataComparingConfig.Current.GetTaskFolderName(task);
+			var fileFolder = GetBaseFolder(taskFolder, CadastralCostDataComparingConfig.Current.TaskPkkoFolder);
+			var files = Directory.GetFiles(fileFolder, "Task_*COST_*.xml", SearchOption.TopDirectoryOnly).ToList();
+			_log.ForContext("FileNames", files)
+				.Debug("Получена информация о предыдущих ПККО COST файлах для {TaskFolder}({TaskId}) для их удаления", taskFolder, task.Id);
+			foreach (var file in files)
+			{
+				_log.Verbose("Удаление файла '{FileName}'", file);
+				File.Delete(file);
+			}
+
+			var i = 0;
+			foreach (var stream in streamList)
+			{
+				var fileName = $"Task_{task.Id}_COST_{i}.xml";
+
+				_log.ForContext("FileFolder", fileFolder)
+					.Verbose("Сохранение файла '{FileName}'", fileName);
+				using var fs = File.Create(Path.Combine(fileFolder, fileName));
+				fs.Seek(0, SeekOrigin.Begin);
+				stream.CopyTo(fs);
+
+				i++;
+			}
+		}
+
+		public static void AddNewPkkoFdFiles(OMTask task, DisposableList<Stream> streamList)
+		{
+			var taskFolder = CadastralCostDataComparingConfig.Current.GetTaskFolderName(task);
+			var fileFolder = GetBaseFolder(taskFolder, CadastralCostDataComparingConfig.Current.TaskPkkoFolder);
+			var files = Directory.GetFiles(fileFolder, "Task_*FD_State_Cadastral_Valuation_*.xml", SearchOption.TopDirectoryOnly).ToList();
+			_log.ForContext("FileNames", files)
+				.Debug("Получена информация о предыдущих ПККО FD файлах для {TaskFolder}({TaskId}) для их удаления", taskFolder, task.Id);
+			foreach (var file in files)
+			{
+				_log.Verbose("Удаление файла '{FileName}'", file);
+				File.Delete(file);
+			}
+
+			var i = 0;
+			foreach (var stream in streamList)
+			{
+				var fileName = $"Task_{task.Id}_FD_State_Cadastral_Valuation_{i}.xml";
+
+				_log.ForContext("FileFolder", fileFolder)
+					.Information("Сохранение файла '{FileName}'", fileName);
+				using var fs = File.Create(Path.Combine(fileFolder, fileName));
+				fs.Seek(0, SeekOrigin.Begin);
+				stream.CopyTo(fs);
+
+				i++;
 			}
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KadOzenka.Dal.DataComparing.Configs;
+using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using Serilog;
 
@@ -54,7 +55,7 @@ namespace KadOzenka.Dal.DataComparing.StorageManagers
 		public static string GetComparingDataRsmFileFullName(OMTask task)
 		{
 			var fileFolder = GetTaskChangesDataFolder(TaskChangesDataComparingConfig.Current.ComparingDataFolder);
-			var fileName = TaskChangesDataComparingConfig.Current.GetFileName(task);
+			var fileName = TaskChangesDataComparingConfig.Current.GetRsmFileName(task);
 			return Path.Combine(fileFolder, fileName);
 		}
 
@@ -83,6 +84,55 @@ namespace KadOzenka.Dal.DataComparing.StorageManagers
 				File.Delete(resultFullFileName);
 
 			File.Move(sourceFullFileName, resultFullFileName);
+		}
+
+		public static bool IsTaskChangesPkkoFileUploaded(OMTask task)
+		{
+			var fileName = TaskChangesDataComparingConfig.Current.GetPkkoFileName(task);
+			var taskChangesComparingDataFolder = GetTaskChangesDataFolder(TaskChangesDataComparingConfig.Current.ComparingDataFolder);
+
+			return File.Exists(Path.Combine(taskChangesComparingDataFolder, fileName));
+		}
+
+		public static GbuReportService.ReportFile GetTaskChangesPkkoFile(OMTask task)
+		{
+			var fileName = TaskChangesDataComparingConfig.Current.GetPkkoFileName(task);
+			var taskChangesComparingDataFolder = GetTaskChangesDataFolder(TaskChangesDataComparingConfig.Current.ComparingDataFolder);
+			var fullFileName = Path.Combine(taskChangesComparingDataFolder, $"{fileName}");
+
+			if (!File.Exists(fullFileName))
+			{
+				throw new Exception("Файл физически отсутствует на сервере");
+			}
+			_log.ForContext("FullFileName", fullFileName).Information("Запрос файла {FileName}", fullFileName);
+
+			MemoryStream memoryStream;
+			using (var fileStream = File.OpenRead(fullFileName))
+			{
+				memoryStream = new MemoryStream();
+				fileStream.CopyTo(memoryStream);
+			}
+
+			memoryStream.Seek(0, SeekOrigin.Begin);
+			var report = new GbuReportService.ReportFile
+			{
+				FileName = fileName,
+				FileStream = memoryStream
+			};
+
+			return report;
+		}
+
+		public static void SaveTaskChangesPkkoFile(Stream stream, OMTask task)
+		{
+			var fileName = TaskChangesDataComparingConfig.Current.GetPkkoFileName(task);
+			var taskChangesComparingDataFolder = GetTaskChangesDataFolder(TaskChangesDataComparingConfig.Current.ComparingDataFolder);
+			var fullFileName = Path.Combine(taskChangesComparingDataFolder, fileName);
+			_log.ForContext("FileFolder", taskChangesComparingDataFolder).Information("Сохранение файла {FileName}", fileName);
+
+			using var fs = File.Create(fullFileName);
+			fs.Seek(0, SeekOrigin.Begin);
+			stream.CopyTo(fs);
 		}
 
 		private static string GetTaskChangesDataFolder(string folder)
