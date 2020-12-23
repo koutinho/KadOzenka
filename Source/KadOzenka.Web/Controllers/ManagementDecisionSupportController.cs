@@ -518,7 +518,7 @@ namespace KadOzenka.Web.Controllers
 	        if (!ModelState.IsValid)
 		        return GenerateMessageNonValidModel();
 
-	        var parameters = new UniformReportLongProcessInputParameters
+	        var parameters = new ReportLongProcessInputParameters
 	        {
 		        TaskIds = model.TaskFilter.ToList()
 	        };
@@ -531,7 +531,7 @@ namespace KadOzenka.Web.Controllers
 	        //	Parameters = parameters.SerializeToXml()
 	        //}, new CancellationToken());
 
-	        UniformReportLongProcess.AddProcessToQueue(parameters);
+	        new UniformReportLongProcess().AddProcessToQueue(parameters);
 
 	        return Ok();
         }

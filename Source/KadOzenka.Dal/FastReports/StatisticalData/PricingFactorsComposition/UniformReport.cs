@@ -14,6 +14,7 @@
 //using ObjectModel.KO;
 //using Serilog;
 
+//TODO отчет сделан через длительный процесс
 //namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 //{
 //    public class UniformReport : DataCompositionByCharacteristicsBaseReport

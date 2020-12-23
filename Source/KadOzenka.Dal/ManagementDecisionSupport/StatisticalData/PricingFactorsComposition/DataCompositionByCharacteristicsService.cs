@@ -15,28 +15,51 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 	{
 		private const int MaxNumberOfUnits = 200000;
 		public string TableName => "data_composition_by_characteristics";
-		public List<RegisterData> CachedRegisters { get; private set; }
-		public List<RegisterAttribute> CachedAttributes { get; private set; }
-		public long RosreestrRegisterId { get; private set; }
 
-
-		public DataCompositionByCharacteristicsService()
+		private static List<RegisterData> _cachedRegisters;
+		public static List<RegisterData> CachedRegisters
 		{
-			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
+			get
+			{
+				if (_cachedRegisters == null)
+				{
+					var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
+					_cachedRegisters = RegisterCache.Registers.Values
+						.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id).ToList();
+				}
 
-			//для тестирования
-			//var test = new List<long> {2, 4, 5, 14, 42430534 };
-			//--and unit.object_id in (10743778)--(549616)
-			CachedRegisters = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable &&
-			                                                             x.Id != mainRegister.Id)
-				//.Where(x => test.Contains(x.Id))
-				.ToList();
+				return _cachedRegisters;
+			}
+		}
 
-			var registerIds = CachedRegisters.Select(x => x.Id).ToList();
-			CachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x => registerIds.Contains(x.RegisterId)).ToList();
+		private static List<RegisterAttribute> _cachedAttributes;
+		public static List<RegisterAttribute> CachedAttributes
+		{
+			get
+			{
+				if (_cachedAttributes == null)
+				{
+					var registerIds = CachedRegisters.Select(x => x.Id).ToList();
+					_cachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x => registerIds.Contains(x.RegisterId)).ToList();
+				}
 
-			var rosreestrRegisterService = new RosreestrRegisterService();
-			RosreestrRegisterId = rosreestrRegisterService.RegisterId;
+				return _cachedAttributes;
+			}
+		}
+
+		protected static long? _rosreestrRegisterId;
+		public static long RosreestrRegisterId
+		{
+			get
+			{
+				if (_rosreestrRegisterId == null)
+				{
+					var rosreestrRegisterService = new RosreestrRegisterService();
+					_rosreestrRegisterId = rosreestrRegisterService.RegisterId;
+				}
+
+				return _rosreestrRegisterId.Value;
+			}
 		}
 
 
