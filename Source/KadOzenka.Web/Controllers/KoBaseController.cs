@@ -87,6 +87,10 @@ namespace KadOzenka.Web.Controllers
 	                return "application/octet-stream";
                 case "docx":
 	                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "txt":
+	                return "text/plain";
+                case "csv":
+	                return "text/csv";
                 default:
 	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
 	        }

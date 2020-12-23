@@ -46,7 +46,7 @@ Write-Host 2. Публикация релиза
                 
                Write-Host (Get-Date).ToString("yyyy-MM-dd HH:mm:ss") Делаем бэкап config-файлов
                 cpi -Path $site_dir\*.config, $site_dir\appsettings.json $backup_path\config\site -Force -Verbose
-                cpi -Path service_dir\*.config, service_dir\appsettings.json $backup_path\config\long_process -Force -Verbose
+                cpi -Path $service_dir\*.config, $service_dir\appsettings.json $backup_path\config\long_process -Force -Verbose
               
                 if ($backup) {
                     compress-archive $site_dir $backup_path"$df.zip" 

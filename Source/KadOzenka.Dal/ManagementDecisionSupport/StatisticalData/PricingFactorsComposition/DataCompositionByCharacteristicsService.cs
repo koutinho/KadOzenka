@@ -15,9 +15,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 	{
 		private const int MaxNumberOfUnits = 200000;
 		public string TableName => "data_composition_by_characteristics";
-		public static List<RegisterData> CachedRegisters { get; private set; }
-		public static List<RegisterAttribute> CachedAttributes { get; private set; }
-		public static long RosreestrRegisterId { get; private set; }
+		public List<RegisterData> CachedRegisters { get; private set; }
+		public List<RegisterAttribute> CachedAttributes { get; private set; }
+		public long RosreestrRegisterId { get; private set; }
 
 
 		public DataCompositionByCharacteristicsService()

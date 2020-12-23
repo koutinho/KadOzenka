@@ -359,6 +359,29 @@
         var formObject = Common.Functions.FormToObject($('.form-horizontal'));
         formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
         kendo.ui.progress($('body'), true);
+        var selectedReport = $('input[type="radio"][name="ReportType"]:checked').val();
+        if (selectedReport == '@((long)StatisticalDataType.PricingFactorsCompositionFinalUniform)') {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddUniformReportLongProcessToQueue", "ManagementDecisionSupport")',
+                data: formObject,
+                success: function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
+                    Common.ShowMessage('Процесс поставлен в очередь');
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+            return;
+        }
         $.post("/ManagementDecisionSupport/GetStatisticalDataReportUrl", formObject).done(function(response) {
             openReportViewer(response);
         }).fail(function (response, textStatus, errorThrown) {

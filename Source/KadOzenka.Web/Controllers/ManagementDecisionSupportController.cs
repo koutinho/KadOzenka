@@ -10,6 +10,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
@@ -509,6 +510,30 @@ namespace KadOzenka.Web.Controllers
             }
 
             return GetStatisticalDataReportUrl(model.Map());
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+        public IActionResult AddUniformReportLongProcessToQueue(StatisticalDataModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var parameters = new UniformReportLongProcessInputParameters
+	        {
+		        TaskIds = model.TaskFilter.ToList()
+	        };
+
+	        ////TODO код для отладки
+	        //new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+	        //{
+	        //	Status_Code = Status.Added,
+	        //	UserId = SRDSession.GetCurrentUserId(),
+	        //	Parameters = parameters.SerializeToXml()
+	        //}, new CancellationToken());
+
+	        UniformReportLongProcess.AddProcessToQueue(parameters);
+
+	        return Ok();
         }
 
 		#endregion
