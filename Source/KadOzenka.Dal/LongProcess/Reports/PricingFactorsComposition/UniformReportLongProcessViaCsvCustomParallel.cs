@@ -16,6 +16,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
@@ -40,7 +41,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public UniformReportLongProcess()
 		{
-			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
+			CancellationManager cancellationManager = new CancellationManager();
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService(cancellationManager);
 		}
 
 
@@ -55,6 +57,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			DataCompositionByCharacteristicsService.CancellationManager.BaseCancellationToken = cancellationToken;
 			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 

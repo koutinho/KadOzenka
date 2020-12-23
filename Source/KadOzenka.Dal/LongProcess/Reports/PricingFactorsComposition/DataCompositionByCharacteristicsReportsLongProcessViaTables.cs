@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using SerilogTimings.Extensions;
 
@@ -26,7 +27,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public DataCompositionByCharacteristicsReportsLongProcessViaTables()
 		{
-			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
+			CancellationManager cancellationManager = new CancellationManager();
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService(cancellationManager);
 		}
 
 
@@ -38,6 +40,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			DataCompositionByCharacteristicsService.CancellationManager.BaseCancellationToken = cancellationToken;
+
 			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 
 			CreteCacheTableViaObjectId();

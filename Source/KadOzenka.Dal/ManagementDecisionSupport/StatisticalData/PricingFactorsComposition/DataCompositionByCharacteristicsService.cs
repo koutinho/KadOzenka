@@ -20,11 +20,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		public List<RegisterAttribute> CachedAttributes { get; private set; }
 		public long RosreestrRegisterId { get; private set; }
 
-		private readonly CancellationManager _cancellationManager;
+		public readonly CancellationManager CancellationManager;
 
 		public DataCompositionByCharacteristicsService(CancellationManager cancellationManager)
 		{
-			_cancellationManager = cancellationManager;
+			CancellationManager = cancellationManager;
 			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
 			//для тестирования
@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var isExists = false;
 
 			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{TableName}') as {nameof(isExists)}";
-			var dataTable = _cancellationManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+			var dataTable = CancellationManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 			//var command = DBMngr.Main.GetSqlStringCommand(sql);
 			//var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var columnName = "count";
 			var sql = $"select count(*) as {columnName} from ko_unit unit where {GetUnitCondition(taskIds)}";
 
-			var dataTable= _cancellationManager.ExecuteSqlStringToDataSet(sql)?.Tables[0];
+			var dataTable= CancellationManager.ExecuteSqlStringToDataSet(sql)?.Tables[0];
 			//var command = DBMngr.Main.GetSqlStringCommand(sql);
 			//var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
