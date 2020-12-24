@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer
 					.Debug("Получена информация о FD файлах");
 
 				if (!rsmFdFiles.IsEmpty() && !pkkoFdFiles.IsEmpty() && task.CadastralCostComparingStatus_Code ==
-					KoDataComparingStatus.ThereAreInconsistencies)
+					KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
 				{
 					strategy = new FDFilesDataComparerStrategy(rsmFdFiles, pkkoFdFiles, taskFolder, task, messageAddresses);
 				}

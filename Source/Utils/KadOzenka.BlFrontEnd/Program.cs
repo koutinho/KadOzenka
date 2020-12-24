@@ -57,6 +57,8 @@ using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -64,6 +66,17 @@ namespace KadOzenka.BlFrontEnd
 	{
 		static void Main(string[] args)
 		{
+			var configuration = new ConfigurationBuilder()
+			   .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+			   .AddEnvironmentVariables()
+			   .Build();
+
+			Log.Logger = new LoggerConfiguration()
+			.ReadFrom.Configuration(configuration)
+			.CreateLogger();
+
+			Log.Information("Starting KadOzenka.BlFrontEnd");
+
 			BuildQsXml.BuildSudApproveStatus();
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 
@@ -79,6 +92,8 @@ namespace KadOzenka.BlFrontEnd
 		{
 			consoleHelper.AddCommand("2", "Запуск службы выполнения фоновых процессов", () =>
 			{
+
+				Log.Information("Запуск службы выполнения фоновых процессов");
 				LongProcessManagementService service = new LongProcessManagementService();
 				service.Start();
 			});

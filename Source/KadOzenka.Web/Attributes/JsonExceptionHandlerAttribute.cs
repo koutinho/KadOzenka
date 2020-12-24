@@ -18,6 +18,10 @@ namespace KadOzenka.Web.Attributes
             var isAjax = context.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
             if (!isAjax) return;
 
+            if (!string.IsNullOrWhiteSpace(Message))
+            {
+                Type = MessageType.Custom;
+            }
             ObjectResult result;
             switch (Type)
             {

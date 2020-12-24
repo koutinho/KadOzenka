@@ -38,15 +38,15 @@ namespace KadOzenka.Dal.DataComparing.Configs
 		public string ComparingDataFolder => "Протоколы изменений";
 		public string ResultDataFolder => "Результаты сравнения протоколов изменений";
 
-		public string GetFileName(OMTask task) => GetNameFromTask(task);
-		public string GetResultFileName(OMTask task) => GetNameFromTask(task, true);
+		public string GetRsmFileName(OMTask task) => GetNameFromTask(task, RsmSuffix);
+		public string GetPkkoFileName(OMTask task) => GetNameFromTask(task, PkkoSuffix);
+		public string GetResultFileName(OMTask task) => GetNameFromTask(task, ResultSuffix);
 
-		protected override string ComposeName(OMTask task, OMInstance document, bool resultFile = false)
+		protected override string ComposeName(OMTask task, OMInstance document, string fileSuffix = null)
 		{
-			var fileSuffix = resultFile ? ResultSuffix : RsmSuffix;
 			return  TaskChangesFilePrefix + NameSeparator + document.RegNumber + NameSeparator +
-			       task.EstimationDate?.ToString(DateFormat) + NameSeparator +
-			       document.ApproveDate?.ToString(DateFormat) + NameSeparator + fileSuffix + ".xlsx";
+			        task.EstimationDate?.ToString(DateFormat) + NameSeparator +
+			        document.ApproveDate?.ToString(DateFormat) + NameSeparator + fileSuffix + ".xlsx";
 		}
 
 		public OMTask GetTaskInfoFromFileName(TaskChangesFile file)

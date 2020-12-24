@@ -98,7 +98,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [JsonExceptionHandler]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
         public JsonResult AddModel(GeneralModelingModel modelingModel)
         {
@@ -239,6 +239,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult AutomaticModelCard(AutomaticModelingModel modelingModel)
 		{
