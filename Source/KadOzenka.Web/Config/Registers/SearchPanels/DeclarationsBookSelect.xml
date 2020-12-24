@@ -6,8 +6,8 @@
 
         <ControlElement Caption="Дата начала" ID="date_begin_panel" OwnType="Panel">
             <children>
-                <ControlElement Caption="с " ID="date_begin_from" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="MoreThan" />
-                <ControlElement Caption="по" ID="date_begin_to" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="LessThan" />
+                <ControlElement Caption="с " ID="date_begin_from" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="MoreOrEqual" />
+                <ControlElement Caption="по" ID="date_begin_to" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="LessOrEqual" />
             </children>
         </ControlElement>
 
@@ -15,8 +15,8 @@
 
         <ControlElement Caption="Дата окончания" ID="date_end_panel" OwnType="Panel">
             <children>
-                <ControlElement Caption="с " ID="date_end_from" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="MoreThan" />
-                <ControlElement Caption="по" ID="date_end_to" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="LessThan" />
+                <ControlElement Caption="с " ID="date_end_from" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="MoreOrEqual" />
+                <ControlElement Caption="по" ID="date_end_to" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="LessOrEqual" />
             </children>
         </ControlElement>
 
