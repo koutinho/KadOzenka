@@ -745,6 +745,7 @@ namespace ObjectModel.KO
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
         public void FillMarkCatalogs(OMModel model)
         {
+            // TODO: ko_mark_catalog
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == model.GroupId && x.FactorId == this.FactorId).SelectAll().Execute());
         }
@@ -2385,6 +2386,7 @@ namespace ObjectModel.KO
                         {
                             if (groupFactor.SignMarket.ParseToBoolean())
                             {
+                                // TODO: ko_mark_catalog
                                 List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
                                 MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == this.Id && x.FactorId == groupFactor.FactorId).SelectAll().Execute());
 
