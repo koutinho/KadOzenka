@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			private List<Attribute> GetUniqueAttributes()
 			{
 				var objectAttributes = new List<Attribute>();
-				Attributes.ForEach(attributeId =>
+				Attributes?.ForEach(attributeId =>
 				{
 					var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == attributeId);
 					var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);

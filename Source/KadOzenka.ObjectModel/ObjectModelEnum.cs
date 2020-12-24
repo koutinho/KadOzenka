@@ -11861,6 +11861,45 @@ namespace ObjectModel.Directory.Common
     }
 }
 
+namespace ObjectModel.Directory.Common
+{
+    /// <summary>
+    /// Статус экспорта файлов (802)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 802)]
+    public enum ExportStatus : long
+    {
+		/// <summary>
+		/// Создана (0)
+		/// </summary>
+		[Description("Создана")]
+        [EnumCode("0")]
+        [ShortTitle("Создана")]
+        Added = 0,
+		/// <summary>
+		/// В работе (1)
+		/// </summary>
+		[Description("В работе")]
+        [EnumCode("1")]
+        [ShortTitle("В работе")]
+        Running = 1,
+		/// <summary>
+		/// Завершено (2)
+		/// </summary>
+		[Description("Завершено")]
+        [EnumCode("2")]
+        [ShortTitle("Завершено")]
+        Completed = 2,
+		/// <summary>
+		/// Ошибка (3)
+		/// </summary>
+		[Description("Ошибка")]
+        [EnumCode("3")]
+        [ShortTitle("Ошибка")]
+        Faulted = 3,
+    }
+}
+
 namespace ObjectModel.Directory.KO
 {
     /// <summary>

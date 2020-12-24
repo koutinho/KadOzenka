@@ -47,10 +47,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				Header = "Кадастровый номер",
 				Width = 4
 			};
+			var columns = new List<GbuReportService.Column> { sequentialNumberColumn, cadastralNumberColumn };
 
 			var maxNumberOfAttributes = info.Max(x => x.FullAttributes?.Count) ?? 0;
+			if (maxNumberOfAttributes == 0)
+				return columns;
 			var maxNumberOfRegisters = info.SelectMany(x => x.FullAttributes.Select(r => r.RegisterNames?.Count ?? 0)).Max();
-			var columns = new List<GbuReportService.Column> { sequentialNumberColumn, cadastralNumberColumn };
 
 			//2 - чтобы учесть колонки с номером по порядку и КН
 			var columnWidth = 8;
@@ -104,7 +106,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			private List<SameAttributes> GetNotUniqueAttributes()
 			{
 				var objectAttributes = new List<Attribute>();
-				Attributes.ForEach(attributeId =>
+				Attributes?.ForEach(attributeId =>
 				{
 					var attribute = DataCompositionByCharacteristicsService.CachedAttributes.FirstOrDefault(x => x.Id == attributeId);
 					var register = DataCompositionByCharacteristicsService.CachedRegisters.FirstOrDefault(x => x.Id == attribute?.RegisterId);

@@ -10,19 +10,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.SRD;
-using GemBox.Spreadsheet;
-using Ionic.Zip;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using ObjectModel.KO;
-using ObjectModel.Common;
-using ObjectModel.Directory.Common;
-using ObjectModel.Gbu;
 using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
@@ -35,12 +27,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
+		private CustomReportsService CustomReportsService { get; }
 
 
 		protected BaseReportLongProcess(ILogger logger)
 		{
 			Logger = logger;
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
+			CustomReportsService = new CustomReportsService();
 		}
 
 		protected abstract List<string> GenerateReportReportRow(int index, T item);
@@ -206,7 +200,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 						Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
 				}
 
-				return SaveReportZip(stream, ReportName);
+				using (Logger.TimeOperation("Сохранение zip-файла"))
+				{
+					return CustomReportsService.SaveReportZip(stream, ReportName, "csv");
+				}
 			}
 		}
 
@@ -216,68 +213,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			var headers = string.Join(',', str);
 			byte[] firstString = encoding.GetBytes(headers);
 			stream.Write(firstString, 0, firstString.Length);
-		}
-
-		protected string SaveReportZip(MemoryStream stream, string fileName, long? mainRegisterId = null, string registerViewId = null, CsvSaveOptions csvSaveOptions = null)
-		{
-			try
-			{
-				using (var zipFile = new ZipFile())
-				{
-					zipFile.AlternateEncoding = Encoding.UTF8;
-					zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
-
-					using (Logger.TimeOperation($"Добавление файла '{fileName}' в zip"))
-					{
-						stream.Seek(0, SeekOrigin.Begin);
-						zipFile.AddEntry($"{fileName}.csv", stream);
-					}
-
-					var zipStream = new MemoryStream();
-					zipFile.Save(zipStream);
-					zipStream.Seek(0, SeekOrigin.Begin);
-					var zipFileName = $"{fileName} (архив)";
-
-					using (Logger.TimeOperation($"Начато сохранение zip-файла '{zipFileName}'"))
-					{
-						var export = SaveReport(zipStream, zipFileName, "zip");
-						//TODO CIPJSKO-645: убрать magic string и зависимость от DataExport
-						return $"/DataExport/DownloadExportResult?exportId={export.Id}";
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex, "Сохранение отчета завершилось исключением");
-				ErrorManager.LogError(ex);
-				throw;
-			}
-		}
-
-		//TODO CIPJSKO-645: убрать зависимость от DataExporterCommon, нужно сохранять отчет в папку с отчетами
-		private OMExportByTemplates SaveReport(MemoryStream stream, string fileName, string fileExtension)
-		{
-			var currentDate = DateTime.Now;
-			var export = new OMExportByTemplates
-			{
-				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-				DateCreated = currentDate,
-				DateStarted = currentDate,
-				Status = (int)ImportStatus.Added,
-				FileResultTitle = fileName,
-				FileExtension = fileExtension,
-				MainRegisterId = OMMainObject.GetRegisterId(),
-				RegisterViewId = "GbuObjects"
-			};
-			export.Save();
-
-			export.DateFinished = DateTime.Now;
-			export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-			export.Status = (long)ImportStatus.Completed;
-			FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-			export.Save();
-
-			return export;
 		}
 
 		#endregion
