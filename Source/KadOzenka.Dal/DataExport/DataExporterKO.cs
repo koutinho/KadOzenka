@@ -83,7 +83,6 @@ namespace KadOzenka.Dal.DataExport
 
             DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
 
-            // TODO: ko_mark_catalog
             List<ObjectModel.KO.OMMarkCatalog> objs = ObjectModel.KO.OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
             int curIndex = 0;
             if (objs.Count > 0)
@@ -939,11 +938,11 @@ namespace KadOzenka.Dal.DataExport
 
                     int countCurr = 0;
                     int countAll = model.ModelFactor.Count();
+                    var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                     foreach (OMModelFactor factor in model.ModelFactor)
                     {
                         RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                        // TODO: ko_mark_catalog
-                        factor.FillMarkCatalogs(model);
+                        factor.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
 
                         XmlNode xnEvaluative_Factor = _xmlFile.CreateElement("Evaluative_Factor");
                         DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor, "Id_Factor", factor.FactorId.ToString() + "_" + _subgroup.Id.ToString());
@@ -1032,6 +1031,8 @@ namespace KadOzenka.Dal.DataExport
 
                 var currentUnitsCount = 0;
                 _log.Debug("Начата обработка ЕО подгруппы");
+
+                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
 	                if (++currentUnitsCount % 1000 == 0)
@@ -1168,8 +1169,7 @@ namespace KadOzenka.Dal.DataExport
                                 DataExportCommon.AddAttribute(_xmlFile, xnCEvaluative_Factor, "ID_Factor", factor_model.FactorId.ToString() + "_" + _subgroup.Id.ToString());
 
                                 RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor_model.FactorId));
-                                // TODO: ko_mark_catalog
-                                factor_model.FillMarkCatalogs(model);
+                                factor_model.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
 
                                 bool addf = false;
                                 if (factor_model.SignMarket)
@@ -1212,8 +1212,7 @@ namespace KadOzenka.Dal.DataExport
                     foreach (OMModelFactor factor_model in model.ModelFactor)
                     {
                         RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor_model.FactorId));
-                        // TODO: ko_mark_catalog
-                        factor_model.FillMarkCatalogs(model);
+                        factor_model.FillMarkCatalogsFromList(marks, model.GroupId);
 
                         XmlNode xnEvaluative_Factor_Modelling = _xmlFile.CreateElement("Evaluative_Factor_Modelling");
                         DataExportCommon.AddAttribute(_xmlFile, xnEvaluative_Factor_Modelling, "Id_factor", factor_model.Id.ToString() + "_" + _subgroup.Id.ToString());
@@ -4842,7 +4841,6 @@ namespace KadOzenka.Dal.DataExport
                     #region Если есть метка, получаем результирущий коэффициент в подставляемое значение
                     if (_sign_market.ParseToBoolean())
                     {
-                        // TODO: ko_mark_catalog
                         List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
                         MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == _group.Id && x.FactorId == factor_item.FactorId).SelectAll().Execute());
 

@@ -743,11 +743,17 @@ namespace ObjectModel.KO
     public partial class OMModelFactor
     {
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
+        [Obsolete]
         public void FillMarkCatalogs(OMModel model)
         {
-            // TODO: ko_mark_catalog
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == model.GroupId && x.FactorId == this.FactorId).SelectAll().Execute());
+        }
+
+        public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
+        {
+            MarkCatalogs = new List<OMMarkCatalog>();
+            MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
         }
     }
     public partial class OMGroup
@@ -1273,6 +1279,7 @@ namespace ObjectModel.KO
             {
                 int? factorReestrId = GetFactorReestrId(this);
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -1285,7 +1292,7 @@ namespace ObjectModel.KO
                     {
 
                         if (weight.SignMarket)
-                            weight.FillMarkCatalogs(model);
+                            weight.FillMarkCatalogsFromList(marks, model.GroupId);
                         if (weight.MarkerId == 1)
                         {
                             idsquarefactor = weight.FactorId;
@@ -2373,6 +2380,7 @@ namespace ObjectModel.KO
             if (upks != null)
             {
                 List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == this.Id).SelectAll().Execute();
                 foreach (ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
                 {
                     string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == groupFactor.FactorId)?.Name;
@@ -2388,7 +2396,7 @@ namespace ObjectModel.KO
                             {
                                 // TODO: ko_mark_catalog
                                 List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
-                                MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == this.Id && x.FactorId == groupFactor.FactorId).SelectAll().Execute());
+                                MarkCatalogs.AddRange(marks.Where(x => x.FactorId == groupFactor.FactorId));
 
                                 string t6 = row.ItemArray[6].ParseToString();
                                 if (t6 != string.Empty && t6 != null)
@@ -2543,6 +2551,7 @@ namespace ObjectModel.KO
             if (factorReestrId != null)
             {
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2552,7 +2561,7 @@ namespace ObjectModel.KO
                     {
 
                         if (weight.SignMarket)
-                            weight.FillMarkCatalogs(model);
+                            weight.FillMarkCatalogsFromList(marks, model.GroupId);
                     }
 
 
