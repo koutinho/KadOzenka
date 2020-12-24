@@ -8,12 +8,12 @@ using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	public class UniformReportLongProcess : BaseReportLongProcess<UniformReportLongProcess.ReportItem>
+	public class NonUniformReportLongProcess : BaseReportLongProcess<NonUniformReportLongProcess.ReportItem>
 	{
-		protected override string ReportName => "Итоговый состав данных по характеристикам объектов недвижимости";
-		protected override string ProcessName => nameof(UniformReportLongProcess);
+		protected override string ReportName => "Состав данных по характеристикам объектов недвижимости взаимно увязанных разнородными сведениями по различным источникам";
+		protected override string ProcessName => nameof(NonUniformReportLongProcess);
 
-		public UniformReportLongProcess() : base(Log.ForContext<UniformReportLongProcess>())
+		public NonUniformReportLongProcess() : base(Log.ForContext<NonUniformReportLongProcess>())
 		{
 		}
 
@@ -21,10 +21,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		protected override List<string> GenerateReportReportRow(int index, ReportItem item)
 		{
 			var attributesInfo = new List<string>();
-			item.FullAttributes.ForEach(x =>
+			item.FullAttributes?.ForEach(attribute =>
 			{
-				attributesInfo.Add(x.Name);
-				attributesInfo.Add(x.RegisterName);
+				attributesInfo.Add(attribute.Name);
+				attribute.RegisterNames.ForEach(registerName => attributesInfo.Add(registerName));
 			});
 			var values = new List<string> { (index + 1).ToString(), item.CadastralNumber };
 			values.AddRange(attributesInfo);
@@ -49,7 +49,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			};
 
 			var maxNumberOfAttributes = info.Max(x => x.FullAttributes?.Count) ?? 0;
-			var columns = new List<GbuReportService.Column>(maxNumberOfAttributes + 2) { sequentialNumberColumn, cadastralNumberColumn };
+			var maxNumberOfRegisters = info.SelectMany(x => x.FullAttributes.Select(r => r.RegisterNames?.Count ?? 0)).Max();
+			var columns = new List<GbuReportService.Column> { sequentialNumberColumn, cadastralNumberColumn };
 
 			//2 - чтобы учесть колонки с номером по порядку и КН
 			var columnWidth = 8;
@@ -62,34 +63,45 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					Index = columnIndex,
 					Width = columnWidth
 				};
-				var sourceColumn = new GbuReportService.Column
-				{
-					Header = $"Итоговый источник информации {i + 1}",
-					Index = characteristicColumn.Index + 1,
-					Width = columnWidth
-				};
-
 				columns.Add(characteristicColumn);
-				columns.Add(sourceColumn);
 
-				columnIndex += 2;
+				var registerColumnsIndex = characteristicColumn.Index + 1;
+				for (var j = 0; j < maxNumberOfRegisters; j++)
+				{
+					var sourceColumn = new GbuReportService.Column
+					{
+						Header = $"Итоговый источник информации {j + 1}",
+						Index = registerColumnsIndex,
+						Width = columnWidth
+					};
+					columns.Add(sourceColumn);
+					registerColumnsIndex++;
+				}
+
+				columnIndex += registerColumnsIndex;
 			}
 
 			return columns;
 		}
 
+
 		#region Entities
+
+		public class SameAttributes
+		{
+			public string Name { get; set; }
+			public List<string> RegisterNames { get; set; }
+		}
 
 		public class ReportItem
 		{
-			private List<Attribute> _fullAttributes;
+			private List<SameAttributes> _fullAttributes;
 
 			public string CadastralNumber { get; set; }
 			public long[] Attributes { get; set; }
-			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
+			public List<SameAttributes> FullAttributes => _fullAttributes ?? (_fullAttributes = GetNotUniqueAttributes());
 
-
-			private List<Attribute> GetUniqueAttributes()
+			private List<SameAttributes> GetNotUniqueAttributes()
 			{
 				var objectAttributes = new List<Attribute>();
 				Attributes.ForEach(attributeId =>
@@ -108,35 +120,33 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				});
 
 				if (objectAttributes.Count == 0)
-					return new List<Attribute>();
+					return new List<SameAttributes>();
 
 				var gbuAttributesExceptRosreestr = objectAttributes
 					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 				var rosreestrAttributes = objectAttributes
 					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 
-				//симметрическая разность множеств
-				var uniqueAttributes = new List<Attribute>();
-				//отбираем уникальные аттрибуты из РР
+				var notUniqueAttribute = new List<SameAttributes>();
 				rosreestrAttributes.ForEach(rr =>
 				{
-					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
+					var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
+						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase)).ToList();
+					if (sameAttributes.Count == 0)
+						return;
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(rr);
+					var registerNames = new List<string> { rr.RegisterName };
+					registerNames.AddRange(sameAttributes.Select(x => x.RegisterName));
+					var attribute = new SameAttributes
+					{
+						Name = rr.Name,
+						RegisterNames = registerNames
+					};
+
+					notUniqueAttribute.Add(attribute);
 				});
-				//отбираем уникальные аттрибуты из всех источников кроме РР
-				gbuAttributesExceptRosreestr.ForEach(gbu =>
-				{
-					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
 
-					if (!isSameAttributesExist)
-						uniqueAttributes.Add(gbu);
-				});
-
-				return uniqueAttributes;
+				return notUniqueAttribute;
 			}
 		}
 

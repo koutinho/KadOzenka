@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Core.ConfigParam;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -9,8 +10,12 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.SRD;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.Tours;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -18,6 +23,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
     {
 	    public string SqlQueriesFolder => "SqlQueries";
         private TourFactorService TourFactorService { get; set; }
+
+        public static readonly Dictionary<long?, Type> ReportsViaLongLongProcess =
+	        new Dictionary<long?, Type>
+	        {
+		        {(long) StatisticalDataType.PricingFactorsCompositionFinalUniform, typeof(UniformReportLongProcess)},
+		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)}
+	        };
 
         public StatisticalDataService()
         {
@@ -125,6 +137,31 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 throw new Exception($"Для тура с Id='{tourId}' не задан {attributeUsingType.GetEnumDescription()}");
 
             return attribute;
+        }
+
+        #endregion
+
+
+        #region Long Processes
+
+        public void AddProcessToQueue(long? modelReportType, object parameters)
+        {
+	        if (modelReportType == null)
+		        throw new Exception("Не передан тип отчета");
+	        if (!ReportsViaLongLongProcess.TryGetValue(modelReportType.Value, out var longProcessType))
+		        throw new Exception("Формирование отчета через фоновый процесс недоступно");
+
+	        var longProcess = (LongProcess.LongProcess)Activator.CreateInstance(longProcessType);
+
+            ////TODO код для отладки
+            //longProcess.StartProcess(new OMProcessType(), new OMQueue
+            //{
+	           // Status_Code = Status.Added,
+	           // UserId = SRDSession.GetCurrentUserId(),
+	           // Parameters = parameters.SerializeToXml()
+            //}, new CancellationToken());
+
+            longProcess.AddToQueue(parameters);
         }
 
         #endregion

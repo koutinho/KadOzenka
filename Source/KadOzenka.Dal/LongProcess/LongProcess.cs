@@ -30,6 +30,11 @@ namespace KadOzenka.Dal.LongProcess
 			throw new NotImplementedException();
 		}
 
+		public virtual void AddToQueue(object input)
+		{
+
+		}
+
 		public bool Test()
 		{
 			return true;
