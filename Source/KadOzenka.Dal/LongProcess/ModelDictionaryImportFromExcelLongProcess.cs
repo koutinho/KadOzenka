@@ -39,9 +39,6 @@ namespace KadOzenka.Dal.LongProcess
 
 			try
 			{
-				var cancelSource = new CancellationTokenSource();
-				var cancelToken = cancelSource.Token;
-
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var import = OMImportDataLog.Where(x => x.Id == processQueue.ObjectId).SelectAll().ExecuteFirstOrDefault();
@@ -52,25 +49,7 @@ namespace KadOzenka.Dal.LongProcess
 				}
 
 				var settings = processQueue.Parameters.DeserializeFromXml<DictionaryImportFileFromExcelDto>();
-
-				var task = Task.Run(() =>
-				{
-					while (true)
-					{
-						if (cancelToken.IsCancellationRequested)
-						{
-							break;
-						}
-						if (DictionaryService.RowsCount > 0 && DictionaryService.CurrentRow > 0)
-						{
-							var newProgress = (long)Math.Round(((double)DictionaryService.CurrentRow / DictionaryService.RowsCount) * 100);
-							if (newProgress != processQueue.Progress)
-							{
-								WorkerCommon.SetProgress(processQueue, newProgress);
-							}
-						}
-					}
-				}, cancelToken);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => DictionaryService.RowsCount, () => DictionaryService.CurrentRow);
 
 				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 					import.DataFileName);
@@ -87,14 +66,13 @@ namespace KadOzenka.Dal.LongProcess
 						settings.DeleteOldValues, import);
 				}
 
-				cancelSource.Cancel();
-				task.Wait(cancellationToken);
-				cancelSource.Dispose();
-
+				LongProcessProgressLogger.StopLogProgress();
 				WorkerCommon.SetProgress(processQueue, 100);
 			}
 			catch (Exception e)
 			{
+				_log.Error(e, "Загрузка справочников моделирования завершена с ошибкой");
+				LongProcessProgressLogger.StopLogProgress();
 				Console.WriteLine(e);
 				throw;
 			}
