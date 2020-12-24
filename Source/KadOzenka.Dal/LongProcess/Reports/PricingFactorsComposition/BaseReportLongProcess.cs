@@ -49,12 +49,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders(List<T> info);
 
 
-		public long AddProcessToQueue(ReportLongProcessInputParameters parameters)
+		public override void AddToQueue(object input)
 		{
+			var parameters = input as ReportLongProcessInputParameters;
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 				throw new Exception("Не переданы ИД задач");
 
-			return LongProcessManager.AddTaskToQueue(ProcessName, parameters: parameters.SerializeToXml());
+			LongProcessManager.AddTaskToQueue(ProcessName, parameters: parameters.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -140,10 +141,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 									urls.Add(urlToDownloadReport);
 
 									Logger.ForContext("UrlToDownloadFile", urlToDownloadReport)
-										.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{i}.");
+										.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{i}. Сформирована ссылка для скачивания");
 								}
-
-								Logger.Debug($"Закончена работа с пакетом №{i}");
 							}
 						});
 					}
