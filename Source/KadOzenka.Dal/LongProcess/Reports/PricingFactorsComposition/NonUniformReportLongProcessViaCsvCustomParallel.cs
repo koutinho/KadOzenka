@@ -8,7 +8,6 @@ using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public class NonUniformReportLongProcess : BaseReportLongProcess<NonUniformReportLongProcess.ReportItem>
 	{
 		protected override string ReportName => "Состав данных по характеристикам объектов недвижимости взаимно увязанных разнородными сведениями по различным источникам";

@@ -19,7 +19,6 @@ using Ionic.Zip;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
-using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
@@ -28,7 +27,6 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public abstract class BaseReportLongProcess<T> : LongProcess where T : new()
 	{
 		private int _packageSize = 125000;
@@ -78,7 +76,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 				return;
 			}
 
-			if (!IsCacheTableExists())
+			if (!DataCompositionByCharacteristicsService.IsCacheTableExists())
 				throw new Exception("Не найдена таблица с данными для отчета");
 
 			var urls = new List<string>();
@@ -119,7 +117,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								limit {_packageSize} offset {i * _packageSize} ";
 
 								var sql = $@"select cadastral_number as CadastralNumber, attributes 
-								from {DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName} 
+								from {DataCompositionByCharacteristicsService.TableName} 
 								where object_id in ({objectIdsSubQuerySql})";
 
 								CheckCancellationToken(cancellationToken);
@@ -169,22 +167,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 
 		#region Support Methods
-
-		private bool IsCacheTableExists()
-		{
-			var isExists = false;
-
-			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{DataCompositionByCharacteristicsReportsLongProcessViaTables.TableName}') as {nameof(isExists)}";
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
-
-			if (dataTable.Rows.Count > 0)
-			{
-				isExists = dataTable.Rows[0][nameof(isExists)].ParseToBooleanNullable().GetValueOrDefault();
-			}
-
-			return isExists;
-		}
 
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, List<string> urls)
 		{

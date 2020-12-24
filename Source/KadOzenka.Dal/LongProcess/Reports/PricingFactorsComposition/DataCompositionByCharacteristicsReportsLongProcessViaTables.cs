@@ -15,11 +15,9 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public class DataCompositionByCharacteristicsReportsLongProcessViaTables : LongProcess
 	{
 		private const int GbuMainObjectPackageSize = 150000;
-		public static string TableName => "data_composition_by_characteristics_by_tables";
 
 		private static readonly ILogger Logger = Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
@@ -40,49 +38,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		{
 			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 
-			CreteCacheTableViaObjectId();
+			using (Logger.TimeOperation("Создание таблицы-кеша для данных отчета"))
+			{
+				DataCompositionByCharacteristicsService.CreteCacheTableViaObjectId();
+			}
 
 			CopyObjectIdsToCacheTable(cancellationToken);
 
 			CopyAttributeIds(cancellationToken);
 
-			CreteIndexOnCacheTable();
+			using (Logger.TimeOperation("Создание индекса для таблицы-кеша"))
+			{
+				DataCompositionByCharacteristicsService.CreteIndexOnCacheTable();
+			}
 
 			Logger.Debug("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
 
 		#region Support Methods
-
-		private void CreteCacheTableViaObjectId()
-		{
-			Logger.Debug("Начато создание таблицы-кеша для данных отчета.");
-
-			var sql = $@"DROP TABLE IF EXISTS {TableName};
-
-				CREATE TABLE {TableName} (
-				    object_id			bigint NOT NULL,
-					cadastral_number	varchar(20) NOT NULL,
-					object_type_code	integer,
-				    attributes			bigint[]
-				);";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			DBMngr.Main.ExecuteNonQuery(command);
-
-			Logger.Debug("Закончено создание таблицы-кеша для данных отчета.");
-		}
-
-		private void CreteIndexOnCacheTable()
-		{
-			using (Logger.TimeOperation("Создание индекса для кеш-таблицы"))
-			{
-				var sql = $@"CREATE UNIQUE INDEX ON {TableName} (object_id);";
-
-				var command = DBMngr.Main.GetSqlStringCommand(sql);
-				DBMngr.Main.ExecuteNonQuery(command);
-			}
-		}
 
 		private void CopyObjectIdsToCacheTable(CancellationToken cancellationToken)
 		{
@@ -93,12 +67,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			var packageIndex = 0;
 			for (var i = packageIndex * GbuMainObjectPackageSize; i < (packageIndex + 1) * GbuMainObjectPackageSize; i++)
 			{
-				if(copiedObjectsCount >= objectsCount)
+				if (copiedObjectsCount >= objectsCount)
 					break;
 
 				CheckCancellationToken(cancellationToken);
 
-				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id, cadastral_number, object_type_code) 
+				var copiedObjectIdsSql = $@"INSERT INTO {DataCompositionByCharacteristicsService.TableName} (object_id, cadastral_number, object_type_code) 
 							(
 								select id, cadastral_number, object_type_code from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
@@ -146,7 +120,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
 									group by object_id";
 
-								var sql = $@"update {TableName} cache_table
+								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table
 									set attributes = array_cat(attributes, source.newAttributes)
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
@@ -172,7 +146,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 								var subQuery = $@"select object_id from {gbuTableName} group by object_id";
 
-								var sql = $@"update {TableName} cache_table 
+								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
