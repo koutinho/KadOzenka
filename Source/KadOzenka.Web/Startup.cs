@@ -37,6 +37,7 @@ using Serilog;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -106,6 +107,7 @@ namespace CIPJS
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
+            services.AddSingleton<StatisticalDataService>();
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

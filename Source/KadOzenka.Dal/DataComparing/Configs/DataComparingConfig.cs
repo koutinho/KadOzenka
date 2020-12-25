@@ -32,9 +32,9 @@ namespace KadOzenka.Dal.DataComparing.Configs
 			return fileName;
 		}
 
-		protected virtual string ComposeName(OMTask task, OMInstance document, bool resultFile = false) { throw new InvalidOperationException(); }
+		protected virtual string ComposeName(OMTask task, OMInstance document, string fileSuffix = null) { throw new InvalidOperationException(); }
 
-		protected string GetNameFromTask(OMTask task, bool resultFile = false)
+		protected string GetNameFromTask(OMTask task, string fileSuffix = null)
 		{
 			if (!task.EstimationDate.HasValue)
 				throw new Exception($"Не заполнена Дата оценки для задания на оценку {task.Id}");
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.DataComparing.Configs
 			if (!document.ApproveDate.HasValue)
 				throw new Exception($"Не заполнена Дата выпуска документа для задания на оценку {task.Id}");
 
-			var name = ComposeName(task, document, resultFile);
+			var name = ComposeName(task, document, fileSuffix);
 			return HandleFileName(name);
 		}
 

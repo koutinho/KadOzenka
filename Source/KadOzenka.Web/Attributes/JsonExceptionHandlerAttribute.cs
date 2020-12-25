@@ -18,6 +18,11 @@ namespace KadOzenka.Web.Attributes
             var isAjax = context.HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
             if (!isAjax) return;
 
+            // Если есть обычный объект исключения, то приоритет на него даже при наличии сообщения
+            if (!string.IsNullOrWhiteSpace(Message) && !(context.Exception.GetType() == typeof(Exception)))
+            {
+                Type = MessageType.Custom;
+            }
             ObjectResult result;
             switch (Type)
             {

@@ -8,12 +8,14 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.GroupingAlgoritm;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
 	public class SetPriorityGroupProcess : LongProcess
 	{
 		public const string LongProcessName = "SetPriorityGroupProcess";
+		private readonly ILogger _log = Log.ForContext<SetPriorityGroupProcess>();
 
 		public static long AddProcessToQueue(GroupingSettings settings)
 		{
@@ -22,39 +24,18 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			var cancelSource = new CancellationTokenSource();
-			var cancelToken = cancelSource.Token;
 			try
 			{
+				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description);
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
-				var t = Task.Run(() => {
-					while (true)
-					{
-						if (cancelToken.IsCancellationRequested)
-						{
-							break;
-						}
-						if (PriorityGrouping.MaxCount > 0 && PriorityGrouping.CurrentCount > 0)
-						{
-							var newProgress = (long)Math.Round(((double)PriorityGrouping.CurrentCount / PriorityGrouping.MaxCount) * 100);
-							if (newProgress != processQueue.Progress)
-							{
-								WorkerCommon.SetProgress(processQueue, newProgress);
-							}
-						}
-
-						Thread.Sleep(1000);
-					}
-				}, cancellationToken);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => PriorityGrouping.MaxCount, () => PriorityGrouping.CurrentCount);
 
 				long reportId = PriorityGrouping.SetPriorityGroup(settings);
 				//TestLongRunningProcess(settings);
 
-				cancelSource.Cancel();
-				t.Wait(cancellationToken);
-				cancelSource.Dispose();
+				LongProcessProgressLogger.StopLogProgress();
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
@@ -63,10 +44,13 @@ namespace KadOzenka.Dal.LongProcess
 
 
 				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", message);
+
+				_log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 			}
 			catch (Exception ex)
 			{
-				cancelSource.Cancel();
+				_log.Error(ex, "Операция нормализации завершена с ошибкой");
+				LongProcessProgressLogger.StopLogProgress();
 				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", $"Операция была прервана: {ex.Message}");
 				ErrorManager.LogError(ex);
 				throw;

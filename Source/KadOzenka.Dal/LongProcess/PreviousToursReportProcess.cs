@@ -25,7 +25,6 @@ namespace KadOzenka.Dal.LongProcess
         private readonly ExcelFile _excelTemplate;
         private readonly ExcelWorksheet _mainWorkSheet;
         private int _currentRowIndex;
-        private string _reportGbuStorage = "SaveReportPath";
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
         private PreviousToursService PreviousToursService { get; set; }
 

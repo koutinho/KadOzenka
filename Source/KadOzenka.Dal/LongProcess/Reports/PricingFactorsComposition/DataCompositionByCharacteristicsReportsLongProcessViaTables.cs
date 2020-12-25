@@ -16,19 +16,16 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 {
-	//TODO связать с отчетом через DataCompositionByCharacteristicsService (убрать методы в сервис)
 	public class DataCompositionByCharacteristicsReportsLongProcessViaTables : LongProcess
 	{
 		private const int GbuMainObjectPackageSize = 150000;
-		public static string TableName => "data_composition_by_characteristics_by_tables";
 
 		private static readonly ILogger Logger = Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 
 		public DataCompositionByCharacteristicsReportsLongProcessViaTables()
 		{
-			CancellationManager cancellationManager = new CancellationManager();
-			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService(cancellationManager);
+			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 		}
 
 
@@ -44,37 +41,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 
-			CreteCacheTableViaObjectId();
+			using (Logger.TimeOperation("Создание таблицы-кеша для данных отчета"))
+			{
+				DataCompositionByCharacteristicsService.CreteCacheTableViaObjectId();
+			}
 
 			CopyObjectIdsToCacheTable(cancellationToken);
 
 			CopyAttributeIds(cancellationToken);
+
+			using (Logger.TimeOperation("Создание индекса для таблицы-кеша"))
+			{
+				DataCompositionByCharacteristicsService.CreteIndexOnCacheTable();
+			}
 
 			Logger.Debug("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
 
 		#region Support Methods
-
-		private void CreteCacheTableViaObjectId()
-		{
-			Logger.Debug("Начато создание таблицы-кеша для данных отчета.");
-
-			var sql = $@"DROP TABLE IF EXISTS {TableName};
-
-				CREATE TABLE {TableName} (
-				    object_id			bigint NOT NULL,
-					cadastral_number	varchar(20) NOT NULL,
-				    attributes			bigint[]
-				);
-
-				CREATE UNIQUE INDEX ON {TableName} (object_id);";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			DBMngr.Main.ExecuteNonQuery(command);
-
-			Logger.Debug("Закончено создание таблицы-кеша для данных отчета.");
-		}
 
 		private void CopyObjectIdsToCacheTable(CancellationToken cancellationToken)
 		{
@@ -85,14 +70,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			var packageIndex = 0;
 			for (var i = packageIndex * GbuMainObjectPackageSize; i < (packageIndex + 1) * GbuMainObjectPackageSize; i++)
 			{
-				if(copiedObjectsCount >= objectsCount)
+				if (copiedObjectsCount >= objectsCount)
 					break;
 
 				CheckCancellationToken(cancellationToken);
 
-				var copiedObjectIdsSql = $@"INSERT INTO {TableName} (object_id, cadastral_number) 
+				var copiedObjectIdsSql = $@"INSERT INTO {DataCompositionByCharacteristicsService.TableName} (object_id, cadastral_number, object_type_code) 
 							(
-								select id, cadastral_number from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+								select id, cadastral_number, object_type_code from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
 							)";
 
 				Logger.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
@@ -116,9 +101,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 			try
 			{
 				var postfixes = new List<string> { "TXT", "NUM", "DT" };
-				var registersCount = 0;
-
-				Parallel.For(0, DataCompositionByCharacteristicsService.CachedRegisters.Count, options, i =>
+				var maxNumberOfRegisters = DataCompositionByCharacteristicsService.CachedRegisters.Count;
+				Parallel.For(0, maxNumberOfRegisters, options, i =>
 				{
 					CheckCancellationToken(cancellationToken);
 
@@ -126,7 +110,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 					using (Logger.TimeOperation($"Работа с реестром '{register.Description}' (ИД {register.Id})"))
 					{
 						Logger.ForContext("RegisterId", register.Id)
-						.Debug($"Начата работа с реестром '{register.Description}'. №{++registersCount} из {DataCompositionByCharacteristicsService.CachedRegisters.Count}");
+						.Debug($"Начата работа с реестром '{register.Description}'. №{i} из {maxNumberOfRegisters}");
 
 						if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
 						{
@@ -137,10 +121,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 								var gbuTableName = $"{register.AllpriTable}_{postfix}";
 
 								var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
-									--where object_id = 15880792
 									group by object_id";
 
-								var sql = $@"update {TableName} cache_table
+								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table
 									set attributes = array_cat(attributes, source.newAttributes)
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
@@ -164,16 +147,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 								var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
 
-								var subQuery = $@"select object_id from {gbuTableName} 
-									--where object_id = 15880792
-									group by object_id";
+								var subQuery = $@"select object_id from {gbuTableName} group by object_id";
 
-								var sql = $@"update {TableName} cache_table 
+								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-								Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
+								Logger.ForContext("RegisterId", register.Id)
+									.Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
 
 								var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
 								DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
