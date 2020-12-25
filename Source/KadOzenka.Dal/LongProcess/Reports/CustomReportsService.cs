@@ -14,6 +14,15 @@ namespace KadOzenka.Dal.LongProcess.Reports
 	{
 		public static string FileStorageKey => "SaveReportPath";
 
+		public OMReportFiles GetFileInfo(long reportId)
+		{
+			var report = OMReportFiles.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+			if (report == null)
+				throw new Exception($"В журнале с сохраненными отчетами не найдена запись с ИД '{reportId}'");
+
+			return report;
+		}
+
 		public string SaveReportZip(MemoryStream stream, string fileName, string fileExtension)
 		{
 			using (var zipFile = new ZipFile())
@@ -55,11 +64,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			return $"/CustomReports/Download?reportId={report.Id}";
 		}
 
-		public CustomReportInfo GerReportInfo(long reportId)
+		public CustomReportInfo GetFile(long reportId)
 		{
-			var report = OMReportFiles.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-			if (report == null)
-				throw new Exception($"В журнале с сохраненными отчетами не найдена запись с ИД '{reportId}'");
+			var report = GetFileInfo(reportId);
 
 			var file = FileStorageManager.GetFileStream(FileStorageKey, report.DateOnServer, report.FileNameOnServer);
 

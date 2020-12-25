@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="810" DefaultLayoutId="1000810" Description="Созданные отчеты" LinkedRegistersList="950"
+              ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
+  <Buttons>
+    
+    <Button Caption="Скачать" NavigateURL="/CustomReports/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
+      <Parameters>
+        <Parameter Key="reportId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+              <Condition Key="[81000700]" Operation="NotEmpty" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+  </Buttons>
+
+
+  <Tabs>
+    <Tab Caption="Основные данные" NavigateURL="~/CustomReports/ReportFileCard">
+      <Parameters>
+        <Parameter Key="reportId" Value="[ObjectID]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
+</RegisterView>

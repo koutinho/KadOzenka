@@ -1,0 +1,127 @@
+﻿@model KadOzenka.Web.Models.CustomReports.ReportFileGeneralInfoModel
+
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Имя пользователя")
+		</div>
+		<div class="col-sm-4">
+            @(Html.Kendo().TextBoxFor(x => x.User)
+                .Enable(false)
+                .HtmlAttributes(new { style = "width: 100%;" }))
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Статус")
+		</div>
+		<div class="col-sm-4">
+            @(Html.Kendo().TextBoxFor(x => x.Status)
+                .Enable(false)
+                .HtmlAttributes(new { style = "width: 100%;" }))
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Дата создания")
+		</div>
+		<div class="col-sm-4">
+            @Html.Kendo().DatePickerFor(m => m.CreationDate).Format("dd.MM.yyyy HH:mm:ss").Enable(false)
+		</div>
+	</div>
+    <div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Дата завершения")
+		</div>
+        <div class="col-sm-4">
+             @Html.Kendo().DatePickerFor(m => m.FinishDate).Format("dd.MM.yyyy HH:mm:ss").Enable(false)
+        </div>
+	</div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Наименование файла")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextAreaFor(x => x.FileName, 3, 0, new { @class = "k-state-disabled k-textbox", style = "width: 100%; padding: 1%; resize: none;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Объем файла шаблона(КБ)")
+		</div>
+        <div class="col-sm-4">
+            @(Html.Kendo().NumericTextBoxFor(x => x.FileSize.Kb)
+                .Enable(false)
+                .HtmlAttributes(new { style = "width: 100%;" }))
+        </div>
+	</div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем файла шаблона (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @(Html.Kendo().NumericTextBoxFor(x => x.FileSize.Mb)
+                .Enable(false)
+                .HtmlAttributes(new { style = "width: 100%;" }))
+        </div>
+    </div>
+    @*<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("ИД Ошибки")
+		</div>
+		<div class="col-sm-4">
+			@Html.TextBox("errorId", Model.ErrorId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+		</div>
+	</div>*@
+</div>
+
+@section styles {
+	<style>
+		#listView {
+			max-height: 200px;
+			overflow: auto;
+			padding: 0.4em;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+		}
+
+		.matchItem {
+			margin-top: 0.4em;
+			border: #ceced2;
+		}
+
+		.matchItem > div {
+			white-space: nowrap;
+		}
+	</style>
+}
+
+@section scripts {
+	<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="return false;" /></span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeName#</span>
+				</span>
+			</div>
+		</div>
+	</script>
+	<script>
+		var dataSource = new kendo.data.DataSource({
+			data: @Html.Raw((string)ViewBag.ColumnsMappingDtoListJson)
+		});
+
+		$(document).ready(function () {
+			$("#listView").kendoListView({
+				dataSource: dataSource,
+				template: kendo.template($("#template").html())
+			});
+		});
+	</script>
+}

@@ -148,6 +148,7 @@
     <None Remove="Config\Registers\Views\CoreSRDUser.xml" />
     <None Remove="Config\Registers\Views\CoreSRDUserSelect.xml" />
     <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
+    <None Remove="Config\Registers\Views\CreatedReports.xml" />
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
     <None Remove="Config\Registers\Views\DeclarationsBook.xml" />
@@ -369,6 +370,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\CommissionCost.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CreatedReports.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
@@ -1849,6 +1853,7 @@
     <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\Views\CreatedReports.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
