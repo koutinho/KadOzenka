@@ -573,6 +573,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ManualModelCard(ManualModelingModel model)
         {

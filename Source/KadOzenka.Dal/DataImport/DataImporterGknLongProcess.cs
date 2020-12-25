@@ -20,6 +20,8 @@ using Ionic.Zip;
 using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.Logger;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Directory;
@@ -35,6 +37,12 @@ namespace KadOzenka.Dal.DataImport
 	{
 		private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGknLongProcess>();
 		public const string LongProcessName = "DataImporterGkn";
+		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }
+
+		public DataImporterGknLongProcess()
+		{
+			DataImporterGknLongProcessProgressLogger = new DataImporterGknLongProcessProgressLogger();
+		}
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, long registerId, long objectId)
 		{
@@ -237,29 +245,19 @@ namespace KadOzenka.Dal.DataImport
 			return true;
 		}
 
-		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
+		private void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
 		{
 			Log.Information("Начат импорт из xml для задачи с Id {TaskId}", objectId);
 
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-		    var cancelSource = new CancellationTokenSource();
-		    var cancelToken = cancelSource.Token;
-
-		    var dataImporterGkn = new DataImporterGkn();
             try
 		    {
-                var t = Task.Run(() =>
-		        {
-		            CollectStatistic(dataLog, dataImporterGkn, cancelToken);
-		        }, cancelToken);
-
-		        dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task, processCancellationToken);
-                cancelSource.Cancel();
-
-		        t.Wait(1000);
-		        cancelSource.Dispose();
+			    var dataImporterGkn = new DataImporterGkn();
+				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
+			    dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task, processCancellationToken);
+		        DataImporterGknLongProcessProgressLogger.StopLogProgress();
 
 		        if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
 		        {
@@ -269,39 +267,29 @@ namespace KadOzenka.Dal.DataImport
 		    catch (Exception ex)
 		    {
 			    Log.Information(ex, "Импорт из xml завершен с ошибкой");
-				cancelSource.Cancel();
-		        throw;
+			    DataImporterGknLongProcessProgressLogger.StopLogProgress();
+				throw;
 		    }
 
             Log.Information("Импорт из xml завершен");
 		}
 
-        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
+        private void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
         {
 	        Log.Information("Начат импорт из xlsx для задачи с Id {TaskId}", objectId);
 
 	        ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
             string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-            var cancelSource = new CancellationTokenSource();
-            var cancelToken = cancelSource.Token;
-
             var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
             var dataImporterGkn = new DataImporterGkn();
             try
             {
-                var t = Task.Run(() =>
-                {
-                    CollectStatistic(dataLog, dataImporterGkn, cancelToken);
-                }, cancelToken);
+	            DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
+	            dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task, processCancellationToken);
+				DataImporterGknLongProcessProgressLogger.StopLogProgress();
 
-                dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task, processCancellationToken);
-                cancelSource.Cancel();
-
-                t.Wait(1000);
-                cancelSource.Dispose();
-
-                if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
+				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
                 {
 	                ExportTaskChanges(task);
                 }
@@ -309,8 +297,8 @@ namespace KadOzenka.Dal.DataImport
             catch (Exception ex)
             {
 	            Log.Information(ex, "Импорт из xlsx завершен с ошибкой");
-				cancelSource.Cancel();
-                throw;
+	            DataImporterGknLongProcessProgressLogger.StopLogProgress();
+				throw;
             }
 
             Log.Information("Импорт из xlsx завершен");
@@ -382,49 +370,7 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
-	    private static void CollectStatistic(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn, CancellationToken cancelToken)
-	    {
-	        while (true)
-	        {
-	            if (cancelToken.IsCancellationRequested && dataImporterGkn.AreCountersInitialized)
-	            {
-	                CollectStatistic(dataLog, GetFileTotalNumberOfObjects(dataImporterGkn), GetFileNumberOfImportedObjects(dataImporterGkn));
-                    break;
-	            }
-
-	            var totalNumberOfObjects = GetFileTotalNumberOfObjects(dataImporterGkn);
-	            var numberOfImportedObjects = GetFileNumberOfImportedObjects(dataImporterGkn);
-	            if (dataImporterGkn.AreCountersInitialized && (dataLog.TotalNumberOfObjects != totalNumberOfObjects ||
-	                dataLog.NumberOfImportedObjects != numberOfImportedObjects))
-	            {
-	                CollectStatistic(dataLog, totalNumberOfObjects, numberOfImportedObjects);
-                }
-                Thread.Sleep(1000);
-	        }
-        }
-
-        private static void CollectStatistic(OMImportDataLog dataLog, int totalNumberOfObjects, int totalNumberOfImportedObjects)
-        {
-            dataLog.TotalNumberOfObjects = totalNumberOfObjects;
-            dataLog.NumberOfImportedObjects = totalNumberOfImportedObjects;
-            dataLog.Save();
-        }
-
-	    private static int GetFileNumberOfImportedObjects(DataImporterGkn dataImporterGkn)
-	    {
-	        return dataImporterGkn.CountImportBuildings + dataImporterGkn.CountImportParcels +
-	               dataImporterGkn.CountImportConstructions + dataImporterGkn.CountImportUncompliteds +
-	               dataImporterGkn.CountImportFlats + dataImporterGkn.CountImportCarPlaces;
-	    }
-
-	    private static int GetFileTotalNumberOfObjects(DataImporterGkn dataImporterGkn)
-	    {
-	        return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
-	               dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
-	               dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
-	    }
-
-	    private static void ExportTaskChanges(OMTask task)
+        private static void ExportTaskChanges(OMTask task)
 	    {
 			Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
 			var path = TaskChangesDataComparingStorageManager.GetComparingDataRsmFileFullName(task);

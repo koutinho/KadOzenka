@@ -4,6 +4,7 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using Serilog;
 using Core.Messages;
+using KadOzenka.Dal.Logger;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -12,10 +13,12 @@ namespace KadOzenka.Dal.LongProcess
 		private readonly ILogger _log = Log.ForContext<LongProcess>();
 		protected const int PercentageInterval = 10;
         protected NotificationSender NotificationSender { get; set; }
+		protected LongProcessProgressLogger LongProcessProgressLogger { get; set; }
 
 		protected LongProcess()
 		{
 			NotificationSender = new NotificationSender();
+			LongProcessProgressLogger = new LongProcessProgressLogger();
 		}
 
 		public abstract void StartProcess(OMProcessType processType, OMQueue processQueue,
@@ -58,17 +61,7 @@ namespace KadOzenka.Dal.LongProcess
 			}
         }
 
-        protected void LogProgress(int maxCount, int currentCount, OMQueue processQueue)
-        {
-	        if (maxCount <= 0 || currentCount <= 0)
-		        return;
-
-	        var newProgress = (long)Math.Round(((double)currentCount / maxCount) * 100);
-	        if (newProgress != processQueue.Progress)
-		        WorkerCommon.SetProgress(processQueue, newProgress);
-        }
-
-		protected void SendMessage(OMQueue processQueue, string message, string subject)
+        protected void SendMessage(OMQueue processQueue, string message, string subject)
         {
 	        new MessageService().SendMessages(new MessageDto
 	        {

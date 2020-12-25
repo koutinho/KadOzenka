@@ -7,6 +7,7 @@ using Core.Register;
 using Platform.Reports;
 using Core.Shared.Extensions;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport;
 
@@ -16,11 +17,13 @@ namespace KadOzenka.Dal.FastReports
     {
 	    private readonly GbuObjectService _gbuObjectService;
 	    private readonly ReportingFormFormationService _reportingFormFormationService;
+	    private readonly CancellationManager _cancellationManager;
 
-	    public PreviouslyRegisteredObjectsReport()
+		public PreviouslyRegisteredObjectsReport()
 	    {
 		    _gbuObjectService = new GbuObjectService();
-		    _reportingFormFormationService = new ReportingFormFormationService(_gbuObjectService);
+		    _cancellationManager = new CancellationManager();
+		    _reportingFormFormationService = new ReportingFormFormationService(_gbuObjectService, _cancellationManager);
 	    }
 
 		protected override string TemplateName(NameValueCollection query)
@@ -61,6 +64,7 @@ namespace KadOzenka.Dal.FastReports
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_cancellationManager.BaseCancellationToken = CancellationToken.GetValueOrDefault();
 			DataSet dataSet;
 			var reportType = GetQueryParam<string>("ReportType", query);
 			switch (reportType)

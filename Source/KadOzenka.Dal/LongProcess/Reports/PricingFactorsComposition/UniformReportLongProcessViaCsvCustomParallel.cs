@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
@@ -15,6 +16,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public UniformReportLongProcess() : base(Log.ForContext<UniformReportLongProcess>())
 		{
+			
 		}
 
 

@@ -12,6 +12,11 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.SRD;
+using GemBox.Spreadsheet;
+using Ionic.Zip;
+using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using ObjectModel.KO;
@@ -28,7 +33,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 		private CustomReportsService CustomReportsService { get; }
-
 
 		protected BaseReportLongProcess(ILogger logger)
 		{
@@ -52,6 +56,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			DataCompositionByCharacteristicsService.CancellationManager.BaseCancellationToken = cancellationToken;
 			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 

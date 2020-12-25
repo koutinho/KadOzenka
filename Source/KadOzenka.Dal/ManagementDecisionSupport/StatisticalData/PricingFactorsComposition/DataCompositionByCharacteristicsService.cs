@@ -3,6 +3,7 @@ using System.Linq;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 
@@ -13,6 +14,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 		public static string TableName => "data_composition_by_characteristics_by_tables";
 
 		private static List<RegisterData> _cachedRegisters;
+
+		public readonly CancellationManager CancellationManager = new CancellationManager();
+
 		public static List<RegisterData> CachedRegisters
 		{
 			get
@@ -64,8 +68,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var isExists = false;
 
 			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{TableName}') as {nameof(isExists)}";
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+			var dataTable = CancellationManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
 			if (dataTable.Rows.Count > 0)
 			{
