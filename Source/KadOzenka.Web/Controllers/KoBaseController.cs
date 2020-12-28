@@ -134,7 +134,12 @@ namespace KadOzenka.Web.Controllers
         {
 	        var fileLocation = FileStorageManager.GetPathForFileFolder(storageKey, fileDateOnServer);
 	        fileLocation = Path.Combine(fileLocation, fileName);
-            
+
+            return CalculateFileSize(fileLocation);
+        }
+
+        protected FileSize CalculateFileSize(string fileLocation)
+        {
 	        var fileSize = new FileSize();
 	        if (!string.IsNullOrEmpty(fileLocation) && System.IO.File.Exists(fileLocation))
 	        {

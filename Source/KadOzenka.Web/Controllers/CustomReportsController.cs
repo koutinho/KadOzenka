@@ -3,11 +3,11 @@ using Core.SRD;
 using KadOzenka.Dal.LongProcess.Reports;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Web.Attributes;
-using KadOzenka.Web.Models.CustomReports;
+using KadOzenka.Web.Models.GeneralReports;
 
 namespace KadOzenka.Web.Controllers
 {
-    public class CustomReportsController : KoBaseController
+	public class CustomReportsController : KoBaseController
     {
 	    public CustomReportsService CustomReportsService { get; set; }
 
@@ -25,8 +25,7 @@ namespace KadOzenka.Web.Controllers
 		    return File(reportInfo.Stream, GetContentTypeByExtension(reportInfo.FileExtension), reportInfo.FullFileName);
 	    }
 
-
-		[HttpGet]
+	    [HttpGet]
 		[SRDFunction(Tag = "")]
 		public IActionResult ReportFileCard(long reportId)
 		{
@@ -34,7 +33,7 @@ namespace KadOzenka.Web.Controllers
 
 			var model = new ReportFileGeneralInfoModel
 			{
-				User = SRDCache.Users[(int) report.UserId].FullName,
+				User = SRDCache.Users[(int)report.UserId].FullName,
 				CreationDate = report.CreationDate,
 				FinishDate = report.FinishDate,
 				FileName = report.FileName,
@@ -42,7 +41,7 @@ namespace KadOzenka.Web.Controllers
 				FileSize = CalculateFileSize(CustomReportsService.FileStorageKey, report.DateOnServer, report.FileNameOnServer)
 			};
 
-			return View(model);
+			return View("~/Views/GeneralReports/ReportFileCard.cshtml", model);
 		}
     }
 }

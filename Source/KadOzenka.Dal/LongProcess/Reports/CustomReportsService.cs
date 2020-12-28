@@ -61,6 +61,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			report.Status_Code = ExportStatus.Completed;
 			report.Save();
 
+			//TODO Dal не должен знать о контроллере
 			return $"/CustomReports/Download?reportId={report.Id}";
 		}
 

@@ -3553,3 +3553,27 @@ namespace ObjectModel.Common
         }
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// </summary>
+    public partial class OMAllReportsInSystemView
+    {
+
+        public OMAllReportsInSystemView()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAllReportsInSystemView(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

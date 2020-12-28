@@ -11877,18 +11877,18 @@ namespace ObjectModel.Directory.Common
         [ShortTitle("Создана")]
         Added = 0,
 		/// <summary>
-		/// В работе (1)
+		/// Запущена (1)
 		/// </summary>
-		[Description("В работе")]
+		[Description("Запущена")]
         [EnumCode("1")]
-        [ShortTitle("В работе")]
+        [ShortTitle("Запущена")]
         Running = 1,
 		/// <summary>
-		/// Завершено (2)
+		/// Завершена (2)
 		/// </summary>
-		[Description("Завершено")]
+		[Description("Завершена")]
         [EnumCode("2")]
-        [ShortTitle("Завершено")]
+        [ShortTitle("Завершена")]
         Completed = 2,
 		/// <summary>
 		/// Ошибка (3)

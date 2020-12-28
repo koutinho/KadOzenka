@@ -1,7 +1,7 @@
 ﻿using System;
 using KadOzenka.Web.Models.KoBase;
 
-namespace KadOzenka.Web.Models.CustomReports
+namespace KadOzenka.Web.Models.GeneralReports
 {
 	public class ReportFileGeneralInfoModel
 	{

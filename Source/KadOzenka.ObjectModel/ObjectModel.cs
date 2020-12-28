@@ -26796,3 +26796,155 @@ namespace ObjectModel.Common
 
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
+    /// </summary>
+    [RegisterInfo(RegisterID = 811)]
+    [Serializable]
+    public partial class OMAllReportsInSystemView : OMBaseClass<OMAllReportsInSystemView>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81100100 Идентификатор (id)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81100200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81100300 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100300)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81100400 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100400)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81100500 Дата завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100500)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private bool _isplatformreport;
+        /// <summary>
+        /// 81100600 Платформенный отчет (is_platform)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100600)]
+        public bool IsPlatformReport
+        {
+            get
+            {
+                CheckPropertyInited("IsPlatformReport");
+                return _isplatformreport;
+            }
+            set
+            {
+                _isplatformreport = value;
+                NotifyPropertyChanged("IsPlatformReport");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81100700 Статус (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100700)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
