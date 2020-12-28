@@ -236,8 +236,8 @@
             const isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
             const isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
 
-            $("#filter").on("input", function () {
-				var query = this.value.toLowerCase();
+            $("#filter").on("input", function (event, enableAllTreeViewValues) {
+                var query = this.value.toLowerCase();
                 const treeView = $("#treeview").data("kendoTreeView");
 
 				// Отключаем кнопку сопоставления после изменения результатов поиска и сбрасываем выделение
@@ -247,7 +247,10 @@
 
                 var dataSource = treeView.dataSource;
                 filter(dataSource, query);
-				treeView.expand(".k-item");
+                treeView.expand(".k-item");
+
+                if (enableAllTreeViewValues)
+                    treeView.enable(true);
             });
 
             $("#filter").keydown(function (e) {
@@ -659,11 +662,10 @@
 			listView.dataItem(node).IsKey = check;
 		};
 
-		function resetData() {
-			$("#matchButton").data('kendoButton').enable(false);
-			$("#treeview").data('kendoTreeView').enable(true);
-			$("#treeview").data('kendoTreeView').select($());
-			dataSource.data([]);
+        function resetData() {
+            $("#matchButton").data('kendoButton').enable(false);
+            $('#filter').val('').trigger('input', [true]);
+            dataSource.data([]);
 			$("#loadButton").data('kendoButton').enable(false);
 		}
 
