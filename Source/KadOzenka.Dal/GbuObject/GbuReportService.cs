@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.GbuObject
 {
 	public class GbuReportService : IDisposable
 	{
+		//TODO Dal не должен знать о контроллере
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={ReportId}";
 		public CellStyle WarningCellStyle { get; }
 		public CellStyle ErrorCellStyle { get; }
