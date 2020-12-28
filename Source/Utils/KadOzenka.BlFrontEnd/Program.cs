@@ -581,6 +581,12 @@ namespace KadOzenka.BlFrontEnd
             });
 
 
+            consoleHelper.AddCommand("563", "Создание триггеров для поддержания актуальности кеш-таблицы для отчетов с составом данных", () =>
+            {
+				TriggerCreationForDataCompositionReports.Start();
+            });
+
+
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}
     }
