@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.update_cache_table_for_data_composition_reports (
+CREATE OR REPLACE FUNCTION public.update_cache_table_for_data_composition_reports_for_registers (
 )
 RETURNS trigger AS
 $body$
@@ -38,5 +38,5 @@ SECURITY INVOKER
 PARALLEL UNSAFE
 COST 100;
 
-ALTER FUNCTION public.update_cache_table_for_data_composition_reports ()
+ALTER FUNCTION public.update_cache_table_for_data_composition_reports_for_registers ()
   OWNER TO cipjs_kad_ozenka;

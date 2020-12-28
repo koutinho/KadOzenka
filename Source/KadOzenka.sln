@@ -58,7 +58,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBScripts", "DBScripts", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{078CA0CD-F126-49E8-9D04-ED68B19545A8}"
 	ProjectSection(SolutionItems) = preProject
-		update_cache_table_for_data_composition_reports_with_type_parti.sql = update_cache_table_for_data_composition_reports_with_type_parti.sql
+		update_cache_table_for_data_composition_reports_for_main_object.sql = update_cache_table_for_data_composition_reports_for_main_object.sql
+		update_cache_table_for_data_composition_reports_for_registers.sql = update_cache_table_for_data_composition_reports_for_registers.sql
 	EndProjectSection
 EndProject
 Global
