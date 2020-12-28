@@ -113,6 +113,12 @@ namespace KadOzenka.Dal.Modeling
 			};
         }
 
+        public bool IsModelGroupExist(long modelId)
+        {
+	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
+	        return OMGroup.Where(x => x.Id == model.GroupId).ExecuteExists();
+        }
+
         public OMTour GetModelTour(long? groupId)
         {
 	        var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == groupId).Select(x => new

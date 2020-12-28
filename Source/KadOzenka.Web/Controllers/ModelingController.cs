@@ -76,7 +76,13 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false, bool isReadOnly = false)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+	        var isGroupExists = ModelingService.IsModelGroupExist(modelId);
+	        if (!isGroupExists)
+	        {
+                return RedirectToAction(nameof(ModelWithDeletedGroupCard), new { modelId, isPartial });
+            }
+
+            var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
 		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial, isReadOnly});
@@ -129,6 +135,19 @@ namespace KadOzenka.Web.Controllers
 
 
         #region Карточка автоматической модели
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult ModelWithDeletedGroupCard(long modelId, bool isPartial)
+        {
+	        var modelName = OMModel.Where(x => x.Id == modelId).Select(x => x.Name).ExecuteFirstOrDefault()?.Name;
+	        if (isPartial)
+	        {
+		        return PartialView(nameof(ModelWithDeletedGroupCard), modelName);
+	        }
+
+	        return View(nameof(ModelWithDeletedGroupCard), modelName);
+        }
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
