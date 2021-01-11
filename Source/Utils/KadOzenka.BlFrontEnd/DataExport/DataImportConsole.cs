@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using KadOzenka.Dal.DataImport.DataImporterByTemplate;
 
 namespace KadOzenka.BlFrontEnd.DataExport
 {
@@ -46,17 +47,18 @@ namespace KadOzenka.BlFrontEnd.DataExport
 			//FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			//DataImporter.AddImportToQueue(100, "1", filePath, fs, settings);
 
-			bool success;
+			var dataImporter =
+				DataImporterByTemplateFactory.CreateDataImporterByTemplate(100);
+			var result = dataImporter.ImportDataFromExcel(excelFile, settings);
 
-			Stream stream = DataImporterByTemplate.ImportDataFromExcel(100, excelFile, settings, null, out success);
-			stream.Seek(0, SeekOrigin.Begin);
+			result.ResultFile.Seek(0, SeekOrigin.Begin);
 			using (FileStream file = new FileStream("D:\\Genix\\result123.xlsx", FileMode.Create, FileAccess.Write))
 			{
-				byte[] bytes = new byte[stream.Length];
-				stream.Read(bytes);
+				byte[] bytes = new byte[result.ResultFile.Length];
+				result.ResultFile.Read(bytes);
 				file.Write(bytes);
 
-				stream.Close();
+				result.ResultFile.Close();
 			}
 		}
 	}
