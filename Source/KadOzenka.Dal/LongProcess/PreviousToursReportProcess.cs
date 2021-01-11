@@ -8,15 +8,10 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using System.IO;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
-using Core.SRD;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using ObjectModel.Common;
-using ObjectModel.Directory.Common;
-using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -25,14 +20,15 @@ namespace KadOzenka.Dal.LongProcess
         private readonly ExcelFile _excelTemplate;
         private readonly ExcelWorksheet _mainWorkSheet;
         private int _currentRowIndex;
-        private string _reportGbuStorage = "SaveReportPath";
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
         private PreviousToursService PreviousToursService { get; set; }
+        private CustomReportsService CustomReportsService { get; }
 
 
         public PreviousToursReportProcess()
         {
             PreviousToursService = new PreviousToursService();
+            CustomReportsService = new CustomReportsService();
             _excelTemplate = new ExcelFile();
             _mainWorkSheet = _excelTemplate.Worksheets.Add("Лист 1");
             _mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
@@ -76,15 +72,12 @@ namespace KadOzenka.Dal.LongProcess
                 GenerateReportBody(reportInfo, tourYears, pricingFactorNames);
                 AddLog(processQueue, "Закончено формирование файла");
 
-                var reportId = SaveReport();
+                var reportDownloadUrl = SaveReport();
                 var message = "Операция успешно завершена." +
-                              $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+                              $@"<a href=""{reportDownloadUrl}"">Скачать результат</a>";
                 NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
 
                 WorkerCommon.SetProgress(processQueue, 100);
-
-                //TODO для тестирования
-                var link = $"https://localhost:50252/DataExport/DownloadExportResult?exportId={reportId}";
             }
             catch (Exception ex)
             {
@@ -235,41 +228,13 @@ namespace KadOzenka.Dal.LongProcess
             });
         }
 
-        private long SaveReport()
+        private string SaveReport()
         {
-            try
-            {
-                var stream = new MemoryStream();
-                _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-                stream.Seek(0, SeekOrigin.Begin);
+	        var stream = new MemoryStream();
+	        _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+	        stream.Seek(0, SeekOrigin.Begin);
 
-                var currentDate = DateTime.Now;
-                var export = new OMExportByTemplates
-                {
-                    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-                    DateCreated = currentDate,
-                    Status = (int)ImportStatus.Added,
-                    FileResultTitle = _reportName,
-                    FileExtension = "xlsx",
-                    MainRegisterId = OMMainObject.GetRegisterId(),
-                    RegisterViewId = "GbuObjects"
-                };
-                export.Save();
-
-                export.DateFinished = DateTime.Now;
-                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-                export.Status = (long)ImportStatus.Completed;
-                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-                export.Save();
-
-                return export.Id;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                ErrorManager.LogError(e);
-                throw;
-            }
+	        return CustomReportsService.SaveReport(stream, _reportName, "xlsx");
         }
 
         #endregion

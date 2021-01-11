@@ -12,12 +12,18 @@ using System.Threading;
 using Core.Main.FileStorages;
 using Core.ErrorManagment;
 using Core.Shared.Exceptions;
+using Serilog;
 
 namespace KadOzenka.Dal.SystemStatistics
 {
     class SystemStatisticsManager : ILongProcess
     {
-        public void LogError(long? objectId, Exception ex, long? errorId = null) { }
+	    private readonly ILogger _log = Log.ForContext<SystemStatisticsManager>();
+
+        public void LogError(long? objectId, Exception ex, long? errorId = null)
+	    {
+		    _log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
+        }
 
         public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {

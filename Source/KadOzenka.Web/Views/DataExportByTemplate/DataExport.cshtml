@@ -227,7 +227,7 @@
             const registerViewId = '@((string)ViewBag.RegisterViewId)';
             const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
-            $("#filter").on("input", function () {
+            $("#filter").on("input", function (event, enableAllTreeViewValues) {
                 var query = this.value.toLowerCase();
                 const treeView = $("#treeview").data("kendoTreeView");
 
@@ -239,6 +239,9 @@
                 var dataSource = treeView.dataSource;
                 filter(dataSource, query);
                 treeView.expand(".k-item");
+
+                if (enableAllTreeViewValues)
+                    treeView.enable(true);
             });
 
             $("#filter").keydown(function (e) {
@@ -634,8 +637,7 @@
 
         function resetData() {
             $("#matchButton").data('kendoButton').enable(false);
-            $("#treeview").data('kendoTreeView').enable(true);
-            $("#treeview").data('kendoTreeView').select($());
+            $('#filter').val('').trigger('input', [true]);
             dataSource.data([]);
             $("#loadButton").data('kendoButton').enable(false);
         }

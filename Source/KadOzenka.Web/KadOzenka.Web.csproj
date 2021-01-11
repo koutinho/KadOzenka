@@ -148,6 +148,7 @@
     <None Remove="Config\Registers\Views\CoreSRDUser.xml" />
     <None Remove="Config\Registers\Views\CoreSRDUserSelect.xml" />
     <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
+    <None Remove="Config\Registers\Views\CreatedReports.xml" />
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
     <None Remove="Config\Registers\Views\DeclarationsBook.xml" />
@@ -369,6 +370,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\CommissionCost.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CreatedReports.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
@@ -655,7 +659,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.628" />
+    <PackageReference Include="Platform.Web" Version="1.0.630" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -1849,6 +1853,7 @@
     <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\Views\CreatedReports.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />

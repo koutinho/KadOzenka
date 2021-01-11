@@ -21,9 +21,9 @@
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />
-    <PackageReference Include="Platform" Version="1.0.363" />
-    <PackageReference Include="Platform.Reports" Version="1.0.47" />
-    <PackageReference Include="Platform.Web" Version="1.0.628" />
+    <PackageReference Include="Platform" Version="1.0.365" />
+    <PackageReference Include="Platform.Reports" Version="1.0.48" />
+    <PackageReference Include="Platform.Web" Version="1.0.630" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.Support" Version="3.141.0" />
@@ -56,6 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CancellationQueryManager\" />
     <Folder Include="Correction\Dto\" />
     <Folder Include="DataImport\DataImportKoFactory\ImportKoFactoryCommon\" />
     <Folder Include="DataImport\DataImportKoFactory\Interface\" />

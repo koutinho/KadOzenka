@@ -25,11 +25,13 @@ using KadOzenka.Dal.LongProcess.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Gbu;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport
 {
 	public class DataImporterByTemplate : ILongProcess
 	{
+		private readonly ILogger _log = Log.ForContext<DataImporterByTemplate>();
 		public const string LongProcessName = "DataImporterFromTemplate";
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -93,6 +95,7 @@ namespace KadOzenka.Dal.DataImport
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 			OMImportDataLog import = OMImportDataLog.Where(x => x.Id == objectId).SelectAll().Execute().FirstOrDefault();
 			if (import == null) return;
 			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;

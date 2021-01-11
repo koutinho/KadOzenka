@@ -1,29 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
 	public class StatisticalDataModel : IValidatableObject
 	{
-		/// <summary>
-		/// Тур
-		/// </summary>
+		public bool IsForBackground => ReportType != null && StatisticalDataService.ReportsViaLongLongProcess.ContainsKey(ReportType);
+
 		public long? TourId { get; set; }
 
-		/// <summary>
-		/// Тур 2
-		/// </summary>
 		public long? SecondTourId { get; set; }
 
-		/// <summary>
-		/// Список заданий на оценку
-		/// </summary>
 		public long[] TaskFilter { get; set; }
 
-		/// <summary>
-		/// Тип отчета
-		/// </summary>
 		[Required(ErrorMessage = "Выберете тип отчета")]
 		public long? ReportType { get; set; }
 

@@ -9,6 +9,7 @@ using ObjectModel.Core.LongProcess;
 using System.Threading.Tasks;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Logger;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
@@ -17,8 +18,12 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "ExportAttributeToKoProcess";
         private static readonly ILogger _log = Log.ForContext<ExportAttributeToKoProcess>();
+        private LongProcessProgressLogger LongProcessProgressLogger { get; }
 
-
+        public ExportAttributeToKoProcess()
+        {
+	        LongProcessProgressLogger = new LongProcessProgressLogger();
+        }
 
         public static void AddProcessToQueue(GbuExportAttributeSettings settings)
 		{
@@ -30,35 +35,20 @@ namespace KadOzenka.Dal.LongProcess
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
             _log.Information("Старт фонового процесса {LongProcessName} {cancellationToken} {QueueId} {processType}", LongProcessName, cancellationToken, processQueue.Id, processType.Parameters);
-            var cancelProgressCounterSource = new CancellationTokenSource();
-            var cancelProgressCounterToken = cancelProgressCounterSource.Token;
             try
 			{
                 WorkerCommon.SetProgress(processQueue, 0);
                 WorkerCommon.LogState(processQueue, "Начата обработка процесса переноса атрибутов из ГБУ в КО.");
                 _log.Information("Начата обработка процесса переноса атрибутов из ГБУ в КО.");
 
-               var progressCounterTask = Task.Run(() => {
-                    while (true)
-                    {
-                        if (cancelProgressCounterToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
+               LongProcessProgressLogger.StartLogProgress(processQueue, () => ExportAttributeToKO.MaxCount, () => ExportAttributeToKO.CurrentCount);
 
-                        LogProgress(processQueue);
-                    }
-                }, cancelProgressCounterToken);
-
-
-				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
+                var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
 
                 var urlToDownload = new ExportAttributeToKO().Run(settings, processQueue);
                 //TestLongRunningProcess(settings);
 
-                cancelProgressCounterSource.Cancel();
-                progressCounterTask.Wait(cancellationToken);
-                cancelProgressCounterSource.Dispose();
+                LongProcessProgressLogger.StopLogProgress();
 
                 WorkerCommon.LogState(processQueue, "Отправка уведомления о завершении операции.");
 				SendSuccessNotification(processQueue, urlToDownload);
@@ -66,10 +56,11 @@ namespace KadOzenka.Dal.LongProcess
             }
 			catch (Exception ex)
 			{
-				var errorId = ErrorManager.LogError(ex);
+				_log.Fatal(ex, "Ошибка запуска фонового процесса {LongProcessName}", LongProcessName);
+				LongProcessProgressLogger.StopLogProgress();
+                var errorId = ErrorManager.LogError(ex);
 				var message = $"{ex.Message} (Подробнее в журнале: {errorId})";
-                _log.Fatal(ex, "Ошибка запуска фонового процесса {LongProcessName}", LongProcessName);
-                SendFailureNotification(processQueue, message);
+				SendFailureNotification(processQueue, message);
 				throw;
 			}
 		}
@@ -77,7 +68,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
-			throw new NotImplementedException();
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 		}
 
 		public bool Test()
@@ -85,17 +76,7 @@ namespace KadOzenka.Dal.LongProcess
 			return true;
 		}
 
-        private static void LogProgress(OMQueue processQueue)
-        {
-            if (ExportAttributeToKO.MaxCount <= 0 || ExportAttributeToKO.CurrentCount <= 0)
-                return;
-
-            var newProgress = (long)Math.Round(((double)ExportAttributeToKO.CurrentCount / ExportAttributeToKO.MaxCount) * 100);
-            if (newProgress != processQueue.Progress)
-                WorkerCommon.SetProgress(processQueue, newProgress);
-        }
-
-        private void SendSuccessNotification(OMQueue processQueue, string urlToDownloadReport)
+		private void SendSuccessNotification(OMQueue processQueue, string urlToDownloadReport)
 		{
 			var message = "Операция переноса атрибутов из ГБУ в КО успешно завершена." +
 			                 $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";

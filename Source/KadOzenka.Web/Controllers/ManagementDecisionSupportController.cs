@@ -16,6 +16,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.MapModeling;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
@@ -41,19 +42,23 @@ namespace KadOzenka.Web.Controllers
 		private readonly DashboardWidgetService _dashboardWidgetService;
 		private readonly StatisticsReportsWidgetService _statisticsReportsWidgetService;
 		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
+		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
 		private readonly int dataPageSize = 30;
 		private readonly int dataCacheSize = 3000;
 
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
-            StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService)
+            StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
+            StatisticalDataService statisticalDataService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
             _statisticsReportsWidgetService = statisticsReportsWidgetService;
             _statisticsReportsWidgetExportService = statisticsReportsWidgetExportService;
             _tourService = tourService;
+            _statisticalDataService = statisticalDataService;
+
         }
 
         #region MapBuilding
@@ -432,7 +437,28 @@ namespace KadOzenka.Web.Controllers
 			return View(new StatisticalDataModel());
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+		public IActionResult ProcessReport(StatisticalDataModel model)
+		{
+			if (!ModelState.IsValid)  
+				return GenerateMessageNonValidModel();
+
+			if (model.IsForBackground)
+			{
+				//пока таких отчетов только 2, поэтому нет унификации
+				var parameters = new ReportLongProcessInputParameters
+				{
+					TaskIds = model.TaskFilter.ToList()
+				};
+				_statisticalDataService.AddProcessToQueue(model.ReportType, parameters);
+				
+				return Ok();
+			}
+
+			return GetStatisticalDataReportUrl(model);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public IActionResult GetStatisticalDataReportUrl(StatisticalDataModel model)
 		{
 			if (!ModelState.IsValid)
@@ -512,31 +538,7 @@ namespace KadOzenka.Web.Controllers
             return GetStatisticalDataReportUrl(model.Map());
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
-        public IActionResult AddUniformReportLongProcessToQueue(StatisticalDataModel model)
-        {
-	        if (!ModelState.IsValid)
-		        return GenerateMessageNonValidModel();
-
-	        var parameters = new UniformReportLongProcessInputParameters
-	        {
-		        TaskIds = model.TaskFilter.ToList()
-	        };
-
-	        ////TODO код для отладки
-	        //new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
-	        //{
-	        //	Status_Code = Status.Added,
-	        //	UserId = SRDSession.GetCurrentUserId(),
-	        //	Parameters = parameters.SerializeToXml()
-	        //}, new CancellationToken());
-
-	        UniformReportLongProcess.AddProcessToQueue(parameters);
-
-	        return Ok();
-        }
-
-		#endregion
+        #endregion
 
 		#endregion StatisticalData
 

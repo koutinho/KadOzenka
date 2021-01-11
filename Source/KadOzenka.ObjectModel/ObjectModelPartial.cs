@@ -3529,3 +3529,51 @@ namespace ObjectModel.Common
         }
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 810 Таблица для созданных отчетов
+    /// </summary>
+    public partial class OMReportFiles
+    {
+
+        public OMReportFiles()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMReportFiles(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// </summary>
+    public partial class OMAllReportsInSystemView
+    {
+
+        public OMAllReportsInSystemView()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAllReportsInSystemView(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

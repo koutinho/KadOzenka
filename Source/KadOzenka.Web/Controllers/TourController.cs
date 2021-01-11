@@ -615,24 +615,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult DeleteGroup(long id)
         {
-            OMGroup group = OMGroup.Where(x => x.Id == id)
-                .SelectAll().ExecuteFirstOrDefault();
-            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == id)
-                .SelectAll().ExecuteFirstOrDefault();
-            OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == id)
-                .SelectAll().ExecuteFirstOrDefault();
-
-            using (var ts = new TransactionScope())
-            {
-                group.Destroy();
-                tourGroup.Destroy();
-                if(calculationSettings != null)
-                    calculationSettings.Destroy();
-
-                ts.Complete();
-            }
-
-            return Json(new { Success = "Удаление выполненно" });
+	        GroupService.DeleteGroup(id);
+	        return Json(new { Success = "Удаление выполненно" });
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]

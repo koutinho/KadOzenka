@@ -15,8 +15,6 @@ namespace KadOzenka.Dal.Declarations
 {
 	public class NotificationService
 	{
-		private const string _reportStorage = "SaveReportPath";
-
 		public OMUved GetNotification(long notificationId)
 		{
 			var omUved = OMUved
