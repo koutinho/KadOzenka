@@ -326,7 +326,7 @@
                     }
 
                     var formData = new FormData();
-					formData.append("MainRegisterId", mainRegisterId);
+					formData.append("MainRegisterId", @((long)ViewBag.MainRegisterId));
                     formData.append("File", file.rawFile);
                     formData.append("RegisterViewId", registerViewId);
                     formData.append("IsBackgroundDownload", isBackgroundDownload);

@@ -46,6 +46,7 @@ using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
@@ -407,7 +408,7 @@ namespace KadOzenka.BlFrontEnd
 			});
 
 			consoleHelper.AddCommand("554", "эксель импорт",
-				() => new DataImporterByTemplate().StartProcess(null,
+				() => new DataImporterByTemplateLongProcess().StartProcess(null,
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 },
 					new System.Threading.CancellationToken()));
 
