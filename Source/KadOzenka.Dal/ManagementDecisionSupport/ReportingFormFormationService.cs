@@ -77,14 +77,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitDto> GetPreviouslyRegisteredObjects(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.Recalculated);
-			var objects = query
+			query
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.ParentTask.CreationDate)
 				.Select(x => x.StatusRepeatCalc_Code)
 				.Select(x => x.Square)
 				.Select(x => x.PropertyType_Code)
-				.Select(x => x.Status_Code)
-				.Execute();
+				.Select(x => x.Status_Code);
+
+			var objects = _cancellationManager.ExecuteQuery(query);
 
 			return objects.Select(x => new UnitDto
 			{
@@ -100,21 +101,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitCountByPropertyTypeDto> GetPreviouslyRegisteredObjectsByPropertyType(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.Recalculated);
-			//var objectsByPropertyType = query
-			//	.GroupBy(x => x.PropertyType_Code)
-			//	.ExecuteSelect(x => new
-			//	{
-			//		x.PropertyType_Code,
-			//		ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
-			//	}).Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
 
-			var objectsByPropertyType = _cancellationManager.ExecuteSelect(query
-				.GroupBy(x => x.PropertyType_Code), x => new
-			{
-				x.PropertyType_Code,
-				ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
-			}).Select(x => new UnitCountByPropertyTypeDto
-				{PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount}).ToList();
+			var objectsByPropertyType = _cancellationManager.ExecuteSelect(query.GroupBy(x => x.PropertyType_Code),
+				x => new
+				{
+					x.PropertyType_Code,
+					ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
+				}).Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
+
 			return objectsByPropertyType;
 		}
 

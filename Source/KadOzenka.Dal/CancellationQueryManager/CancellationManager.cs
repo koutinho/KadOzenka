@@ -1,10 +1,12 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.QuerySubsystem.SqlExecutor;
 using Microsoft.Practices.EnterpriseLibrary.Data;
@@ -133,7 +135,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			return BaseCancellationToken.IsCancellationRequested;
 		}
 
-		private void CreateSubscriberToCancellationRequest<T>(CancellationTokenSource cTokenSource, QSQuery<T> query, Executor<T> executor) where T: class, new()
+		private void CreateSubscriberToCancellationRequest<T>(CancellationTokenSource cTokenSource, QSQuery<T>? query, Executor<T>? executor) where T: class, new()
 		{
 			try
 			{
@@ -143,13 +145,13 @@ namespace KadOzenka.Dal.CancellationQueryManager
 					{
 						if (cTokenSource.IsCancellationRequested)
 						{
-							_log.ForContext("==> Query", query.GetSql()).Debug("Отмена ожидания вызова токена отмены");
+							_log.ForContext("==> Query", query?.GetSql()).Debug("Отмена ожидания вызова токена отмены");
 							break;
 						}
 
 						if (BaseCancellationToken.IsCancellationRequested)
 						{
-							_log.ForContext("==> Query", query.GetSql()).Debug("Отмена запроса");
+							_log.ForContext("==> Query", query?.GetSql()).Debug("Отмена запроса");
 							query?.CancelExecuting();
 							executor?.CancelExecute();
 							break;
@@ -161,7 +163,8 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			}
 			catch (Exception e)
 			{
-				
+				ErrorManager.LogError(e);
+				throw;
 			}
 		}
 
@@ -169,7 +172,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 		private void StartSubscriber<T>(CancellationTokenSource cTokenSource, QSQuery<T> query = null, Executor<T> executor = null) where T: class, new()
 		{
-			CreateSubscriberToCancellationRequest(cTokenSource,query, executor);
+			CreateSubscriberToCancellationRequest(cTokenSource, query, executor);
 		}
 
 
