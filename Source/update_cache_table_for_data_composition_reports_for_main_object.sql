@@ -3,7 +3,8 @@ CREATE OR REPLACE FUNCTION public.update_cache_table_for_data_composition_report
 RETURNS trigger AS
 $body$
 BEGIN
-    INSERT INTO data_composition_by_characteristics_by_tables (object_id) VALUES (NEW.id);    
+    INSERT INTO data_composition_by_characteristics_by_tables (object_id, cadastral_number, object_type_code) 
+    VALUES (NEW.id, NEW.cadastral_number, NEW.object_type_code);    
 	
     RETURN NULL;
 END;
