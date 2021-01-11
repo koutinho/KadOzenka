@@ -87,6 +87,7 @@ namespace KadOzenka.Dal.LongProcess.ExpressScore
 
 		public override void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			base.LogError(objectId, ex, errorId);
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == objectId)
 				.SelectAll()

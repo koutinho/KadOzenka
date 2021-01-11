@@ -27,7 +27,6 @@ namespace KadOzenka.Dal.LongProcess
 		public virtual void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
 			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
-			throw new NotImplementedException();
 		}
 
 		public virtual void AddToQueue(object input)

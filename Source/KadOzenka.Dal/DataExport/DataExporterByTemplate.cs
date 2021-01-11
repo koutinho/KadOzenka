@@ -15,12 +15,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Serilog;
 
 namespace KadOzenka.Dal.DataExport
 {
 	public class DataExporterByTemplate : ILongProcess
 	{
-		public const string LongProcessName = "DataExporterByTemplate";
+		private readonly ILogger _log = Log.ForContext<DataExporterByTemplate>();
+        public const string LongProcessName = "DataExporterByTemplate";
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
@@ -80,7 +82,8 @@ namespace KadOzenka.Dal.DataExport
 
         public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
-			OMExportByTemplates export = OMExportByTemplates
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
+            OMExportByTemplates export = OMExportByTemplates
 				.Where(x => x.Id == objectId)
 				.SelectAll()
 				.Execute()

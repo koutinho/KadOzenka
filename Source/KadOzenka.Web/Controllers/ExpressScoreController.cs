@@ -601,9 +601,10 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetScenarioCalculate()
 		{
-			List<SelectListItem> res = new List<SelectListItem>();
-			res.AddRange(ComboBoxHelper.GetSelectList(typeof(ScenarioType)));
-			return Json(res);
+			var exceptions = new List<long> { (long)ScenarioType.None };
+			var scenarios = Helpers.EnumExtensions.GetSelectList(typeof(ScenarioType), exceptions: exceptions);
+
+			return Json(scenarios);
 		}
 
 		#endregion

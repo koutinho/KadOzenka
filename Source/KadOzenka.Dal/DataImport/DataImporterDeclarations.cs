@@ -22,11 +22,13 @@ using Core.RefLib;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.LongProcess.Common;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport
 {
 	public class DataImporterDeclarations : ILongProcess
 	{
+		private readonly ILogger _log = Log.ForContext<DataImporterDeclarations>();
 		public static string LongProcessName => "DataImporterDeclarations";
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
@@ -53,6 +55,7 @@ namespace KadOzenka.Dal.DataImport
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == objectId)
 				.SelectAll()

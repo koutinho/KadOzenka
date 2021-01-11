@@ -121,6 +121,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			Log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == objectId)
 				.SelectAll()

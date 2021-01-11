@@ -8,6 +8,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
 using ObjectModel.KO;
@@ -16,6 +17,13 @@ namespace KadOzenka.Dal.Groups
 {
     public class GroupService
     {
+        public ModelingService ModelingService { get; }
+
+        public GroupService()
+        {
+	        ModelingService = new ModelingService();
+        }
+
 	    public GroupDto GetGroupById(long? groupId)
         {
             var group = GetGroupByIdInternal(groupId);
@@ -307,6 +315,32 @@ namespace KadOzenka.Dal.Groups
 
 			return SetGroupFields(groupDto, group, tourGroup);
 		}
+
+        public void DeleteGroup(long groupId)
+        {
+	        OMGroup group = OMGroup.Where(x => x.Id == groupId)
+		        .SelectAll().ExecuteFirstOrDefault();
+	        OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId)
+		        .SelectAll().ExecuteFirstOrDefault();
+	        OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId)
+		        .SelectAll().ExecuteFirstOrDefault();
+	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
+
+	        using (var ts = new TransactionScope())
+	        {
+		        group.Destroy();
+		        tourGroup.Destroy();
+		        if (calculationSettings != null)
+			        calculationSettings.Destroy();
+
+		        foreach (var model in models)
+		        {
+			        ModelingService.DeleteModel(model.Id);
+		        }
+
+		        ts.Complete();
+	        }
+        }
 
         #region Group To Market Segment Relation
 

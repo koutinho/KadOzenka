@@ -74,7 +74,7 @@
                 var data = treeList.dataItem(row);
                 Common.UI.ShowConfirm({
                     title: '',
-                    content: 'Удалить группу ' + data.GroupName+'?',
+                    content: 'Выполнить удаление группы ' + data.GroupName+'? Все связанные с группой модели также будут удалены.',
                     onSuccess: function () {
                         kendo.ui.progress($('body'), true);
                         $.ajax({
