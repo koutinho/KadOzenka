@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.GbuObject
             List<ObjectModel.Gbu.OMMainObject> Objs = new List<ObjectModel.Gbu.OMMainObject>();
             foreach (ObjectModel.KO.OMCodDictionary item in DictionaryItem)
             {
-                ObjectModel.Gbu.OMMainObject obj = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == setting.PropertyType && x.IsActive == true && x.CadastralNumber == item.Code).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject obj = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == setting.PropertyType && x.IsActive == true && x.CadastralNumber == item.Value).SelectAll().ExecuteFirstOrDefault();
                 if (obj != null) Objs.Add(obj);
             }
 
@@ -112,9 +112,9 @@ namespace KadOzenka.Dal.GbuObject
                 CurrentCount++;
             }
 
-            ObjectModel.KO.OMCodDictionary item = ObjectModel.KO.OMCodDictionary.Where(x => x.Code == obj.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+            ObjectModel.KO.OMCodDictionary item = ObjectModel.KO.OMCodDictionary.Where(x => x.Value == obj.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
             string value = string.Empty;
-            if (item != null) value = item.Value;
+            if (item != null) value = item.Code;
 
             lock (locked)
             {
