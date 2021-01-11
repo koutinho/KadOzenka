@@ -25,7 +25,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 	        return OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
         }
 
-        #region Source
+
+        #region Источник (Реестр)
 
         public SourceDto GetSource(long registerId)
         {
@@ -71,14 +72,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             ValidateSource(sourceDto);
 
             var register = RegisterService.GetRegister(sourceDto.RegisterId);
-
-            using (var ts = new TransactionScope())
-            {
-                register.RegisterDescription = sourceDto.RegisterDescription;
-                register.Save();
-
-                ts.Complete();
-            }
+            register.RegisterDescription = sourceDto.RegisterDescription;
+            register.Save();
         }
 
         #region Support Methods
@@ -99,7 +94,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
         #endregion
 
 
-        #region Characteristic
+        #region Характеристика (Атрибут)
 
         public long AddCharacteristic(CharacteristicDto characteristicDto, bool withValueField = false)
         {
