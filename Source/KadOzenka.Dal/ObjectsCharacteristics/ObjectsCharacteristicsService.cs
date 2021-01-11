@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
                 RegisterConfigurator.CreateDbTableForRegister(omRegister.RegisterId);
 
-                DataCompositionByCharacteristicsService.CreateTriggerForRegister(omRegister.RegisterId);
+                //DataCompositionByCharacteristicsService.CreateTriggerForRegister(omRegister.RegisterId);
 
                 CreateObjectCharacteristics(omRegister.RegisterId);
 
@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 {
 	                SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
 	                RegisterConfigurator.CreateDbTableForRegister(characteristicDto.RegisterId);
-	                DataCompositionByCharacteristicsService.CreateTriggerForRegister(register.Id, id);
+	                //DataCompositionByCharacteristicsService.CreateTriggerForRegister(register.Id, id);
                 }
 	            else
 	            {
