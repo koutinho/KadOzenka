@@ -100,14 +100,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitCountByPropertyTypeDto> GetPreviouslyRegisteredObjectsByPropertyType(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.Recalculated);
-			var objectsByPropertyType = query
-				.GroupBy(x => x.PropertyType_Code)
-				.ExecuteSelect(x => new
-				{
-					x.PropertyType_Code,
-					ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
-				}).Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
+			//var objectsByPropertyType = query
+			//	.GroupBy(x => x.PropertyType_Code)
+			//	.ExecuteSelect(x => new
+			//	{
+			//		x.PropertyType_Code,
+			//		ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
+			//	}).Select(x => new UnitCountByPropertyTypeDto { PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount }).ToList();
 
+			var objectsByPropertyType = _cancellationManager.ExecuteSelect(query
+				.GroupBy(x => x.PropertyType_Code), x => new
+			{
+				x.PropertyType_Code,
+				ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
+			}).Select(x => new UnitCountByPropertyTypeDto
+				{PropertyType = x.PropertyType_Code, ObjectsCount = x.ObjectCount}).ToList();
 			return objectsByPropertyType;
 		}
 
@@ -281,9 +288,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			taskCreationDateFrom = taskCreationDateFrom?.Date;
 			taskCreationDateTo = taskCreationDateTo?.GetEndOfTheDay();
-			if (!_cancellationManager.GetReportCancellationToken().IsCancellationRequested)
+			if (!_cancellationManager.CheckRequestCancellationReportToken())
 			{
-				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo)
+				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo, _cancellationManager)
 					.Select(x => new UnitCountByTypeOfUseDto
 						{ TypeOfUse = GetAttribureValueString(x.AttributeValue, attribute), ObjectsCount = x.ObjectsCount }).ToList();
 

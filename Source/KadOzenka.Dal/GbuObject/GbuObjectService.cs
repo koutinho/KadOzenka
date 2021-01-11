@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
 using Platform.Register;
 using Serilog;
@@ -384,7 +385,8 @@ namespace KadOzenka.Dal.GbuObject
 			return result;
 		}
 
-		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
+		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo,
+			CancellationManager cancellationManager)
 		{
 			var attributeData = RegisterCache.GetAttributeData(attributeId);
 			var registerData = RegisterCache.GetRegisterData(attributeData.RegisterId);
@@ -446,7 +448,7 @@ from (select
 
 			sql += ") data group by data.Value";
 
-			return QSQuery.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
+			return cancellationManager.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
 		}
 
 		public List<long> GetGbuRegistersIds()

@@ -12,6 +12,9 @@ using Serilog;
 
 namespace KadOzenka.Dal.CancellationQueryManager
 {
+	/// <summary>
+	/// Менеджер для отмены запросов
+	/// </summary>
 	public class CancellationManager
 	{
 		public CancellationToken BaseCancellationToken = CancellationToken.None;
@@ -34,7 +37,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			}
 			catch (Exception e)
 			{
-				_log.Error("Ошбка во время запроса данных для отччета {e}", e);
+				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<T>();
 			}
@@ -54,7 +57,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			}
 			catch (Exception e)
 			{
-				_log.Error("Ошбка во время запроса данных для отччета {e}", e);
+				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<TResult>();
 			}
@@ -73,7 +76,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			}
 			catch (Exception e)
 			{
-				_log.Error("Ошбка во время запроса данных для отччета {e}", e);
+				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<TResult>();
 			}
@@ -93,10 +96,31 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			}
 			catch (Exception e)
 			{
-				_log.Error("Ошбка во время запроса данных для отччета {e}", e);
+				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new DataSet();
 			}
+		}
+
+		public int ExecuteCount<TSource>(QSQuery<TSource> query) where TSource : class, new ()
+		{
+			var cTokenSource = new CancellationTokenSource();
+
+			try
+			{
+				StartSubscriber(cTokenSource, query);
+				var res = query.ExecuteCount();
+				CancelSubscriber(cTokenSource);
+
+				return res;
+			}
+			catch (Exception e)
+			{
+				_log.Error("Ошибка во время запроса данных {e}", e);
+				CancelSubscriber(cTokenSource);
+				return 0;
+			}
+			
 		}
 
 		public void CancelSubscriber(CancellationTokenSource cTokenSource)
@@ -104,9 +128,9 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			cTokenSource.Cancel();
 		}
 
-		public CancellationToken GetReportCancellationToken()
+		public bool CheckRequestCancellationReportToken()
 		{
-			return BaseCancellationToken;
+			return BaseCancellationToken.IsCancellationRequested;
 		}
 
 		private void CreateSubscriberToCancellationRequest<T>(CancellationTokenSource cTokenSource, QSQuery<T> query, Executor<T> executor) where T: class, new()
@@ -119,11 +143,13 @@ namespace KadOzenka.Dal.CancellationQueryManager
 					{
 						if (cTokenSource.IsCancellationRequested)
 						{
+							_log.ForContext("==> Query", query.GetSql()).Debug("Отмена ожидания вызова токена отмены");
 							break;
 						}
 
 						if (BaseCancellationToken.IsCancellationRequested)
 						{
+							_log.ForContext("==> Query", query.GetSql()).Debug("Отмена запроса");
 							query?.CancelExecuting();
 							executor?.CancelExecute();
 							break;
@@ -133,9 +159,9 @@ namespace KadOzenka.Dal.CancellationQueryManager
 				});
 				task.Start();
 			}
-			catch (OperationCanceledException e)
+			catch (Exception e)
 			{
-				_log.Debug("Отмена ожидания вызова токена отмены для отчетов");
+				
 			}
 		}
 
