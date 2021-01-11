@@ -1,11 +1,14 @@
 ﻿using System;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
+using Core.Register;
+using Core.SRD;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using Platform.Configurator;
+using Platform.Register;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {
@@ -96,23 +99,35 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         #region Характеристика (Атрибут)
 
-        public long AddCharacteristic(CharacteristicDto characteristicDto, bool withValueField = false)
+        public long AddCharacteristic(CharacteristicDto characteristicDto)
         {
             ValidateCharacteristic(characteristicDto);
 
             long id;
             using (var ts = new TransactionScope())
             {
-                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
-                    characteristicDto.RegisterId, characteristicDto.Type, withValueField, characteristicDto.ReferenceId);
-                id = omAttribute.Id;
-                CreateOrUpdateCharacteristicSetting(id, 
-	                characteristicDto.UseParentAttributeForLivingPlacement,
-	                characteristicDto.UseParentAttributeForNotLivingPlacement,
-	                characteristicDto.UseParentAttributeForCarPlace);
+	            var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
+		            characteristicDto.RegisterId, characteristicDto.Type, false, characteristicDto.ReferenceId);
+	            id = omAttribute.Id;
 
-                var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
-                RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+                //TODO если будут еще различия, то разнести по двум разным сервисам
+                //TODO (для ресстров с разделением по типу данных и реестров с разделением по атрибуту)
+                var register = RegisterCache.GetRegisterData((int) characteristicDto.RegisterId);
+                if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
+                {
+	                SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
+	                RegisterConfigurator.CreateDbTableForRegister(characteristicDto.RegisterId);
+                }
+	            else
+	            {
+		            var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
+		            RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+                }
+
+	            CreateOrUpdateCharacteristicSetting(id,
+		            characteristicDto.UseParentAttributeForLivingPlacement,
+		            characteristicDto.UseParentAttributeForNotLivingPlacement,
+		            characteristicDto.UseParentAttributeForCarPlace);
 
                 ts.Complete();
             }
@@ -133,6 +148,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public void DeleteCharacteristic(long characteristicId)
         {
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
             RegisterAttributeService.RemoveRegisterAttribute(characteristicId);
         }
 
