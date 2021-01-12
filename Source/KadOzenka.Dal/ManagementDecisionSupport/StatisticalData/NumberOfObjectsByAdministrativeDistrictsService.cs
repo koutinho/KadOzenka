@@ -110,7 +110,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		{
 			string contents;
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("NumberOfObjectsByAdministrativeDistrictsBySubject", "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks));
+			var table = CancellationManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList),
+				isOks));
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
 			if (table.Count != 0)
 			{
