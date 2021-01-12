@@ -173,7 +173,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					break;
 			}
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+			var table = CancellationManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList),
+				isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto>();
 			if(table.Count != 0)
             {
