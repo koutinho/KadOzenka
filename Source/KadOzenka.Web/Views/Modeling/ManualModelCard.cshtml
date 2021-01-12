@@ -71,15 +71,6 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    // Установка стиля при загрузке меток из файла
-    var mutConfig = { childList: true, subtree: true };
-    var mutationFunction = function (mutList, observer) {
-        var targetNode = $(".k-file");
-        if (targetNode) {
-            targetNode.addClass("k-file-success");
-        }
-    }
-
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isFromTourCard);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isFromTourCard);
@@ -438,7 +429,7 @@
                 success: function (response) {
                     var modal = $("#uploadMarksCatalogModal");
                     modal.html(response);
-                    ShowModal(modal, '50%', '30%');
+                    ShowModal(modal, '50%', '30%', "Загрузка меток");
                 },
                 error: function (response) {
                     Common.ShowError(response.responseText);
