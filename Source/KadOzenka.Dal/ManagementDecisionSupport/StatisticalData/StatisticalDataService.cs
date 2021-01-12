@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Core.ConfigParam;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -10,18 +9,18 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using Core.SRD;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.Tours;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
-using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class StatisticalDataService
     {
 	    public string SqlQueriesFolder => "SqlQueries";
+
+	    public readonly CancellationManager CancellationManager;
         private TourFactorService TourFactorService { get; set; }
 
         public static readonly Dictionary<long?, Type> ReportsViaLongLongProcess =
@@ -34,6 +33,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public StatisticalDataService()
         {
             TourFactorService = new TourFactorService();
+            CancellationManager = new CancellationManager();
         }
 
 

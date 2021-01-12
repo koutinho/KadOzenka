@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 	/// </summary>
 	public class CancellationManager
 	{
-		private CancellationToken BaseCancellationToken = CancellationToken.None;
+		private CancellationToken _baseCancellationToken = CancellationToken.None;
 
 		private readonly ILogger _log = Log.ForContext<CancellationManager>();
 
@@ -145,14 +145,14 @@ namespace KadOzenka.Dal.CancellationQueryManager
 		{
 			if (token != null)
 			{
-				BaseCancellationToken = token.GetValueOrDefault();
+				_baseCancellationToken = token.GetValueOrDefault();
 			}
 			
 		}
 
 		public bool IsRequestCancellationReportToken()
 		{
-			return BaseCancellationToken.IsCancellationRequested;
+			return _baseCancellationToken.IsCancellationRequested;
 		}
 
 
@@ -177,7 +177,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 							break;
 						}
 
-						if (BaseCancellationToken.IsCancellationRequested)
+						if (_baseCancellationToken.IsCancellationRequested)
 						{
 							_log.ForContext("==> Query", query?.GetSql()).Debug("Отмена запроса");
 							query?.CancelExecuting();
