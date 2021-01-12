@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.Enum;
@@ -94,28 +95,23 @@ namespace KadOzenka.Dal.KoObject
 				MaxDegreeOfParallelism = 1
 			};
 
-			var estimatedSubGroupAttribute = OMAttribute.Where(x => x.Id == param.IdEstimatedSubGroup).SelectAll()
-				.ExecuteFirstOrDefault();
+			var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
+			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
 
-			var codeGroupAttribute = OMAttribute.Where(x => x.Id == param.IdCodeGroup).SelectAll()
-				.ExecuteFirstOrDefault();
+			var gbuObjects = new List<OMMainObject>();
+			var gbuObjectIds = units.Select(x => x.ObjectId).ToList();
+			if(gbuObjectIds.IsNotEmpty())
+				gbuObjects.AddRange(OMMainObject.Where(x => gbuObjectIds.Contains(x.Id)).SelectAll().Execute());
 
 			Parallel.ForEach(units, options, item =>
 			{
-				GbuReportService.Row rowReport;
-				lock (locked)
-				{
-					rowReport = reportService.GetCurrentRow();
-					reportService.AddValue(item.CadastralNumber, (int)ReportColumns.KnColumn, rowReport);
-				}
-
-				var gbuObject = OMMainObject.Where(x => x.Id == item.ObjectId).SelectAll().ExecuteFirstOrDefault();
+				var gbuObject = gbuObjects.FirstOrDefault(x => x.Id == item.ObjectId);
 
 				// берем код группы (значение из справочника цод)
 				var codeGroup = GetValueFactor(gbuObject, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
-					AddErrorRow($"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", rowReport, reportService);
+					AddErrorRow(item.CadastralNumber,$"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", reportService);
 					return;
 				}
 
@@ -125,24 +121,23 @@ namespace KadOzenka.Dal.KoObject
 				{
                     var value = complianceGuides[0].Group;
                     AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
-					AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
+					AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					return;
 				}
 
 				if (complianceGuides.Count <= 1)
 				{
-					AddErrorRow($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", rowReport, reportService);
+					AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", reportService);
 					return;
 				}
 				{
-					var attributeQuarter = OMAttribute.Where(x => x.Id == param.IdCodeQuarter).SelectAll()
-						.ExecuteFirstOrDefault();
+					var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
 					// берем кадастровый квартал
 					ValueItem codeQuarter = GetValueFactor(gbuObject, attributeQuarter.RegisterId, attributeQuarter.Id);
 
 					if (string.IsNullOrEmpty(codeQuarter.Value))
 					{
-						AddErrorRow($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", rowReport, reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", reportService);
 						return;
 					}
 
@@ -150,16 +145,16 @@ namespace KadOzenka.Dal.KoObject
 
 					if (gbuQuarterObject == null)
 					{
-						AddErrorRow($"Не найден объект кадастровый квартал {codeQuarter.Value} .", rowReport, reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найден объект кадастровый квартал {codeQuarter.Value} .", reportService);
 						return;
 					}
-					var attributeTerritoryType = OMAttribute.Where(x => x.Id == param.IdTerritoryType).SelectAll().ExecuteFirstOrDefault();
+					var attributeTerritoryType = RegisterCache.GetAttributeData((int)param.IdTerritoryType);
 
 					ValueItem territoryType = GetValueFactor(gbuQuarterObject, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 
 					if (string.IsNullOrEmpty(territoryType.Value))
 					{
-						AddErrorRow($"Не найден тип территории для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найден тип территории для объекта {gbuObject.CadastralNumber}", reportService);
 						return;
 					}
 
@@ -168,12 +163,12 @@ namespace KadOzenka.Dal.KoObject
 
 					if (string.IsNullOrEmpty(complianceGuid.Code))
 					{
-						AddErrorRow($"Не найдено значение в таблице сопоставления, для кода {codeGroup.Value} и подгуппы {territoryType.Value}", rowReport, reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления, для кода {codeGroup.Value} и подгруппы {territoryType.Value}", reportService);
 						return;
 					}
 					var value = complianceGuid.Group;
 					AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
-					AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
+					AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 				}
 			});
 
@@ -244,25 +239,28 @@ namespace KadOzenka.Dal.KoObject
 			return res;
 		}
 
-		public static void AddErrorRow(string value, GbuReportService.Row rowNumber, GbuReportService reportService)
+		public static void AddErrorRow(string kn, string value, GbuReportService reportService)
 		{
 			lock (locked)
 			{
-				reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowNumber);
+				var rowReport = reportService.GetCurrentRow();
+				reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowReport);
+				reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowReport);
 			}
 		}
 
-		public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, long inputAttributeId, long sourceAttributeId, string value, GbuReportService reportService)
+		public static void AddRowToReport(string kn, long inputAttributeId, long sourceAttributeId, string value, GbuReportService reportService)
 		{
 			lock (locked)
 			{
+				var rowReport = reportService.GetCurrentRow();
 				var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
 				var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
-				reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowNumber);
-				reportService.AddValue(inputAttributeName, (int)ReportColumns.InputFieldColumn, rowNumber);
-				reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowNumber);
-				reportService.AddValue(sourceAttributeName, (int)ReportColumns.OutputFieldColumn, rowNumber);
-				reportService.AddValue(string.Empty, (int)ReportColumns.ErrorColumn, rowNumber);
+				reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowReport);
+				reportService.AddValue(inputAttributeName, (int)ReportColumns.InputFieldColumn, rowReport);
+				reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowReport);
+				reportService.AddValue(sourceAttributeName, (int)ReportColumns.OutputFieldColumn, rowReport);
+				reportService.AddValue(string.Empty, (int)ReportColumns.ErrorColumn, rowReport);
 			}
 		}
 
