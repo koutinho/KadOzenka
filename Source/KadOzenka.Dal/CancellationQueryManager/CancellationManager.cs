@@ -19,13 +19,10 @@ namespace KadOzenka.Dal.CancellationQueryManager
 	/// </summary>
 	public class CancellationManager
 	{
-		public CancellationToken BaseCancellationToken = CancellationToken.None;
+		private CancellationToken BaseCancellationToken = CancellationToken.None;
 
 		private readonly ILogger _log = Log.ForContext<CancellationManager>();
 
-		public CancellationManager()
-		{
-		}
 
 		public List<T> ExecuteQuery<T>(QSQuery<T> query) where T : class, new()
 		{
@@ -125,17 +122,48 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			
 		}
 
-		public void CancelSubscriber(CancellationTokenSource cTokenSource)
+		public DataTable ExecuteQueryToDataTable(QSQuery query)
 		{
-			cTokenSource.Cancel();
+			var cTokenSource = new CancellationTokenSource();
+			try
+			{
+				StartSubscriber(cTokenSource, query);
+				var res = query.ExecuteQuery();
+				CancelSubscriber(cTokenSource);
+				return res;
+			}
+			catch (Exception e)
+			{
+				_log.Error("Ошибка во время запроса данных {e}", e);
+				CancelSubscriber(cTokenSource);
+				return new DataTable();
+			}
+			
 		}
 
-		public bool CheckRequestCancellationReportToken()
+		public void SetBaseToken(CancellationToken? token)
+		{
+			if (token != null)
+			{
+				BaseCancellationToken = token.GetValueOrDefault();
+			}
+			
+		}
+
+		public bool IsRequestCancellationReportToken()
 		{
 			return BaseCancellationToken.IsCancellationRequested;
 		}
 
-		private void CreateSubscriberToCancellationRequest<T>(CancellationTokenSource cTokenSource, QSQuery<T>? query, Executor<T>? executor) where T: class, new()
+
+		#region private methods
+
+		private void CancelSubscriber(CancellationTokenSource cTokenSource)
+		{
+			cTokenSource.Cancel();
+		}
+
+		private void CreateSubscriberToCancellationRequest<T>(CancellationTokenSource cTokenSource, QSQuery<T>? query = null, Executor<T>? executor = null, QSQuery? simpleQuery = null) where T : class, new()
 		{
 			try
 			{
@@ -154,6 +182,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 							_log.ForContext("==> Query", query?.GetSql()).Debug("Отмена запроса");
 							query?.CancelExecuting();
 							executor?.CancelExecute();
+							simpleQuery?.CancelExecuting();
 							break;
 						}
 						Thread.Sleep(1000);
@@ -170,12 +199,19 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 		#region support methods
 
-		private void StartSubscriber<T>(CancellationTokenSource cTokenSource, QSQuery<T> query = null, Executor<T> executor = null) where T: class, new()
+		private void StartSubscriber<T>(CancellationTokenSource cTokenSource, QSQuery<T>? query = null, Executor<T>? executor = null) where T : class, new()
 		{
 			CreateSubscriberToCancellationRequest(cTokenSource, query, executor);
 		}
 
+		private void StartSubscriber(CancellationTokenSource cTokenSource, QSQuery? simpleQuery = null)
+		{
+			CreateSubscriberToCancellationRequest<object>(cTokenSource,  simpleQuery: simpleQuery);
+		}
 
 		#endregion
+
+		#endregion
+
 	}
 }

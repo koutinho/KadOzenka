@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.FastReports
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
-			_cancellationManager.BaseCancellationToken = CancellationToken.GetValueOrDefault();
+			_cancellationManager.SetBaseToken(CancellationToken);
 			DataSet dataSet;
 			var reportType = GetQueryParam<string>("ReportType", query);
 			switch (reportType)

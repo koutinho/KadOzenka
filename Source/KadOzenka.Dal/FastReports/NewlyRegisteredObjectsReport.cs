@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.FastReports
 		{
 			_gbuObjectService = new GbuObjectService();
 			_cancellationManager = new CancellationManager();
-			_cancellationManager.BaseCancellationToken = CancellationToken.GetValueOrDefault();
+			_cancellationManager.SetBaseToken(CancellationToken);
 			_reportingFormFormationService = new ReportingFormFormationService(_gbuObjectService, _cancellationManager);
 		}
 

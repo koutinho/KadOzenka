@@ -182,7 +182,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			query.AddColumn(OMUnit.GetColumn(x => x.Status_Code, nameof(UnitWithChangedFactorsDto.Status)));
 			query.AddColumn(OMUnitChange.GetColumn(x => x.ChangeStatus, nameof(UnitWithChangedFactorsDto.ChangedFactor)));
 
-			var table = query.ExecuteQuery();
+			//var table = query.ExecuteQuery();
+			var table = _cancellationManager.ExecuteQueryToDataTable(query);
 			var data = new List<UnitWithChangedFactorsDto>();
 			if (table.Rows.Count != 0)
 			{
@@ -245,10 +246,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			var factorsCondition = new QSConditionSimple(new QSColumnQuery(subQuery, "factors"), QSConditionType.Exists);
 			query = query.And(factorsCondition);
-			var objects = query
+			query
 				.Select(x => x.PropertyType)
-				.Select(x => x.PropertyType_Code)
-				.Execute();
+				.Select(x => x.PropertyType_Code);
+
+			var objects = _cancellationManager.ExecuteQuery(query);
 
 			return objects
 				.GroupBy(x => x.PropertyType_Code)
@@ -282,14 +284,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			taskCreationDateFrom = taskCreationDateFrom?.Date;
 			taskCreationDateTo = taskCreationDateTo?.GetEndOfTheDay();
-			if (!_cancellationManager.CheckRequestCancellationReportToken())
+			if (!_cancellationManager.IsRequestCancellationReportToken())
 			{
 				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo, _cancellationManager)
 					.Select(x => new UnitCountByTypeOfUseDto
 						{ TypeOfUse = GetAttribureValueString(x.AttributeValue, attribute), ObjectsCount = x.ObjectsCount }).ToList();
 
 				var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, status);
-				var objectsCount = query.ExecuteCount();
+				var objectsCount = _cancellationManager.ExecuteCount(query);
 
 				if (values.Sum(x => x.ObjectsCount) < objectsCount)
 				{
