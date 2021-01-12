@@ -316,20 +316,44 @@ namespace KadOzenka.Dal.Groups
 			return SetGroupFields(groupDto, group, tourGroup);
 		}
 
+        public bool CanGroupBeDeleted(long groupId, bool checkChildGroups = true)
+        {
+            var result = !OMUnit.Where(x => x.GroupId == groupId).ExecuteExists();
+            if (result && checkChildGroups)
+            {
+	            List<long?> childGroupIds = OMGroup.Where(x => x.ParentId == groupId).Execute().Select(x => (long?)x.Id).ToList();
+	            if (childGroupIds.IsNotEmpty())
+	            {
+                    result = !OMUnit.Where(x => childGroupIds.Contains(x.GroupId)).ExecuteExists();
+                }
+            }
+
+            return result;
+        }
+
         public void DeleteGroup(long groupId)
         {
 	        OMGroup group = OMGroup.Where(x => x.Id == groupId)
-		        .SelectAll().ExecuteFirstOrDefault();
-	        OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId)
-		        .SelectAll().ExecuteFirstOrDefault();
-	        OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId)
-		        .SelectAll().ExecuteFirstOrDefault();
-	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
+		        .Select(x => new{x.Number, x.GroupName}).ExecuteFirstOrDefault();
 
-	        using (var ts = new TransactionScope())
+	        if (!CanGroupBeDeleted(groupId, false))
+	            throw new Exception($"Группа '{group.Number}. {group.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки");
+
+            List<OMGroup> childGroups = OMGroup.Where(x => x.ParentId == groupId).Execute();
+            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+	        OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId).ExecuteFirstOrDefault();
+	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
+            List<OMGroupFactor> groupFactors = OMGroupFactor.Where(x => x.GroupId == groupId).Execute();
+            List<OMCalcGroup> calcGroups = OMCalcGroup.Where(x => x.GroupId == groupId || x.ParentCalcGroupId == groupId).Execute();
+            OMGroupToMarketSegmentRelation groupToMarketSegmentRelation = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
+
+            using (var ts = new TransactionScope())
 	        {
-		        group.Destroy();
-		        tourGroup.Destroy();
+		        foreach (var childGroup in childGroups)
+		        {
+			        DeleteGroup(childGroup.Id);
+		        }
+
 		        if (calculationSettings != null)
 			        calculationSettings.Destroy();
 
@@ -338,7 +362,26 @@ namespace KadOzenka.Dal.Groups
 			        ModelingService.DeleteModel(model.Id);
 		        }
 
-		        ts.Complete();
+		        foreach (var groupFactor in groupFactors)
+		        {
+			        groupFactor.Destroy();
+		        }
+
+		        foreach (var omCalcGroup in calcGroups)
+		        {
+			        omCalcGroup.Destroy();
+		        }
+
+                if(groupToMarketSegmentRelation != null)
+	                groupToMarketSegmentRelation.Destroy();
+
+                if(group != null)
+					group.Destroy();
+
+                if (tourGroup != null)
+                    tourGroup.Destroy();
+
+                ts.Complete();
 	        }
         }
 
