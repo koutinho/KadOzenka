@@ -765,6 +765,16 @@ namespace KadOzenka.Web.Controllers
             return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UploadMarksCatalog(long groupId, long factorId)
+        {
+	        ViewBag.GroupId = groupId;
+	        ViewBag.FactorId = factorId;
+
+	        return PartialView();
+        }
+
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
         {

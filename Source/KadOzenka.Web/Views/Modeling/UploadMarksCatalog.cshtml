@@ -1,0 +1,118 @@
+﻿<!-- Модальное окно для загрузки справочника меток -->
+@using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "uploadMarksCatalogForm", enctype = "multipart/form-data" }))
+{
+    <div id="uploadMarksCatalogWnd">
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-9">
+                    <label for="isDeleteAllCheckBox">Загрузка с удалением имеющихся данных</label>
+                </div>
+                <div class="col-sm-2">
+                    <input name="isDeleteAllCheckBox" id="isDeleteAllCheckBox" type="checkbox" />
+                </div>
+            </div>
+            <div class="form-group">
+                <input name="marksCatalogFiles" id="marksCatalogFiles" type="file" aria-label="files" accept=".xls,.xlsx" />
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 col-sm-offset-9">
+                    <button id="loadMarksCatalogFilesButton" type="button">Загрузить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
+<script>
+    // Установка стиля при загрузке меток из файла
+    var mutConfig = { childList: true, subtree: true };
+    var mutationFunction = function (mutList, observer) {
+        var targetNode = $(".k-file");
+        if (targetNode) {
+            targetNode.addClass("k-file-success");
+        }
+    }
+
+    $(document).ready(function () {
+        $('#marksCatalogFiles').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Выбрать Файл'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function (e) {
+                if (e.operation === "upload") {
+                    Common.ShowMessage("Данные загружены успешно");
+                }
+            },
+            error: function (e) {
+                console.log('error', e);
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            }
+        }).data('kendoUpload');
+
+        var mutObserver = new MutationObserver(mutationFunction);
+        var uploader = $(".k-upload");
+        if (uploader.length) {
+            mutObserver.observe(uploader[0], mutConfig);
+        }
+
+        $("#loadMarksCatalogFilesButton").kendoButton({
+            click: uploadMarksCatalog
+        });
+    });
+
+
+
+
+
+
+    function uploadMarksCatalog() {
+        console.log('uploadMarksCatalog');
+        var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
+        if (files.length === 0) {
+            Common.ShowError("Файл не выбран");
+            return;
+        }
+        var form = $('#uploadMarksCatalogForm');
+        var formData = new FormData();
+        formData.append('file', files[0].rawFile);
+        formData.append('groupId', '@ViewBag.GroupId');
+        formData.append('factorId', '@ViewBag.FactorId');
+        formData.append('isDeleteOld', $("#isDeleteAllCheckBox").is(":checked"));
+        kendo.ui.progress($('#uploadMarksCatalogWnd'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
+                    window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            },
+            error: function(e) {
+                Common.ShowError(e.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#uploadMarksCatalogWnd'), false);
+                var modal = $("#uploadMarksCatalogWnd").data("kendoWindow");
+                if (modal)
+                    modal.close();
+            }
+        });
+    }
+</script>
