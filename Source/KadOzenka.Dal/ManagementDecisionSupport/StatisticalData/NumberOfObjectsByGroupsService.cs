@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Core.Register.QuerySubsystem;
-using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class NumberOfObjectsByGroupsService
 	{
-		private readonly StatisticalDataService _statisticalDataService;
 
-		public NumberOfObjectsByGroupsService(StatisticalDataService statisticalDataService) => _statisticalDataService = statisticalDataService;
-
-        public class InitialData
+		public class InitialData
         {
             public string PropertyType { get; set; }
             public string Group { get; set; }
@@ -24,6 +17,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             public long objectsCount { get; set; }
         }
 
+        public CancellationManager CancellationManager = new CancellationManager();
         public List<NumberOfObjectsByGroupsDto> GetNumberOfObjectsByGroups(long[] taskList, bool isOksReportType)
         {
             string contents = string.Empty, fileName = string.Empty;
@@ -32,8 +26,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             else fileName = "NumberOfObjectsByGroupsDto_isNotOksReportType";
             using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
 
-            var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
-
+            var table = CancellationManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
             var result = new List<NumberOfObjectsByGroupsDto>();
             if (table.Count != 0)
             {

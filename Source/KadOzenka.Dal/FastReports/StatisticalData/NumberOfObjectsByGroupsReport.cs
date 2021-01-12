@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		public NumberOfObjectsByGroupsReport()
 		{
-			_service = new NumberOfObjectsByGroupsService(new StatisticalDataService());
+			_service = new NumberOfObjectsByGroupsService();
 			_logger = Log.ForContext<NumberOfObjectsByGroupsReport>();
 		}
 
@@ -26,6 +26,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.CancellationManager.SetBaseToken(CancellationToken);
+
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetQueryParam<string>("ReportType", query);
 			Logger.Debug("Тип отчета {ReportType}", reportType);
