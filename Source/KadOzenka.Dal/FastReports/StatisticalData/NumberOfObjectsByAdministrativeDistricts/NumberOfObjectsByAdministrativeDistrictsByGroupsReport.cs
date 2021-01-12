@@ -44,6 +44,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.CancellationManager.SetBaseToken(CancellationToken);
 			var taskList = GetTaskIdList(query);
 			var divisionType = GetAreaDivisionType(GetQueryParam<string>("DivisionType", query));
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
