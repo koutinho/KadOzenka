@@ -95,16 +95,13 @@
 			dial.data("kendoWindow").open();
 		});
 
-	$('.remove-tour').on('click',
-		function () {
-			if (!!$('div.k-state-selected')) {
-				$(this).attr('disabled', true);
-				$('.add-tour').attr('disabled', true);
-				$('.edit-tour').attr('disabled', true);
-				removeTour();
-			}
+    $('.remove-tour').on('click',
+        function() {
+            if (!!$('div.k-state-selected')) {
+                removeTour();
+            }
 
-		});
+        });
 
 	$('#saveTour').on('click',
 		function() {
@@ -145,40 +142,68 @@
             error: function (response) {
                 Common.ShowError(response.responseText);
             },
-            complete: function () {
+            complete: function() {
                 kendo.ui.progress($('body'), false);
             }
         });
     }
 
-	function removeTour() {
-		kendo.ui.progress($('body'), true);
-
-		var id = $('div.k-state-selected p').data('id');
-
-		var url = "@Url.Action("TourEstimates", "Tour")" + `?id=${id}`;
-
-		$.ajax({
-			url: url,
-			type: 'DELETE',
-			success: function (response) {
-				kendo.ui.progress($('body'), false);
-				if (response.Error) {
-					Common.ShowError(response.Error);
-					return;
-				}
-				if (response.Success) {
-					$('.edit-tour').attr('disabled', false);
-					$('.add-tour').attr('disabled', false);
-					$('.remove-tour').attr('disabled', false);
-					var listView = $("#listView").data("kendoListView");
-					listView.remove($('div.k-state-selected'));
-					Common.ShowMessage(response.Success);
-				}
-			},
-			data: {id}
-		});
-	}
+    function removeTour() {
+        var id = $('div.k-state-selected p').data('id');
+        var year = $('div.k-state-selected p').text();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            url: '@Url.Action("CanTourBeDeleted", "Tour")',
+            type: 'POST',
+            data: { id: id },
+            success: function(response) {
+                if (response.CanTourBeDeleted) {
+                    Common.UI.ShowConfirm({
+                        title: '',
+                        content: `Выполнить удаление тура ${year}? Все связанные с туром данные также будут удалены.`,
+                        onSuccess: function() {
+                            kendo.ui.progress($('body'), true);
+                            var url = "@Url.Action("TourEstimates", "Tour")" + `?id=${id}`;
+                            $.ajax({
+                                url: url,
+                                type: 'DELETE',
+                                data: { id },
+                                success: function(response) {
+                                    if (response.Error) {
+                                        Common.ShowError(response.Error);
+                                        return;
+                                    }
+                                    if (response.Success) {
+                                        var listView = $("#listView").data("kendoListView");
+                                        listView.remove($('div.k-state-selected'));
+                                        Common.ShowMessage(response.Success);
+                                    }
+                                },
+                                error: function(response) {
+                                    Common.ShowError(response.responseText);
+                                },
+                                complete: function () {
+                                    kendo.ui.progress($('body'), false);
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Common.UI.ShowDialog({
+                        title: '',
+                        icon: 'error',
+                        content: `Тур ${year} не может быть удален, т.к. имеются связанные задания на оценку`});
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 	function cancelTour() {
 		$('.edit-tour').attr('disabled', false);
