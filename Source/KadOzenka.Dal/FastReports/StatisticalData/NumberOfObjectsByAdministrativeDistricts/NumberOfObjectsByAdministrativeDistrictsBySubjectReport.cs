@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		public NumberOfObjectsByAdministrativeDistrictsBySubjectReport()
 		{
-			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService(), new GbuCodRegisterService());
+			_service = new NumberOfObjectsByAdministrativeDistrictsService(new GbuCodRegisterService());
 			_logger = Log.ForContext<NumberOfObjectsByAdministrativeDistrictsBySubjectReport>();
 		}
 
