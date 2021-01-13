@@ -714,7 +714,7 @@ namespace KadOzenka.Dal.DataExport
                         }
                     }
                     taskCounter++;
-                    progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) / countCurr;
+                    progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) / koGroups.Count;
                     setProgress?.Invoke(progress, progressMessage: progressMessage);
                     if(unloadResultQueue != null)
 	                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
