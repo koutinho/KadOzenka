@@ -12,6 +12,7 @@ using Npgsql;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Web.SignalR
 {
@@ -19,8 +20,9 @@ namespace KadOzenka.Web.SignalR
 	{
 		private IHubContext<KoUnloadResultsProgressHub> _hubContext;
 		private long _koUnloadResultQueueChangedEventsCount = 0;
-		private readonly TimeSpan _updatesSendingInterval = TimeSpan.FromMilliseconds(100);
+		private readonly TimeSpan _updatesSendingInterval = TimeSpan.FromMilliseconds(3000);
 		private static object _syncRoot = new object();
+		private ILogger _log = Log.ForContext<KoUnloadResultsListenerService>();
 
 		public bool IsListening { get; private set; }
 
@@ -35,6 +37,7 @@ namespace KadOzenka.Web.SignalR
 
 		public void InitiateUpdatesSending()
 		{
+			_log.Verbose("Запуск процесса оповещения об обновлениях выгрузок");
 			var cancelSource = new CancellationTokenSource();
 			Task.Run(() =>
 			{
@@ -57,6 +60,7 @@ namespace KadOzenka.Web.SignalR
 
 		public void ListenForAlarmNotifications()
 		{
+			_log.Verbose("Запуск процесса прослушивания оповещений выгрузок");
 			IsListening = true;
 			var cancelSource = new CancellationTokenSource();
 			Task.Run(() =>
@@ -87,21 +91,24 @@ namespace KadOzenka.Web.SignalR
 		{
 			lock (_syncRoot)
 			{
-				_koUnloadResultQueueChangedEventsCount++;
+				// второе оповещение нужно для обновления данных после того как процесс завершится
+				_koUnloadResultQueueChangedEventsCount = 2;
 			}
 		}
 
 		public List<UnloadSettingsQueueModel> GetUnloadSettingsQueues()
 		{
 			var result = new List<UnloadSettingsQueueModel>();
-
 			var startDate = DateTime.Now.Date;
 			var endDate = DateTime.Now.GetEndOfTheDay();
 			var omUnloadResultQueues = OMUnloadResultQueue
 				.Where(x => x.DateFinished == null || x.DateFinished >= startDate && x.DateFinished <= endDate)
 				.SelectAll()
 				.Execute().OrderBy(x => x.DateCreated).ToList();
+			_log.ForContext("omUnloadResultQueuesCount",omUnloadResultQueues.Count)
+				.Verbose("Получение данных очередей выгрузок");
 
+			// Множественные запросы к базе с опросом статуса
 			foreach (var unloadResultQueue in omUnloadResultQueues)
 			{
 				var omQueue = OMQueue.Where(x => x.ObjectId == unloadResultQueue.Id).ExecuteFirstOrDefault();
