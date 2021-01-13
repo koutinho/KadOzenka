@@ -742,6 +742,7 @@ namespace ObjectModel.KO
     }
     public partial class OMModelFactor
     {
+        static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
         [Obsolete]
         public void FillMarkCatalogs(OMModel model)
@@ -754,6 +755,7 @@ namespace ObjectModel.KO
         {
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
+            _log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }
     }
     public partial class OMGroup
