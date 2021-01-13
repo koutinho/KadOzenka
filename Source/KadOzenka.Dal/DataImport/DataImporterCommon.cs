@@ -8,6 +8,7 @@ using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.LongProcess.DataImport;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Declarations;
@@ -67,11 +68,11 @@ namespace KadOzenka.Dal.DataImport
 			}
 			else
 			{
-				DataImporterByTemplate.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileTitle, fileStream, columns, import.DocumentId);
+				DataImporterByTemplateLongProcess.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileTitle, fileStream, columns, import.DocumentId);
 			}
 		}
 
-		public static void SendResultNotification(OMImportDataLog import, string subject = null)
+		public static void SendResultNotification(OMImportDataLog import, string subject = null, string importStatus = null)
 		{
 			if (string.IsNullOrEmpty(subject))
 				subject =
@@ -82,7 +83,7 @@ namespace KadOzenka.Dal.DataImport
 				Addressers = new MessageAddressersDto { UserIds = new long[] { import.UserId } },
 				Subject = subject,
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
-Статус загрузки: {import.Status_Code.GetEnumDescription()}
+Статус загрузки: {importStatus ?? import.Status_Code.GetEnumDescription()}
 <a href=""/DataImport/DownloadImportResultFile?importId={import.Id}"">Скачать результат</a>
 <a href=""/DataImport/DownloadImportDataFile?importId={import.Id}"">Скачать исходный файл</a>
 <a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",

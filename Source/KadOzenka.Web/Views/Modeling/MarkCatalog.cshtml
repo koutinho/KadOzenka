@@ -1,4 +1,12 @@
 ﻿@using KadOzenka.Dal.GbuObject.Dto
+
+
+<!-- Модальное окно для загрузки справочника меток -->
+<div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
+</div>
+
+
+<!-- Окно с основной информацией -->
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
         <div class="col-sm-3">
@@ -111,6 +119,11 @@
         </div>
     </div>
 </div>
+
+<script id="toolBarTemplate" type="text/x-kendo-template">
+    <a class="k-button k-button-icontext k-grid-add" href="\#">Добавить</a>
+    <a class="k-button k-button-icontext" id="showUploadMarksCatalogBtn" href="\#" onclick="return showUploadMarksCatalogModal()">Загрузить справочник меток</a>
+</script>
 
 <script>
     $(document).ready(function () {
@@ -231,7 +244,9 @@
                 },
                 { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
             ],
-            toolbar: ["create"],
+            toolbar: [
+                { template: kendo.template($("#toolBarTemplate").html()) }
+            ],
             scrollable: true,
             editable: "inline",
             pageable: true,
@@ -271,9 +286,8 @@
 
         $('#grid').data("kendoGrid").bind('dataBound', SetAddButtonEnabled);
         $('#grid').data("kendoGrid").bind('change', SetAddButtonEnabled);
+        $('#showUploadMarksCatalogBtn').on('click', showUploadMarksCatalogModal);
     });
-
-
 
 
     function reloadGroupsAndFactors() {
@@ -337,9 +351,38 @@
         var factorId = $('#Factor').val();
         if (groupId == '' || factorId == '') {
             $('.k-grid-add').addClass('k-state-disabled');
-        }
-        else {
+            $('#showUploadMarksCatalogBtn').addClass('k-state-disabled');
+        } else {
             $('.k-grid-add').removeClass('k-state-disabled');
+            $('#showUploadMarksCatalogBtn').removeClass('k-state-disabled');
         }
     }
+
+
+    function showUploadMarksCatalogModal() {
+        var groupId = $('#Subgroup').val();
+        var factorId = $('#Factor').val();
+        if (groupId == '' || factorId == '') {
+            Common.ShowError("Нужно выбрать фактор и группу");
+            return;
+        }
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            url: '@Url.Action("UploadMarksCatalog", "Modeling")',
+            type: 'GET',
+            data: { groupId: groupId, factorId: factorId },
+            success: function (response) {
+                var modal = $("#uploadMarksCatalogModal");
+                modal.html(response);
+                ShowModal(modal, '70%', '35%', "Загрузка меток", GridInit);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
 </script>
