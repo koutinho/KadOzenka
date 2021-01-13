@@ -50,16 +50,16 @@
 
   <ItemGroup>
     <None Update="Config\Param\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-	  <None Update="Config\Reports\*">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	<None Update="Config\Reports\*">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
-	<None Update="Config\SqlQueries\*">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	<None Update="Config\SqlQueries\**\*">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
 	<None Update="Config\ExcelTemplates\*">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
 

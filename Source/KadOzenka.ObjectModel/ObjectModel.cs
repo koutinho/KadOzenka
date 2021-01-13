@@ -26800,9 +26800,9 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
     /// </summary>
-    [RegisterInfo(RegisterID = 811)]
+    [RegisterInfo(RegisterID = 1000811)]
     [Serializable]
     public partial class OMAllReportsInSystemView : OMBaseClass<OMAllReportsInSystemView>
     {

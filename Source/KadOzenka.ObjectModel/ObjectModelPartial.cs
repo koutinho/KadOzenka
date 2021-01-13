@@ -3557,7 +3557,7 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
     /// </summary>
     public partial class OMAllReportsInSystemView
     {

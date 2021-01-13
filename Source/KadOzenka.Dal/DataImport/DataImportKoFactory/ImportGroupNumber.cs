@@ -62,7 +62,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 						{
 							string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-							string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
+							string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString()?.Replace(",", ".");
 							bool findGroup = false;
 							bool findObj = false;
 							OMUnit unit = OMUnit
@@ -187,7 +187,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 						{
 							string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
-							string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
+							string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString()?.Replace(",", ".");
 							bool findGroup = false;
 							bool findObj = false;
 

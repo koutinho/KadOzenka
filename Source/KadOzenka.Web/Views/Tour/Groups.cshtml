@@ -71,28 +71,54 @@
 			var treeList = $("#treeList").data("kendoTreeView");
             var row = treeList.select();
             if (row.length > 0) {
-                var data = treeList.dataItem(row);
-                Common.UI.ShowConfirm({
-                    title: '',
-                    content: 'Выполнить удаление группы ' + data.GroupName+'? Все связанные с группой модели также будут удалены.',
-                    onSuccess: function () {
-                        kendo.ui.progress($('body'), true);
-                        $.ajax({
-                            url: '@Url.Action("DeleteGroup", "Tour")',
-                            type: 'POST',
-                            data: { id: data.Id },
-                            success: function (response) {
-                                kendo.ui.progress($('body'), false);
-                                if (response.Success) {
-	                                DownloadGroups();
-                                    Common.ShowMessage(response.Success);
+				var data = treeList.dataItem(row);
+
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    url: '@Url.Action("CanGroupBeDeleted", "Tour")',
+                    type: 'POST',
+                    data: { id: data.Id },
+                    success: function (response) {
+                        if (response.CanGroupBeDeleted) {
+                            Common.UI.ShowConfirm({
+                                title: '',
+                                content: 'Выполнить удаление группы ' +
+                                    data.GroupName +
+                                    '? Все связанные с группой модели также будут удалены.',
+                                onSuccess: function() {
+                                    kendo.ui.progress($('body'), true);
+                                    $.ajax({
+                                        url: '@Url.Action("DeleteGroup", "Tour")',
+                                        type: 'POST',
+                                        data: { id: data.Id },
+                                        success: function(response) {
+                                            if (response.Success) {
+                                                DownloadGroups();
+                                                Common.ShowMessage(response.Success);
+                                            }
+                                        },
+                                        error: function(response) {
+                                            Common.ShowError(response.responseText);
+                                        },
+                                        complete: function () {
+                                            kendo.ui.progress($('body'), false);
+                                        }
+                                    });
                                 }
-                            },
-                            error: function (response) {
-                                kendo.ui.progress($('body'), false);
-                                Common.ShowError(response.responseText);
-                            }
-                        });
+                            });
+                        }
+                        else {
+                            Common.UI.ShowDialog({
+                                title: '',
+                                icon: 'error',
+                                content: `Группа ${data.GroupName} не может быть удалена, т.к. имеются связанные единицы оценки`});
+                        }
+                    },
+                    error: function(response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function () {
+                        kendo.ui.progress($('body'), false);
                     }
                 });
             }
