@@ -10,6 +10,8 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.KoBase;
 using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
+using Core.Main.FileStorages;
+using System.IO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -126,6 +128,25 @@ namespace KadOzenka.Web.Controllers
 				        Text = y.Text
 			        }).ToList()
 		        }).AsEnumerable();
+        }
+
+        protected FileSize CalculateFileSize(string storageKey, DateTime fileDateOnServer, string fileName)
+        {
+	        var fileLocation = FileStorageManager.GetPathForFileFolder(storageKey, fileDateOnServer);
+	        fileLocation = Path.Combine(fileLocation, fileName);
+
+            return CalculateFileSize(fileLocation);
+        }
+
+        protected FileSize CalculateFileSize(string fileLocation)
+        {
+	        var fileSize = new FileSize();
+	        if (!string.IsNullOrEmpty(fileLocation) && System.IO.File.Exists(fileLocation))
+	        {
+		        var resultFileSize = new FileInfo(fileLocation).Length;
+		        fileSize.Kb = (float)(resultFileSize / 1024m);
+	        }
+	        return fileSize;
         }
     }
 }

@@ -15,11 +15,13 @@ using System.Linq;
 using ObjectModel.Directory.Sud;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Common;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport
 {
 	public class DataImporterSud : ILongProcess
 	{
+		private readonly ILogger _log = Log.ForContext<DataImporterSud>();
 		public const string LongProcessName = "DataImporterSud";
 
 		class ErrorRow
@@ -110,6 +112,7 @@ namespace KadOzenka.Dal.DataImport
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == objectId)
 				.SelectAll()

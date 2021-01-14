@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours.Dto;
 using ObjectModel.Core.Register;
@@ -11,10 +13,12 @@ namespace KadOzenka.Dal.Tours
     public class TourService
     {
         private TourFactorService TourFactorService { get; set; }
+        private GroupService GroupService { get; set; }
 
-        public TourService(TourFactorService tourFactorService)
+        public TourService(TourFactorService tourFactorService, GroupService groupService)
         {
             TourFactorService = tourFactorService;
+            GroupService = groupService;
         }
 
         public TourDto GetTourById(long? tourId)
@@ -102,6 +106,42 @@ namespace KadOzenka.Dal.Tours
             }
 
             tourAttributeSettings.Save();
+        }
+
+        public bool CanTourBeDeleted(long tourId)
+        {
+	        return !OMTask.Where(x => x.TourId == tourId).ExecuteExists();
+        }
+
+        public void DeleteTour(long tourId)
+        {
+	        var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+	        if (tour == null)
+		        throw new Exception("Тур с указанным ид не найден");
+
+	        if (!CanTourBeDeleted(tourId))
+		        throw new Exception($"Тур {tour.Year} не может быть удален, т.к. имеются связанные задания на оценку");
+
+		    var groupIds = OMTourGroup.Where(x => x.TourId == tourId).Select(x => x.GroupId).Execute().Select(x => x.GroupId).ToList();
+		    var complianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId).Execute();
+
+            using (var ts = new TransactionScope())
+	        {
+		        foreach (var groupId in groupIds)
+		        {
+			        GroupService.DeleteGroup(groupId);
+                }
+
+		        foreach (var complianceGuide in complianceGuides)
+		        {
+			        complianceGuide.Destroy();
+		        }
+
+		        TourFactorService.RemoveTourFactorRegisters(tour.Id);
+                tour.Destroy();
+
+		        ts.Complete();
+	        }
         }
 
         #region Support Methods

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="08/10/2020 10:13:53" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="12/29/2020 10:07:41" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -58,19 +58,19 @@ namespace FastReport
       table[0, 0].Text = &quot;Метод расчета&quot;;
       
       newCol = new TableColumn();
-      newCol.Width = 300.0f;
+      newCol.Width = 200.0f;
       table.Columns.Insert(0, newCol);
       table[0, 0].SetStyle(table[1, 0]);
       table[0, 0].Text = &quot;Номер подгруппы&quot;;
       
       newCol = new TableColumn();
-      newCol.AutoSize = true;
+      newCol.Width = 200.0f;
       table.Columns.Insert(table.ColumnCount, newCol);
       table[table.ColumnCount - 1, 0].SetStyle(table[1, 0]);
       table[table.ColumnCount - 1, 0].Text = &quot;Коэфициент&quot;;
       
       newCol = new TableColumn();
-      newCol.AutoSize = true;
+      newCol.Width = 60.0f;
       table.Columns.Insert(table.ColumnCount, newCol);
       table[table.ColumnCount - 1, 0].SetStyle(table[1, 0]);
       table[table.ColumnCount - 1, 0].Text = &quot;Метка&quot;;
@@ -158,18 +158,18 @@ namespace FastReport
           <TableCell Name="Cell11"/>
           <TableCell Name="Cell14" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
-        <TableRow Name="Row2" Height="37.8">
+        <TableRow Name="Row2" Height="37.8" AutoSize="true">
           <TableCell Name="Cell3" Border.Lines="All" Text="SubgroupId" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
           <TableCell Name="Cell12" Border.Lines="All" Text="Факторы (для моделирования)/подгруппы по которым считались (для иных)" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
           <TableCell Name="Cell15" Border.Lines="All" Text="Перенесите данные сюда&#13;&#10;для создания новой колонки" HorzAlign="Center" VertAlign="Center" TextFill.Color="Gray"/>
         </TableRow>
-        <TableRow Name="Row3">
+        <TableRow Name="Row3" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[SubgroupId]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell13" Visible="false" Text="[FactorsSubgroups]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell16" Border.Lines="All" Text="[  ]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="215.61" Width="1425.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="217.74" Width="1425.06" Height="47.25"/>
   </ReportPage>
 </Report>

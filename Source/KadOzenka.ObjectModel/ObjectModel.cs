@@ -26609,3 +26609,342 @@ namespace ObjectModel.Common
 
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 810 Таблица для созданных отчетов (COMMON_REPORT_FILES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 810)]
+    [Serializable]
+    public partial class OMReportFiles : OMBaseClass<OMReportFiles>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81000200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81000300 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000300)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81000500 Статус ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000500)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ExportStatus _status_Code;
+        /// <summary>
+        /// 81000500 Статус (справочный код) (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000500)]
+        public ObjectModel.Directory.Common.ExportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81000600 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000600)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81000700 Дата Завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000700)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private string _fileextension;
+        /// <summary>
+        /// 81000800 Расширение файла (file_extension)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000800)]
+        public string FileExtension
+        {
+            get
+            {
+                CheckPropertyInited("FileExtension");
+                return _fileextension;
+            }
+            set
+            {
+                _fileextension = value;
+                NotifyPropertyChanged("FileExtension");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
+    /// </summary>
+    [RegisterInfo(RegisterID = 1000811)]
+    [Serializable]
+    public partial class OMAllReportsInSystemView : OMBaseClass<OMAllReportsInSystemView>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81100100 Идентификатор (id)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81100200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81100300 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100300)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81100400 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100400)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81100500 Дата завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100500)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private bool _isplatformreport;
+        /// <summary>
+        /// 81100600 Платформенный отчет (is_platform)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100600)]
+        public bool IsPlatformReport
+        {
+            get
+            {
+                CheckPropertyInited("IsPlatformReport");
+                return _isplatformreport;
+            }
+            set
+            {
+                _isplatformreport = value;
+                NotifyPropertyChanged("IsPlatformReport");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81100700 Статус (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100700)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}

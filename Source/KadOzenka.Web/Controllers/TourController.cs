@@ -55,8 +55,8 @@ namespace KadOzenka.Web.Controllers
         public TourController()
         {
             TourFactorService = new TourFactorService();
-            TourService = new TourService(TourFactorService);
             GroupService = new GroupService();
+            TourService = new TourService(TourFactorService, GroupService);
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
@@ -482,30 +482,23 @@ namespace KadOzenka.Web.Controllers
                 ? TourService.AddTour(tourDto) 
                 : TourService.UpdateTour(tourDto);
 
-            return Json(new { Success = "Сохранение выполненно", Id = id });
+            return Json(new { Success = "Сохранение выполнено", Id = id });
         }
 
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+        public IActionResult CanTourBeDeleted(long id)
+        {
+	        var canTourBeDeleted = TourService.CanTourBeDeleted(id);
+	        return Json(new { CanTourBeDeleted = canTourBeDeleted });
+        }
 
         [HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
         public IActionResult TourEstimates(int id)
         {
-            var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-
-
-            if (tour == null)
-            {
-                return Json(new { Error = "Тур с указыным ид не найден" });
-            }
-
-            using (var ts = new TransactionScope())
-            {
-                TourFactorService.RemoveTourFactorRegisters(tour.Id);
-                tour.Destroy();
-                ts.Complete();
-            }
-
-            return Json(new { Success = "Удаление выполненно" });
+	        TourService.DeleteTour(id);
+            return Json(new { Success = "Удаление выполнено" });
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
@@ -613,26 +606,18 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+        public IActionResult CanGroupBeDeleted(long id)
+        {
+	        var canGroupBeDeleted = GroupService.CanGroupBeDeleted(id);
+	        return Json(new { CanGroupBeDeleted = canGroupBeDeleted });
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult DeleteGroup(long id)
         {
-            OMGroup group = OMGroup.Where(x => x.Id == id)
-                .SelectAll().ExecuteFirstOrDefault();
-            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == id)
-                .SelectAll().ExecuteFirstOrDefault();
-            OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == id)
-                .SelectAll().ExecuteFirstOrDefault();
-
-            using (var ts = new TransactionScope())
-            {
-                group.Destroy();
-                tourGroup.Destroy();
-                if(calculationSettings != null)
-                    calculationSettings.Destroy();
-
-                ts.Complete();
-            }
-
-            return Json(new { Success = "Удаление выполненно" });
+	        GroupService.DeleteGroup(id);
+	        return Json(new { Success = "Удаление выполнено" });
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]

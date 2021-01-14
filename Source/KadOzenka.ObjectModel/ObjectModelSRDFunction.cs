@@ -89,6 +89,12 @@ namespace ObjectModel.SRD
               // Удаление (362)
               public const string CORE_SRD_ROLES_DELETE = "CORE.SRD.ROLES.DELETE";
                 
+              // Копирование (363)
+              public const string CORE_SRD_ROLES_COPY = "CORE.SRD.ROLES.COPY";
+                
+              // Копирование (364)
+              public const string CORE_SRD_USERS_COPY = "CORE.SRD.USERS.COPY";
+                
               // Объекты аналоги (500)
               public const string MARKET = "MARKET";
                 

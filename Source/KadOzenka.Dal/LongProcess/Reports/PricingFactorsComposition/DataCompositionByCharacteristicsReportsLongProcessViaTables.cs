@@ -91,83 +91,69 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		private void CopyAttributeIds(CancellationToken cancellationToken)
 		{
-			var cancelTokenSource = new CancellationTokenSource();
-			var options = new ParallelOptions
-			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 20
-			};
+			var postfixes = new List<string> { "TXT", "NUM", "DT" };
+			var maxNumberOfRegisters = DataCompositionByCharacteristicsService.CachedRegisters.Count;
+			CheckCancellationToken(cancellationToken);
 
-			try
+			var i = 0;
+			DataCompositionByCharacteristicsService.CachedRegisters.ForEach(register =>
 			{
-				var postfixes = new List<string> { "TXT", "NUM", "DT" };
-				var maxNumberOfRegisters = DataCompositionByCharacteristicsService.CachedRegisters.Count;
-				Parallel.For(0, maxNumberOfRegisters, options, i =>
+				using (Logger.TimeOperation($"Работа с реестром '{register.Description}' (ИД {register.Id})"))
 				{
-					CheckCancellationToken(cancellationToken);
+					Logger.ForContext("RegisterId", register.Id)
+					.Debug($"Начата работа с реестром '{register.Description}'. №{i++} из {maxNumberOfRegisters}");
 
-					var register = DataCompositionByCharacteristicsService.CachedRegisters[i];
-					using (Logger.TimeOperation($"Работа с реестром '{register.Description}' (ИД {register.Id})"))
+					if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
 					{
-						Logger.ForContext("RegisterId", register.Id)
-						.Debug($"Начата работа с реестром '{register.Description}'. №{i} из {maxNumberOfRegisters}");
-
-						if (register.AllpriPartitioning == AllpriPartitioningType.DataType)
+						foreach (var postfix in postfixes)
 						{
-							foreach (var postfix in postfixes)
-							{
-								CheckCancellationToken(cancellationToken);
+							CheckCancellationToken(cancellationToken);
 
-								var gbuTableName = $"{register.AllpriTable}_{postfix}";
+							var gbuTableName = $"{register.AllpriTable}_{postfix}";
 
-								var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
+							var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
 									group by object_id";
 
-								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table
+							var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table
 									set attributes = array_cat(attributes, source.newAttributes)
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-								Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}");
+							Logger.ForContext("RegisterId", register.Id).Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}");
 
-								var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
-								DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
-							}
+							var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
+							DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
 						}
-						else if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
+					}
+					else if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
+					{
+						var attributesCounter = 0;
+						var attributes = DataCompositionByCharacteristicsService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
+						foreach (var attribute in attributes)
 						{
-							var attributesCounter = 0;
-							var attributes = DataCompositionByCharacteristicsService.CachedAttributes.Where(x => x.RegisterId == register.Id).ToList();
-							foreach (var attribute in attributes)
-							{
-								CheckCancellationToken(cancellationToken);
+							CheckCancellationToken(cancellationToken);
 
-								if (attribute.IsPrimaryKey)
-									continue;
+							if (attribute.IsPrimaryKey)
+								continue;
 
-								var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
+							var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
 
-								var subQuery = $@"select object_id from {gbuTableName} group by object_id";
+							var subQuery = $@"select object_id from {gbuTableName} group by object_id";
 
-								var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table 
+							var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
 									from ({subQuery}) as source
 									where cache_table.object_id = source.object_id";
 
-								Logger.ForContext("RegisterId", register.Id)
-									.Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
+							Logger.ForContext("RegisterId", register.Id)
+								.Debug(new Exception(sql), $"Запрос для таблицы - {gbuTableName}. №{++attributesCounter} из {attributes.Count}");
 
-								var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
-								DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
-							}
+							var insetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
+							DBMngr.Main.ExecuteNonQuery(insetAttributesCommand);
 						}
 					}
-				});
-			}
-			catch (OperationCanceledException)
-			{
-				Logger.Error("Закончена обработка, вызвана отмена токена");
-			}
+				}
+			});
 		}
 
 		private void CheckCancellationToken(CancellationToken cancellationToken)

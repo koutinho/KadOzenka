@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 	{
 		public override void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			base.LogError(objectId, ex, errorId);
 			OMExportByTemplates export = OMExportByTemplates
 				.Where(x => x.Id == objectId)
 				.SelectAll()

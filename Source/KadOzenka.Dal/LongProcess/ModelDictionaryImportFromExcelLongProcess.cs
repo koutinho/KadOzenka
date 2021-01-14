@@ -82,6 +82,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			base.LogError(objectId, ex, errorId);
 			var import = OMImportDataLog.Where(x => x.Id == objectId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
