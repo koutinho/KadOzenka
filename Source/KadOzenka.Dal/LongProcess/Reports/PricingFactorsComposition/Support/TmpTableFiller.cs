@@ -17,6 +17,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 	/// </summary>
 	public class TmpTableFiller : ABaseReportTableLongProcess
 	{
+		public static int ProcessId => 65;
+		public static string ProcessName => "DataCompositionByCharacteristics_TmpTableFiller";
+
 		public TmpTableFiller() : base(Log.ForContext<TmpTableFiller>())
 		{
 		}

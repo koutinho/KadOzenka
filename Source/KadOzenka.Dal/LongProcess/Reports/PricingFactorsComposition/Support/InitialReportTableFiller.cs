@@ -19,6 +19,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 	/// </summary>
 	public class InitialReportTableFiller : LongProcess
 	{
+		public static int ProcessId => 53;
+		public static string ProcessName => "DataCompositionByCharacteristics_InitialReportTableFiller";
+
 		private const int GbuMainObjectPackageSize = 150000;
 
 		private static readonly ILogger Logger = Log.ForContext<InitialReportTableFiller>();
@@ -33,7 +36,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 		public static long AddProcessToQueue()
 		{
-			return LongProcessManager.AddTaskToQueue(nameof(InitialReportTableFiller));
+			return LongProcessManager.AddTaskToQueue(ProcessName);
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

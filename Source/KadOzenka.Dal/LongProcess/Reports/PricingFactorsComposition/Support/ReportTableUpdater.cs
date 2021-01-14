@@ -12,6 +12,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 	/// </summary>
 	public class ReportTableUpdater : ABaseReportTableLongProcess
 	{
+		public static int ProcessId => 70;
+		public static string ProcessName => "DataCompositionByCharacteristics_ReportTableUpdater";
+
 		public ReportTableUpdater() : base(Log.ForContext<ReportTableUpdater>())
 		{
 		}
