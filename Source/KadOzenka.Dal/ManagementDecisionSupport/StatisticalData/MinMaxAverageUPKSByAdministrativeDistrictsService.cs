@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -32,8 +33,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
 
+		public readonly CancellationManager CancellationManager;
 		public MinMaxAverageUPKSByAdministrativeDistrictsService(GbuCodRegisterService gbuCodRegisterService)
 		{
+			CancellationManager =  new CancellationManager();
 			_gbuCodRegisterService = gbuCodRegisterService;
 		}
 
@@ -54,7 +57,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+			var table = CancellationManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
 			var data = new List<MinMaxAverageUPKSByAdministrativeDistrictsDto>();
 
 			if (table.Count != 0)
