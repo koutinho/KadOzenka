@@ -58,6 +58,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.MinMaxAverageByGroups
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
             UpksService.CancellationManager.SetBaseToken(CancellationToken);
+            UprsService.CancellationManager.SetBaseToken(CancellationToken);
+            UpksAndUprsService.CancellationManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 
             var dataSet = new DataSet();
