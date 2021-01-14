@@ -4999,11 +4999,11 @@ namespace KadOzenka.Dal.DataExport
         }
 
 	    private static Dictionary<KoUnloadResultType, MethodInfo> GetUnloadResultMethodInfoDictionary()
-	    {
-		    var koUnloadResultTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
-			    .Where(x => typeof(IKoUnloadResult).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).ToList();
+        {
+            var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes()
+		        .Where(x => typeof(IKoUnloadResult).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).ToList();
 
-		    var methods = koUnloadResultTypes
+		    var methods = assemblyTypes
 			    .SelectMany(t => t.GetMethods())
 			    .Where(m => m.GetCustomAttributes(typeof(KoUnloadResultActionAttribute), false).Length > 0)
 			    .ToDictionary(
