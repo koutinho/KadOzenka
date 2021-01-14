@@ -49,6 +49,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
@@ -554,7 +555,7 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("562", "Тест длительного процесса для отчета 'Состав данных по характеристикам ОН'", () =>
             {
-				new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
+				new InitialReportTableFiller().StartProcess(new OMProcessType(), new OMQueue
 				{
 					Status_Code = Status.Added,
 					UserId = SRDSession.GetCurrentUserId()

@@ -16,8 +16,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -27,6 +31,8 @@ namespace KadOzenka.Dal.DataImport
 
         //Объект-блокиратор для многопоточки
         private static object locked = new object();
+        private Dictionary<long, List<long>> _updatedObjectsAttributes;
+
         //ID фактора Материал стен итоговый
         public Int64 Id_Factor_Wall { get; private set; }
         //ID фактора Год постройки итоговый
@@ -99,6 +105,7 @@ namespace KadOzenka.Dal.DataImport
         {
             Id_Factor_Wall = -1;
             Id_Factor_Year = -1;
+            _updatedObjectsAttributes = new Dictionary<long, List<long>>();
         }
 
 
@@ -336,12 +343,38 @@ namespace KadOzenka.Dal.DataImport
 		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Машино-мест");
 	        }
             Log.ForContext("TaskId", idTask).Debug("Импорт Машино-мест завершен");
+
+            try
+            {
+	            using (Log.TimeOperation("Добавление задачи на актуализацию данных для отчетов с характеристиками объектов"))
+	            {
+		            var id = TmpTableFiller.AddProcessToQueue(_updatedObjectsAttributes);
+	            }
+            }
+            catch (Exception e)
+            {
+	            Log.ForContext("MappedInfoToUpdate",
+			            TmpTableFiller.MapDictionary(_updatedObjectsAttributes),
+			            destructureObjects: true)
+		            .ForContext("InfoToUpdateAsDictionary", _updatedObjectsAttributes, destructureObjects: true)
+                    .Fatal(e, "Не удалось добавить в очередь процсесс для актуализации данных для отчетов с характеристиками обектов");
+            }
         }
 
         private void SaveAttributeValueWithCheckInternal(GbuObjectAttribute attributeValue)
-        {
-	        SaveAttributeValueWithCheck(attributeValue);
-        }
+		{
+			SaveAttributeValueWithCheck(attributeValue);
+
+			lock (locked)
+			{
+				if (!_updatedObjectsAttributes.ContainsKey(attributeValue.ObjectId))
+				{
+					_updatedObjectsAttributes[attributeValue.ObjectId] = new List<long>();
+				}
+
+				_updatedObjectsAttributes[attributeValue.ObjectId].Add(attributeValue.AttributeId);
+			}
+		}
 
         //TODO перенести в общий сервис, например, GbuObjectService
         public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)

@@ -1,30 +1,30 @@
-﻿using Core.Register.LongProcessManagment;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Core.Register.LongProcessManagment;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using Platform.Register;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using SerilogTimings.Extensions;
 
-namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 {
-	//25 min
-	public class DataCompositionByCharacteristicsSingleFull : LongProcess
+	/// <summary>
+	/// Начальный сбор данных. Идет 3 суток, заполняет таблицу для отчета по всем ОН в системе.
+	/// </summary>
+	public class InitialReportTableFiller : LongProcess
 	{
-		private static readonly ILogger Logger = Log.ForContext<DataCompositionByCharacteristicsSingleFull>();
+		private const int GbuMainObjectPackageSize = 150000;
+
+		private static readonly ILogger Logger = Log.ForContext<InitialReportTableFiller>();
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 
-		public DataCompositionByCharacteristicsSingleFull()
+		public InitialReportTableFiller()
 		{
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 		}
@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public static long AddProcessToQueue()
 		{
-			return LongProcessManager.AddTaskToQueue(nameof(DataCompositionByCharacteristicsSingleFull));
+			return LongProcessManager.AddTaskToQueue(nameof(InitialReportTableFiller));
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -44,22 +44,18 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			using (Logger.TimeOperation("Полное время работы процесса"))
 			{
-				List<long> objectsIds;
-				using (Logger.TimeOperation("Получение ИД обновленных объектов"))
+				using (Logger.TimeOperation("Создание таблицы-кеша для данных отчета"))
 				{
-					objectsIds = GetObjectIds();
-					Logger.Debug($"Найдено {objectsIds.Count} объектов для пересбора данных");
-				}
-				
-				CheckCancellationToken(cancellationToken);
-				using (Logger.TimeOperation("Сброс атрибутов"))
-				{
-					ResetAttributes(objectsIds);
+					DataCompositionByCharacteristicsService.CreteCacheTableViaObjectId();
 				}
 
-				using (Logger.TimeOperation("Пересбор данных"))
+				CopyObjectIdsToCacheTable(cancellationToken);
+
+				CopyAttributeIds(cancellationToken);
+
+				using (Logger.TimeOperation("Создание индекса для таблицы-кеша"))
 				{
-					CopyAttributeIds(objectsIds, cancellationToken);
+					DataCompositionByCharacteristicsService.CreteIndexOnCacheTable();
 				}
 			}
 
@@ -69,36 +65,40 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		#region Support Methods
 
-		private List<long> GetObjectIds()
+		private void CopyObjectIdsToCacheTable(CancellationToken cancellationToken)
 		{
-			var sql = "select object_id from data_composition_by_characteristics_tmp";
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+			var objectsCount = OMMainObject.Where(x => x.ObjectType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+			Logger.Debug($"Всего в БД {objectsCount} ОН.");
 
-			var objectIds = new List<long>();
-			foreach (DataRow row in dataTable.Rows)
+			var copiedObjectsCount = 0;
+			var packageIndex = 0;
+			for (var i = packageIndex * GbuMainObjectPackageSize; i < (packageIndex + 1) * GbuMainObjectPackageSize; i++)
 			{
-				objectIds.Add(row["object_id"].ParseToLong());
+				if (copiedObjectsCount >= objectsCount)
+					break;
+
+				CheckCancellationToken(cancellationToken);
+
+				var copiedObjectIdsSql = $@"INSERT INTO {DataCompositionByCharacteristicsService.TableName} (object_id, cadastral_number, object_type_code) 
+							(
+								select id, cadastral_number, object_type_code from gbu_main_object where OBJECT_TYPE_CODE <> 2190 order by id limit {GbuMainObjectPackageSize} offset {packageIndex * GbuMainObjectPackageSize} 
+							)";
+
+				Logger.Debug(new Exception(copiedObjectIdsSql), $"Начато копирование пакета с ОН, индекс - {i}. До этого было выгружено {copiedObjectsCount} записей");
+				var insertObjectIdsCommand = DBMngr.Main.GetSqlStringCommand(copiedObjectIdsSql);
+				copiedObjectsCount += DBMngr.Main.ExecuteNonQuery(insertObjectIdsCommand);
+				Logger.Debug($"Закончено копирование пакета {i}");
+
+				packageIndex++;
 			}
-
-			return objectIds;
 		}
 
-		private void ResetAttributes(List<long> objectIds)
-		{
-			var sql = $"update data_composition_by_characteristics_by_tables set attributes = null where object_id in ({string.Join(',', objectIds)})";
-			
-			var resetAttributesCommand = DBMngr.Main.GetSqlStringCommand(sql);
-			DBMngr.Main.ExecuteNonQuery(resetAttributesCommand);
-		}
-
-		private void CopyAttributeIds(List<long> objectsIds, CancellationToken cancellationToken)
+		private void CopyAttributeIds(CancellationToken cancellationToken)
 		{
 			var postfixes = new List<string> { "TXT", "NUM", "DT" };
 			var maxNumberOfRegisters = DataCompositionByCharacteristicsService.CachedRegisters.Count;
 			CheckCancellationToken(cancellationToken);
 
-			var objectIdsSqlCondition = $"where object_id in ({string.Join(',', objectsIds)})";
 			var i = 0;
 			DataCompositionByCharacteristicsService.CachedRegisters.ForEach(register =>
 			{
@@ -116,7 +116,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 							var gbuTableName = $"{register.AllpriTable}_{postfix}";
 
 							var subQuery = $@" select object_id, array_agg(distinct(attribute_id)) as newAttributes from {gbuTableName}
-									{objectIdsSqlCondition}
 									group by object_id";
 
 							var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table
@@ -143,7 +142,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 							var gbuTableName = $"{register.AllpriTable}_{attribute.Id}";
 
-							var subQuery = $@"select object_id from {gbuTableName} {objectIdsSqlCondition} group by object_id";
+							var subQuery = $@"select object_id from {gbuTableName} group by object_id";
 
 							var sql = $@"update {DataCompositionByCharacteristicsService.TableName} cache_table 
 									set attributes = array_append(attributes, CAST ({attribute.Id} AS bigint))
@@ -163,7 +162,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		private void CheckCancellationToken(CancellationToken cancellationToken)
 		{
-			if (!cancellationToken.IsCancellationRequested) 
+			if (!cancellationToken.IsCancellationRequested)
 				return;
 
 			var message = "Формирование кеш-таблицы было отменено пользователем";
