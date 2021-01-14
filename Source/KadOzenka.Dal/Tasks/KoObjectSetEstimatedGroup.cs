@@ -102,6 +102,7 @@ namespace KadOzenka.Dal.KoObject
 			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
 			var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
 			var attributeTerritoryType = RegisterCache.GetAttributeData((int)param.IdTerritoryType);
+			var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
 
 			// обрабатываем юниты порциями по 1000 для уменьшения числа запросов к бд
 			var partitionSize = 1000;
@@ -132,7 +133,7 @@ namespace KadOzenka.Dal.KoObject
 				{
 					var propertyTypeValues = currentUnitsPartition.Select(x => x.PropertyType).Distinct().ToList();
 					var codeGroupValues = codeGroups.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
-					allComplianceGuides = OMComplianceGuide.Where(x => codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty))
+					allComplianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId && codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty))
 						.Select(x => new{x.SubGroup, x.TypeProperty, x.Code}).Execute();
 				}
 				Logger.Verbose("Получение значений из таблицы соответствий кода и группы");
@@ -209,7 +210,7 @@ namespace KadOzenka.Dal.KoObject
 						territoryTypes.TryGetValue(gbuQuarterObject.Id, out var territoryType);
 						if (string.IsNullOrEmpty(territoryType.Value))
 						{
-							AddErrorRow(item.CadastralNumber, $"Не найден тип территории для объекта {gbuObject.CadastralNumber}", reportService);
+							AddErrorRow(item.CadastralNumber, $"Не найден тип территории для объекта {gbuQuarterObject.CadastralNumber}", reportService);
 							return;
 						}
 
@@ -269,11 +270,11 @@ namespace KadOzenka.Dal.KoObject
 				var objAttr = attribs.Where(x => x.ObjectId == mainObject.Id).ToList();
 				if (objAttr.Count > 0)
 				{
-					var valueInString = attribs[0].GetValueInString();
+					var valueInString = objAttr[0].GetValueInString();
 					if (!string.IsNullOrEmpty(valueInString))
 					{
 						res.Value = valueInString;
-						res.IdDocument = attribs[0].ChangeDocId;
+						res.IdDocument = objAttr[0].ChangeDocId;
 					}
 				}
 
