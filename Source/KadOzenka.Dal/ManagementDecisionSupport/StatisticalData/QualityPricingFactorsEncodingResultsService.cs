@@ -105,6 +105,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList, long tourId)
 		{
+			if (QueryManager.IsRequestCancellationToken())
+			{
+				return new List<QualityPricingFactorsEncodingResultsGroupingDto>();
+			}
 			var codeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 			if (codeGroupAttr == null)
 			{
@@ -118,7 +122,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList), codeGroupAttr.Id);
-			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsGroupingDto>(sql);
+			var result = QueryManager.ExecuteSql<QualityPricingFactorsEncodingResultsGroupingDto>(sql);
 
 			return result;
 		}
