@@ -128,7 +128,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList));
-			var result = QSQuery.ExecuteSql<ResultsAnalysisDto>(sql);
+			var result = QueryManager.ExecuteSql<ResultsAnalysisDto>(sql);
 
 			return result;
 		}
