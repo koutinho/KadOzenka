@@ -95,7 +95,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList), isOks);
-			var result = QSQuery.ExecuteSql<CalculationStatisticsDto>(sql);
+			var result = QueryManager.ExecuteSql<CalculationStatisticsDto>(sql);
 
 			return result;
 		}
