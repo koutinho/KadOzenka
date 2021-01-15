@@ -5,6 +5,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -13,6 +14,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class AdditionalFormsService
 	{
+		public readonly QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly string _reportCalculationStatisticsFileName = "AdditionalForms_CalculationStatistics";
 		private readonly string _reportMarketFileName = "AdditionalForms_Market";
@@ -20,6 +22,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public AdditionalFormsService(StatisticalDataService statisticalDataService)
 		{
+			QueryManager =  new QueryManager();
 			_statisticalDataService = statisticalDataService;
 		}
 
@@ -111,7 +114,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				RegisterCache.GetAttributeData(typeOfUseCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(oksGroupAttributeId).Id,
 				RegisterCache.GetAttributeData(typeOfUseAttributeId).Id);
-			var result = QSQuery.ExecuteSql<MarketDataDto>(sql);
+			var result = QueryManager.ExecuteSql<MarketDataDto>(sql);
 
 			return result;
 		}
