@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 		{
 			var parameters = MapDictionary(updatedObjectsAttributes);
 
-			return LongProcessManager.AddTaskToQueue(nameof(TmpTableFiller), parameters: parameters);
+			return LongProcessManager.AddTaskToQueue(ProcessName, parameters: parameters);
 		}
 
 		
