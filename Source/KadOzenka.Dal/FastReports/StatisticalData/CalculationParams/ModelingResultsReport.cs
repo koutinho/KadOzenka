@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupedFactors = modelId == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(modelId.Value);
+                : FactorsService.GetGroupedModelFactors(modelId.Value, queryManager);
             var generalAttributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
 
             var sql = GetSql(taskIds, modelId, groupId, groupedFactors);

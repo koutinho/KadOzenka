@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Core.Register;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
@@ -22,7 +23,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         }
 
 
-        public List<PricingFactors> GetGroupedModelFactors(long modelId)
+        public List<PricingFactors> GetGroupedModelFactors(long modelId, QueryManager queryManager)
         {
             var query = ModelFactorsService.GetModelFactorsQuery(modelId);
 
@@ -32,7 +33,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorPure.RegisterId)));
 
             //если модель автоматическая, её факторы дублируются для лин/экс/мульт типов
-            var factors = query.ExecuteQuery<ModelFactorPure>()
+            var factors = queryManager.ExecuteQuery<ModelFactorPure>(query)
 	            .GroupBy(x => x.FactorId).Select(x => x.FirstOrDefault()).ToList();
 
             var groupedFactors = factors.GroupBy(x => x.RegisterId, (key, group) => new PricingFactors

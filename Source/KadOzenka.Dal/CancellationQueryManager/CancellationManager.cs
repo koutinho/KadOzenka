@@ -43,6 +43,25 @@ namespace KadOzenka.Dal.CancellationQueryManager
 		
 		}
 
+		public List<T> ExecuteQuery<T>(QSQuery query) where T : class, new()
+		{
+			var cTokenSource = new CancellationTokenSource();
+			try
+			{
+				StartSubscriber(cTokenSource, query);
+				var res = query.ExecuteQuery<T>();
+				CancelSubscriber(cTokenSource);
+				return res;
+			}
+			catch (Exception e)
+			{
+				_log.Error("Ошибка во время запроса данных {e}", e);
+				CancelSubscriber(cTokenSource);
+				return new List<T>();
+			}
+
+		}
+
 		public List<TResult> ExecuteSelect<TSource, TResult>(QSQuery<TSource> query, Expression<Func<TSource, TResult>> expr) where TSource : class, new()
 		{
 			var cTokenSource = new CancellationTokenSource();
