@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.Number
             }).ExecuteFirstOrDefault();
 
-            if (queryManager.IsRequestCancellationReportToken())
+            if (queryManager.IsRequestCancellationToken())
             {
                 return new DataSet();
             }
