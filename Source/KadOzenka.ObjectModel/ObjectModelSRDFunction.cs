@@ -551,5 +551,11 @@ namespace ObjectModel.SRD
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
                 
+              // Отчетность (1300141)
+              public const string REPORTS = "REPORTS";
+                
+              // Cохранение отчетов (1300142)
+              public const string CORE_SAVED_REPORTS_SAVE = "CORE.SAVED.REPORTS.SAVE";
+                
     }
 }
