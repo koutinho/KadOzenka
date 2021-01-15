@@ -79,6 +79,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				contents = sr.ReadToEnd();
 			}
 
+			if (QueryManager.IsRequestCancellationToken())
+			{
+				return new List<QualityPricingFactorsEncodingResultsZuDto>();
+			}
+
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
 				RegisterCache.GetAttributeData(linkedObjectsInfoAttributeId).Id,
 				RegisterCache.GetAttributeData(linkedObjectsInfoSourceAttributeId).Id,
@@ -92,7 +97,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetLocationAttribute().Id,
 				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
-			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsZuDto>(sql);
+			var result = QueryManager.ExecuteSql<QualityPricingFactorsEncodingResultsZuDto>(sql);
 
 			return result;
 		}
