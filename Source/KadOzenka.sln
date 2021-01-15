@@ -48,13 +48,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishSc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxy", "Proxy\Proxy.csproj", "{C9003E80-9E76-4021-A6B9-F71849EACB0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyChecker", "ProxyChecker\ProxyChecker.csproj", "{0361032E-D57F-4110-ABED-1E1E770F65F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyChecker", "ProxyChecker\ProxyChecker.csproj", "{0361032E-D57F-4110-ABED-1E1E770F65F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBScripts", "DBScripts", "{6E305F06-3550-4448-8ED7-65954B2A41BE}"
-ProjectSection(SolutionItems) = preProject
-	Utils\DBScripts\Indexes.sql = Utils\DBScripts\Indexes.sql
-	Utils\DBScripts\Constraints.sql = Utils\DBScripts\Constraints.sql
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		Utils\DBScripts\Constraints.sql = Utils\DBScripts\Constraints.sql
+		Utils\DBScripts\Indexes.sql = Utils\DBScripts\Indexes.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{078CA0CD-F126-49E8-9D04-ED68B19545A8}"
+	ProjectSection(SolutionItems) = preProject
+		update_cache_table_for_data_composition_reports_for_main_object.sql = update_cache_table_for_data_composition_reports_for_main_object.sql
+		update_cache_table_for_data_composition_reports_for_registers.sql = update_cache_table_for_data_composition_reports_for_registers.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,6 +206,7 @@ Global
 		{C9003E80-9E76-4021-A6B9-F71849EACB0C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{0361032E-D57F-4110-ABED-1E1E770F65F9} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{6E305F06-3550-4448-8ED7-65954B2A41BE} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{078CA0CD-F126-49E8-9D04-ED68B19545A8} = {6E305F06-3550-4448-8ED7-65954B2A41BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}

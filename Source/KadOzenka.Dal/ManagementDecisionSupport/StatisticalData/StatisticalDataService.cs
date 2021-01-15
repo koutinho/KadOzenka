@@ -10,7 +10,7 @@ using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Directory;
 

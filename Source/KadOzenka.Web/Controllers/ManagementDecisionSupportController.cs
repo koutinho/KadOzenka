@@ -7,10 +7,13 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
@@ -434,7 +437,17 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public ActionResult StatisticalData()
 		{
-			return View(new StatisticalDataModel());
+			var dataCompositionByCharacteristicReportsActualizationDate =
+				LongProcessService.GetLastSuccessfulCompletedQueue(ReportTableUpdater.ProcessId)?.EndDate ??
+				LongProcessService.GetLastSuccessfulCompletedQueue(InitialReportTableFiller.ProcessId)?.EndDate;
+
+			var model = new StatisticalDataModel
+			{
+				PricingFactorsCompositionFinalUniformReportActualizationDate = dataCompositionByCharacteristicReportsActualizationDate,
+				PricingFactorsCompositionFinalNonuniformActualizationDate = dataCompositionByCharacteristicReportsActualizationDate
+			};
+
+			return View(model);
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]

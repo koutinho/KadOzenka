@@ -1,29 +1,33 @@
-﻿using Core.Register.LongProcessManagment;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Core.Register.LongProcessManagment;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using Platform.Register;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using SerilogTimings.Extensions;
 
-namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 {
-	public class DataCompositionByCharacteristicsReportsLongProcessViaTables : LongProcess
+	/// <summary>
+	/// Начальный сбор данных. Идет 3 суток, заполняет таблицу для отчета по всем ОН в системе.
+	/// </summary>
+	public class InitialReportTableFiller : LongProcess
 	{
+		public static int ProcessId => 53;
+		public static string ProcessName => "DataCompositionByCharacteristics_InitialReportTableFiller";
+
 		private const int GbuMainObjectPackageSize = 150000;
 
-		private static readonly ILogger Logger = Log.ForContext<DataCompositionByCharacteristicsReportsLongProcessViaTables>();
+		private static readonly ILogger Logger = Log.ForContext<InitialReportTableFiller>();
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 
-		public DataCompositionByCharacteristicsReportsLongProcessViaTables()
+		public InitialReportTableFiller()
 		{
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 		}
@@ -32,7 +36,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		public static long AddProcessToQueue()
 		{
-			return LongProcessManager.AddTaskToQueue(nameof(DataCompositionByCharacteristicsReportsLongProcessViaTables));
+			return LongProcessManager.AddTaskToQueue(ProcessName);
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -41,18 +45,21 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 
-			using (Logger.TimeOperation("Создание таблицы-кеша для данных отчета"))
+			using (Logger.TimeOperation("Полное время работы процесса"))
 			{
-				DataCompositionByCharacteristicsService.CreteCacheTableViaObjectId();
-			}
+				using (Logger.TimeOperation("Создание таблицы-кеша для данных отчета"))
+				{
+					DataCompositionByCharacteristicsService.CreteCacheTableViaObjectId();
+				}
 
-			CopyObjectIdsToCacheTable(cancellationToken);
+				CopyObjectIdsToCacheTable(cancellationToken);
 
-			CopyAttributeIds(cancellationToken);
+				CopyAttributeIds(cancellationToken);
 
-			using (Logger.TimeOperation("Создание индекса для таблицы-кеша"))
-			{
-				DataCompositionByCharacteristicsService.CreteIndexOnCacheTable();
+				using (Logger.TimeOperation("Создание индекса для таблицы-кеша"))
+				{
+					DataCompositionByCharacteristicsService.CreteIndexOnCacheTable();
+				}
 			}
 
 			Logger.Debug("Финиш фонового процесса: {Description}.", processType.Description);
@@ -158,7 +165,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
 
 		private void CheckCancellationToken(CancellationToken cancellationToken)
 		{
-			if (!cancellationToken.IsCancellationRequested) 
+			if (!cancellationToken.IsCancellationRequested)
 				return;
 
 			var message = "Формирование кеш-таблицы было отменено пользователем";

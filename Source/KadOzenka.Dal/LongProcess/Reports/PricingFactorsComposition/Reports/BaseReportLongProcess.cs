@@ -1,8 +1,4 @@
-﻿using Core.Register.LongProcessManagment;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory;
-using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,19 +6,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.SRD;
-using GemBox.Spreadsheet;
-using Ionic.Zip;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory;
 using ObjectModel.KO;
+using Serilog;
 using SerilogTimings.Extensions;
 
-namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
 	public abstract class BaseReportLongProcess<T> : LongProcess where T : new()
 	{

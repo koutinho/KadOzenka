@@ -12,14 +12,22 @@ namespace KadOzenka.Dal.LongProcess.Common
 		private static List<Status> ProcessRunningStatuses =>
 			_processRunningStatuses ?? (_processRunningStatuses = new List<Status> {Status.Running, Status.Added, Status.PrepareToRun});
 
-		public static bool CheckProcessExistsInQueue(long processId, long? objectId)
+		public static bool CheckProcessActiveInQueue(long processId, long? objectId)
 		{
 			return GetBaseQueryToActiveProcessInQueue(processId, objectId).ExecuteExists();
 		}
 
-		public static OMQueue GetQueue(long processId, long? objectId)
+		public static OMQueue GetProcessActiveQueue(long processId, long? objectId)
 		{
 			return GetBaseQueryToActiveProcessInQueue(processId, objectId).SelectAll().ExecuteFirstOrDefault();
+		}
+
+		public static OMQueue GetLastSuccessfulCompletedQueue(long processId)
+		{
+			return OMQueue.Where(x => x.ProcessTypeId == processId && x.Status_Code == Status.Completed)
+				.OrderByDescending(x => x.EndDate)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 		}
 
 		

@@ -278,7 +278,7 @@ namespace KadOzenka.Web.Controllers
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
 
-            var isProcessExists = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
+            var isProcessExists = LongProcessService.CheckProcessActiveInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
@@ -412,7 +412,7 @@ namespace KadOzenka.Web.Controllers
 	        if (factorModel.Id == -1)
 	        {
 		        var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
-                var queue = LongProcessService.GetQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
+                var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
 		        if (hasFormedObjectArray && queue != null)
 		        {
 			        var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
