@@ -38,6 +38,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 			try
 			{
+				//для тестирования
+				//var updatedObjectsAttributes = new List<ObjectsToUpdate>{new ObjectsToUpdate{ObjectId = 22, AttributeIds = new List<long>{2, 3}}};
 				var updatedObjectsAttributes = GetInputParameters(processQueue);
 				Logger.Debug($"Получено {updatedObjectsAttributes?.Count} для внесения во временную таблицу.", processType.Description);
 
@@ -45,11 +47,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 				{
 					using (Logger.TimeOperation("Полное время работы процесса"))
 					{
-						var jobInfo = GetJobsInfo();
-						if (jobInfo == null)
-							return;
-
-						var nexJobNumber = jobInfo.Max + 1;
+						var nexJobNumber = GetNexJobNumber();
 						FillTmpTable(updatedObjectsAttributes, nexJobNumber);
 					}
 				}
@@ -88,6 +86,26 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 				throw new Exception("Не удалось добавить обновить таблицу, т.к. нет входных данных для процесса");
 
 			return updatedObjectsAttributes;
+		}
+
+		private long GetNexJobNumber()
+		{
+			using (Logger.TimeOperation("Получение следующего номера задания на обновление"))
+			{
+				var sql = @$"select max(job_number) as max_job_number from {TmpTableName}";
+
+				var command = DBMngr.Main.GetSqlStringCommand(sql);
+				var row = DBMngr.Main.ExecuteDataSet(command).Tables[0]?.Rows[0];
+				long nexJobNumber = 0;
+				if (row != null)
+				{
+					nexJobNumber = row["max_job_number"].ParseToLong();
+				}
+
+				Logger.Debug($"Номер задания - {nexJobNumber}");
+
+				return ++nexJobNumber;
+			}
 		}
 
 		private void FillTmpTable(List<ObjectsToUpdate> updatedObjectsAttributes, long nexJobNumber)

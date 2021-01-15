@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
+using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.LongProcess;
 using Serilog;
@@ -26,9 +30,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 			using (Logger.TimeOperation("Полное время работы процесса"))
 			{
-				var jobInfo = GetJobsInfo();
-				if (jobInfo == null)
+				if(!IsNotDoneJobExists())
 					return;
+
+				var jobInfo = GetJobsInfo();
 
 				for(var i = jobInfo.Min; i <= jobInfo.Max; i++)
 				{
@@ -48,6 +53,45 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 
 		#region Support Methods
+
+		private bool IsNotDoneJobExists()
+		{
+			var isJobExists = false;
+			using (Logger.TimeOperation("Проверка наличия невыполненных заданий"))
+			{
+				var sql = @$"select exists (select 1 from {TmpTableName} where {GetConditionForNotDoneJob()}) as is_exists";
+
+				var command = DBMngr.Main.GetSqlStringCommand(sql);
+				var row = DBMngr.Main.ExecuteDataSet(command).Tables[0]?.Rows[0];
+				if (row != null)
+				{
+					isJobExists = row["is_exists"].ParseToBoolean();
+				}
+
+				Logger.Debug($"Задание найдено - {isJobExists}");
+			}
+
+			return isJobExists;
+		}
+
+		private JobInfo GetJobsInfo()
+		{
+			using (Logger.TimeOperation("Получение информации о невыполненных заданиях"))
+			{
+				var sql = @$"select min(job_number) as {nameof(JobInfo.Min)}, max(job_number) as {nameof(JobInfo.Max)}
+							from {TmpTableName} where {GetConditionForNotDoneJob()}";
+
+				var jobsInfo = QSQuery.ExecuteSql<JobInfo>(sql).First();
+				Logger.Debug($"Минимальный номер невыполненной работы - {jobsInfo.Min}, максимальный - {jobsInfo.Max}");
+
+				return jobsInfo;
+			}
+		}
+
+		private string GetConditionForNotDoneJob()
+		{
+			return "COALESCE(is_done, 0) = 0";
+		}
 
 		private void UpdateAttributesInCacheTable(long jobNumber)
 		{
@@ -79,6 +123,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 				var affectedRowsCount = DBMngr.Main.ExecuteNonQuery(command);
 				Logger.Debug(new Exception(sql), $"Обновлено {affectedRowsCount} строк");
 			}
+		}
+
+		#endregion
+
+		#region Entities
+
+		public class JobInfo
+		{
+			public long Max { get; set; }
+			public long Min { get; set; }
 		}
 
 		#endregion
