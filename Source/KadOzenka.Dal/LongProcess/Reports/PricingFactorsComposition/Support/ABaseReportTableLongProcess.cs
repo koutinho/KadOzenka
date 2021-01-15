@@ -28,7 +28,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 				var sql = @$"select min(job_number) as {nameof(JobInfo.Min)}, max(job_number) as {nameof(JobInfo.Max)}
 							from {TmpTableName} where COALESCE(is_done, 0) = 0";
 
-				return QSQuery.ExecuteSql<JobInfo>(sql).FirstOrDefault();
+				var jobsInfo = QSQuery.ExecuteSql<JobInfo>(sql).FirstOrDefault();
+				Logger.Debug($"Минимальный номер невыполненной работы - {jobsInfo?.Min}, максимальный - {jobsInfo?.Max}");
+
+				return jobsInfo;
 			}
 		}
 

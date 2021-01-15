@@ -27,6 +27,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 			using (Logger.TimeOperation("Полное время работы процесса"))
 			{
 				var jobInfo = GetJobsInfo();
+				if (jobInfo == null)
+					return;
 
 				for(var i = jobInfo.Min; i <= jobInfo.Max; i++)
 				{

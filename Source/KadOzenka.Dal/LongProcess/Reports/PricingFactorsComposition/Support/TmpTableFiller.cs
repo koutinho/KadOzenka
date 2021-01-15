@@ -46,7 +46,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 					using (Logger.TimeOperation("Полное время работы процесса"))
 					{
 						var jobInfo = GetJobsInfo();
-					
+						if (jobInfo == null)
+							return;
+
 						var nexJobNumber = jobInfo.Max + 1;
 						FillTmpTable(updatedObjectsAttributes, nexJobNumber);
 					}
