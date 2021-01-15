@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
-			_service.CancellationManager.SetBaseToken(CancellationToken);
+			_service.QueryManager.SetBaseToken(CancellationToken);
 			var firstTourId = GetQueryParam<long?>("TourId", query);
 			if (!firstTourId.HasValue)
 			{

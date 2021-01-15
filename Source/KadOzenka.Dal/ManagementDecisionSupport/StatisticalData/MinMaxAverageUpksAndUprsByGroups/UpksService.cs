@@ -10,13 +10,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 {
     public class UpksService : MinMaxAverageUpksAndUprsByGroupsBaseService
     {
-	    public readonly CancellationManager CancellationManager;
+	    public readonly QueryManager QueryManager;
         private readonly StatisticalDataService _statisticalDataService;
         private readonly RosreestrRegisterService _rosreestrRegisterService;
         
         public UpksService(StatisticalDataService statisticalDataService)
 		{
-			CancellationManager = new CancellationManager();
+			QueryManager = new QueryManager();
             _statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
         }
@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
             var sql = GetSqlForZu(taskIdList, false);
-            var result = CancellationManager.ExecuteSql<UpksByGroupsZuDto>(sql);
+            var result = QueryManager.ExecuteSql<UpksByGroupsZuDto>(sql);
 
             var summary = new UpksByGroupsZuDto
             {
@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubgroupsForZu(long[] taskIdList)
         {
             var sql = GetSqlForZu(taskIdList, true);
-            var result = CancellationManager.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(sql);
+            var result = QueryManager.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(sql);
 
             var summary = new UpksByGroupsAndSubGroupsZuDto
             {
@@ -90,7 +90,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         {
             var sql = GetSqlForOks(taskIdList, false);
 
-            var result = CancellationManager.ExecuteSql<ByGroupsOksDto>(sql);
+            var result = QueryManager.ExecuteSql<ByGroupsOksDto>(sql);
 
             AddSummaryByGroupsOks(result);
 
@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<ByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
         {
             var sql = GetSqlForOks(taskIdList, true);
-            var result = CancellationManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
+            var result = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
 
             AddSummaryByGroupsAndSubGroupsOks(result);
 

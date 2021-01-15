@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             public long objectsCount { get; set; }
         }
 
-        public CancellationManager CancellationManager = new CancellationManager();
+        public QueryManager QueryManager = new QueryManager();
         public List<NumberOfObjectsByGroupsDto> GetNumberOfObjectsByGroups(long[] taskList, bool isOksReportType)
         {
             string contents = string.Empty, fileName = string.Empty;
@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             else fileName = "NumberOfObjectsByGroupsDto_isNotOksReportType";
             using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
 
-            var table = CancellationManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
+            var table = QueryManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList)));
             var result = new List<NumberOfObjectsByGroupsDto>();
             if (table.Count != 0)
             {

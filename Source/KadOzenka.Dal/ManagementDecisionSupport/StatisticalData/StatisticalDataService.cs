@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
     {
 	    public string SqlQueriesFolder => "SqlQueries";
 
-	    public readonly CancellationManager CancellationManager;
+	    public readonly QueryManager QueryManager;
         private TourFactorService TourFactorService { get; set; }
 
         public static readonly Dictionary<long?, Type> ReportsViaLongLongProcess =
@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public StatisticalDataService()
         {
             TourFactorService = new TourFactorService();
-            CancellationManager = new CancellationManager();
+            QueryManager = new QueryManager();
         }
 
 

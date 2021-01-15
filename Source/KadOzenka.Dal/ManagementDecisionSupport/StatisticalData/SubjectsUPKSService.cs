@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class SubjectsUPKSService
 	{
-		public CancellationManager CancellationManager;
+		public QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService RosreestrRegisterService;
 		private readonly string _reportByTypeSqlFileName = "SubjectsUPKS_ByType";
@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public SubjectsUPKSService(StatisticalDataService statisticalDataService)
 		{
-			CancellationManager = new CancellationManager();
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
             RosreestrRegisterService = new RosreestrRegisterService();
 
@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				contents = sr.ReadToEnd();
 			}
 
-			var result = CancellationManager.ExecuteSql<SubjectsUPKSByTypeDto>(string.Format(contents, string.Join(", ", taskIdList)));
+			var result = QueryManager.ExecuteSql<SubjectsUPKSByTypeDto>(string.Format(contents, string.Join(", ", taskIdList)));
 
 			return result;
 		}
@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				contents = sr.ReadToEnd();
 			}
 
-			var result = CancellationManager.ExecuteSql<SubjectsUPKSByTypeAndPurposeDto>(string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id));
+			var result = QueryManager.ExecuteSql<SubjectsUPKSByTypeAndPurposeDto>(string.Format(contents, string.Join(", ", taskIdList), buildingPurposeAttr.Id, placementPurposeAttr.Id));
 
 			return result;
 		}

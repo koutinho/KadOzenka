@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -16,12 +17,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 	public class GeneralizedIndicatorsService
 	{
+		public readonly QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly string _reportSqlFileName = "GeneralizedIndicators";
 
 		public GeneralizedIndicatorsService(StatisticalDataService statisticalDataService, GbuCodRegisterService gbuCodRegisterService)
 		{
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
 			_gbuCodRegisterService = gbuCodRegisterService;
 		}
@@ -35,7 +38,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			}
 
 			var sql = string.Format(contents, areaDivisionType, string.Join(", ", taskIdList), propertyObjectType, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id);
-			var result = QSQuery.ExecuteSql<GeneralizedIndicatorsDto>(sql);
+			var result = QueryManager.ExecuteSql<GeneralizedIndicatorsDto>(sql);
 
 			return result;
 		}

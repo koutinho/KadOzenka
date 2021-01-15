@@ -386,7 +386,7 @@ namespace KadOzenka.Dal.GbuObject
 		}
 
 		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo,
-			CancellationManager cancellationManager)
+			QueryManager queryManager)
 		{
 			var attributeData = RegisterCache.GetAttributeData(attributeId);
 			var registerData = RegisterCache.GetRegisterData(attributeData.RegisterId);
@@ -448,7 +448,7 @@ from (select
 
 			sql += ") data group by data.Value";
 
-			return cancellationManager.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
+			return queryManager.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
 		}
 
 		public List<long> GetGbuRegistersIds()

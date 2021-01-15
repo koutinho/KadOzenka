@@ -9,14 +9,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class MinMaxAverageUPKSByCadastralQuartersService
 	{
-		public CancellationManager CancellationManager;
+		public QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly string _sqlFileName = "MinMaxAverageUPKSByCadastralQuarters";
 
         public MinMaxAverageUPKSByCadastralQuartersService(StatisticalDataService statisticalDataService, GbuCodRegisterService gbuCodRegisterService)
 		{
-			CancellationManager = new CancellationManager();
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
 			_gbuCodRegisterService = gbuCodRegisterService;
 		}
@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		        contents = sr.ReadToEnd();
             }
 
-	        var result = CancellationManager.ExecuteSql<MinMaxAverageUPKSByCadastralQuartersDto>(string.Format(contents, string.Join(", ", taskList), _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+	        var result = QueryManager.ExecuteSql<MinMaxAverageUPKSByCadastralQuartersDto>(string.Format(contents, string.Join(", ", taskList), _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
 
 	        return result;
         }

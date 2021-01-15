@@ -24,13 +24,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         #endregion
 
-        public CancellationManager CancellationManager;
+        public QueryManager QueryManager;
         private readonly UpksService _upksService;
 		private readonly UprsService _uprsService;
 
         public UpksAndUprsService(UpksService upksService, UprsService uprsService)
 		{
-			CancellationManager = new CancellationManager();
+			QueryManager = new QueryManager();
             _upksService = upksService;
             _uprsService = uprsService;
 		}
@@ -41,10 +41,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForZu(taskIdList, false);
-            var upksResults = CancellationManager.ExecuteSql<UpksByGroupsZuDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<UpksByGroupsZuDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForZu(taskIdList, false);
-            var uprsResults = CancellationManager.ExecuteSql<UprsByGroupsZuDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<UprsByGroupsZuDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsZuDto>();
             foreach (var upks in upksResults)
@@ -80,10 +80,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<ByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubGroupsForZu(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForZu(taskIdList, true);
-            var upksResults = CancellationManager.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForZu(taskIdList, true);
-            var uprsResults = CancellationManager.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(uprsSql);
 
             var result = new List<ByGroupsAndSubGroupsZuDto>();
             foreach (var upks in upksResults)
@@ -126,10 +126,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsOksDto> GetDataByGroupsForOks(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForOks(taskIdList, false);
-            var upksResults = CancellationManager.ExecuteSql<ByGroupsOksDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<ByGroupsOksDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForOks(taskIdList, false);
-            var uprsResults = CancellationManager.ExecuteSql<ByGroupsOksDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<ByGroupsOksDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsOksDto>();
             foreach (var upks in upksResults)
@@ -179,10 +179,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForOks(taskIdList, true);
-            var upksResults = CancellationManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForOks(taskIdList, true);
-            var uprsResults = CancellationManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsAndSubGroupsOksDto>();
             foreach (var upks in upksResults)

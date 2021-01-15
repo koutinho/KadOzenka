@@ -17,14 +17,14 @@ namespace KadOzenka.Dal.FastReports
     {
 	    private readonly GbuObjectService _gbuObjectService;
 		private readonly ReportingFormFormationService _reportingFormFormationService;
-		private readonly CancellationManager _cancellationManager;
+		private readonly QueryManager _queryManager;
 
 		public NewlyRegisteredObjectsReport()
 		{
 			_gbuObjectService = new GbuObjectService();
-			_cancellationManager = new CancellationManager();
-			_cancellationManager.SetBaseToken(CancellationToken);
-			_reportingFormFormationService = new ReportingFormFormationService(_gbuObjectService, _cancellationManager);
+			_queryManager = new QueryManager();
+			_queryManager.SetBaseToken(CancellationToken);
+			_reportingFormFormationService = new ReportingFormFormationService(_gbuObjectService, _queryManager);
 		}
 
 		protected override string TemplateName(NameValueCollection query)

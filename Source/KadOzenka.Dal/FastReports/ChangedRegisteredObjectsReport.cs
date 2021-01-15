@@ -13,12 +13,12 @@ namespace KadOzenka.Dal.FastReports
     public class ChangedRegisteredObjectsReport : FastReportBase
     {
 	    private readonly ReportingFormFormationService _reportingFormFormationService;
-	    private readonly CancellationManager _cancellationManager;
+	    private readonly QueryManager _queryManager;
 
 		public ChangedRegisteredObjectsReport()
 		{
-			_cancellationManager = new CancellationManager();
-			_reportingFormFormationService = new ReportingFormFormationService(new GbuObjectService(), _cancellationManager);
+			_queryManager = new QueryManager();
+			_reportingFormFormationService = new ReportingFormFormationService(new GbuObjectService(), _queryManager);
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.FastReports
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-	        _cancellationManager.SetBaseToken(CancellationToken);
+	        _queryManager.SetBaseToken(CancellationToken);
 			var reportType = GetQueryParam<string>("ReportType", query);
 	        DataSet dataSet = reportType == "В разрезе видов объекта недвижимости"
 	            ? GetDataForNewlyRegisteredObjectsByPropertyTypeReport(query)

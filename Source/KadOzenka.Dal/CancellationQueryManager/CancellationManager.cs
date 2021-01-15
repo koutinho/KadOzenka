@@ -17,11 +17,11 @@ namespace KadOzenka.Dal.CancellationQueryManager
 	/// <summary>
 	/// Менеджер для отмены запросов
 	/// </summary>
-	public class CancellationManager
+	public class QueryManager
 	{
 		private CancellationToken _baseCancellationToken = CancellationToken.None;
 
-		private readonly ILogger _log = Log.ForContext<CancellationManager>();
+		private readonly ILogger _log = Log.ForContext<QueryManager>();
 
 
 		public List<T> ExecuteQuery<T>(QSQuery<T> query) where T : class, new()

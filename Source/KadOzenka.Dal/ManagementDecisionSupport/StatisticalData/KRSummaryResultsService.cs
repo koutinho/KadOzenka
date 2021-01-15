@@ -2,6 +2,7 @@
 using System.IO;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 
@@ -9,6 +10,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class KRSummaryResultsService
 	{
+		public readonly QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
@@ -17,6 +19,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public KRSummaryResultsService(StatisticalDataService statisticalDataService)
 		{
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
             _gbuCodRegisterService = new GbuCodRegisterService();
@@ -47,7 +50,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 
-			var result = QSQuery.ExecuteSql<KRSummaryResultsOksDto>(sql);
+			var result = QueryManager.ExecuteSql<KRSummaryResultsOksDto>(sql);
 
 			return result;
 		}
@@ -69,7 +72,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
 
-			var result = QSQuery.ExecuteSql<KRSummaryResultsZuDto>(sql);
+			var result = QueryManager.ExecuteSql<KRSummaryResultsZuDto>(sql);
 
 			return result;
 		}

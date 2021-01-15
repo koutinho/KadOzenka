@@ -39,6 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_summaryResultsService.QueryManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 
 			var klardAttributeId = GetQueryParam<long?>("KlardAttribute", query);
