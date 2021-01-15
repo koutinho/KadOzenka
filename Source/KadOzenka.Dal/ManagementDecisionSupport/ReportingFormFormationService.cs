@@ -284,7 +284,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			taskCreationDateFrom = taskCreationDateFrom?.Date;
 			taskCreationDateTo = taskCreationDateTo?.GetEndOfTheDay();
-			if (!_queryManager.IsRequestCancellationReportToken())
+			if (!_queryManager.IsRequestCancellationToken())
 			{
 				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo, _queryManager)
 					.Select(x => new UnitCountByTypeOfUseDto

@@ -150,7 +150,7 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			
 		}
 
-		public bool IsRequestCancellationReportToken()
+		public bool IsRequestCancellationToken()
 		{
 			return _baseCancellationToken.IsCancellationRequested;
 		}
