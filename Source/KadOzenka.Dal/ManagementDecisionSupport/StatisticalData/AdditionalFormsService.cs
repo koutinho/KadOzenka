@@ -62,7 +62,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			query.AddColumn(OMUnitChange.GetColumn(x => x.NewValue, "NewValue"));
 			query.AddColumn(OMUnitChange.GetColumn(x => x.ChangeStatus, "ChangeStatus"));
 
-			var table = query.ExecuteQuery();
+			var table = QueryManager.ExecuteQueryToDataTable(query);
 			var result = new List<ChangesUploadingDto>();
 			if (table.Rows.Count != 0)
 			{
