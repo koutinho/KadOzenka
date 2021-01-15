@@ -220,11 +220,22 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 		private void StartSubscriber<T>(CancellationTokenSource cTokenSource, QSQuery<T>? query = null, Executor<T>? executor = null) where T : class, new()
 		{
+			if (_baseCancellationToken == CancellationToken.None)
+			{
+				_log.ForContext("ObjectType", query != null ? query.GetType().GetGenericTypeDefinition() : executor?.GetType().GetGenericTypeDefinition(), true)
+					.Warning("Базовый токен отмены не установлен, менджер работает как обычный запрос без функции отмены");
+			}
+
 			CreateSubscriberToCancellationRequest(cTokenSource, query, executor);
 		}
 
 		private void StartSubscriber(CancellationTokenSource cTokenSource, QSQuery? simpleQuery = null)
 		{
+			if (_baseCancellationToken == CancellationToken.None)
+			{
+				_log.Warning("Базовый токен отмены не установлен, менджер работает как обычный запрос без функции отмены");
+			}
+
 			CreateSubscriberToCancellationRequest<object>(cTokenSource,  simpleQuery: simpleQuery);
 		}
 
