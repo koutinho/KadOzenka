@@ -49,6 +49,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.Number
             }).ExecuteFirstOrDefault();
 
+            if (queryManager.IsRequestCancellationReportToken())
+            {
+                return new DataSet();
+            }
             var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
