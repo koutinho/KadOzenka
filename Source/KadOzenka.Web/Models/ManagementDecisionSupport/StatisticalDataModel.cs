@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -17,6 +18,9 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 
 		[Required(ErrorMessage = "Выберете тип отчета")]
 		public long? ReportType { get; set; }
+
+		public DateTime? PricingFactorsCompositionFinalUniformReportActualizationDate { get; set; }
+		public DateTime? PricingFactorsCompositionFinalNonuniformActualizationDate { get; set; }
 
 
         private readonly List<long?> _reportsEnabledWithoutTasks = 
