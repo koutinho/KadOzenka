@@ -4,6 +4,7 @@ using System.IO;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -13,6 +14,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
 	public class QualityPricingFactorsEncodingResultsService
 	{
+		public readonly QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
@@ -22,6 +24,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public QualityPricingFactorsEncodingResultsService(StatisticalDataService statisticalDataService, GbuCodRegisterService gbuCodRegisterService)
 		{
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
             _gbuCodRegisterService = gbuCodRegisterService;
@@ -34,6 +37,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportOksSqlFileName)))
 			{
 				contents = sr.ReadToEnd();
+			}
+
+			if (QueryManager.IsRequestCancellationToken())
+			{
+				return new List<QualityPricingFactorsEncodingResultsOksDto>();
 			}
 
 			var sql = string.Format(contents, string.Join(", ", taskIdList),
@@ -57,7 +65,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 _rosreestrRegisterService.GetWallMaterialAttribute().Id,
 				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id
 			);
-			var result = QSQuery.ExecuteSql<QualityPricingFactorsEncodingResultsOksDto>(sql);
+			var result = QueryManager.ExecuteSql<QualityPricingFactorsEncodingResultsOksDto>(sql);
 
 			return result;
 		}
