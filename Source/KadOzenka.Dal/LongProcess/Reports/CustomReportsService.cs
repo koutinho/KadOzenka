@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Core.Main.FileStorages;
 using Core.SRD;
@@ -13,6 +14,18 @@ namespace KadOzenka.Dal.LongProcess.Reports
 	public class CustomReportsService
 	{
 		public static string FileStorageKey => "SaveReportPath";
+		private ZipFile _generalZipFile;
+
+
+		public CustomReportsService()
+		{
+			_generalZipFile = new ZipFile
+			{
+				AlternateEncoding = Encoding.UTF8,
+				AlternateEncodingUsage = ZipOption.AsNecessary
+			};
+		}
+
 
 		public OMReportFiles GetFileInfo(long reportId)
 		{
@@ -23,26 +36,48 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			return report;
 		}
 
-		public string SaveReportZip(MemoryStream stream, string fileName, string fileExtension)
+
+		public void AddFileToZip(MemoryStream stream, string fileName, string fileExtension)
 		{
-			using (var zipFile = new ZipFile())
+			using (var currentZipFile = new ZipFile())
 			{
-				zipFile.AlternateEncoding = Encoding.UTF8;
-				zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+				currentZipFile.AlternateEncoding = Encoding.UTF8;
+				currentZipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
 				stream.Seek(0, SeekOrigin.Begin);
-				zipFile.AddEntry($"{fileName}.{fileExtension}", stream);
+				currentZipFile.AddEntry($"{fileName}.{fileExtension}", stream);
 
-				var zipStream = new MemoryStream();
-				zipFile.Save(zipStream);
-				zipStream.Seek(0, SeekOrigin.Begin);
-				var zipFileName = $"{fileName} (архив)";
+				var currentZipStream = new MemoryStream();
+				currentZipFile.Save(currentZipStream);
+				currentZipStream.Seek(0, SeekOrigin.Begin);
 
-				return SaveReport(zipStream, zipFileName, "zip");
+				var counter = _generalZipFile.Entries.Count + 1;
+				var zipFileName = $"{fileName} №{counter} (архив).zip";
+
+				_generalZipFile.AddEntry(zipFileName, currentZipStream);
 			}
 		}
 
-		public string SaveReport(MemoryStream stream, string fileName, string fileExtension)
+		public string SaveReport(string fileName)
+		{
+			MemoryStream stream;
+			if (_generalZipFile.Entries.Count == 1)
+			{
+				var entry = _generalZipFile.Entries.ElementAt(0);
+				stream = (MemoryStream) entry.InputStream;
+			}
+			else
+			{
+				stream = new MemoryStream();
+				_generalZipFile.Save(stream);
+			}
+
+			stream.Seek(0, SeekOrigin.Begin);
+
+			return SaveFile(stream, fileName, "zip");
+		}
+
+		public string SaveFile(MemoryStream stream, string fileName, string fileExtension)
 		{
 			var currentDate = DateTime.Now;
 			var report = new OMReportFiles

@@ -234,7 +234,7 @@ namespace KadOzenka.Dal.LongProcess
 	        _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 	        stream.Seek(0, SeekOrigin.Begin);
 
-	        return CustomReportsService.SaveReport(stream, _reportName, "xlsx");
+	        return CustomReportsService.SaveFile(stream, _reportName, "xlsx");
         }
 
         #endregion

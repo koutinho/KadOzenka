@@ -337,7 +337,7 @@ namespace KadOzenka.Dal.Groups
 		        .Select(x => new{x.Number, x.GroupName}).ExecuteFirstOrDefault();
 
 	        if (!CanGroupBeDeleted(groupId, false))
-	            throw new Exception($"Группа '{group.Number}. {group.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки");
+	            throw new Exception($"Группа '{group?.Number}. {group?.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки");
 
             List<OMGroup> childGroups = OMGroup.Where(x => x.ParentId == groupId).Execute();
             OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
