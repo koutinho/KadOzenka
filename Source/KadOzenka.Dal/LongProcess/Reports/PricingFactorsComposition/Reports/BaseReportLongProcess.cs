@@ -74,7 +74,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			if (!DataCompositionByCharacteristicsService.IsCacheTableExists())
 				throw new Exception("Не найдена таблица с данными для отчета");
 
-			var urls = new List<string>();
+			var urlToDownload = string.Empty;
 			try
 			{
 				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
@@ -128,13 +128,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 								CheckCancellationToken(cancellationToken);
 								using (Logger.TimeOperation($"Формирование файла для пакета №{i}"))
 								{
-									Logger.Debug(new Exception(sql), $"Начата запись в файл для пакета №{i}.");
-
-									var urlToDownloadReport = GenerateReport(currentPage);
-									urls.Add(urlToDownloadReport);
-
-									Logger.ForContext("UrlToDownloadFile", urlToDownloadReport)
-										.Debug(new Exception(sql), $"Закончена запись в файл для пакета №{i}. Сформирована ссылка для скачивания");
+									GenerateReport(currentPage);
 								}
 							}
 						});
@@ -145,7 +139,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 					}
 				}
 
-				SendMessageInternal(processQueue, "Операция успешно завершена.", urls);
+				using (Logger.TimeOperation("Сохранение zip-файла"))
+				{
+					urlToDownload = CustomReportsService.SaveReport(ReportName);
+				}
+
+				SendMessageInternal(processQueue, "Операция успешно завершена.", urlToDownload);
 
 				Logger.Debug("Закончен фоновый процесс.");
 			}
@@ -153,8 +152,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			{
 				var errorId = ErrorManager.LogError(exception);
 				Logger.Fatal(exception, "Ошибка построения отчета");
+
 				var message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
-				SendMessageInternal(processQueue, message, urls);
+				SendMessageInternal(processQueue, message, urlToDownload);
 			}
 
 			WorkerCommon.SetProgress(processQueue, 100);
@@ -163,13 +163,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#region Support Methods
 
-		private void SendMessageInternal(OMQueue processQueue, string mainMessage, List<string> urls)
+		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)
 		{
-			var linksToUrls = new StringBuilder();
-			linksToUrls.AppendLine("Созданные файлы:");
-			urls.ForEach(url => { linksToUrls.AppendLine($@"<a href=""{url}"">Скачать результат</a>"); });
+			var fullMessage = string.IsNullOrWhiteSpace(urlToDownload) 
+				? mainMessage 
+				: mainMessage + "<br>" + $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
-			SendMessage(processQueue, mainMessage + "<br>" + linksToUrls, MessageSubject);
+			SendMessage(processQueue, fullMessage, MessageSubject);
 		}
 
 		private void CheckCancellationToken(CancellationToken cancellationToken)
@@ -182,7 +182,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			throw new Exception(message);
 		}
 
-		private string GenerateReport(List<T> reportItems)
+		private void GenerateReport(List<T> reportItems)
 		{
 			var headerColumns = GenerateReportHeaders(reportItems);
 
@@ -201,9 +201,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 						Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
 				}
 
-				using (Logger.TimeOperation("Сохранение zip-файла"))
+				using (Logger.TimeOperation("Добавление zip-файла"))
 				{
-					return CustomReportsService.SaveReportZip(stream, ReportName, "csv");
+					CustomReportsService.AddFileToZip(stream, ReportName, "csv");
 				}
 			}
 		}
