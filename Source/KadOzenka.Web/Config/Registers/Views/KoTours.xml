@@ -6,13 +6,8 @@
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" SRDFunctionTag="KO.DICT.TOURS" ShowRowMenu="true">
   
   <ObjectCardButtons>
-    <Button Caption="Туры оценки" NavigateURL="/Tour/TourEstimates" WindowHeight="500" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.ESTIMATES" Icon="fas fa-plus">
-		</Button>
 
-    <Button Caption="Группы" NavigateURL="/Tour/Groups" WindowHeight="500" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.GROUPS" Icon="fas fa-plus">
-    </Button>
-
-    <Button Caption="Значения меток" NavigateURL="/Modeling/MarkCatalog" WindowHeight="750" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.MARK_CATALOG" Icon="fas fa-plus">
+      <Button Caption="Значения меток" NavigateURL="/Modeling/MarkCatalog" WindowHeight="750" WindowWidth="800" SRDFunctionTag="KO.DICT.TOURS.MARK_CATALOG" Icon="fas fa-plus">
     </Button>
 
     <Button Caption="Импорт данных из Excel" NavigateURL="/Tour/ImportDataFromExcel" WindowHeight="400" WindowWidth="800"  SRDFunctionTag="KO.DICT.TOURS.IMPORT_GROUP_DATA_FROM_EXCEL" Icon="fas fa-wrench"/>

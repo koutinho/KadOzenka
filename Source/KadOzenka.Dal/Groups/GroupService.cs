@@ -331,6 +331,60 @@ namespace KadOzenka.Dal.Groups
             return result;
         }
 
+        public bool CanGroupsBeDeleted(long tourId, bool isOks)
+        {
+	        var result = true;
+	        var groups = GetTourGroupsInfo(tourId, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
+	        var areGroupsNotEmpty = isOks
+		        ? groups.OksGroups.Count > 0 || groups.OksSubGroups.Count > 0
+		        : groups.ZuGroups.Count > 0 || groups.ZuSubGroups.Count > 0;
+
+	        if (areGroupsNotEmpty)
+	        {
+		        List<long?> groupIds;
+		        if (isOks)
+		        {
+			        groupIds = groups.OksGroups.Select(x => x.Id).ToList();
+			        groupIds.AddRange(groups.OksSubGroups.Select(x => x.Id).ToList());
+		        }
+                else
+                {
+                    groupIds = groups.ZuGroups.Select(x => x.Id).ToList();
+                    groupIds.AddRange(groups.ZuSubGroups.Select(x => x.Id).ToList());
+                }
+
+		        result = !OMUnit.Where(x => groupIds.Contains(x.GroupId)).ExecuteExists();
+            }
+
+	        return result;
+        }
+
+        public void DeleteGroups(long tourId, bool isOks)
+        {
+	        var groups = GetTourGroupsInfo(tourId, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
+	        List<long?> groupIds;
+	        if (isOks)
+	        {
+		        groupIds = groups.OksGroups.Select(x => x.Id).ToList();
+		        groupIds.AddRange(groups.OksSubGroups.Select(x => x.Id).ToList());
+	        }
+	        else
+	        {
+		        groupIds = groups.ZuGroups.Select(x => x.Id).ToList();
+		        groupIds.AddRange(groups.ZuSubGroups.Select(x => x.Id).ToList());
+	        }
+
+            using (var ts = new TransactionScope())
+	        {
+		        foreach (var groupId in groupIds)
+		        {
+			        DeleteGroup(groupId.Value);
+		        }
+
+		        ts.Complete();
+            }
+        }
+
         public void DeleteGroup(long groupId)
         {
 	        OMGroup group = OMGroup.Where(x => x.Id == groupId)

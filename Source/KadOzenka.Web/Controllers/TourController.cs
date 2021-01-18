@@ -119,11 +119,13 @@ namespace KadOzenka.Web.Controllers
             {
                 case (long)KoGroupAlgoritm.MainParcel:
                     groupDto.Name = KoGroupAlgoritm.MainParcel.GetEnumDescription();
+                    groupDto.GroupType = GroupType.Main;
                     isReadOnly = true;
                     break;
 
                 case (long)KoGroupAlgoritm.MainOKS:
                     groupDto.Name = KoGroupAlgoritm.MainOKS.GetEnumDescription();
+                    groupDto.GroupType = GroupType.Main;
                     isReadOnly = true;
                     break;
 
@@ -490,7 +492,7 @@ namespace KadOzenka.Web.Controllers
         public IActionResult CanTourBeDeleted(long id)
         {
 	        var canTourBeDeleted = TourService.CanTourBeDeleted(id);
-	        return Json(new { CanTourBeDeleted = canTourBeDeleted });
+	        return Json(new { CanBeDeleted = canTourBeDeleted });
         }
 
         [HttpDelete]
@@ -538,54 +540,6 @@ namespace KadOzenka.Web.Controllers
             return Json(groupModels);
         }
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult EditGroup(long? id)
-        {
-            if (!id.HasValue)
-                return View(new GroupModel());
-
-            var group = GroupService.GetGroupById(id);
-            var tourGroup = OMTourGroup.Where(x => x.GroupId == id.Value)
-                .SelectAll().ExecuteFirstOrDefault();
-            group.RatingTourId = tourGroup.TourId;
-
-            var model = GroupModel.ToModel(group);
-
-            var objType = KoGroupAlgoritm.MainOKS;
-            var baseParentId = group.ParentGroupId;
-            if (baseParentId != -1 && baseParentId != null)
-            {
-                while (true)
-                {
-                    var parent = OMGroup.Where(x => x.Id == baseParentId).SelectAll().ExecuteFirstOrDefault();
-                    if (parent == null)
-                    {
-                        break;
-                    }
-                    if (baseParentId == parent.ParentId)
-                    {
-                        break;
-                    }
-                    if (parent.ParentId == -1 || parent.ParentId == null)
-                    {
-                        objType = parent.GroupAlgoritm_Code;
-                        break;
-                    }
-
-                    baseParentId = parent.ParentId;
-                }
-            }
-            else
-            {
-                objType = group.GroupAlgorithmCode;
-            }
-
-            model.ObjType = objType == KoGroupAlgoritm.MainOKS ? "OKS" : "Parcel";
-
-            return View(model);
-        }
-
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public JsonResult EditGroup(GroupModel model)
@@ -609,7 +563,15 @@ namespace KadOzenka.Web.Controllers
         public IActionResult CanGroupBeDeleted(long id)
         {
 	        var canGroupBeDeleted = GroupService.CanGroupBeDeleted(id);
-	        return Json(new { CanGroupBeDeleted = canGroupBeDeleted });
+	        return Json(new { CanBeDeleted = canGroupBeDeleted });
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+        public IActionResult CanGroupsBeDeleted(long tourId, bool isOks)
+        {
+	        var canGroupsBeDeleted = GroupService.CanGroupsBeDeleted(tourId, isOks);
+	        return Json(new { CanBeDeleted = canGroupsBeDeleted });
         }
 
         [HttpPost]
@@ -617,6 +579,14 @@ namespace KadOzenka.Web.Controllers
         public IActionResult DeleteGroup(long id)
         {
 	        GroupService.DeleteGroup(id);
+	        return Json(new { Success = "Удаление выполнено" });
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
+        public IActionResult DeleteGroups(long tourId, bool isOks)
+        {
+	        GroupService.DeleteGroups(tourId, isOks);
 	        return Json(new { Success = "Удаление выполнено" });
         }
 
