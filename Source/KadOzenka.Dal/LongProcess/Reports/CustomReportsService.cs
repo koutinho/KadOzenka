@@ -60,6 +60,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public string SaveReport(string fileName)
 		{
+			if (_generalZipFile.Entries.Count == 0)
+				return string.Empty;
+
 			MemoryStream stream;
 			if (_generalZipFile.Entries.Count == 1)
 			{

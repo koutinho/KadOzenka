@@ -29,10 +29,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 		private CustomReportsService CustomReportsService { get; }
+		private object _locker;
 
 		protected BaseReportLongProcess(ILogger logger)
 		{
 			Logger = logger;
+			_locker = new object();
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 			CustomReportsService = new CustomReportsService();
 		}
@@ -74,16 +76,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			if (!DataCompositionByCharacteristicsService.IsCacheTableExists())
 				throw new Exception("Не найдена таблица с данными для отчета");
 
-			var urlToDownload = string.Empty;
+			var message = string.Empty;
 			try
 			{
-				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) && x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long) x.TaskId) &&
+				                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
 				Logger.Debug($"Всего в БД {unitsCount} ЕО.");
 
-				var cancelTokenSource = new CancellationTokenSource();
+				var localCancelTokenSource = new CancellationTokenSource();
 				var options = new ParallelOptions
 				{
-					CancellationToken = cancelTokenSource.Token,
+					CancellationToken = localCancelTokenSource.Token,
 					MaxDegreeOfParallelism = 20
 				};
 
@@ -91,73 +94,74 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				var processedItemsCount = 0;
 				using (Logger.TimeOperation("Полная обработка всех пакетов"))
 				{
-					try
+					Parallel.For(0, numberOfPackages, options, (i, s) =>
 					{
-						Parallel.For(0, numberOfPackages, options, (i, s) =>
+						if (processedItemsCount >= unitsCount)
 						{
-							if (processedItemsCount >= unitsCount)
-							{
-								cancelTokenSource.Cancel();
-								options.CancellationToken.ThrowIfCancellationRequested();
-							}
+							localCancelTokenSource.Cancel();
+							options.CancellationToken.ThrowIfCancellationRequested();
+						}
 
-							CheckCancellationToken(cancellationToken);
-							Logger.Debug($"Начата работа с пакетом №{i}");
+						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
+						Logger.Debug($"Начата работа с пакетом №{i}");
 
-							using (Logger.TimeOperation($"Полная обработка пакета №{i} (сбор данных + генерация файла)"))
-							{
-								var objectIdsSubQuerySql = $@"select object_id from ko_unit 
+						using (Logger.TimeOperation($"Полная обработка пакета №{i} (сбор данных + генерация файла)"))
+						{
+							var objectIdsSubQuerySql = $@"select object_id from ko_unit 
 								where task_id in ({string.Join(',', parameters.TaskIds)}) and PROPERTY_TYPE_CODE <> 2190 
 								order by object_id 
 								limit {_packageSize} offset {i * _packageSize} ";
 
-								var sql = $@"select cadastral_number as CadastralNumber, attributes 
+							var sql = $@"select cadastral_number as CadastralNumber, attributes 
 								from {DataCompositionByCharacteristicsService.TableName} 
 								where object_id in ({objectIdsSubQuerySql})";
 
-								CheckCancellationToken(cancellationToken);
-								List<T> currentPage;
-								using (Logger.TimeOperation($"Сбор данных для пакета №{i}"))
-								{
-									Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
+							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
+							List<T> currentPage;
+							using (Logger.TimeOperation($"Сбор данных для пакета №{i}"))
+							{
+								Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
 
-									currentPage = QSQuery.ExecuteSql<T>(sql);
-									processedItemsCount += currentPage.Count;
-								}
-
-								CheckCancellationToken(cancellationToken);
-								using (Logger.TimeOperation($"Формирование файла для пакета №{i}"))
-								{
-									GenerateReport(currentPage);
-								}
+								currentPage = QSQuery.ExecuteSql<T>(sql);
+								processedItemsCount += currentPage.Count;
 							}
-						});
-					}
-					catch (OperationCanceledException)
-					{
-						Logger.Error("Закончена обработка, вызвана отмена токена");
-					}
+
+							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
+							using (Logger.TimeOperation($"Формирование файла для пакета №{i}"))
+							{
+								GenerateReport(currentPage);
+							}
+						}
+					});
 				}
 
-				using (Logger.TimeOperation("Сохранение zip-файла"))
-				{
-					urlToDownload = CustomReportsService.SaveReport(ReportName);
-				}
-
-				SendMessageInternal(processQueue, "Операция успешно завершена.", urlToDownload);
-
-				Logger.Debug("Закончен фоновый процесс.");
+				message = "Операция успешно завершена.";
+			}
+			catch (OperationCanceledException)
+			{
+				message = "Формирование отчета было отменено пользователем";
+				Logger.Error(message);
 			}
 			catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
 				Logger.Fatal(exception, "Ошибка построения отчета");
 
-				var message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
+				message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
+			}
+			finally
+			{
+				string urlToDownload;
+				using (Logger.TimeOperation("Сохранение zip-файла"))
+				{
+					urlToDownload = CustomReportsService.SaveReport(ReportName);
+				}
+
 				SendMessageInternal(processQueue, message, urlToDownload);
 			}
 
 			WorkerCommon.SetProgress(processQueue, 100);
+			Logger.Debug("Закончен фоновый процесс.");
 		}
 
 
@@ -172,14 +176,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			SendMessage(processQueue, fullMessage, MessageSubject);
 		}
 
-		private void CheckCancellationToken(CancellationToken cancellationToken)
+		private void CheckCancellationToken(CancellationToken processCancellationToken,
+			CancellationTokenSource localCancellationToken, ParallelOptions options)
 		{
-			if (!cancellationToken.IsCancellationRequested)
+			if (!processCancellationToken.IsCancellationRequested)
 				return;
 
-			var message = "Формирование отчета было отменено пользователем";
-			Logger.Error(message);
-			throw new Exception(message);
+			localCancellationToken.Cancel();
+			options.CancellationToken.ThrowIfCancellationRequested();
 		}
 
 		private void GenerateReport(List<T> reportItems)
@@ -201,9 +205,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 						Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
 				}
 
-				using (Logger.TimeOperation("Добавление zip-файла"))
+				lock (_locker)
 				{
-					CustomReportsService.AddFileToZip(stream, ReportName, "csv");
+					using (Logger.TimeOperation("Добавление zip-файла"))
+					{
+						CustomReportsService.AddFileToZip(stream, ReportName, "csv");
+					}
 				}
 			}
 		}

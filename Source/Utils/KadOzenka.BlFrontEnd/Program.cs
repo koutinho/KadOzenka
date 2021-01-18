@@ -50,6 +50,8 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
@@ -557,7 +559,7 @@ namespace KadOzenka.BlFrontEnd
 				}, new CancellationToken());
 			});
 
-            consoleHelper.AddCommand("562", "Тест длительного процесса для отчета 'Состав данных по характеристикам ОН'", () =>
+            consoleHelper.AddCommand("562", "Тест длительного процесса для начального наполнения данными отчетов с характеристиками объектов", () =>
             {
 				new InitialReportTableFiller().StartProcess(new OMProcessType(), new OMQueue
 				{
@@ -628,6 +630,24 @@ namespace KadOzenka.BlFrontEnd
 				});
             });
 
+
+            consoleHelper.AddCommand("565", "Тест длительного процесса для начального наполнения данными отчетов с характеристиками объектов", () =>
+            {
+				//TODO тестирование отмены процесса
+				var cancelSource = new CancellationTokenSource();
+				var cancelToken = cancelSource.Token;
+				Task.Factory.StartNew(() =>
+				{
+					Thread.Sleep(5000);
+					cancelSource.Cancel();
+				});
+				new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId(),
+					Parameters = new ReportLongProcessInputParameters {TaskIds = new List<long>{ 15534573 }}.SerializeToXml()
+				}, cancelToken);
+			});
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
