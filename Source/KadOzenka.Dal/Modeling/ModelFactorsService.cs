@@ -498,9 +498,11 @@ namespace KadOzenka.Dal.Modeling
 		private void ValidateMark(long? groupId, string value, decimal? metka)
 		{
 			if (string.IsNullOrWhiteSpace(value))
-				throw new Exception("Передано пустое значение");
+				throw new Exception("Нельзя сохранить пустое значение");
 			if (metka == null)
-				throw new Exception("Передана пустая метка");
+				throw new Exception("Нельзя сохранить пустую метку");
+			if (metka.GetValueOrDefault() == 0)
+				throw new Exception("Нельзя сохранить нулевую метку");
 			if (groupId == null)
 				throw new Exception("Не переден ИД группы");
 		}
