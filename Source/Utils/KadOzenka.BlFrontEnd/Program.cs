@@ -46,13 +46,16 @@ using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
+using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
@@ -60,6 +63,7 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
 using Microsoft.Extensions.Configuration;
+using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.BlFrontEnd
@@ -587,6 +591,43 @@ namespace KadOzenka.BlFrontEnd
             {
 				TriggerCreationForDataCompositionReports.Start();
             });
+
+            consoleHelper.AddCommand("564", "Удаление моделей, которые остались после некорректного удаления групп и туров", () =>
+            {
+	            var groupIds = OMGroup.Where(x => true).Execute().Select(x => x.Id).ToList();
+
+	            var tourService = new TourService(new TourFactorService(), new GroupService());
+	            var groupService = new GroupService();
+
+				var modelsWithNotExistedGroups = OMModel.Where(x => !groupIds.Contains((long) x.GroupId)).SelectAll().Execute().ToList();
+				//var modelIdsToDelete = modelsWithNotExistedGroups.Select(x => x.Id).ToList();
+				var notExistedGroupIds = modelsWithNotExistedGroups.Select(x => x.GroupId.Value).Distinct().ToList();
+				if (notExistedGroupIds.Count > 0)
+				{
+					var tourToGroupRelations = OMTourGroup.Where(x => notExistedGroupIds.Contains(x.GroupId)).SelectAll().Execute();
+					var possibleDeletedTourIds = tourToGroupRelations.Select(x => x.TourId).Distinct().ToList();
+					if (possibleDeletedTourIds.Count > 0)
+					{
+						possibleDeletedTourIds.ForEach(x =>
+						{
+							tourService.DeleteTour(x);
+						});
+					}
+
+					notExistedGroupIds.ForEach(x =>
+					{
+						groupService.DeleteGroup(x);
+					});
+				}
+
+				var tours = OMTour.Where(x => true).Execute().Select(x => x.Id).ToList();
+				var deletedTourIds = OMTourGroup.Where(x => !tours.Contains(x.TourId)).SelectAll().Execute().Select(x => x.TourId).Distinct().ToList();
+				deletedTourIds.ForEach(x =>
+				{
+					tourService.DeleteTour(x);
+				});
+            });
+
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
