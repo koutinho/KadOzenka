@@ -40,7 +40,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         protected StatisticalDataReport()
 		{
-			GbuObjectService = new GbuObjectService();
+			QueryManager = new QueryManager();
+            GbuObjectService = new GbuObjectService(QueryManager);
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             GbuCodRegisterService = new GbuCodRegisterService();
@@ -49,7 +50,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             ModelFactorsService = new ModelFactorsService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();
-            QueryManager = new QueryManager();
+           
         }
 
 		public override string GetTitle(long? objectId)

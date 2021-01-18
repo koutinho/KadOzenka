@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -222,7 +223,9 @@ namespace KadOzenka.Dal.CancellationQueryManager
 		{
 			if (_baseCancellationToken == CancellationToken.None)
 			{
-				_log.ForContext("ObjectType", query != null ? query.GetType().GetGenericTypeDefinition() : executor?.GetType().GetGenericTypeDefinition(), true)
+				var names = query?.GetType().GenericTypeArguments.Select(x => x.Name) ??
+				            executor?.GetType().GenericTypeArguments.Select(x => x.Name) ?? new List<string>();
+				_log.ForContext("ObjectType", names, true)
 					.Warning("Базовый токен отмены не установлен, менджер работает как обычный запрос без функции отмены");
 			}
 
