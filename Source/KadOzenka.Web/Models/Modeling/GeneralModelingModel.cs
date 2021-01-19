@@ -10,7 +10,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public long Id { get; set; }
 		public bool IsCreationMode { get; set; }
-		public bool IsFromTourCard { get; set; }
+		public bool IsReadOnly { get; set; }
 
 	    [Display(Name = "Имя")]
 	    [Required(ErrorMessage = "Не заполнено Имя")]

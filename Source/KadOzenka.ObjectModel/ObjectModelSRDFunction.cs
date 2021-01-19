@@ -557,5 +557,8 @@ namespace ObjectModel.SRD
               // Cохранение отчетов (1300142)
               public const string CORE_SAVED_REPORTS_SAVE = "CORE.SAVED.REPORTS.SAVE";
                 
+              // Реестр утвержденных моделей (1300143)
+              public const string KO_DICT_MODELS_APPROVED = "KO.DICT.MODELS.APPROVED";
+                
     }
 }
