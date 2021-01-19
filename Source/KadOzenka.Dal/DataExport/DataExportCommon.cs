@@ -9,6 +9,8 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.TD;
 using System.Globalization;
 using System.Linq;
+using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -412,18 +414,23 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static bool GetObjectAttribute(OMUnit _unit, long _number, out string _value)
         {
-            bool result = false;
-            _value = "";
-            List<long> lstIds = new List<long>();
-            lstIds.Add(_number);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds, _unit.CreationDate.Value);
-            if (attribs.Count > 0)
+            using (Log.Logger.TimeOperation("Получение атрибутов объекта"))
             {
-                _value = attribs[0].StringValue;
-                result = true;
-            }
+                bool result = false;
+                _value = "";
+                List<long> lstIds = new List<long>();
+                lstIds.Add(_number);
+                List<GbuObjectAttribute> attribs =
+                    new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds,
+                        _unit.CreationDate.Value);
+                if (attribs.Count > 0)
+                {
+                    _value = attribs[0].StringValue;
+                    result = true;
+                }
 
-            return result;
+                return result;
+            }
         }
 
         /// <summary>

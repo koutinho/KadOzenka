@@ -7,6 +7,7 @@ using GemBox.Document;
 using GemBox.Document.Tables;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -33,6 +34,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
+using KadOzenka.Dal.Extentions;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -202,11 +204,11 @@ namespace KadOzenka.Dal.DataExport
 
             foreach (var marker in markers)
             {
-	            var factor = marker.ValueFactor == null ? string.Empty : marker.ValueFactor;
-	            var metka = marker.MetkaFactor == null ? string.Empty : marker.MetkaFactor.ParseToString();
+                var factor = marker.ValueFactor == null ? string.Empty : marker.ValueFactor;
+                var metka = marker.MetkaFactor == null ? string.Empty : marker.MetkaFactor.ParseToString();
 
                 DataExportCommon.AddRow(mainWorkSheet, row, new object[] { factor, metka });
-	            row++;
+                row++;
             }
 
             MemoryStream stream = new MemoryStream();
@@ -227,7 +229,7 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadChange)]
         public static List<ResultKoUnloadSettings> ExportUnitChangeToExcel(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings settings, SetProgress setProgress)
         {
-	        if (unloadResultQueue != null)
+            if (unloadResultQueue != null)
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
             var progressMessage = "Выгрузка изменений";
@@ -248,14 +250,14 @@ namespace KadOzenka.Dal.DataExport
             var progress = 0;
             foreach (long taskId in settings.TaskFilter)
             {
-	            List<ObjectModel.KO.OMUnit> units = null;
+                List<ObjectModel.KO.OMUnit> units = null;
                 if(settings.IsDataComparingUnload)
-	                units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
+                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
                 else
                 {
-	                units = settings.UnloadParcel 
-		                ? ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute() 
-		                : ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
+                    units = settings.UnloadParcel
+                        ? ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute()
+                        : ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
                 }
 
                 var unitsCounter = 0;
@@ -286,9 +288,9 @@ namespace KadOzenka.Dal.DataExport
 
             if (settings.IsDataComparingUnload)
             {
-	            MemoryStream stream = new MemoryStream();
-	            excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-	            stream.Seek(0, SeekOrigin.Begin);
+                MemoryStream stream = new MemoryStream();
+                excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
 
                 using var fs = File.Create(settings.FileName);
                 fs.Seek(0, SeekOrigin.Begin);
@@ -296,15 +298,15 @@ namespace KadOzenka.Dal.DataExport
             }
             else
             {
-	            long id = SaveReportDownload.SaveReportExcel(filename, excelTemplate, OMUnit.GetRegisterId());
-	            //excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-	            var resultFile = new ResultKoUnloadSettings
-	            {
-		            FileId = id,
-		            FileName = filename,
-		            TaskId = settings.TaskFilter.FirstOrDefault()
-	            };
-	            result.Add(resultFile);
+                long id = SaveReportDownload.SaveReportExcel(filename, excelTemplate, OMUnit.GetRegisterId());
+                //excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                var resultFile = new ResultKoUnloadSettings
+                {
+                    FileId = id,
+                    FileName = filename,
+                    TaskId = settings.TaskFilter.FirstOrDefault()
+                };
+                result.Add(resultFile);
             }
             
 
@@ -321,7 +323,7 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOUnit : IKoUnloadResult
     {
-	    private static readonly ILogger _log = Log.ForContext<DEKOUnit>();
+        private static readonly ILogger _log = Log.ForContext<DEKOUnit>();
 
         /// <summary>
         /// Экспорт в Xml - КНомер, УПКСЗ, КСтоимость. По 5000 записей. 
@@ -329,122 +331,124 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadXML1)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по объектам");
+            _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по объектам");
             var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по объектам";
-	        var taskCounter = 0;
-	        var progress = 0;
-	        if (unloadResultQueue != null)
-		        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+            var taskCounter = 0;
+            var progress = 0;
+            if (unloadResultQueue != null)
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
 
-	        List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
+            List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
 
             string file_name = "";
             foreach (long taskId in setting.TaskFilter)
             {
-	            _log.Debug("Начата работа с ЗнО с ИД {TaskId}", taskId);
+                _log.Debug("Начата работа с ЗнО с ИД {TaskId}", taskId);
 
+                const int chunkSize = 5000;
                 var currentTask = OMTask.Where(x => x.Id == taskId).Select(x => x.EstimationDate).ExecuteFirstOrDefault();
-                var units_all = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).Select(x => new
+                var unitsAll = OMUnit.Where(x => x.TaskId == taskId && x.CadastralCost > 0).Select(x => new
                 {
-	                x.CadastralNumber,
-	                x.Upks,
-	                x.CadastralCost
-                }).Execute();
-                int count_curr = 0;
-                int count_all = units_all.Count();
-                _log.Debug($"Найдено {count_all} ЕО у которых Кадастровая стоимость > 0 ");
+                    x.CadastralNumber,
+                    x.Upks,
+                    x.CadastralCost
+                }).Execute().Split(chunkSize).ToArray();
+                //int countCurr = 0;
+                int countAll = unitsAll.Count();
+                _log.Debug($"Найдено {countAll} наборов ЕО у которых Кадастровая стоимость > 0 ");
 
-                List<OMUnit> units_curr = new List<OMUnit>();
-                int count_write = 5000;
-                int count_file = 1;
+                //var unitsCurr = new List<OMUnit>();
+                //int countWrite = 5000;
+                //int countFile = 1;
                 var unitCounter = 0;
-                foreach (OMUnit unit in units_all)
+
+                for (var index=0; index<unitsAll.Length;index++)
                 {
-                    units_curr.Add(unit);
-                    count_curr++;
-                    if (count_curr == count_write)
+                    //unitsCurr.AddRange(chunk);
+                    //countCurr++;
+                    //if (countCurr == countWrite)
                     {
-                        file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
+                        file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + index.ToString().PadLeft(4, '0');
 
                         Stream resultFile;
                         using (_log.TimeOperation($"Формирование файла '{file_name}'"))
                         {
-	                        resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
+                            resultFile = SaveXmlDocument(unitsAll[index], currentTask.EstimationDate);
                         }
 
                         if (setting.IsDataComparingUnload)
                         {
-	                        using (_log.TimeOperation($"Копирование файла '{file_name}' для сравнения"))
-	                        {
-		                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-		                        using var fs = File.Create(fullFileName);
-		                        fs.Seek(0, SeekOrigin.Begin);
-		                        resultFile.CopyTo(fs);
+                            using (_log.TimeOperation($"Копирование файла '{file_name}' для сравнения"))
+                            {
+                                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+                                using var fs = File.Create(fullFileName);
+                                fs.Seek(0, SeekOrigin.Begin);
+                                resultFile.CopyTo(fs);
                             }
                         }
                         else
                         {
-	                        long id;
-	                        using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
-	                        {
-		                        id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
-	                        }
+                            long id;
+                            using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
+                            {
+                                id = SaveReportDownload.SaveReport(file_name, resultFile, OMUnit.GetRegisterId());
+                            }
 
-	                        var resFile = new ResultKoUnloadSettings
-	                        {
-		                        FileName = file_name,
-		                        FileId = id,
-		                        TaskId = taskId
-	                        };
-	                        res.Add(resFile);
+                            var resFile = new ResultKoUnloadSettings
+                            {
+                                FileName = file_name,
+                                FileId = id,
+                                TaskId = taskId
+                            };
+                            res.Add(resFile);
                         }
 
-                        units_curr.Clear();
-                        count_curr = 0;
-                        count_file++;
+                        //unitsCurr.Clear();
+                        //countCurr = 0;
+                        //countFile++;
                     }
 
                     unitCounter++;
-                    progress = (unitCounter * 100 / count_all + taskCounter * 100) / setting.TaskFilter.Count;
+                    progress = (unitCounter * 100 / countAll + taskCounter * 100) / setting.TaskFilter.Count;
                     setProgress?.Invoke(progress, progressMessage: progressMessage);
                     if (unloadResultQueue != null)
                         KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
 
-                file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
+//                file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + countFile.ToString().PadLeft(4, '0');
 
-                Stream resultFile1;
-                using (_log.TimeOperation($"Формирование файла (оставшиеся ЕО) '{file_name}'"))
-                {
-	                resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
-                }
-
-                if (setting.IsDataComparingUnload)
-                {
-	                using (_log.TimeOperation($"Копирование файла (оставшиеся ЕО) '{file_name}' для сравнения"))
-	                {
-		                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-		                using var fs = File.Create(fullFileName);
-		                fs.Seek(0, SeekOrigin.Begin);
-		                resultFile1.CopyTo(fs);
-	                }
-                }
-                else
-                {
-	                long id1;
-	                using (_log.TimeOperation($"Сохранение файла (оставшиеся ЕО) '{file_name}'"))
-	                {
-		                id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
-                    }
-
-	                var koResultFile = new ResultKoUnloadSettings
-	                {
-		                FileName = file_name,
-		                FileId = id1,
-		                TaskId = taskId
-	                };
-	                res.Add(koResultFile);
-                }
+//                Stream resultFile1;
+//                using (_log.TimeOperation($"Формирование файла (оставшиеся ЕО) '{file_name}'"))
+//                {
+//                    resultFile1 = SaveXmlDocument(unitsCurr, currentTask.EstimationDate);
+//                }
+//
+//                if (setting.IsDataComparingUnload)
+//                {
+//                    using (_log.TimeOperation($"Копирование файла (оставшиеся ЕО) '{file_name}' для сравнения"))
+//                    {
+//                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+//                        using var fs = File.Create(fullFileName);
+//                        fs.Seek(0, SeekOrigin.Begin);
+//                        resultFile1.CopyTo(fs);
+//                    }
+//                }
+//                else
+//                {
+//                    long id1;
+//                    using (_log.TimeOperation($"Сохранение файла (оставшиеся ЕО) '{file_name}'"))
+//                    {
+//                        id1 = SaveReportDownload.SaveReport(file_name, resultFile1, OMUnit.GetRegisterId());
+//                    }
+//
+//                    var koResultFile = new ResultKoUnloadSettings
+//                    {
+//                        FileName = file_name,
+//                        FileId = id1,
+//                        TaskId = taskId
+//                    };
+//                    res.Add(koResultFile);
+//                }
 
                 taskCounter++;
             }
@@ -537,12 +541,12 @@ namespace KadOzenka.Dal.DataExport
             XmlNode xn_Parcels = null;
 
             var currentUnitCount = -1;
-            foreach (ObjectModel.KO.OMUnit unit in units)
+            foreach (var unit in units)
             {
-	            if (++currentUnitCount % 1000 == 0)
-		            _log.ForContext("UnitId", unit.Id).Debug($"Идет обработка {currentUnitCount} ЕО из {units.Count}");
+                if (++currentUnitCount % 1000 == 0)
+                    _log.ForContext("UnitId", unit.Id).Debug($"Идет обработка {currentUnitCount} ЕО из {units.Count}");
 
-	            string[] arrtmp = unit.CadastralNumber.Split(':');
+                string[] arrtmp = unit.CadastralNumber.Split(':');
                 if (arrtmp.Length == 4)
                 {
                     string kn = unit.CadastralNumber;
@@ -555,16 +559,14 @@ namespace KadOzenka.Dal.DataExport
 
                     if (double.TryParse(tupksz.Replace(',', '.'), out dUPKSZ))
                         upksz = dUPKSZ.ToString("0.00").Replace(',', '.');
-                    else
-                        if (double.TryParse(tupksz.Replace('.', ','), out dUPKSZ))
+                    else if (double.TryParse(tupksz.Replace('.', ','), out dUPKSZ))
                         upksz = dUPKSZ.ToString("0.00").Replace(',', '.');
                     else
                         upksz = "";
 
                     if (double.TryParse(tks.Replace(',', '.'), out dKS))
                         ks = dKS.ToString("0.00").Replace(',', '.');
-                    else
-                        if (double.TryParse(tks.Replace('.', ','), out dKS))
+                    else if (double.TryParse(tks.Replace('.', ','), out dKS))
                         ks = dKS.ToString("0.00").Replace(',', '.');
                     else
                         ks = "";
@@ -630,7 +632,7 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOGroup : IKoUnloadResult
     {
-	    private static readonly ILogger _log = Log.ForContext<DEKOGroup>();
+        private static readonly ILogger _log = Log.ForContext<DEKOGroup>();
 
         /// <summary>
         /// Выгрузка в XML из ObjectModel.KO.OMGroup
@@ -638,12 +640,12 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadXML2)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по группам");
+            _log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по группам");
 
             var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
-	        var progress = 0;
-	        if (unloadResultQueue != null)
-		        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+            var progress = 0;
+            if (unloadResultQueue != null)
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
 
             List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
             // Выбираем все подгруппы
@@ -654,7 +656,7 @@ namespace KadOzenka.Dal.DataExport
 
             foreach (OMGroup subgroup in koGroups)
             {
-	            _log.ForContext("SubGroupId", subgroup.Id).Debug($"Начата работа с подгруппой '{subgroup.GroupName}', №{countCurr} из {countAll}");
+                _log.ForContext("SubGroupId", subgroup.Id).Debug($"Начата работа с подгруппой '{subgroup.GroupName}', №{countCurr} из {countAll}");
 
                 countCurr++;
                 string str_message = "Выгружается группа " + countCurr.ToString() + " (Id=" + subgroup.Id.ToString() + ") из " + countAll.ToString();
@@ -662,19 +664,19 @@ namespace KadOzenka.Dal.DataExport
                 var taskCounter = 0;
                 foreach (long taskId in setting.TaskFilter)
                 {
-	                _log.Debug("Начата работа с ЗнО {TaskId}", taskId);
+                    _log.Debug("Начата работа с ЗнО {TaskId}", taskId);
 
                     subgroup.Unit = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId && x.CadastralCost > 0).SelectAll().Execute();
                     _log.ForContext("SubGroupId", subgroup.Id).ForContext("TaskId", taskId)
-	                    .Debug($"Найдено {subgroup.Unit.Count} ЕО с группой {subgroup.Id} и ЗнО {taskId}, у которых положительная Кадастровая стоимость");
+                        .Debug($"Найдено {subgroup.Unit.Count} ЕО с группой {subgroup.Id} и ЗнО {taskId}, у которых положительная Кадастровая стоимость");
 
                     if (subgroup.Unit.Count > 0)
                     {
-	                    Stream resultFile;
-	                    using (_log.TimeOperation($"Формирование файла для подгруппы '{subgroup.GroupName}'"))
-	                    {
-		                    resultFile = SaveXmlDocument(subgroup, str_message);
-	                    }
+                        Stream resultFile;
+                        using (_log.TimeOperation($"Формирование файла для подгруппы '{subgroup.GroupName}'"))
+                        {
+                            resultFile = SaveXmlDocument(subgroup, str_message);
+                        }
 
                         OMGroup parent_group = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
                         string full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
@@ -682,48 +684,48 @@ namespace KadOzenka.Dal.DataExport
                         full_group_num = full_group_num.Replace("\n", "");
 
                         string file_name = "Task_" + taskId  +"_" + full_group_num
-										   + "_FD_State_Cadastral_Valuation_"
+                                           + "_FD_State_Cadastral_Valuation_"
                                            + subgroup.Id.ToString().PadLeft(5, '0')
                                            + countCurr.ToString().PadLeft(5, '0');
 
                         if (setting.IsDataComparingUnload)
                         {
-	                        using (_log.TimeOperation($"Копирование файла для сравнения '{file_name}'"))
-	                        {
-		                        var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
-		                        using var fs = File.Create(fullFileName);
-		                        fs.Seek(0, SeekOrigin.Begin);
-		                        resultFile.CopyTo(fs);
+                            using (_log.TimeOperation($"Копирование файла для сравнения '{file_name}'"))
+                            {
+                                var fullFileName = Path.Combine(setting.DirectoryName, $"{file_name}.xml");
+                                using var fs = File.Create(fullFileName);
+                                fs.Seek(0, SeekOrigin.Begin);
+                                resultFile.CopyTo(fs);
                             }
                         }
                         else
                         {
-	                        long id;
-	                        using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
-	                        {
-		                        id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
+                            long id;
+                            using (_log.TimeOperation($"Сохранение файла '{file_name}'"))
+                            {
+                                id = SaveReportDownload.SaveReport(file_name, resultFile, OMGroup.GetRegisterId());
                             }
 
-	                        var fileResult = new ResultKoUnloadSettings
-	                        {
-		                        FileName = file_name,
-		                        FileId = id,
-		                        TaskId = taskId
-	                        };
-	                        res.Add(fileResult);
+                            var fileResult = new ResultKoUnloadSettings
+                            {
+                                FileName = file_name,
+                                FileId = id,
+                                TaskId = taskId
+                            };
+                            res.Add(fileResult);
                         }
                     }
                     taskCounter++;
                     progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) / koGroups.Count;
                     setProgress?.Invoke(progress, progressMessage: progressMessage);
                     if(unloadResultQueue != null)
-	                    KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
+                        KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                 }
             }
 
             setProgress?.Invoke(100, true, progressMessage);
             if (unloadResultQueue != null)
-	            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
 
             _log.Debug("Закончена выгрузка в XML результатов Кадастровой оценки по группам");
 
@@ -743,13 +745,13 @@ namespace KadOzenka.Dal.DataExport
 
             using (_log.TimeOperation("Добавление общей информации в файл"))
             {
-	            AddXmlGeneralInfo(xmlFile, xnLandValuation);
+                AddXmlGeneralInfo(xmlFile, xnLandValuation);
             }
 
             Dictionary<Int64, XmlNode> dictNodes = new Dictionary<long, XmlNode>();
             using (_log.TimeOperation("Добавление основной информации в файл"))
             {
-	            AddXmlPackage(xmlFile, xnLandValuation, _subgroup, dictNodes, _message);
+                AddXmlPackage(xmlFile, xnLandValuation, _subgroup, dictNodes, _message);
             }
             xmlFile.AppendChild(xnLandValuation);
 
@@ -927,13 +929,13 @@ namespace KadOzenka.Dal.DataExport
                 XmlNode xnEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
                 OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 _log.ForContext("ModelId", model?.Id).ForContext("SubgroupId", _subgroup.Id)
-	                .Debug($"Поиск активной модели для погруппы {_subgroup.GroupName}. Модель найдена - {model != null}");
+                    .Debug($"Поиск активной модели для погруппы {_subgroup.GroupName}. Модель найдена - {model != null}");
                 if (model != null)
                 {
-	                if (model.ModelFactor.Count == 0)
-	                {
-		                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
-		                _log.Debug($"Найдено {model.ModelFactor.Count} факторов типа {model.AlgoritmType_Code.GetEnumDescription()} для модели");
+                    if (model.ModelFactor.Count == 0)
+                    {
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
+                        _log.Debug($"Найдено {model.ModelFactor.Count} факторов типа {model.AlgoritmType_Code.GetEnumDescription()} для модели");
                     }
 
                     int countCurr = 0;
@@ -1010,7 +1012,7 @@ namespace KadOzenka.Dal.DataExport
             XmlNode xnAppraise = _xmlFile.CreateElement("Appraise");
             string region_rf = ConfigurationManager.AppSettings["3XML_RegionRF"];
 
-            _log.Debug($"Механизм группировки погруппы - '{_subgroup.GroupAlgoritm_Code}'");
+            _log.Debug($"Механизм группировки подгруппы - '{_subgroup.GroupAlgoritm_Code}'");
             if (_subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
                 #region Statistical_Modelling
@@ -1032,11 +1034,14 @@ namespace KadOzenka.Dal.DataExport
                 var currentUnitsCount = 0;
                 _log.Debug("Начата обработка ЕО подгруппы");
 
-                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
+                List<OMMarkCatalog> marks = new List<OMMarkCatalog>();
+                if (model!=null)
+                    marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId ).SelectAll().Execute();
+                int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
-	                if (++currentUnitsCount % 1000 == 0)
-		                _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
+                    if (++currentUnitsCount % 1000 == 0)
+                        _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
 
                     XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
                     DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
@@ -1135,10 +1140,13 @@ namespace KadOzenka.Dal.DataExport
                     XmlNode xnCEvaluative_Factors = _xmlFile.CreateElement("Evaluative_Factors");
 
                     #region Получили реестр Id группы, реестр, где лежат ее факторы
-                    int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
+
                     //Получаем список факторов группы
                     List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                    DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
+                    DataTable data;
+                    using (_log.TimeOperation("Получение атрибутов")){
+                        data = RegisterStorage.GetAttributes((int) unit.Id, factorReestrId.Value);
+                    }
                     if (data != null)
                     {
                         foreach (DataRow row in data.Rows)
@@ -1263,8 +1271,8 @@ namespace KadOzenka.Dal.DataExport
                 var currentUnitsCount = 0;
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
-	                if (++currentUnitsCount % 1000 == 0)
-		                _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
+                    if (++currentUnitsCount % 1000 == 0)
+                        _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
 
                     XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
                     DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
@@ -1394,8 +1402,8 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadDEKOResponseDocExportToXml)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по исходящим документам";
-	        KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
+            var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по исходящим документам";
+            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var _doc = OMInstance.Where(x => x.Id == setting.IdResponseDocument).SelectAll().ExecuteFirstOrDefault();
             var result = new List<ResultKoUnloadSettings>();
             List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id && x.CadastralCost > 0).SelectAll().Execute();
@@ -1411,13 +1419,13 @@ namespace KadOzenka.Dal.DataExport
             List<string> list_bads = new List<string>();
             using (ZipFile zipFile = new ZipFile())
             {
-	            zipFile.AlternateEncoding = Encoding.UTF8;
-	            zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+                zipFile.AlternateEncoding = Encoding.UTF8;
+                zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
                 int num_pp = 0;
-	            list_bads.AddRange(CalcXMLResponseDoc(ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
-	            setProgress(20, progressMessage: progressMessage);
-	            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 20);
+                list_bads.AddRange(CalcXMLResponseDoc(ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
+                setProgress(20, progressMessage: progressMessage);
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 20);
                 list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
                 setProgress(40, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 40);
@@ -1429,17 +1437,17 @@ namespace KadOzenka.Dal.DataExport
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 90);
 
                 MemoryStream stream = new MemoryStream();
-	            zipFile.Save(stream);
-	            stream.Seek(0, SeekOrigin.Begin);
-	            var fileName = $"Выгрузка XML результатов Кадастровой оценки по исходящим документам ({ _doc.RegNumber} { _doc.Description})";
-	            long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
-	            var fileResult = new ResultKoUnloadSettings
-	            {
-		            FileId = id,
-		            FileName = fileName,
-		            TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
-	            };
-	            result.Add(fileResult);
+                zipFile.Save(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                var fileName = $"Выгрузка XML результатов Кадастровой оценки по исходящим документам ({ _doc.RegNumber} { _doc.Description})";
+                long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+                var fileResult = new ResultKoUnloadSettings
+                {
+                    FileId = id,
+                    FileName = fileName,
+                    TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
+                };
+                result.Add(fileResult);
             }
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, progressMessage);
@@ -2004,7 +2012,7 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadDEKOVuonExportToXml)]
         public static List<ResultKoUnloadSettings> ExportToXml(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Выгрузки в XML результатов Кадастровой оценки для ВУОН";
+            var progressMessage = "Выгрузки в XML результатов Кадастровой оценки для ВУОН";
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var _doc = OMInstance.Where(x => x.Id == setting.IdResponseDocument).SelectAll().ExecuteFirstOrDefault();
             var result = new List<ResultKoUnloadSettings>();
@@ -2017,17 +2025,17 @@ namespace KadOzenka.Dal.DataExport
             }
             using (ZipFile zipFile = new ZipFile())
             {
-	            zipFile.AlternateEncoding = Encoding.UTF8;
-	            zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+                zipFile.AlternateEncoding = Encoding.UTF8;
+                zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
                 List<ActOpredel> list_act = new List<ActOpredel>();
-	            List<OMInstance> list_doc_in = new List<OMInstance>();
-	            List<string> list_bads = new List<string>();
+                List<OMInstance> list_doc_in = new List<OMInstance>();
+                List<string> list_bads = new List<string>();
 
-	            int num_pp = 0;
-	            list_bads.AddRange(CalcXMLFromVuon(num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
-	            setProgress(20, progressMessage: progressMessage);
-	            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 20);
+                int num_pp = 0;
+                list_bads.AddRange(CalcXMLFromVuon(num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
+                setProgress(20, progressMessage: progressMessage);
+                KOUnloadResult.SetCurrentProgress(unloadResultQueue, 20);
                 list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
                 setProgress(40, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 40);
@@ -2038,16 +2046,16 @@ namespace KadOzenka.Dal.DataExport
                 setProgress(80, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 80);
                 MemoryStream stream = new MemoryStream();
-	            zipFile.Save(stream);
-	            stream.Seek(0, SeekOrigin.Begin);
-	            var fileName = $"Выгрузка XML результатов Кадастровой оценки для ВУОН ({ _doc.RegNumber} { _doc.Description})";
-	            long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+                zipFile.Save(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                var fileName = $"Выгрузка XML результатов Кадастровой оценки для ВУОН ({ _doc.RegNumber} { _doc.Description})";
+                long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
                 setProgress(90, progressMessage: progressMessage);
                 var fileResult = new ResultKoUnloadSettings
                 {
-	                FileId = id,
-	                FileName = fileName,
-	                TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
+                    FileId = id,
+                    FileName = fileName,
+                    TaskId = units.FirstOrDefault().TaskId.GetValueOrDefault()
                 };
                 result.Add(fileResult);
             }
@@ -2347,9 +2355,9 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable04)]
         public static List<ResultKoUnloadSettings> ExportToXls4(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Группировка объектов недвижимости";
-	        var taskCounter = 0;
-	        var progress = 0;
+            var progressMessage = "Группировка объектов недвижимости";
+            var taskCounter = 0;
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var res = new List<ResultKoUnloadSettings>();
             foreach (long taskId in setting.TaskFilter)
@@ -2455,11 +2463,11 @@ namespace KadOzenka.Dal.DataExport
             //excel_edit.Save(_dir_name + "\\" + file_name + ".xlsx"); //temp
             
             return new ResultKoUnloadSettings
-		    {
-			    FileId = id,
-			    FileName = file_name,
-			    TaskId = _taskid
-		    };
+            {
+                FileId = id,
+                FileName = file_name,
+                TaskId = _taskid
+            };
         }
 
         /// <summary>
@@ -2506,12 +2514,12 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable05)]
         public static List<ResultKoUnloadSettings> ExportToXls5(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Модельная стоимость и Метод УПКС";
-	        var progress = 0;
+            var progressMessage = "Модельная стоимость и Метод УПКС";
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var res = new List<ResultKoUnloadSettings>();
-			// Выбираем все группы
-			List<OMGroup> groups = OMGroup.Where(x => x.ParentId == -1).SelectAll().Execute();
+            // Выбираем все группы
+            List<OMGroup> groups = OMGroup.Where(x => x.ParentId == -1).SelectAll().Execute();
             int    num_group    = 0;
             int    num_subgroup = 0;
             int countAll = groups.Count;
@@ -2542,12 +2550,12 @@ namespace KadOzenka.Dal.DataExport
 
                         if ((subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model) || (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon))
                         {
-	                        var fileResult = SaveExcel5Model(units, subgroup, setting.DirectoryName, taskId, message);
+                            var fileResult = SaveExcel5Model(units, subgroup, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
                         }
                         else
                         {
-	                        var fileResult = SaveExcel5Upksz(units, subgroup, setting.DirectoryName, taskId, message);
+                            var fileResult = SaveExcel5Upksz(units, subgroup, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
                         }
                         taskCounter++;
@@ -2569,7 +2577,7 @@ namespace KadOzenka.Dal.DataExport
             OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
             {
-	            return new ResultKoUnloadSettings(true);
+                return new ResultKoUnloadSettings(true);
             }
 
             if (model.ModelFactor.Count == 0)
@@ -2653,9 +2661,9 @@ namespace KadOzenka.Dal.DataExport
 
             return new ResultKoUnloadSettings
             {
-	            FileId = id,
-	            FileName = file_name,
-	            TaskId = _taskid
+                FileId = id,
+                FileName = file_name,
+                TaskId = _taskid
             };
 
         }
@@ -2712,12 +2720,12 @@ namespace KadOzenka.Dal.DataExport
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
-			return new ResultKoUnloadSettings
-			{
-				FileName = file_name,
-				FileId = id,
-				TaskId = _taskid
-			};
+            return new ResultKoUnloadSettings
+            {
+                FileName = file_name,
+                FileId = id,
+                TaskId = _taskid
+            };
         }
 
         /// <summary>
@@ -2827,8 +2835,8 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable07)]
         public static List<ResultKoUnloadSettings> ExportToXls7(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Обобщенные показатели по кадастровым районам";
-	        var progress = 0;
+            var progressMessage = "Обобщенные показатели по кадастровым районам";
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
             int num_save = 0;
@@ -2948,14 +2956,14 @@ namespace KadOzenka.Dal.DataExport
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
             var fileResult = SaveExcel7(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
-	            setting.TaskFilter.FirstOrDefault());
+                setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-			setProgress(100, true, "Обобщенные показатели по кадастровым районам - Формирование отчета");
+            setProgress(100, true, "Обобщенные показатели по кадастровым районам - Формирование отчета");
 
             return result;
 
-			#endregion
+            #endregion
         }
 
         private static void CalculationStat7(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
@@ -3026,12 +3034,12 @@ namespace KadOzenka.Dal.DataExport
 
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
-			return new ResultKoUnloadSettings
-			{
-				FileId = id,
-				FileName = file_name,
-				TaskId = firrsTaskId
-			};
+            return new ResultKoUnloadSettings
+            {
+                FileId = id,
+                FileName = file_name,
+                TaskId = firrsTaskId
+            };
             //excel_edit.Save(file_name);
         }
 
@@ -3041,8 +3049,8 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable08)]
         public static List<ResultKoUnloadSettings> ExportToXls8(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Минимальные, максимальные, средние УПКС по кадастровым кварталам";
-	        var progress = 0;
+            var progressMessage = "Минимальные, максимальные, средние УПКС по кадастровым кварталам";
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             var result = new List<ResultKoUnloadSettings>();
             int num_save = 0;
@@ -3145,7 +3153,7 @@ namespace KadOzenka.Dal.DataExport
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
             var fileResult = SaveExcel8(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
-	            setting.TaskFilter.FirstOrDefault());
+                setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
             setProgress(100, true, "Минимальные, максимальные, средние УПКС по кадастровым кварталам - Формирование отчета");
@@ -3219,20 +3227,20 @@ namespace KadOzenka.Dal.DataExport
                 start_rows += 3;
             }
 
-			// string path_name = _dir_name + "\\Table8";
-			// if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
+            // string path_name = _dir_name + "\\Table8";
+            // if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name ="Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
                                          + "." + ((_is_parsel) ? "ЗУ" : "ОКС");
 
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
             // excel_edit.Save(file_name);
 
-			return new ResultKoUnloadSettings
-			{
-				FileName = file_name,
-				FileId = id,
-				TaskId = firstTaskId
-			};
+            return new ResultKoUnloadSettings
+            {
+                FileName = file_name,
+                FileId = id,
+                TaskId = firstTaskId
+            };
         }
 
         /// <summary>
@@ -3241,9 +3249,9 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable09)]
         public static List<ResultKoUnloadSettings> ExportToXls9(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Результаты определения КС";
-	        var taskCounter = 0;
-	        var progress = 0;
+            var progressMessage = "Результаты определения КС";
+            var taskCounter = 0;
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             List < ResultKoUnloadSettings > res = new List<ResultKoUnloadSettings>();
 
@@ -3284,16 +3292,16 @@ namespace KadOzenka.Dal.DataExport
                 {
                     count_file++;
                     var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName,
-	                    taskId, message);
+                        taskId, message);
                     res.Add(fileResult);
                 }
 
                 taskCounter++;
             }
-			KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-			setProgress(100, true,progressMessage);
+            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+            setProgress(100, true,progressMessage);
 
-			return res;
+            return res;
         }
 
         private static ResultKoUnloadSettings SaveExcel9(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
@@ -3344,12 +3352,12 @@ namespace KadOzenka.Dal.DataExport
 
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
-			return new ResultKoUnloadSettings
-			{
-				FileName = file_name,
-				FileId = id,
-				TaskId = _taskid
-			};
+            return new ResultKoUnloadSettings
+            {
+                FileName = file_name,
+                FileId = id,
+                TaskId = _taskid
+            };
         }
 
         /// <summary>
@@ -3388,9 +3396,9 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable10)]
         public static List<ResultKoUnloadSettings> ExportToXls10(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Результаты ГКО";
-	        var taskCounter = 0;
-	        var progress = 0;
+            var progressMessage = "Результаты ГКО";
+            var taskCounter = 0;
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
 
@@ -3432,7 +3440,7 @@ namespace KadOzenka.Dal.DataExport
                 {
                     count_file++;
                     var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num_curr,
-	                    setting.DirectoryName, taskId, message);
+                        setting.DirectoryName, taskId, message);
                     res.Add(fileResult);
                 }
                 taskCounter++;
@@ -3497,12 +3505,12 @@ namespace KadOzenka.Dal.DataExport
 
             long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
 
-			return new ResultKoUnloadSettings
-			{
-				FileName = file_name,
-				FileId = id,
-				TaskId = _taskid
-			};
+            return new ResultKoUnloadSettings
+            {
+                FileName = file_name,
+                FileId = id,
+                TaskId = _taskid
+            };
         }
 
         /// <summary>
@@ -3555,9 +3563,9 @@ namespace KadOzenka.Dal.DataExport
         [KoUnloadResultAction(KoUnloadResultType.UnloadTable11)]
         public static List<ResultKoUnloadSettings> ExportToXls11(OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting, SetProgress setProgress)
         {
-	        var progressMessage = "Сводные результаты по КР";
-	        var taskCounter = 0;
-	        var progress = 0;
+            var progressMessage = "Сводные результаты по КР";
+            var taskCounter = 0;
+            var progress = 0;
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 0);
             List <ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
 
@@ -3566,7 +3574,7 @@ namespace KadOzenka.Dal.DataExport
                 List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
                 if (units_all.Count == 0) return new List<ResultKoUnloadSettings>();
 
-				List<PropertyTypes> prop_types = new List<PropertyTypes>()
+                List<PropertyTypes> prop_types = new List<PropertyTypes>()
                 {
                     PropertyTypes.Building,
                     PropertyTypes.Company,
@@ -3622,14 +3630,14 @@ namespace KadOzenka.Dal.DataExport
                     {
                         count_file++;
                         var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num_curr,
-	                        setting.DirectoryName, taskId, message1);
+                            setting.DirectoryName, taskId, message1);
                         res.Add(fileResult);
                     }
                 }
                 taskCounter++;
             }
-			KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
-			setProgress(100, true, progressMessage);
+            KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
+            setProgress(100, true, progressMessage);
 
             return res;
         }
@@ -3763,9 +3771,9 @@ namespace KadOzenka.Dal.DataExport
             //excelTemplate.Save(file_name);
             return new ResultKoUnloadSettings
             {
-	            FileName = file_name,
-	            FileId = id,
-	            TaskId = _taskid
+                FileName = file_name,
+                FileId = id,
+                TaskId = _taskid
             };
         }
 
@@ -4821,11 +4829,11 @@ namespace KadOzenka.Dal.DataExport
             {
                 foreach (DataRow row in data.Rows)
                 {
-	                var numberValue = row.ItemArray[7].ParseToDecimalNullable();
+                    var numberValue = row.ItemArray[7].ParseToDecimalNullable();
                     if (numberValue.HasValue)
-	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), numberValue.ToString().Replace(",", ".")));
+                        FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), numberValue.ToString().Replace(",", ".")));
                     else
-	                    FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                        FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                 }
                 CalcItem factor_item = (FactorValuesGroup.Count > 0) ?
                                         FactorValuesGroup.Find(x => x.FactorId == _factor_id) :
@@ -4919,11 +4927,11 @@ namespace KadOzenka.Dal.DataExport
 
                 if (attribs.Count > 0)
                 {
-	                var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribs.First().RegisterData.Id);
-	                if (attribute_source != null)
-	                {
-		                source_out = attribute_source.Description;
-	                }
+                    var attribute_source = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attribs.First().RegisterData.Id);
+                    if (attribute_source != null)
+                    {
+                        source_out = attribute_source.Description;
+                    }
                 }
             }
 
@@ -4939,26 +4947,26 @@ namespace KadOzenka.Dal.DataExport
     {
         private static readonly ILogger _log = Log.ForContext<KOUnloadResult>();
         public static List<KoUnloadResultType> GetKoUnloadResultTypes(KOUnloadSettings setting)
-	    {
-		    List<KoUnloadResultType> koUnloadResults = new List<KoUnloadResultType>();
+        {
+            List<KoUnloadResultType> koUnloadResults = new List<KoUnloadResultType>();
 
-		    var usedUnloadTypes = typeof(KOUnloadSettings).GetFields()
-			    .Where(fieldInfo => fieldInfo.GetCustomAttributes(typeof(KoUnloadResultTypeAttribute), false).Length > 0
-			                && (bool) fieldInfo.GetValue(setting))
-			    .Select(fieldInfo =>
-				    ((KoUnloadResultTypeAttribute) fieldInfo.GetCustomAttributes(typeof(KoUnloadResultTypeAttribute), false).First())
-				    .UnloadType);
-		    koUnloadResults.AddRange(usedUnloadTypes);
+            var usedUnloadTypes = typeof(KOUnloadSettings).GetFields()
+                .Where(fieldInfo => fieldInfo.GetCustomAttributes(typeof(KoUnloadResultTypeAttribute), false).Length > 0
+                            && (bool) fieldInfo.GetValue(setting))
+                .Select(fieldInfo =>
+                    ((KoUnloadResultTypeAttribute) fieldInfo.GetCustomAttributes(typeof(KoUnloadResultTypeAttribute), false).First())
+                    .UnloadType);
+            koUnloadResults.AddRange(usedUnloadTypes);
 
-		    return koUnloadResults;
-	    }
+            return koUnloadResults;
+        }
 
-	    /// <summary>
+        /// <summary>
         /// Выгрузка результатов
         /// </summary>
         public static List<ResultKoUnloadSettings> Unload(OMQueue queue, OMUnloadResultQueue unloadResultQueue, KOUnloadSettings setting)
         {
-	        List<ResultKoUnloadSettings> result = new List<ResultKoUnloadSettings>();
+            List<ResultKoUnloadSettings> result = new List<ResultKoUnloadSettings>();
             setting.DirectoryName = "";
             var counter = new UnloadCounter(setting, queue, 90);
             SetProgress setProgress = counter.ReportProgress;
@@ -4974,8 +4982,8 @@ namespace KadOzenka.Dal.DataExport
             {
               
                 unloadResultQueue.UnloadCurrentCount = unloadCurrentCount;
-	            unloadResultQueue.CurrentUnloadType_Code = koUnloadResultType;
-	            unloadResultQueue.Save();
+                unloadResultQueue.CurrentUnloadType_Code = koUnloadResultType;
+                unloadResultQueue.Save();
                 try
                 {
                     //TODO: сейчас не реализована Выгрузка истории по объектам
@@ -4998,39 +5006,39 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-	    private static Dictionary<KoUnloadResultType, MethodInfo> GetUnloadResultMethodInfoDictionary()
+        private static Dictionary<KoUnloadResultType, MethodInfo> GetUnloadResultMethodInfoDictionary()
         {
             var assemblyTypes = Assembly.GetExecutingAssembly().GetTypes()
-		        .Where(x => typeof(IKoUnloadResult).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).ToList();
+                .Where(x => typeof(IKoUnloadResult).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).ToList();
 
-		    var methods = assemblyTypes
-			    .SelectMany(t => t.GetMethods())
-			    .Where(m => m.GetCustomAttributes(typeof(KoUnloadResultActionAttribute), false).Length > 0)
-			    .ToDictionary(
-				    x => ((KoUnloadResultActionAttribute) x
-					    .GetCustomAttributes(typeof(KoUnloadResultActionAttribute), false)
-					    .First()).UnloadType, x => x);
+            var methods = assemblyTypes
+                .SelectMany(t => t.GetMethods())
+                .Where(m => m.GetCustomAttributes(typeof(KoUnloadResultActionAttribute), false).Length > 0)
+                .ToDictionary(
+                    x => ((KoUnloadResultActionAttribute) x
+                        .GetCustomAttributes(typeof(KoUnloadResultActionAttribute), false)
+                        .First()).UnloadType, x => x);
 
-		    return methods;
-	    }
+            return methods;
+        }
 
-	    public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
-	    {
-		    unloadResultQueue.CurrentUnloadProgress = progress;
-		    unloadResultQueue.Save();
-	    }
+        public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
+        {
+            unloadResultQueue.CurrentUnloadProgress = progress;
+            unloadResultQueue.Save();
+        }
     }
 
     public interface IKoUnloadResult { }
 
     public class KoUnloadResultActionAttribute : Attribute
     {
-	    public KoUnloadResultType UnloadType { get; }
+        public KoUnloadResultType UnloadType { get; }
 
-	    public KoUnloadResultActionAttribute(KoUnloadResultType unloadType)
-	    {
-		    UnloadType = unloadType;
-	    }
+        public KoUnloadResultActionAttribute(KoUnloadResultType unloadType)
+        {
+            UnloadType = unloadType;
+        }
     }
 
     public delegate void SetProgress(int taskProgress, bool reportFinish = false, string progressMessage = "");
@@ -5095,33 +5103,33 @@ namespace KadOzenka.Dal.DataExport
 
     public class SaveReportDownload
     {
-	    public static long SaveReportExcel(string nameReport, ExcelFile excel, long registerId, string registerViewId = "KoTasks")
-	    {
-		    var currentDate = DateTime.Now;
-		    long reportId = 0;
-		    try
-		    {
-			    var export = new OMExportByTemplates
-			    {
-				    UserId = SRDSession.GetCurrentUserId().Value,
-				    DateCreated = currentDate,
-				    Status = (long)ImportStatus.Added,
-				    FileResultTitle = nameReport,
+        public static long SaveReportExcel(string nameReport, ExcelFile excel, long registerId, string registerViewId = "KoTasks")
+        {
+            var currentDate = DateTime.Now;
+            long reportId = 0;
+            try
+            {
+                var export = new OMExportByTemplates
+                {
+                    UserId = SRDSession.GetCurrentUserId().Value,
+                    DateCreated = currentDate,
+                    Status = (long)ImportStatus.Added,
+                    FileResultTitle = nameReport,
                     FileExtension = "xlsx",
                     MainRegisterId = registerId,
-				    RegisterViewId = registerViewId
-				};
+                    RegisterViewId = registerViewId
+                };
 
-			    reportId = export.Save();
+                reportId = export.Save();
 
-			    export.Status = (long)ImportStatus.Running;
-			    export.DateStarted = DateTime.Now;
-			    export.Save();
+                export.Status = (long)ImportStatus.Running;
+                export.DateStarted = DateTime.Now;
+                export.Save();
 
 
-				MemoryStream stream = new MemoryStream();
-			    excel.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-			    stream.Seek(0, SeekOrigin.Begin);
+                MemoryStream stream = new MemoryStream();
+                excel.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+                stream.Seek(0, SeekOrigin.Begin);
 
                 export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
                 export.DateFinished = DateTime.Now;
@@ -5130,71 +5138,71 @@ namespace KadOzenka.Dal.DataExport
                 FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
                 export.Save();
 
-			    return reportId;
-		    }
-		    catch (Exception e)
-		    {
-			    var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-			    if (export != null)
-			    {
-				    export.DateFinished = DateTime.Now;
-				    export.Status = (long)ImportStatus.Faulted;
-				    export.Save();
-			    }
-				
-			    Console.WriteLine(e);
-			    ErrorManager.LogError(e);
-			    return 0;
-		    }
-	    }
+                return reportId;
+            }
+            catch (Exception e)
+            {
+                var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+                if (export != null)
+                {
+                    export.DateFinished = DateTime.Now;
+                    export.Status = (long)ImportStatus.Faulted;
+                    export.Save();
+                }
 
-	    public static long SaveReport(string nameReport, Stream stream, long registerId, string registerViewId = "KoTasks", string reportExtension = "xml")
-	    {
-		    var currentDate = DateTime.Now;
-		    long reportId = 0;
-		    try
-		    {
-			    var export = new OMExportByTemplates
-			    {
-				    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-				    DateCreated = currentDate,
-				    Status = (long)ImportStatus.Added,
-				    FileResultTitle = nameReport,
-				    FileExtension = reportExtension,
+                Console.WriteLine(e);
+                ErrorManager.LogError(e);
+                return 0;
+            }
+        }
+
+        public static long SaveReport(string nameReport, Stream stream, long registerId, string registerViewId = "KoTasks", string reportExtension = "xml")
+        {
+            var currentDate = DateTime.Now;
+            long reportId = 0;
+            try
+            {
+                var export = new OMExportByTemplates
+                {
+                    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+                    DateCreated = currentDate,
+                    Status = (long)ImportStatus.Added,
+                    FileResultTitle = nameReport,
+                    FileExtension = reportExtension,
                     MainRegisterId = registerId,
-				    RegisterViewId = registerViewId
-			    };
+                    RegisterViewId = registerViewId
+                };
 
-			    reportId = export.Save();
+                reportId = export.Save();
 
-			    export.Status = (long)ImportStatus.Running;
-			    export.DateStarted = DateTime.Now;
-			    export.Save();
+                export.Status = (long)ImportStatus.Running;
+                export.DateStarted = DateTime.Now;
+                export.Save();
 
-			    export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-			    export.DateFinished = DateTime.Now;
-			    export.Status = (long)ImportStatus.Completed;
+                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
+                export.DateFinished = DateTime.Now;
+                export.Status = (long)ImportStatus.Completed;
                 FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
                 export.Save();
 
-			    return reportId;
-		    }
-		    catch (Exception e)
-		    {
-			    var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-			    export.DateFinished = DateTime.Now;
-			    export.Status = (long)ImportStatus.Faulted;
-			    Console.WriteLine(e);
-			    ErrorManager.LogError(e);
-			    return 0;
-		    }
+                return reportId;
+            }
+            catch (Exception e)
+            {
+                var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+                export.DateFinished = DateTime.Now;
+                export.Status = (long)ImportStatus.Faulted;
+                Console.WriteLine(e);
+                ErrorManager.LogError(e);
+                return 0;
+            }
 
-		}
+        }
 
-	    public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
-	    {
-		    unloadResultQueue.CurrentUnloadProgress = progress;
-		    unloadResultQueue.Save();
-	    }
+        public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)
+        {
+            unloadResultQueue.CurrentUnloadProgress = progress;
+            unloadResultQueue.Save();
+        }
     }
 }
