@@ -1038,6 +1038,8 @@ namespace KadOzenka.Dal.DataExport
                 if (model!=null)
                     marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId ).SelectAll().Execute();
                 int? factorReestrId = OMGroup.GetFactorReestrId(_subgroup);
+
+                var allAttributes = new GbuObjectService().GetAllAttributes(_subgroup.Unit.Select(x => x.Id).ToList(), null, new List<long> {3,4,5,8,600}, isLight: true);
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
                     if (++currentUnitsCount % 1000 == 0)
@@ -1061,7 +1063,7 @@ namespace KadOzenka.Dal.DataExport
                     if (unit.PropertyType_Code == PropertyTypes.Stead)
                     {
                         string value_attr_3_4 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3_4)) //Код категории земель из ГКН
+                        if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 3, out value_attr_3_4)) //Код категории земель из ГКН
                         {
                             XmlNode xnAssignation = _xmlFile.CreateElement("Category");
                             DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3_4);
@@ -1069,7 +1071,7 @@ namespace KadOzenka.Dal.DataExport
                         }
 
                         value_attr_3_4 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3_4)) //Код вида использования по документам
+                        if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 4, out value_attr_3_4)) //Код вида использования по документам
                         {
                             XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
                             DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3_4);
@@ -1081,7 +1083,7 @@ namespace KadOzenka.Dal.DataExport
                         #region Assignation
                         XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
                         string value_attr_5 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
+                        if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 5, out value_attr_5)) //Код Вид использования по классификатору
                         {
                             if (unit.PropertyType_Code == PropertyTypes.Building)
                             {
@@ -1118,14 +1120,14 @@ namespace KadOzenka.Dal.DataExport
                     xnCadastralLocation.AppendChild(xnCadastralRegion);
 
                     string value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr)) //Код 600 - Адрес 
+                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 600, out value_attr)) //Код 600 - Адрес
                     {
                         XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
                         xnCadastralNote.InnerText = value_attr;
                         xnCadastralLocation.AppendChild(xnCadastralNote);
                     }
                     value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr)) //Код 8 - Местоположение
+                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 8, out value_attr)) //Код 8 - Местоположение
                     {
                         XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
                         xnCadastralOther.InnerText = value_attr;
@@ -1269,113 +1271,130 @@ namespace KadOzenka.Dal.DataExport
                 XmlNode xnReal_Estates = _xmlFile.CreateElement("Real_Estates");
 
                 var currentUnitsCount = 0;
+                var allAttributes = new GbuObjectService().GetAllAttributes(
+                                                                      _subgroup.Unit.Select(x => x.Id).ToList(), null, new List<long> {3, 4, 5, 8, 600},
+                                                                      isLight: true);
                 foreach (OMUnit unit in _subgroup.Unit)
                 {
-                    if (++currentUnitsCount % 1000 == 0)
-                        _log.Debug($"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
+                    if (++currentUnitsCount % 1000 == 0 || currentUnitsCount == 1)
+                            _log.Debug(
+                                $"Начата обработка ЕО №{currentUnitsCount} из {_subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
 
-                    XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
-                    DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
+                        XmlNode xnReal_Estate = _xmlFile.CreateElement("Real_Estate");
+                        DataExportCommon.AddAttribute(_xmlFile, xnReal_Estate, "ID_Group", _subgroup.Id.ToString());
 
-                    XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
-                    xnCadastralNumber.InnerText = unit.CadastralNumber;
-                    xnReal_Estate.AppendChild(xnCadastralNumber);
+                        XmlNode xnCadastralNumber = _xmlFile.CreateElement("CadastralNumber");
+                        xnCadastralNumber.InnerText = unit.CadastralNumber;
+                        xnReal_Estate.AppendChild(xnCadastralNumber);
 
-                    XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
-                    xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralType);
+                        XmlNode xnCadastralType = _xmlFile.CreateElement("Type");
+                        xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralType);
 
-                    XmlNode xnSpecific_CadastralCost = _xmlFile.CreateElement("Specific_CadastralCost");
-                    DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Value", unit.Upks.ToString());
-                    DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Unit", "1002");
-                    xnReal_Estate.AppendChild(xnSpecific_CadastralCost);
+                        XmlNode xnSpecific_CadastralCost = _xmlFile.CreateElement("Specific_CadastralCost");
+                        DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Value",
+                            unit.Upks.ToString());
+                        DataExportCommon.AddAttribute(_xmlFile, xnSpecific_CadastralCost, "Unit", "1002");
+                        xnReal_Estate.AppendChild(xnSpecific_CadastralCost);
 
-                    XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
-                    xnCadastralArea.InnerText = unit.Square.ToString();
-                    xnReal_Estate.AppendChild(xnCadastralArea);
+                        XmlNode xnCadastralArea = _xmlFile.CreateElement("Area");
+                        xnCadastralArea.InnerText = unit.Square.ToString();
+                        xnReal_Estate.AppendChild(xnCadastralArea);
 
-                    if (unit.PropertyType_Code == PropertyTypes.Stead)
-                    {
-                        string value_attr_3 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 3, out value_attr_3)) //Код категории земель из ГКН
+                        if (unit.PropertyType_Code == PropertyTypes.Stead)
                         {
-                            XmlNode xnAssignation = _xmlFile.CreateElement("Category");
-                            DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3);
-                            xnReal_Estate.AppendChild(xnAssignation);
-                        }
-
-                        value_attr_3 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 4, out value_attr_3)) //Код Вид использования по документам
-                        {
-                            XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
-                            DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3);
-                            xnReal_Estate.AppendChild(xnUtilization);
-                        }
-                    }
-                    else
-                    {
-                        #region Assignation
-                        XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
-                        string value_attr_5 = "";
-                        if (DataExportCommon.GetObjectAttribute(unit, 5, out value_attr_5)) //Код Вид использования по классификатору
-                        {
-                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+                            string value_attr_3 = "";
+                            if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 3, out value_attr_3)
+                            ) //Код категории земель из ГКН
                             {
-                                XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
-                                XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
-                                xnAss_Building.InnerText = value_attr_5;
-                                xnAssignation_Building.AppendChild(xnAss_Building);
-                                xnAssignation.AppendChild(xnAssignation_Building);
-                            }
-                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Pllacement)
-                            {
-                                XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
-                                XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
-                                xnAss_Flat.InnerText = value_attr_5;
-                                xnAssignation_Flat.AppendChild(xnAss_Flat);
-                                xnAssignation.AppendChild(xnAssignation_Flat);
-                            }
-                            if ((unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction) ||
-                                (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding))
-                            {
-                                XmlNode xnFormalized_Constr_Uncompleted = _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
-                                xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
-                                xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
-                            }
-                            if (value_attr_5 != "005002002999")
-
+                                XmlNode xnAssignation = _xmlFile.CreateElement("Category");
+                                DataExportCommon.AddAttribute(_xmlFile, xnAssignation, "Name", value_attr_3);
                                 xnReal_Estate.AppendChild(xnAssignation);
+                            }
+
+                            value_attr_3 = "";
+                            if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 4, out value_attr_3)
+                            ) //Код Вид использования по документам
+                            {
+                                XmlNode xnUtilization = _xmlFile.CreateElement("Utilization");
+                                DataExportCommon.AddAttribute(_xmlFile, xnUtilization, "Name_doc", value_attr_3);
+                                xnReal_Estate.AppendChild(xnUtilization);
+                            }
                         }
-                        #endregion
-                    }
+                        else
+                        {
+                            #region Assignation
 
-                    XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
+                            XmlNode xnAssignation = _xmlFile.CreateElement("Assignation");
+                            string value_attr_5 = "";
+                            if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 5, out value_attr_5)
+                            ) //Код Вид использования по классификатору
+                            {
+                                if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+                                {
+                                    XmlNode xnAssignation_Building = _xmlFile.CreateElement("Assignation_Building");
+                                    XmlNode xnAss_Building = _xmlFile.CreateElement("Ass_Building");
+                                    xnAss_Building.InnerText = value_attr_5;
+                                    xnAssignation_Building.AppendChild(xnAss_Building);
+                                    xnAssignation.AppendChild(xnAssignation_Building);
+                                }
 
-                    XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
-                    xnCadastralRegion.InnerText = region_rf;
-                    xnCadastralLocation.AppendChild(xnCadastralRegion);
+                                if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Pllacement)
+                                {
+                                    XmlNode xnAssignation_Flat = _xmlFile.CreateElement("Assignation_Flat");
+                                    XmlNode xnAss_Flat = _xmlFile.CreateElement("Ass_Flat");
+                                    xnAss_Flat.InnerText = value_attr_5;
+                                    xnAssignation_Flat.AppendChild(xnAss_Flat);
+                                    xnAssignation.AppendChild(xnAssignation_Flat);
+                                }
 
-                    string value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 600, out value_attr))  //Код Адрес
-                    {
-                        XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
-                        xnCadastralNote.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralNote);
-                    }
-                    value_attr = "";
-                    if (DataExportCommon.GetObjectAttribute(unit, 8, out value_attr))  //Код Местоположение
-                    {
-                        XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
-                        xnCadastralOther.InnerText = value_attr;
-                        xnCadastralLocation.AppendChild(xnCadastralOther);
-                    }
+                                if ((unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction) ||
+                                    (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding))
+                                {
+                                    XmlNode xnFormalized_Constr_Uncompleted =
+                                        _xmlFile.CreateElement("Formalized_Constr_Uncompleted");
+                                    xnFormalized_Constr_Uncompleted.InnerText = value_attr_5;
+                                    xnAssignation.AppendChild(xnFormalized_Constr_Uncompleted);
+                                }
 
-                    xnReal_Estate.AppendChild(xnCadastralLocation);
-                    XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
-                    xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
-                    xnReal_Estate.AppendChild(xnDate_valuation);
+                                if (value_attr_5 != "005002002999")
 
-                    xnReal_Estates.AppendChild(xnReal_Estate);
+                                    xnReal_Estate.AppendChild(xnAssignation);
+                            }
+
+                            #endregion
+                        }
+
+                        XmlNode xnCadastralLocation = _xmlFile.CreateElement("Location");
+
+                        XmlNode xnCadastralRegion = _xmlFile.CreateElement("Region");
+                        xnCadastralRegion.InnerText = region_rf;
+                        xnCadastralLocation.AppendChild(xnCadastralRegion);
+
+                        string value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 600, out value_attr)) //Код Адрес
+                        {
+                            XmlNode xnCadastralNote = _xmlFile.CreateElement("Note");
+                            xnCadastralNote.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralNote);
+                        }
+
+                        value_attr = "";
+                        if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 8, out value_attr)
+                        ) //Код Местоположение
+                        {
+                            XmlNode xnCadastralOther = _xmlFile.CreateElement("Other");
+                            xnCadastralOther.InnerText = value_attr;
+                            xnCadastralLocation.AppendChild(xnCadastralOther);
+                        }
+
+                        xnReal_Estate.AppendChild(xnCadastralLocation);
+                        XmlNode xnDate_valuation = _xmlFile.CreateElement("Date_valuation");
+                        xnDate_valuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime()
+                            .ToString("yyyy-MM-dd");
+                        xnReal_Estate.AppendChild(xnDate_valuation);
+
+                        xnReal_Estates.AppendChild(xnReal_Estate);
                 }
 
                 xnEvaluation_Group.AppendChild(xnReal_Estates);

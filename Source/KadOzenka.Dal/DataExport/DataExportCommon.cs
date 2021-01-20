@@ -433,6 +433,20 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
+        public static bool GetObjectAttribute(List<GbuObjectAttribute> list, OMUnit unit, long attrNumber, out string value)
+        {
+            bool result = false;
+            value = "";
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId).ToList();
+            if (attribs.Count > 0)
+            {
+                value = attribs[0].StringValue;
+                result = true;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Проверка значений УПКСЗ и КС с предыдущими. Были ли изменения. Поиск по Кадастровому номеру
         /// </summary>
