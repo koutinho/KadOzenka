@@ -73,6 +73,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				return;
 			}
 
+			Logger.ForContext("InputParameters", parameters.TaskIds, destructureObjects: true).Debug("Входные параметры");
+
 			if (!DataCompositionByCharacteristicsService.IsCacheTableExists())
 				throw new Exception("Не найдена таблица с данными для отчета");
 
