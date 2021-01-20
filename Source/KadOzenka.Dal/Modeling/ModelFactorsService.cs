@@ -60,6 +60,7 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
 			var attributes = new List<ModelAttributeRelationDto>();
 			var table = query.ExecuteQuery();
@@ -76,6 +77,8 @@ namespace KadOzenka.Dal.Modeling
 				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
 
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+				
+				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
 				attributes.Add(new ModelAttributeRelationDto
 				{
@@ -84,7 +87,8 @@ namespace KadOzenka.Dal.Modeling
 					AttributeId = attributeId,
 					AttributeName = attributeName,
 					AttributeType = attributeType,
-					DictionaryId = dictionaryId
+					DictionaryId = dictionaryId,
+					IsActive = isActive.GetValueOrDefault()
 				});
 			}
 
@@ -129,8 +133,9 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.PreviousWeight, nameof(ModelAttributeRelationDto.PreviousWeight)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
-			var sql = query.GetSql();
+			//var sql = query.GetSql();
 
 			var attributes = new List<ModelAttributeRelationDto>();
 			var table = query.ExecuteQuery();
@@ -155,6 +160,7 @@ namespace KadOzenka.Dal.Modeling
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var previousWeight = row[nameof(ModelAttributeRelationDto.PreviousWeight)].ParseToDecimalNullable();
+				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
 				attributes.Add(new ModelAttributeRelationDto
 				{
@@ -170,7 +176,8 @@ namespace KadOzenka.Dal.Modeling
 					SignDiv = signDiv.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
 					Coefficient = weight,
-					PreviousWeight = previousWeight
+					PreviousWeight = previousWeight,
+					IsActive = isActive.GetValueOrDefault()
 				});
 			}
 
@@ -241,7 +248,8 @@ namespace KadOzenka.Dal.Modeling
 						DictionaryId = dto.DictionaryId,
 						MarkerId = -1,
 						AlgorithmType_Code = type,
-						PreviousWeight = dto.PreviousWeight ?? 1
+						PreviousWeight = dto.PreviousWeight ?? 1,
+						IsActive = dto.IsActive
 					}.Save();
 				});
 
@@ -249,23 +257,30 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
-		public void UpdateAutomaticFactor(AutomaticModelFactorDto dto)
+		public bool UpdateAutomaticFactor(AutomaticModelFactorDto dto)
 		{
 			ValidateAutomaticFactor(dto);
 
 			var factor = GetFactorById(dto.Id);
 
+			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.DictionaryId != dto.DictionaryId)
+				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
-						.Select(x => x.DictionaryId).Execute();
+						.Select(x => new
+						{
+							x.DictionaryId,
+							x.IsActive
+						}).Execute();
 					factors.ForEach(x =>
 					{
 						x.DictionaryId = dto.DictionaryId;
+						x.IsActive = dto.IsActive;
 						x.Save();
 					});
+					mustResetTrainingResult = true;
 				}
 
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
@@ -273,6 +288,8 @@ namespace KadOzenka.Dal.Modeling
 
 				ts.Complete();
 			}
+
+			return mustResetTrainingResult;
 		}
 
 		public int AddManualFactor(ManualModelFactorDto dto)
@@ -350,8 +367,7 @@ namespace KadOzenka.Dal.Modeling
 
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
-			//тип алгоритма не важен, т.к. для автоматической модели существует три фактора для каждого типа алгоритма
-			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, KoAlgoritmType.Line);
+			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, factor.Type);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)

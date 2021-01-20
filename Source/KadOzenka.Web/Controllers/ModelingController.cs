@@ -385,7 +385,8 @@ namespace KadOzenka.Web.Controllers
 	        var factorDto = new AutomaticFactorModel
 	        {
 		        Id = -1,
-		        ModelId = generalModelId
+		        ModelId = generalModelId,
+                IsActive = true
 	        };
 
 	        return View("EditAutomaticModelFactor", factorDto);
@@ -446,7 +447,11 @@ namespace KadOzenka.Web.Controllers
             }
             else
 	        {
-		        ModelFactorsService.UpdateAutomaticFactor(dto);
+		        var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
+		        if (mustResetTrainingResult)
+		        {
+			        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+                }
 	        }
 
 	        return Json(isProcessForFactorAdditionCreated);

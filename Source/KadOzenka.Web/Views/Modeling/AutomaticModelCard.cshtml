@@ -245,7 +245,8 @@
                             IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
                             Coefficient: { type: "number" },
-                            PreviousWeight: { type: "number" }
+                            PreviousWeight: { type: "number" },
+                            IsActive: { type: "boolean" }
                         }
                     }
                 },
@@ -268,6 +269,12 @@
                     field: 'IsNormalized',
                     title: 'Нормализация',
                     template: '<input type="checkbox" #= DictionaryId != null ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'IsActive',
+                    title: 'Использовать в модели',
+                    template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
                     attributes: { style: "text-align: center;" }
                 },
                 {

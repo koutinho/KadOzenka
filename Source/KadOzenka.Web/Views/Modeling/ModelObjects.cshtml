@@ -157,6 +157,10 @@
     .label-select-all-checkbox {
         padding-left: 10%
     }
+
+    .not-active-factor {
+        color: #BEBEBE;
+    }
 </style>
 
 
@@ -264,8 +268,8 @@
         excludeAllFunc, trainingAllFunc, controlAllFunc,
         saveFunc, exportFunc)
     {
-        var model = '@Json.Serialize(Model.Attributes)';
-        var modelAttributes = JSON.parse(model);
+        var modelAttributesSerialized = '@Json.Serialize(Model.Attributes)';
+        var modelAttributes = JSON.parse(modelAttributesSerialized);
         mapResponse(data, modelAttributes);
         var dataSource = new kendo.data.DataSource({
             transport:{
@@ -368,9 +372,11 @@
 
     function generateColumns(gridId, modelAttributes) {
         var additionalColumns = modelAttributes.map(function (attribute) {
+            var styleClass = attribute.IsActive === true ? "" : "not-active-factor";
             return {
-                title: attribute.AttributeName,
                 field: objectFieldPrefixForCoefficient + attribute.AttributeId,
+                headerTemplate: '<label style="font-weight: normal" class="' + styleClass + '">' + attribute.AttributeName + '</label>',
+                attributes: { 'class': styleClass },
                 filterable: {
                     extra: false,
                     operators: {

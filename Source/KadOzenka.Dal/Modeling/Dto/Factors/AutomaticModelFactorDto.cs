@@ -10,5 +10,6 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public long? FactorId { get; set; }
 		public long? DictionaryId { get; set; }
 		public decimal? PreviousWeight { get; set; }
+		public bool IsActive { get; set; }
 	}
 }

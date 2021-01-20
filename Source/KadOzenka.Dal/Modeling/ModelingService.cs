@@ -714,6 +714,13 @@ namespace KadOzenka.Dal.Modeling
 					break;
 			}
 
+			var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
+			factors.ForEach(x =>
+			{
+				x.Weight = 0;
+				x.Save();
+			});
+
 			generalModel.Save();
 		}
 
