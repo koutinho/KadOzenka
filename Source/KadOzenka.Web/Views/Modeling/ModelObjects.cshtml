@@ -237,12 +237,14 @@
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
                     setIsForTrainingCheckboxForSuccessfulObjects, setIsForControlCheckboxForSuccessfulObjects,
+                    selectAllObjectsForExcludingForSuccessfulObjects,
                     selectAllObjectsForTrainingForSuccessfulObjects, selectAllObjectsForControlForSuccessfulObjects,
                     saveSuccessfulObjects, exportSuccessfulObjectsToExcel);
                 //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
                 //generateGrid(result.errorModels, errorObjectsGridId,
                 //    setIsExcludedCheckboxForErrorObjects,
                 //    setIsForTrainingCheckboxForErrorObjects, setIsForControlCheckboxForErrorObjects,
+                //    selectAllObjectsForExcludingForErrorObjects,
                 //    selectAllObjectsForTrainingForErrorObjects, selectAllObjectsForControlForErrorObjects,
                 //    saveErrorObjects, exportErrorObjectsToExcel);
             },
@@ -257,7 +259,11 @@
 
 
 
-    function generateGrid(data, gridId, excludeFunc, trainingFunc, controlFunc, trainingAllFunc, controlAllFunc, saveFunc, exportFunc) {
+    function generateGrid(data, gridId,
+        excludeFunc, trainingFunc, controlFunc,
+        excludeAllFunc, trainingAllFunc, controlAllFunc,
+        saveFunc, exportFunc)
+    {
         var model = '@Json.Serialize(Model.Attributes)';
         var modelAttributes = JSON.parse(model);
         mapResponse(data, modelAttributes);
@@ -317,6 +323,7 @@
         $("#" + gridId + " .k-grid-content").on("change", "input.isExcluded", excludeFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.isForTraining", trainingFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.IsForControl", controlFunc);
+        $("#headerCheckboxIsForExcluding-" + gridId).on("click", excludeAllFunc);
         $("#headerCheckboxIsForTraining-" + gridId).on("click", trainingAllFunc);
         $("#headerCheckboxIsForControl-" + gridId).on("click", controlAllFunc);
         $('#saveBtn-' + gridId).on('click', saveFunc);
@@ -378,6 +385,7 @@
                 sortable: false
             };
         });
+        var selectAllForExcludingId = "headerCheckboxIsForExcluding-" + gridId;
         var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
         var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsBeforeMarks = [
@@ -402,6 +410,8 @@
             {
                 title: "Исключен из расчета",
                 field: "IsExcluded",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForExcludingId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Исключен из расчета</span>",
                 template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx, isExcluded" />',
                 filterable: false,
                 sortable: false
@@ -554,6 +564,26 @@
         var grid = $("#" + gridId).data("kendoGrid");
         var dataItem = grid.dataItem($(e.target).closest("tr"));
         return dataItem;
+    }
+
+
+    //Установка галочки для исключения ВСЕХ объектов
+    function selectAllObjectsForExcludingForSuccessfulObjects(e) {
+        selectAllObjectsForExcluding(successfulObjectsGridId, e);
+    }
+    //function selectAllObjectsForExcludingForErrorObjects() {
+    //    selectAllObjectsForTraining(errorObjectsGridId, e);
+    //}
+    function selectAllObjectsForExcluding(gridId, e) {
+        e.stopPropagation();
+        var grid = $("#" + gridId).data("kendoGrid");
+        var headerState = $("#headerCheckboxIsForExcluding-" + gridId).prop("checked");
+        var data = getObjectsFromGrid(gridId);
+        for (var i = 0; i < data.length; i++) {
+            data[i].IsExcluded = headerState;
+            setCheckboxState(grid, data[i]);
+        }
+        grid.refresh();
     }
 
 

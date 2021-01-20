@@ -3,11 +3,11 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost:4041",
+      "applicationUrl": "https://localhost:4041",
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:50250/",
+      "applicationUrl": "https://localhost:50250/",
       "sslPort": 0
     }
   },
@@ -15,7 +15,7 @@
     "IIS Express": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:4041",
+      "launchUrl": "https://localhost:4041",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -24,11 +24,11 @@
     "KadOzenka.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50252/",
+      "launchUrl": "https://localhost:50252/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:50252/"
+      "applicationUrl": "https://localhost:50252/"
     }
   }
 }
