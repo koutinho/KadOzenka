@@ -444,10 +444,11 @@ namespace KadOzenka.Dal.Modeling
 
             var columnHeaders = new List<object>
             {
-                "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена"
-            };
+                "Id", "Признак выбора аналога в обучающую модель", "Признак выбора аналога в контрольную модель",
+                "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена",
+				"Отклонение цены от прогнозной, %"
+			};
             columnHeaders.AddRange(factors.Select(x => x.Name).ToList());
-            columnHeaders.AddRange(new List<string>{ "Признак выбора аналога в обучающую модель", "Признак выбора аналога в контрольную модель" });
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
             //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
@@ -462,11 +463,13 @@ namespace KadOzenka.Dal.Modeling
 	                var obj = marketObjects.FirstOrDefault(x => x.Id == id);
                     if(obj == null)
                         return;
-                    
-	                var values = new List<object>
+
+                    var values = new List<object>
                     {
-                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel
-                    };
+	                    obj.Id, obj.IsForTraining.GetValueOrDefault(), obj.IsForControl.GetValueOrDefault(),
+	                    obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
+	                    CalculatePercent(obj.PriceFromModel, obj.Price)
+					};
 
 	                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
 	                factors.ForEach(attribute =>
@@ -475,10 +478,7 @@ namespace KadOzenka.Dal.Modeling
 		                values.Add(coefficient);
 	                });
 
-	                values.Add(obj.IsForTraining.GetValueOrDefault());
-	                values.Add(obj.IsForControl.GetValueOrDefault());
-
-                    //var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
+	                //var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
                     // factors, coefficients, obj.CadastralNumber); 
 
                     //values.Add(calculationParameters.ModelingPrice); 
