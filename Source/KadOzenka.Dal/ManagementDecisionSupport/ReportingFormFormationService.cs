@@ -16,12 +16,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 	public class ReportingFormFormationService
 	{
 		private readonly GbuObjectService _gbuObjectService;
-		private readonly CancellationManager _cancellationManager;
+		private readonly QueryManager _queryManager;
 
-		public ReportingFormFormationService(GbuObjectService gbuObjectService, CancellationManager cancellationManager)
+		public ReportingFormFormationService(GbuObjectService gbuObjectService, QueryManager queryManager)
 		{
 			_gbuObjectService = gbuObjectService;
-			_cancellationManager = cancellationManager;
+			_queryManager = queryManager;
 
 		}
 
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				.Select(x => x.Status_Code);
 		
 
-			var objects = _cancellationManager.ExecuteQuery(query);
+			var objects = _queryManager.ExecuteQuery(query);
 			return objects.Select(x => new UnitDto
 			{
 				CadastralNumber = x.CadastralNumber,
@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.New);
 				query.GroupBy(x => x.PropertyType_Code);
 
-			var objectsByPropertyType = _cancellationManager.ExecuteSelect(query, x => new
+			var objectsByPropertyType = _queryManager.ExecuteSelect(query, x => new
 			{
 				x.PropertyType_Code,
 				ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
@@ -77,14 +77,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitDto> GetPreviouslyRegisteredObjects(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.Recalculated);
-			var objects = query
+			query
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.ParentTask.CreationDate)
 				.Select(x => x.StatusRepeatCalc_Code)
 				.Select(x => x.Square)
 				.Select(x => x.PropertyType_Code)
-				.Select(x => x.Status_Code)
-				.Execute();
+				.Select(x => x.Status_Code);
+
+			var objects = _queryManager.ExecuteQuery(query);
 
 			return objects.Select(x => new UnitDto
 			{
@@ -100,9 +101,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		public List<UnitCountByPropertyTypeDto> GetPreviouslyRegisteredObjectsByPropertyType(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
 			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, KoUnitStatus.Recalculated);
-			var objectsByPropertyType = query
-				.GroupBy(x => x.PropertyType_Code)
-				.ExecuteSelect(x => new
+
+			var objectsByPropertyType = _queryManager.ExecuteSelect(query.GroupBy(x => x.PropertyType_Code),
+				x => new
 				{
 					x.PropertyType_Code,
 					ObjectCount = QSExtensions.Count<OMUnit>(y => 1)
@@ -181,7 +182,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			query.AddColumn(OMUnit.GetColumn(x => x.Status_Code, nameof(UnitWithChangedFactorsDto.Status)));
 			query.AddColumn(OMUnitChange.GetColumn(x => x.ChangeStatus, nameof(UnitWithChangedFactorsDto.ChangedFactor)));
 
-			var table = query.ExecuteQuery();
+			//var table = query.ExecuteQuery();
+			var table = _queryManager.ExecuteQueryToDataTable(query);
 			var data = new List<UnitWithChangedFactorsDto>();
 			if (table.Rows.Count != 0)
 			{
@@ -244,10 +246,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			var factorsCondition = new QSConditionSimple(new QSColumnQuery(subQuery, "factors"), QSConditionType.Exists);
 			query = query.And(factorsCondition);
-			var objects = query
+			query
 				.Select(x => x.PropertyType)
-				.Select(x => x.PropertyType_Code)
-				.Execute();
+				.Select(x => x.PropertyType_Code);
+
+			var objects = _queryManager.ExecuteQuery(query);
 
 			return objects
 				.GroupBy(x => x.PropertyType_Code)
@@ -281,14 +284,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			taskCreationDateFrom = taskCreationDateFrom?.Date;
 			taskCreationDateTo = taskCreationDateTo?.GetEndOfTheDay();
-			if (!_cancellationManager.GetReportCancellationToken().IsCancellationRequested)
+			if (!_queryManager.IsRequestCancellationToken())
 			{
-				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo)
+				var values = _gbuObjectService.GetAttributeValueKoObjectsCount(attribute.Id, status, taskCreationDateFrom, taskCreationDateTo, _queryManager)
 					.Select(x => new UnitCountByTypeOfUseDto
 						{ TypeOfUse = GetAttribureValueString(x.AttributeValue, attribute), ObjectsCount = x.ObjectsCount }).ToList();
 
 				var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo, status);
-				var objectsCount = query.ExecuteCount();
+				var objectsCount = _queryManager.ExecuteCount(query);
 
 				if (values.Sum(x => x.ObjectsCount) < objectsCount)
 				{

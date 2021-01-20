@@ -42,6 +42,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
 			var dateFrom = GetQueryParam<DateTime?>("DateFrom", query);
 			var dateTo = GetQueryParam<DateTime?>("DateTo", query);
 			var typeOfUseCodeAttributeId = GetFilterParameterValue(query, "TypeOfUseCodeAttribute", "Код вида использования");

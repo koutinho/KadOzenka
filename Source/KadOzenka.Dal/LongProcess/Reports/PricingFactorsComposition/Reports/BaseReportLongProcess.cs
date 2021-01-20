@@ -9,6 +9,7 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
@@ -20,7 +21,7 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public abstract class BaseReportLongProcess<T> : LongProcess where T : new()
+	public abstract class BaseReportLongProcess<T> : LongProcess where T : class, new()
 	{
 		private int _packageSize = 125000;
 		protected abstract string ReportName { get; }
@@ -29,6 +30,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 		private CustomReportsService CustomReportsService { get; }
+		private readonly QueryManager _queryManager;
 		private object _locker;
 
 		protected BaseReportLongProcess(ILogger logger)
@@ -37,6 +39,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			_locker = new object();
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 			CustomReportsService = new CustomReportsService();
+			_queryManager = new QueryManager();
 		}
 
 		protected abstract List<string> GenerateReportReportRow(int index, T item);
@@ -54,7 +57,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			DataCompositionByCharacteristicsService.CancellationManager.BaseCancellationToken = cancellationToken;
+			DataCompositionByCharacteristicsService.QueryManager.SetBaseToken(cancellationToken);
+			_queryManager.SetBaseToken(cancellationToken);
 			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 
@@ -124,9 +128,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 							{
 								Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
 
-								currentPage = QSQuery.ExecuteSql<T>(sql);
-								processedItemsCount += currentPage.Count;
-							}
+									currentPage = _queryManager.ExecuteSql<T>(sql);
+									processedItemsCount += currentPage.Count;
+								}
 
 							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
 							using (Logger.TimeOperation($"Формирование файла для пакета №{i}"))

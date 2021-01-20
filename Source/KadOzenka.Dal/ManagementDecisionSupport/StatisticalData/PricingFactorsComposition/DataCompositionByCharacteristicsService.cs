@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 
 		private static List<RegisterData> _cachedRegisters;
 
-		public readonly CancellationManager CancellationManager = new CancellationManager();
+		public readonly QueryManager QueryManager = new QueryManager();
 
 		public static List<RegisterData> CachedRegisters
 		{
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactors
 			var isExists = false;
 
 			var sql = $@"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{TableName}') as {nameof(isExists)}";
-			var dataTable = CancellationManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+			var dataTable = QueryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
 			if (dataTable.Rows.Count > 0)
 			{

@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			DataCompositionByCharacteristicsService.CancellationManager.BaseCancellationToken = cancellationToken;
+			DataCompositionByCharacteristicsService.QueryManager.SetBaseToken(cancellationToken); 
 
 			Logger.Debug("Старт фонового процесса: {Description}.", processType.Description);
 

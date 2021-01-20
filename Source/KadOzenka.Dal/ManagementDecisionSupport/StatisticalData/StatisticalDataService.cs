@@ -9,6 +9,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Directory;
@@ -18,6 +19,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
     public class StatisticalDataService
     {
 	    public string SqlQueriesFolder => "SqlQueries";
+
+	    public readonly QueryManager QueryManager;
         private TourFactorService TourFactorService { get; set; }
 
         public static readonly Dictionary<long?, Type> ReportsViaLongLongProcess =
@@ -30,6 +33,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public StatisticalDataService()
         {
             TourFactorService = new TourFactorService();
+            QueryManager = new QueryManager();
         }
 
 
