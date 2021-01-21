@@ -388,39 +388,42 @@
                         }
                     }
                 },
-                sortable: false
+                sortable: false,
+                width: 200
             };
         });
+        var widthForColumnsWithCheckBoxes = 100;
+        var widthForColumnsWithPrices = 150;
         var selectAllForExcludingId = "headerCheckboxIsForExcluding-" + gridId;
         var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
         var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsBeforeMarks = [
             {
-                title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
                 filterable: false,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithCheckBoxes
             },
             {
-                title: "Признак выбора аналога в контрольную модель",
                 field: "IsForControl",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
                 template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
                 filterable: false,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithCheckBoxes
             },
             {
-                title: "Исключен из расчета",
                 field: "IsExcluded",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForExcludingId + "' class='header-select-all-checkbox'>" +
-                    "<span class='label-select-all-checkbox'>Исключен из расчета</span>",
+                    "<span class='label-select-all-checkbox'>Признак исключения из расчета</span>",
                 template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx, isExcluded" />',
                 filterable: false,
-                sortable: false
+                sortable: false,
+                width: widthForColumnsWithCheckBoxes
             },
             {
                 title: "Кадастровый номер",
@@ -461,28 +464,32 @@
                         }
                     }
                 },
-                sortable: true
+                sortable: true,
+                width: 100
             },
             {
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price) #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             },
             {
                 title: "Спрогнозированная цена",
                 field: "PriceFromModel",
                 template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             },
             {
                 title: "Отклонение цены от прогнозной, %",
                 field: "DeviationFromPredictablePrice",
                 template: '#: DeviationFromPredictablePrice == null ? "" : kendo.toString(DeviationFromPredictablePrice, "n2") #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             }
         ];
         var baseColumnsAfterMarks = [
