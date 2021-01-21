@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.DataExport
     {
         public static string specifierInteger = "D";
         public static string specifierDouble = "N";
-        public static CultureInfo culture = CultureInfo.CreateSpecificCulture("ru-RU");
+        public static CultureInfo Culture = CultureInfo.CreateSpecificCulture("ru-RU");
 
         /// <summary>
         /// Добавление аттрибута к объекту XML

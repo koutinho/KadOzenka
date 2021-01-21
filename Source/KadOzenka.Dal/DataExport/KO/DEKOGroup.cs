@@ -170,7 +170,7 @@ namespace KadOzenka.Dal.DataExport
             #region Details
             XmlNode xnDetails = xmlFile.CreateElement("Details");
             XmlNode xnDateDoc = xmlFile.CreateElement("Date_Doc");
-            xnDateDoc.InnerText = ConfigurationManager.AppSettings["3XML_Detail_Date_Doc"].ParseToDateTime().ToString();
+            xnDateDoc.InnerText = ConfigurationManager.AppSettings["3XML_Detail_Date_Doc"].ParseToDateTime().ToString(DataExportCommon.Culture);
             xnDetails.AppendChild(xnDateDoc);
 
             XmlNode xnNDoc = xmlFile.CreateElement("N_Doc");
@@ -225,7 +225,7 @@ namespace KadOzenka.Dal.DataExport
 
             #region Report_Details
             XmlNode xnReportDetails = xmlFile.CreateElement("Report_Details");
-            DataExportCommon.AddAttribute(xmlFile, xnReportDetails, "Date", ConfigurationManager.AppSettings["3XML_Report_Details_Date"].ParseToDateTime().ToString());
+            DataExportCommon.AddAttribute(xmlFile, xnReportDetails, "Date", ConfigurationManager.AppSettings["3XML_Report_Details_Date"].ParseToDateTime().ToString(DataExportCommon.Culture));
             DataExportCommon.AddAttribute(xmlFile, xnReportDetails, "Number", ConfigurationManager.AppSettings["3XML_Report_Details_Number"]);
 
             #region Appraisers
@@ -788,7 +788,6 @@ namespace KadOzenka.Dal.DataExport
                             DataExportCommon.AddAttribute(xmlFile, xnCEvaluativeFactor, "ID_Factor",
                                 factorModel.FactorId.ToString() + "_" + subgroup.Id.ToString());
 
-                            RegisterAttribute attributeFactor = RegisterCache.GetAttributeData((int) (factorModel.FactorId));
                             factorModel.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
 
                             bool addf = false;
@@ -834,7 +833,6 @@ namespace KadOzenka.Dal.DataExport
             {
                 foreach (OMModelFactor factorModel in model.ModelFactor)
                 {
-                    RegisterAttribute attributeFactor = RegisterCache.GetAttributeData((int) (factorModel.FactorId));
                     factorModel.FillMarkCatalogsFromList(marks, model.GroupId);
 
                     XmlNode xnEvaluativeFactorModelling = xmlFile.CreateElement("Evaluative_Factor_Modelling");
