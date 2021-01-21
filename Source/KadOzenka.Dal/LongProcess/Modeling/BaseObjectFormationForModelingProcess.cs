@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
 					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
 					    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
-						return;
+						continue;
 
 					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
 				}

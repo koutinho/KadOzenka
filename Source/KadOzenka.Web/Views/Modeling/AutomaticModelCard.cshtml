@@ -55,7 +55,7 @@
         <li id="SectionMainData" data-expand style="padding-top: 1%">
             <span>Основные данные</span>
             <div class="form-horizontal col-sm-12" style="padding: 2%">
-                <div id="mainToolbar"></div>
+                <div id="mainToolbar" style="position: fixed; background-color: white; z-index: 2; width: 95%"></div>
                 <div style="padding-top: 2%">
                     @{
                         await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
@@ -249,8 +249,7 @@
                             IsActive: { type: "boolean" }
                         }
                     }
-                },
-                pageSize: 10
+                }
             },
             columns: [
                 {
@@ -297,7 +296,10 @@
             dataBound: changeToolBarButtonsClass,
             width: '100%',
             scrollable: true,
-            selectable: true
+            selectable: true,
+            pageable: {
+                pageSize: 10
+            }
         });
 
         $("#chooseModelTypeButtons").kendoButtonGroup({
