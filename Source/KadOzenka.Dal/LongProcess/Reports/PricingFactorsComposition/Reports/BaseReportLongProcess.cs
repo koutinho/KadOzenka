@@ -87,7 +87,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			{
 				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long) x.TaskId) &&
 				                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-				Logger.Debug($"Всего в БД {unitsCount} ЕО.");
+				Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
+				WorkerCommon.SetProgress(processQueue, 1);
 
 				var localCancelTokenSource = new CancellationTokenSource();
 				var options = new ParallelOptions
@@ -96,6 +97,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 					MaxDegreeOfParallelism = 20
 				};
 
+				var processedPackageCount = 0;
 				var numberOfPackages = unitsCount / _packageSize + 1;
 				var processedItemsCount = 0;
 				using (Logger.TimeOperation("Полная обработка всех пакетов"))
@@ -109,9 +111,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 						}
 
 						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-						Logger.Debug($"Начата работа с пакетом №{i}");
+						Logger.Debug("Начата работа с пакетом №{i}", i);
 
-						using (Logger.TimeOperation($"Полная обработка пакета №{i} (сбор данных + генерация файла)"))
+						using (Logger.TimeOperation("Полная обработка пакета №{i} (сбор данных + генерация файла)", i))
 						{
 							var objectIdsSubQuerySql = $@"select object_id from ko_unit 
 								where task_id in ({string.Join(',', parameters.TaskIds)}) and PROPERTY_TYPE_CODE <> 2190 
@@ -124,19 +126,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
 							List<T> currentPage;
-							using (Logger.TimeOperation($"Сбор данных для пакета №{i}"))
+							using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
 							{
-								Logger.Debug(new Exception(sql), $"Начат сбор данных для пакета №{i}. До этого было обработано {processedItemsCount} записей");
+								Logger.Debug(new Exception(sql), "Начат сбор данных для пакета №{i}. До этого было обработано {ProcessedItemsCount} записей", i, processedItemsCount);
 
 									currentPage = _queryManager.ExecuteSql<T>(sql);
 									processedItemsCount += currentPage.Count;
-								}
+							}
 
 							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-							using (Logger.TimeOperation($"Формирование файла для пакета №{i}"))
+							using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
 							{
 								GenerateReport(currentPage);
 							}
+						}
+
+						lock (_locker)
+						{
+							processedPackageCount++;
+							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
 						}
 					});
 				}
@@ -208,7 +216,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 					WriteToStream(values, encoding, stream);
 
 					if (i % 100000 == 0)
-						Logger.Debug($"Обрабатывается строка №{i} из {reportItems.Count}.");
+						Logger.Debug("Обрабатывается строка №{i} из {reportItemsCount}.", i, reportItems.Count);
 				}
 
 				lock (_locker)
