@@ -1,16 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Serilog.Extensions.Logging;
 using Serilog;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Serilog.Configuration;
-using Serilog.Events;
-using SerilogTimings;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using KadOzenka.Dal.WorkerCheckerDataBase;
 
 namespace CIPJS
 {
@@ -32,6 +25,7 @@ namespace CIPJS
             {
                 Log.Warning("Application KadOzenka.Web starting up");
                 BuildWebHost(args).Run();
+                new WorkerCheckerDb().StartChecker();
             }
             catch (Exception ex)
             {
