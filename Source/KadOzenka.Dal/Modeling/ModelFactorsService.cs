@@ -425,9 +425,19 @@ namespace KadOzenka.Dal.Modeling
 			if (factorId == null)
 				throw new Exception("Не передан ИД фактора");
 
-			var isTheSameAttributeExists = OMModelFactor.Where(x =>
-					x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
-				.ExecuteExists();
+			bool isTheSameAttributeExists;
+			if (type == KoAlgoritmType.None)
+			{
+				isTheSameAttributeExists = OMModelFactor.Where(x => x.Id != id && x.FactorId == factorId && x.ModelId == modelId)
+					.ExecuteExists();
+			}
+			else
+			{
+				isTheSameAttributeExists = OMModelFactor.Where(x =>
+						x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
+					.ExecuteExists();
+			}
+
 			if (isTheSameAttributeExists)
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
