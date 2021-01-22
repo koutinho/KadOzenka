@@ -25,7 +25,6 @@ namespace CIPJS
             {
                 Log.Warning("Application KadOzenka.Web starting up");
                 BuildWebHost(args).Run();
-                new WorkerCheckerDb().StartChecker();
             }
             catch (Exception ex)
             {
@@ -41,6 +40,8 @@ namespace CIPJS
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
+                .StartWorkerChecker()
                 .Build();
+
     }
 }
