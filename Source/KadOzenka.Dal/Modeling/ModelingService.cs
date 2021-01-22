@@ -298,12 +298,7 @@ namespace KadOzenka.Dal.Modeling
 			var model = GetModelEntityById(modelId);
 
 			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
-			factors.ForEach(factor =>
-			{
-				ModelFactorsService.DeleteMarks(model.GroupId, factor.FactorId);
-
-				factor.Destroy();
-			});
+			factors.ForEach(factor => factor.Destroy());
 
 			if (model.Type_Code == KoModelType.Automatic)
 			{
