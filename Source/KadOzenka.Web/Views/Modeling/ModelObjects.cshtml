@@ -171,7 +171,8 @@
             <span class="k-icon k-i-save" style="padding-right: 30%"></span>
             Сохранить
         </a>
-        <a class="k-button k-button-icon" id="exportBtn-#: gridId #" style="width:120px;">
+        @*<a class="k-button k-button-icon" id="exportBtn-#: gridId #" style="width:120px;">*@
+        <a class="k-button k-button-icontext k-grid-excel" style="width:120px;">
             <span class="k-icon k-i-download" style="padding-right: 30%"></span>
             Выгрузить
         </a>
@@ -300,6 +301,24 @@
         }
         $("#" + gridId).kendoGrid({
             toolbar: kendo.template($("#GridToolbarTemplate").html())({ gridId: gridId}),
+            excel: {
+                //TODO русское символы кодируются неправильно, нужно исправить ИД на имя модели
+                fileName: "Объекты модели " + '@Model.Id' + ".xlsx",
+                allPages: true
+            },
+            excelExport: function (e) {
+                var sheet = e.workbook.sheets[0];
+                for (var i = 1; i < sheet.rows.length; i++) {
+                    var row = sheet.rows[i];
+                    for (var j = 0; j < row.cells.length; j++) {
+                        var cell = row.cells[j];
+                        if (typeof cell.value === "boolean") {
+                            var textValue = cell.value ? "Да" : "Нет";
+                            cell.value = textValue;
+                        }
+                    }
+                }
+            },
             filterable: {
                 extra: true,
                 operators: {
@@ -331,7 +350,8 @@
         $("#headerCheckboxIsForTraining-" + gridId).on("click", trainingAllFunc);
         $("#headerCheckboxIsForControl-" + gridId).on("click", controlAllFunc);
         $('#saveBtn-' + gridId).on('click', saveFunc);
-        $('#exportBtn-' + gridId).on('click', exportFunc);
+        //реализовано средствами kendo
+        //$('#exportBtn-' + gridId).on('click', exportFunc);
         $("#allObjectsCount").text(data.length);
     }
 
@@ -374,6 +394,7 @@
         var additionalColumns = modelAttributes.map(function (attribute) {
             var styleClass = attribute.IsActive === true ? "" : "not-active-factor";
             return {
+                title: attribute.AttributeName,
                 field: objectFieldPrefixForCoefficient + attribute.AttributeId,
                 headerTemplate: '<label style="font-weight: normal" class="' + styleClass + '">' + attribute.AttributeName + '</label>',
                 attributes: { 'class': styleClass },
@@ -399,6 +420,14 @@
         var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsBeforeMarks = [
             {
+                title: "ИД",
+                field: "Id",
+                filterable: false,
+                sortable: false,
+                width: 5
+            },
+            {
+                title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
@@ -408,6 +437,7 @@
                 width: widthForColumnsWithCheckBoxes
             },
             {
+                title: "Признак выбора аналога в контрольную модель",
                 field: "IsForControl",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
@@ -417,6 +447,7 @@
                 width: widthForColumnsWithCheckBoxes
             },
             {
+                title: "Признак исключения из расчета",
                 field: "IsExcluded",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForExcludingId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак исключения из расчета</span>",
@@ -438,6 +469,7 @@
                 template: "# if(UnitId != null){# <a href=\"/ObjectCard?ObjId=#=UnitId#&RegisterViewId=KoObjects&isVertical=true&useMasterPage=true\" target=\"_blank\"><span class=\"k-icon k-i-hyperlink-open\"></span></a> #} #",
                 sortable: false,
                 filterable: false,
+                exportable: { excel: false },
                 width: 100
             },
             {
