@@ -7,7 +7,6 @@ using System.Linq;
 using System.Xml;
 using Core.Register;
 using Core.Register.QuerySubsystem;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Directory;
@@ -20,9 +19,9 @@ namespace KadOzenka.Dal.DataExport
     /// <summary>
     /// Класс выгрузки в XML результатов Кадастровой оценки по группам.
     /// </summary>
-    public class DekoGroup : IKoUnloadResult
+    public class DEKOGroup : IKoUnloadResult
     {
-        private static readonly ILogger Log = Serilog.Log.ForContext<DekoGroup>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<DEKOGroup>();
 
         /// <summary>
         /// Выгрузка в XML из ObjectModel.KO.OMGroup
@@ -32,27 +31,27 @@ namespace KadOzenka.Dal.DataExport
         {
             Log.ForContext("InputParameters", setting, true).Debug("Начата выгрузка в XML результатов Кадастровой оценки по группам");
 
-            var progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
+            const string progressMessage = "Выгрузка в XML результатов Кадастровой оценки по группам";
             var progress = 0;
             if (unloadResultQueue != null)
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
 
-            List<ResultKoUnloadSettings> res = new List<ResultKoUnloadSettings>();
+            var res = new List<ResultKoUnloadSettings>();
             // Выбираем все подгруппы
-            List<OMGroup> koGroups = OMGroup.Where(x => x.ParentId != -1).SelectAll().Execute();
-            int countCurr = 0;
-            int countAll = koGroups.Count();
+            var koGroups = OMGroup.Where(x => x.ParentId != -1).SelectAll().Execute();
+            var countCurr = 0;
+            var countAll = koGroups.Count;
             Log.Debug($"Найдено {countAll} подгрупп");
 
-            foreach (OMGroup subgroup in koGroups)
+            foreach (var subgroup in koGroups)
             {
                 Log.ForContext("SubGroupId", subgroup.Id).Debug($"Начата работа с подгруппой '{subgroup.GroupName}', №{countCurr} из {countAll}");
 
                 countCurr++;
-                string strMessage = "Выгружается группа " + countCurr.ToString() + " (Id=" + subgroup.Id.ToString() + ") из " + countAll.ToString();
+                var strMessage = "Выгружается группа " + countCurr + " (Id=" + subgroup.Id + ") из " + countAll;
                 Console.WriteLine(strMessage);
                 var taskCounter = 0;
-                foreach (long taskId in setting.TaskFilter)
+                foreach (var taskId in setting.TaskFilter)
                 {
                     Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
 
@@ -68,15 +67,9 @@ namespace KadOzenka.Dal.DataExport
                             resultFile = SaveXmlDocument(subgroup, strMessage);
                         }
 
-                        OMGroup parentGroup = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
-                        string fullGroupNum = ((parentGroup.Number == null ? parentGroup.Id.ToString() : parentGroup.Number)) + "." +
-                                                ((subgroup.Number == null ? subgroup.Id.ToString() : subgroup.Number));
-                        fullGroupNum = fullGroupNum.Replace("\n", "");
-
-                        string fileName = "Task_" + taskId  +"_" + fullGroupNum
-                                           + "_FD_State_Cadastral_Valuation_"
-                                           + subgroup.Id.ToString().PadLeft(5, '0')
-                                           + countCurr.ToString().PadLeft(5, '0');
+                        var parentGroup = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
+                        var fullGroupNum = GetFullGroupNum(parentGroup, subgroup);
+                        var fileName = GetFdFileName(taskId, fullGroupNum, subgroup, countCurr);
 
                         if (setting.IsDataComparingUnload)
                         {
@@ -122,13 +115,29 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
+        private static string GetFullGroupNum(OMGroup parentGroup, OMGroup subgroup)
+        {
+            var fullGroupNum = (parentGroup.Number ?? parentGroup.Id.ToString()) + "." +
+                               (subgroup.Number ?? subgroup.Id.ToString());
+            fullGroupNum = fullGroupNum.Replace("\n", "");
+            return fullGroupNum;
+        }
+
+        private static string GetFdFileName(long taskId, string fullGroupNum, OMGroup subgroup, int countCurr)
+        {
+            return "Task_" + taskId  +"_" + fullGroupNum
+                   + "_FD_State_Cadastral_Valuation_"
+                   + subgroup.Id.ToString().PadLeft(5, '0')
+                   + countCurr.ToString().PadLeft(5, '0');
+        }
+
         /// <summary>
         /// Экспорт в Xml - КОценка по группам.
         /// </summary>
-        public static Stream SaveXmlDocument(OMGroup subgroup, string message)
+        private static Stream SaveXmlDocument(OMGroup subgroup, string message)
         {
 
-            XmlDocument xmlFile = new XmlDocument();
+            var xmlFile = new XmlDocument();
             XmlNode xnLandValuation = xmlFile.CreateElement("FD_State_Cadastral_Valuation");
             DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
             xmlFile.AppendChild(xnLandValuation);
@@ -138,14 +147,14 @@ namespace KadOzenka.Dal.DataExport
                 AddXmlGeneralInfo(xmlFile, xnLandValuation);
             }
 
-            Dictionary<Int64, XmlNode> dictNodes = new Dictionary<long, XmlNode>();
+            var dictNodes = new Dictionary<long, XmlNode>();
             using (Log.TimeOperation("Добавление основной информации в файл"))
             {
                 AddXmlPackage(xmlFile, xnLandValuation, subgroup, dictNodes, message);
             }
             xmlFile.AppendChild(xnLandValuation);
 
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
             xmlFile.Save(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -288,33 +297,31 @@ namespace KadOzenka.Dal.DataExport
             parent.AppendChild(xnGeneralInformation);
         }
 
-        public static void AddXmlPackage(XmlDocument xmlFile, XmlNode parentNode, OMGroup subgroup, Dictionary<Int64, XmlNode> dictNodes, string message)
+        public static void AddXmlPackage(XmlDocument xmlFile, XmlNode parentNode, OMGroup subgroup, Dictionary<long, XmlNode> dictNodes, string message)
         {
             XmlNode xnPackage = xmlFile.CreateElement("Package");
 
-            GroupsRealEstates(xmlFile, subgroup, xnPackage);
+            AddXnGroupsRealEstates(xmlFile, subgroup, xnPackage);
 
             EvaluativeFactors(xmlFile, subgroup, dictNodes, message, xnPackage);
 
-            Appraise(xmlFile, subgroup, xnPackage);
+            AddAppraise(xmlFile, subgroup, xnPackage);
 
             parentNode.AppendChild(xnPackage);
         }
 
-        private static void EvaluativeFactors(XmlDocument xmlFile, OMGroup subgroup, Dictionary<long, XmlNode> dictNodes, string message,
+        private static void EvaluativeFactors(XmlDocument xmlFile, OMGroup subgroup, IDictionary<long, XmlNode> dictNodes, string message,
             XmlNode xnPackage)
         {
-            #region Evaluative_Factors
-
             if (dictNodes.ContainsKey(subgroup.Id))
             {
-                XmlNode temp = xmlFile.ImportNode(dictNodes[subgroup.Id], true);
+                var temp = xmlFile.ImportNode(dictNodes[subgroup.Id], true);
                 xnPackage.AppendChild(temp);
             }
             else
             {
                 XmlNode xnEvaluativeFactors = xmlFile.CreateElement("Evaluative_Factors");
-                OMModel model = OMModel.Where(x => x.GroupId == subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll()
+                var model = OMModel.Where(x => x.GroupId == subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll()
                     .ExecuteFirstOrDefault();
                 Log.ForContext("ModelId", model?.Id).ForContext("SubgroupId", subgroup.Id)
                     .Debug($"Поиск активной модели для погруппы {subgroup.GroupName}. Модель найдена - {model != null}");
@@ -329,17 +336,17 @@ namespace KadOzenka.Dal.DataExport
                             $"Найдено {model.ModelFactor.Count} факторов типа {model.AlgoritmType_Code.GetEnumDescription()} для модели");
                     }
 
-                    int countCurr = 0;
-                    int countAll = model.ModelFactor.Count();
+                    var countCurr = 0;
+                    var countAll = model.ModelFactor.Count;
                     var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
-                    foreach (OMModelFactor factor in model.ModelFactor)
+                    foreach (var factor in model.ModelFactor)
                     {
-                        RegisterAttribute attributeFactor = RegisterCache.GetAttributeData((int) (factor.FactorId));
+                        var attributeFactor = RegisterCache.GetAttributeData((int) factor.FactorId);
                         factor.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
 
                         XmlNode xnEvaluativeFactor = xmlFile.CreateElement("Evaluative_Factor");
                         DataExportCommon.AddAttribute(xmlFile, xnEvaluativeFactor, "Id_Factor",
-                            factor.FactorId.ToString() + "_" + subgroup.Id.ToString());
+                            factor.FactorId + "_" + subgroup.Id);
                         DataExportCommon.AddAttribute(xmlFile, xnEvaluativeFactor, "Type", factor.SignMarket ? "1" : "2");
                         XmlNode xnNameFactor = xmlFile.CreateElement("Name_Factor");
                         xnNameFactor.InnerText = attributeFactor.Name;
@@ -348,13 +355,13 @@ namespace KadOzenka.Dal.DataExport
                         XmlNode xnNameFactorDesc = xmlFile.CreateElement("Name_Factor_Desc");
                         xnNameFactorDesc.InnerText = attributeFactor.Description;
                         xnEvaluativeFactor.AppendChild(xnNameFactorDesc);
-                        bool addfactor = false;
+                        var addfactor = false;
                         if (attributeFactor.Type == RegisterAttributeType.STRING)
                         {
                             if (factor.MarkCatalogs.Count > 0)
                             {
                                 XmlNode xnQualitativeValues = xmlFile.CreateElement("QualitativeValues");
-                                foreach (OMMarkCatalog mark in factor.MarkCatalogs)
+                                foreach (var mark in factor.MarkCatalogs)
                                 {
                                     XmlNode xnQualitativeValueRoot = xmlFile.CreateElement("QualitativeValue");
 
@@ -392,8 +399,8 @@ namespace KadOzenka.Dal.DataExport
                             xnEvaluativeFactors.AppendChild(xnEvaluativeFactor);
 
                         countCurr++;
-                        string strMessage = message + " -- " + "Evaluative_Factors " + countCurr.ToString() + " из " +
-                                             countAll.ToString();
+                        var strMessage = message + " -- " + "Evaluative_Factors " + countCurr + " из " +
+                                         countAll;
                         Console.WriteLine(strMessage);
                     }
                 }
@@ -401,16 +408,12 @@ namespace KadOzenka.Dal.DataExport
                 xnPackage.AppendChild(xnEvaluativeFactors);
                 dictNodes.Add(subgroup.Id, xnEvaluativeFactors);
             }
-
-            #endregion
         }
 
-        private static void Appraise(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage)
+        private static void AddAppraise(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage)
         {
-            #region Appraise
-
             XmlNode xnAppraise = xmlFile.CreateElement("Appraise");
-            string regionRf = ConfigurationManager.AppSettings["3XML_RegionRF"];
+            var regionRf = ConfigurationManager.AppSettings["3XML_RegionRF"];
 
             Log.Debug($"Механизм группировки подгруппы - '{subgroup.GroupAlgoritm_Code}'");
 
@@ -419,22 +422,18 @@ namespace KadOzenka.Dal.DataExport
 
             if (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
-                StatisticModelling(xmlFile, subgroup, allAttributes, regionRf, xnAppraise);
+                AddXnStatisticModelling(xmlFile, subgroup, allAttributes, regionRf, xnAppraise);
             }
             else
             {
-                Other(xmlFile, subgroup, allAttributes, regionRf, xnAppraise);
+                AddXnOther(xmlFile, subgroup, allAttributes, regionRf, xnAppraise);
             }
 
             xnPackage.AppendChild(xnAppraise);
-
-            #endregion
         }
 
-        private static void GroupsRealEstates(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage)
+        private static void AddXnGroupsRealEstates(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage)
         {
-            #region Groups_Real_Estates
-
             XmlNode xnGroupsRealEstates = xmlFile.CreateElement("Groups_Real_Estates");
 
             XmlNode xnGroupRealEstate = xmlFile.CreateElement("Group_Real_Estate");
@@ -448,15 +447,11 @@ namespace KadOzenka.Dal.DataExport
 
             xnGroupsRealEstates.AppendChild(xnGroupRealEstate);
             xnPackage.AppendChild(xnGroupsRealEstates);
-
-            #endregion
         }
 
-        private static void Other(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
+        private static void AddXnOther(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
             XmlNode xnAppraise)
         {
-            #region Other
-
             XmlNode xnOther = xmlFile.CreateElement("Other");
             XmlNode xnEvaluationGroup = xmlFile.CreateElement("Evaluation_Group");
 
@@ -468,125 +463,9 @@ namespace KadOzenka.Dal.DataExport
 
             var currentUnitsCount = 0;
 
-            foreach (OMUnit unit in subgroup.Unit)
+            foreach (var unit in subgroup.Unit)
             {
-                if (++currentUnitsCount % 1000 == 0 || currentUnitsCount == 1)
-                    Log.Debug(
-                        $"Начата обработка ЕО №{currentUnitsCount} из {subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
-
-                XmlNode xnRealEstate = xmlFile.CreateElement("Real_Estate");
-                DataExportCommon.AddAttribute(xmlFile, xnRealEstate, "ID_Group", subgroup.Id.ToString());
-
-                XmlNode xnCadastralNumber = xmlFile.CreateElement("CadastralNumber");
-                xnCadastralNumber.InnerText = unit.CadastralNumber;
-                xnRealEstate.AppendChild(xnCadastralNumber);
-
-                XmlNode xnCadastralType = xmlFile.CreateElement("Type");
-                xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
-                xnRealEstate.AppendChild(xnCadastralType);
-
-                XmlNode xnSpecificCadastralCost = xmlFile.CreateElement("Specific_CadastralCost");
-                DataExportCommon.AddAttribute(xmlFile, xnSpecificCadastralCost, "Value",
-                    unit.Upks.ToString());
-                DataExportCommon.AddAttribute(xmlFile, xnSpecificCadastralCost, "Unit", "1002");
-                xnRealEstate.AppendChild(xnSpecificCadastralCost);
-
-                XmlNode xnCadastralArea = xmlFile.CreateElement("Area");
-                xnCadastralArea.InnerText = unit.Square.ToString();
-                xnRealEstate.AppendChild(xnCadastralArea);
-
-                if (unit.PropertyType_Code == PropertyTypes.Stead)
-                {
-                    string valueAttr3 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 3, out valueAttr3)
-                    ) //Код категории земель из ГКН
-                    {
-                        XmlNode xnAssignation = xmlFile.CreateElement("Category");
-                        DataExportCommon.AddAttribute(xmlFile, xnAssignation, "Name", valueAttr3);
-                        xnRealEstate.AppendChild(xnAssignation);
-                    }
-
-                    valueAttr3 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 4, out valueAttr3)
-                    ) //Код Вид использования по документам
-                    {
-                        XmlNode xnUtilization = xmlFile.CreateElement("Utilization");
-                        DataExportCommon.AddAttribute(xmlFile, xnUtilization, "Name_doc", valueAttr3);
-                        xnRealEstate.AppendChild(xnUtilization);
-                    }
-                }
-                else
-                {
-                    #region Assignation
-
-                    XmlNode xnAssignation = xmlFile.CreateElement("Assignation");
-                    string valueAttr5 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 5, out valueAttr5)
-                    ) //Код Вид использования по классификатору
-                    {
-                        if (unit.PropertyType_Code == PropertyTypes.Building)
-                        {
-                            XmlNode xnAssignationBuilding = xmlFile.CreateElement("Assignation_Building");
-                            XmlNode xnAssBuilding = xmlFile.CreateElement("Ass_Building");
-                            xnAssBuilding.InnerText = valueAttr5;
-                            xnAssignationBuilding.AppendChild(xnAssBuilding);
-                            xnAssignation.AppendChild(xnAssignationBuilding);
-                        }
-
-                        if (unit.PropertyType_Code == PropertyTypes.Pllacement)
-                        {
-                            XmlNode xnAssignationFlat = xmlFile.CreateElement("Assignation_Flat");
-                            XmlNode xnAssFlat = xmlFile.CreateElement("Ass_Flat");
-                            xnAssFlat.InnerText = valueAttr5;
-                            xnAssignationFlat.AppendChild(xnAssFlat);
-                            xnAssignation.AppendChild(xnAssignationFlat);
-                        }
-
-                        if ((unit.PropertyType_Code == PropertyTypes.Construction) ||
-                            (unit.PropertyType_Code == PropertyTypes.UncompletedBuilding))
-                        {
-                            XmlNode xnFormalizedConstrUncompleted =
-                                xmlFile.CreateElement("Formalized_Constr_Uncompleted");
-                            xnFormalizedConstrUncompleted.InnerText = valueAttr5;
-                            xnAssignation.AppendChild(xnFormalizedConstrUncompleted);
-                        }
-
-                        if (valueAttr5 != "005002002999")
-
-                            xnRealEstate.AppendChild(xnAssignation);
-                    }
-
-                    #endregion
-                }
-
-                XmlNode xnCadastralLocation = xmlFile.CreateElement("Location");
-
-                XmlNode xnCadastralRegion = xmlFile.CreateElement("Region");
-                xnCadastralRegion.InnerText = regionRf;
-                xnCadastralLocation.AppendChild(xnCadastralRegion);
-
-                string valueAttr = "";
-                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 600, out valueAttr)) //Код Адрес
-                {
-                    XmlNode xnCadastralNote = xmlFile.CreateElement("Note");
-                    xnCadastralNote.InnerText = valueAttr;
-                    xnCadastralLocation.AppendChild(xnCadastralNote);
-                }
-
-                valueAttr = "";
-                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 8, out valueAttr)
-                ) //Код Местоположение
-                {
-                    XmlNode xnCadastralOther = xmlFile.CreateElement("Other");
-                    xnCadastralOther.InnerText = valueAttr;
-                    xnCadastralLocation.AppendChild(xnCadastralOther);
-                }
-
-                xnRealEstate.AppendChild(xnCadastralLocation);
-                XmlNode xnDateValuation = xmlFile.CreateElement("Date_valuation");
-                xnDateValuation.InnerText = ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime()
-                    .ToString("yyyy-MM-dd");
-                xnRealEstate.AppendChild(xnDateValuation);
+                var xnRealEstate = GetXnRealEstate(xmlFile, subgroup, allAttributes, regionRf, unit, ref currentUnitsCount);
 
                 xnRealEstates.AppendChild(xnRealEstate);
             }
@@ -594,256 +473,68 @@ namespace KadOzenka.Dal.DataExport
             xnEvaluationGroup.AppendChild(xnRealEstates);
             xnOther.AppendChild(xnEvaluationGroup);
             xnAppraise.AppendChild(xnOther);
-
-            #endregion
         }
 
-        private static void StatisticModelling(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
+        private static void AddXnStatisticModelling(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
             XmlNode xnAppraise)
         {
-            #region Statistical_Modelling
-
-            OMModel model = OMModel.Where(x => x.GroupId == subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll()
+            var model = OMModel.Where(x => x.GroupId == subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll()
                 .ExecuteFirstOrDefault();
 
             XmlNode xnStatisticalModelling = xmlFile.CreateElement("Statistical_Modelling");
             XmlNode xnGroupRealEstateModelling = xmlFile.CreateElement("Group_Real_Estate_Modelling");
             DataExportCommon.AddAttribute(xmlFile, xnGroupRealEstateModelling, "ID_Group", subgroup.Id.ToString());
 
-            #region Rating_Model
-
             XmlNode xnRatingModel = xmlFile.CreateElement("Rating_Model");
             if (model != null) xnRatingModel.InnerText = model.AlgoritmType;
             xnGroupRealEstateModelling.AppendChild(xnRatingModel);
-
-            #endregion
-
-            #region Real_Estates
 
             XmlNode xnRealEstates = xmlFile.CreateElement("Real_Estates");
 
             var currentUnitsCount = 0;
             Log.Debug("Начата обработка ЕО подгруппы");
 
-            List<OMMarkCatalog> marks = new List<OMMarkCatalog>();
+            var marks = new List<OMMarkCatalog>();
             if (model != null)
                 marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
-            int? factorReestrId = OMGroup.GetFactorReestrId(subgroup);
+            var factorReestrId = OMGroup.GetFactorReestrId(subgroup);
 
-
-            foreach (OMUnit unit in subgroup.Unit)
+            foreach (var unit in subgroup.Unit)
             {
-                if (++currentUnitsCount % 1000 == 0)
-                    Log.Debug(
-                        $"Начата обработка ЕО №{currentUnitsCount} из {subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
-
-                XmlNode xnRealEstate = xmlFile.CreateElement("Real_Estate");
-                DataExportCommon.AddAttribute(xmlFile, xnRealEstate, "ID_Group", subgroup.Id.ToString());
-
-                XmlNode xnCadastralNumber = xmlFile.CreateElement("CadastralNumber");
-                xnCadastralNumber.InnerText = unit.CadastralNumber;
-                xnRealEstate.AppendChild(xnCadastralNumber);
-
-                XmlNode xnCadastralType = xmlFile.CreateElement("Type");
-                xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
-                xnRealEstate.AppendChild(xnCadastralType);
-
-                XmlNode xnCadastralArea = xmlFile.CreateElement("Area");
-                xnCadastralArea.InnerText = unit.Square.ToString();
-                xnRealEstate.AppendChild(xnCadastralArea);
-
-                if (unit.PropertyType_Code == PropertyTypes.Stead)
-                {
-                    string valueAttr34 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 3, out valueAttr34)
-                    ) //Код категории земель из ГКН
-                    {
-                        XmlNode xnAssignation = xmlFile.CreateElement("Category");
-                        DataExportCommon.AddAttribute(xmlFile, xnAssignation, "Name", valueAttr34);
-                        xnRealEstate.AppendChild(xnAssignation);
-                    }
-
-                    valueAttr34 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 4, out valueAttr34)
-                    ) //Код вида использования по документам
-                    {
-                        XmlNode xnUtilization = xmlFile.CreateElement("Utilization");
-                        DataExportCommon.AddAttribute(xmlFile, xnUtilization, "Name_doc", valueAttr34);
-                        xnRealEstate.AppendChild(xnUtilization);
-                    }
-                }
-                else
-                {
-                    #region Assignation
-
-                    XmlNode xnAssignation = xmlFile.CreateElement("Assignation");
-                    string valueAttr5 = "";
-                    if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 5, out valueAttr5)
-                    ) //Код Вид использования по классификатору
-                    {
-                        if (unit.PropertyType_Code == PropertyTypes.Building)
-                        {
-                            XmlNode xnAssignationBuilding = xmlFile.CreateElement("Assignation_Building");
-                            XmlNode xnAssBuilding = xmlFile.CreateElement("Ass_Building");
-                            xnAssBuilding.InnerText = valueAttr5;
-                            xnAssignationBuilding.AppendChild(xnAssBuilding);
-                            xnAssignation.AppendChild(xnAssignationBuilding);
-                        }
-
-                        if (unit.PropertyType_Code == PropertyTypes.Pllacement)
-                        {
-                            XmlNode xnAssignationFlat = xmlFile.CreateElement("Assignation_Flat");
-                            XmlNode xnAssFlat = xmlFile.CreateElement("Ass_Flat");
-                            xnAssFlat.InnerText = valueAttr5;
-                            xnAssignationFlat.AppendChild(xnAssFlat);
-                            xnAssignation.AppendChild(xnAssignationFlat);
-                        }
-
-                        if ((unit.PropertyType_Code == PropertyTypes.Construction) ||
-                            (unit.PropertyType_Code == PropertyTypes.UncompletedBuilding))
-                        {
-                            XmlNode xnFormalizedConstrUncompleted = xmlFile.CreateElement("Formalized_Constr_Uncompleted");
-                            xnFormalizedConstrUncompleted.InnerText = valueAttr5;
-                            xnAssignation.AppendChild(xnFormalizedConstrUncompleted);
-                        }
-
-                        if (valueAttr5 != "005002002999")
-                            xnRealEstate.AppendChild(xnAssignation);
-                    }
-
-                    #endregion
-                }
-
-                XmlNode xnCadastralLocation = xmlFile.CreateElement("Location");
-                XmlNode xnCadastralRegion = xmlFile.CreateElement("Region");
-                xnCadastralRegion.InnerText = regionRf;
-                xnCadastralLocation.AppendChild(xnCadastralRegion);
-
-                string valueAttr = "";
-                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 600, out valueAttr)) //Код 600 - Адрес
-                {
-                    XmlNode xnCadastralNote = xmlFile.CreateElement("Note");
-                    xnCadastralNote.InnerText = valueAttr;
-                    xnCadastralLocation.AppendChild(xnCadastralNote);
-                }
-
-                valueAttr = "";
-                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 8, out valueAttr)) //Код 8 - Местоположение
-                {
-                    XmlNode xnCadastralOther = xmlFile.CreateElement("Other");
-                    xnCadastralOther.InnerText = valueAttr;
-                    xnCadastralLocation.AppendChild(xnCadastralOther);
-                }
-
-                xnRealEstate.AppendChild(xnCadastralLocation);
-
-                XmlNode xnDateValuation = xmlFile.CreateElement("Date_valuation");
-                xnDateValuation.InnerText =
-                    ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
-                xnRealEstate.AppendChild(xnDateValuation);
-
-                XmlNode xnCEvaluativeFactors = xmlFile.CreateElement("Evaluative_Factors");
-
-                #region Получили реестр Id группы, реестр, где лежат ее факторы
-
-                //Получаем список факторов группы
-                List<CalcItem> factorValuesGroup = new List<CalcItem>();
-                DataTable data;
-                using (Log.TimeOperation("Получение атрибутов"))
-                {
-                    data = RegisterStorage.GetAttributes((int) unit.Id, factorReestrId.Value);
-                }
-
-                if (data != null)
-                {
-                    foreach (DataRow row in data.Rows)
-                    {
-                        factorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(),
-                            row.ItemArray[7].ParseToString()));
-                    }
-                }
-
-                #endregion
-
-                if (model != null)
-                {
-                    if (model.ModelFactor.Count == 0)
-                        model.ModelFactor = OMModelFactor
-                            .Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll()
-                            .Execute();
-                    foreach (OMModelFactor factorModel in model.ModelFactor)
-                    {
-                        bool findf = false;
-                        string valueItem = string.Empty; //TODO: значение фактора для данного объекта
-                        CalcItem factorItem = factorValuesGroup.Find(x => x.FactorId == factorModel.FactorId);
-                        if (factorItem != null)
-                        {
-                            findf = true;
-                            valueItem = factorItem.Value;
-                        }
-
-                        if (findf) // если фактор найден
-                        {
-                            XmlNode xnCEvaluativeFactor = xmlFile.CreateElement("Evaluative_Factor");
-                            DataExportCommon.AddAttribute(xmlFile, xnCEvaluativeFactor, "ID_Factor",
-                                factorModel.FactorId.ToString() + "_" + subgroup.Id.ToString());
-
-                            factorModel.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
-
-                            bool addf = false;
-                            if (factorModel.SignMarket)
-                            {
-                                OMMarkCatalog mark = factorModel.MarkCatalogs.Find(x => x.ValueFactor == valueItem);
-                                if (mark != null)
-                                {
-                                    XmlNode xnQualitativeId = xmlFile.CreateElement("Qualitative_Id");
-                                    xnQualitativeId.InnerText = mark.Id.ToString();
-                                    xnCEvaluativeFactor.AppendChild(xnQualitativeId);
-                                    addf = true;
-                                }
-                            }
-                            else
-                            {
-                                XmlNode xnQuantitativeValue = xmlFile.CreateElement("Quantitative_Value");
-                                xnQuantitativeValue.InnerText = valueItem.ToUpper();
-                                xnCEvaluativeFactor.AppendChild(xnQuantitativeValue);
-                                addf = true;
-                            }
-
-                            if (addf)
-                                xnCEvaluativeFactors.AppendChild(xnCEvaluativeFactor);
-                        }
-                    }
-                }
-
-                xnRealEstate.AppendChild(xnCEvaluativeFactors);
+                var xnRealEstate = GetXnRealEstate(xmlFile, subgroup, allAttributes, regionRf, unit, ref currentUnitsCount);
+                AddXnEvaluativeFactors(xmlFile, subgroup, unit, factorReestrId, model, marks, xnRealEstate);
                 xnRealEstates.AppendChild(xnRealEstate);
             }
 
             Log.Debug("Закончена обработка ЕО подгруппы");
             xnGroupRealEstateModelling.AppendChild(xnRealEstates);
 
-            #endregion
+            AddXnEvaluativeFactorsModelling(xmlFile, subgroup, model, marks, xnGroupRealEstateModelling);
 
-            #region Evaluative_Factors_Modelling
+            xnStatisticalModelling.AppendChild(xnGroupRealEstateModelling);
+            xnAppraise.AppendChild(xnStatisticalModelling);
+        }
 
+        private static void AddXnEvaluativeFactorsModelling(XmlDocument xmlFile, OMGroup subgroup, OMModel model, List<OMMarkCatalog> marks,
+            XmlNode xnGroupRealEstateModelling)
+        {
             XmlNode xnEvaluativeFactorsModelling = xmlFile.CreateElement("Evaluative_Factors_Modelling");
 
             if (model != null)
             {
-                foreach (OMModelFactor factorModel in model.ModelFactor)
+                foreach (var factorModel in model.ModelFactor)
                 {
                     factorModel.FillMarkCatalogsFromList(marks, model.GroupId);
 
                     XmlNode xnEvaluativeFactorModelling = xmlFile.CreateElement("Evaluative_Factor_Modelling");
                     DataExportCommon.AddAttribute(xmlFile, xnEvaluativeFactorModelling, "Id_factor",
-                        factorModel.Id.ToString() + "_" + subgroup.Id.ToString());
+                        factorModel.Id + "_" + subgroup.Id);
                     if (factorModel.SignMarket)
                     {
                         if (factorModel.MarkCatalogs.Count > 0)
                         {
                             XmlNode xnCastAccounts = xmlFile.CreateElement("Cast_Accounts");
-                            foreach (OMMarkCatalog mark in factorModel.MarkCatalogs)
+                            foreach (var mark in factorModel.MarkCatalogs)
                             {
                                 XmlNode xnCastAccount = xmlFile.CreateElement("Cast_Account");
 
@@ -867,13 +558,209 @@ namespace KadOzenka.Dal.DataExport
             }
 
             xnGroupRealEstateModelling.AppendChild(xnEvaluativeFactorsModelling);
+        }
 
-            #endregion
+        private static XmlNode GetXnRealEstate(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
+            OMUnit unit, ref int currentUnitsCount)
+        {
+            if (++currentUnitsCount % 1000 == 0 || currentUnitsCount == 1)
+                Log.Debug(
+                    $"Начата обработка ЕО №{currentUnitsCount} из {subgroup.Unit.Count} (Заполнение информации по ГБУ-атрибутам)");
 
-            xnStatisticalModelling.AppendChild(xnGroupRealEstateModelling);
-            xnAppraise.AppendChild(xnStatisticalModelling);
+            XmlNode xnRealEstate = xmlFile.CreateElement("Real_Estate");
+            DataExportCommon.AddAttribute(xmlFile, xnRealEstate, "ID_Group", subgroup.Id.ToString());
 
-            #endregion
+            XmlNode xnCadastralNumber = xmlFile.CreateElement("CadastralNumber");
+            xnCadastralNumber.InnerText = unit.CadastralNumber;
+            xnRealEstate.AppendChild(xnCadastralNumber);
+
+            XmlNode xnCadastralType = xmlFile.CreateElement("Type");
+            xnCadastralType.InnerText = unit.PropertyType_Code.ToString();
+            xnRealEstate.AppendChild(xnCadastralType);
+
+            if (subgroup.GroupAlgoritm_Code != KoGroupAlgoritm.Model)
+            {
+                XmlNode xnSpecificCadastralCost = xmlFile.CreateElement("Specific_CadastralCost");
+                DataExportCommon.AddAttribute(xmlFile, xnSpecificCadastralCost, "Value",
+                    unit.Upks.ToString());
+                DataExportCommon.AddAttribute(xmlFile, xnSpecificCadastralCost, "Unit", "1002");
+                xnRealEstate.AppendChild(xnSpecificCadastralCost);
+            }
+
+            XmlNode xnCadastralArea = xmlFile.CreateElement("Area");
+            xnCadastralArea.InnerText = unit.Square.ToString();
+            xnRealEstate.AppendChild(xnCadastralArea);
+
+            AddPropertyTypeInfo(xmlFile, allAttributes, unit, xnRealEstate);
+
+            XmlNode xnCadastralLocation = xmlFile.CreateElement("Location");
+            XmlNode xnCadastralRegion = xmlFile.CreateElement("Region");
+            xnCadastralRegion.InnerText = regionRf;
+            xnCadastralLocation.AppendChild(xnCadastralRegion);
+
+            if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 600, out var valueAttr600)) //Код 600 - Адрес
+            {
+                XmlNode xnCadastralNote = xmlFile.CreateElement("Note");
+                xnCadastralNote.InnerText = valueAttr600;
+                xnCadastralLocation.AppendChild(xnCadastralNote);
+            }
+
+            if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 8, out var valueAttr8)) //Код 8 - Местоположение
+            {
+                XmlNode xnCadastralOther = xmlFile.CreateElement("Other");
+                xnCadastralOther.InnerText = valueAttr8;
+                xnCadastralLocation.AppendChild(xnCadastralOther);
+            }
+
+            xnRealEstate.AppendChild(xnCadastralLocation);
+
+            XmlNode xnDateValuation = xmlFile.CreateElement("Date_valuation");
+            xnDateValuation.InnerText =
+                ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime().ToString("yyyy-MM-dd");
+            xnRealEstate.AppendChild(xnDateValuation);
+            return xnRealEstate;
+        }
+
+        private static void AddXnEvaluativeFactors(XmlDocument xmlFile, OMGroup subgroup, OMUnit unit, int? factorReestrId, OMModel model,
+            List<OMMarkCatalog> marks, XmlNode xnRealEstate)
+        {
+            XmlNode xnCEvaluativeFactors = xmlFile.CreateElement("Evaluative_Factors");
+
+            //Получаем список факторов группы
+            var factorValuesGroup = new List<CalcItem>();
+            DataTable data;
+            using (Log.TimeOperation("Получение атрибутов"))
+            {
+                data = RegisterStorage.GetAttributes((int) unit.Id, factorReestrId.Value);
+            }
+
+            if (data != null)
+            {
+                foreach (DataRow row in data.Rows)
+                {
+                    factorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(),
+                        row.ItemArray[7].ParseToString()));
+                }
+            }
+
+            if (model != null)
+            {
+                if (model.ModelFactor.Count == 0)
+                    model.ModelFactor = OMModelFactor
+                        .Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll()
+                        .Execute();
+                foreach (var factorModel in model.ModelFactor)
+                {
+                    var findf = false;
+                    var valueItem = string.Empty; //TODO: значение фактора для данного объекта
+                    var factorItem = factorValuesGroup.Find(x => x.FactorId == factorModel.FactorId);
+                    if (factorItem != null)
+                    {
+                        findf = true;
+                        valueItem = factorItem.Value;
+                    }
+
+                    if (findf) // если фактор найден
+                    {
+                        XmlNode xnCEvaluativeFactor = xmlFile.CreateElement("Evaluative_Factor");
+                        DataExportCommon.AddAttribute(xmlFile, xnCEvaluativeFactor, "ID_Factor",
+                            factorModel.FactorId + "_" + subgroup.Id);
+
+                        factorModel.FillMarkCatalogsFromList(marks, model.GroupId ?? 0);
+
+                        var addf = false;
+                        if (factorModel.SignMarket)
+                        {
+                            var mark = factorModel.MarkCatalogs.Find(x => x.ValueFactor == valueItem);
+                            if (mark != null)
+                            {
+                                XmlNode xnQualitativeId = xmlFile.CreateElement("Qualitative_Id");
+                                xnQualitativeId.InnerText = mark.Id.ToString();
+                                xnCEvaluativeFactor.AppendChild(xnQualitativeId);
+                                addf = true;
+                            }
+                        }
+                        else
+                        {
+                            XmlNode xnQuantitativeValue = xmlFile.CreateElement("Quantitative_Value");
+                            xnQuantitativeValue.InnerText = valueItem.ToUpper();
+                            xnCEvaluativeFactor.AppendChild(xnQuantitativeValue);
+                            addf = true;
+                        }
+
+                        if (addf)
+                            xnCEvaluativeFactors.AppendChild(xnCEvaluativeFactor);
+                    }
+                }
+            }
+
+            xnRealEstate.AppendChild(xnCEvaluativeFactors);
+        }
+
+        private static void AddPropertyTypeInfo(XmlDocument xmlFile, List<GbuObjectAttribute> allAttributes, OMUnit unit, XmlNode xnRealEstate)
+        {
+            if (unit.PropertyType_Code == PropertyTypes.Stead)
+            {
+                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 3, out var valueAttr3)
+                ) //Код категории земель из ГКН
+                {
+                    XmlNode xnAssignation = xmlFile.CreateElement("Category");
+                    DataExportCommon.AddAttribute(xmlFile, xnAssignation, "Name", valueAttr3);
+                    xnRealEstate.AppendChild(xnAssignation);
+                }
+
+                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 4, out var valueAttr4)
+                ) //Код вида использования по документам
+                {
+                    XmlNode xnUtilization = xmlFile.CreateElement("Utilization");
+                    DataExportCommon.AddAttribute(xmlFile, xnUtilization, "Name_doc", valueAttr4);
+                    xnRealEstate.AppendChild(xnUtilization);
+                }
+            }
+            else
+            {
+                #region Assignation
+
+                XmlNode xnAssignation = xmlFile.CreateElement("Assignation");
+                if (DataExportCommon.GetObjectAttribute(allAttributes, unit, 5, out var valueAttr5)
+                ) //Код Вид использования по классификатору
+                {
+                    switch (unit.PropertyType_Code)
+                    {
+                        case PropertyTypes.Building:
+                        {
+                            XmlNode xnAssignationBuilding = xmlFile.CreateElement("Assignation_Building");
+                            XmlNode xnAssBuilding = xmlFile.CreateElement("Ass_Building");
+                            xnAssBuilding.InnerText = valueAttr5;
+                            xnAssignationBuilding.AppendChild(xnAssBuilding);
+                            xnAssignation.AppendChild(xnAssignationBuilding);
+                            break;
+                        }
+                        case PropertyTypes.Pllacement:
+                        {
+                            XmlNode xnAssignationFlat = xmlFile.CreateElement("Assignation_Flat");
+                            XmlNode xnAssFlat = xmlFile.CreateElement("Ass_Flat");
+                            xnAssFlat.InnerText = valueAttr5;
+                            xnAssignationFlat.AppendChild(xnAssFlat);
+                            xnAssignation.AppendChild(xnAssignationFlat);
+                            break;
+                        }
+                        case PropertyTypes.Construction:
+                        case PropertyTypes.UncompletedBuilding:
+                        {
+                            XmlNode xnFormalizedConstrUncompleted = xmlFile.CreateElement("Formalized_Constr_Uncompleted");
+                            xnFormalizedConstrUncompleted.InnerText = valueAttr5;
+                            xnAssignation.AppendChild(xnFormalizedConstrUncompleted);
+                            break;
+                        }
+                    }
+
+                    if (valueAttr5 != "005002002999")
+                        xnRealEstate.AppendChild(xnAssignation);
+                }
+
+                #endregion
+            }
         }
     }
 }
