@@ -88,6 +88,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long) x.TaskId) &&
 				                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
 				Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
+				if (unitsCount == 0)
+				{
+					message = "У заданий на оценку нет единиц оценки";
+					return;
+				}
 				WorkerCommon.SetProgress(processQueue, 1);
 
 				var localCancelTokenSource = new CancellationTokenSource();
@@ -104,12 +109,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				{
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
 					{
-						if (processedItemsCount >= unitsCount)
-						{
-							localCancelTokenSource.Cancel();
-							options.CancellationToken.ThrowIfCancellationRequested();
-						}
-
 						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
 						Logger.Debug("Начата работа с пакетом №{i}", i);
 

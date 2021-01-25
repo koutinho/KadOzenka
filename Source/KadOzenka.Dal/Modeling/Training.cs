@@ -165,7 +165,7 @@ namespace KadOzenka.Dal.Modeling
 		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
 		            notReturnedTypes.ForEach(x =>
 		            {
-			            ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+			            ModelingService.ResetTrainingResults(GeneralModel, x);
                     });
                 }
             }
