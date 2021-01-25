@@ -1006,12 +1006,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
-
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
+	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 

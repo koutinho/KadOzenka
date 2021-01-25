@@ -6,6 +6,7 @@ using System.Text;
 using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -15,6 +16,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Oks;
+using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Ko;
 using ObjectModel.Market;
 using Serilog;
@@ -26,6 +28,21 @@ namespace KadOzenka.Dal.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         public ModelingRepository ModelingRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
+
+		#region Информация для выгрузки/загрузки объектов моделирования
+
+		private const int IdColumnIndex = 0;
+		private const int IsForTrainingColumnIndex = 1;
+		private const int IsForControlColumnIndex = 2;
+		private const int IsExcludedColumnIndex = 3;
+		private const int CadastralNumberColumnIndex = 4;
+		private const int ObjectTypeColumnIndex = 5;
+		private const int PriceColumnIndex = 6;
+		private const int PredictedPriceColumnIndex = 7;
+		private const int DeviationFromPredictablePriceColumnIndex = 8;
+		private int _maxNumberOfColumns = 9;
+
+		#endregion
 
 		public ModelingService()
 		{
@@ -422,68 +439,63 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        public Stream ExportMarketObjectsToExcel(long modelId, List<long> marketObjectsIds)
+        public Stream ExportMarketObjectsToExcel(long modelId)
         {
 	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
 	        //if (model == null)
 	        //    throw new Exception($"Не найдена модель с ИД '{modelId}'");
-            //пока работаем только с Exp
-            var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp).Select(x => new
-            {
-	            FactorId = x.FactorId.GetValueOrDefault(),
-                Name = RegisterCache.GetAttributeData((int)x.FactorId.GetValueOrDefault()).Name
-            }).OrderBy(x => x.Name).ToList();
-
-            var excelTemplate = new ExcelFile();
+	        var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
-            var columnHeaders = new List<object>
-            {
-                "Id", "Признак выбора аналога в обучающую модель", "Признак выбора аналога в контрольную модель",
-                "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена",
-				"Отклонение цены от прогнозной, %"
-			};
-            columnHeaders.AddRange(factors.Select(x => x.Name).ToList());
+            var factors = GetFactorColumnsForModelObjectsInFile(modelId);
+			var columnHeaders = new object[_maxNumberOfColumns];
+            columnHeaders[IdColumnIndex] = "ИД";
+            columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
+            columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
+            columnHeaders[IsExcludedColumnIndex] = "Исключен из расчета";
+            columnHeaders[CadastralNumberColumnIndex] = "Кадастровый номер";
+            columnHeaders[ObjectTypeColumnIndex] = "Тип объекта";
+            columnHeaders[PriceColumnIndex] = "Цена";
+            columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
+            columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
+            factors.ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
             //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
-            AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
+            AddRowToExcel(mainWorkSheet, 0, columnHeaders);
 
-            if (marketObjectsIds != null && marketObjectsIds.Count > 0)
-            {
-                var rowCounter = 1;
-                var marketObjects = OMModelToMarketObjects.Where(x => marketObjectsIds.Contains(x.Id)).SelectAll().Execute();
-                marketObjectsIds.ForEach(id =>
-                {
-	                var obj = marketObjects.FirstOrDefault(x => x.Id == id);
-                    if(obj == null)
-                        return;
+			var rowCounter = 1;
+			var marketObjects = GetModelObjects(modelId);
+			marketObjects.ForEach(obj =>
+			{
+				var values = new object[_maxNumberOfColumns];
+				values[IdColumnIndex] = obj.Id;
+				values[IsForTrainingColumnIndex] = obj.IsForTraining.GetValueOrDefault();
+				values[IsForControlColumnIndex] = obj.IsForControl.GetValueOrDefault();
+				values[IsExcludedColumnIndex] = obj.IsExcluded.GetValueOrDefault();
+				values[CadastralNumberColumnIndex] = obj.CadastralNumber;
+				values[ObjectTypeColumnIndex] = obj.UnitPropertyType;
+				values[PriceColumnIndex] = obj.Price;
+				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
+				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
 
-                    var values = new List<object>
-                    {
-	                    obj.Id, obj.IsForTraining.GetValueOrDefault(), obj.IsForControl.GetValueOrDefault(),
-	                    obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel,
-	                    CalculatePercent(obj.PriceFromModel, obj.Price)
-					};
+				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				factors.ForEach(attribute =>
+				{
+					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId)?.Coefficient;
+					values[attribute.ColumnIndex] = coefficient;
+				});
 
-	                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	                factors.ForEach(attribute =>
-	                {
-		                var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.FactorId)?.Coefficient;
-		                values.Add(coefficient);
-	                });
+				//var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
+				// factors, coefficients, obj.CadastralNumber); 
 
-	                //var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
-                    // factors, coefficients, obj.CadastralNumber); 
+				//values.Add(calculationParameters.ModelingPrice); 
+				//values.Add(calculationParameters.Percent);
 
-                    //values.Add(calculationParameters.ModelingPrice); 
-                    //values.Add(calculationParameters.Percent);
+				AddRowToExcel(mainWorkSheet, rowCounter++, values);
+			});
 
-                    AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
-                });
-            }
-
-            var stream = new MemoryStream();
+			var stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
@@ -497,7 +509,7 @@ namespace KadOzenka.Dal.Modeling
             var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
-            for (var i = 1; i < rowsCount; i++)
+            for (var i = 1; i <= rowsCount; i++)
             {
                 var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
                 var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
@@ -617,9 +629,23 @@ namespace KadOzenka.Dal.Modeling
         }
 
 
-        #region Support Methods
+		#region Support Methods
 
-        private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
+		private List<Column> GetFactorColumnsForModelObjectsInFile(long modelId)
+		{
+			//пока работаем только с Exp (был расчет МС и процента)
+			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp).Select(x => new Column
+			{
+				AttributeId = x.FactorId.GetValueOrDefault(),
+				Name = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name,
+			}).OrderBy(x => x.Name).ToList();
+			
+			factors.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
+			
+			return factors;
+		}
+
+		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
         {
 			var resultFile = new ExcelFile();
 	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
@@ -722,9 +748,16 @@ namespace KadOzenka.Dal.Modeling
 		#endregion
 
 
-        #region Entities
+		#region Entities
 
-        public class ModelObjectsCalculationParameters
+		private class Column
+		{
+			public long AttributeId { get; set; }
+			public string Name { get; set; }
+			public int ColumnIndex { get; set; }
+		}
+
+		public class ModelObjectsCalculationParameters
         {
 	        public decimal? ModelingPrice { get; set; }
 	        public decimal? Percent { get; set; }
