@@ -118,7 +118,7 @@
     <div class="form-group">
         <a class="k-button k-button-icon" id="uploadBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
-            Загрузить объекты
+            Обновить объекты
         </a>
     </div>
     <div class="form-group" style="padding: 1% 0 2% 0">
@@ -741,7 +741,7 @@
         upload.clearAllFiles();
         upload.removeAllFiles();
         var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '25%', '14%', "Загрузка объектов модели");
+        ShowModal(modal, '25%', '14%', "Обновление объектов модели (признаки и факторы)");
     }
 
 
@@ -755,7 +755,7 @@
             },
             async: {
                 autoUpload: true,
-                saveUrl: '@Url.Action("ExcludeModelObjectsFromCalculation", "Modeling")'
+                saveUrl: '@Url.Action("UpdateModelObjects", "Modeling", new {modelId = Model.Id })'
             },
             validation: {
                 allowedExtensions: ['.xls', '.xlsx'],
@@ -773,7 +773,7 @@
                         $("#errorRowIndexesBlock").show();
                     }
                     var modalWithResult = $("#excludeModelObjectsFromCalculationResult");
-                    ShowModal(modalWithResult, '33%', '25%', "Результат загрузки объектов модели (исключение из расчета)");
+                    ShowModal(modalWithResult, '33%', '25%', "Результат обновления объектов модели (признаки и факторы)");
                     if (response.fileName) {
                         window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
                     }

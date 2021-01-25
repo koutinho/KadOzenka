@@ -14,6 +14,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Oks;
 using Microsoft.Practices.ObjectBuilder2;
@@ -501,24 +502,33 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public ExcludeModelObjectsFromCalculationResult ExcludeModelObjectsFromCalculation(ExcelFile file)
+		public ExcludeModelObjectsFromCalculationResult UpdateModelObjects(long modelId, ExcelFile file)
         {
-            const int idColumnIndex = 0;
-            const int isExcludedColumnIndex = 1;
+	        var factors = GetFactorColumnsForModelObjectsInFile(modelId);
 
             var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
             for (var i = 1; i <= rowsCount; i++)
             {
-                var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
-                var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
+	            var cells = rows[i].Cells;
+	            var factorsFromFile = new List<CoefficientForObject>();
+                factors.ForEach(factor =>
+                {
+	                factorsFromFile.Add(new CoefficientForObject(factor.AttributeId)
+					{
+						Coefficient = cells[factor.ColumnIndex].Value.ParseToDecimalNullable()
+					});
+                });
 
                 modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
                 {
-                    Id = id,
-                    IsExcluded = isExcludedStr?.ToLower() == "да",
-                    RowIndexInFile = i
+                    Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
+					IsForTraining = cells[IsForTrainingColumnIndex].Value.ParseToBooleanFromString(),
+					IsForControl = cells[IsForControlColumnIndex].Value.ParseToBooleanFromString(),
+                    IsExcluded = cells[IsExcludedColumnIndex].Value.ParseToBooleanFromString(),
+                    RowIndexInFile = i,
+					Factors = factorsFromFile
                 });
             }
 
@@ -534,8 +544,14 @@ namespace KadOzenka.Dal.Modeling
             };
 
             var modelObjects = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-	            .Select(x => x.IsExcluded)
-	            .Execute();
+	            .Select(x => new
+	            {
+		            x.IsForTraining,
+		            x.IsForControl,
+		            x.IsExcluded,
+					x.Coefficients
+	            }).Execute();
+
             foreach (var modelObjectFromExcel in modelObjectsFromExcel)
             {
 	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
@@ -545,13 +561,32 @@ namespace KadOzenka.Dal.Modeling
 		            continue;
 	            }
 
-	            if (modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded)
+				var coefficientsWereChanged = false;
+	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+	            factors.ForEach(attribute =>
+	            {
+		            var coefficientFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
+		            var coefficientFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
+		            if (coefficientFromDb != null && coefficientFromDb.Coefficient != coefficientFromFile?.Coefficient)
+		            {
+			            coefficientsWereChanged = true;
+			            coefficientFromDb.Coefficient = coefficientFromFile?.Coefficient;
+		            }
+	            });
+
+	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
+	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
+	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
+	                !coefficientsWereChanged)
 	            {
 		            result.UnchangedObjectsCount++;
 		            continue;
 	            }
-	            
+
+	            modelObject.IsForTraining = modelObjectFromExcel.IsForTraining;
+	            modelObject.IsForControl = modelObjectFromExcel.IsForControl;
 	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
+	            modelObject.Coefficients = coefficientsFromDb.SerializeToXml();
 	            modelObject.Save();
 	            result.UpdatedObjectsCount++;
             }
@@ -570,6 +605,7 @@ namespace KadOzenka.Dal.Modeling
 	            {
 		            stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
 	            }
+
 	            result.File = stream;
             }
 
@@ -763,12 +799,20 @@ namespace KadOzenka.Dal.Modeling
 	        public decimal? Percent { get; set; }
         }
 
-        public class ModelObjectsFromExcelData
+        private class ModelObjectsFromExcelData
         {
 	        public long? Id { get; set; }
+	        public bool IsForTraining { get; set; }
+	        public bool IsForControl { get; set; }
 	        public bool IsExcluded { get; set; }
+	        public List<CoefficientForObject> Factors { get; set; }
 	        public int RowIndexInFile { get; set; }
-        }
+
+	        public ModelObjectsFromExcelData()
+	        {
+		        Factors = new List<CoefficientForObject>();
+	        }
+		}
 
         public class ExcludeModelObjectsFromCalculationResult
 		{
