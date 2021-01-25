@@ -21,6 +21,7 @@ namespace CIPJS
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
                 .CreateLogger();
 
+
             try
             {
                 Log.Warning("Application KadOzenka.Web starting up");
@@ -40,7 +41,6 @@ namespace CIPJS
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
-                .StartWorkerChecker()
                 .Build();
 
     }
