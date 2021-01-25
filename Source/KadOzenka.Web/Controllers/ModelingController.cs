@@ -1006,12 +1006,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
-
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
+	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
@@ -1032,7 +1029,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ExcludeModelObjectsFromCalculation(IFormFile file)
+        public ActionResult UpdateModelObjects(long modelId, IFormFile file)
         {
             if (file == null)
                 throw new Exception("Не выбран файл");
@@ -1043,7 +1040,7 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            var excludeResult = ModelingService.ExcludeModelObjectsFromCalculation(excelFile);
+            var excludeResult = ModelingService.UpdateModelObjects(modelId, excelFile);
             
             var fileName = string.Empty;
             if (excludeResult.File != null)
