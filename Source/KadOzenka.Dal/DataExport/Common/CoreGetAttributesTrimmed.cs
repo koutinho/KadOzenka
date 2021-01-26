@@ -180,7 +180,7 @@ namespace KadOzenka.Dal.DataExport
             // Формируем отрезки Life.
             // Ключ - идентификатор типа атрибута. Значение - связанная цепь отрезков Life.
             var lifeDictionary = new Dictionary<long, Life>();
-            var cachedAttributes = RegisterCache.RegisterAttributes.Values;
+            var cachedAttributes = RegisterCache.RegisterAttributes.Values.Where(x=>x.RegisterId==registerId).ToList();
             var stringCulture = CultureInfo.CurrentCulture.CompareInfo;
             using (log.ForContext("Rows", dtQuant.Rows.Count)
                 .ForContext("Columns", dtQuant.Columns.Count)
@@ -192,10 +192,10 @@ namespace KadOzenka.Dal.DataExport
                     {
                         RegisterAttribute attribute;
                         attribute = cachedAttributes.FirstOrDefault(p =>
-                            (stringCulture.Compare(p.CodeField, dataColumn.ColumnName,
+                            stringCulture.Compare(p.CodeField, dataColumn.ColumnName,
                                  CompareOptions.IgnoreCase) == 0 ||
                              stringCulture.Compare(p.ValueField, dataColumn.ColumnName,
-                                 CompareOptions.IgnoreCase) == 0) && p.RegisterId == registerId);
+                                 CompareOptions.IgnoreCase) == 0);
 
 
                         if (attribute == null)
