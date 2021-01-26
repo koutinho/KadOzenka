@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -8,12 +9,14 @@ using KadOzenka.Dal.Registers.GbuRegistersServices;
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
 {
 	public class UprsService : MinMaxAverageUpksAndUprsByGroupsBaseService
-    {
+	{
+		public QueryManager QueryManager;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
 
         public UprsService(StatisticalDataService statisticalDataService)
 		{
+            QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
             _rosreestrRegisterService = new RosreestrRegisterService();
         }
@@ -24,7 +27,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UprsByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
             var sql = GetSqlForZu(taskIdList, false);
-            var result = QSQuery.ExecuteSql<UprsByGroupsZuDto>(sql);
+            var result = QueryManager.ExecuteSql<UprsByGroupsZuDto>(sql);
 
             var summary = new UprsByGroupsZuDto
             {
@@ -44,7 +47,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         {
             var sql = GetSqlForZu(taskIdList, true);
 
-            var result = QSQuery.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(sql);
+            var result = QueryManager.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(sql);
 
             var summary = new UprsByGroupsAndSubGroupsZuDto
             {
@@ -89,7 +92,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<ByGroupsOksDto> GetDataByGroupsForOks(long[] taskIdList)
         {
             var sql = GetSqlForOks(taskIdList, false);
-            var result = QSQuery.ExecuteSql<ByGroupsOksDto>(sql);
+            var result = QueryManager.ExecuteSql<ByGroupsOksDto>(sql);
 
             AddSummaryByGroupsOks(result);
 
@@ -99,7 +102,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<ByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
         {
             var sql = GetSqlForOks(taskIdList, true);
-            var result = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
+            var result = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(sql);
 
             AddSummaryByGroupsAndSubGroupsOks(result);
 

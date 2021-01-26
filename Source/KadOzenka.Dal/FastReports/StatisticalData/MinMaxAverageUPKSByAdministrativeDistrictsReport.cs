@@ -39,6 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 			var reportType = GetReportType(GetQueryParam<string>("ReportType", query));
 			Logger.Debug("Тип отчета {ReportType}", reportType);

@@ -7,6 +7,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.CancellationQueryManager;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.KO;
 using Serilog;
@@ -18,8 +19,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 	    private readonly ILogger _logger;
 	    protected override ILogger Logger => _logger;
 
+	    private readonly QueryManager queryManager;
 	    public ModelingResultsReport()
 	    {
+            queryManager = new QueryManager();
 		    _logger = Log.ForContext<ModelingResultsReport>();
 	    }
 
@@ -36,6 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
+            queryManager.SetBaseToken(CancellationToken);
             var taskIdList = GetTaskIdList(query).ToList();
             var groupId = GetGroupIdFromFilter(query);
 
@@ -45,6 +49,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 x.Number
             }).ExecuteFirstOrDefault();
 
+            if (queryManager.IsRequestCancellationToken())
+            {
+                return new DataSet();
+            }
             var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
@@ -101,12 +109,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
             var groupedFactors = modelId == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(modelId.Value);
+                : FactorsService.GetGroupedModelFactors(modelId.Value, queryManager);
             var generalAttributes = groupedFactors.SelectMany(x => x.Attributes).ToList();
 
             var sql = GetSql(taskIds, modelId, groupId, groupedFactors);
-            var command = DBMngr.Main.GetSqlStringCommand(sql);
-            var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+            var dataTable = queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
             var items = new List<ReportItem>();
             foreach (DataRow row in dataTable.Rows)

@@ -82,9 +82,18 @@ namespace KadOzenka.Dal.DataImport
 					        }
 
 					        var metkaNumber = metka.ParseToDecimalNullable();
+					        if (metkaNumber.GetValueOrDefault() == 0)
+					        {
+						        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, "Нельзя сохранить пустое или нулевое значение метки.");
+						        return;
+							}
+					        if (string.IsNullOrWhiteSpace(value))
+					        {
+						        AddErrorToExcel(mainWorkSheet, row.Index, maxColumns, "Значение не может быть пустым.");
+						        return;
+					        }
 
-					        ObjectModel.KO.OMMarkCatalog existObject =
-						        objs.Find(x => x.ValueFactor.ToUpper() == value.ToUpper());
+							var existObject = objs.Find(x => x.GroupId == groupId && x.ValueFactor.ToUpper() == value.ToUpper());
 					        bool newobj = false;
 					        if (existObject == null)
 					        {
@@ -105,8 +114,6 @@ namespace KadOzenka.Dal.DataImport
 						        existObject.Save();
 					        }
 
-
-
 					        if (newobj)
 					        {
 						        try
@@ -125,7 +132,6 @@ namespace KadOzenka.Dal.DataImport
 						        {
 
 						        }
-
 					        }
 					        else
 					        {
@@ -145,7 +151,6 @@ namespace KadOzenka.Dal.DataImport
 						        {
 
 						        }
-
 					        }
 				        }
 			        }

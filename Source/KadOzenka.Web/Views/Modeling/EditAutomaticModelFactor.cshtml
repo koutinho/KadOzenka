@@ -39,6 +39,14 @@
     </div>
     <div class="form-group">
         <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.IsActive, NotSetRequired: true)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoCheckBoxFor(x => x.IsActive, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
             @Html.CustomLabelFor(x => x.DictionaryId)
         </div>
         <div class="col-sm-9">

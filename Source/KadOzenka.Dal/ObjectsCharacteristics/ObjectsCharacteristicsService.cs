@@ -3,6 +3,7 @@ using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
 using Core.Register;
 using Core.SRD;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
@@ -62,6 +63,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
                 RegisterConfigurator.CreateDbTableForRegister(omRegister.RegisterId);
 
+                //DataCompositionByCharacteristicsService.CreateTriggerForRegister(omRegister.RegisterId);
+
                 CreateObjectCharacteristics(omRegister.RegisterId);
 
                 ts.Complete();
@@ -117,6 +120,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 {
 	                SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
 	                RegisterConfigurator.CreateDbTableForRegister(characteristicDto.RegisterId);
+	                //DataCompositionByCharacteristicsService.CreateTriggerForRegister(register.Id, id);
                 }
 	            else
 	            {

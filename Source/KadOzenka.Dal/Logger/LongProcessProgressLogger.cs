@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.Logger
 			_taskLogProgress = null;
 		}
 
-		private void LogProgress(int maxCount, int currentCount, OMQueue processQueue)
+		public void LogProgress(int maxCount, int currentCount, OMQueue processQueue)
 		{
 			if (maxCount <= 0 || currentCount <= 0)
 				return;

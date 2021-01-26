@@ -120,12 +120,10 @@ namespace KadOzenka.Dal.Tours
 
         public void DeleteTour(long tourId)
         {
-	        var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
-	        if (tour == null)
-		        throw new Exception("Тур с указанным ид не найден");
+			var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
 
-	        if (!CanTourBeDeleted(tourId))
-		        throw new Exception($"Тур {tour.Year} не может быть удален, т.к. имеются связанные задания на оценку");
+			if (!CanTourBeDeleted(tourId))
+		        throw new Exception($"Тур {tour?.Year} не может быть удален, т.к. имеются связанные задания на оценку");
 
 	        var complianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId).Execute();
 
@@ -145,9 +143,10 @@ namespace KadOzenka.Dal.Tours
 
 		        RecycleBinService.MoveObjectsToRecycleBin(complianceGuides.Select(x => x.Id).ToList(), OMComplianceGuide.GetRegisterId(), eventId);
 
-                TourFactorService.RemoveTourFactorRegistersLogically(tour.Id, eventId);
+                TourFactorService.RemoveTourFactorRegistersLogically(tourId, eventId);
 
-		        RecycleBinService.MoveObjectToRecycleBin(tour.Id, OMTour.GetRegisterId(), eventId);
+				if (tour != null)
+		        	RecycleBinService.MoveObjectToRecycleBin(tourId, OMTour.GetRegisterId(), eventId);
 
                 ts.Complete();
 	        }

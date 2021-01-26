@@ -118,7 +118,7 @@
     <div class="form-group">
         <a class="k-button k-button-icon" id="uploadBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
-            Загрузить объекты
+            Обновить объекты
         </a>
     </div>
     <div class="form-group" style="padding: 1% 0 2% 0">
@@ -156,6 +156,10 @@
 
     .label-select-all-checkbox {
         padding-left: 10%
+    }
+
+    .not-active-factor {
+        color: #BEBEBE;
     }
 </style>
 
@@ -237,12 +241,14 @@
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
                     setIsForTrainingCheckboxForSuccessfulObjects, setIsForControlCheckboxForSuccessfulObjects,
+                    selectAllObjectsForExcludingForSuccessfulObjects,
                     selectAllObjectsForTrainingForSuccessfulObjects, selectAllObjectsForControlForSuccessfulObjects,
                     saveSuccessfulObjects, exportSuccessfulObjectsToExcel);
                 //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
                 //generateGrid(result.errorModels, errorObjectsGridId,
                 //    setIsExcludedCheckboxForErrorObjects,
                 //    setIsForTrainingCheckboxForErrorObjects, setIsForControlCheckboxForErrorObjects,
+                //    selectAllObjectsForExcludingForErrorObjects,
                 //    selectAllObjectsForTrainingForErrorObjects, selectAllObjectsForControlForErrorObjects,
                 //    saveErrorObjects, exportErrorObjectsToExcel);
             },
@@ -257,9 +263,13 @@
 
 
 
-    function generateGrid(data, gridId, excludeFunc, trainingFunc, controlFunc, trainingAllFunc, controlAllFunc, saveFunc, exportFunc) {
-        var model = '@Json.Serialize(Model.Attributes)';
-        var modelAttributes = JSON.parse(model);
+    function generateGrid(data, gridId,
+        excludeFunc, trainingFunc, controlFunc,
+        excludeAllFunc, trainingAllFunc, controlAllFunc,
+        saveFunc, exportFunc)
+    {
+        var modelAttributesSerialized = '@Json.Serialize(Model.Attributes)';
+        var modelAttributes = JSON.parse(modelAttributesSerialized);
         mapResponse(data, modelAttributes);
         var dataSource = new kendo.data.DataSource({
             transport:{
@@ -317,6 +327,7 @@
         $("#" + gridId + " .k-grid-content").on("change", "input.isExcluded", excludeFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.isForTraining", trainingFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.IsForControl", controlFunc);
+        $("#headerCheckboxIsForExcluding-" + gridId).on("click", excludeAllFunc);
         $("#headerCheckboxIsForTraining-" + gridId).on("click", trainingAllFunc);
         $("#headerCheckboxIsForControl-" + gridId).on("click", controlAllFunc);
         $('#saveBtn-' + gridId).on('click', saveFunc);
@@ -361,9 +372,11 @@
 
     function generateColumns(gridId, modelAttributes) {
         var additionalColumns = modelAttributes.map(function (attribute) {
+            var styleClass = attribute.IsActive === true ? "" : "not-active-factor";
             return {
-                title: attribute.AttributeName,
                 field: objectFieldPrefixForCoefficient + attribute.AttributeId,
+                headerTemplate: '<label style="font-weight: normal" class="' + styleClass + '">' + attribute.AttributeName + '</label>',
+                attributes: { 'class': styleClass },
                 filterable: {
                     extra: false,
                     operators: {
@@ -375,36 +388,42 @@
                         }
                     }
                 },
-                sortable: false
+                sortable: false,
+                width: 200
             };
         });
+        var widthForColumnsWithCheckBoxes = 100;
+        var widthForColumnsWithPrices = 150;
+        var selectAllForExcludingId = "headerCheckboxIsForExcluding-" + gridId;
         var selectAllForTrainingId = "headerCheckboxIsForTraining-" + gridId;
         var selectAllForControlId = "headerCheckboxIsForControl-" + gridId;
         var baseColumnsBeforeMarks = [
             {
-                title: "Признак выбора аналога в обучающую модель",
                 field: "IsForTraining",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForTrainingId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в обучающую модель</span>",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # class="chkbx, isForTraining" />',
                 filterable: false,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithCheckBoxes
             },
             {
-                title: "Признак выбора аналога в контрольную модель",
                 field: "IsForControl",
                 headerTemplate: "<input type='checkbox' id='" + selectAllForControlId + "' class='header-select-all-checkbox'>" +
                     "<span class='label-select-all-checkbox'>Признак выбора аналога в контрольную модель</span>",
                 template: '<input type="checkbox" #= IsForControl ? \'checked="checked"\' : "" # class="chkbx, IsForControl" />',
                 filterable: false,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithCheckBoxes
             },
             {
-                title: "Исключен из расчета",
                 field: "IsExcluded",
+                headerTemplate: "<input type='checkbox' id='" + selectAllForExcludingId + "' class='header-select-all-checkbox'>" +
+                    "<span class='label-select-all-checkbox'>Признак исключения из расчета</span>",
                 template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx, isExcluded" />',
                 filterable: false,
-                sortable: false
+                sortable: false,
+                width: widthForColumnsWithCheckBoxes
             },
             {
                 title: "Кадастровый номер",
@@ -445,28 +464,32 @@
                         }
                     }
                 },
-                sortable: true
+                sortable: true,
+                width: 100
             },
             {
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price) #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             },
             {
                 title: "Спрогнозированная цена",
                 field: "PriceFromModel",
                 template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             },
             {
                 title: "Отклонение цены от прогнозной, %",
                 field: "DeviationFromPredictablePrice",
                 template: '#: DeviationFromPredictablePrice == null ? "" : kendo.toString(DeviationFromPredictablePrice, "n2") #',
                 filterable: true,
-                sortable: true
+                sortable: true,
+                width: widthForColumnsWithPrices
             }
         ];
         var baseColumnsAfterMarks = [
@@ -554,6 +577,26 @@
         var grid = $("#" + gridId).data("kendoGrid");
         var dataItem = grid.dataItem($(e.target).closest("tr"));
         return dataItem;
+    }
+
+
+    //Установка галочки для исключения ВСЕХ объектов
+    function selectAllObjectsForExcludingForSuccessfulObjects(e) {
+        selectAllObjectsForExcluding(successfulObjectsGridId, e);
+    }
+    //function selectAllObjectsForExcludingForErrorObjects() {
+    //    selectAllObjectsForTraining(errorObjectsGridId, e);
+    //}
+    function selectAllObjectsForExcluding(gridId, e) {
+        e.stopPropagation();
+        var grid = $("#" + gridId).data("kendoGrid");
+        var headerState = $("#headerCheckboxIsForExcluding-" + gridId).prop("checked");
+        var data = getObjectsFromGrid(gridId);
+        for (var i = 0; i < data.length; i++) {
+            data[i].IsExcluded = headerState;
+            setCheckboxState(grid, data[i]);
+        }
+        grid.refresh();
     }
 
 
@@ -658,16 +701,11 @@
     //    exportObjectsToExcel(errorObjectsGridId);
     //}
     function exportObjectsToExcel(gridId) {
-        var modelId = '@Model.Id';
-        var data = getObjectsFromGrid(gridId);
-        var objectIds = data.map(function (attribute) {
-            return attribute.Id;
-        });
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("ExportModelObjectsToExcel", "Modeling")',
-            data: { objectIdsStr: JSON.stringify({ 'objectIds': objectIds }), modelId: modelId},
+            data: { modelId: '@Model.Id'},
             success: function (response) {
                 var url =
                     '@Url.Action("DownloadModelObjectsFromExcel", "Modeling", new {modelName = Model.Name})&fileName=' +
@@ -703,7 +741,7 @@
         upload.clearAllFiles();
         upload.removeAllFiles();
         var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '25%', '14%', "Загрузка объектов модели");
+        ShowModal(modal, '25%', '14%', "Обновление объектов модели (признаки и факторы)");
     }
 
 
@@ -717,7 +755,7 @@
             },
             async: {
                 autoUpload: true,
-                saveUrl: '@Url.Action("ExcludeModelObjectsFromCalculation", "Modeling")'
+                saveUrl: '@Url.Action("UpdateModelObjects", "Modeling", new {modelId = Model.Id })'
             },
             validation: {
                 allowedExtensions: ['.xls', '.xlsx'],
@@ -735,7 +773,7 @@
                         $("#errorRowIndexesBlock").show();
                     }
                     var modalWithResult = $("#excludeModelObjectsFromCalculationResult");
-                    ShowModal(modalWithResult, '33%', '25%', "Результат загрузки объектов модели (исключение из расчета)");
+                    ShowModal(modalWithResult, '33%', '25%', "Результат обновления объектов модели (признаки и факторы)");
                     if (response.fileName) {
                         window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
                     }

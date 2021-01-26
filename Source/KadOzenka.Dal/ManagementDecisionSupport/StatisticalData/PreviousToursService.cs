@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
@@ -14,6 +15,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class PreviousToursService
     {
+	    public readonly QueryManager QueryManager;
         protected readonly GbuObjectService GbuObjectService;
         protected readonly StatisticalDataService StatisticalDataService;
         protected readonly RosreestrRegisterService RosreestrRegisterService;
@@ -48,6 +50,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public PreviousToursService()
         {
+            QueryManager = new QueryManager();
             GbuObjectService = new GbuObjectService();
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
@@ -60,9 +63,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
             var factorsByRegisters = model == null
                 ? new List<FactorsService.PricingFactors>()
-                : FactorsService.GetGroupedModelFactors(model.Id);
+                : FactorsService.GetGroupedModelFactors(model.Id, QueryManager);
             var generalAttributes = factorsByRegisters.SelectMany(x => x.Attributes).ToList();
 
+            if (QueryManager.IsRequestCancellationToken())
+            {
+                return new PreviousToursReportInfo();
+            }
             var sqlFileContent = StatisticalDataService.GetSqlFileContent("PricingFactorsComposition", "PreviousTours");
 
             var oksName = RosreestrRegisterService.GetObjectNameAttribute();
@@ -89,8 +96,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	            location.Id, parentCadastralNumberForOks.Id, buildYear.Id, commissioningYear.Id, floorsNumber.Id, 
 	            undergroundFloorsNumber.Id, wallMaterial.Id, sqlForModelFactors.Columns, sqlForModelFactors.Tables);
 
-            var command = DBMngr.Main.GetSqlStringCommand(sqlWithParameters);
-            var dataTable = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+            var dataTable = QueryManager.ExecuteSqlStringToDataSet(sqlWithParameters).Tables[0];
 
             var items = new List<PreviousTourReportItem>();
             foreach (DataRow row in dataTable.Rows)

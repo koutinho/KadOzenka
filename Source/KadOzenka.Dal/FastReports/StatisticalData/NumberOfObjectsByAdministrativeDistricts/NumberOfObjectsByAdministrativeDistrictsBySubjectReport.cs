@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		public NumberOfObjectsByAdministrativeDistrictsBySubjectReport()
 		{
-			_service = new NumberOfObjectsByAdministrativeDistrictsService(new StatisticalDataService(), new GbuObjectService(), new GbuCodRegisterService());
+			_service = new NumberOfObjectsByAdministrativeDistrictsService(new GbuCodRegisterService());
 			_logger = Log.ForContext<NumberOfObjectsByAdministrativeDistrictsBySubjectReport>();
 		}
 
@@ -29,6 +29,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByAdministrat
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
+
 			var taskIdList = GetTaskIdList(query);
 			var zuOksObjectType = GetQueryParam<string>("ZuOksObjectType", query);
 			Logger.Debug("Тип объекта {ObjectType}", zuOksObjectType);

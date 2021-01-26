@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms.Entities;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Serilog;
@@ -15,10 +16,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 	{
 		private readonly string _reportSqlFileName = "AdditionalForms_CalculationAnalysis";
 		private readonly ILogger _logger;
+		private readonly QueryManager _queryManager;
 		protected override ILogger Logger => _logger;
 
 		public CalculationsAnalysisReport()
 		{
+			_queryManager = new QueryManager();
 			_logger = Log.ForContext<CalculationsAnalysisReport>();
 		}
 
@@ -29,6 +32,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_queryManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 			var reportItems = GetReportData(taskIdList);
 			Logger.Debug("Найдено {Count} объектов", reportItems?.Count);
@@ -64,7 +68,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
                 RosreestrRegisterService.GetAddressAttribute().Id,
                 RosreestrRegisterService.GetLocationAttribute().Id
 			);
-			var result = QSQuery.ExecuteSql<CalculationsAnalysisReportItem>(sql);
+			var result = _queryManager.ExecuteSql<CalculationsAnalysisReportItem>(sql);
 
 			return result;
 		}

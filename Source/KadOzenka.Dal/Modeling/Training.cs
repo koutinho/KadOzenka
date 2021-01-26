@@ -59,8 +59,8 @@ namespace KadOzenka.Dal.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
-            AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
+            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
+            AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
             MarketObjectsForTraining = ModelingService.GetIncludedModelObjects(GeneralModel.Id, true);
@@ -163,7 +163,10 @@ namespace KadOzenka.Dal.Modeling
 		            var array = (KoAlgoritmType[])System.Enum.GetValues(typeof(KoAlgoritmType));
 		            var list = new List<KoAlgoritmType>(array);
 		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
-		            notReturnedTypes.ForEach(ResetTrainingResults);
+		            notReturnedTypes.ForEach(x =>
+		            {
+			            ModelingService.ResetTrainingResults(GeneralModel, x);
+                    });
                 }
             }
             catch (Exception)
@@ -174,7 +177,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void RollBackResult()
         {
-	        ResetTrainingResults(InputParameters.ModelType);
+	        ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
         protected override void SendSuccessNotification(OMQueue processQueue)
@@ -282,18 +285,6 @@ namespace KadOzenka.Dal.Modeling
 
 			GeneralModel.Save();
 		}
-
-        private void ResetTrainingResults(KoAlgoritmType type)
-        {
-	        ModelingService.ResetTrainingResults(GeneralModel, type);
-
-	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
-	        factors.ForEach(x =>
-	        {
-		        x.Weight = 0;
-		        x.Save();
-	        });
-        }
 
         #endregion
     }

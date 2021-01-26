@@ -8766,6 +8766,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _isactive;
+        /// <summary>
+        /// 21001300 Использовать в моделировании (is_active)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001300)]
+        public bool? IsActive
+        {
+            get
+            {
+                CheckPropertyInited("IsActive");
+                return _isactive;
+            }
+            set
+            {
+                _isactive = value;
+                NotifyPropertyChanged("IsActive");
+            }
+        }
+
     }
 }
 

@@ -153,7 +153,17 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
                     currentMarketObjectCoefficients.AddRange(currentUnitCoefficients);
 
-                    modelToMarketObjectRelation.Coefficients = currentMarketObjectCoefficients.SerializeToXml();
+                    //если для объекта не найдены коэффициенты, заполняем их значением null
+                    var resultCoefficients = new List<CoefficientForObject>(modelAttributes.Count);
+                    modelAttributes.ForEach(x => resultCoefficients.Add(new CoefficientForObject(x.AttributeId)));
+                    currentMarketObjectCoefficients.ForEach(currentCoefficient =>
+                    {
+	                    var baseCoefficient = resultCoefficients.First(x => x.AttributeId == currentCoefficient.AttributeId);
+	                    baseCoefficient.Coefficient = currentCoefficient.Coefficient;
+	                    baseCoefficient.Value = currentCoefficient.Value;
+                    });
+
+                    modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeToXml();
                     modelToMarketObjectRelation.Save();
 
                     //сохраняем в список, чтобы не выкачивать повторно

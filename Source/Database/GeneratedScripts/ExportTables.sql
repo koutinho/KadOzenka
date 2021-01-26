@@ -719,6 +719,85 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('COMMON_REPORT_FILES')) then
+		execute 'create table COMMON_REPORT_FILES ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'id')) then
+        execute 'alter table COMMON_REPORT_FILES add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'user_id')) then
+        execute 'alter table COMMON_REPORT_FILES add "user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'creation_date')) then
+        execute 'alter table COMMON_REPORT_FILES add "creation_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'status')) then
+        execute 'alter table COMMON_REPORT_FILES add "status" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'file_name')) then
+        execute 'alter table COMMON_REPORT_FILES add "file_name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'finish_date')) then
+        execute 'alter table COMMON_REPORT_FILES add "finish_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REPORT_FILES', 'file_extension')) then
+        execute 'alter table COMMON_REPORT_FILES add "file_extension" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_810_q_pk')) then
+    execute 'alter table COMMON_REPORT_FILES add constraint reg_810_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('CORE_ATTACHMENT')) then
 		execute 'create table CORE_ATTACHMENT ("id" BIGINT NOT NULL)';
 	end if;
@@ -6880,6 +6959,137 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_852_quant_pk')) then
     execute 'alter table DASHBOARDS_PANEL_TYPE add constraint reg_852_quant_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('DASHBOARDS_PANELINDEXCARDCACHE')) then
+		execute 'create table DASHBOARDS_PANELINDEXCARDCACHE ("id" NUMERIC NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'id')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "id" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'key')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "key" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'lastrequested')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "lastrequested" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'expired')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "expired" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'updatingstart')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "updatingstart" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'updated')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "updated" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'status')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "status" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'enabled')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "enabled" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'updatecounter')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "updatecounter" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'lasttimeout')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "lasttimeout" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_PANELINDEXCARDCACHE', 'datacacheitem')) then
+        execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add "datacacheitem" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('dashboards_panelindexcardcache_key_key')) then
+    execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add constraint dashboards_panelindexcardcache_key_key unique (key)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('dashboards_panelindexcardcache_pkey')) then
+    execute 'alter table DASHBOARDS_PANELINDEXCARDCACHE add constraint dashboards_panelindexcardcache_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('dashboards_panelindexcardcache_key_key')) then
+	execute 'CREATE UNIQUE INDEX dashboards_panelindexcardcache_key_key on DASHBOARDS_PANELINDEXCARDCACHE (key)';
   end if;
 end $$;
 --<DO>--
@@ -17254,6 +17464,1170 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49413074')) then
+		execute 'create table gbu_source2_a_49413074 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'id')) then
+        execute 'alter table gbu_source2_a_49413074 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'object_id')) then
+        execute 'alter table gbu_source2_a_49413074 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'ot')) then
+        execute 'alter table gbu_source2_a_49413074 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 's')) then
+        execute 'alter table gbu_source2_a_49413074 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'value')) then
+        execute 'alter table gbu_source2_a_49413074 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'change_date')) then
+        execute 'alter table gbu_source2_a_49413074 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49413074 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49413074', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49413074 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49413074__pk')) then
+    execute 'alter table gbu_source2_a_49413074 add constraint reg_2_a_49413074__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49413074__fk_o')) then
+	execute 'alter table gbu_source2_a_49413074 add constraint reg_2_a_49413074__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49413074_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49413074_inx_obj_attr_id on gbu_source2_a_49413074 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420743')) then
+		execute 'create table gbu_source2_a_49420743 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'id')) then
+        execute 'alter table gbu_source2_a_49420743 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420743 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'ot')) then
+        execute 'alter table gbu_source2_a_49420743 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 's')) then
+        execute 'alter table gbu_source2_a_49420743 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'value')) then
+        execute 'alter table gbu_source2_a_49420743 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420743 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420743 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420743', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420743 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420743__pk')) then
+    execute 'alter table gbu_source2_a_49420743 add constraint reg_2_a_49420743__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420743__fk_o')) then
+	execute 'alter table gbu_source2_a_49420743 add constraint reg_2_a_49420743__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420743_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420743_inx_obj_attr_id on gbu_source2_a_49420743 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420746')) then
+		execute 'create table gbu_source2_a_49420746 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'id')) then
+        execute 'alter table gbu_source2_a_49420746 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420746 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'ot')) then
+        execute 'alter table gbu_source2_a_49420746 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 's')) then
+        execute 'alter table gbu_source2_a_49420746 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'value')) then
+        execute 'alter table gbu_source2_a_49420746 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420746 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420746 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420746', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420746 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420746__pk')) then
+    execute 'alter table gbu_source2_a_49420746 add constraint reg_2_a_49420746__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420746__fk_o')) then
+	execute 'alter table gbu_source2_a_49420746 add constraint reg_2_a_49420746__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420746_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420746_inx_obj_attr_id on gbu_source2_a_49420746 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420747')) then
+		execute 'create table gbu_source2_a_49420747 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'id')) then
+        execute 'alter table gbu_source2_a_49420747 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420747 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'ot')) then
+        execute 'alter table gbu_source2_a_49420747 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 's')) then
+        execute 'alter table gbu_source2_a_49420747 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'value')) then
+        execute 'alter table gbu_source2_a_49420747 add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420747 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420747 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420747', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420747 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420747__pk')) then
+    execute 'alter table gbu_source2_a_49420747 add constraint reg_2_a_49420747__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420747__fk_o')) then
+	execute 'alter table gbu_source2_a_49420747 add constraint reg_2_a_49420747__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420747_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420747_inx_obj_attr_id on gbu_source2_a_49420747 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420748')) then
+		execute 'create table gbu_source2_a_49420748 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'id')) then
+        execute 'alter table gbu_source2_a_49420748 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420748 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'ot')) then
+        execute 'alter table gbu_source2_a_49420748 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 's')) then
+        execute 'alter table gbu_source2_a_49420748 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'value')) then
+        execute 'alter table gbu_source2_a_49420748 add "value" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420748 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420748 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420748', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420748 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420748__pk')) then
+    execute 'alter table gbu_source2_a_49420748 add constraint reg_2_a_49420748__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420748__fk_o')) then
+	execute 'alter table gbu_source2_a_49420748 add constraint reg_2_a_49420748__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420748_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420748_inx_obj_attr_id on gbu_source2_a_49420748 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420749')) then
+		execute 'create table gbu_source2_a_49420749 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'id')) then
+        execute 'alter table gbu_source2_a_49420749 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420749 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'ot')) then
+        execute 'alter table gbu_source2_a_49420749 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 's')) then
+        execute 'alter table gbu_source2_a_49420749 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_49420749 add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'value')) then
+        execute 'alter table gbu_source2_a_49420749 add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420749 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420749 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420749', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420749 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420749__pk')) then
+    execute 'alter table gbu_source2_a_49420749 add constraint reg_2_a_49420749__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420749__fk_o')) then
+	execute 'alter table gbu_source2_a_49420749 add constraint reg_2_a_49420749__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420749_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420749_inx_obj_attr_id on gbu_source2_a_49420749 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420750')) then
+		execute 'create table gbu_source2_a_49420750 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'id')) then
+        execute 'alter table gbu_source2_a_49420750 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420750 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'ot')) then
+        execute 'alter table gbu_source2_a_49420750 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 's')) then
+        execute 'alter table gbu_source2_a_49420750 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'value')) then
+        execute 'alter table gbu_source2_a_49420750 add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420750 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420750 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420750', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420750 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420750__pk')) then
+    execute 'alter table gbu_source2_a_49420750 add constraint reg_2_a_49420750__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420750__fk_o')) then
+	execute 'alter table gbu_source2_a_49420750 add constraint reg_2_a_49420750__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420750_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420750_inx_obj_attr_id on gbu_source2_a_49420750 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420754')) then
+		execute 'create table gbu_source2_a_49420754 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'id')) then
+        execute 'alter table gbu_source2_a_49420754 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420754 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'ot')) then
+        execute 'alter table gbu_source2_a_49420754 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 's')) then
+        execute 'alter table gbu_source2_a_49420754 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'value')) then
+        execute 'alter table gbu_source2_a_49420754 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420754 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420754 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420754', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420754 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420754__pk')) then
+    execute 'alter table gbu_source2_a_49420754 add constraint reg_2_a_49420754__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420754__fk_o')) then
+	execute 'alter table gbu_source2_a_49420754 add constraint reg_2_a_49420754__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420754_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420754_inx_obj_attr_id on gbu_source2_a_49420754 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420761')) then
+		execute 'create table gbu_source2_a_49420761 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'id')) then
+        execute 'alter table gbu_source2_a_49420761 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420761 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'ot')) then
+        execute 'alter table gbu_source2_a_49420761 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 's')) then
+        execute 'alter table gbu_source2_a_49420761 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'value')) then
+        execute 'alter table gbu_source2_a_49420761 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420761 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420761 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420761', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420761 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420761__pk')) then
+    execute 'alter table gbu_source2_a_49420761 add constraint reg_2_a_49420761__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420761__fk_o')) then
+	execute 'alter table gbu_source2_a_49420761 add constraint reg_2_a_49420761__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420761_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420761_inx_obj_attr_id on gbu_source2_a_49420761 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49420762')) then
+		execute 'create table gbu_source2_a_49420762 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'id')) then
+        execute 'alter table gbu_source2_a_49420762 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'object_id')) then
+        execute 'alter table gbu_source2_a_49420762 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'ot')) then
+        execute 'alter table gbu_source2_a_49420762 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 's')) then
+        execute 'alter table gbu_source2_a_49420762 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'value')) then
+        execute 'alter table gbu_source2_a_49420762 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'change_date')) then
+        execute 'alter table gbu_source2_a_49420762 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49420762 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49420762', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49420762 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420762__pk')) then
+    execute 'alter table gbu_source2_a_49420762 add constraint reg_2_a_49420762__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49420762__fk_o')) then
+	execute 'alter table gbu_source2_a_49420762 add constraint reg_2_a_49420762__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49420762_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49420762_inx_obj_attr_id on gbu_source2_a_49420762 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_49421360')) then
+		execute 'create table gbu_source2_a_49421360 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'id')) then
+        execute 'alter table gbu_source2_a_49421360 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'object_id')) then
+        execute 'alter table gbu_source2_a_49421360 add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'ot')) then
+        execute 'alter table gbu_source2_a_49421360 add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 's')) then
+        execute 'alter table gbu_source2_a_49421360 add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'value')) then
+        execute 'alter table gbu_source2_a_49421360 add "value" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'change_date')) then
+        execute 'alter table gbu_source2_a_49421360 add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_49421360 add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_49421360', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_49421360 add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49421360__pk')) then
+    execute 'alter table gbu_source2_a_49421360 add constraint reg_2_a_49421360__pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_2_a_49421360__fk_o')) then
+	execute 'alter table gbu_source2_a_49421360 add constraint reg_2_a_49421360__fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_2_a_49421360_inx_obj_attr_id')) then
+	execute 'CREATE UNIQUE INDEX reg_2_a_49421360_inx_obj_attr_id on gbu_source2_a_49421360 (object_id, ot)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_5')) then
 		execute 'create table gbu_source2_a_5 ("id" BIGINT NOT NULL)';
 	end if;
@@ -26781,24 +28155,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('ko_model_unique_constraint')) then
-    execute 'alter table KO_MODEL add constraint ko_model_unique_constraint unique (name)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
   if (not core_updstru_checkexistconstraint('reg_206_q_pk')) then
     execute 'alter table KO_MODEL add constraint reg_206_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('ko_model_unique_constraint')) then
-	execute 'CREATE UNIQUE INDEX ko_model_unique_constraint on KO_MODEL (name)';
   end if;
 end $$;
 --<DO>--
@@ -26914,6 +28272,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'previous_weight')) then
         execute 'alter table KO_MODEL_FACTOR add "previous_weight" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'is_active')) then
+        execute 'alter table KO_MODEL_FACTOR add "is_active" SMALLINT';
     end if;
 end $$;
 

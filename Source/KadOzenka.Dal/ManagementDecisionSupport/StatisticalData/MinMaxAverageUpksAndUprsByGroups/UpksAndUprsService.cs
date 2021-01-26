@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
@@ -23,12 +24,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         #endregion
 
+        public QueryManager QueryManager;
         private readonly UpksService _upksService;
 		private readonly UprsService _uprsService;
 
         public UpksAndUprsService(UpksService upksService, UprsService uprsService)
 		{
-			_upksService = upksService;
+			QueryManager = new QueryManager();
+            _upksService = upksService;
             _uprsService = uprsService;
 		}
 
@@ -38,10 +41,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsZuDto> GetDataByGroupsForZu(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForZu(taskIdList, false);
-            var upksResults = QSQuery.ExecuteSql<UpksByGroupsZuDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<UpksByGroupsZuDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForZu(taskIdList, false);
-            var uprsResults = QSQuery.ExecuteSql<UprsByGroupsZuDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<UprsByGroupsZuDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsZuDto>();
             foreach (var upks in upksResults)
@@ -77,10 +80,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<ByGroupsAndSubGroupsZuDto> GetDataByGroupsAndSubGroupsForZu(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForZu(taskIdList, true);
-            var upksResults = QSQuery.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<UpksByGroupsAndSubGroupsZuDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForZu(taskIdList, true);
-            var uprsResults = QSQuery.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<UprsByGroupsAndSubGroupsZuDto>(uprsSql);
 
             var result = new List<ByGroupsAndSubGroupsZuDto>();
             foreach (var upks in upksResults)
@@ -123,10 +126,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsOksDto> GetDataByGroupsForOks(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForOks(taskIdList, false);
-            var upksResults = QSQuery.ExecuteSql<ByGroupsOksDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<ByGroupsOksDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForOks(taskIdList, false);
-            var uprsResults = QSQuery.ExecuteSql<ByGroupsOksDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<ByGroupsOksDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsOksDto>();
             foreach (var upks in upksResults)
@@ -176,10 +179,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
         public List<UpksAndUprsByGroupsAndSubGroupsOksDto> GetDataByGroupsAndSubGroupsForOks(long[] taskIdList)
         {
             var upksSql = _upksService.GetSqlForOks(taskIdList, true);
-            var upksResults = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(upksSql);
+            var upksResults = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(upksSql);
 
             var uprsSql = _uprsService.GetSqlForOks(taskIdList, true);
-            var uprsResults = QSQuery.ExecuteSql<ByGroupsAndSubGroupsOksDto>(uprsSql);
+            var uprsResults = QueryManager.ExecuteSql<ByGroupsAndSubGroupsOksDto>(uprsSql);
 
             var result = new List<UpksAndUprsByGroupsAndSubGroupsOksDto>();
             foreach (var upks in upksResults)

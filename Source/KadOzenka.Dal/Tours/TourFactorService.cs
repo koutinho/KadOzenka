@@ -134,12 +134,6 @@ namespace KadOzenka.Dal.Tours
 
         public void RemoveTourFactorRegistersLogically(long tourId, long eventId)
         {
-	        var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
-	        if (tour == null)
-	        {
-		        throw new Exception($"Не найден тур с ИД {tourId}");
-	        }
-
 	        using (var ts = new TransactionScope())
 	        {
 		        var omTourFactorRegisters = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute();
