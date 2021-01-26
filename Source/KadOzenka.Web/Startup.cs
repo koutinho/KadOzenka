@@ -110,6 +110,7 @@ namespace CIPJS
             services.AddSingleton<SignalRMessageService>();
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
+            services.AddTransient<RecycleBinService>();
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

@@ -3557,6 +3557,54 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях
+    /// </summary>
+    public partial class OMRecycleBin
+    {
+
+        public OMRecycleBin()
+        {
+
+            EventId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRecycleBin(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 813 Информация о реестрах с логическим удалением
+    /// </summary>
+    public partial class OMRegistersWithSoftDeletion
+    {
+
+        public OMRegistersWithSoftDeletion()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRegistersWithSoftDeletion(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
     /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
     /// </summary>
     public partial class OMAllReportsInSystemView
