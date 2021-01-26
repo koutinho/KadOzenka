@@ -12,13 +12,16 @@ using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
 using ObjectModel.Core.TD;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.DataExport
 {
     public static class CoreGetAttributesTrimmed
     {
-        static ILogger log = Log.ForContext("SourceContext",nameof(CoreGetAttributesTrimmed));
-        public static DataTable GetAttributes(int iObjectID, int iRegisterID, DateTime dtStart = new DateTime(), DateTime dtEnd = new DateTime(), long[] aAttributeIDs = null, int iChangeID = -1)
+        static ILogger log = Log.ForContext("SourceContext", nameof(CoreGetAttributesTrimmed));
+
+        public static DataTable GetAttributes(int iObjectID, int iRegisterID, DateTime dtStart = new DateTime(),
+            DateTime dtEnd = new DateTime(), long[] aAttributeIDs = null, int iChangeID = -1)
         {
             switch (RegisterCache.Registers[iRegisterID].StorageType)
             {
@@ -26,15 +29,19 @@ namespace KadOzenka.Dal.DataExport
                 case StorageType.Type4:
                     return GetLifeByQuant(iObjectID, iRegisterID, aAttributeIDs, dtStart, dtEnd);
                 default:
-                    throw new RegisterStorageException(string.Format("Метод GetAttributes не реализован для {0} типа реестра", RegisterCache.Registers[iRegisterID].StorageType));
+                    throw new RegisterStorageException(string.Format(
+                        "Метод GetAttributes не реализован для {0} типа реестра",
+                        RegisterCache.Registers[iRegisterID].StorageType));
             }
         }
 
         private static DataTable GetLifeByQuant(int objectId, int registerId, long[] attributes, DateTime dtStart,
             DateTime dtEnd)
         {
+            QSQuery query;
+            RegisterData registerData;
             // Получаем всю историю изменения объекта, кроме черновых записей
-            QSQuery query = new QSQuery
+            query = new QSQuery
             {
                 MainRegisterID = registerId,
                 Condition = new QSConditionGroup
@@ -88,7 +95,7 @@ namespace KadOzenka.Dal.DataExport
                 }
             }
 
-            RegisterData registerData = RegisterCache.GetRegisterData(registerId);
+            registerData = RegisterCache.GetRegisterData(registerId);
 
             if (registerData.TrackChangesColumn.IsNotEmpty())
             {
@@ -164,86 +171,98 @@ namespace KadOzenka.Dal.DataExport
                 }
             };
 
-            DataTable dtQuant = query.ExecuteQuery();
+            DataTable dtQuant;
+            using (log.ForContext("SQL", query.GetSql()).TimeOperation("Выполнение ExecuteQuery"))
+            {
+                dtQuant = query.ExecuteQuery();
+            }
 
             // Формируем отрезки Life.
             // Ключ - идентификатор типа атрибута. Значение - связанная цепь отрезков Life.
             var lifeDictionary = new Dictionary<long, Life>();
-
-            foreach (DataRow row in dtQuant.Rows)
+            var cachedAttributes = RegisterCache.RegisterAttributes.Values;
+            var stringCulture = CultureInfo.CurrentCulture.CompareInfo;
+            using (log.ForContext("Rows", dtQuant.Rows.Count)
+                .ForContext("Columns", dtQuant.Columns.Count)
+                .TimeOperation("Формирование отрезков life"))
             {
-                foreach (DataColumn dataColumn in dtQuant.Columns)
+                foreach (DataRow row in dtQuant.Rows)
                 {
-                    RegisterAttribute attribute;
-                    attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(p =>
-                        (string.Equals(p.CodeField, dataColumn.ColumnName,
-                             StringComparison.CurrentCultureIgnoreCase) ||
-                         string.Equals(p.ValueField, dataColumn.ColumnName,
-                             StringComparison.CurrentCultureIgnoreCase)) && p.RegisterId == registerId);
-
-                    if (attribute == null)
+                    foreach (DataColumn dataColumn in dtQuant.Columns)
                     {
-                        continue;
-                    }
+                        RegisterAttribute attribute;
+                        attribute = cachedAttributes.FirstOrDefault(p =>
+                            (stringCulture.Compare(p.CodeField, dataColumn.ColumnName,
+                                 CompareOptions.IgnoreCase) == 0 ||
+                             stringCulture.Compare(p.ValueField, dataColumn.ColumnName,
+                                 CompareOptions.IgnoreCase) == 0) && p.RegisterId == registerId);
 
-                    if (attribute.IsPrimaryKey && RegisterCache.Registers[registerId].StorageType == StorageType.Type4)
-                    {
-                        continue;
-                    }
 
-                    long attributeId = attribute.Id;
-                    Life life;
-
-                    DateTime dateTimeS = row["S_"].ParseTo<DateTime>();
-                    DateTime dateTimePo = row["PO_"].ParseTo<DateTime>();
-
-                    // Если для данного показателя еще нет ни одного отрезка Life
-                    if (!lifeDictionary.TryGetValue(attributeId, out life))
-                    {
-                        if ((attribute.ValueField.IsNotEmpty() && row[attribute.ValueField] != DBNull.Value) ||
-                            (attribute.CodeField.IsNotEmpty() && row[attribute.CodeField] != DBNull.Value))
+                        if (attribute == null)
                         {
-                            life = new Life
+                            continue;
+                        }
+
+                        if (attribute.IsPrimaryKey &&
+                            RegisterCache.Registers[registerId].StorageType == StorageType.Type4)
+                        {
+                            continue;
+                        }
+
+                        long attributeId = attribute.Id;
+                        Life life;
+
+                        DateTime dateTimeS = row["S_"].ParseTo<DateTime>();
+                        DateTime dateTimePo = row["PO_"].ParseTo<DateTime>();
+
+                        // Если для данного показателя еще нет ни одного отрезка Life
+                        if (!lifeDictionary.TryGetValue(attributeId, out life))
+                        {
+                            if ((attribute.ValueField.IsNotEmpty() && row[attribute.ValueField] != DBNull.Value) ||
+                                (attribute.CodeField.IsNotEmpty() && row[attribute.CodeField] != DBNull.Value))
+                            {
+                                life = new Life
+                                {
+                                    Attribute = attribute,
+                                    S = dateTimeS,
+                                    PO = dateTimePo,
+                                    QuantRow = row
+                                };
+                                lifeDictionary.Add(attributeId, life);
+                            }
+
+                            continue;
+                        }
+
+                        // Если для данного показателя уже существует история
+                        if (!IsDataRowsEqual(life.QuantRow, row, attribute))
+                        {
+                            lifeDictionary[attributeId] = new Life
                             {
                                 Attribute = attribute,
                                 S = dateTimeS,
                                 PO = dateTimePo,
-                                QuantRow = row
+                                QuantRow = row,
+                                PrevLife = life
                             };
-                            lifeDictionary.Add(attributeId, life);
                         }
-
-                        continue;
-                    }
-
-                    // Если для данного показателя уже существует история
-                    if (!IsDataRowsEqual(life.QuantRow, row, attribute))
-                    {
-                        lifeDictionary[attributeId] = new Life
+                        else
                         {
-                            Attribute = attribute,
-                            S = dateTimeS,
-                            PO = dateTimePo,
-                            QuantRow = row,
-                            PrevLife = life
-                        };
-                    }
-                    else
-                    {
-                        lifeDictionary[attributeId].PO = dateTimePo;
+                            lifeDictionary[attributeId].PO = dateTimePo;
+                        }
                     }
                 }
             }
 
             DataTable dtLife = new DataTable();
             dtLife.Columns.Add("OBJECT_ID", typeof(int));
-            dtLife.Columns.Add("ATTRIBUTE_ID", typeof(int));
+            dtLife.Columns.Add("ATTRIBUTE_ID", typeof(int)); // 1
             dtLife.Columns.Add("OT", typeof(DateTime));
             dtLife.Columns.Add("S", typeof(DateTime));
             dtLife.Columns.Add("PO", typeof(DateTime));
             dtLife.Columns.Add("REF_ITEM_ID", typeof(int));
-            dtLife.Columns.Add("TEXT_VALUE", typeof(string));
-            dtLife.Columns.Add("NUMBER_VALUE", typeof(decimal));
+            dtLife.Columns.Add("TEXT_VALUE", typeof(string)); //6
+            dtLife.Columns.Add("NUMBER_VALUE", typeof(decimal)); //7
             dtLife.Columns.Add("DATE_VALUE", typeof(DateTime));
             dtLife.Columns.Add("CHANGE_ID", typeof(int));
             dtLife.Columns.Add("CHANGE_USER_ID", typeof(int));
@@ -286,6 +305,7 @@ namespace KadOzenka.Dal.DataExport
                 AddRowToLife(dtLife, life, objectId);
             }
 
+
             if (registerData.AllpriTable.IsNotEmpty())
             {
                 string sqlAllpri = $"select * from {registerData.AllpriTable} where OBJECT_ID = {objectId}";
@@ -295,15 +315,18 @@ namespace KadOzenka.Dal.DataExport
                     sqlAllpri += " and attribute_id in (" + String.Join(",", attributes) + ")";
                 }
 
+                var op = log.BeginOperation("ExecuteDataset");
                 DbCommand dbCommand = RegisterStorage.GetDatabase(registerId).GetSqlStringCommand(sqlAllpri);
                 DataTable allpriDt = RegisterStorage.GetDatabase(registerId).ExecuteDataSet(dbCommand, null, false)
                     .Tables[0];
+                op.Complete();
 
                 DateTime? minDate = null;
                 bool nullExists = false;
 
                 Dictionary<int, DateTime> historyDatesPo = new Dictionary<int, DateTime>();
 
+                var op1 = log.BeginOperation("обработка 1");
                 foreach (DataRow rowAllpri in allpriDt.Rows)
                 {
                     var attributeId = rowAllpri["ATTRIBUTE_ID"].ParseToInt();
@@ -329,6 +352,9 @@ namespace KadOzenka.Dal.DataExport
                     }
                 }
 
+                op1.Complete();
+
+                var op2 = log.BeginOperation("обработка 2");
                 // Установка даты С для показателей, которые есть только в Quant (нет истории), на основе минимальной даты с из AllPri
                 foreach (DataRow row in dtLife.Rows)
                 {
@@ -345,6 +371,9 @@ namespace KadOzenka.Dal.DataExport
                     row["S"] = minDate ?? (Object) DBNull.Value;
                 }
 
+                op2.Complete();
+
+                var op3 = log.BeginOperation("обработка 3");
                 foreach (DataRow rowAllpri in allpriDt.Rows)
                 {
                     DataRow row = dtLife.NewRow();
@@ -372,34 +401,37 @@ namespace KadOzenka.Dal.DataExport
                     if (attributeData.ValueField.IsNullOrEmpty() && attributeData.CodeField.IsNotEmpty() &&
                         attributeData.ReferenceId > 0)
                     {
-
                         row["TEXT_VALUE"] = ReferencesCommon.GetItems(attributeData.ReferenceId.Value, false)
                             .FirstOrDefault(x => x.ItemId == rowAllpri["REF_ITEM_ID"].ParseToInt())
                             ?.Value;
-
                     }
 
                     dtLife.Rows.Add(row);
                 }
+
+                op3.Complete();
             }
 
             string sortExpression = "";
 
-            if (dtStart != DateTime.MinValue)
+            using (log.TimeOperation("Сортировка"))
             {
-                sortExpression += string.Format("PO > #{0}#", dtStart.ToString(CultureInfo.InvariantCulture));
-            }
+                if (dtStart != DateTime.MinValue)
+                {
+                    sortExpression += string.Format("PO > #{0}#", dtStart.ToString(CultureInfo.InvariantCulture));
+                }
 
-            if (dtEnd != DateTime.MinValue)
-            {
-                sortExpression += (sortExpression.IsNotEmpty() ? " and " : "") +
-                                  string.Format("S <= #{0}# OR S IS NULL",
-                                      dtEnd.ToString(CultureInfo.InvariantCulture));
-            }
+                if (dtEnd != DateTime.MinValue)
+                {
+                    sortExpression += (sortExpression.IsNotEmpty() ? " and " : "") +
+                                      string.Format("S <= #{0}# OR S IS NULL",
+                                          dtEnd.ToString(CultureInfo.InvariantCulture));
+                }
 
-            if (sortExpression.IsNotEmpty())
-            {
-                dtLife = dtLife.FilteringAndSortingTable(sortExpression);
+                if (sortExpression.IsNotEmpty())
+                {
+                    dtLife = dtLife.FilteringAndSortingTable(sortExpression);
+                }
             }
 
             return dtLife;
@@ -411,22 +443,27 @@ namespace KadOzenka.Dal.DataExport
             /// Дата "С" отрезка Life, может отличаться от даты значения AllPri
             /// </summary>
             public DateTime S;
+
             /// <summary>
             /// Дата "По" отрезка Life, может отличаться от даты значения AllPri
             /// </summary>
             public DateTime PO;
+
             /// <summary>
             /// Соответствующая запись в AllPri
             /// </summary>
             public DataRow AllPriRow;
+
             /// <summary>
             /// Соответствующая запись в Quant
             /// </summary>
             public DataRow QuantRow;
+
             /// <summary>
             /// Показатель
             /// </summary>
             public RegisterAttribute Attribute;
+
             /// <summary>
             /// Ссылка на предыдущий отрезок Life (с более ранним значением "С" и "По").
             /// </summary>
@@ -434,23 +471,16 @@ namespace KadOzenka.Dal.DataExport
 
             public int ID
             {
-                get
-                {
-                    return AllPriRow["ID"].ParseTo<int>();
-                }
+                get { return AllPriRow["ID"].ParseTo<int>(); }
             }
 
             public DateTime OT
             {
-                get
-                {
-                    return AllPriRow["OT"].ParseTo<DateTime>();
-                }
+                get { return AllPriRow["OT"].ParseTo<DateTime>(); }
             }
 
             public Life()
             {
-
             }
 
             public Life(DateTime dtS, DateTime dtPO, DataRow drAllPriRow, Life prevLife)
@@ -461,9 +491,9 @@ namespace KadOzenka.Dal.DataExport
                 PrevLife = prevLife;
             }
         }
+
         private static void AddRowToLife(DataTable dtLife, Life life, int objectId)
         {
-
             while (life != null)
             {
                 DataRow row = dtLife.NewRow();
@@ -485,11 +515,11 @@ namespace KadOzenka.Dal.DataExport
                 {
                     value = life.QuantRow[life.Attribute.ValueField];
                 }
-                else if(life.Attribute.CodeField.IsNotEmpty())
+                else if (life.Attribute.CodeField.IsNotEmpty())
                 {
                     var attributeData = RegisterCache.GetAttributeData(life.Attribute.Id);
 
-                    if(attributeData.ReferenceId > 0)
+                    if (attributeData.ReferenceId > 0)
                     {
                         value = ReferencesCommon.GetItems(attributeData.ReferenceId.Value, false)
                             .FirstOrDefault(x => x.ItemId == life.QuantRow[life.Attribute.CodeField].ParseToInt())

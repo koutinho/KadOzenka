@@ -631,11 +631,12 @@ namespace KadOzenka.Dal.DataExport
             DataTable data;
             using (Log.TimeOperation("Получение атрибутов"))
             {
-                data = RegisterStorage.GetAttributes((int) unit.Id, factorReestrId.Value);
+                data = CoreGetAttributesTrimmed.GetAttributes((int) unit.Id, factorReestrId.Value);
             }
 
             if (data != null)
             {
+                Log.Verbose("Data rows {RowCount}",data.Rows.Count);
                 foreach (DataRow row in data.Rows)
                 {
                     factorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(),
