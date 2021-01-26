@@ -1006,12 +1006,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
-
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
+	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
@@ -1032,7 +1029,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ExcludeModelObjectsFromCalculation(IFormFile file)
+        public ActionResult UpdateModelObjects(long modelId, IFormFile file)
         {
             if (file == null)
                 throw new Exception("Не выбран файл");
@@ -1043,19 +1040,19 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            var excludeResult = ModelingService.ExcludeModelObjectsFromCalculation(excelFile);
+            var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
             
             var fileName = string.Empty;
-            if (excludeResult.File != null)
+            if (updateResult.File != null)
             {
 	            fileName = "Не найденные объекты.xlsx";
-	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
+	            HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
             }
 
             return Content(JsonConvert.SerializeObject(new
             {
-	            excludeResult.TotalCount, excludeResult.UpdatedObjectsCount, excludeResult.UnchangedObjectsCount,
-	            excludeResult.ErrorObjectsCount, excludeResult.ErrorRowIndexes, fileName
+	            updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
+	            updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
             }), "application/json");
         }
 
