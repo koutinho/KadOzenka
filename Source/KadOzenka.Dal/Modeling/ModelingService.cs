@@ -449,6 +449,8 @@ namespace KadOzenka.Dal.Modeling
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
             var factors = GetFactorColumnsForModelObjectsInFile(modelId);
+			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
+            var groupedFactors = factors.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
 			var columnHeaders = new object[_maxNumberOfColumns];
             columnHeaders[IdColumnIndex] = "ИД";
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
@@ -481,10 +483,21 @@ namespace KadOzenka.Dal.Modeling
 				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
 
 				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-				factors.ForEach(attribute =>
+				groupedFactors.ForEach(factor =>
 				{
-					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId)?.Coefficient;
-					values[attribute.ColumnIndex] = coefficient;
+					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
+					var factorColumns = factor.ToList();
+					factorColumns.ForEach(x =>
+					{
+						if (x.IsColumnWithValue)
+						{
+							values[x.ColumnIndex] = coefficient?.Value;
+						}
+						else
+						{
+							values[x.ColumnIndex] = coefficient?.Coefficient;
+						}
+					});
 				});
 
 				//var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
@@ -502,9 +515,9 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-		public ExcludeModelObjectsFromCalculationResult UpdateModelObjects(long modelId, ExcelFile file)
+		public UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file)
         {
-	        var factors = GetFactorColumnsForModelObjectsInFile(modelId);
+	        var factors = GetFactorColumnsForModelObjectsInFile(modelId).Where(x => !x.IsColumnWithValue).ToList();
 
             var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
@@ -535,10 +548,10 @@ namespace KadOzenka.Dal.Modeling
             var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
             if (modelObjectsIds.Count == 0)
             {
-	            return new ExcludeModelObjectsFromCalculationResult();
+	            return new UpdateModelObjectsResult();
             }
 
-            var result = new ExcludeModelObjectsFromCalculationResult
+            var result = new UpdateModelObjectsResult
             {
                 TotalCount = modelObjectsFromExcel.Count
             };
@@ -667,18 +680,43 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private List<Column> GetFactorColumnsForModelObjectsInFile(long modelId)
+		private List<FactorInFileInfo> GetFactorColumnsForModelObjectsInFile(long modelId)
 		{
 			//пока работаем только с Exp (был расчет МС и процента)
-			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp).Select(x => new Column
+			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+			var result = new List<FactorInFileInfo>();
+			factors.ForEach(x =>
 			{
-				AttributeId = x.FactorId.GetValueOrDefault(),
-				Name = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name,
-			}).OrderBy(x => x.Name).ToList();
+				var factorId = x.FactorId.GetValueOrDefault();
+				var factorName = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name;
+				if (x.DictionaryId == null)
+				{
+					result.Add(new FactorInFileInfo
+					{
+						AttributeId = factorId,
+						Name = factorName
+					});
+				}
+				else
+				{
+					result.Add(new FactorInFileInfo
+					{
+						AttributeId = factorId,
+						Name = $"{factorName} (Коэффициент)"
+					});
+					result.Add(new FactorInFileInfo
+					{
+						AttributeId = factorId,
+						Name = $"{factorName} (Значение)",
+						IsColumnWithValue = true
+					});
+				}
+			});
+
+			result = result.OrderBy(x => x.Name).ToList();
+			result.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
 			
-			factors.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
-			
-			return factors;
+			return result;
 		}
 
 		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
@@ -786,11 +824,12 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Entities
 
-		private class Column
+		private class FactorInFileInfo
 		{
 			public long AttributeId { get; set; }
 			public string Name { get; set; }
 			public int ColumnIndex { get; set; }
+			public bool IsColumnWithValue { get; set; }
 		}
 
 		public class ModelObjectsCalculationParameters
@@ -814,7 +853,7 @@ namespace KadOzenka.Dal.Modeling
 	        }
 		}
 
-        public class ExcludeModelObjectsFromCalculationResult
+        public class UpdateModelObjectsResult
 		{
 			public int TotalCount { get; set; }
 			public int UpdatedObjectsCount { get; set; }
@@ -823,7 +862,7 @@ namespace KadOzenka.Dal.Modeling
 			public List<int> ErrorRowIndexes { get; set; }
 			public MemoryStream File { get; set; }
 
-			public ExcludeModelObjectsFromCalculationResult()
+			public UpdateModelObjectsResult()
 			{
 				ErrorRowIndexes = new List<int>();
 			}

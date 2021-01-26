@@ -1040,19 +1040,19 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            var excludeResult = ModelingService.UpdateModelObjects(modelId, excelFile);
+            var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
             
             var fileName = string.Empty;
-            if (excludeResult.File != null)
+            if (updateResult.File != null)
             {
 	            fileName = "Не найденные объекты.xlsx";
-	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
+	            HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
             }
 
             return Content(JsonConvert.SerializeObject(new
             {
-	            excludeResult.TotalCount, excludeResult.UpdatedObjectsCount, excludeResult.UnchangedObjectsCount,
-	            excludeResult.ErrorObjectsCount, excludeResult.ErrorRowIndexes, fileName
+	            updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
+	            updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
             }), "application/json");
         }
 
