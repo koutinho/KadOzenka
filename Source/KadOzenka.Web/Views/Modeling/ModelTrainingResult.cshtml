@@ -10,73 +10,111 @@
 }
 else
 {
-    <div class="form-horizontal col-sm-12" style="padding: 3%">
-        <div class="form-group">
-            @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
-                .Name("priceHistoryGrid")
-                .ToolBar(tools => tools.Pdf().Text("Выгрузить в pdf"))
-                .Pdf(pdf => pdf
-                    .AllPages()
-                    .AvoidLinks()
-                    .PaperSize("A4")
-                    .Scale(0.8)
-                    .Margin("2cm", "1cm", "1cm", "1cm")
-                    .Landscape()
-                    .RepeatHeaders()
-                    .FileName("Результаты обучения модели.pdf")
-                )
-                .Columns(columns =>
-                {
-                    columns.Group(g => g.Title("Средняя абсолютная ошибка")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
-                            c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
-                        }));
-                    columns.Group(g => g.Title("Критерий Фишера")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.FisherCriterionTrain).Title("Train");
-                            c.Bound(x => x.FisherCriterionTest).Title("Test");
-                        }));
-                    columns.Group(g => g.Title("Коэффициент детерминации (R²)")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.R2Train).Title("Train");
-                            c.Bound(x => x.R2Test).Title("Test");
-                        }));
-                })
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .ServerOperation(false)
-                    .Model(x =>
-                    {
-                        x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
-                        x.Field(c => c.MeanSquaredErrorTest).Editable(false);
-                        x.Field(c => c.FisherCriterionTrain).Editable(false);
-                        x.Field(c => c.FisherCriterionTest).Editable(false);
-                        x.Field(c => c.R2Train).Editable(false);
-                        x.Field(c => c.R2Test).Editable(false);
-                    }))
-                .HtmlAttributes(new {@class = "coefficients-grid" }))
-        </div>
-        <div class="form-group" style="padding-top: 2%">
-            <div class="col-sm-5 center">
-                @Html.CustomLabel("Разброс:")
-            </div>
-            <div class="col-sm-5 center">
-                @Html.CustomLabel("Корреляция:")
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-5 center" id="scatterDiv">
-                <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено"/>
-            </div>
-            <div class="col-sm-5 center" id="correlationDiv">
-                <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено"/>
+<div class="form-horizontal col-sm-12" style="padding: 2%">
+
+    <div class="form-group" style="padding-bottom: 5%;">
+        <span>Анализ качества статистической модели</span>
+        <div class="coefficients-grid k-grid k-widget k-display-block" id="qualityGrid" name="qualityGrid" data-role="grid">
+            <div class="k-grid-content k-auto-scrollable">
+                <table role="grid">
+                    <thead class="k-grid-header" role="rowgroup">
+                    <tr role="row">
+                        <th scope="col" role="columnheader" colspan="1" class="k-header"> </th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">t-критерий Стьюдента</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">Средняя ошибка аппроксимации</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">Коэффициент детерминации (R²)</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">F-критерий Фишера</th>
+                    </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <tr role="row">
+                            <td class="quality-grid-first-column" role="gridcell">Расчетное</td>
+                            <td class="" role="gridcell">@Model.StudentCriterionForCalculation</td>
+                            <td class="" role="gridcell" rowspan="2">@Model.MeanSquaredError</td>
+                            <td class="" role="gridcell" rowspan="2">@Model.R2</td>
+                            <td class="" role="gridcell">@Model.FisherCriterionForCalculation</td>
+                        </tr>
+                        <tr class="k-alt" role="row">
+                            <td class="quality-grid-first-column" role="gridcell">Табличное</td>
+                            <td class="" role="gridcell">@Model.StudentCriterionForTable</td>
+                            <td class="" role="gridcell">@Model.FisherCriterionForTable</td>
+                        </tr>
+                    <tr role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Критерий</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.CriterionForStudent)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.CriterionForMeanSquaredError)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.CriterionForR2)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.CriterionForFisher)</td>
+                    </tr>
+                    <tr class="k-alt" role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Вывод</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForStudent)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForMeanSquaredError)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForR2)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForFisher)</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    
+    <div class="form-group">
+        @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
+            .Name("trainAndTestGrid")
+            .Columns(columns =>
+            {
+                columns.Group(g => g.Title("Средняя абсолютная ошибка")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
+                        c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
+                    }));
+                columns.Group(g => g.Title("Критерий Фишера")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.FisherCriterionTrain).Title("Train");
+                        c.Bound(x => x.FisherCriterionTest).Title("Test");
+                    }));
+                columns.Group(g => g.Title("Коэффициент детерминации (R²)")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.R2Train).Title("Train");
+                        c.Bound(x => x.R2Test).Title("Test");
+                    }));
+            })
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(x =>
+                {
+                    x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
+                    x.Field(c => c.MeanSquaredErrorTest).Editable(false);
+                    x.Field(c => c.FisherCriterionTrain).Editable(false);
+                    x.Field(c => c.FisherCriterionTest).Editable(false);
+                    x.Field(c => c.R2Train).Editable(false);
+                    x.Field(c => c.R2Test).Editable(false);
+                }))
+            .HtmlAttributes(new {@class = "coefficients-grid" }))
+    </div>
+
+    <div class="form-group" style="padding-top: 2%">
+        <div class="col-sm-5 center">
+            @Html.CustomLabel("Разброс:")
+        </div>
+        <div class="col-sm-5 center">
+            @Html.CustomLabel("Корреляция:")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-5 center" id="scatterDiv">
+            <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено" />
+        </div>
+        <div class="col-sm-5 center" id="correlationDiv">
+            <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено" />
+        </div>
+    </div>
+</div>
 
 }
 
@@ -100,6 +138,25 @@ else
 
     .coefficients-grid {
         text-align: center;
+    }
+
+    .quality-grid-first-column {
+        text-align: left;
+    }
+
+    #qualityGrid textarea {
+        height: 7em;
+        width: 85%;
+        padding: 5%;
+        resize: none;
+        border: none;
+        text-align: center;
+    }
+
+    #qualityGrid textarea:focus {
+        outline: none !important;
+        border: 1px solid red;
+        box-shadow: 0 0 10px #719ECE;
     }
 </style>
 
