@@ -13,6 +13,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
@@ -29,6 +30,7 @@ namespace KadOzenka.Dal.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         public ModelingRepository ModelingRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
+        public RecycleBinService RecycleBinService { get; }
 
 		#region Информация для выгрузки/загрузки объектов моделирования
 
@@ -49,6 +51,7 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ModelFactorsService = new ModelFactorsService();
 			ModelingRepository = new ModelingRepository();
+			RecycleBinService = new RecycleBinService();
 		}
 
         #region CRUD General Model
@@ -327,9 +330,25 @@ namespace KadOzenka.Dal.Modeling
 			model.Destroy();
 		}
 
-        #region Support Methods
+        public void DeleteModelLogically(long modelId, long eventId)
+        {
+	        var model = GetModelEntityById(modelId);
 
-        private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
+	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+	        RecycleBinService.MoveObjectsToRecycleBin(factors.Select(x => x.Id).ToList(), OMModelFactor.GetRegisterId(), eventId);
+
+	        if (model.Type_Code == KoModelType.Automatic)
+	        {
+		        var modelToObjectsRelation = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+		        RecycleBinService.MoveObjectsToRecycleBin(modelToObjectsRelation.Select(x => x.Id).ToList(), OMModelToMarketObjects.GetRegisterId(), eventId);
+	        }
+
+			RecycleBinService.MoveObjectToRecycleBin(model.Id, OMModel.GetRegisterId(), eventId);
+		}
+
+		#region Support Methods
+
+		private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
         {
 	        var message = new StringBuilder();
 

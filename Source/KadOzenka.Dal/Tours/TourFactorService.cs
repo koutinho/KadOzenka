@@ -6,6 +6,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
@@ -22,11 +23,13 @@ namespace KadOzenka.Dal.Tours
     {
         public RegisterService RegisterService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
+        public RecycleBinService RecycleBinService { get; }
 
         public TourFactorService()
         {
             RegisterService = new RegisterService();
             RegisterAttributeService = new RegisterAttributeService();
+            RecycleBinService = new RecycleBinService();
         }
 
         public List<OMAttribute> GetTourAttributes(long tourId, ObjectTypeExtended objectType)
@@ -129,26 +132,24 @@ namespace KadOzenka.Dal.Tours
             return omRegister;
         }
 
-        public void RemoveTourFactorRegisters(long tourId)
+        public void RemoveTourFactorRegistersLogically(long tourId, long eventId)
         {
 	        using (var ts = new TransactionScope())
-            {
-                var omTourFactorRegisters = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute();
-                if (omTourFactorRegisters.Count > 0)
-                {
-                    foreach (var omTourFactorRegisterId in omTourFactorRegisters.Select(x => x.RegisterId).Distinct().ToList())
-                    {
-                        RegisterService.RemoveRegister(omTourFactorRegisterId.Value);
-                    }
+	        {
+		        var omTourFactorRegisters = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute();
+		        if (omTourFactorRegisters.Count > 0)
+		        {
+			        foreach (var omTourFactorRegisterId in omTourFactorRegisters.Select(x => x.RegisterId).Distinct().ToList())
+			        {
+				        RegisterService.RemoveRegister(omTourFactorRegisterId.Value, eventId);
+			        }
 
-                    foreach (var omTourFactorRegister in omTourFactorRegisters)
-                    {
-                        omTourFactorRegister.Destroy();
-                    }
-                }
+			        RecycleBinService.MoveObjectsToRecycleBin(omTourFactorRegisters.Select(x => x.Id).ToList(),
+				        OMTourFactorRegister.GetRegisterId(), eventId);
+		        }
 
-                ts.Complete();
-            }
+		        ts.Complete();
+	        }
         }
 
         public long CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
