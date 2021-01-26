@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours.Dto;
+using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
@@ -14,11 +17,13 @@ namespace KadOzenka.Dal.Tours
     {
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
+        private RecycleBinService RecycleBinService { get; }
 
-        public TourService(TourFactorService tourFactorService, GroupService groupService)
+        public TourService(TourFactorService tourFactorService, GroupService groupService, RecycleBinService recycleBinService)
         {
             TourFactorService = tourFactorService;
             GroupService = groupService;
+            RecycleBinService = recycleBinService;
         }
 
         public TourDto GetTourById(long? tourId)
@@ -122,25 +127,29 @@ namespace KadOzenka.Dal.Tours
 	        if (!CanTourBeDeleted(tourId))
 		        throw new Exception($"Тур {tour.Year} не может быть удален, т.к. имеются связанные задания на оценку");
 
-		    var groupIds = OMTourGroup.Where(x => x.TourId == tourId).Select(x => x.GroupId).Execute().Select(x => x.GroupId).ToList();
-		    var complianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId).Execute();
+	        var complianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId).Execute();
 
-            using (var ts = new TransactionScope())
+	        using (var ts = new TransactionScope())
 	        {
-		        foreach (var groupId in groupIds)
+		        var recycleBinRecord = new OMRecycleBin
 		        {
-			        GroupService.DeleteGroup(groupId);
-                }
+			        DeletedTime = DateTime.Now,
+			        UserId = SRDSession.GetCurrentUserId().Value,
+			        ObjectRegisterId = OMTour.GetRegisterId(),
+			        Description = $"Тур '{tour.Year}'"
+		        };
+		        long eventId = recycleBinRecord.Save();
 
-		        foreach (var complianceGuide in complianceGuides)
-		        {
-			        complianceGuide.Destroy();
-		        }
+		        GroupService.DeleteGroups(tourId, true, eventId);
+		        GroupService.DeleteGroups(tourId, false, eventId);
 
-		        TourFactorService.RemoveTourFactorRegisters(tour.Id);
-                tour.Destroy();
+		        RecycleBinService.MoveObjectsToRecycleBin(complianceGuides.Select(x => x.Id).ToList(), OMComplianceGuide.GetRegisterId(), eventId);
 
-		        ts.Complete();
+                TourFactorService.RemoveTourFactorRegistersLogically(tour.Id, eventId);
+
+		        RecycleBinService.MoveObjectToRecycleBin(tour.Id, OMTour.GetRegisterId(), eventId);
+
+                ts.Complete();
 	        }
         }
 

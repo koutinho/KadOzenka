@@ -68,7 +68,6 @@
     <Folder Include="LongProcess\Modeling\Entities\" />
     <Folder Include="Modeling\Dto\Factors\" />
     <Folder Include="Seman\" />
-    <Folder Include="CommonFunctions\" />
   </ItemGroup>
 
   <ItemGroup>

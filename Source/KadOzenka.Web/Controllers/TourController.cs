@@ -12,6 +12,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
@@ -56,7 +57,7 @@ namespace KadOzenka.Web.Controllers
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
-            TourService = new TourService(TourFactorService, GroupService);
+            TourService = new TourService(TourFactorService, GroupService, new RecycleBinService());
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
@@ -872,7 +873,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public JsonResult GetGroupsForTour(long tourId)
         {
-            var groups = GroupService.GetGroupsTreeForTour(tourId);
+            var groups = GroupService.GetGroupsTreeForTour(tourId, true);
 
             var models = groups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
 

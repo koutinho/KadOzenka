@@ -110,6 +110,7 @@
     <None Remove="Config\Registers\Views\CalculatePersonSelect.xml" />
     <None Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <None Remove="Config\Registers\Views\CommissionCost.xml" />
+    <None Remove="Config\Registers\Views\CommonRecycleBin.xml" />
     <None Remove="Config\Registers\Views\CoreAuditCommon.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessQueue.xml" />
     <None Remove="Config\Registers\Views\CoreLongProcessQueueCard.xml" />
@@ -367,6 +368,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\CharacteristicsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CommonRecycleBin.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\CommissionCost.xml">
@@ -1853,6 +1857,7 @@
     <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\Views\CommonRecycleBin.xml" />
     <ConfigPath Remove="Config\Registers\Views\CreatedReports.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
