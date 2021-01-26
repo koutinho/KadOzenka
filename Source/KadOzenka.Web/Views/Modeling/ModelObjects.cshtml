@@ -411,16 +411,18 @@
                         {
                             headerTemplate: getGridColumnHeaderTemplate(styleClass, 'Значение'),
                             field: valueField,
-                            attributes: { 'class': styleClass }
+                            attributes: { 'class': styleClass },
+                            width: 100
                         },
                         {
                             headerTemplate: getGridColumnHeaderTemplate(styleClass, 'Коэффициент'),
                             field: objectFieldPrefixForCoefficient + attribute.AttributeId,
-                            attributes: { 'class': styleClass }
+                            attributes: { 'class': styleClass },
+                            width: 100
                         }
                     ],
                     sortable: false,
-                    width: 200
+                    resizable: true
                 };
                 additionalColumns.push(combinedColumn);
             }
