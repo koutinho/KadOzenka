@@ -15,8 +15,16 @@ else
     <div class="form-group" style="padding-bottom: 5%;">
         <span>Анализ качества статистической модели</span>
         <div class="coefficients-grid k-grid k-widget k-display-block" id="qualityGrid" name="qualityGrid" data-role="grid">
+            <div class="k-header k-grid-toolbar">
+                <div style="float: left">
+                    <a class="k-button k-button-icon" id="exportBtn" style="width:120px;">
+                        <span class="k-icon k-i-download" style="padding-right: 30%"></span>
+                        Выгрузить
+                    </a>
+                </div>
+            </div>
             <div class="k-grid-content k-auto-scrollable">
-                <table role="grid">
+                <table id="qualityTable" role="grid">
                     <thead class="k-grid-header" role="rowgroup">
                     <tr role="row">
                         <th scope="col" role="columnheader" colspan="1" class="k-header"> </th>
@@ -27,18 +35,18 @@ else
                     </tr>
                     </thead>
                     <tbody role="rowgroup">
-                        <tr role="row">
-                            <td class="quality-grid-first-column" role="gridcell">Расчетное</td>
-                            <td class="" role="gridcell">@Model.StudentCriterionForCalculation</td>
-                            <td class="" role="gridcell" rowspan="2">@Model.MeanSquaredError</td>
-                            <td class="" role="gridcell" rowspan="2">@Model.R2</td>
-                            <td class="" role="gridcell">@Model.FisherCriterionForCalculation</td>
-                        </tr>
-                        <tr class="k-alt" role="row">
-                            <td class="quality-grid-first-column" role="gridcell">Табличное</td>
-                            <td class="" role="gridcell">@Model.StudentCriterionForTable</td>
-                            <td class="" role="gridcell">@Model.FisherCriterionForTable</td>
-                        </tr>
+                    <tr role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Расчетное</td>
+                        <td class="" role="gridcell">@Model.StudentCriterionForCalculation</td>
+                        <td class="" role="gridcell" rowspan="2">@Model.MeanSquaredError</td>
+                        <td class="" role="gridcell" rowspan="2">@Model.R2</td>
+                        <td class="" role="gridcell">@Model.FisherCriterionForCalculation</td>
+                    </tr>
+                    <tr class="k-alt" role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Табличное</td>
+                        <td class="" role="gridcell">@Model.StudentCriterionForTable</td>
+                        <td class="" role="gridcell">@Model.FisherCriterionForTable</td>
+                    </tr>
                     <tr role="row">
                         <td class="quality-grid-first-column" role="gridcell">Критерий</td>
                         <td class="" role="gridcell">@Html.TextAreaFor(x => x.CriterionForStudent)</td>
@@ -176,6 +184,8 @@ else
                 $("#correlationImg")
                     .on('load', () => onImageLoad(correlation))
                     .on('error', () => onImageFail(correlation, $("#correlationImg"), "@Model.CorrelationImageLink"));
+
+                $('#exportBtn').on('click', exportTrainingResult);
             </text>
         }
     });
@@ -232,4 +242,28 @@ else
             $("#scatterImg").css('margin-top', ((max - scatterImgHeight) / 2) + 'px');
         }
     };
+
+
+    function exportTrainingResult() {
+        //var form = $('#updateFactorForm');
+        //var formObject = Common.Functions.FormToObject(form);
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Html.Raw(Url.Action("ExportTrainingResultToExcel", "Modeling", new {modelId = Model.ModelId, type = Model.Type}))',
+            //data: formObject,
+            success: function (response) {
+                var url =
+                    '@Url.Action("DownloadTrainingResultFile", "Modeling", new {modelName = Model.ModelName})&fileName=' +
+                        response.FileName;
+                window.location = url;
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 </script>

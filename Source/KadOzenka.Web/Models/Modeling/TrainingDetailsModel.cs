@@ -1,9 +1,14 @@
-﻿using KadOzenka.Dal.Modeling.Entities;
+﻿using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
 {
     public class TrainingDetailsModel
     {
+        public long ModelId { get; set; }
+        public string ModelName { get; set; }
+        public KoAlgoritmType Type { get; set; }
+
         public decimal StudentCriterionForCalculation { get; set; }
         public decimal StudentCriterionForTable { get; set; }
         public decimal MeanSquaredError { get; set; }
@@ -36,32 +41,35 @@ namespace KadOzenka.Web.Models.Modeling
         public string CorrelationImageLink { get; set; }
 
 
-        public static TrainingDetailsModel ToModel(TrainingResponse trainingResult)
+        public static TrainingDetailsModel ToModel(TrainingDetailsDto trainingResult)
         {
-            return new TrainingDetailsModel
+	        return new TrainingDetailsModel
             {
-                MeanSquaredErrorTrain = trainingResult?.AccuracyScore?.MeanSquaredError?.Train,
-                MeanSquaredErrorTest = trainingResult?.AccuracyScore?.MeanSquaredError?.Test,
-                FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Train,
-                FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Test,
-                R2Train = trainingResult?.AccuracyScore?.R2?.Train,
-                R2Test = trainingResult?.AccuracyScore?.R2?.Test,
-                ScatterImageLink = trainingResult?.Images?.ScatterLink,
-                CorrelationImageLink = trainingResult?.Images?.CorrelationLink,
-                StudentCriterionForCalculation = -1,
-                StudentCriterionForTable = -2,
-                MeanSquaredError = -3,
-                R2 = -4,
-                FisherCriterionForCalculation = -5,
-                FisherCriterionForTable = -6,
-                CriterionForStudent = "Критерий для Стьюдента",
-                CriterionForMeanSquaredError = "Критерий для ошибки",
-                CriterionForR2 = "Критерий для R2",
-                CriterionForFisher = "Критерий для Фишера",
-                ConclusionForStudent = "Вывод для Стьюдента",
-                ConclusionForMeanSquaredError = "Вывод для ошибки",
-                ConclusionForR2 = "Вывод для R2",
-                ConclusionForFisher = "Вывод для Фишера"
+                ModelId = trainingResult.ModelId,
+                ModelName = trainingResult.ModelName,
+                Type = trainingResult.Type,
+				MeanSquaredErrorTrain = trainingResult.MeanSquaredErrorTrain,
+                MeanSquaredErrorTest = trainingResult.MeanSquaredErrorTest,
+                FisherCriterionTrain = trainingResult.FisherCriterionTrain,
+                FisherCriterionTest = trainingResult.FisherCriterionTest,
+                R2Train = trainingResult.R2Train,
+                R2Test = trainingResult.R2Test,
+                ScatterImageLink = trainingResult.ScatterImageLink,
+                CorrelationImageLink = trainingResult.CorrelationImageLink,
+                StudentCriterionForCalculation = trainingResult.StudentCriterionForCalculation,
+                StudentCriterionForTable = trainingResult.StudentCriterionForTable,
+                MeanSquaredError = trainingResult.MeanSquaredError,
+                R2 = trainingResult.R2,
+                FisherCriterionForCalculation = trainingResult.FisherCriterionForCalculation,
+                FisherCriterionForTable = trainingResult.FisherCriterionForTable,
+                CriterionForStudent = trainingResult.CriterionForStudent,
+                CriterionForMeanSquaredError = trainingResult.CriterionForMeanSquaredError,
+                CriterionForR2 = trainingResult.CriterionForR2,
+                CriterionForFisher = trainingResult.CriterionForFisher,
+                ConclusionForStudent = trainingResult.ConclusionForStudent,
+                ConclusionForMeanSquaredError = trainingResult.ConclusionForMeanSquaredError,
+                ConclusionForR2 = trainingResult.ConclusionForR2,
+                ConclusionForFisher = trainingResult.ConclusionForFisher
             };
         }
     }

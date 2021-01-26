@@ -861,38 +861,36 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult LinearModelDetails(long modelId)
+        public ActionResult ModelTrainingResult(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var trainingResult = ModelingService.GetTrainingResult(modelId, type);
+	        
+	        var model = TrainingDetailsModel.ToModel(trainingResult);
 
-	        var trainingResult = GetTrainingDetails(model.LinearTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
-
-	        return View("ModelTrainingResult", details);
+	        return View(model);
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ExponentialModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileStream = ModelingService.ExportTrainingResultToExcel(modelId, type);
 
-	        var trainingResult = GetTrainingDetails(model.ExponentialTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
+	        HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
-	        return View("ModelTrainingResult", details);
+	        return Json(new { FileName = modelId.ToString() });
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult MultiplicativeModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public IActionResult DownloadTrainingResultFile(string fileName, string modelName)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+	        if (fileInfo == null)
+		        return new EmptyResult();
 
-	        var trainingResult = GetTrainingDetails(model.MultiplicativeTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
-
-	        return View("ModelTrainingResult", details);
+	        return File(fileInfo.FileContent, fileInfo.ContentType,
+		        $"Результаты обучения модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
 
         #region Support Methods
