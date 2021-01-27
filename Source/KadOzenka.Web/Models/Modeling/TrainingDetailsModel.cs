@@ -21,10 +21,10 @@ namespace KadOzenka.Web.Models.Modeling
         public string CriterionForR2 { get; set; }
         public string CriterionForFisher { get; set; }
 
-        public bool ConclusionForStudent { get; set; }
-        public bool ConclusionForMeanSquaredError { get; set; }
-        public bool ConclusionForR2 { get; set; }
-        public bool ConclusionForFisher { get; set; }
+        public bool? ConclusionForStudent { get; set; }
+        public bool? ConclusionForMeanSquaredError { get; set; }
+        public bool? ConclusionForR2 { get; set; }
+        public bool? ConclusionForFisher { get; set; }
 
 
 
