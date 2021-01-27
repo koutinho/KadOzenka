@@ -1368,7 +1368,9 @@ namespace KadOzenka.Web.Controllers
 		        Value = x.Id.ToString()
 	        }).ToList();
 
-	        return Json(dictionaries);
+	        dictionaries.Insert(0, new SelectListItem("", ""));
+
+            return Json(dictionaries);
         }
 
         #endregion
