@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMModelingDictionary> GetDictionaries()
 		{
-			return OMModelingDictionary.Where(x => true).SelectAll().Execute();
+			return OMModelingDictionary.Where(x => true).OrderBy(x => x.Name).SelectAll().Execute();
 		}
 
 		public List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true)
