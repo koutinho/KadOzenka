@@ -870,6 +870,16 @@ namespace KadOzenka.Web.Controllers
 	        return View(model);
         }
 
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult UpdateTrainingQualityInfo(TrainingDetailsModel model)
+        {
+	        var dto = model.TrainingQualityInfoModel.FromModel();
+	        ModelingService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
+
+	        return Ok();
+        }
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)

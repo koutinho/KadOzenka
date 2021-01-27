@@ -851,22 +851,7 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var model = GetModelEntityById(modelId);
 
-			string trainingResultStr;
-			switch (type)
-			{
-				case KoAlgoritmType.Exp:
-					trainingResultStr = model.ExponentialTrainingResult;
-					break;
-				case KoAlgoritmType.Line:
-					trainingResultStr = model.LinearTrainingResult;
-					break;
-				case KoAlgoritmType.Multi:
-					trainingResultStr = model.MultiplicativeTrainingResult;
-					break;
-				default:
-					throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
-			}
-
+			var trainingResultStr = model.GetTrainingResult(type);
 			if (string.IsNullOrWhiteSpace(trainingResultStr))
 				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
 
@@ -885,21 +870,38 @@ namespace KadOzenka.Dal.Modeling
 				R2Test = trainingResult?.AccuracyScore?.R2?.Test,
 				ScatterImageLink = trainingResult?.Images?.ScatterLink,
 				CorrelationImageLink = trainingResult?.Images?.CorrelationLink,
-				StudentCriterionForCalculation = -1,
-				StudentCriterionForTable = -2,
-				MeanSquaredError = -3,
-				R2 = -4,
-				FisherCriterionForCalculation = -5,
-				FisherCriterionForTable = -6,
-				CriterionForStudent = "Критерий для Стьюдента",
-				CriterionForMeanSquaredError = "Критерий для ошибки",
-				CriterionForR2 = "Критерий для R2",
-				CriterionForFisher = "Критерий для Фишера",
-				ConclusionForStudent = true,
-				ConclusionForMeanSquaredError = false,
-				ConclusionForR2 = true,
-				ConclusionForFisher = false
+				QualityControlInfo = trainingResult?.QualityControlInfo
 			};
+		}
+
+		public void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			trainingResult.QualityControlInfo = newQualityControlInfo;
+
+			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					model.ExponentialTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Line:
+					model.LinearTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Multi:
+					model.MultiplicativeTrainingResult = updatedTrainingResult;
+					break;
+				default:
+					throw new Exception($"Передан неизвестный тип модели {type.GetEnumDescription()}");
+			}
+
+			model.Save();
 		}
 
 		public Stream ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
@@ -928,29 +930,31 @@ namespace KadOzenka.Dal.Modeling
 
 			var firstRow = new object[]
 			{
-				"Расчетное", trainingResult.StudentCriterionForCalculation, trainingResult.MeanSquaredError,
-				trainingResult.R2, trainingResult.FisherCriterionForCalculation
+				"Расчетное", trainingResult.MeanSquaredErrorTest, trainingResult.MeanSquaredErrorTest,
+				trainingResult.R2Test, trainingResult.FisherCriterionTest
 			};
 			AddRowToExcel(mainWorkSheet, calculationRowIndex, firstRow);
 
 			var secondRow = new object[]
 			{
-				"Табличное", trainingResult.StudentCriterionForTable, trainingResult.MeanSquaredError,
-				trainingResult.R2, trainingResult.FisherCriterionForTable
+				"Табличное", trainingResult.MeanSquaredErrorTest, trainingResult.MeanSquaredErrorTest,
+				trainingResult.R2Test, trainingResult.FisherCriterionTest
 			};
 			AddRowToExcel(mainWorkSheet, tableRowIndex, secondRow);
 
+			var studentInfo = trainingResult.QualityControlInfo.Student;
+			var mseInfo = trainingResult.QualityControlInfo.MeanSquaredError;
+			var r2Info = trainingResult.QualityControlInfo.R2;
+			var fisherInfo = trainingResult.QualityControlInfo.Fisher;
 			var thirdRow = new object[]
 			{
-				"Критерий", trainingResult.CriterionForStudent, trainingResult.CriterionForMeanSquaredError,
-				trainingResult.CriterionForR2, trainingResult.CriterionForFisher
+				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion
 			};
 			AddRowToExcel(mainWorkSheet, criterionRowIndex, thirdRow);
 
 			var fifthRow = new object[]
 			{
-				"Вывод", trainingResult.ConclusionForStudent, trainingResult.ConclusionForMeanSquaredError,
-				trainingResult.ConclusionForR2, trainingResult.ConclusionForFisher
+				"Вывод", studentInfo.Conclusion, mseInfo.Conclusion, r2Info.Conclusion, fisherInfo.Conclusion
 			};
 			AddRowToExcel(mainWorkSheet, conclusionRowIndex, fifthRow);
 

@@ -22,6 +22,14 @@ namespace KadOzenka.Dal.Modeling.Entities
 
         [JsonProperty("images")]
         public Images Images { get; set; }
+
+        [JsonProperty("quality_control_info")]
+        public QualityControlInfo QualityControlInfo { get; set; }
+
+        public TrainingResponse()
+        {
+	        QualityControlInfo = new QualityControlInfo();
+        }
     }
 
     public class Coefficients
@@ -57,5 +65,33 @@ namespace KadOzenka.Dal.Modeling.Entities
         public string ScatterLink { get; set; }
         [JsonProperty("correlation")]
         public string CorrelationLink { get; set; }
+    }
+
+    public class QualityControlInfo
+    {
+	    [JsonProperty("student")]
+	    public QualityControlGeneral Student { get; set; }
+	    [JsonProperty("mse")]
+        public QualityControlGeneral MeanSquaredError { get; set; }
+        [JsonProperty("r2")]
+        public QualityControlGeneral R2 { get; set; }
+        [JsonProperty("fisher")]
+        public QualityControlGeneral Fisher { get; set; }
+
+        public QualityControlInfo()
+        {
+	        Student = new QualityControlGeneral();
+	        MeanSquaredError = new QualityControlGeneral();
+	        R2 = new QualityControlGeneral();
+	        Fisher = new QualityControlGeneral();
+        }
+    }
+
+    public class QualityControlGeneral
+    {
+	    [JsonProperty("criterion")]
+	    public string Criterion { get; set; }
+	    [JsonProperty("conclusion")]
+	    public bool Conclusion { get; set; }
     }
 }

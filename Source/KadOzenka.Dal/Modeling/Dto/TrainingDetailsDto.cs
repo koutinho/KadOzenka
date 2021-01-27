@@ -1,4 +1,5 @@
-﻿using ObjectModel.Directory;
+﻿using KadOzenka.Dal.Modeling.Entities;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Modeling.Dto
 {
@@ -7,24 +8,6 @@ namespace KadOzenka.Dal.Modeling.Dto
         public long ModelId { get; set; }
         public string ModelName { get; set; }
         public KoAlgoritmType Type { get; set; }
-
-        public decimal StudentCriterionForCalculation { get; set; }
-        public decimal StudentCriterionForTable { get; set; }
-        public decimal MeanSquaredError { get; set; }
-        public decimal R2 { get; set; }
-        public decimal FisherCriterionForCalculation { get; set; }
-        public decimal FisherCriterionForTable { get; set; }
-        
-        public string CriterionForStudent { get; set; }
-        public string CriterionForMeanSquaredError { get; set; }
-        public string CriterionForR2 { get; set; }
-        public string CriterionForFisher { get; set; }
-
-        public bool ConclusionForStudent { get; set; }
-        public bool ConclusionForMeanSquaredError { get; set; }
-        public bool ConclusionForR2 { get; set; }
-        public bool ConclusionForFisher { get; set; }
-
 
 
         public string MeanSquaredErrorTrain { get; set; }
@@ -38,5 +21,8 @@ namespace KadOzenka.Dal.Modeling.Dto
 
         public string ScatterImageLink { get; set; }
         public string CorrelationImageLink { get; set; }
+
+
+        public QualityControlInfo QualityControlInfo { get; set; }
     }
 }
