@@ -56,10 +56,10 @@ else
                     </tr>
                     <tr class="k-alt" role="row">
                         <td class="quality-grid-first-column" role="gridcell">Вывод</td>
-                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForStudent)</td>
-                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForMeanSquaredError)</td>
-                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForR2)</td>
-                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.ConclusionForFisher)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.ConclusionForStudent, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.ConclusionForMeanSquaredError, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.ConclusionForR2, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.ConclusionForFisher, isReadonly: false)</td>
                     </tr>
                     </tbody>
                 </table>

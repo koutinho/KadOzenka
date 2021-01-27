@@ -895,10 +895,10 @@ namespace KadOzenka.Dal.Modeling
 				CriterionForMeanSquaredError = "Критерий для ошибки",
 				CriterionForR2 = "Критерий для R2",
 				CriterionForFisher = "Критерий для Фишера",
-				ConclusionForStudent = "Вывод для Стьюдента",
-				ConclusionForMeanSquaredError = "Вывод для ошибки",
-				ConclusionForR2 = "Вывод для R2",
-				ConclusionForFisher = "Вывод для Фишера"
+				ConclusionForStudent = true,
+				ConclusionForMeanSquaredError = false,
+				ConclusionForR2 = true,
+				ConclusionForFisher = false
 			};
 		}
 
