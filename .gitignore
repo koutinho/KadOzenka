@@ -24,6 +24,8 @@
 /Source/KadOzenka.LongProcessService/wwwroot
 /Source/KadOzenka.Dal/obj
 /Source/KadOzenka.Dal/bin
+/Source/KadOzenka.Dal.Tests/obj
+/Source/KadOzenka.Dal.Tests/bin
 /Source/ImageProccessor/obj
 /Source/ImageProccessor/bin
 /Source/Utils/EP.SdkCore/obj
