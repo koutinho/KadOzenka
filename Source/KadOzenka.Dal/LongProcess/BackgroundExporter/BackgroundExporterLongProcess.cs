@@ -15,10 +15,10 @@ namespace KadOzenka.Dal.LongProcess.BackgroundExporter
 
 		public static string ProcessType = nameof(BackgroundExporterLongProcess); 
 
-		public static void AddProcessToQueue(List<long> backgroundIds)
+		public static long AddProcessToQueue(List<long> backgroundIds)
 		{
 			string param = JsonConvert.SerializeObject(backgroundIds);
-			LongProcessManager.AddTaskToQueue(ProcessType, null, null, param);
+			return LongProcessManager.AddTaskToQueue(ProcessType, null, null, param);
 		}
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

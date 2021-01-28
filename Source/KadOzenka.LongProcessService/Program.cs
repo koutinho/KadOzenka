@@ -29,7 +29,7 @@ namespace KadOzenka.LongProcessService
             try
             {
                 Log.Information("Starting web host KadOzenka.LongProcessService");
-                CreateWebHostBuilder(args).Build().Run();
+                CreateWebHostBuilder(args, configuration).Build().Run();
 
             }
             catch (Exception ex)
@@ -44,10 +44,10 @@ namespace KadOzenka.LongProcessService
            
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, IConfigurationRoot config) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .StartWorkerChecker()
+                .StartWorkerChecker(config)
                 .UseStartup<Startup>();
     }
 }
