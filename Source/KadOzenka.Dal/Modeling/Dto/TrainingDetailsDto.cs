@@ -19,9 +19,8 @@ namespace KadOzenka.Dal.Modeling.Dto
         public string R2Train { get; set; }
         public string R2Test { get; set; }
 
-        public string ScatterImageLink { get; set; }
-        public string CorrelationImageLink { get; set; }
-
+        public byte[] ScatterImage { get; set; }
+        public byte[] CorrelationImage { get; set; }
 
         public QualityControlInfo QualityControlInfo { get; set; }
     }

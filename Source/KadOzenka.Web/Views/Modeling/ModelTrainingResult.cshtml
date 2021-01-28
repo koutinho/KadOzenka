@@ -150,10 +150,10 @@ else
     </div>
     <div class="form-group">
         <div class="col-sm-5 center" id="scatterDiv">
-            <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено" />
+            <img id="scatterImg" src="@Model.ScatterImageData" alt="Изображение не найдено" />
         </div>
         <div class="col-sm-5 center" id="correlationDiv">
-            <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено" />
+            <img id="correlationImg" src="@Model.CorrelationImageData" alt="Изображение не найдено" />
         </div>
     </div>
 </div>
@@ -209,59 +209,13 @@ else
         @if (Model != null)
         {
             <text>
-                //картинки не всегда подгружаются сразу (особенности сервиса моделирования),
-                //поэтому, если картинка не загрузилась - отправляем еще несколько запросов на сервис
-                $("#scatterImg")
-                    .on('load', () => onImageLoad(scatter))
-                    .on('error', () => onImageFail(scatter, $("#scatterImg"), "@Model.ScatterImageLink"));
-
-                $("#correlationImg")
-                    .on('load', () => onImageLoad(correlation))
-                    .on('error', () => onImageFail(correlation, $("#correlationImg"), "@Model.CorrelationImageLink"));
-
+                alignImagesMiddle();
                 $('#exportBtn').on('click', exportTrainingResult);
                 $("#saveBtn").on('click', saveQualityInfo);
             </text>
         }
     });
 
-
-
-    var requestsMaxNumber = 25;
-    var scatter = {
-        Timer: -1,
-        Counter: 0
-    };
-    var correlation = {
-        Timer: -1,
-        Counter: 0
-    }
-
-
-    function onImageLoad(imgObject) {
-        //console.log('success');
-        if (imgObject.Timer !== -1) {
-            clearInterval(imgObject.Timer);
-            alignImagesMiddle();
-        }
-    }
-
-
-    function onImageFail(imgObject, jqObject, srcValue) {
-        //console.log('error');
-        imgObject.Counter++;
-        //console.log('counter', imgObject.Counter);
-        if (imgObject.Timer === -1) {
-            // повторить с интервалом 2 секунды
-            imgObject.Timer = setInterval(() => jqObject.attr("src", srcValue), 2000);
-            //console.log('set sheduler', imgObject.Timer);
-        }
-        else if (imgObject.Counter > requestsMaxNumber) {
-            // остановить вывод
-            clearInterval(imgObject.Timer);
-            //console.log('stop calling', imgObject.Timer);
-        }
-    }
 
 
     function alignImagesMiddle() {
@@ -280,13 +234,10 @@ else
 
 
     function exportTrainingResult() {
-        //var form = $('#updateFactorForm');
-        //var formObject = Common.Functions.FormToObject(form);
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
             url: '@Html.Raw(Url.Action("ExportTrainingResultToExcel", "Modeling", new {modelId = Model.ModelId, type = Model.Type}))',
-            //data: formObject,
             success: function (response) {
                 var url =
                     '@Url.Action("DownloadTrainingResultFile", "Modeling", new {modelName = Model.ModelName})&fileName=' +

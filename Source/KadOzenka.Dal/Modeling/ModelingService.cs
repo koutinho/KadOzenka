@@ -855,6 +855,7 @@ namespace KadOzenka.Dal.Modeling
 			if (string.IsNullOrWhiteSpace(trainingResultStr))
 				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
 
+			var images = GetModelImages(modelId, type);
 			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
 
 			return new TrainingDetailsDto
@@ -868,8 +869,8 @@ namespace KadOzenka.Dal.Modeling
 				FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Test,
 				R2Train = trainingResult?.AccuracyScore?.R2?.Train,
 				R2Test = trainingResult?.AccuracyScore?.R2?.Test,
-				ScatterImageLink = trainingResult?.Images?.ScatterLink,
-				CorrelationImageLink = trainingResult?.Images?.CorrelationLink,
+				ScatterImage = images?.Scatter,
+				CorrelationImage = images?.Correlation,
 				QualityControlInfo = trainingResult?.QualityControlInfo
 			};
 		}
@@ -904,8 +905,9 @@ namespace KadOzenka.Dal.Modeling
 			model.Save();
 		}
 
-		public Stream ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
+		public Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type)
 		{
+			//TODO не тащить картинки, проверить после правок сервиса моделирования
 			var trainingResult = GetTrainingResult(modelId, type);
 
 			var excelTemplate = new ExcelFile();
@@ -967,6 +969,13 @@ namespace KadOzenka.Dal.Modeling
 			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
 			return stream;
+		}
+
+		public OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type)
+		{
+			return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 		}
 
 		#endregion

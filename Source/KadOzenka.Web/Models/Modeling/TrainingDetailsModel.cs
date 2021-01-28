@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
+﻿using System;
+using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -22,8 +23,8 @@ namespace KadOzenka.Web.Models.Modeling
         public string R2Train { get; set; }
         public string R2Test { get; set; }
 
-        public string ScatterImageLink { get; set; }
-        public string CorrelationImageLink { get; set; }
+        public string ScatterImageData { get; set; }
+        public string CorrelationImageData { get; set; }
 
 
         public static TrainingDetailsModel ToModel(TrainingDetailsDto trainingResult)
@@ -39,10 +40,24 @@ namespace KadOzenka.Web.Models.Modeling
                 FisherCriterionTest = trainingResult.FisherCriterionTest,
                 R2Train = trainingResult.R2Train,
                 R2Test = trainingResult.R2Test,
-                ScatterImageLink = trainingResult.ScatterImageLink,
-                CorrelationImageLink = trainingResult.CorrelationImageLink,
+                ScatterImageData = ConvertByteToImage(trainingResult.ScatterImage),
+                CorrelationImageData = ConvertByteToImage(trainingResult.CorrelationImage),
                 TrainingQualityInfoModel = TrainingQualityInfoModel.ToModel(trainingResult)
             };
         }
+
+        
+        #region Support Methods
+
+        private static string ConvertByteToImage(byte[] image)
+        {
+	        if (image == null || image.Length == 0)
+		        return string.Empty;
+
+	        var imageStr = Convert.ToBase64String(image);
+	        return $"data:image/png;base64,{imageStr}";
+        }
+
+        #endregion
     }
 }

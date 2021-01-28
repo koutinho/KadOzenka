@@ -864,7 +864,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult ModelTrainingResult(long modelId, KoAlgoritmType type)
         {
 	        var trainingResult = ModelingService.GetTrainingResult(modelId, type);
-	        
+
 	        var model = TrainingDetailsModel.ToModel(trainingResult);
 
 	        return View(model);
@@ -884,7 +884,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
         {
-	        var fileStream = ModelingService.ExportTrainingResultToExcel(modelId, type);
+	        var fileStream = ModelingService.ExportQualityInfoToExcel(modelId, type);
 
 	        HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
