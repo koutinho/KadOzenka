@@ -35,22 +35,6 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		[SRDFunction(Tag = "ADMIN")]
-		public IActionResult DeleteRecycleBinRecord(long id)
-		{
-			var record = RecycleBinService.GetRecycleBinRecord(id);
-			return View(RecycleBinModel.FromDto(record));
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = "ADMIN")]
-		public IActionResult Delete(RecycleBinModel model)
-		{
-			RecycleBinService.DeleteObject(model.Id);
-			return Ok();
-		}
-
-		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.CORE_LONG_PROCESS_PARAM_EDIT)]
 		public ActionResult FlushOldDataFromRecycleBinLongProcessParams(long processTypeId)
 		{
@@ -60,23 +44,6 @@ namespace KadOzenka.Web.Controllers
 			ViewBag.processTypeId = processTypeId;
 
 			return View(userConfig);
-		}
-
-		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.CORE_LONG_PROCESS_PARAM_EDIT)]
-		public ActionResult FlushOldDataFromRecycleBinLongProcessParams(FlushOldDataFromRecycleBinLongProcessParams config, [FromQuery]long processTypeId)
-		{
-			if (processTypeId == 0)
-			{
-				return BadRequest();
-			}
-
-			OMProcessType processType = OMProcessType.Where(w => w.Id == processTypeId).SelectAll().ExecuteFirstOrDefault();
-
-			processType.Parameters = config.SerializeToXml();
-			processType.Save();
-
-			return Ok();
 		}
 	}
 }

@@ -146,16 +146,6 @@ INSERT INTO {tableName} ({string.Join(", ", mainTableCols)})
 			}
 		}
 
-		public void DeleteObject(long eventId)
-		{
-			var deletedRecord = OMRecycleBin.Where(x => x.EventId == eventId).
-				Select(x => x.EventId).ExecuteFirstOrDefault();
-			if (deletedRecord == null)
-				throw new Exception($"Не найдена запись в козине с ИД {eventId}");
-
-			DeleteData(new List<OMRecycleBin> { deletedRecord });
-		}
-
 		public void FlushOldData(int keepDataForPastNDays)
 		{
 			_log.Debug("Очистка данных корзины старше {KeepDataForPastNDays} дней", keepDataForPastNDays);
