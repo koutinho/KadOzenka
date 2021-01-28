@@ -5,10 +5,13 @@ using System.Linq;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Modeling;
+using ObjectModel.Common;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
 using ObjectModel.KO;
@@ -18,10 +21,12 @@ namespace KadOzenka.Dal.Groups
     public class GroupService
     {
         public ModelingService ModelingService { get; }
+        public RecycleBinService RecycleBinService { get; }
 
         public GroupService()
         {
 	        ModelingService = new ModelingService();
+	        RecycleBinService = new RecycleBinService();
         }
 
 	    public GroupDto GetGroupById(long? groupId)
@@ -139,12 +144,33 @@ namespace KadOzenka.Dal.Groups
             return groups;
         }
 
-        public List<GroupTreeDto> GetGroupsTreeForTour(long tourId)
+        public List<GroupTreeDto> GetGroupsTreeForTour(long tourId, bool addEmptyOksZuMainGroups = false)
         {
 	        var allGroups = GetGroups();
 	        var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
 	        if (allGroupsInTour.Count == 0)
+	        {
+		        if (addEmptyOksZuMainGroups)
+		        {
+			        var emptyModels = new List<GroupTreeDto>();
+                    var emptyMainGroups = GetMainGroups();
+			        foreach (var mainGroup in emptyMainGroups)
+			        {
+				        emptyModels.Add(new GroupTreeDto
+				        {
+					        Id = mainGroup.Id,
+					        GroupName = mainGroup.GroupName,
+					        GroupType = mainGroup.GroupType,
+					        TourId = tourId,
+					        Items = new List<GroupTreeDto>()
+				        });
+                    }
+
+			        return emptyModels;
+		        }
+
 		        return new List<GroupTreeDto>();
+	        }
 
 	        var subgroups = GetSubgroups(allGroupsInTour);
 	        var groupsWithSubGroups = GetGroupsWithSubgroups(subgroups, allGroups);
@@ -183,7 +209,7 @@ namespace KadOzenka.Dal.Groups
                                 }).ToList()
                         }).ToList();
 
-                if (groups.Count > 0)
+                if (groups.Count > 0 || addEmptyOksZuMainGroups)
 		        {
 			        models.Add(new GroupTreeDto
 					{
@@ -331,55 +357,134 @@ namespace KadOzenka.Dal.Groups
             return result;
         }
 
-        public void DeleteGroup(long groupId)
+        public bool CanGroupsBeDeleted(long tourId, bool isOks)
         {
-	        OMGroup group = OMGroup.Where(x => x.Id == groupId)
-		        .Select(x => new{x.Number, x.GroupName}).ExecuteFirstOrDefault();
+	        var result = true;
+	        var groups = GetTourGroupsInfo(tourId, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
+	        var areGroupsNotEmpty = isOks
+		        ? groups.OksGroups.Count > 0 || groups.OksSubGroups.Count > 0
+		        : groups.ZuGroups.Count > 0 || groups.ZuSubGroups.Count > 0;
 
-	        if (!CanGroupBeDeleted(groupId, false))
-	            throw new Exception($"Группа '{group?.Number}. {group?.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки");
+	        if (areGroupsNotEmpty)
+	        {
+		        List<long?> groupIds;
+		        if (isOks)
+		        {
+			        groupIds = groups.OksGroups.Select(x => x.Id).ToList();
+			        groupIds.AddRange(groups.OksSubGroups.Select(x => x.Id).ToList());
+		        }
+                else
+                {
+                    groupIds = groups.ZuGroups.Select(x => x.Id).ToList();
+                    groupIds.AddRange(groups.ZuSubGroups.Select(x => x.Id).ToList());
+                }
 
-            List<OMGroup> childGroups = OMGroup.Where(x => x.ParentId == groupId).Execute();
-            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
-	        OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId).ExecuteFirstOrDefault();
-	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
-            List<OMGroupFactor> groupFactors = OMGroupFactor.Where(x => x.GroupId == groupId).Execute();
-            List<OMCalcGroup> calcGroups = OMCalcGroup.Where(x => x.GroupId == groupId || x.ParentCalcGroupId == groupId).Execute();
-            OMGroupToMarketSegmentRelation groupToMarketSegmentRelation = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
+		        result = !OMUnit.Where(x => groupIds.Contains(x.GroupId)).ExecuteExists();
+            }
+
+	        return result;
+        }
+
+        public void DeleteGroups(long tourId, bool isOks, long? eventId = null)
+        {
+	        var groups = GetTourGroupsInfo(tourId, isOks ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu);
+	        var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+	        List<long?> groupIds;
+	        if (isOks)
+	        {
+		        groupIds = groups.OksGroups.Select(x => x.Id).ToList();
+	        }
+	        else
+	        {
+		        groupIds = groups.ZuGroups.Select(x => x.Id).ToList();
+	        }
 
             using (var ts = new TransactionScope())
 	        {
+		        if (eventId == null)
+		        {
+			        var recycleBinRecord = new OMRecycleBin
+			        {
+				        DeletedTime = DateTime.Now,
+				        UserId = SRDSession.GetCurrentUserId().Value,
+				        ObjectRegisterId = OMGroup.GetRegisterId(),
+				        Description = isOks
+					        ? $"Группы категории 'Основная группа ОКС' Тура '{tour.Year}'"
+					        : $"Группы категории 'Основная группа Участки' Тура '{tour.Year}'"
+			        };
+			        eventId = recycleBinRecord.Save();
+                }
+		        
+                foreach (var groupId in groupIds)
+		        {
+			        DeleteGroup(groupId.Value, tour.Year, eventId);
+		        }
+
+		        ts.Complete();
+            }
+        }
+
+        public void DeleteGroup(long groupId, long? tourYear=null, long? eventId = null)
+        {
+	        OMGroup group = OMGroup.Where(x => x.Id == groupId)
+		        .Select(x => new { x.Number, x.GroupName }).ExecuteFirstOrDefault();
+
+	        if (!CanGroupBeDeleted(groupId, false))
+		        throw new Exception($"Группа '{group?.Number}. {group?.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки");
+
+	        List<OMGroup> childGroups = OMGroup.Where(x => x.ParentId == groupId).Execute();
+	        OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+	        if (!tourYear.HasValue && tourGroup != null)
+	        {
+		        tourYear = OMTour.Where(x => x.Id == tourGroup.TourId)
+			        .Select(x => x.Year).ExecuteFirstOrDefault()?.Year;
+	        }
+            OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId).ExecuteFirstOrDefault();
+	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
+	        List<OMGroupFactor> groupFactors = OMGroupFactor.Where(x => x.GroupId == groupId).Execute();
+	        List<OMCalcGroup> calcGroups = OMCalcGroup.Where(x => x.GroupId == groupId || x.ParentCalcGroupId == groupId).Execute();
+	        OMGroupToMarketSegmentRelation groupToMarketSegmentRelation = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
+	        using (var ts = new TransactionScope())
+	        {
+		        if (eventId == null)
+		        {
+			        var recycleBinRecord = new OMRecycleBin
+			        {
+				        DeletedTime = DateTime.Now,
+				        UserId = SRDSession.GetCurrentUserId().Value,
+				        ObjectRegisterId = OMGroup.GetRegisterId(),
+				        Description = tourYear.HasValue
+					        ? $"Группа '{@group.Number}. {@group.GroupName}' Тура '{tourYear}'"
+                            : $"Группа '{@group.Number}. {@group.GroupName}'"
+                    };
+			        eventId = recycleBinRecord.Save();
+		        }
+
 		        foreach (var childGroup in childGroups)
 		        {
-			        DeleteGroup(childGroup.Id);
+			        DeleteGroup(childGroup.Id, tourYear, eventId);
 		        }
 
 		        if (calculationSettings != null)
-			        calculationSettings.Destroy();
+                    RecycleBinService.MoveObjectToRecycleBin(calculationSettings.Id, OMAutoCalculationSettings.GetRegisterId(), eventId.Value);
 
 		        foreach (var model in models)
 		        {
-			        ModelingService.DeleteModel(model.Id);
+			        ModelingService.DeleteModelLogically(model.Id, eventId.Value);
 		        }
 
-		        foreach (var groupFactor in groupFactors)
-		        {
-			        groupFactor.Destroy();
-		        }
 
-		        foreach (var omCalcGroup in calcGroups)
-		        {
-			        omCalcGroup.Destroy();
-		        }
+	            RecycleBinService.MoveObjectsToRecycleBin(groupFactors.Select(x => x.Id).ToList(), OMGroupFactor.GetRegisterId(), eventId.Value);
+	            RecycleBinService.MoveObjectsToRecycleBin(calcGroups.Select(x => x.Id).ToList(), OMCalcGroup.GetRegisterId(), eventId.Value);
 
-                if(groupToMarketSegmentRelation != null)
-	                groupToMarketSegmentRelation.Destroy();
+	            if (groupToMarketSegmentRelation != null)
+		            RecycleBinService.MoveObjectToRecycleBin(groupToMarketSegmentRelation.Id, OMGroupToMarketSegmentRelation.GetRegisterId(), eventId.Value);
 
-                if(group != null)
-					group.Destroy();
+	            if (group != null)
+		            RecycleBinService.MoveObjectToRecycleBin(group.Id, OMGroup.GetRegisterId(), eventId.Value);
 
                 if (tourGroup != null)
-                    tourGroup.Destroy();
+	                RecycleBinService.MoveObjectToRecycleBin(tourGroup.Id, OMTourGroup.GetRegisterId(), eventId.Value);
 
                 ts.Complete();
 	        }

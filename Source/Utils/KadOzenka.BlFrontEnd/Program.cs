@@ -43,6 +43,7 @@ using System.Threading.Tasks;
 using Core.Main.FileStorages;
 using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -598,7 +599,7 @@ namespace KadOzenka.BlFrontEnd
             {
 	            var groupIds = OMGroup.Where(x => true).Execute().Select(x => x.Id).ToList();
 
-	            var tourService = new TourService(new TourFactorService(), new GroupService());
+	            var tourService = new TourService(new TourFactorService(), new GroupService(),  new RecycleBinService());
 	            var groupService = new GroupService();
 
 				var modelsWithNotExistedGroups = OMModel.Where(x => !groupIds.Contains((long) x.GroupId)).SelectAll().Execute().ToList();

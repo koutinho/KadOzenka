@@ -16,18 +16,23 @@ using Core.Shared.Misc;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.DataComparing.Configs;
+using KadOzenka.Dal.DataComparing.Exceptions;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Models.Task;
+using KadOzenka.Dal.Tasks.Responses;
 using ObjectModel.Common;
 using ObjectModel.Directory;
+using Serilog;
 
 namespace KadOzenka.Dal.Tasks
 {
     public class TaskService
     {
+	    private static readonly ILogger _log = Log.ForContext<TaskService>();
+
         public DocumentService DocumentService { get; set; }
 
         public TaskService()
@@ -402,26 +407,41 @@ namespace KadOzenka.Dal.Tasks
 
         #region Data Comparing
 
-        public TaskDataComparingDto GetTaskDataComparingDto(long taskId)
+        public TaskDataComparingDtoResponse TryGetTaskDataComparingDto(long taskId)
         {
-            var task = GetTask(taskId);
-            var dto = new TaskDataComparingDto
-            {
-                Id = taskId,
-                NoteType = task.NoteType_Code,
-                DataComparingTaskChangesStatusCode = task.DataChangesComparingStatus_Code,
-                DataComparingCadastralCostStatusCode = task.CadastralCostComparingStatus_Code
-            };
+	        try
+	        {
+		        var task = GetTask(taskId);
+		        var dto = new TaskDataComparingDto
+		        {
+			        Id = taskId,
+			        NoteType = task.NoteType_Code,
+			        DataComparingTaskChangesStatusCode = task.DataChangesComparingStatus_Code,
+			        DataComparingCadastralCostStatusCode = task.CadastralCostComparingStatus_Code
+		        };
 
-            if (task.CadastralCostComparingStatus_Code ==
-               KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
-                dto.ContainsFdFilesComparingResult = CadastralCostDataComparingStorageManager.ContainsResultFdFile(task);
+		        if (task.CadastralCostComparingStatus_Code ==
+		            KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies)
+			        dto.ContainsFdFilesComparingResult =
+				        CadastralCostDataComparingStorageManager.ContainsResultFdFile(task);
 
-            dto.IsTaskChangesPkkoFileUploaded = TaskChangesDataComparingStorageManager.IsTaskChangesPkkoFileUploaded(task);
-            dto.AreCostPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreCostPkkoFilesUploaded(task);
-            dto.AreFdPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreFdPkkoFilesUploaded(task);
+		        dto.IsTaskChangesPkkoFileUploaded =
+			        TaskChangesDataComparingStorageManager.IsTaskChangesPkkoFileUploaded(task);
+		        dto.AreCostPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreCostPkkoFilesUploaded(task);
+		        dto.AreFdPkkoFilesUploaded = CadastralCostDataComparingStorageManager.AreFdPkkoFilesUploaded(task);
 
-            return dto;
+		        return new TaskDataComparingDtoResponse {Success = true, TaskDataComparingDto = dto};
+	        }
+	        catch (DataComparingException ex)
+	        {
+		        _log.Error(ex, "Не удалось получить данные о сравнении для задания на оценку {TaskId}", taskId);
+		        return new TaskDataComparingDtoResponse { Success = false, ErrorMessage = ex.Message};
+            }
+	        catch (Exception ex)
+	        {
+		        _log.Error(ex, "Не удалось получить данные о сравнении для задания на оценку {TaskId}", taskId);
+		        return new TaskDataComparingDtoResponse { Success = false };
+            }
         }
 
         public FileStream DownloadTaskChangesDataComparingResult(long taskId)

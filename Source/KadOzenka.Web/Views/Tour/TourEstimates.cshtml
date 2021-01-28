@@ -157,10 +157,10 @@
             type: 'POST',
             data: { id: id },
             success: function(response) {
-                if (response.CanTourBeDeleted) {
+                if (response.CanBeDeleted) {
                     Common.UI.ShowConfirm({
                         title: '',
-                        content: `Выполнить удаление тура ${year}? Все связанные с туром данные также будут удалены.`,
+                        content: `Выполнить удаление тура '${year}'? Все связанные с туром данные также будут удалены.`,
                         onSuccess: function() {
                             kendo.ui.progress($('body'), true);
                             var url = "@Url.Action("TourEstimates", "Tour")" + `?id=${id}`;
@@ -193,7 +193,7 @@
                     Common.UI.ShowDialog({
                         title: '',
                         icon: 'error',
-                        content: `Тур ${year} не может быть удален, т.к. имеются связанные задания на оценку`});
+                        content: `Тур '${year}' не может быть удален, т.к. имеются связанные задания на оценку`});
                 }
             },
             error: function(response) {

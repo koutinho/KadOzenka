@@ -1,0 +1,40 @@
+﻿@model KadOzenka.Web.Models.RecycleBin.RecycleBinModel
+
+@using (Html.BeginForm("Restore", "RecycleBin", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                @Html.CustomLabel($"Восстановить объект '{Model.ObjectName}' (тип объекта: '{Model.ObjectType}', дата удаления: '{Model.DeletedTime:dd.MM.yyyy hh:mm:ss}')?")
+            </div>
+        </div>
+        <div class="form-group">
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" id="restore" class="k-button" type="button">Восстановить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#restore').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                $.post(form.attr('action'), formObject).done(function (response) {
+                    $('#restore').attr("disabled", true);
+                    Common.ShowMessage("Данные восстановлены");
+                }).fail(function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
+                });
+            });
+    });
+</script>

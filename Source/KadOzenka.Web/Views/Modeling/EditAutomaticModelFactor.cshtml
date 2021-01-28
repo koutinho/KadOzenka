@@ -55,6 +55,8 @@
                 .DataValueField("Value")
                 .OptionLabel("--Выберите cловарь--")
                 .Filter(FilterType.Contains)
+                .Height(175)
+                .Events(e => e.Open("hideOptionalLabel"))
                 .DataSource(source =>
                 {
                     source.Read(read => read.Action("GetDictionaries", "Modeling"));
@@ -81,6 +83,7 @@
 </div>
 }
 
+
 <script>
     $(document).ready(function () {
         $('#save').on('click', saveFactor);
@@ -89,6 +92,10 @@
         initAttributes();
     });
 
+    //иногда лейбл загораживает значение в списке и это значение невозможно выбрать
+    function hideOptionalLabel() {
+        $(".k-list-optionlabel").hide();
+    }
 
 
 

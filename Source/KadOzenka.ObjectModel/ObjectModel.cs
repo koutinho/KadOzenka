@@ -26820,6 +26820,190 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях (COMMON_RECYCLE_BIN)
+    /// </summary>
+    [RegisterInfo(RegisterID = 812)]
+    [Serializable]
+    public partial class OMRecycleBin : OMBaseClass<OMRecycleBin>
+    {
+
+        private long _eventid;
+        /// <summary>
+        /// 81200100 Идентификатор события удаления (EVENT_ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81200100)]
+        public long EventId
+        {
+            get
+            {
+                CheckPropertyInited("EventId");
+                return _eventid;
+            }
+            set
+            {
+                _eventid = value;
+                NotifyPropertyChanged("EventId");
+            }
+        }
+
+
+        private DateTime _deletedtime;
+        /// <summary>
+        /// 81200200 Время удаления (DELETED_TIME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200200)]
+        public DateTime DeletedTime
+        {
+            get
+            {
+                CheckPropertyInited("DeletedTime");
+                return _deletedtime;
+            }
+            set
+            {
+                _deletedtime = value;
+                NotifyPropertyChanged("DeletedTime");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81200300 Идентификатор пользователя (USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200300)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private long _objectregisterid;
+        /// <summary>
+        /// 81200400 Идентификатор реестра удаляемой сущности (OBJECT_REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200400)]
+        public long ObjectRegisterId
+        {
+            get
+            {
+                CheckPropertyInited("ObjectRegisterId");
+                return _objectregisterid;
+            }
+            set
+            {
+                _objectregisterid = value;
+                NotifyPropertyChanged("ObjectRegisterId");
+            }
+        }
+
+
+        private string _description;
+        /// <summary>
+        /// 81200500 Описание (DESCRIPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200500)]
+        public string Description
+        {
+            get
+            {
+                CheckPropertyInited("Description");
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                NotifyPropertyChanged("Description");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 813 Информация о реестрах с логическим удалением (COMMON_REGISTERS_WITH_SOFT_DELETION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 813)]
+    [Serializable]
+    public partial class OMRegistersWithSoftDeletion : OMBaseClass<OMRegistersWithSoftDeletion>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _registerid;
+        /// <summary>
+        /// 81300200 Идентификатор реестра (REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81300200)]
+        public long RegisterId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterId");
+                return _registerid;
+            }
+            set
+            {
+                _registerid = value;
+                NotifyPropertyChanged("RegisterId");
+            }
+        }
+
+
+        private string _maintablename;
+        /// <summary>
+        /// 81300300 Имя основной таблицы (MAIN_TABLE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81300300)]
+        public string MainTableName
+        {
+            get
+            {
+                CheckPropertyInited("MainTableName");
+                return _maintablename;
+            }
+            set
+            {
+                _maintablename = value;
+                NotifyPropertyChanged("MainTableName");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
     /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
     /// </summary>
     [RegisterInfo(RegisterID = 1000811)]
