@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.LongProcess.BackgroundExporter
 			List<OMBackgroundExport> backgroundExports =
 				OMBackgroundExport.Where(x => backgroundIds.Contains(x.Id)).SelectAll().Execute();
 
-			new Platform.Web.Services.BackgroundExporterScheduler.BackgroundExporterLongProcess().Export(backgroundExports, processQueue, cancellationToken);
+			new Platform.Web.Services.BackgroundExporterScheduler.BackgroundExporterLongProcess().Export(backgroundExports, processType, processQueue, cancellationToken);
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
