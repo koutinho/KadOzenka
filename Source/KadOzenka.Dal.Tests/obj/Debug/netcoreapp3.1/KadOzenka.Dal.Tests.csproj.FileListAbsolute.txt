@@ -1,12 +1,7 @@
-D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\testhost.dll
-D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\testhost.exe
-D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.PlatformAbstractions.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\NUnit3.TestAdapter.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\NUnit3.TestAdapter.pdb
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\nunit.engine.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\nunit.engine.api.dll
-D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\nunit.engine.core.dll
-D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\KadOzenka.Dal.Tests.exe
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\KadOzenka.Dal.Tests.deps.json
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\KadOzenka.Dal.Tests.runtimeconfig.json
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\KadOzenka.Dal.Tests.runtimeconfig.dev.json
@@ -15,11 +10,13 @@ D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\KadOzenka.Da
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.VisualStudio.CodeCoverage.Shim.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.DotNet.InternalAbstractions.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.CoreUtilities.dll
+D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.PlatformAbstractions.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.CommunicationUtilities.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.CrossPlatEngine.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.TestPlatform.Utilities.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Microsoft.VisualStudio.TestPlatform.Common.dll
+D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\testhost.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\NuGet.Frameworks.dll
 D:\New\KadOzenka\Source\KadOzenka.Dal.Tests\bin\Debug\netcoreapp3.1\nunit.framework.dll
