@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.Modeling
 				.ExecuteFirstOrDefault();
 		}
 
-		public virtual OMModel GetModelById(long modelId)
+		public OMModel GetModelById(long modelId)
 		{
 			return OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
 		}
