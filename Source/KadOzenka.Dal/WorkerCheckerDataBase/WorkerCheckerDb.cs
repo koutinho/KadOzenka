@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.WorkerCheckerDataBase.Interface;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Serilog;
 
 namespace KadOzenka.Dal.WorkerCheckerDataBase
@@ -13,9 +15,16 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 	public class WorkerCheckerDb
 	{
 		private readonly ILogger _log = Log.ForContext<WorkerCheckerDb>();
+		private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+		private readonly int _runSecond = 30000; // по умолчанию 30 сек
+		private readonly int _sleep = 60000; //по умолчанию 60 сек
 
-		private const int RUN_SECOND = 30000; // перезапуск в случае ошибки
-		private const int SLEEP = 60000; // мин
+
+		public WorkerCheckerDb(int? runSecond = null, int? sleep =  null)
+		{
+			_runSecond = runSecond ?? _runSecond;
+			_sleep = sleep ?? _sleep;
+		}
 
 		public void StartChecker()
 		{
@@ -23,6 +32,7 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 
 			if (!checkers.Any())
 			{
+				_log.Warning("Воркер чекер не запущен, так как не найдены классы для проверки");
 				return;
 			}
 
@@ -30,17 +40,21 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 				{
 					try
 					{
-						_log.Debug("Запуск воркер чекера");
 
 						while (true)
 						{
+							if (_cancellationTokenSource.IsCancellationRequested)
+							{
+								_log.Warning("Запрошен токен отмены воркер чекера");
+								break;
+							}
 
 							foreach (var checker in checkers)
 							{
 								checker.Check();
 							}
 
-							Thread.Sleep(SLEEP);
+							Thread.Sleep(_sleep);
 						}
 
 					}
@@ -48,17 +62,13 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 					{
 						Console.WriteLine(e);
 						ErrorManager.LogError(e);
-						_log.ForContext("Error", e).Error("Ошибка воркер чекера, перезапуск произойдет автоматически через {sec} сек.", RUN_SECOND/1000);
-					}
-					finally
-					{
-						Thread.Sleep(RUN_SECOND);
-						_log.Warning("Автозапуск воркер чекера");
-						new WorkerCheckerDb().StartChecker();
-						GC.Collect();
+						CheckerRunner.CleanChecker();
+						_log.ForContext("Error", e).Error("Ошибка воркер чекера, перезапуск произойдет автоматически через {sec} сек.", _runSecond / 1000);
+						Thread.Sleep(_runSecond);
+						CheckerRunner.SetAndRunChecker(_runSecond, _sleep);
 					}
 
-				});
+				}, _cancellationTokenSource.Token);
 
 			task.Start();
 
@@ -66,6 +76,10 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 
 		#region support methods
 
+		public void CancelToken()
+		{
+			_cancellationTokenSource.Cancel();
+		}
 		private List<IWorkerChecker> GetCheckers()
 		{
 			try
@@ -103,12 +117,98 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 		#endregion
 	}
 
-	public static class StartChecker
+	/// <summary>
+	/// Класс логики по запуску воркер чекера
+	/// </summary>
+	public static class CheckerRunner
 	{
-		public static IWebHostBuilder StartWorkerChecker(this IWebHostBuilder builder)
+		private static WorkerCheckerDb _checker;
+
+		public static IWebHostBuilder StartWorkerChecker(this IWebHostBuilder builder, IConfigurationRoot config)
 		{
-			new WorkerCheckerDb().StartChecker();
+			Log.Logger.Warning("Проверяем необходимо ли запускать воркер чекер");
+			bool useWorkerChecker = config.GetSection("WorkerChecker:useWorkerChecker").Value == "True";
+
+			CheckTimeProperty(config, out int? runChecker, out int? sleep);
+
+			if (useWorkerChecker)
+			{
+				SetAndRunChecker(runChecker, sleep);
+			}
+			else
+			{
+				Log.Logger.ForContext("config", config, true).Warning("Воркер чекер не запущен т.к флаг useWorkerChecker = false или не нейден");
+			}
+
+			ChangeToken.OnChange(config.GetReloadToken,  InvokeChanged, config);
+
 			return builder;
 		}
+
+		/// <summary>
+		/// Метод запускает воркер чекер
+		/// </summary>
+		/// <param name="runSecond"> время автозапуска после ошибки</param>
+		/// <param name="sleep"> время через которое происходит проверка сущностей для чекера</param>
+		public static void SetAndRunChecker(int? runSecond, int? sleep)
+		{
+			if (_checker == null)
+			{
+				Log.Logger.ForContext("TimeToRunAfterError", runSecond)
+					.ForContext("TimeToSleepCheck", sleep)
+					.Warning("Запуск воркер чекера");
+				_checker = new WorkerCheckerDb(runSecond, sleep);
+				_checker.StartChecker();
+			}
+			else
+			{
+				Log.Logger.Warning("Воркер чекер не запущен, т.к существует предыдущий экземпляр");
+			}
+		}
+
+		public static void CleanChecker()
+		{
+			if (_checker != null)
+			{
+				_checker.CancelToken();
+				_checker = null;
+				Log.Logger.Warning("Воркер чекер отключен");
+			}
+		}
+
+		private static void InvokeChanged(IConfigurationRoot config)
+		{
+			Log.Logger.ForContext("config.Providers", config.Providers.ToList(), true).Debug("Сработала подписка на измение кофигурационного файла");
+
+			CheckTimeProperty(config, out int? runChecker, out int? sleep);
+
+			if (config.GetSection("WorkerChecker:useWorkerChecker").Value == "True")
+			{
+				SetAndRunChecker(runChecker, sleep);
+			}
+			else
+			{
+				CleanChecker();
+				GC.Collect();
+			}
+		}
+
+
+		private static void CheckTimeProperty(IConfigurationRoot config, out int? runChecker, out int? sleep)
+		{
+			runChecker = null;
+			sleep = null;
+
+			if (int.TryParse(config.GetSection("WorkerChecker:timeToRun").Value, out int run))
+			{
+				runChecker = run;
+			}
+
+			if (int.TryParse(config.GetSection("WorkerChecker:timeSleepToCheck").Value, out int timeSleep))
+			{
+				sleep = timeSleep;
+			}
+		}
 	}
+
 }
