@@ -9,33 +9,15 @@
                 @Html.CustomLabel("Удалять данные старше N дней")
             </div>
             <div class="col-sm-8">
-                @Html.Kendo().NumericTextBoxFor(m => m.KeepDataForPastNDays).Format("N0").Decimals(0).Min(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" })
+                @Html.Kendo().NumericTextBoxFor(m => m.KeepDataForPastNDays).Format("N0").Decimals(0).Min(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" }).Enable(false)
             </div>
         </div>
         <div class="form-group">
-        </div>
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
-            </div>
         </div>
     </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#save').on('click', function () {
-            kendo.ui.progress($(document.body), true);
-            var form = $('form');
-            var formObject = Common.Functions.FormToObject(form);
-            var url = $('form').attr('action') + '?processTypeId=' + $('#processTypeId').val();
-            $.post(url, formObject).done(function () {
-                Common.ShowMessage('Сохранение выполнено успешно');
-            }).fail(function (e) {
-                Common.ShowError('Во время сохранения произошла ошибка');
-            }).always(function () {
-                kendo.ui.progress($(document.body), false);
-            });
-        });
     });
 </script>

@@ -2,18 +2,6 @@
 <RegisterView RegisterId="812" DefaultLayoutId="1008121" LinkedRegistersList="930, 950" AllowSearchPanelResize="false" Description="Корзина" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" SRDFunctionTag="ADMIN" ShowRowMenu="false">
   <Buttons>
-      <Button Caption="Удалить запись" NavigateURL="~/RecycleBin/DeleteRecycleBinRecord" SRDFunctionTag="ADMIN" WindowHeight="200" WindowWidth="800" Icon="fas fa-trash-alt" NeedRefresh="true">
-          <ConditionGroups>
-              <ConditionGroup HideOrDisable="Disable">
-                  <Conditions>
-                      <Condition Key="NeedSelectedRow" Operation="" Value="true"/>
-                  </Conditions>
-              </ConditionGroup>
-          </ConditionGroups>
-          <Parameters>
-              <Parameter Key="id" Value="[ObjectId]" />
-          </Parameters>
-      </Button>
       <Button Caption="Восстановить объект" NavigateURL="~/RecycleBin/RestoreRecycleBinRecord" SRDFunctionTag="ADMIN" WindowHeight="200" WindowWidth="800" Icon="fas fa-trash-restore" NeedRefresh="true">
           <ConditionGroups>
               <ConditionGroup HideOrDisable="Disable">
