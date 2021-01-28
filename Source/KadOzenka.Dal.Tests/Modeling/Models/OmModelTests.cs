@@ -2,12 +2,11 @@
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Modeling
+namespace KadOzenka.Dal.Tests.Modeling.Models
 {
 	[TestFixture]
 	public class OmModelTests
 	{
-		[Test]
 		[TestCase(KoAlgoritmType.Line, 1, 2, 3, 1)]
 		[TestCase(KoAlgoritmType.Exp, 1, 2, 3, 2)]
 		[TestCase(KoAlgoritmType.Multi, 1, 2, 3, 3)]

@@ -17,6 +17,8 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Exceptions;
+using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.Oks;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Ko;
@@ -353,7 +355,7 @@ namespace KadOzenka.Dal.Modeling
 	        var message = new StringBuilder();
 
 	        if (string.IsNullOrWhiteSpace(modelDto.Name))
-		        message.AppendLine("У модели не заполнено Имя");
+		        message.AppendLine(Messages.EmptyName);
 	        if (string.IsNullOrWhiteSpace(modelDto.Description))
 		        message.AppendLine("У модели не заполнено Описание");
 
@@ -361,7 +363,7 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
+		        throw new ModelCrudException(message.ToString());
         }
 
         private void ValidateModelDuringAddition(ModelingModelDto modelDto)
