@@ -4,11 +4,13 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
@@ -51,59 +53,76 @@ namespace KadOzenka.Dal.DataExport
                 var strMessage = "Выгружается группа " + countCurr + " (Id=" + subgroup.Id + ") из " + countAll;
                 Console.WriteLine(strMessage);
                 var taskCounter = 0;
-                foreach (var taskId in setting.TaskFilter)
-                {
-                    Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
-
-                    subgroup.Unit = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId && x.CadastralCost > 0).SelectAll().Execute();
-                    Log.ForContext("SubGroupId", subgroup.Id).ForContext("TaskId", taskId)
-                        .Debug($"Найдено {subgroup.Unit.Count} ЕО с группой {subgroup.Id} и ЗнО {taskId}, у которых положительная Кадастровая стоимость");
-
-                    if (subgroup.Unit.Count > 0)
+                var syncRoot = new object();
+                ParallelOptions options = new ParallelOptions{ MaxDegreeOfParallelism = 8 };
+                Parallel.ForEach(setting.TaskFilter, options, taskId =>
+                        //foreach (var taskId in setting.TaskFilter)
                     {
-                        Stream resultFile;
-                        using (Log.TimeOperation($"Формирование файла для подгруппы '{subgroup.GroupName}'"))
-                        {
-                            resultFile = SaveXmlDocument(subgroup, strMessage);
-                        }
+                        Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
 
-                        var parentGroup = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
-                        var fullGroupNum = GetFullGroupNum(parentGroup, subgroup);
-                        var fileName = GetFdFileName(taskId, fullGroupNum, subgroup, countCurr);
+                        var factorReestrId = OMGroup.GetFactorReestrId(subgroup);
+                        Log.Debug("FactorReestrId {factorReestrId} GetGroupAttributes", factorReestrId);
+                        var groupAttributes = GetGroupAttributes(factorReestrId.Value, subgroup.Id, taskId);
 
-                        if (setting.IsDataComparingUnload)
+                        subgroup.Unit = OMUnit
+                            .Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId && x.CadastralCost > 0)
+                            .SelectAll().Execute();
+                        Log.ForContext("SubGroupId", subgroup.Id).ForContext("TaskId", taskId)
+                            .Debug(
+                                $"Найдено {subgroup.Unit.Count} ЕО с группой {subgroup.Id} и ЗнО {taskId}, у которых положительная Кадастровая стоимость");
+
+                        if (subgroup.Unit.Count > 0)
                         {
-                            using (Log.TimeOperation($"Копирование файла для сравнения '{fileName}'"))
+                            Stream resultFile;
+                            using (Log.TimeOperation("Формирование файла для подгруппы {GroupName}",subgroup.GroupName))
                             {
-                                var fullFileName = Path.Combine(setting.DirectoryName, $"{fileName}.xml");
-                                using var fs = File.Create(fullFileName);
-                                fs.Seek(0, SeekOrigin.Begin);
-                                resultFile.CopyTo(fs);
-                            }
-                        }
-                        else
-                        {
-                            long id;
-                            using (Log.TimeOperation($"Сохранение файла '{fileName}'"))
-                            {
-                                id = SaveReportDownload.SaveReport(fileName, resultFile, OMGroup.GetRegisterId());
+                                resultFile = SaveXmlDocument(subgroup, strMessage, groupAttributes);
                             }
 
-                            var fileResult = new ResultKoUnloadSettings
+                            var parentGroup = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll()
+                                .ExecuteFirstOrDefault();
+                            var fullGroupNum = GetFullGroupNum(parentGroup, subgroup);
+                            var fileName = GetFdFileName(taskId, fullGroupNum, subgroup, countCurr);
+
+                            if (setting.IsDataComparingUnload)
                             {
-                                FileName = fileName,
-                                FileId = id,
-                                TaskId = taskId
-                            };
-                            res.Add(fileResult);
+                                using (Log.TimeOperation($"Копирование файла для сравнения '{fileName}'"))
+                                {
+                                    var fullFileName = Path.Combine(setting.DirectoryName, $"{fileName}.xml");
+                                    using var fs = File.Create(fullFileName);
+                                    fs.Seek(0, SeekOrigin.Begin);
+                                    resultFile.CopyTo(fs);
+                                }
+                            }
+                            else
+                            {
+                                long id;
+                                using (Log.TimeOperation($"Сохранение файла '{fileName}'"))
+                                {
+                                    id = SaveReportDownload.SaveReport(fileName, resultFile, OMGroup.GetRegisterId());
+                                }
+
+                                var fileResult = new ResultKoUnloadSettings
+                                {
+                                    FileName = fileName,
+                                    FileId = id,
+                                    TaskId = taskId
+                                };
+                                res.Add(fileResult);
+                            }
+                        }
+
+                        lock (syncRoot)
+                        {
+                            taskCounter++;
+                            progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) /
+                                       koGroups.Count;
+                            setProgress?.Invoke(progress, progressMessage: progressMessage);
+                            if (unloadResultQueue != null)
+                                KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                         }
                     }
-                    taskCounter++;
-                    progress = (taskCounter * 100 / setting.TaskFilter.Count + (countCurr - 1) * 100) / koGroups.Count;
-                    setProgress?.Invoke(progress, progressMessage: progressMessage);
-                    if(unloadResultQueue != null)
-                        KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
-                }
+                );
             }
 
             setProgress?.Invoke(100, true, progressMessage);
@@ -134,9 +153,8 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Экспорт в Xml - КОценка по группам.
         /// </summary>
-        private static Stream SaveXmlDocument(OMGroup subgroup, string message)
+        private static Stream SaveXmlDocument(OMGroup subgroup, string message, Dictionary<long,List<CalcItem>> calcItemDict)
         {
-
             var xmlFile = new XmlDocument();
             XmlNode xnLandValuation = xmlFile.CreateElement("FD_State_Cadastral_Valuation");
             DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
@@ -150,7 +168,7 @@ namespace KadOzenka.Dal.DataExport
             var dictNodes = new Dictionary<long, XmlNode>();
             using (Log.TimeOperation("Добавление основной информации в файл"))
             {
-                AddXmlPackage(xmlFile, xnLandValuation, subgroup, dictNodes, message);
+                AddXmlPackage(xmlFile, xnLandValuation, subgroup, dictNodes, message, calcItemDict);
             }
             xmlFile.AppendChild(xnLandValuation);
 
@@ -297,7 +315,7 @@ namespace KadOzenka.Dal.DataExport
             parent.AppendChild(xnGeneralInformation);
         }
 
-        public static void AddXmlPackage(XmlDocument xmlFile, XmlNode parentNode, OMGroup subgroup, Dictionary<long, XmlNode> dictNodes, string message)
+        public static void AddXmlPackage(XmlDocument xmlFile, XmlNode parentNode, OMGroup subgroup, Dictionary<long, XmlNode> dictNodes, string message, Dictionary<long,List<CalcItem>> calcItemDict)
         {
             XmlNode xnPackage = xmlFile.CreateElement("Package");
 
@@ -305,7 +323,7 @@ namespace KadOzenka.Dal.DataExport
 
             EvaluativeFactors(xmlFile, subgroup, dictNodes, message, xnPackage);
 
-            AddAppraise(xmlFile, subgroup, xnPackage);
+            AddAppraise(xmlFile, subgroup, xnPackage, calcItemDict);
 
             parentNode.AppendChild(xnPackage);
         }
@@ -410,7 +428,7 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static void AddAppraise(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage)
+        private static void AddAppraise(XmlDocument xmlFile, OMGroup subgroup, XmlNode xnPackage, Dictionary<long,List<CalcItem>> calcItemDict)
         {
             XmlNode xnAppraise = xmlFile.CreateElement("Appraise");
             var regionRf = ConfigurationManager.AppSettings["3XML_RegionRF"];
@@ -422,7 +440,7 @@ namespace KadOzenka.Dal.DataExport
 
             if (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
-                AddXnStatisticModelling(xmlFile, subgroup, allAttributes, regionRf, xnAppraise);
+                AddXnStatisticModelling(xmlFile, subgroup, allAttributes, regionRf, xnAppraise, calcItemDict);
             }
             else
             {
@@ -476,7 +494,7 @@ namespace KadOzenka.Dal.DataExport
         }
 
         private static void AddXnStatisticModelling(XmlDocument xmlFile, OMGroup subgroup, List<GbuObjectAttribute> allAttributes, string regionRf,
-            XmlNode xnAppraise)
+            XmlNode xnAppraise, Dictionary<long,List<CalcItem>> calcItemDict)
         {
             var model = OMModel.Where(x => x.GroupId == subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll()
                 .ExecuteFirstOrDefault();
@@ -498,11 +516,13 @@ namespace KadOzenka.Dal.DataExport
             if (model != null)
                 marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
             var factorReestrId = OMGroup.GetFactorReestrId(subgroup);
+            Log.Debug("FactorReestrId {factorReestrId} AddXnStatisticModelling", factorReestrId);
 
             foreach (var unit in subgroup.Unit)
             {
+                calcItemDict.TryGetValue(unit.Id, out var dict);
                 var xnRealEstate = GetXnRealEstate(xmlFile, subgroup, allAttributes, regionRf, unit, ref currentUnitsCount);
-                AddXnEvaluativeFactors(xmlFile, subgroup, unit, factorReestrId, model, marks, xnRealEstate);
+                AddXnEvaluativeFactors(xmlFile, subgroup, unit, factorReestrId, model, marks, xnRealEstate, dict);
                 xnRealEstates.AppendChild(xnRealEstate);
             }
 
@@ -622,27 +642,33 @@ namespace KadOzenka.Dal.DataExport
         }
 
         private static void AddXnEvaluativeFactors(XmlDocument xmlFile, OMGroup subgroup, OMUnit unit, int? factorReestrId, OMModel model,
-            List<OMMarkCatalog> marks, XmlNode xnRealEstate)
+            List<OMMarkCatalog> marks, XmlNode xnRealEstate, List<CalcItem> calcItems)
         {
             XmlNode xnCEvaluativeFactors = xmlFile.CreateElement("Evaluative_Factors");
 
             //Получаем список факторов группы
-            var factorValuesGroup = new List<CalcItem>();
-            DataTable data;
-            using (Log.TimeOperation("Получение атрибутов"))
-            {
-                data = CoreGetAttributesTrimmed.GetAttributes((int) unit.Id, factorReestrId.Value);
-            }
+//            var factorValuesGroup = new List<CalcItem>();
+//            DataTable data;
+            //List<CalcItem> testData;
+//            using (Log.TimeOperation("Получение атрибутов"))
+//            {
+//                // data = CoreGetAttributesTrimmed.GetAttributes((int) unit.Id, factorReestrId.Value);
+//                testData = GetAttributes(factorReestrId.Value, unit.Id).OrderBy(x=>x.FactorId).ToList();
+//            }
 
-            if (data != null)
-            {
-                Log.Verbose("Data rows {RowCount}",data.Rows.Count);
-                foreach (DataRow row in data.Rows)
-                {
-                    factorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(),
-                        row.ItemArray[7].ParseToString()));
-                }
-            }
+
+
+//            if (data != null)
+//            {
+//                Log.Verbose("Data rows {RowCount}",data.Rows.Count);
+//                foreach (DataRow row in data.Rows)
+//                {
+//                    factorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(),
+//                        row.ItemArray[7].ParseToString()));
+//                }
+//            }
+
+            //factorValuesGroup = factorValuesGroup.OrderBy(x => x.FactorId).ToList();
 
             if (model != null)
             {
@@ -654,7 +680,7 @@ namespace KadOzenka.Dal.DataExport
                 {
                     var findf = false;
                     var valueItem = string.Empty; //TODO: значение фактора для данного объекта
-                    var factorItem = factorValuesGroup.Find(x => x.FactorId == factorModel.FactorId);
+                    var factorItem = calcItems.Find(x => x.FactorId == factorModel.FactorId);
                     if (factorItem != null)
                     {
                         findf = true;
@@ -762,6 +788,130 @@ namespace KadOzenka.Dal.DataExport
 
                 #endregion
             }
+        }
+
+        public static Dictionary<long,List<CalcItem>> GetGroupAttributes(long factorReestrId, long groupId, long taskId)
+        {
+            OMGroup group = OMGroup.Where(x => x.Id == groupId).SelectAll().ExecuteFirstOrDefault();
+            if (group.GroupAlgoritm_Code != KoGroupAlgoritm.Model) return new Dictionary<long, List<CalcItem>>();
+
+            var allAttr = GetTourFactorAttributesByRegisterId(factorReestrId);
+            var attr = allAttr.Where(x => !x.IsPrimaryKey.GetValueOrDefault(false)).ToList();
+            var primary = allAttr.FirstOrDefault(x => x.IsPrimaryKey.GetValueOrDefault(false));
+
+            var registerPrimaryKeyColumn = new QSColumnSimple(primary.Id);
+
+            var objectsId = OMUnit
+                .Where(x => x.GroupId == groupId && x.TaskId == taskId)
+                .Select(x => x.ObjectId).Execute()
+                .Select(x => x.ObjectId).ToList();
+            if (objectsId.Count == 0)
+            {
+                return new Dictionary<long, List<CalcItem>>();
+            }
+
+            var query = new QSQuery
+            {
+                MainRegisterID = (int)factorReestrId,
+                Condition = new QSConditionSimple
+                {
+                    ConditionType = QSConditionType.In,
+                    LeftOperand = registerPrimaryKeyColumn,
+                    RightOperand = new QSColumnConstant(objectsId)
+                }
+            };
+
+            attr.ForEach(attribute =>
+            {
+                query.AddColumn(attribute.Id, attribute.Id.ToString());
+            });
+
+            DataTable dt;
+            try
+            {
+                var sql = query.GetSql();
+                dt = query.ExecuteQuery();
+            }
+            catch (Exception e)
+            {
+                Log.Warning(e,"Ошибка выгрузки из реестра №{factorRegisterId}",factorReestrId);
+                return new Dictionary<long, List<CalcItem>>();
+            }
+
+            var dict = new Dictionary<long,List<CalcItem>>();
+            foreach (DataRow row in dt.Rows)
+            {
+                var calcItems = new List<CalcItem>();
+                foreach (DataColumn column in dt.Columns)
+                {
+                    var ordinal = column.Ordinal;
+                    if (ordinal==0) continue;
+
+                    var x = row.ItemArray[ordinal];
+                    if (x is DBNull) continue;
+
+                    calcItems.Add(new CalcItem(column.ColumnName.ParseToLong(),x.ToString(),null));
+                }
+                dict.Add(row.ItemArray[0].ParseToLong(),calcItems);
+            }
+
+            return dict;
+        }
+        private static List<CalcItem> GetAttributes(long factorReestrId, long objectId)
+        {
+            var allAttr = GetTourFactorAttributesByRegisterId(factorReestrId);
+            var attr = allAttr.Where(x => !x.IsPrimaryKey.GetValueOrDefault(false)).ToList();
+            var primary = allAttr.FirstOrDefault(x => x.IsPrimaryKey.GetValueOrDefault(false));
+
+            var registerPrimaryKeyColumn = new QSColumnSimple(primary.Id);
+
+            var query = new QSQuery
+            {
+                MainRegisterID = (int)factorReestrId,
+                Condition = new QSConditionSimple
+                {
+                    ConditionType = QSConditionType.In,
+                    LeftOperand = registerPrimaryKeyColumn,
+                    RightOperand = new QSColumnConstant(objectId)
+                }
+            };
+
+            attr.ForEach(attribute =>
+            {
+                query.AddColumn(attribute.Id, attribute.Id.ToString());
+            });
+
+            var sql = query.GetSql();
+            var dt = query.ExecuteQuery();
+
+            var calcItems = new List<CalcItem>();
+            foreach (DataRow row in dt.Rows)
+            {
+                foreach (DataColumn column in dt.Columns)
+                {
+                    var ordinal = column.Ordinal;
+                    if (ordinal==0) continue;
+
+                    var x = row.ItemArray[ordinal];
+                    if (x is DBNull) continue;
+
+                    calcItems.Add(new CalcItem(column.ColumnName.ParseToLong(),x.ToString(),null));
+                }
+            }
+
+            return calcItems;
+        }
+
+        private static List<OMAttribute> GetTourFactorAttributesByRegisterId(long registerId)
+        {
+            var registers = OMTourFactorRegister.Where(x => x.RegisterId == registerId).SelectAll().Execute();
+            var registerIds = registers.Select(x => x.RegisterId).Distinct().ToList();
+
+            return OMAttribute
+                .Where(x => registerIds.Contains(x.RegisterId)
+                            //&& x.IsDeleted.Coalesce(false) == false
+                            )
+                .OrderBy(x => x.Name).SelectAll().Execute();
         }
     }
 }
