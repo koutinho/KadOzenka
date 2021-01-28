@@ -1,10 +1,20 @@
 ﻿using System;
+using NUnit.Framework;
 
 namespace KadOzenka.Dal.Tests
 {
 	public class BaseTests
 	{
-		protected string GenerateRandomString(string beginning = "", int maxNumberOfCharacters = 5)
+		protected Random Random { get; set; }
+
+		[OneTimeSetUp]
+		public void SetUp()
+		{
+			Random = new Random();
+		}
+
+
+		protected string GetRandomString(string beginning = "", int maxNumberOfCharacters = 5)
 		{
 			var guid = Guid.NewGuid();
 			var salted = $"{beginning}_{guid}";

@@ -2,15 +2,18 @@ using KadOzenka.Dal.Tests.Modeling.Models;
 
 namespace KadOzenka.Dal.Tests
 {
-	public class Tests
+	public class Examples
 	{
 		public void Setup()
 		{
-			//тест на расширения класса через partial
+			//расширения класса через partial
 			var tmp = nameof(OmModelTests.Check_A0_For_Model);
 
-			//тест на выбрасывание исключения
+			//выбрасывание исключения
 			tmp = nameof(GettingTests.If_Model_Id_Is_Empty_Throw_Exception);
+
+			//стаб репозитория
+			tmp = nameof(GettingTests.If_Model_Not_Found_By_Id_Throw_Exception);
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
-        public ModelingRepository ModelingRepository { get; set; }
+        private IModelingRepository ModelingRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public RecycleBinService RecycleBinService { get; }
 
@@ -56,6 +56,16 @@ namespace KadOzenka.Dal.Modeling
 			RecycleBinService = new RecycleBinService();
 		}
 
+		/// <summary>
+		/// Для тестирования
+		/// </summary>
+		/// <param name="modelingRepository"></param>
+		public void StubModelingRepository(IModelingRepository modelingRepository)
+		{
+			ModelingRepository = modelingRepository;
+		}
+
+
         #region CRUD General Model
 
         public OMModel GetActiveModelEntityByGroupId(long? groupId)
@@ -72,9 +82,9 @@ namespace KadOzenka.Dal.Modeling
 	        if (modelId.GetValueOrDefault() == 0)
 		        throw new EmptyModelIdException(Messages.EmptyModelId);
 
-	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetModelById(modelId.Value);
 	        if (model == null)
-		        throw new EmptyModelIdException($"Не найдена Модель с id='{modelId}'");
+		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
 	        return model;
         }

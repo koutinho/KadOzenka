@@ -26,8 +26,8 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		{
 			return new ModelingModelDto
 			{
-				Name = GenerateRandomString(),
-				Description = GenerateRandomString(),
+				Name = GetRandomString(),
+				Description = GetRandomString(),
 				GroupId = Random.Next(),
 				IsOksObjectType = true,
 				AlgorithmTypeForCadastralPriceCalculation = KoAlgoritmType.Line,

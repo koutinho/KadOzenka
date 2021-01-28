@@ -1,8 +1,11 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
+﻿using Core.ObjectModel;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
-using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tests.Modeling.Models
 {
@@ -18,22 +21,16 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			StringAssert.Contains(Messages.EmptyModelId, exception.Message);
 		}
 
-		
-		#region Support Methods
 
-		private ModelingModelDto GetModelInfoDto()
+		[Test]
+		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
-			return new ModelingModelDto
-			{
-				Name = GenerateRandomString(),
-				Description = GenerateRandomString(),
-				GroupId = Random.Next(),
-				IsOksObjectType = true,
-				AlgorithmTypeForCadastralPriceCalculation = KoAlgoritmType.Line,
-				Type = KoModelType.Automatic
-			};
-		}
+			var modelingRepositoryMock = Substitute.For<IModelingRepository>();
+			modelingRepositoryMock.GetModelById(Arg.Any<long>()).ReturnsNull();
+			ModelingService.StubModelingRepository(modelingRepositoryMock);
 
-		#endregion
+			var modelId = Random.Next();
+			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
+		}
 	}
 }
