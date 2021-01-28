@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\New\\KadOzenka\\Source\\KadOzenka.Dal.Tests\\KadOzenka.Dal.Tests.csproj": {}
+  },
+  "projects": {
+    "D:\\New\\KadOzenka\\Source\\KadOzenka.Dal.Tests\\KadOzenka.Dal.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\New\\KadOzenka\\Source\\KadOzenka.Dal.Tests\\KadOzenka.Dal.Tests.csproj",
+        "projectName": "KadOzenka.Dal.Tests",
+        "projectPath": "D:\\New\\KadOzenka\\Source\\KadOzenka.Dal.Tests\\KadOzenka.Dal.Tests.csproj",
+        "packagesPath": "C:\\Users\\korotkova\\.nuget\\packages\\",
+        "outputPath": "D:\\New\\KadOzenka\\Source\\KadOzenka.Dal.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "D:\\New\\KadOzenka\\Source\\NuGet.Config",
+          "C:\\Users\\korotkova\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "\\\\192.168.3.67\\NuGetStorages\\FastReport": {},
+          "\\\\192.168.3.67\\NuGetStorages\\PlatformFinanceNetCore": {},
+          "\\\\192.168.3.67\\NuGetStorages\\PlatformNetCore": {},
+          "http://nuget.genix.pro/nuget/": {},
+          "http://packagesource": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.8.3, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.13.0, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[3.17.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.400\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
