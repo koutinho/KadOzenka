@@ -539,44 +539,65 @@ namespace KadOzenka.Dal.XmlParser
             return CadastralNumber;
         }
     }
-    public class xmlObjectParcel
+
+    public class xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
+	    /// <summary>
+	    /// Вид объекта недвижимости
+	    /// </summary>
+	    public enTypeObject TypeObject;
+	    /// <summary>
+	    /// Тип объекта недвижимости
+	    /// </summary>
+	    public string TypeRealty;
+	    /// <summary>
+	    /// Дата создания
+	    /// </summary>
+	    public DateTime DateCreate;
+	    /// <summary>
+	    /// Кадастровый номер
+	    /// </summary>
+	    public string CadastralNumber;
+	    /// <summary>
+	    /// Номер кадастрового квартала
+	    /// </summary>
+	    public string CadastralNumberBlock;
+	    /// <summary>
+	    /// Сведения о кадастровой стоимости
+	    /// </summary>
+	    public xmlCost CadastralCost;
+	    /// <summary>
+	    /// Адрес (местоположение)
+	    /// </summary>
+	    public xmlAdress Adress;
+
+        public xmlObjectParticular(xmlObject obj)
+	    {
+		    TypeObject = obj.TypeObject;
+		    TypeRealty = obj.TypeRealty;
+		    DateCreate = obj.DateCreate;
+		    CadastralNumber = obj.CadastralNumber;
+		    CadastralNumberBlock = obj.CadastralNumberBlock;
+		    CadastralCost = obj.CadastralCost;
+		    Adress = obj.Adress;
+	    }
+
+	    public override string ToString()
+	    {
+		    return CadastralNumber;
+	    }
+    }
+
+    public class xmlObjectParcel : xmlObjectParticular
+    {
+	    /// <summary>
         /// Кадастровые номера объектов недвижимости, расположенных в пределах земельного участка
         /// </summary>
         public List<string> InnerCadastralNumbers;
         /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
         /// Площадь в квадратных метрах
         /// </summary>
         public string Area;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
         /// <summary>
         /// Наименование участка
         /// </summary>
@@ -602,68 +623,29 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlSupervisionEvent> GovernmentLandSupervision;
 
-        public xmlObjectParcel(xmlObject obj)
+        public xmlObjectParcel(xmlObject obj) : base(obj)
         {
-            TypeObject = obj.TypeObject;
-            TypeRealty = obj.TypeRealty;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            InnerCadastralNumbers = obj.InnerCadastralNumbers;
-            CadastralCost = obj.CadastralCost;
-            Area = obj.Area;
-            Adress = obj.Adress;
-            Name = obj.NameParcel;
+	        InnerCadastralNumbers = obj.InnerCadastralNumbers;
+	        Area = obj.Area;
+	        Name = obj.NameParcel;
             Category = obj.Category;
             Utilization = obj.Utilization;
             Encumbrances = obj.Encumbrances;
             ZoneAndTerritorys = obj.ZoneAndTerritorys;
             GovernmentLandSupervision = obj.GovernmentLandSupervision;
         }
-        public override string ToString()
-        {
-            return CadastralNumber;
-        }
     }
-    public class xmlObjectBuild
+    public class xmlObjectBuild : xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
+	    /// <summary>
         /// Кадастровый номер земельного участка (земельных участков), в пределах которого (которых) расположен данный объект недвижимости
         /// </summary>
         public List<string> ParentCadastralNumbers;
-        /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
+	    /// <summary>
         /// Площадь в квадратных метрах
         /// </summary>
         public string Area;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
-        /// <summary>
+	    /// <summary>
         /// Назначение здания
         /// </summary>
         public xmlCodeName AssignationBuilding;
@@ -684,63 +666,24 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlCodeName> Walls;
 
-        public xmlObjectBuild(xmlObject obj)
+        public xmlObjectBuild(xmlObject obj) : base(obj)
         {
-            TypeRealty = obj.TypeRealty;
-            TypeObject = obj.TypeObject;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            ParentCadastralNumbers = obj.ParentCadastralNumbers;
-            CadastralCost = obj.CadastralCost;
-            Area = obj.Area;
-            Adress = obj.Adress;
-            AssignationBuilding = obj.AssignationBuilding;
+	        ParentCadastralNumbers = obj.ParentCadastralNumbers;
+	        Area = obj.Area;
+	        AssignationBuilding = obj.AssignationBuilding;
             Floors = obj.Floors;
             Years = obj.Years;
             Name = obj.NameObject;
             Walls = obj.Walls;
         }
-        public override string ToString()
-        {
-            return CadastralNumber;
-        }
     }
-    public class xmlObjectConstruction
+    public class xmlObjectConstruction : xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
+	    /// <summary>
         /// Кадастровый номер земельного участка (земельных участков), в пределах которого (которых) расположен данный объект недвижимости
         /// </summary>
         public List<string> ParentCadastralNumbers;
-        /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
-        /// <summary>
+	    /// <summary>
         /// Назначение (сооружение, онс)
         /// </summary>
         public string AssignationName;
@@ -765,63 +708,24 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlCodeName> Walls;
 
-        public xmlObjectConstruction(xmlObject obj)
+        public xmlObjectConstruction(xmlObject obj) : base(obj)
         {
-            TypeRealty = obj.TypeRealty;
-            TypeObject = obj.TypeObject;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            ParentCadastralNumbers = obj.ParentCadastralNumbers;
-            CadastralCost = obj.CadastralCost;
-            Adress = obj.Adress;
-            AssignationName = obj.AssignationName;
+	        ParentCadastralNumbers = obj.ParentCadastralNumbers;
+	        AssignationName = obj.AssignationName;
             Floors = obj.Floors;
             Years = obj.Years;
             Name = obj.NameObject;
             KeyParameters = obj.KeyParameters;
             Walls = obj.Walls;
         }
-        public override string ToString()
-        {
-            return CadastralNumber;
-        }
     }
-    public class xmlObjectUncomplited
+    public class xmlObjectUncomplited : xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
+	    /// <summary>
         /// Кадастровый номер земельного участка (земельных участков), в пределах которого (которых) расположен данный объект недвижимости
         /// </summary>
         public List<string> ParentCadastralNumbers;
-        /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
-        /// <summary>
+	    /// <summary>
         /// Назначение
         /// </summary>
         public string AssignationName;
@@ -834,64 +738,25 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlCodeNameValue> KeyParameters;
 
-        public xmlObjectUncomplited(xmlObject obj)
+        public xmlObjectUncomplited(xmlObject obj) : base(obj)
         {
-            TypeRealty = obj.TypeRealty;
-            TypeObject = obj.TypeObject;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            ParentCadastralNumbers = obj.ParentCadastralNumbers;
-            CadastralCost = obj.CadastralCost;
-            Adress = obj.Adress;
-            AssignationName = obj.AssignationName;
+	        ParentCadastralNumbers = obj.ParentCadastralNumbers;
+	        AssignationName = obj.AssignationName;
             DegreeReadiness = obj.DegreeReadiness;
             KeyParameters = obj.KeyParameters;
         }
-        public override string ToString()
-        {
-            return CadastralNumber;
-        }
     }
-    public class xmlObjectFlat
+    public class xmlObjectFlat : xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
+	    /// <summary>
         /// Кадастровый номер квартиры, в которой расположена комната
         /// </summary>
         public string CadastralNumberFlat;
-        /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
+	    /// <summary>
         /// Площадь в квадратных метрах
         /// </summary>
         public string Area;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
-        /// <summary>
+	    /// <summary>
         /// Назначение помещения
         /// </summary>
         public xmlCodeName AssignationFlatCode;
@@ -933,18 +798,11 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlCodeName> parentWalls;
 
-        public xmlObjectFlat(xmlObject obj)
+        public xmlObjectFlat(xmlObject obj) : base(obj)
         {
-            TypeRealty = obj.TypeRealty;
-            TypeObject = obj.TypeObject;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            CadastralNumberFlat = obj.CadastralNumberFlat;
-            CadastralCost = obj.CadastralCost;
-            Area = obj.Area;
-            Adress = obj.Adress;
-            AssignationFlatCode = obj.AssignationFlatCode;
+	        CadastralNumberFlat = obj.CadastralNumberFlat;
+	        Area = obj.Area;
+	        AssignationFlatCode = obj.AssignationFlatCode;
             AssignationFlatType = obj.AssignationFlatType;
             Name = obj.NameObject;
             PositionsInObject = obj.PositionsInObject;
@@ -955,51 +813,18 @@ namespace KadOzenka.Dal.XmlParser
             parentAssignationName = obj.AssignationName;
             parentWalls = obj.Walls;
         }
-        public override string ToString()
-        {
-            return CadastralNumber;
-        }
     }
-    public class xmlObjectCarPlace
+    public class xmlObjectCarPlace : xmlObjectParticular
     {
-        /// <summary>
-        /// Вид объекта недвижимости
-        /// </summary>
-        public enTypeObject TypeObject;
-        /// <summary>
-        /// Тип объекта недвижимости
-        /// </summary>
-        public string TypeRealty;
-        /// <summary>
-        /// Дата создания
-        /// </summary>
-        public DateTime DateCreate;
-        /// <summary>
-        /// Кадастровый номер
-        /// </summary>
-        public string CadastralNumber;
-        /// <summary>
-        /// Номер кадастрового квартала
-        /// </summary>
-        public string CadastralNumberBlock;
-        /// <summary>
-        /// Сведения о кадастровой стоимости
-        /// </summary>
-        public xmlCost CadastralCost;
-        /// <summary>
+	    /// <summary>
         /// Площадь в квадратных метрах
         /// </summary>
         public string Area;
-        /// <summary>
-        /// Адрес (местоположение)
-        /// </summary>
-        public xmlAdress Adress;
-        /// <summary>
+	    /// <summary>
         /// Местоположение в объекте недвижимости
         /// </summary>
         public List<xmlPosition> PositionsInObject;
-
-        /// <summary>
+	    /// <summary>
         /// Кадастровый номер здания или сооружения, в котором расположено помещение
         /// </summary>
         public string CadastralNumberOKS;
@@ -1024,27 +849,16 @@ namespace KadOzenka.Dal.XmlParser
         /// </summary>
         public List<xmlCodeName> parentWalls;
 
-        public xmlObjectCarPlace(xmlObject obj)
+        public xmlObjectCarPlace(xmlObject obj) : base(obj)
         {
-            TypeRealty = obj.TypeRealty;
-            TypeObject = obj.TypeObject;
-            DateCreate = obj.DateCreate;
-            CadastralNumber = obj.CadastralNumber;
-            CadastralNumberBlock = obj.CadastralNumberBlock;
-            CadastralCost = obj.CadastralCost;
-            Area = obj.Area;
-            Adress = obj.Adress;
-            PositionsInObject = obj.PositionsInObject;
+	        Area = obj.Area;
+	        PositionsInObject = obj.PositionsInObject;
             CadastralNumberOKS = obj.CadastralNumberOKS;
             parentFloors = obj.Floors;
             parentYears = obj.Years;
             parentAssignationBuilding = obj.AssignationBuilding;
             parentAssignationName = obj.AssignationName;
             parentWalls = obj.Walls;
-        }
-        public override string ToString()
-        {
-            return CadastralNumber;
         }
     }
     public class xmlObjectList
