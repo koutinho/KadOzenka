@@ -61,6 +61,15 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не передан идентификатор Модели.
+        /// </summary>
+        public static string EmptyModelId {
+            get {
+                return ResourceManager.GetString("EmptyModelId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to У модели не заполнено Имя.
         /// </summary>
         public static string EmptyName {

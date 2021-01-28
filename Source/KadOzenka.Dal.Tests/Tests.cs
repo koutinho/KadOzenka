@@ -1,27 +1,16 @@
-using System;
-using NUnit.Framework;
+using KadOzenka.Dal.Tests.Modeling.Models;
 
 namespace KadOzenka.Dal.Tests
 {
-	[TestFixture]
 	public class Tests
 	{
-		[SetUp]
 		public void Setup()
 		{
-		}
+			//тест на расширения класса через partial
+			var tmp = nameof(OmModelTests.Check_A0_For_Model);
 
-		[Test]
-		public void Test1()
-		{
-			Console.WriteLine("test");
-			Assert.Pass();
-		}
-
-		[Test]
-		public void Test2()
-		{
-			Assert.Pass();
+			//тест на выбрасывание исключения
+			tmp = nameof(GettingTests.If_Model_Id_Is_Empty_Throw_Exception);
 		}
 	}
 }

@@ -69,12 +69,12 @@ namespace KadOzenka.Dal.Modeling
 
         public OMModel GetModelEntityById(long? modelId)
         {
-	        if (modelId == null)
-		        throw new Exception("Не передан идентификатор Модели для поиска");
+	        if (modelId.GetValueOrDefault() == 0)
+		        throw new EmptyModelIdException(Messages.EmptyModelId);
 
 	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
 	        if (model == null)
-		        throw new Exception($"Не найдена Модель с id='{modelId}'");
+		        throw new EmptyModelIdException($"Не найдена Модель с id='{modelId}'");
 
 	        return model;
         }
