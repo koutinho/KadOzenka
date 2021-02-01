@@ -431,30 +431,20 @@ namespace KadOzenka.Dal.DataExport
                 value1 = attribs[0].StringValue;
                 result = true;
             }
-// TODO: Убрать до мержа CIPJSKO-676
-//            var value2 = "";
-//            var result2 = GetObjectAttribute(unit, attrNumber, out value2);
-//
-//            var log = Log.Logger
-//                .ForContext<DataExportCommon>()
-//                .ForContext("dec1.attrNumber", attrNumber)
-//                .ForContext("dec2.listValue", value1)
-//                .ForContext("dec3.methodValue", value2);
-//
-//            if (value1 != value2 && value1!="")
-//            {
-//                log.ForContext("dec5.listOfFoundAttributes", attribs,  true)
-//                    .ForContext("dec4.OMUnit", unit, true)
-//                    .Verbose("Расхождение в значениях");
-//            }
-//
-//            if (value1 == "" && value2 != "")
-//            {
-//                log.Verbose("Значение не найдено в списке");
-//            }
 
             value = value1;
             return result;
+        }
+
+        public static bool GetObjectAttribute(Dictionary<long,List<GbuObjectAttribute>> dict, OMUnit unit, long attrNumber, out string value)
+        {
+            value = "";
+            var dictLookup = dict.TryGetValue(unit.ObjectId.GetValueOrDefault(), out var list);
+            if (!dictLookup) return false;
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId && x.S <= unit.CreationDate.GetValueOrDefault()).OrderByDescending(x=>x.S).ToList();
+            if (attribs.Count <= 0) return false;
+            value = attribs[0].StringValue;
+            return true;
         }
 
         /// <summary>
