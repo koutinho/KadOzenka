@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.Modeling
         public OMModel GetModelEntityById(long? modelId)
         {
 	        if (modelId.GetValueOrDefault() == 0)
-		        throw new EmptyModelIdException(Messages.EmptyModelId);
+		        throw new Exception(Messages.EmptyModelId);
 
 	        var model = ModelingRepository.GetModelById(modelId.Value);
 	        if (model == null)

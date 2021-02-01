@@ -4,6 +4,8 @@ namespace KadOzenka.Dal.Tests
 {
 	public class Examples
 	{
+		//doc https://github.com/Moq/moq4/wiki/Quickstart
+
 		public void Setup()
 		{
 			//расширения класса через partial

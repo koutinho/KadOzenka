@@ -1,9 +1,8 @@
-﻿using Core.ObjectModel;
+﻿using System;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
-using NSubstitute;
-using NSubstitute.ReturnsExtensions;
+using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
 
@@ -16,7 +15,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		[TestCase(0)]
 		public void If_Model_Id_Is_Empty_Throw_Exception(long modelId)
 		{
-			var exception = Assert.Throws<EmptyModelIdException>(() => ModelingService.GetModelEntityById(modelId));
+			var exception = Assert.Throws<Exception>(() => ModelingService.GetModelEntityById(modelId));
 
 			StringAssert.Contains(Messages.EmptyModelId, exception.Message);
 		}
@@ -25,9 +24,9 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		[Test]
 		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
-			var modelingRepositoryMock = Substitute.For<IModelingRepository>();
-			modelingRepositoryMock.GetModelById(Arg.Any<long>()).ReturnsNull();
-			ModelingService.StubModelingRepository(modelingRepositoryMock);
+			var modelingRepositoryMock = new Mock<IModelingRepository>();
+			modelingRepositoryMock.Setup(foo => foo.GetModelById(It.IsAny<long>())).Returns((OMModel) null);
+			ModelingService.StubModelingRepository(modelingRepositoryMock.Object);
 
 			var modelId = Random.Next();
 			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
