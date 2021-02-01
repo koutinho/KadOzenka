@@ -5,6 +5,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using Serilog;
 using SerilogTimings.Extensions;
@@ -30,10 +31,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 			using (Logger.TimeOperation("Полное время работы процесса"))
 			{
-				if(!IsNotDoneJobExists())
+				if (processQueue.Parameters == null || string.IsNullOrEmpty(processQueue.Parameters))
+				{
+					Logger.Warning("Не переданы параметры для фонового процесса: {Description}. Запуск оменен.", processType.Description);
 					return;
-
-				var jobInfo = GetJobsInfo();
+				}
+				var jobInfo = JsonConvert.DeserializeObject<JobInfo>(processQueue.Parameters);
 
 				for(var i = jobInfo.Min; i <= jobInfo.Max; i++)
 				{
@@ -54,10 +57,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 
 		#region Support Methods
 
-		private bool IsNotDoneJobExists()
+		public static bool IsNotDoneJobExists(ILogger logger)
 		{
 			var isJobExists = false;
-			using (Logger.TimeOperation("Проверка наличия невыполненных заданий"))
+			using (logger.TimeOperation("Проверка наличия невыполненных заданий"))
 			{
 				var sql = @$"select exists (select 1 from {TmpTableName} where {GetConditionForNotDoneJob()}) as is_exists";
 
@@ -68,27 +71,27 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 					isJobExists = row["is_exists"].ParseToBoolean();
 				}
 
-				Logger.Debug($"Задание найдено - {isJobExists}");
+				logger.Debug($"Задание найдено - {isJobExists}");
 			}
 
 			return isJobExists;
 		}
 
-		private JobInfo GetJobsInfo()
+		public static JobInfo GetJobsInfo(ILogger logger)
 		{
-			using (Logger.TimeOperation("Получение информации о невыполненных заданиях"))
+			using (logger.TimeOperation("Получение информации о невыполненных заданиях"))
 			{
 				var sql = @$"select min(job_number) as {nameof(JobInfo.Min)}, max(job_number) as {nameof(JobInfo.Max)}
 							from {TmpTableName} where {GetConditionForNotDoneJob()}";
 
 				var jobsInfo = QSQuery.ExecuteSql<JobInfo>(sql).First();
-				Logger.Debug($"Минимальный номер невыполненной работы - {jobsInfo.Min}, максимальный - {jobsInfo.Max}");
+				logger.Debug($"Минимальный номер невыполненной работы - {jobsInfo.Min}, максимальный - {jobsInfo.Max}");
 
 				return jobsInfo;
 			}
 		}
 
-		private string GetConditionForNotDoneJob()
+		private static string GetConditionForNotDoneJob()
 		{
 			return "COALESCE(is_done, 0) = 0";
 		}

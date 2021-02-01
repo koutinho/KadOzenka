@@ -1,16 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Serilog.Extensions.Logging;
 using Serilog;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Serilog.Configuration;
-using Serilog.Events;
-using SerilogTimings;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using KadOzenka.Dal.WorkerCheckerDataBase;
 
 namespace CIPJS
 {
@@ -27,6 +20,7 @@ namespace CIPJS
                 .ReadFrom.Configuration(configuration)
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
                 .CreateLogger();
+
 
             try
             {
@@ -48,5 +42,6 @@ namespace CIPJS
                 .UseSerilog()
                 .UseStartup<Startup>()
                 .Build();
+
     }
 }
