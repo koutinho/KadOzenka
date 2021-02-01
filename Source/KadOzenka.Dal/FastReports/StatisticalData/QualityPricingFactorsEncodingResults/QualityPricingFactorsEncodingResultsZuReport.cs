@@ -49,6 +49,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 
 			var linkedObjectsInfoAttributeId = GetQueryParam<long?>("LinkedObjectsInfoAttribute", query);

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
 using Platform.Register;
 using Serilog;
@@ -23,6 +24,15 @@ namespace KadOzenka.Dal.GbuObject
     {
         private static readonly ILogger _log = Log.ForContext<GbuObjectService>();
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
+
+		private QueryManager _queryManager;
+
+		public GbuObjectService(){}
+
+		public GbuObjectService(QueryManager queryManager)
+		{
+			_queryManager = queryManager;
+		}
 
 		public static GbuObjectAttribute CheckExistsValueFromAttributeIdPartition(long objectId, long attributeId, DateTime otDate)
 		{
@@ -119,7 +129,7 @@ namespace KadOzenka.Dal.GbuObject
 									$"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
 							}
 
-							result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 						}
 					}
 					else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
@@ -169,7 +179,7 @@ namespace KadOzenka.Dal.GbuObject
 									$"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
 							}
 
-							result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 						}
 					}
 				}
@@ -409,7 +419,8 @@ namespace KadOzenka.Dal.GbuObject
 			return result;
 		}
 
-		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
+		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo,
+			QueryManager queryManager)
 		{
 			var attributeData = RegisterCache.GetAttributeData(attributeId);
 			var registerData = RegisterCache.GetRegisterData(attributeData.RegisterId);
@@ -471,7 +482,7 @@ from (select
 
 			sql += ") data group by data.Value";
 
-			return QSQuery.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
+			return queryManager.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
 		}
 
 		public List<long> GetGbuRegistersIds()

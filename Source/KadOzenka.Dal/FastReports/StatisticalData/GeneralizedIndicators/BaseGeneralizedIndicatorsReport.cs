@@ -32,6 +32,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.GeneralizedIndicators
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
 			var taskIdList = GetTaskIdList(query);
 
 			var dataTitleTable = new DataTable("Common");

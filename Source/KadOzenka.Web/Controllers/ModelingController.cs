@@ -157,7 +157,7 @@ namespace KadOzenka.Web.Controllers
 
 			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
-			model.IsFromTourCard = isReadOnly;
+			model.IsReadOnly = isReadOnly;
 
 			if (isPartial)
 			{
@@ -278,7 +278,7 @@ namespace KadOzenka.Web.Controllers
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
 
-            var isProcessExists = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
+            var isProcessExists = LongProcessService.CheckProcessActiveInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
@@ -385,7 +385,8 @@ namespace KadOzenka.Web.Controllers
 	        var factorDto = new AutomaticFactorModel
 	        {
 		        Id = -1,
-		        ModelId = generalModelId
+		        ModelId = generalModelId,
+                IsActive = true
 	        };
 
 	        return View("EditAutomaticModelFactor", factorDto);
@@ -412,7 +413,7 @@ namespace KadOzenka.Web.Controllers
 	        if (factorModel.Id == -1)
 	        {
 		        var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
-                var queue = LongProcessService.GetQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
+                var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
 		        if (hasFormedObjectArray && queue != null)
 		        {
 			        var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
@@ -446,7 +447,11 @@ namespace KadOzenka.Web.Controllers
             }
             else
 	        {
-		        ModelFactorsService.UpdateAutomaticFactor(dto);
+		        var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
+		        if (mustResetTrainingResult)
+		        {
+			        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+                }
 	        }
 
 	        return Json(isProcessForFactorAdditionCreated);
@@ -561,7 +566,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
-            model.IsFromTourCard = isReadOnly;
+            model.IsReadOnly = isReadOnly;
 
             if (isPartial)
             {
@@ -1001,12 +1006,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
-
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
+	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
@@ -1027,7 +1029,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ExcludeModelObjectsFromCalculation(IFormFile file)
+        public ActionResult UpdateModelObjects(long modelId, IFormFile file)
         {
             if (file == null)
                 throw new Exception("Не выбран файл");
@@ -1038,19 +1040,19 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
             
-            var excludeResult = ModelingService.ExcludeModelObjectsFromCalculation(excelFile);
+            var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
             
             var fileName = string.Empty;
-            if (excludeResult.File != null)
+            if (updateResult.File != null)
             {
 	            fileName = "Не найденные объекты.xlsx";
-	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
+	            HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
             }
 
             return Content(JsonConvert.SerializeObject(new
             {
-	            excludeResult.TotalCount, excludeResult.UpdatedObjectsCount, excludeResult.UnchangedObjectsCount,
-	            excludeResult.ErrorObjectsCount, excludeResult.ErrorRowIndexes, fileName
+	            updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
+	            updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
             }), "application/json");
         }
 
@@ -1368,7 +1370,9 @@ namespace KadOzenka.Web.Controllers
 		        Value = x.Id.ToString()
 	        }).ToList();
 
-	        return Json(dictionaries);
+	        dictionaries.Insert(0, new SelectListItem("", ""));
+
+            return Json(dictionaries);
         }
 
         #endregion

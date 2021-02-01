@@ -86,8 +86,8 @@ namespace KadOzenka.Web.Controllers
             if (taskDto == null)
                 return NotFound();
 
-            var dataComparingDto = TaskService.GetTaskDataComparingDto(taskId);
-            var taskModel = TaskEditModel.ToEditModel(taskDto, dataComparingDto);
+            var dataComparingDtoResponse = TaskService.TryGetTaskDataComparingDto(taskId);
+            var taskModel = TaskEditModel.ToEditModel(taskDto, dataComparingDtoResponse);
 
             return View(taskModel);
         }

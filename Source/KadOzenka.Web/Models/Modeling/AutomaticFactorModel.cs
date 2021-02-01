@@ -25,6 +25,9 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Коэффициент из предыдущего тура")]
 		public decimal? PreviousWeight { get; set; }
 
+		[Display(Name = "Использовать в модели")]
+		public bool? IsActive { get; set; }
+
 
 		public static AutomaticFactorModel ToModel(OMModelFactor factor)
 		{
@@ -35,7 +38,8 @@ namespace KadOzenka.Web.Models.Modeling
 				AlgorithmType = factor.AlgorithmType_Code,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				PreviousWeight = factor.PreviousWeight
+				PreviousWeight = factor.PreviousWeight,
+				IsActive = factor.IsActive.GetValueOrDefault()
 			};
 		}
 
@@ -48,7 +52,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
-				PreviousWeight = PreviousWeight
+				PreviousWeight = PreviousWeight,
+				IsActive = IsActive.GetValueOrDefault()
 			};
 		}
 	}

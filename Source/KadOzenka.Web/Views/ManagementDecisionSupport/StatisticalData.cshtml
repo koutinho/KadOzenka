@@ -224,7 +224,13 @@
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForOks.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForOks).Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform).Enable(true))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                    .Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription() +
+                           (Model.PricingFactorsCompositionFinalUniformReportActualizationDate == null
+                               ? ""
+                               : $" ({Model.PricingFactorsCompositionFinalUniformReportActualizationDate.Value.ToString("dd.MM.yyyy HH:mm")})"))
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform)
+                    .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType)
@@ -234,7 +240,13 @@
                     .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform).Enable(true))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                    .Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription() +
+                           (Model.PricingFactorsCompositionFinalNonuniformActualizationDate == null
+                               ? ""
+                               : $" ({Model.PricingFactorsCompositionFinalNonuniformActualizationDate.Value.ToString("dd.MM.yyyy HH:mm")})"))
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform)
+                    .Enable(true))
             </div>
         </div>
 

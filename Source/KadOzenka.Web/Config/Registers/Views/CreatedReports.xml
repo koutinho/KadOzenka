@@ -7,11 +7,11 @@
         <Parameter Key="reportId" Value="[ObjectID]" />
       </Parameters>
       <ConditionGroups>
-        <ConditionGroup HideOrDisable="Disable">
+        <!--<ConditionGroup HideOrDisable="Disable">
           <Conditions>
               <Condition Key="[81100700]" Operation="NotEqual" Value="Завершена" />
           </Conditions>
-        </ConditionGroup>
+        </ConditionGroup>-->
       </ConditionGroups>
     </Button>
   </Buttons>

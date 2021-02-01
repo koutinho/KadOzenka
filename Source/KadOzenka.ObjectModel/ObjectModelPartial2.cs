@@ -1358,3 +1358,46 @@ namespace ObjectModel.Common
 
     }
 }
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// </summary>
+    public partial class OMAllReportsInSystemView
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях
+    /// </summary>
+    public partial class OMRecycleBin
+    {
+        /// <summary>
+        /// Ссылка на (930 Список реестров)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
+
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}

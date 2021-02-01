@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 			{
 				try
 				{
-					if (row.Index != 0) //все, кроме заголовков
+					if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
 					{
 						// Найти ИД объекта по ключевым полям					
 						List<QSCondition> conditions = new List<QSCondition>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.DataComparing.Exceptions;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.TD;
 using ObjectModel.KO;
@@ -37,13 +38,13 @@ namespace KadOzenka.Dal.DataComparing.Configs
 		protected string GetNameFromTask(OMTask task, string fileSuffix = null)
 		{
 			if (!task.EstimationDate.HasValue)
-				throw new Exception($"Не заполнена Дата оценки для задания на оценку {task.Id}");
+				throw new DataComparingException("Не заполнена Дата оценки.");
 
 			var document = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
 			if (document == null)
-				throw new Exception($"Не найден документ для задания на оценку {task.Id}");
+				throw new DataComparingException("Не найден связанный с заданием на оценку документ.");
 			if (!document.ApproveDate.HasValue)
-				throw new Exception($"Не заполнена Дата выпуска документа для задания на оценку {task.Id}");
+				throw new DataComparingException("Не заполнена Дата выпуска документа.");
 
 			var name = ComposeName(task, document, fileSuffix);
 			return HandleFileName(name);

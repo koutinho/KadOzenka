@@ -4,7 +4,7 @@
               UseMasterPage="false" NeedOpenEmpty="false" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
 
   <Buttons>
-    <Button Caption="Добавить" NavigateURL="/ObjectsCharacteristics/AddCharacteristic" WindowHeight="280" WindowWidth="840" NeedRefresh="true">
+    <Button Caption="Добавить" NavigateURL="/ObjectsCharacteristics/AddCharacteristic" WindowHeight="350" WindowWidth="840" NeedRefresh="true">
       <Parameters>
           <Parameter Key="registerId" Value="{Get:93100300}" />
       </Parameters>

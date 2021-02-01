@@ -8,6 +8,7 @@ using Core.Register;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
@@ -16,6 +17,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 {
     public class CadastralCostDeterminationResultsMainReport : StatisticalDataReport
     {
+	    private readonly QueryManager _queryManager;
 	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
         private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
         private readonly ILogger _logger;
@@ -24,6 +26,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
         public CadastralCostDeterminationResultsMainReport()
         {
+	        _queryManager = new QueryManager();
             _reportsDictionary = new Dictionary<Type, ICadastralCostDeterminationResultsReport>();
             _logger = Log.ForContext<CadastralCostDeterminationResultsMainReport>();
         }
@@ -35,7 +38,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
         }
 
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
-        {
+        { 
+	        _queryManager.SetBaseToken(CancellationToken);
             var taskIdList = GetTaskIdList(query).ToList();
 
             var report = GetReport(query);
@@ -88,9 +92,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
         private List<OMUnit> GetUnits(List<long> taskIds, List<long?> groupIds)
         {
-	        return OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
-	                          x.GroupId != null && groupIds.Contains(x.GroupId) &&
-	                          x.PropertyType_Code != PropertyTypes.CadastralQuartal)
+	        var query = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long) x.TaskId) &&
+	                                      x.GroupId != null && groupIds.Contains(x.GroupId) &&
+	                                      x.PropertyType_Code != PropertyTypes.CadastralQuartal)
 		        .Select(x => new
 		        {
 			        x.CadastralBlock,
@@ -100,7 +104,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 			        x.Square,
 			        x.Upks,
 			        x.CadastralCost
-		        }).Execute();
+		        });
+
+	        return _queryManager.ExecuteQuery(query);
         }
 
         private List<ReportItem> GetOperations(List<OMUnit> units)

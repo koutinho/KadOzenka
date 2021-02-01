@@ -16,8 +16,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -27,6 +31,8 @@ namespace KadOzenka.Dal.DataImport
 
         //Объект-блокиратор для многопоточки
         private static object locked = new object();
+        private Dictionary<long, List<long>> _updatedObjectsAttributes;
+
         //ID фактора Материал стен итоговый
         public Int64 Id_Factor_Wall { get; private set; }
         //ID фактора Год постройки итоговый
@@ -99,6 +105,7 @@ namespace KadOzenka.Dal.DataImport
         {
             Id_Factor_Wall = -1;
             Id_Factor_Year = -1;
+            _updatedObjectsAttributes = new Dictionary<long, List<long>>();
         }
 
 
@@ -336,7 +343,38 @@ namespace KadOzenka.Dal.DataImport
 		        Log.Warning("Импорт данных ГКН был отменен во время загрузки Машино-мест");
 	        }
             Log.ForContext("TaskId", idTask).Debug("Импорт Машино-мест завершен");
+
+            try
+            {
+	            using (Log.TimeOperation("Добавление задачи на актуализацию данных для отчетов с характеристиками объектов"))
+	            {
+		            var id = TmpTableFiller.AddProcessToQueue(_updatedObjectsAttributes);
+	            }
+            }
+            catch (Exception e)
+            {
+	            Log.ForContext("MappedInfoToUpdate",
+			            TmpTableFiller.MapDictionary(_updatedObjectsAttributes),
+			            destructureObjects: true)
+		            .ForContext("InfoToUpdateAsDictionary", _updatedObjectsAttributes, destructureObjects: true)
+                    .Fatal(e, "Не удалось добавить в очередь процсесс для актуализации данных для отчетов с характеристиками обектов");
+            }
         }
+
+        private void SaveAttributeValueWithCheckInternal(GbuObjectAttribute attributeValue)
+		{
+			SaveAttributeValueWithCheck(attributeValue);
+
+			lock (locked)
+			{
+				if (!_updatedObjectsAttributes.ContainsKey(attributeValue.ObjectId))
+				{
+					_updatedObjectsAttributes[attributeValue.ObjectId] = new List<long>();
+				}
+
+				_updatedObjectsAttributes[attributeValue.ObjectId].Add(attributeValue.AttributeId);
+			}
+		}
 
         //TODO перенести в общий сервис, например, GbuObjectService
         public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
@@ -376,7 +414,7 @@ namespace KadOzenka.Dal.DataImport
             attributeValue.Save();
         }
 
-        public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -390,10 +428,11 @@ namespace KadOzenka.Dal.DataImport
                 Ot = otDate,
                 StringValue = value,
             };
-            SaveAttributeValueWithCheck(attributeValue);
+
+            SaveAttributeValueWithCheckInternal(attributeValue);
         }
 
-        public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -408,9 +447,10 @@ namespace KadOzenka.Dal.DataImport
                 NumValue = value,
             };
 
-            SaveAttributeValueWithCheck(attributeValue);
+            SaveAttributeValueWithCheckInternal(attributeValue);
         }
-        public static void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+
+        public void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -425,11 +465,10 @@ namespace KadOzenka.Dal.DataImport
                 NumValue=(value?1:0)
             };
 
-            SaveAttributeValueWithCheck(attributeValue);
+            SaveAttributeValueWithCheckInternal(attributeValue);
         }
 
-
-        public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -444,7 +483,7 @@ namespace KadOzenka.Dal.DataImport
                 DtValue = value,
             };
 
-            SaveAttributeValueWithCheck(attributeValue);
+            SaveAttributeValueWithCheckInternal(attributeValue);
         }
 
         public static KoStatusRepeatCalc GetNewtatusRepeatCalc(List<ObjectModel.KO.OMUnit> units)
@@ -715,7 +754,7 @@ namespace KadOzenka.Dal.DataImport
             }
         }
 
-        private static void SaveGknDataBuilding(xmlObjectBuild current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataBuilding(xmlObjectBuild current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -994,7 +1033,7 @@ namespace KadOzenka.Dal.DataImport
                 CountImportParcels++;
             }
         }
-        private static void SaveGknDataParcel(xmlObjectParcel current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataParcel(xmlObjectParcel current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Наименование участка
             SetAttributeValue_String(1, current.Name.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1290,7 +1329,7 @@ namespace KadOzenka.Dal.DataImport
             }
 
         }
-        private static void SaveGknDataConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Площадь
             SetAttributeValue_String(44, xmlCodeNameValue.GetNames(current.KeyParameters), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1553,7 +1592,7 @@ namespace KadOzenka.Dal.DataImport
 
         }
 
-        private static void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Процент готовности
             SetAttributeValue_Numeric(46, (current.DegreeReadiness == string.Empty || current.DegreeReadiness == null) ? (decimal?)null : current.DegreeReadiness.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -1840,7 +1879,7 @@ namespace KadOzenka.Dal.DataImport
             }
         }
 
-        private static void SaveGknDataFlat(xmlObjectFlat current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataFlat(xmlObjectFlat current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
@@ -2164,7 +2203,7 @@ namespace KadOzenka.Dal.DataImport
             }
         }
 
-        private static void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        private void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
 	        //Площадь
             SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);

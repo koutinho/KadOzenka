@@ -72,19 +72,24 @@
         <div class="row">
             <div class="k-content wide flex-tree-list col-sm-5">
                 <div id="treeList" class="height-constraint" style="font-size: 120%;"></div>
-                @(Html.Kendo().ToolBar()
-                    .Name("additionToolbar")
-                    .Items(items =>
-                    {
-                        items.Add().Type(CommandType.SplitButton).Text("")
-                            .Icon("add").HtmlAttributes(new { style = "color: green;" })
-                            .MenuButtons(menuButtons =>
+                <div style="display: flex; place-items: center;">
+                    <div>
+                        @(Html.Kendo().ToolBar()
+                            .Name("additionToolbar")
+                            .Items(items =>
                             {
-                                menuButtons.Add().Text("Тур").Id("add-tour");
-                                menuButtons.Add().Text("Группа").Id("add-group");
-                                menuButtons.Add().Text("Подгруппа").Id("add-subgroup");
-                            });
-                    }))
+                                items.Add().Type(CommandType.SplitButton).Text("")
+                                    .Icon("add").HtmlAttributes(new {style = "color: green;"})
+                                    .MenuButtons(menuButtons =>
+                                    {
+                                        menuButtons.Add().Text("Тур").Id("add-tour");
+                                        menuButtons.Add().Text("Группа").Id("add-group");
+                                        menuButtons.Add().Text("Подгруппа").Id("add-subgroup");
+                                    });
+                            }))
+                    </div>
+                    <button type="button" id="deleteGroupOrTourButton"><span class="k-icon k-i-delete"></span></button>
+                </div>
             </div>
             <div id="tabs" class="col-sm-6" style="display: none">
                 @(Html.Kendo().TabStrip()
@@ -126,10 +131,12 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/groups.js"></script>
 <script type="text/javascript">
-    const GROUP_TYPE = { NONE: "0", UNDEFINED: "1", MAIN: "2", GROUP: "3", SUBGROUP: "4" };
+    const GROUP_TYPE = { NONE: 0, UNDEFINED: 1, MAIN:2, GROUP: 3, SUBGROUP: 4 };
 
     $(document).ready(function () {
         $('#additionToolbar').removeClass("k-widget");
+        $('#additionToolbar .k-split-button').addClass("displayInherit");
+        $('#additionToolbar .k-overflow-anchor').addClass("displayNone");
 
         $("#add-tour").click(function () {
             var modal = $("#tourAdditionModal");
@@ -210,6 +217,11 @@
 					}
 				});
 
+                $("#deleteGroupOrTourButton").kendoButton({
+                    icon: "delete",
+                    click: ondeleteGroupOrTourButtonClick
+                });
+
 				FocusOnTour();
 			},
 			error: function(response) {
@@ -221,6 +233,100 @@
 		});
 	}
 
+    function ondeleteGroupOrTourButtonClick() {
+        var row = GetSelectedRowInTree();
+        if (row.length > 0) {
+            var data = GetDataFromRowInTree(row);
+
+            var checkUrl, deleteUrl;
+            var deleteRequestType = 'POST';
+            var requestData = { id: data.Id };
+            var confirmMessage, forbiddingMessage;
+            if (data.IsTour) {
+                checkUrl = '@Url.Action("CanTourBeDeleted", "Tour")';
+                deleteUrl = '@Url.Action("TourEstimates", "Tour")';
+                deleteRequestType = 'DELETE';
+                confirmMessage = `Выполнить удаление тура '${data.GroupName}'? Все связанные с туром данные также будут удалены.`;
+                forbiddingMessage = `Тур '${data.GroupName}' не может быть удален, т.к. имеются связанные задания на оценку`;
+            } else {
+                var parentYear = GetParentFromTree(row);
+                var parentYearData = GetDataFromRowInTree(parentYear);
+                switch (data.GroupType) {
+                case GROUP_TYPE.MAIN:
+                    checkUrl = '@Url.Action("CanGroupsBeDeleted", "Tour")';
+                    deleteUrl = '@Url.Action("DeleteGroups", "Tour")';
+                        requestData = { tourId: parentYearData.Id, isOks: data.GroupName.endsWith('ОКС') };
+                    break;
+                case GROUP_TYPE.GROUP:
+                    parentYear = GetParentFromTree(parentYear);
+                    parentYearData = GetDataFromRowInTree(parentYear);
+                    checkUrl = '@Url.Action("CanGroupBeDeleted", "Tour")';
+                    deleteUrl = '@Url.Action("DeleteGroup", "Tour")';
+                    break;
+                case GROUP_TYPE.SUBGROUP:
+                    parentYear = GetParentFromTree(GetParentFromTree(parentYear));
+                    parentYearData = GetDataFromRowInTree(parentYear);
+                    checkUrl = '@Url.Action("CanGroupBeDeleted", "Tour")';
+                    deleteUrl = '@Url.Action("DeleteGroup", "Tour")';
+                    break;
+                }
+                confirmMessage = `Выполнить удаление группы '${data.GroupName}' тура '${parentYearData.GroupName}'? Все связанные с группой модели также будут удалены.`;
+                forbiddingMessage = `Группа '${data.GroupName}' тура '${parentYearData.GroupName}' не может быть удалена, т.к. имеются связанные единицы оценки`;
+            }
+
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                url: checkUrl,
+                type: 'POST',
+                data: requestData,
+                success: function (response) {
+                    if (response.CanBeDeleted) {
+                        Common.UI.ShowConfirm({
+                            title: '',
+                            content: confirmMessage,
+                            onSuccess: function() {
+                                kendo.ui.progress($('body'), true);
+                                $.ajax({
+                                    url: deleteUrl,
+                                    type: deleteRequestType,
+                                    data: requestData,
+                                    success: function(response) {
+                                        if (response.Success) {
+                                            window.parent.location.reload();
+                                            Common.ShowMessage(response.Success);
+                                        }
+                                    },
+                                    error: function(response) {
+                                        Common.ShowError(response.responseText);
+                                    },
+                                    complete: function () {
+                                        kendo.ui.progress($('body'), false);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        Common.UI.ShowDialog({
+                            title: '',
+                            icon: 'error',
+                            content: forbiddingMessage});
+                    }
+                },
+                error: function(response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        } else {
+            Common.UI.ShowDialog({
+                title: '',
+                icon: 'error',
+                content: `Не выбрана запись для удаления`});
+        }
+    }
 
 	function DownloadGroupsForTour(tree) {
 		var node = $('#treeList').data('kendoTreeView').dataItem(tree.node);
@@ -601,6 +707,28 @@
         }
         .k-tabstrip:focus {
             box-shadow: none;
+        }
+
+        .displayInherit {
+            display: inherit !important;
+        }
+
+        .displayNone {
+            display: none !important;
+        }
+
+        #deleteGroupOrTourButton {
+            background-color: white;
+            border-color: #e5e8f0;
+        }
+
+        #deleteGroupOrTourButton:hover {
+            background-color: #9ea8b9;
+            border-color: #bebec3;
+        } 
+
+        #deleteGroupOrTourButton span{
+             color: red;
         }
     </style>
 }
