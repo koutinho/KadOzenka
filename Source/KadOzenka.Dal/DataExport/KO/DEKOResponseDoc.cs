@@ -397,9 +397,10 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
                 xmlFile.AppendChild(xnLandValuation);
 
-                DEKOGroup.AddXmlGeneralInfo(xmlFile, xnLandValuation);
+                // TODO: Поправить выгрузку в ВУОН после правок выгрузки результатов оценки по группам
+                //DEKOGroup.AddXmlGeneralInfo(xmlFile, xnLandValuation);
                 //"Выгрузка XML для ФД"
-                DEKOGroup.AddXmlPackage(xmlFile, xnLandValuation, _group_unit, dictNodes, "",null); //TODO: calcItemDict
+                //DEKOGroup.AddXmlPackage(xmlFile, xnLandValuation, _group_unit, dictNodes, "",null); //TODO: calcItemDict
 
                 //if (!Directory.Exists(_dir_name))
                 //    Directory.CreateDirectory(_dir_name);
