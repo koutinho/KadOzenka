@@ -1,4 +1,5 @@
 ﻿using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;

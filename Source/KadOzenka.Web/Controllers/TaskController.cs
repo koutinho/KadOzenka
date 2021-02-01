@@ -25,6 +25,7 @@ using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
@@ -508,7 +509,7 @@ namespace KadOzenka.Web.Controllers
                 switch (unitFactorsShowType)
                 {
                     case UnitFactorsShowType.ModelFactors:
-                        var model = new ModelingRepository().GetActiveModelEntityByGroupId(unit.GroupId);
+                        var model = new ModelingService().GetActiveModelEntityByGroupId(unit.GroupId);
                         if (model != null)
                         {
                             var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
@@ -48,6 +49,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             var groupId = GetGroupIdFromFilter(query);
 
             var model = ModelService.GetActiveModelEntityByGroupId(groupId);
+            if (model == null)
+	            throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model.Id, groupId);
 
             var factors = GetFactors(model);

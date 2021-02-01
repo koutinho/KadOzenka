@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             {
                 return new DataSet();
             }
-            var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
+            var model = ModelService.GetActiveModelEntityByGroupId(groupId);
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model?.Id, groupId);
 
             var operations = GetOperations(taskIdList, model?.Id, groupId);

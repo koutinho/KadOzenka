@@ -18,6 +18,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions;
+using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.Oks;
 using Microsoft.Practices.ObjectBuilder2;
@@ -59,13 +60,14 @@ namespace KadOzenka.Dal.Modeling
 
 		#region CRUD General Model
 
-        public OMModel GetActiveModelEntityByGroupId(long? groupId)
+		public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {
-	        var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
-	        if (model == null)
-		        throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
+	        if (groupId == null)
+		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-	        return model;
+			var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
+
+			return model;
         }
 
         public OMModel GetModelEntityById(long? modelId)
