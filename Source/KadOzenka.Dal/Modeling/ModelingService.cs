@@ -49,24 +49,15 @@ namespace KadOzenka.Dal.Modeling
 
 		#endregion
 
-		public ModelingService()
+		public ModelingService(IModelingRepository modelingRepository = null)
 		{
 			ModelFactorsService = new ModelFactorsService();
-			ModelingRepository = new ModelingRepository();
+			ModelingRepository = modelingRepository ?? new ModelingRepository();
 			RecycleBinService = new RecycleBinService();
 		}
 
-		/// <summary>
-		/// Для тестирования
-		/// </summary>
-		/// <param name="modelingRepository"></param>
-		public void StubModelingRepository(IModelingRepository modelingRepository)
-		{
-			ModelingRepository = modelingRepository;
-		}
 
-
-        #region CRUD General Model
+		#region CRUD General Model
 
         public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {

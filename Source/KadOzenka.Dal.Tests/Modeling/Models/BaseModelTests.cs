@@ -1,17 +1,27 @@
 ﻿using KadOzenka.Dal.Modeling;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tests.Modeling.Models
 {
 	[TestFixture]
 	public class BaseModelTests : BaseTests
 	{
-		protected ModelingService ModelingService { get; set; }
+		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
+		protected Mock<IModelingRepository> ModelingRepository { get; set; }
 
 		[SetUp]
-		public void BaseModelSetUp()
+		public void BaseModelTestsOneTimeSetUp()
 		{
-			ModelingService = new ModelingService();
+			ModelingRepository = new Mock<IModelingRepository>();
+		}
+
+		protected override void AddServicesToContainer(ServiceCollection container)
+		{
+			container.AddTransient<ModelingService>();
+			container.AddTransient(typeof(IModelingRepository), sp => ModelingRepository.Object);
 		}
 	}
 }

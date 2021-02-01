@@ -1,5 +1,4 @@
 ﻿using System;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
 using Moq;
@@ -24,9 +23,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		[Test]
 		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
-			var modelingRepositoryMock = new Mock<IModelingRepository>();
-			modelingRepositoryMock.Setup(foo => foo.GetModelById(It.IsAny<long>())).Returns((OMModel) null);
-			ModelingService.StubModelingRepository(modelingRepositoryMock.Object);
+			ModelingRepository.Setup(foo => foo.GetModelById(It.IsAny<long>())).Returns((OMModel)null);
 
 			var modelId = Random.Next();
 			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));

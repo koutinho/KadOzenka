@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace KadOzenka.Dal.Tests
@@ -6,11 +7,14 @@ namespace KadOzenka.Dal.Tests
 	public class BaseTests
 	{
 		protected Random Random { get; set; }
+		protected ServiceProvider Provider { get; set; }
+		
 
 		[OneTimeSetUp]
 		public void SetUp()
 		{
 			Random = new Random();
+			ConfigureServices();
 		}
 
 
@@ -21,5 +25,24 @@ namespace KadOzenka.Dal.Tests
 
 			return salted.Substring(0, Math.Min(maxNumberOfCharacters, salted.Length));
 		}
+
+		protected virtual void AddServicesToContainer(ServiceCollection container)
+		{
+
+		}
+
+		
+		#region Support Methods
+
+		private void ConfigureServices()
+		{
+			var container = new ServiceCollection();
+
+			AddServicesToContainer(container);
+
+			Provider = container.BuildServiceProvider();
+		}
+
+		#endregion
 	}
 }
