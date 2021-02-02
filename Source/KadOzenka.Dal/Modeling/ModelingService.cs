@@ -376,8 +376,8 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
-        }
+				throw new ModelCrudException(message.ToString());
+		}
 
         #endregion
 
