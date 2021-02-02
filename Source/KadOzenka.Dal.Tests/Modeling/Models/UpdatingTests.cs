@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			};
 			ModelingRepository.Setup(x => x.GetById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns(initialModel);
-			ModelingRepository.Setup(x => x.GetByCondition(It.IsAny<Expression<Func<OMModel, bool>>>(), It.IsAny<Expression<Func<OMModel, object>>>()))
+			ModelingRepository.Setup(x => x.GetEntitiesByCondition(It.IsAny<Expression<Func<OMModel, bool>>>(), It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns(new List<OMModel>());
 			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
 

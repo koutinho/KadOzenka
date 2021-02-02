@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (groupId == null)
 		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-			var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
+			var model = ModelingRepository.GetEntityByCondition(x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, null);
 
 			return model;
         }
@@ -292,7 +292,7 @@ namespace KadOzenka.Dal.Modeling
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelingRepository.GetByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
+				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
 					if (!x.IsActive.GetValueOrDefault())

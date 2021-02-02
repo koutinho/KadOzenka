@@ -9,7 +9,10 @@ namespace KadOzenka.Dal.CommonFunctions
 	{
 		TSource GetById(long id, Expression<Func<TSource, object>> selectExpression);
 
-		List<TSource> GetByCondition(Expression<Func<TSource, bool>> whereExpression,
+		List<TSource> GetEntitiesByCondition(Expression<Func<TSource, bool>> whereExpression,
+			Expression<Func<TSource, object>> selectExpression);
+
+		TSource GetEntityByCondition(Expression<Func<TSource, bool>> whereExpression,
 			Expression<Func<TSource, object>> selectExpression);
 
 		int Save(TSource entity);
