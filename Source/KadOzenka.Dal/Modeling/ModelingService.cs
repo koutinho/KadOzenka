@@ -6,7 +6,6 @@ using System.Text;
 using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -16,15 +15,11 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
-using KadOzenka.Dal.Oks;
-using Microsoft.Practices.ObjectBuilder2;
-using ObjectModel.Ko;
-using ObjectModel.Market;
 using Serilog;
+using System.Linq.Expressions;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -75,7 +70,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (modelId.GetValueOrDefault() == 0)
 		        throw new Exception(Messages.EmptyModelId);
 
-	        var model = ModelingRepository.GetModelById(modelId.Value);
+	        var model = ModelingRepository.GetModelById(modelId.Value, null);
 	        if (model == null)
 		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
@@ -84,36 +79,34 @@ namespace KadOzenka.Dal.Modeling
 
         public ModelingModelDto GetModelById(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.Description,
-			        x.Name,
-			        x.LinearTrainingResult,
-			        x.ExponentialTrainingResult,
-			        x.MultiplicativeTrainingResult,
-                    x.GroupId,
-			        x.ParentGroup.Id,
-			        x.ParentGroup.GroupName,
-			        x.IsOksObjectType,
-                    x.Type_Code,
-                    x.AlgoritmType_Code,
-                    x.CalculationType_Code,
-                    x.A0,
-					x.A0ForExponential,
-					x.A0ForMultiplicative,
-                    x.A0ForLinearTypeInPreviousTour,
-                    x.A0ForExponentialTypeInPreviousTour,
-					x.A0ForMultiplicativeTypeInPreviousTour,
-                    x.Formula,
-                    x.CalculationMethod_Code,
-					x.IsActive
-                }).ExecuteFirstOrDefault();
+	        Expression<Func<OMModel, object>> selectExpression = x => new
+	        {
+		        x.Description,
+		        x.Name,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.GroupId,
+		        x.ParentGroup.Id,
+		        x.ParentGroup.GroupName,
+		        x.IsOksObjectType,
+		        x.Type_Code,
+		        x.AlgoritmType_Code,
+		        x.CalculationType_Code,
+		        x.A0,
+		        x.A0ForExponential,
+		        x.A0ForMultiplicative,
+		        x.A0ForLinearTypeInPreviousTour,
+		        x.A0ForExponentialTypeInPreviousTour,
+		        x.A0ForMultiplicativeTypeInPreviousTour,
+		        x.Formula,
+		        x.CalculationMethod_Code,
+		        x.IsActive
+	        };
+	        
+	        var model = ModelingRepository.GetModelById(modelId, selectExpression);
 
-	        if (model == null)
-				throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-	        var tour = GetModelTour(model.GroupId);
+			var tour = GetModelTour(model.GroupId);
 
             return new ModelingModelDto
 	        {
@@ -141,7 +134,10 @@ namespace KadOzenka.Dal.Modeling
 
         public bool IsModelGroupExist(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetModelById(modelId, x => new {x.GroupId});
+	        if (model == null)
+		        return false;
+
 	        return OMGroup.Where(x => x.Id == model.GroupId).ExecuteExists();
         }
 
@@ -274,18 +270,15 @@ namespace KadOzenka.Dal.Modeling
 
         public void MakeModelActive(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.GroupId,
-					x.Type_Code,
-					x.LinearTrainingResult,
-					x.ExponentialTrainingResult,
-					x.MultiplicativeTrainingResult,
-					x.IsActive
-		        }).ExecuteFirstOrDefault();
-	        if (model == null)
-		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
+	        var model = ModelingRepository.GetModelById(modelId, x => new
+	        {
+		        x.GroupId,
+		        x.Type_Code,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.IsActive
+	        });
 
 	        if (model.Type_Code == KoModelType.Automatic)
 	        {

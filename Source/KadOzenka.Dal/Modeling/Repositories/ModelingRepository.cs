@@ -1,4 +1,6 @@
-﻿using Core.Register.QuerySubsystem;
+﻿using System;
+using System.Linq.Expressions;
+using Core.Register.QuerySubsystem;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling.Repositories
@@ -11,9 +13,15 @@ namespace KadOzenka.Dal.Modeling.Repositories
 				.ExecuteFirstOrDefault();
 		}
 
-		public OMModel GetModelById(long modelId)
+		public OMModel GetModelById(long modelId, Expression<Func<OMModel, object>> selectExpression)
 		{
-			return OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+			var baseQuery = OMModel.Where(x => x.Id == modelId);
+			
+			baseQuery = selectExpression == null 
+				? baseQuery.SelectAll() 
+				: baseQuery.Select(selectExpression);
+
+			return baseQuery.ExecuteFirstOrDefault();
 		}
 	}
 }

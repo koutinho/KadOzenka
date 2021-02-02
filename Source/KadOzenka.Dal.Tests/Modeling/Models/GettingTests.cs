@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq.Expressions;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
 using Moq;
@@ -23,7 +25,9 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		[Test]
 		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
-			ModelingRepository.Setup(foo => foo.GetModelById(It.IsAny<long>())).Returns((OMModel)null);
+			ModelingRepository
+				.Setup(foo => foo.GetModelById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
+				.Returns((OMModel) null);
 
 			var modelId = Random.Next();
 			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
