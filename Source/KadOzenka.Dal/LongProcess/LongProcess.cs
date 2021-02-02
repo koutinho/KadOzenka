@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.LongProcess
 		private readonly ILogger _log = Log.ForContext<LongProcess>();
 		protected const int PercentageInterval = 10;
 		protected INotificationSender NotificationSender { get; set; }
-		protected LongProcessProgressLogger LongProcessProgressLogger { get; set; }
+		protected ILongProcessProgressLogger LongProcessProgressLogger { get; set; }
 
 
 		protected LongProcess()
@@ -21,10 +21,10 @@ namespace KadOzenka.Dal.LongProcess
 			LongProcessProgressLogger = new LongProcessProgressLogger();
 		}
 
-		protected LongProcess(INotificationSender notificationSender)
+		protected LongProcess(INotificationSender notificationSender, ILongProcessProgressLogger logger)
 		{
 			NotificationSender = notificationSender ?? new NotificationSender();
-			LongProcessProgressLogger = new LongProcessProgressLogger();
+			LongProcessProgressLogger = logger ?? new LongProcessProgressLogger();
 		}
 
 

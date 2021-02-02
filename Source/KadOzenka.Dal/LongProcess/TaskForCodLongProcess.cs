@@ -7,6 +7,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Units.Repositories;
@@ -30,8 +31,9 @@ namespace KadOzenka.Dal.LongProcess
 		public TaskForCodLongProcess(ITaskService taskService = null,
 			IRosreestrRegisterService rosreestrRegisterService = null, IGbuObjectService gbuObjectService = null,
 			IGbuReportService gbuReportService = null, IUnitRepository unitRepository = null,
-			IWorkerCommonWrapper worker = null, INotificationSender notificationSender = null)
-			: base(notificationSender)
+			IWorkerCommonWrapper worker = null, INotificationSender notificationSender = null,
+			ILongProcessProgressLogger logger = null)
+			: base(notificationSender, logger)
 		{
 			TaskService = taskService ?? new TaskService();
 			RosreestrRegisterService = rosreestrRegisterService ?? new RosreestrRegisterService();
