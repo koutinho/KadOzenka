@@ -15,7 +15,6 @@ using NUnit.Framework;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Directory.ES;
 
 namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 {
@@ -25,33 +24,24 @@ namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 		private ModelDictionaryImportFromExcelLongProcess LongProcess => Provider.GetService<ModelDictionaryImportFromExcelLongProcess>();
 		private Mock<IDictionaryService> DictionaryService { get; set; }
 		private Mock<IImportDataLogRepository> ImportDataLogRepository { get; set; }
-		private Mock<IFileStorageManagerWrapper> FileStorageManagerWrapper { get; set; }
-		private Mock<INotificationSender> NotificationSender { get; set; }
-		private Mock<ILongProcessProgressLogger> LongProcessProgressLogger { get; set; }
 
 
 		[SetUp]
-		public void BaseTourSetUp()
+		public void SetUp()
 		{
 			DictionaryService = new Mock<IDictionaryService>();
 			ImportDataLogRepository = new Mock<IImportDataLogRepository>();
-			FileStorageManagerWrapper = new Mock<IFileStorageManagerWrapper>();
-			NotificationSender = new Mock<INotificationSender>();
-			LongProcessProgressLogger = new Mock<ILongProcessProgressLogger>();
 		}
 
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
+			base.AddServicesToContainer(container);
+
 			container.AddTransient<ModelDictionaryImportFromExcelLongProcess>();
 
-			var workerCommonWrapper = new Mock<IWorkerCommonWrapper>();
-			container.AddTransient(typeof(IWorkerCommonWrapper), sp => workerCommonWrapper.Object);
-			container.AddTransient(typeof(INotificationSender), sp => NotificationSender.Object);
 			container.AddTransient(typeof(IDictionaryService), sp => DictionaryService.Object);
 			container.AddTransient(typeof(IImportDataLogRepository), sp => ImportDataLogRepository.Object);
-			container.AddTransient(typeof(IFileStorageManagerWrapper), sp => FileStorageManagerWrapper.Object);
-			container.AddTransient(typeof(ILongProcessProgressLogger), sp => LongProcessProgressLogger.Object);
 		}
 
 

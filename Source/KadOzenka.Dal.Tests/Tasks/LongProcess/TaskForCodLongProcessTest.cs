@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using Core.Register.RegisterEntities;
-using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Units.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,24 +17,18 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 {
 	[TestFixture]
-	public class TaskForCodLongProcessTest : BaseTests
+	public class TaskForCodLongProcessTest : BaseLongProcessTests
 	{
 		private TaskForCodLongProcess LongProcess => Provider.GetService<TaskForCodLongProcess>();
 		private Mock<ITaskService> TaskService { get; set; }
 		private Mock<IUnitRepository> UnitRepository { get; set; }
-		private Mock<IRosreestrRegisterService> RosreestrRegisterService { get; set; }
-		private Mock<IGbuObjectService> GbuObjectService { get; set; }
-		private Mock<IGbuReportService> ReportService { get; set; }
 
 
 		[SetUp]
-		public void BaseTourSetUp()
+		public void SetUp()
 		{
 			TaskService = new Mock<ITaskService>();
 			UnitRepository = new Mock<IUnitRepository>();
-			RosreestrRegisterService = new Mock<IRosreestrRegisterService>();
-			GbuObjectService = new Mock<IGbuObjectService>();
-			ReportService = new Mock<IGbuReportService>();
 
 			TaskService.Setup(x => x.GetTemplateForTaskName(It.IsAny<long>())).Returns(GetRandomString("taskName_"));
 			RosreestrRegisterService.Setup(x => x.GetPFsAttribute()).Returns(new RegisterAttribute());
@@ -45,17 +37,12 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
+			base.AddServicesToContainer(container);
+
 			container.AddTransient<TaskForCodLongProcess>();
 
-			var workerCommonWrapper = new Mock<IWorkerCommonWrapper>();
-			var notificationSender = new Mock<INotificationSender>();
-			container.AddTransient(typeof(IWorkerCommonWrapper), sp => workerCommonWrapper.Object);
-			container.AddTransient(typeof(INotificationSender), sp => notificationSender.Object);
 			container.AddTransient(typeof(ITaskService), sp => TaskService.Object);
 			container.AddTransient(typeof(IUnitRepository), sp => UnitRepository.Object);
-			container.AddTransient(typeof(IRosreestrRegisterService), sp => RosreestrRegisterService.Object);
-			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
-			container.AddTransient(typeof(IGbuReportService), sp => ReportService.Object);
 		}
 
 

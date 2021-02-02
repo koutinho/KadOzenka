@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.Tests
 		
 
 		[OneTimeSetUp]
-		public void SetUp()
+		public void BaseTestsSetUp()
 		{
 			Random = new Random();
 			ConfigureServices();
