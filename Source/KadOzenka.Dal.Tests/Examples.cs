@@ -18,10 +18,10 @@ namespace KadOzenka.Dal.Tests
 			tmp = nameof(GettingTests.If_Model_Not_Found_By_Id_Throw_Exception);
 
 			//проверка, что данные не сохранились (не вызвался метод репозитория)
-			tmp = nameof(CreationTests.CanNot_Create_Model_With_Empty_Name);
+			tmp = nameof(Tours.CreationTests.CanNot_Create_Tour_Without_Year);
 
 			//проверка, что данные сохранились (вызвался метод репозитория с определенными входными параметрами)
-			tmp = nameof(UpdatingTests.Can_Make_Manual_Model_Active_If_There_No_Other_Models_For_Group);
+			tmp = nameof(Tours.CreationTests.Can_Create_Tour);
 		}
 	}
 }

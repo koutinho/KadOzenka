@@ -5,8 +5,9 @@ using System.Transactions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours.Dto;
+using KadOzenka.Dal.Tours.Repositories;
+using KadOzenka.Dal.Tours.Resources;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
@@ -18,12 +19,15 @@ namespace KadOzenka.Dal.Tours
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
         private RecycleBinService RecycleBinService { get; }
+        private ITourRepository TourRepository { get; }
 
-        public TourService(TourFactorService tourFactorService, GroupService groupService, RecycleBinService recycleBinService)
+        public TourService(TourFactorService tourFactorService, GroupService groupService,
+	        RecycleBinService recycleBinService, ITourRepository tourRepository)
         {
             TourFactorService = tourFactorService;
             GroupService = groupService;
             RecycleBinService = recycleBinService;
+	        TourRepository = tourRepository;
         }
 
         public TourDto GetTourById(long? tourId)
@@ -45,12 +49,12 @@ namespace KadOzenka.Dal.Tours
         {
             ValidateTour(tourDto);
 
-            var id= new OMTour
+            var tour = new OMTour
             {
 	            Year = tourDto.Year.Value
-            }.Save();
+            };
 
-            return id;
+            return TourRepository.Save(tour);
         }
 
         public int UpdateTour(TourDto tourDto)
@@ -141,15 +145,15 @@ namespace KadOzenka.Dal.Tours
 
         #region Support Methods
 
-        private  void ValidateTour(TourDto tourDto)
+        private void ValidateTour(TourDto tourDto)
         {
-            if (tourDto.Year == null || tourDto.Year.Value == 0)
-                throw new Exception("Не указан год при создании Тура");
+            if (tourDto.Year.GetValueOrDefault() == 0)
+                throw new Exception(Messages.EmptyTourYear);
 
             if (!int.TryParse(tourDto.Year.Value.ToString(), out _))
                 throw new Exception("Введенное число не может быть преобразовано в год");
 
-            var isTourWithTheSameYearExists = OMTour.Where(x => x.Year == tourDto.Year && x.Id != tourDto.Id).ExecuteExists();
+            var isTourWithTheSameYearExists = TourRepository.IsExists(x => x.Year == tourDto.Year && x.Id != tourDto.Id);
             if (isTourWithTheSameYearExists)
 	            throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
         }
@@ -159,7 +163,7 @@ namespace KadOzenka.Dal.Tours
             if (tourId == null)
                 throw new Exception("Не передан идентификатор Тура для поиска");
 
-            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+            var tour = TourRepository.GetById(tourId.Value, null);
             if (tour == null)
                 throw new Exception($"Не найден Тур с id='{tourId}'");
 

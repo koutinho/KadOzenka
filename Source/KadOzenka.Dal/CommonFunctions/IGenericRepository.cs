@@ -15,6 +15,8 @@ namespace KadOzenka.Dal.CommonFunctions
 		TSource GetEntityByCondition(Expression<Func<TSource, bool>> whereExpression,
 			Expression<Func<TSource, object>> selectExpression);
 
+		bool IsExists(Expression<Func<TSource, bool>> whereExpression);
+
 		int Save(TSource entity);
 	}
 }

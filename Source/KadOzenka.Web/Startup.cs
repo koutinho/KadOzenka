@@ -39,6 +39,8 @@ using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -111,6 +113,8 @@ namespace CIPJS
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
             services.AddTransient<RecycleBinService>();
+            services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
+            services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

@@ -13,8 +13,8 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		protected Mock<IModelingRepository> ModelingRepository { get; set; }
 
 
-		[OneTimeSetUp]
-		public void BaseModelTestsOneTimeSetUp()
+		[SetUp]
+		public void BaseModelTestsSetUp()
 		{
 			ModelingRepository = new Mock<IModelingRepository>();
 		}

@@ -28,6 +28,13 @@ namespace KadOzenka.Dal.CommonFunctions
 			return baseQuery.ExecuteFirstOrDefault();
 		}
 
+		public bool IsExists(Expression<Func<TSource, bool>> whereExpression)
+		{
+			var baseQuery = GetBaseQuery(whereExpression);
+
+			return baseQuery.ExecuteExists();
+		}
+
 		public List<TSource> GetEntitiesByCondition(Expression<Func<TSource, bool>> whereExpression,
 			Expression<Func<TSource, object>> selectExpression)
 		{

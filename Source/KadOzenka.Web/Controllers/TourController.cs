@@ -26,6 +26,7 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
+using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Tour;
 using KadOzenka.Web.Models.Tour.EstimateGroup;
@@ -53,11 +54,11 @@ namespace KadOzenka.Web.Controllers
         public TourComplianceImportService TourComplianceImportService { get; set; }
         public GroupFactorService GroupFactorService { get; set; }
 
-        public TourController()
+        public TourController(ITourRepository tourRepository)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
-            TourService = new TourService(TourFactorService, GroupService, new RecycleBinService());
+            TourService = new TourService(TourFactorService, GroupService, new RecycleBinService(), tourRepository);
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
