@@ -1,44 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
+using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling.Repositories
 {
-	public class ModelingRepository : IModelingRepository
+	public class ModelingRepository : GenericRepository<OMModel>, IModelingRepository
 	{
-		public OMModel GetById(long id, Expression<Func<OMModel, object>> selectExpression)
+		protected override QSQuery<OMModel> GetBaseQuery(Expression<Func<OMModel, bool>> whereExpression)
 		{
-			return GetEntityByCondition(x => x.Id == id, selectExpression);
+			return OMModel.Where(whereExpression);
 		}
 
-		public OMModel GetEntityByCondition(Expression<Func<OMModel, bool>> whereExpression,
-			Expression<Func<OMModel, object>> selectExpression)
+		protected override Expression<Func<OMModel, bool>> GetWhereByIdExpression(long id)
 		{
-			var baseQuery = OMModel.Where(whereExpression);
-
-			baseQuery = selectExpression == null
-				? baseQuery.SelectAll()
-				: baseQuery.Select(selectExpression);
-
-			return baseQuery.ExecuteFirstOrDefault();
-		}
-
-		public List<OMModel> GetEntitiesByCondition(Expression<Func<OMModel, bool>> whereExpression,
-			Expression<Func<OMModel, object>> selectExpression)
-		{
-			var baseQuery = OMModel.Where(whereExpression);
-
-			baseQuery = selectExpression == null
-				? baseQuery.SelectAll()
-				: baseQuery.Select(selectExpression);
-
-			return baseQuery.Execute();
-		}
-
-		public int Save(OMModel model)
-		{
-			return model.Save();
+			return x => x.Id == id;
 		}
 	}
 }
