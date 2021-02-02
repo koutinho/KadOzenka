@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling.Repositories
 {
-	public interface IModelingRepository
+	public interface IModelingRepository : IGenericRepository<OMModel>
 	{
-		OMModel GetModelById(long modelId, Expression<Func<OMModel, object>> selectExpression);
-
-		List<OMModel> GetModelsByCondition(Expression<Func<OMModel, bool>> whereExpression,
-			Expression<Func<OMModel, object>> selectExpression);
-
 		OMModel GetActiveModelEntityByGroupId(long? groupId);
-
-		int Save(OMModel model);
 	}
 }

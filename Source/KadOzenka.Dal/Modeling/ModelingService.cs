@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (modelId.GetValueOrDefault() == 0)
 		        throw new Exception(Messages.EmptyModelId);
 
-	        var model = ModelingRepository.GetModelById(modelId.Value, null);
+	        var model = ModelingRepository.GetById(modelId.Value, null);
 	        if (model == null)
 		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
@@ -104,7 +104,7 @@ namespace KadOzenka.Dal.Modeling
 		        x.IsActive
 	        };
 	        
-	        var model = ModelingRepository.GetModelById(modelId, selectExpression);
+	        var model = ModelingRepository.GetById(modelId, selectExpression);
 
 			var tour = GetModelTour(model.GroupId);
 
@@ -134,7 +134,7 @@ namespace KadOzenka.Dal.Modeling
 
         public bool IsModelGroupExist(long modelId)
         {
-	        var model = ModelingRepository.GetModelById(modelId, x => new {x.GroupId});
+	        var model = ModelingRepository.GetById(modelId, x => new {x.GroupId});
 	        if (model == null)
 		        return false;
 
@@ -270,7 +270,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void MakeModelActive(long modelId)
         {
-	        var model = ModelingRepository.GetModelById(modelId, x => new
+	        var model = ModelingRepository.GetById(modelId, x => new
 	        {
 		        x.GroupId,
 		        x.Type_Code,
@@ -292,7 +292,7 @@ namespace KadOzenka.Dal.Modeling
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelingRepository.GetModelsByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
+				var otherModelsForGroup = ModelingRepository.GetByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
 					if (!x.IsActive.GetValueOrDefault())

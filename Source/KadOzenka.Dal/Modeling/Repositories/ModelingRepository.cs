@@ -14,9 +14,9 @@ namespace KadOzenka.Dal.Modeling.Repositories
 				.ExecuteFirstOrDefault();
 		}
 
-		public OMModel GetModelById(long modelId, Expression<Func<OMModel, object>> selectExpression)
+		public OMModel GetById(long id, Expression<Func<OMModel, object>> selectExpression)
 		{
-			var baseQuery = OMModel.Where(x => x.Id == modelId);
+			var baseQuery = OMModel.Where(x => x.Id == id);
 			
 			baseQuery = selectExpression == null 
 				? baseQuery.SelectAll() 
@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.Modeling.Repositories
 			return baseQuery.ExecuteFirstOrDefault();
 		}
 
-		public List<OMModel> GetModelsByCondition(Expression<Func<OMModel, bool>> whereExpression,
+		public List<OMModel> GetByCondition(Expression<Func<OMModel, bool>> whereExpression,
 			Expression<Func<OMModel, object>> selectExpression)
 		{
 			var baseQuery = OMModel.Where(whereExpression);

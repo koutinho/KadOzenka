@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
 			ModelingRepository
-				.Setup(foo => foo.GetModelById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
+				.Setup(foo => foo.GetById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns((OMModel) null);
 
 			var modelId = Random.Next();
