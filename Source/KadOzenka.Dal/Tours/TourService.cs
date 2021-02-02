@@ -43,37 +43,24 @@ namespace KadOzenka.Dal.Tours
 
         public int AddTour(TourDto tourDto)
         {
-            ValidateTourYear(tourDto);
-            var existedTour = OMTour.Where(x => x.Year == tourDto.Year).Select(x => x.Id).ExecuteFirstOrDefault();
-            if (existedTour != null)
-                throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
+            ValidateTour(tourDto);
 
-            int id;
-            using (var ts = new TransactionScope())
+            var id= new OMTour
             {
-                id = new OMTour
-                {
-                    Year = tourDto.Year.Value
-                }.Save();
-                ts.Complete();
-            }
+	            Year = tourDto.Year.Value
+            }.Save();
 
             return id;
         }
 
         public int UpdateTour(TourDto tourDto)
         {
-            ValidateTourYear(tourDto);
+            ValidateTour(tourDto);
 
             var tour = GetTourByIdInternal(tourDto.Id);
 
-            int id;
-            using (var ts = new TransactionScope())
-            {
-                tour.Year = tourDto.Year;
-                id = tour.Save();
-                ts.Complete();
-            }
+            tour.Year = tourDto.Year;
+            var id = tour.Save();
 
             return id;
         }
@@ -154,13 +141,17 @@ namespace KadOzenka.Dal.Tours
 
         #region Support Methods
 
-        private  void ValidateTourYear(TourDto tourDto)
+        private  void ValidateTour(TourDto tourDto)
         {
             if (tourDto.Year == null || tourDto.Year.Value == 0)
                 throw new Exception("Не указан год при создании Тура");
 
             if (!int.TryParse(tourDto.Year.Value.ToString(), out _))
                 throw new Exception("Введенное число не может быть преобразовано в год");
+
+            var isTourWithTheSameYearExists = OMTour.Where(x => x.Year == tourDto.Year && x.Id != tourDto.Id).ExecuteExists();
+            if (isTourWithTheSameYearExists)
+	            throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
         }
 
         private OMTour GetTourByIdInternal(long? tourId)
