@@ -1,4 +1,6 @@
+using KadOzenka.Dal.Tests.Modeling.Dictionaries;
 using KadOzenka.Dal.Tests.Modeling.Models;
+using KadOzenka.Dal.Tests.Tasks.LongProcess;
 
 namespace KadOzenka.Dal.Tests
 {
@@ -22,6 +24,11 @@ namespace KadOzenka.Dal.Tests
 
 			//проверка, что данные сохранились (вызвался метод репозитория с определенными входными параметрами)
 			tmp = nameof(Tours.CreationTests.Can_Create_Tour);
+
+
+			//примеры тестов для длительных процессов
+			tmp = nameof(ModelDictionaryImportFromExcelLongProcessTest); //простой
+			tmp = nameof(TaskForCodLongProcessTest); //сложнее
 		}
 	}
 }

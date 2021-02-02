@@ -39,6 +39,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
@@ -57,18 +58,21 @@ namespace KadOzenka.Web.Controllers
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
+        public IModelObjectsRepository ModelObjectsRepository { get; set; }
 
 
         public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
-            ModelFactorsService modelFactorsService, GroupService groupService)
+	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+	        ModelFactorsService modelFactorsService, GroupService groupService,
+	        IModelObjectsRepository modelObjectsRepository)
         {
-            ModelingService = modelingService;
-            TourFactorService = tourFactorService;
-            RegisterAttributeService = registerAttributeService;
-            DictionaryService = dictionaryService;
-            ModelFactorsService = modelFactorsService;
-            GroupService = groupService;
+	        ModelingService = modelingService;
+	        TourFactorService = tourFactorService;
+	        RegisterAttributeService = registerAttributeService;
+	        DictionaryService = dictionaryService;
+	        ModelFactorsService = modelFactorsService;
+	        GroupService = groupService;
+	        ModelObjectsRepository = modelObjectsRepository;
         }
 
 
@@ -155,7 +159,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
-			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+			var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
 			model.IsReadOnly = isReadOnly;
 

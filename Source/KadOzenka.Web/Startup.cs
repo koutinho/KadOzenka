@@ -35,6 +35,7 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Reports;
@@ -115,6 +116,8 @@ namespace CIPJS
             services.AddTransient<RecycleBinService>();
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
             services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
+            services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
+            services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

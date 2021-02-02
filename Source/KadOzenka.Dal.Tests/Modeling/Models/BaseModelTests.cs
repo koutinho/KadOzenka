@@ -11,12 +11,14 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 	{
 		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
 		protected Mock<IModelingRepository> ModelingRepository { get; set; }
+		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; set; }
 
 
 		[SetUp]
 		public void BaseModelTestsSetUp()
 		{
 			ModelingRepository = new Mock<IModelingRepository>();
+			ModelObjectsRepository = new Mock<IModelObjectsRepository>();
 		}
 
 
@@ -24,6 +26,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		{
 			container.AddTransient<ModelingService>();
 			container.AddTransient(typeof(IModelingRepository), sp => ModelingRepository.Object);
+			container.AddTransient(typeof(IModelObjectsRepository), sp => ModelObjectsRepository.Object);
 		}
 	}
 }

@@ -27,6 +27,7 @@ namespace KadOzenka.Dal.Modeling
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelingRepository ModelingRepository { get; set; }
+        private IModelObjectsRepository ModelObjectsRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public RecycleBinService RecycleBinService { get; }
 
@@ -45,11 +46,13 @@ namespace KadOzenka.Dal.Modeling
 
 		#endregion
 
-		public ModelingService(IModelingRepository modelingRepository = null)
+		public ModelingService(IModelingRepository modelingRepository = null,
+			IModelObjectsRepository modelObjectsRepository = null)
 		{
 			ModelFactorsService = new ModelFactorsService();
 			ModelingRepository = modelingRepository ?? new ModelingRepository();
 			RecycleBinService = new RecycleBinService();
+			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 		}
 
 
@@ -282,7 +285,7 @@ namespace KadOzenka.Dal.Modeling
 
 	        if (model.Type_Code == KoModelType.Automatic)
 	        {
-		        var hasFormedObjectArray = GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+		        var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
@@ -394,23 +397,9 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
-        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
-        {
-	        if (isForTraining)
-	        {
-		        return OMModelToMarketObjects
-			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
-	        }
-
-	        return OMModelToMarketObjects
-		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
-        }
-
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
         {
-	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
+	        return ModelObjectsRepository.GetIncludedModelObjects(modelId, isForTraining);
         }
 
         public int DestroyModelMarketObjects(OMModel model)
