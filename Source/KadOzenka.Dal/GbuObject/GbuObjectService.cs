@@ -19,8 +19,8 @@ using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
-    public class GbuObjectService
-    {
+	public class GbuObjectService : IGbuObjectService
+	{
         private static readonly ILogger _log = Log.ForContext<GbuObjectService>();
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
 

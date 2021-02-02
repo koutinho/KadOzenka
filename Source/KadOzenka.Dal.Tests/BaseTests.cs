@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -24,6 +26,13 @@ namespace KadOzenka.Dal.Tests
 			var salted = $"{beginning}_{guid}";
 
 			return salted.Substring(0, Math.Min(maxNumberOfCharacters, salted.Length));
+		}
+
+		protected static List<T> CreateListWithRepeatedElements<T>(T element, int count)
+		{
+			var elements = new List<T>(count);
+			elements.AddRange(Enumerable.Repeat(element, count));
+			return elements;
 		}
 
 		protected virtual void AddServicesToContainer(ServiceCollection container)

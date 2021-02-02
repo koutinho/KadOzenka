@@ -15,7 +15,6 @@ using Core.Register;
 using Core.Shared.Misc;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataComparing;
-using KadOzenka.Dal.DataComparing.Configs;
 using KadOzenka.Dal.DataComparing.Exceptions;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
@@ -29,7 +28,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.Tasks
 {
-    public class TaskService
+    public class TaskService : ITaskService
     {
 	    private static readonly ILogger _log = Log.ForContext<TaskService>();
 

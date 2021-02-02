@@ -15,14 +15,15 @@ using Ionic.Zip;
 
 namespace KadOzenka.Dal.GbuObject
 {
-	public class GbuReportService : IDisposable
+	public class GbuReportService : IDisposable, IGbuReportService
 	{
 		//TODO Dal не должен знать о контроллере
 		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={ReportId}";
-		public CellStyle WarningCellStyle { get; }
-		public CellStyle ErrorCellStyle { get; }
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
 		public static readonly int MaxRowsCountInSheet = 1000000;
+
+		public CellStyle WarningCellStyle { get; }
+		public CellStyle ErrorCellStyle { get; }
 
 		private ExcelFile _curretExcelFile;
 		private int _fileCounter = 0;

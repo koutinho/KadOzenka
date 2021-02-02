@@ -6,9 +6,32 @@ using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Dal.LongProcess
 {
-	public class NotificationSender
+	public interface INotificationSender
 	{
-		public static void SendNotification(OMQueue processQueue, string subject, string message, long? roleId = null)
+		void SendNotification(OMQueue processQueue, string subject, string message);
+		void SendNotification(OMQueue processQueue, string subject, string message, long? roleId);
+		void SendNotification(string subject, string message, MessageAddressersDto messageAddresses);
+		void SendExportResultNotificationWithAttachment(OMExportByTemplates export, string subject);
+	}
+
+
+	public class NotificationSender : INotificationSender
+	{
+		protected const int MaxMessageSize = 4000;
+
+		public void SendNotification(OMQueue processQueue, string subject, string message)
+		{
+			var resultMessage = message;
+			if (message?.Length >= MaxMessageSize)
+			{
+				var ending = " */далее обрезано/*";
+				resultMessage = message.Substring(0, MaxMessageSize - ending.Length) + ending;
+			}
+
+			SendNotification(processQueue, subject, resultMessage, null);
+		}
+
+		public void SendNotification(OMQueue processQueue, string subject, string message, long? roleId)
         {
             var addressers = roleId == null
                 ? new MessageAddressersDto
@@ -31,7 +54,7 @@ namespace KadOzenka.Dal.LongProcess
             });
 		}
 
-		public static void SendNotification(string subject, string message, MessageAddressersDto messageAddresses)
+		public void SendNotification(string subject, string message, MessageAddressersDto messageAddresses)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
@@ -44,20 +67,7 @@ namespace KadOzenka.Dal.LongProcess
 			});
 		}
 
-        public static void SendNotification(OMQueue processQueue, string subject, string message, long roleId)
-        {
-            new MessageService().SendMessages(new MessageDto
-            {
-                Addressers = new MessageAddressersDto { UserIds = processQueue.UserId.HasValue ? new long[] { processQueue.UserId.Value } : new long[] { } },
-                Subject = subject,
-                Message = message,
-                IsUrgent = true,
-                IsEmail = true,
-                ExpireDate = DateTime.Now.AddHours(2)
-            });
-        }
-
-        public void SendExportResultNotificationWithAttachment(OMExportByTemplates export, string subject)
+		public void SendExportResultNotificationWithAttachment(OMExportByTemplates export, string subject)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{

@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.Modeling
 		        ? "Операция успешно завершена."
 		        : $"Операция частично завершена.<br>{AdditionalMessage}";
 
-	        NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+	        new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
 

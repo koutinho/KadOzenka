@@ -73,7 +73,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			}
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 			{
-				SendMessage(processQueue, "Не переданы ИД задач для построения отчета", MessageSubject);
+				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы ИД задач для построения отчета");
 				return;
 			}
 
@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				? mainMessage 
 				: mainMessage + "<br>" + $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
-			SendMessage(processQueue, fullMessage, MessageSubject);
+			NotificationSender.SendNotification(processQueue, MessageSubject, fullMessage);
 		}
 
 		private void CheckCancellationToken(CancellationToken processCancellationToken,
