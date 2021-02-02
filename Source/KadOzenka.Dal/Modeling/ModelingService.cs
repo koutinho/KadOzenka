@@ -170,7 +170,7 @@ namespace KadOzenka.Dal.Modeling
                 Formula = "-"
 	        };
 
-	        model.Save();
+	        ModelingRepository.Save(model);
         }
 
         public void AddManualModel(ModelingModelDto modelDto)
@@ -189,12 +189,12 @@ namespace KadOzenka.Dal.Modeling
 
 	        model.Formula = model.GetFormulaFull(true);
 
-	        model.Save();
-        }
+			ModelingRepository.Save(model);
+		}
 
         public void UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
-			ValidateModelDuringUpdating(modelDto);
+			ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -223,7 +223,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void UpdateManualModel(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -292,21 +292,21 @@ namespace KadOzenka.Dal.Modeling
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+				var otherModelsForGroup = ModelingRepository.GetModelsByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
 					if (!x.IsActive.GetValueOrDefault())
 						return;
 
 			        x.IsActive = false;
-			        x.Save();
-		        });
+			        ModelingRepository.Save(x);
+				});
 
 		        if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
-			        model.Save();
-				}
+			        ModelingRepository.Save(model);
+		        }
 
 		        ts.Complete();
 	        }
@@ -346,7 +346,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
+		private void ValidateBaseModel(ModelingModelDto modelDto)
         {
 	        var message = new StringBuilder();
 
@@ -364,7 +364,7 @@ namespace KadOzenka.Dal.Modeling
 
         private void ValidateModelDuringAddition(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
 	        var message = new StringBuilder();
 

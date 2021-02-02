@@ -3,7 +3,6 @@ using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tests.Modeling.Models
 {
@@ -13,11 +12,13 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
 		protected Mock<IModelingRepository> ModelingRepository { get; set; }
 
-		[SetUp]
+
+		[OneTimeSetUp]
 		public void BaseModelTestsOneTimeSetUp()
 		{
 			ModelingRepository = new Mock<IModelingRepository>();
 		}
+
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
