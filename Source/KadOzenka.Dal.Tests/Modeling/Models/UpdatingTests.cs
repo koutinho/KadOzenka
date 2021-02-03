@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			var initialModel = new ModelBuilder().Manual().IsActive(false).Build();
 
 			MoqModelingRepository_GetById(initialModel);
-			MoqModelingRepository_GetEntitiesByCondition(new List<OMModel>());
+			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
 			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
 			ModelingService.MakeModelActive(initialModel.Id);
@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			var initialModel = new ModelBuilder().Automatic().IsActive(false).Build();
 
 			MoqModelingRepository_GetById(initialModel);
-			MoqModelingRepository_GetEntitiesByCondition(new List<OMModel>());
+			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
 			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
@@ -82,7 +82,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 				.Returns(output);
 		}
 
-		private void MoqModelingRepository_GetEntitiesByCondition(List<OMModel> output)
+		private void MoqModelingRepository_GetOtherGroupModels(List<OMModel> output)
 		{
 			ModelingRepository.Setup(x => x.GetEntitiesByCondition(It.IsAny<Expression<Func<OMModel, bool>>>(),
 					It.IsAny<Expression<Func<OMModel, object>>>()))

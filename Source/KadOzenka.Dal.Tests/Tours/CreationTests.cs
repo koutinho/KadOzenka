@@ -11,10 +11,11 @@ namespace KadOzenka.Dal.Tests.Tours
 	[TestFixture]
 	public class CreationTests : BaseTourTests
 	{
-		[Test]
-		public void CanNot_Create_Tour_Without_Year()
+		[TestCase(0)]
+		[TestCase(null)]
+		public void CanNot_Create_Tour_Without_Year(long? tourYear)
 		{
-			var tourDto = new TourDto();
+			var tourDto = new TourDto {Year = tourYear};
 
 			var exception = Assert.Throws<Exception>(() => TourService.AddTour(tourDto));
 

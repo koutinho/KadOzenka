@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.Tests
 			return salted.Substring(0, Math.Min(maxNumberOfCharacters, salted.Length));
 		}
 
-		public static int GenerateRandomInteger(int minNumber = 0, int maxNumber = 100)
+		public static int GenerateRandomInteger(int minNumber = 1, int maxNumber = 100)
 		{
 			return Random.Next(minNumber, maxNumber);
 		}

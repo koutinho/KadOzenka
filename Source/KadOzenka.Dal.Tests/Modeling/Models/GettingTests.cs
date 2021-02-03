@@ -24,11 +24,12 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		[Test]
 		public void If_Model_Not_Found_By_Id_Throw_Exception()
 		{
+			var modelId = RandomGenerator.GenerateRandomInteger();
+
 			ModelingRepository
-				.Setup(foo => foo.GetById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
+				.Setup(foo => foo.GetById(modelId, It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns((OMModel) null);
 
-			var modelId = RandomGenerator.GenerateRandomInteger();
 			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
 		}
 	}
