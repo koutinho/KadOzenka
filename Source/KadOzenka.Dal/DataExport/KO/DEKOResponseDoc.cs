@@ -391,17 +391,20 @@ namespace KadOzenka.Dal.DataExport
             _group_unit.Unit = units;
             if (units.Count > 0)
             {
+                var export = new DEKOGroup.DEKOGroupExportForVuon(_group_unit, _unit.TaskId.GetValueOrDefault());
                 //int lenobjs = units.Length;
-                XmlDocument xmlFile = new XmlDocument();
-                XmlNode xnLandValuation = xmlFile.CreateElement("FD_State_Cadastral_Valuation");
-                DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
-                xmlFile.AppendChild(xnLandValuation);
-
-                // TODO: Поправить выгрузку в ВУОН после правок выгрузки результатов оценки по группам
-                //DEKOGroup.AddXmlGeneralInfo(xmlFile, xnLandValuation);
-                //"Выгрузка XML для ФД"
-                //DEKOGroup.AddXmlPackage(xmlFile, xnLandValuation, _group_unit, dictNodes, "",null); //TODO: calcItemDict
-
+//                XmlDocument xmlFile = new XmlDocument();
+//                XmlNode xnLandValuation = xmlFile.CreateElement("FD_State_Cadastral_Valuation");
+//                DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "02");
+//                xmlFile.AppendChild(xnLandValuation);
+//
+//                // TODO: Поправить выгрузку в ВУОН после правок выгрузки результатов оценки по группам
+//
+//                var genInfo = new DEKOGroup.DEKOGroupExportBase();
+//                xnLandValuation.AppendChild(genInfo);
+//                //"Выгрузка XML для ФД"
+//                DEKOGroupExportCommon.AddXmlPackage(xmlFile, xnLandValuation, _group_unit, dictNodes, ""); //TODO: calcItemDict
+                var stream = export.Export();
                 //if (!Directory.Exists(_dir_name))
                 //    Directory.CreateDirectory(_dir_name);
 
@@ -417,9 +420,9 @@ namespace KadOzenka.Dal.DataExport
                                   "_" + _doc_in.CreateDate.ToString("ddMMyyyy") +
                                   "_" + ((int)_unit.PropertyType_Code).ToString() +
                                   "_" + _unit.Id.ToString() + ".xml";
-                MemoryStream stream = new MemoryStream();
-                xmlFile.Save(stream);
-                stream.Seek(0, SeekOrigin.Begin);
+//                MemoryStream stream = new MemoryStream();
+//                xmlFile.Save(stream);
+//                stream.Seek(0, SeekOrigin.Begin);
                 zipFile.AddEntry(fileName, stream);
             }
 

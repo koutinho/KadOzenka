@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
@@ -12,7 +11,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
-using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -98,33 +96,42 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private class DEKOGroupExport
+        internal class DEKOGroupExportBase
         {
+            private readonly bool _singleQueryMode;
             private readonly KOUnloadSettings _setting;
             private readonly OMGroup _subgroup;
             private readonly long _taskId;
             private readonly XmlDocument _xmlFile;
-            private Dictionary<long, List<CalcItem>> _calcItemDict;
-            private const bool SINGLE_QUERY_MODE = true;
-            private List<GbuObjectAttribute> _allAttributes;
             private Dictionary<long, List<GbuObjectAttribute>> _attributesByObject;
-            private OMModel _model;
-            private Stopwatch _stopwatch = new Stopwatch();
+            private Dictionary<long, List<CalcItem>> _calcItemDict;
+            private readonly OMModel _model;
+            private readonly Stopwatch _stopwatch;
 
-            public DEKOGroupExport(KOUnloadSettings setting, OMGroup subgroup, long taskId)
+            protected DEKOGroupExportBase(KOUnloadSettings setting, OMGroup subgroup, long taskId) : this(subgroup,
+                taskId)
             {
                 _setting = setting;
+            }
+
+            protected DEKOGroupExportBase(OMGroup subgroup, long taskId) : this()
+            {
                 _subgroup = subgroup;
                 _taskId = taskId;
+            }
+
+            private DEKOGroupExportBase()
+            {
+                _singleQueryMode = true;
                 _xmlFile = new XmlDocument();
                 _calcItemDict = new Dictionary<long, List<CalcItem>>();
-                _allAttributes = new List<GbuObjectAttribute>();
+                _stopwatch = new Stopwatch();
                 _model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true)
                     .SelectAll()
                     .ExecuteFirstOrDefault();
             }
 
-            internal void Export(int countCurr, List<ResultKoUnloadSettings> res)
+            protected void FullExport(int countCurr, List<ResultKoUnloadSettings> res)
             {
                 var factorRegisterId = OMGroup.GetFactorReestrId(_subgroup);
                 Log.Debug("FactorReestrId {factorReestrId} GetGroupAttributes", factorRegisterId);
@@ -197,7 +204,7 @@ namespace KadOzenka.Dal.DataExport
             /// <summary>
             /// Экспорт в Xml - КОценка по группам.
             /// </summary>
-            private Stream SaveXmlDocument()
+            protected Stream SaveXmlDocument()
             {
                 //var xmlFile = new XmlDocument();
                 XmlNode xnLandValuation = _xmlFile.CreateElement("FD_State_Cadastral_Valuation");
@@ -427,12 +434,10 @@ namespace KadOzenka.Dal.DataExport
                                 _model.ModelFactor.Count, _model.AlgoritmType_Code.GetEnumDescription());
                         }
 
-                        var countCurr = 0;
-                        var countAll = _model.ModelFactor.Count;
                         var marks = OMMarkCatalog.Where(x => x.GroupId == _model.GroupId).SelectAll().Execute();
                         foreach (var factor in _model.ModelFactor)
                         {
-                            var attributeFactor = RegisterCache.GetAttributeData((int) factor.FactorId);
+                            var attributeFactor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault());
                             factor.FillMarkCatalogsFromList(marks, _model.GroupId ?? 0);
 
                             XmlNode xnEvaluativeFactor = _xmlFile.CreateElement("Evaluative_Factor");
@@ -479,10 +484,6 @@ namespace KadOzenka.Dal.DataExport
 
                             if (addfactor)
                                 xnEvaluativeFactors.AppendChild(xnEvaluativeFactor);
-
-                            countCurr++;
-                            //var strMessage = message + " -- " + "Evaluative_Factors " + countCurr + " из " + countAll;
-                            //Console.WriteLine(strMessage);
                         }
                     }
 
@@ -599,7 +600,7 @@ namespace KadOzenka.Dal.DataExport
                     marks = OMMarkCatalog.Where(x => x.GroupId == _model.GroupId).SelectAll().Execute();
                 var factorRegisterId = OMGroup.GetFactorReestrId(_subgroup).ParseToInt();
 
-                if (SINGLE_QUERY_MODE)
+                if (_singleQueryMode)
                     _calcItemDict = GetGroupFactors(factorRegisterId, _subgroup.Id, _taskId);
 
                 _stopwatch.Restart();
@@ -608,7 +609,7 @@ namespace KadOzenka.Dal.DataExport
                     _calcItemDict.TryGetValue(unit.Id, out var dict);
                     var xnRealEstate = GetXnRealEstate(regionRf, unit,
                         ref currentUnitsCount);
-                    if (SINGLE_QUERY_MODE)
+                    if (_singleQueryMode)
                         AddXnEvaluativeFactors(marks, xnRealEstate, dict);
                     else
                         AddXnEvaluativeFactors(marks, xnRealEstate, unit, factorRegisterId);
@@ -916,6 +917,7 @@ namespace KadOzenka.Dal.DataExport
                         .ToList();
                     var primary = allAttr.FirstOrDefault(x => x.IsPrimaryKey.GetValueOrDefault(false));
 
+                    if (primary == null) return new Dictionary<long, List<CalcItem>>();
                     var registerPrimaryKeyColumn = new QSColumnSimple(primary.Id);
 
                     var objectsId = OMUnit
@@ -945,10 +947,8 @@ namespace KadOzenka.Dal.DataExport
                     attr.ForEach(attribute => { query.AddColumn(attribute.Id, attribute.Id.ToString()); });
 
                     DataTable dt;
-                    string sql;
                     try
                     {
-                        sql = query.GetSql();
                         dt = query.ExecuteQuery();
                     }
                     catch (Exception e)
@@ -997,6 +997,7 @@ namespace KadOzenka.Dal.DataExport
                     var attr = allAttr.Where(x => !x.IsPrimaryKey.GetValueOrDefault(false)).ToList();
                     var primary = allAttr.FirstOrDefault(x => x.IsPrimaryKey.GetValueOrDefault(false));
 
+                    if (primary == null) return new List<CalcItem>();
                     var registerPrimaryKeyColumn = new QSColumnSimple(primary.Id);
 
                     var query = new QSQuery
@@ -1050,6 +1051,32 @@ namespace KadOzenka.Dal.DataExport
                         //&& x.IsDeleted.Coalesce(false) == false
                     )
                     .OrderBy(x => x.Name).SelectAll().Execute();
+            }
+        }
+
+        internal class DEKOGroupExport : DEKOGroupExportBase
+        {
+            public DEKOGroupExport(KOUnloadSettings setting, OMGroup subgroup, long taskId)
+                : base(setting, subgroup, taskId)
+            {
+            }
+
+            public void Export(int countCurr, List<ResultKoUnloadSettings> res)
+            {
+                FullExport(countCurr, res);
+            }
+        }
+
+        internal class DEKOGroupExportForVuon : DEKOGroupExportBase
+        {
+            public DEKOGroupExportForVuon(OMGroup subgroup, long taskId)
+                : base(subgroup, taskId)
+            {
+            }
+
+            public Stream Export()
+            {
+                return SaveXmlDocument();
             }
         }
     }
