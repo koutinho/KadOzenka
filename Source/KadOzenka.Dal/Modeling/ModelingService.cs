@@ -23,7 +23,7 @@ using System.Linq.Expressions;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService
+	public class ModelingService : IModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelingRepository ModelingRepository { get; set; }

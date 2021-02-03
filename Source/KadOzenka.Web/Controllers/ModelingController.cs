@@ -52,7 +52,7 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ModelingController : KoBaseController
 	{
-		public ModelingService ModelingService { get; set; }
+		public IModelingService ModelingService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
@@ -61,7 +61,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
 
 
-        public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
+        public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
 	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository)

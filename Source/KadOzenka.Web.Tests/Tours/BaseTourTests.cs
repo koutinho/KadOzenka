@@ -10,13 +10,12 @@ namespace KadOzenka.Web.Tests.Tours
 	public class BaseTourTests : BaseTests
 	{
 		protected TourController TourController => Provider.GetService<TourController>();
-		protected Mock<ITourService> TourService { get; set; }
 
 
 		[SetUp]
 		public void BaseTourSetUp()
 		{
-			TourService = new Mock<ITourService>();
+
 		}
 
 
@@ -24,7 +23,6 @@ namespace KadOzenka.Web.Tests.Tours
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
 			container.AddTransient<TourController>();
-			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 		}
 	}
 }

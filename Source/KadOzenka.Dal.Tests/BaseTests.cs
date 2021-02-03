@@ -17,13 +17,6 @@ namespace KadOzenka.Dal.Tests
 			ConfigureServices();
 		}
 
-		protected static List<T> CreateListWithRepeatedElements<T>(T element, int count)
-		{
-			var elements = new List<T>(count);
-			elements.AddRange(Enumerable.Repeat(element, count));
-			return elements;
-		}
-
 		protected virtual void AddServicesToContainer(ServiceCollection container)
 		{
 

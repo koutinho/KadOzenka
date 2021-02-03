@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace KadOzenka.Dal.Tests
 {
@@ -28,6 +30,13 @@ namespace KadOzenka.Dal.Tests
 		{
 			var integer = Random.Next();
 			return (decimal) (integer / 2.3);
+		}
+
+		public static List<T> CreateListWithRepeatedElements<T>(T element, int count)
+		{
+			var elements = new List<T>(count);
+			elements.AddRange(Enumerable.Repeat(element, count));
+			return elements;
 		}
 	}
 }
