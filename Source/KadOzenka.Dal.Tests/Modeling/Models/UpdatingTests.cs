@@ -53,6 +53,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 
 			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
 
+			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
 			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
@@ -68,6 +69,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 
 			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
 
+			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
 			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
