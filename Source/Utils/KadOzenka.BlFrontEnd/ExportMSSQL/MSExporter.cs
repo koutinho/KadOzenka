@@ -2153,6 +2153,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     {
                         koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
                     }
+                    if (objtype == PropertyTypes.Pllacement)
+                    {
+                        koGroup.BuildingCadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_PARENT"]);
+                    }
+                    if (objtype == PropertyTypes.Stead)
+                    {
+                        koGroup.UseAsPrototype = NullConvertor.ToString(myOleDbDataReader["procent"])=="Да";
+                    }
                     count++;
                     Items.Add(koGroup);
                     if (Items.Count == 50)
