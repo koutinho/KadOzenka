@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Resources;
+using KadOzenka.Dal.Tests.Modeling.Builders;
 using Moq;
 using NUnit.Framework;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tests.Modeling.Models
@@ -13,15 +13,11 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 	public class UpdatingTests : BaseModelTests
 	{
 		[Test]
-		public void Can_Make_Manual_Model_Active_If_There_No_Other_Models_For_Group()
+		public void Can_Make_Manual_Model_Active_If_There_Are_No_Other_Models_For_Group()
 		{
 			OMModel updatedModel = null;
-			var initialModel = new OMModel
-			{
-				Id = Random.Next(),
-				Type_Code = KoModelType.Manual,
-				IsActive = false
-			};
+			var initialModel = new ModelBuilder().Manual().IsActive(false).Build();
+
 			MoqModelingRepository_GetById(initialModel);
 			MoqModelingRepository_GetEntitiesByCondition(new List<OMModel>());
 			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
@@ -32,16 +28,11 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		}
 
 		[Test]
-		public void Can_Make_Automatic_Model_Active_If_There_No_Other_Models_For_Group()
+		public void Can_Make_Automatic_Model_Active_If_There_Are_No_Other_Models_For_Group()
 		{
 			OMModel updatedModel = null;
-			var initialModel = new OMModel
-			{
-				Id = Random.Next(),
-				Type_Code = KoModelType.Automatic,
-				LinearTrainingResult = GetRandomString(),
-				IsActive = false
-			};
+			var initialModel = new ModelBuilder().Automatic().IsActive(false).Build();
+
 			MoqModelingRepository_GetById(initialModel);
 			MoqModelingRepository_GetEntitiesByCondition(new List<OMModel>());
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
@@ -50,6 +41,34 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			ModelingService.MakeModelActive(initialModel.Id);
 
 			VerifyModelIsMakedActive(initialModel, updatedModel);
+		}
+
+		[Test]
+		public void CanNot_Make_Automatic_Model_Active_If_There_Are_No_Model_Objects()
+		{
+			var initialModel = new ModelBuilder().Automatic().IsActive(false).Build();
+
+			MoqModelingRepository_GetById(initialModel);
+			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(false);
+
+			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
+
+			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
+		}
+
+		[Test]
+		public void CanNot_Make_Automatic_Model_Active_If_There_Are_No_Training_Results()
+		{
+			var initialModel = new ModelBuilder().Automatic().IsActive(false)
+				.LinearTrainingResult(null).ExponentialTrainingResult(null).MultiplicativeTrainingResult(null)
+				.Build();
+
+			MoqModelingRepository_GetById(initialModel);
+			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
+
+			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
+
+			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 

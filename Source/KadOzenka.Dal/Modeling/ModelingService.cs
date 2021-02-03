@@ -290,19 +290,17 @@ namespace KadOzenka.Dal.Modeling
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception("Невозможно активировать необученную модель");
+			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
 			}
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(x => x.GroupId == model.GroupId, x => new {x.IsActive});
+				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(
+					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
-					if (!x.IsActive.GetValueOrDefault())
-						return;
-
-			        x.IsActive = false;
-			        ModelingRepository.Save(x);
+					x.IsActive = false;
+					ModelingRepository.Save(x);
 				});
 
 		        if (!model.IsActive.GetValueOrDefault())

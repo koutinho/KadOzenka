@@ -61,6 +61,15 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Невозможно активировать необученную модель.
+        /// </summary>
+        public static string CanNotActivateNotPreparedAutomaticModel {
+            get {
+                return ResourceManager.GetString("CanNotActivateNotPreparedAutomaticModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не передан идентификатор Модели.
         /// </summary>
         public static string EmptyModelId {

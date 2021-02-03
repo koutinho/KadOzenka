@@ -8,24 +8,13 @@ namespace KadOzenka.Dal.Tests
 {
 	public class BaseTests
 	{
-		protected Random Random { get; set; }
 		protected ServiceProvider Provider { get; set; }
 		
 
 		[OneTimeSetUp]
 		public void BaseTestsSetUp()
 		{
-			Random = new Random();
 			ConfigureServices();
-		}
-
-
-		protected string GetRandomString(string beginning = "", int maxNumberOfCharacters = 5)
-		{
-			var guid = Guid.NewGuid();
-			var salted = $"{beginning}_{guid}";
-
-			return salted.Substring(0, Math.Min(maxNumberOfCharacters, salted.Length));
 		}
 
 		protected static List<T> CreateListWithRepeatedElements<T>(T element, int count)

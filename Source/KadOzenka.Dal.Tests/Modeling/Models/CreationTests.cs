@@ -30,9 +30,9 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		{
 			return new ModelingModelDto
 			{
-				Name = GetRandomString(),
-				Description = GetRandomString(),
-				GroupId = Random.Next(),
+				Name = RandomGenerator.GetRandomString(),
+				Description = RandomGenerator.GetRandomString(),
+				GroupId = RandomGenerator.GenerateRandomInteger(),
 				IsOksObjectType = true,
 				AlgorithmTypeForCadastralPriceCalculation = KoAlgoritmType.Line,
 				Type = KoModelType.Automatic

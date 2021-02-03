@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 			TaskService = new Mock<ITaskService>();
 			UnitRepository = new Mock<IUnitRepository>();
 
-			TaskService.Setup(x => x.GetTemplateForTaskName(It.IsAny<long>())).Returns(GetRandomString("taskName_"));
+			TaskService.Setup(x => x.GetTemplateForTaskName(It.IsAny<long>())).Returns(RandomGenerator.GetRandomString("taskName_"));
 			RosreestrRegisterService.Setup(x => x.GetPFsAttribute()).Returns(new RegisterAttribute());
 		}
 
@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 		[Test]
 		public void If_After_Filtration_Some_Units_Left_Must_Create_Report()
 		{
-			var units = CreateListWithRepeatedElements(new OMUnit{ObjectId = Random.Next()}, 10);
+			var units = CreateListWithRepeatedElements(new OMUnit{ObjectId = RandomGenerator.GenerateRandomInteger()}, 10);
 			var filteredUnits = new List<GbuObjectAttribute> { new GbuObjectAttribute { ObjectId = units[0].ObjectId.Value, NumValue = 1 } };
 			MoqUnitRepository(units);
 			MockGbuObjectServiceGetAllAttributes(filteredUnits);
@@ -96,8 +96,8 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 			LongProcess.StartProcess(new OMProcessType(), new OMQueue
 			{
 				Status_Code = Status.Added,
-				ObjectId = Random.Next(),
-				UserId = Random.Next()
+				ObjectId = RandomGenerator.GenerateRandomInteger(),
+				UserId = RandomGenerator.GenerateRandomInteger()
 			}, new CancellationToken());
 		}
 

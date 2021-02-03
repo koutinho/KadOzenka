@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 				.Setup(foo => foo.GetById(It.IsAny<long>(), It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns((OMModel) null);
 
-			var modelId = Random.Next();
+			var modelId = RandomGenerator.GenerateRandomInteger();
 			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
 		}
 	}

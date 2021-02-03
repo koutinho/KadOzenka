@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 		[Test]
 		public void If_ImportDataLog_Not_Found_Do_Nothing()
 		{
-			var importDataLogId = Random.Next();
+			var importDataLogId = RandomGenerator.GenerateRandomInteger();
 			MoqImportDataLog(importDataLogId, null);
 
 			StartProcess(importDataLogId, null);
@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 		[Test]
 		public void Can_Create_New_Dictionary()
 		{
-			var importDataLogId = Random.Next();
+			var importDataLogId = RandomGenerator.GenerateRandomInteger();
 			MoqImportDataLog(importDataLogId, new OMImportDataLog());
 
 			StartProcess(importDataLogId, new DictionaryImportFileFromExcelDto {IsNewDictionary = true});
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 		[Test]
 		public void Can_Update_Dictionary()
 		{
-			var importDataLogId = Random.Next();
+			var importDataLogId = RandomGenerator.GenerateRandomInteger();
 			MoqImportDataLog(importDataLogId, new OMImportDataLog());
 
 			StartProcess(importDataLogId, new DictionaryImportFileFromExcelDto { IsNewDictionary = false });
@@ -112,7 +112,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
 			{
 				Status_Code = Status.Added,
 				ObjectId = importId,
-				UserId = Random.Next(),
+				UserId = RandomGenerator.GenerateRandomInteger(),
 				Parameters = inputParameters?.SerializeToXml()
 			}, new CancellationToken());
 		}
