@@ -68,9 +68,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         {
 	        AttributeChangeStatuses = new Dictionary<KoChangeStatus, ImportedAttribute>
 	        {
-		        {KoChangeStatus.Place, new ImportedAttribute(8)},
-		        {KoChangeStatus.Adress, new ImportedAttribute(600)},
-		        {KoChangeStatus.CadastralBlock, new ImportedAttribute(601)},
+		        {KoChangeStatus.Place, new ImportedAttribute(Consts.LocationAttributeId)},
+		        {KoChangeStatus.Adress, new ImportedAttribute(Consts.AddressAttributeId)},
+		        {KoChangeStatus.CadastralBlock, new ImportedAttribute(Consts.CadastralQuarterAttributeId)},
 	        };
         }
 
@@ -78,20 +78,20 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         {
 	        GknDataAttributes = new List<ImportedAttributeGkn>
 	        {
-		        new ImportedAttributeGkn(13,
+		        new ImportedAttributeGkn(Consts.CreationDateAttributeId,
 			        current => (current.DateCreate == DateTime.MinValue) ? (DateTime?) null : current.DateCreate),
-		        new ImportedAttributeGkn(26, current => current.TypeRealty),
-		        new ImportedAttributeGkn(601, current => current.CadastralNumberBlock),
-		        new ImportedAttributeGkn(6, current => current.CadastralCost.Value.ParseToDecimal(),
+		        new ImportedAttributeGkn(Consts.ObjectTypeAttributeId, current => current.TypeRealty),
+		        new ImportedAttributeGkn(Consts.CadastralQuarterAttributeId, current => current.CadastralNumberBlock),
+		        new ImportedAttributeGkn(Consts.CadastralCostAttributeId, current => current.CadastralCost.Value.ParseToDecimal(),
 			        current => current.CadastralCost != null),
-		        new ImportedAttributeGkn(8, current => xmlAdress.GetTextPlace(current.Adress)),
-		        new ImportedAttributeGkn(600, current => xmlAdress.GetTextAdress(current.Adress))
+		        new ImportedAttributeGkn(Consts.LocationAttributeId, current => xmlAdress.GetTextPlace(current.Adress)),
+		        new ImportedAttributeGkn(Consts.AddressAttributeId, current => xmlAdress.GetTextAdress(current.Adress))
 	        };
         }
 
         protected virtual void InitTaskFormingAttributes()
         {
-			TaskFormingAttributes = new List<ImportedAttribute> { new ImportedAttribute(660), new ImportedAttribute(661) };
+			TaskFormingAttributes = new List<ImportedAttribute> { new ImportedAttribute(Consts.P1GroupAttributeId), new ImportedAttribute(Consts.P2FsAttributeId) };
         }
 
 
@@ -247,7 +247,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
                     {
                         List<long> sourceIds = new List<long>
                          {
-                             2
+                             Consts.RosreestrRegisterId
                          };
                         var attrIds = AttributeChangeStatuses.Values.Select(x => x.AttributeId).ToList();
 

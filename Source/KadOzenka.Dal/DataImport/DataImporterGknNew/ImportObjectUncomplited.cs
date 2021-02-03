@@ -25,30 +25,30 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected override void InitAttributeChangeStatusList()
 		{
 			base.InitAttributeChangeStatusList();
-			AttributeChangeStatuses.Add(KoChangeStatus.Procent, new ImportedAttribute(46));
-			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(44));
-			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(19));
-			AttributeChangeStatuses.Add(KoChangeStatus.NumberParcel, new ImportedAttribute(602));
+			AttributeChangeStatuses.Add(KoChangeStatus.Procent, new ImportedAttribute(Consts.ReadinessPercentageAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(Consts.PlacementCharacteristicAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(Consts.ObjectNameAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.NumberParcel, new ImportedAttribute(Consts.ParcelAttributeId));
 		}
 
 		protected override void InitGknDataAttributes()
 		{
 			base.InitGknDataAttributes();
-			GknDataAttributes.Add(new ImportedAttributeGkn(46, current => string.IsNullOrEmpty(((xmlObjectUncomplited)current).DegreeReadiness) ? (decimal?)null : ((xmlObjectUncomplited)current).DegreeReadiness.ParseToDecimal()));
-			GknDataAttributes.Add(new ImportedAttributeGkn(44, current => xmlCodeNameValue.GetNames(((xmlObjectUncomplited)current).KeyParameters)));
-			GknDataAttributes.Add(new ImportedAttributeGkn(19, current => ((xmlObjectUncomplited)current).AssignationName));
-			GknDataAttributes.Add(new ImportedAttributeGkn(602, current => xmlCodeName.GetNames(((xmlObjectUncomplited)current).ParentCadastralNumbers)));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ReadinessPercentageAttributeId, current => string.IsNullOrEmpty(((xmlObjectUncomplited)current).DegreeReadiness) ? (decimal?)null : ((xmlObjectUncomplited)current).DegreeReadiness.ParseToDecimal()));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.PlacementCharacteristicAttributeId, current => xmlCodeNameValue.GetNames(((xmlObjectUncomplited)current).KeyParameters)));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ObjectNameAttributeId, current => ((xmlObjectUncomplited)current).AssignationName));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ParcelAttributeId, current => xmlCodeName.GetNames(((xmlObjectUncomplited)current).ParentCadastralNumbers)));
 		}
 
         protected override void SetCODTasksFormingAttributesWithChecking(long gbuObjectId, Dictionary<KoChangeStatus, bool> unitChangesDictionary)
 		{
 			if (!unitChangesDictionary[KoChangeStatus.Name])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 660), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P1GroupAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.CadastralBlock] || !unitChangesDictionary[KoChangeStatus.Place])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 661), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P2FsAttributeId), true, gbuObjectId);
 			}
 		}
 

@@ -25,23 +25,23 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected override void InitAttributeChangeStatusList()
 		{
 			base.InitAttributeChangeStatusList();
-			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(2));
-			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(19));
-			AttributeChangeStatuses.Add(KoChangeStatus.Use, new ImportedAttribute(14));
-			AttributeChangeStatuses.Add(KoChangeStatus.YearBuild, new ImportedAttribute(15));
-			AttributeChangeStatuses.Add(KoChangeStatus.YearUse, new ImportedAttribute(16));
-			AttributeChangeStatuses.Add(KoChangeStatus.Floors, new ImportedAttribute(17));
-			AttributeChangeStatuses.Add(KoChangeStatus.DownFloors, new ImportedAttribute(18));
-			AttributeChangeStatuses.Add(KoChangeStatus.Walls, new ImportedAttribute(21));
-			AttributeChangeStatuses.Add(KoChangeStatus.CadastralBuilding, new ImportedAttribute(604));
+			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(Consts.SquareAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(Consts.ObjectNameAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Use, new ImportedAttribute(Consts.BuildingPurposeAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.YearBuild, new ImportedAttribute(Consts.YearOfBuildAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.YearUse, new ImportedAttribute(Consts.YearOfUseAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Floors, new ImportedAttribute(Consts.FloorCountAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.DownFloors, new ImportedAttribute(Consts.FloorUndergroundCountAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Walls, new ImportedAttribute(Consts.WallMaterialAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.CadastralBuilding, new ImportedAttribute(Consts.CadastralNumberOKSAttributeId));
 			AttributeChangeStatuses.Add(KoChangeStatus.NumberFloor, new ImportedAttribute(24));
 		}
 
 		protected override void InitTaskFormingAttributes()
 		{
 			base.InitTaskFormingAttributes();
-			TaskFormingAttributes.Add(new ImportedAttribute(662));
-			TaskFormingAttributes.Add(new ImportedAttribute(663));
+			TaskFormingAttributes.Add(new ImportedAttribute(Consts.P3WallMaterialAttributeId));
+			TaskFormingAttributes.Add(new ImportedAttribute(Consts.P4YearOfBuildAttributeId));
 		}
 
         protected override void DoInheritanceFromPrevUnit(OMUnit lastUnit, OMUnit koUnit, Dictionary<KoChangeStatus, bool> unitChangesDictionary)
@@ -64,38 +64,38 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		{
 			if (!unitChangesDictionary[KoChangeStatus.Name] || !unitChangesDictionary[KoChangeStatus.Use])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 660), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P1GroupAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.CadastralBlock] || !unitChangesDictionary[KoChangeStatus.Place])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 661), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P2FsAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.Walls])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 662), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P3WallMaterialAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.YearBuild] || !unitChangesDictionary[KoChangeStatus.YearUse])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 663), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P4YearOfBuildAttributeId), true, gbuObjectId);
 			}
         }
 
 		protected override void InitGknDataAttributes()
 		{
 			base.InitGknDataAttributes();
-			GknDataAttributes.Add(new ImportedAttributeGkn(2, current => ((xmlObjectCarPlace)current).Area.ParseToDecimal()));
-			GknDataAttributes.Add(new ImportedAttributeGkn(19, current => ((xmlObjectCarPlace)current).TypeRealty));
-			GknDataAttributes.Add(new ImportedAttributeGkn(14, current => ((xmlObjectCarPlace)current).parentAssignationBuilding.Name, current => ((xmlObjectCarPlace)current).parentAssignationBuilding != null));
-			GknDataAttributes.Add(new ImportedAttributeGkn(22, current => ((xmlObjectCarPlace)current).parentAssignationName, current => !string.IsNullOrEmpty(((xmlObjectCarPlace)current).parentAssignationName)));
-			GknDataAttributes.Add(new ImportedAttributeGkn(17, current => ((xmlObjectCarPlace)current).parentFloors.Floors, current => ((xmlObjectCarPlace)current).parentFloors != null));
-			GknDataAttributes.Add(new ImportedAttributeGkn(18, current => ((xmlObjectCarPlace)current).parentFloors.Underground_Floors, current => ((xmlObjectCarPlace)current).parentFloors != null));
-			GknDataAttributes.Add(new ImportedAttributeGkn(16, current => ((xmlObjectCarPlace)current).parentYears.Year_Used, current => ((xmlObjectCarPlace)current).parentYears != null));
-			GknDataAttributes.Add(new ImportedAttributeGkn(15, current => ((xmlObjectCarPlace)current).parentYears.Year_Built, current => ((xmlObjectCarPlace)current).parentYears != null));
-			GknDataAttributes.Add(new ImportedAttributeGkn(21, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).parentWalls), current => !string.IsNullOrEmpty(xmlCodeName.GetNames(((xmlObjectCarPlace)current).parentWalls))));
-			GknDataAttributes.Add(new ImportedAttributeGkn(604, current => ((xmlObjectCarPlace)current).CadastralNumberOKS));
-			GknDataAttributes.Add(new ImportedAttributeGkn(606, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).PositionsInObject[0].NumbersOnPlan), current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
-			GknDataAttributes.Add(new ImportedAttributeGkn(25, current => ((xmlObjectCarPlace)current).PositionsInObject[0].Position.Name, current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
-			GknDataAttributes.Add(new ImportedAttributeGkn(24, current => ((xmlObjectCarPlace)current).PositionsInObject[0].Position.Value, current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.SquareAttributeId, current => ((xmlObjectCarPlace)current).Area.ParseToDecimal()));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ObjectNameAttributeId, current => ((xmlObjectCarPlace)current).TypeRealty));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.BuildingPurposeAttributeId, current => ((xmlObjectCarPlace)current).parentAssignationBuilding.Name, current => ((xmlObjectCarPlace)current).parentAssignationBuilding != null));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ConstructionPurposeAttributeId, current => ((xmlObjectCarPlace)current).parentAssignationName, current => !string.IsNullOrEmpty(((xmlObjectCarPlace)current).parentAssignationName)));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorCountAttributeId, current => ((xmlObjectCarPlace)current).parentFloors.Floors, current => ((xmlObjectCarPlace)current).parentFloors != null));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorUndergroundCountAttributeId, current => ((xmlObjectCarPlace)current).parentFloors.Underground_Floors, current => ((xmlObjectCarPlace)current).parentFloors != null));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.YearOfUseAttributeId, current => ((xmlObjectCarPlace)current).parentYears.Year_Used, current => ((xmlObjectCarPlace)current).parentYears != null));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.YearOfBuildAttributeId, current => ((xmlObjectCarPlace)current).parentYears.Year_Built, current => ((xmlObjectCarPlace)current).parentYears != null));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.WallMaterialAttributeId, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).parentWalls), current => !string.IsNullOrEmpty(xmlCodeName.GetNames(((xmlObjectCarPlace)current).parentWalls))));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.CadastralNumberOKSAttributeId, current => ((xmlObjectCarPlace)current).CadastralNumberOKS));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FlatNumbersAttributeId, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).PositionsInObject[0].NumbersOnPlan), current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorTypeAttributeId, current => ((xmlObjectCarPlace)current).PositionsInObject[0].Position.Name, current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
+			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorNumberAttributeId, current => ((xmlObjectCarPlace)current).PositionsInObject[0].Position.Value, current => ((xmlObjectCarPlace)current).PositionsInObject.Count > 0));
 		}
 
 		protected override void SetAdditionalUnitProperties(OMUnit koUnit, xmlObjectCarPlace current)

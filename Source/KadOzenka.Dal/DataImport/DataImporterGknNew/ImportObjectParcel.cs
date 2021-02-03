@@ -25,10 +25,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected override void InitAttributeChangeStatusList()
 		{
 			base.InitAttributeChangeStatusList();
-			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(1));
-			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(2));
-			AttributeChangeStatuses.Add(KoChangeStatus.Category, new ImportedAttribute(3));
-			AttributeChangeStatuses.Add(KoChangeStatus.Use, new ImportedAttribute(4));
+			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(Consts.ParcelNameAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(Consts.SquareAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Category, new ImportedAttribute(Consts.LandCategoryAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Use, new ImportedAttribute(Consts.TypeOfUseByDocumentsAttributeId));
 		}
 
         protected override void DoInheritanceFromPrevUnit(OMUnit lastUnit, OMUnit koUnit, Dictionary<KoChangeStatus, bool> unitChangesDictionary)
@@ -51,22 +51,22 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		{
 			if (!unitChangesDictionary[KoChangeStatus.Name] || !unitChangesDictionary[KoChangeStatus.Use])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 660), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P1GroupAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.CadastralBlock] || !unitChangesDictionary[KoChangeStatus.Place])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 661), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P2FsAttributeId), true, gbuObjectId);
 			}
 		}
 
         protected override void InitGknDataAttributes()
         {
             base.InitGknDataAttributes();
-            GknDataAttributes.Add(new ImportedAttributeGkn(1, current => ((xmlObjectParcel)current).Name.Name));
-            GknDataAttributes.Add(new ImportedAttributeGkn(2, current => ((xmlObjectParcel)current).Area.ParseToDecimal()));
-            GknDataAttributes.Add(new ImportedAttributeGkn(3, current => ((xmlObjectParcel)current).Category.Name));
-            GknDataAttributes.Add(new ImportedAttributeGkn(4, current => ((xmlObjectParcel)current).Utilization.ByDoc));
-            GknDataAttributes.Add(new ImportedAttributeGkn(5, current => ((xmlObjectParcel)current).Utilization.Utilization.Name));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ParcelNameAttributeId, current => ((xmlObjectParcel)current).Name.Name));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.SquareAttributeId, current => ((xmlObjectParcel)current).Area.ParseToDecimal()));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.LandCategoryAttributeId, current => ((xmlObjectParcel)current).Category.Name));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.TypeOfUseByDocumentsAttributeId, current => ((xmlObjectParcel)current).Utilization.ByDoc));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.TypeOfUseByClassifierAttributeId, current => ((xmlObjectParcel)current).Utilization.Utilization.Name));
             //TODO ждем ответа от заказчиков - что сохранять в качестве ЗУ
             //GknDataAttributes.Add(new ImportedAttributeGkn(5, current => xmlCodeName.GetNames(((xmlObjectParcel)current).InnerCadastralNumbers)));
         }

@@ -19,13 +19,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string CancelMessage => "Импорт данных ГКН был отменен во время загрузки Сооружений";
 		public override string SuccessMessage => "Импорт Сооружений завершен";
 
-		/// <summary>
-		/// Аттрибут "Земельный участок"
-		/// </summary>
-		private const long ParcelAttributeId = 602;
-		private const long WallMaterialAttributeId = 21;
-
-
 		public ImportObjectConstruction(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
 			DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction) : base(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
 		{
@@ -46,21 +39,21 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected override void InitAttributeChangeStatusList()
 		{
 			base.InitAttributeChangeStatusList();
-			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(44));
-			AttributeChangeStatuses.Add(KoChangeStatus.Assignment, new ImportedAttribute(22));
-			AttributeChangeStatuses.Add(KoChangeStatus.YearBuild, new ImportedAttribute(15));
-			AttributeChangeStatuses.Add(KoChangeStatus.YearUse, new ImportedAttribute(16));
-			AttributeChangeStatuses.Add(KoChangeStatus.Floors, new ImportedAttribute(17));
-			AttributeChangeStatuses.Add(KoChangeStatus.DownFloors, new ImportedAttribute(18));
-			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(19));
-			AttributeChangeStatuses.Add(KoChangeStatus.NumberParcel, new ImportedAttribute(602));
-			AttributeChangeStatuses.Add(KoChangeStatus.Walls, new ImportedAttribute(21));
+			AttributeChangeStatuses.Add(KoChangeStatus.Square, new ImportedAttribute(Consts.PlacementCharacteristicAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Assignment, new ImportedAttribute(Consts.ConstructionPurposeAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.YearBuild, new ImportedAttribute(Consts.YearOfBuildAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.YearUse, new ImportedAttribute(Consts.YearOfUseAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Floors, new ImportedAttribute(Consts.FloorCountAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.DownFloors, new ImportedAttribute(Consts.FloorUndergroundCountAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Name, new ImportedAttribute(Consts.ObjectNameAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.NumberParcel, new ImportedAttribute(Consts.ParcelAttributeId));
+			AttributeChangeStatuses.Add(KoChangeStatus.Walls, new ImportedAttribute(Consts.WallMaterialAttributeId));
 		}
 
         protected override void InitTaskFormingAttributes()
 		{
 			base.InitTaskFormingAttributes();
-			TaskFormingAttributes.Add(new ImportedAttribute(663));
+			TaskFormingAttributes.Add(new ImportedAttribute(Consts.P4YearOfBuildAttributeId));
 		}
 
         protected override void DoInheritanceFromPrevUnit(OMUnit lastUnit, OMUnit koUnit, Dictionary<KoChangeStatus, bool> unitChangesDictionary)
@@ -92,15 +85,15 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		{
 			if (!unitChangesDictionary[KoChangeStatus.Name] || !unitChangesDictionary[KoChangeStatus.Assignment])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 660), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P1GroupAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.CadastralBlock] || !unitChangesDictionary[KoChangeStatus.Place])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 661), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P2FsAttributeId), true, gbuObjectId);
 			}
 			if (!unitChangesDictionary[KoChangeStatus.YearBuild] || !unitChangesDictionary[KoChangeStatus.YearUse])
 			{
-				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == 663), true, gbuObjectId);
+				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P4YearOfBuildAttributeId), true, gbuObjectId);
 			}
 		}
 
@@ -108,15 +101,15 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         protected override void InitGknDataAttributes()
         {
             base.InitGknDataAttributes();
-            GknDataAttributes.Add(new ImportedAttributeGkn(44, current => xmlCodeNameValue.GetNames(((xmlObjectConstruction)current).KeyParameters)));
-            GknDataAttributes.Add(new ImportedAttributeGkn(22, current =>((xmlObjectConstruction)current).AssignationName));
-            GknDataAttributes.Add(new ImportedAttributeGkn(19, current =>((xmlObjectConstruction)current).Name));
-            GknDataAttributes.Add(new ImportedAttributeGkn(17, current =>((xmlObjectConstruction)current).Floors.Floors, current => ((xmlObjectConstruction)current).Floors != null));
-            GknDataAttributes.Add(new ImportedAttributeGkn(18, current =>((xmlObjectConstruction)current).Floors.Underground_Floors, current => ((xmlObjectConstruction)current).Floors != null));
-            GknDataAttributes.Add(new ImportedAttributeGkn(16, current =>((xmlObjectConstruction)current).Years.Year_Used, current => ((xmlObjectConstruction)current).Years != null));
-            GknDataAttributes.Add(new ImportedAttributeGkn(15, current =>((xmlObjectConstruction)current).Years.Year_Built, current => ((xmlObjectConstruction)current).Years != null));
-            GknDataAttributes.Add(new ImportedAttributeGkn(602, current => xmlCodeName.GetNames(((xmlObjectConstruction)current).ParentCadastralNumbers)));
-            GknDataAttributes.Add(new ImportedAttributeGkn(WallMaterialAttributeId, current => xmlCodeName.GetNames(((xmlObjectConstruction)current).Walls)));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.PlacementCharacteristicAttributeId, current => xmlCodeNameValue.GetNames(((xmlObjectConstruction)current).KeyParameters)));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ConstructionPurposeAttributeId, current =>((xmlObjectConstruction)current).AssignationName));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ObjectNameAttributeId, current =>((xmlObjectConstruction)current).Name));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorCountAttributeId, current =>((xmlObjectConstruction)current).Floors.Floors, current => ((xmlObjectConstruction)current).Floors != null));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.FloorUndergroundCountAttributeId, current =>((xmlObjectConstruction)current).Floors.Underground_Floors, current => ((xmlObjectConstruction)current).Floors != null));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.YearOfUseAttributeId, current =>((xmlObjectConstruction)current).Years.Year_Used, current => ((xmlObjectConstruction)current).Years != null));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.YearOfBuildAttributeId, current =>((xmlObjectConstruction)current).Years.Year_Built, current => ((xmlObjectConstruction)current).Years != null));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ParcelAttributeId, current => xmlCodeName.GetNames(((xmlObjectConstruction)current).ParentCadastralNumbers)));
+            GknDataAttributes.Add(new ImportedAttributeGkn(Consts.WallMaterialAttributeId, current => xmlCodeName.GetNames(((xmlObjectConstruction)current).Walls)));
         }
     }
 }
