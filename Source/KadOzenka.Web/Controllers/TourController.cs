@@ -47,18 +47,18 @@ namespace KadOzenka.Web.Controllers
 {
     public class TourController : KoBaseController
     {
-        public TourService TourService { get; set; }
+        public ITourService TourService { get; set; }
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
         public GroupFactorService GroupFactorService { get; set; }
 
-        public TourController(ITourRepository tourRepository)
+        public TourController(ITourService tourService)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
-            TourService = new TourService(TourFactorService, GroupService, new RecycleBinService(), tourRepository);
+            TourService = tourService;
             GbuObjectService = new GbuObjectService();
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
@@ -486,7 +486,7 @@ namespace KadOzenka.Web.Controllers
                 ? TourService.AddTour(tourDto) 
                 : TourService.UpdateTour(tourDto);
 
-            return Json(new { Success = "Сохранение выполнено", Id = id });
+            return Json(new { Id = id });
         }
 
         [HttpPost]

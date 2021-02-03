@@ -116,6 +116,7 @@ namespace CIPJS
             services.AddTransient<RecycleBinService>();
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
             services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
+            services.AddTransient(typeof(ITourService), typeof(TourService));
             services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
             services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
 

@@ -14,8 +14,8 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tours
 {
-    public class TourService
-    {
+	public class TourService : ITourService
+	{
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
         private RecycleBinService RecycleBinService { get; }

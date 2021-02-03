@@ -35,8 +35,8 @@
                 type: 'POST',
                 url: '@Url.Action("TourEstimates", "Tour")',
                 data: data,
-                success: function (response) {
-                    Common.ShowMessage(response.Success);
+                success: function () {
+                    Common.ShowMessage("Сохранение выполнено");
                     //метод из TourCard
 					ReloadTourCartTab(data.id, null, null);
                 },
