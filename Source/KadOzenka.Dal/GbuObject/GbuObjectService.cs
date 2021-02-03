@@ -519,5 +519,16 @@ from (select
 
 	       return RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attrId)?.Description;
         }
+
+        public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
+        {
+	        if (CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot) != null)
+	        {
+		        // Проблема в наличии значения на ту же дату ОТ
+			        attributeValue.Ot = GetNextOtFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+		    }
+
+	        attributeValue.Save();
+        }
 	}
 }
