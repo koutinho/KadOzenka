@@ -11,7 +11,7 @@
 
             <ControlElement Caption="Дата последней проверки" ID="create_date" OwnType="Calendar" AttributeNumber="97501000" QueryOperation="WithinDate" DefaultValue="[CurrentDay]" />
 
-            <ControlElement Caption="Статус" ID="type" OwnType="Combo" AttributeNumber="97500900" QueryOperation="Equal" ComboBoxFilter="None" AllowItemSelection="true" DefaultValue="">
+            <ControlElement Caption="Статус" ID="type" OwnType="Combo" AttributeNumber="97500900" QueryOperation="Equal" ComboBoxFilter="None" AllowItemSelection="true">
                 <CustomItems>
                     <KeyValuePair>
                         <Key>0</Key>
