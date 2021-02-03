@@ -28,17 +28,24 @@ namespace KadOzenka.Dal.LongProcess
 		private IFileStorageManagerWrapper FileStorageManagerWrapper { get; }
 
 
-		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService = null,
-			IImportDataLogRepository importDataLogRepository = null,
-			INotificationSender notificationSender = null, IWorkerCommonWrapper worker = null,
-			IFileStorageManagerWrapper fileStorageManagerWrapper = null,
-			ILongProcessProgressLogger logger = null)
+		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService,
+			IImportDataLogRepository importDataLogRepository, INotificationSender notificationSender, 
+			IWorkerCommonWrapper worker, IFileStorageManagerWrapper fileStorageManagerWrapper,
+			ILongProcessProgressLogger logger)
 			: base(notificationSender, logger)
 		{
-			DictionaryService = dictionaryService ?? new DictionaryService();
-			ImportDataLogRepository = importDataLogRepository  ?? new ImportDataLogRepository();
-			Worker = worker ?? new WorkerCommonWrapper();
-			FileStorageManagerWrapper = fileStorageManagerWrapper ?? new FileStorageManagerWrapper();
+			DictionaryService = dictionaryService;
+			ImportDataLogRepository = importDataLogRepository;
+			Worker = worker;
+			FileStorageManagerWrapper = fileStorageManagerWrapper;
+		}
+
+		public ModelDictionaryImportFromExcelLongProcess()
+		{
+			DictionaryService = new DictionaryService();
+			ImportDataLogRepository = new ImportDataLogRepository();
+			Worker = new WorkerCommonWrapper();
+			FileStorageManagerWrapper = new FileStorageManagerWrapper();
 		}
 
 
