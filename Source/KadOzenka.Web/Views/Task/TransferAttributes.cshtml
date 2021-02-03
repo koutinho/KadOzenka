@@ -308,7 +308,8 @@
         var filtered = arr.filter(v=>!changedEntries.includes(v));
         filtered.push(dataItem.value);
         blockAlreadySelectedNodes(filtered);
-    };
+        $.find('[class^=IdAttributeG]').concat($.find('tr[class^=wrapper-] input[class*=IdAttributeG]')).forEach(d=>$(d).data('kendoDropDownTree').close());
+    }
 
     function updateStates() {
         clearTreeStates();
@@ -320,6 +321,7 @@
         getDataSource().forEach(function (d) {
                 d.treeview.unbind('select');
                 d.treeview.bind('select', e => updateSelected(e));
+                d.options.autoClose = false;
             }
         );
         updateStates();

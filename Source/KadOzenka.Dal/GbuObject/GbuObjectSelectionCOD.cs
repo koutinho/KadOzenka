@@ -140,7 +140,7 @@ namespace KadOzenka.Dal.GbuObject
                 Ot = dt,
                 StringValue = value
             };
-            DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static void AddRowToReport(GbuReportService reportService, GbuReportService.Row rowNumber, string kn, string value, long resultAttribute)
