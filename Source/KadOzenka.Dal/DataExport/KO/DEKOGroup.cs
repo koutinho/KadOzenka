@@ -126,7 +126,7 @@ namespace KadOzenka.Dal.DataExport
                 _xmlFile = new XmlDocument();
                 _calcItemDict = new Dictionary<long, List<CalcItem>>();
                 _stopwatch = new Stopwatch();
-                _model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true)
+                _model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(true) == true)
                     .SelectAll()
                     .ExecuteFirstOrDefault();
             }
@@ -139,7 +139,7 @@ namespace KadOzenka.Dal.DataExport
                 _subgroup.Unit = OMUnit
                     .Where(x => x.GroupId == _subgroup.Id && x.TaskId == _taskId && x.CadastralCost > 0)
                     .OrderBy(x => x.Id)
-                    .SelectAll().Execute();
+                    .Select(x => new { x.Id,x.CadastralNumber,x.PropertyType_Code,x.Square,x.Upks,x.ObjectId,x.CreationDate}).Execute();
                 Log.Debug(
                     "Найдено {subgroupUnitCount} ЕО с группой {subgroupId} и ЗнО {taskId}, у которых положительная Кадастровая стоимость",
                     _subgroup.Unit.Count, _subgroup.Id, _taskId);
@@ -513,9 +513,10 @@ namespace KadOzenka.Dal.DataExport
                 xnPackage.AppendChild(xnAppraise);
             }
 
-            private Dictionary<long, List<GbuObjectAttribute>> GetAttributesByObject()
+            private Dictionary<long, List<GbuObjectAttribute>> GetAttributesByObject(List<long> objectIds = null)
             {
-                var objectIds = _subgroup.Unit.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
+                if (objectIds == null)
+                    objectIds = _subgroup.Unit.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
                 var allAttributes =
                     new GbuObjectService().GetAllAttributes(objectIds, null, new List<long> {3, 4, 5, 8, 600});
                 Log.Verbose("Получено атрибутов: {attributesCount}", allAttributes.Count);
@@ -1051,6 +1052,64 @@ namespace KadOzenka.Dal.DataExport
                         //&& x.IsDeleted.Coalesce(false) == false
                     )
                     .OrderBy(x => x.Name).SelectAll().Execute();
+            }
+
+            protected class UnitInfo
+            {
+                public long UnitId { get; set; }
+                public OMUnit Unit { get; set; }
+                public List<CalcItem> CalcItems { get; set; }
+                public List<GbuObjectAttribute> Attributes { get; set; }
+            }
+
+            protected IEnumerable<UnitInfo> GetUnitInfos(bool loadGroupFactors)
+            {
+                List<UnitInfo> unitInfos = new List<UnitInfo>();
+                var unitInfosCounter = 0;
+                var batch = 100_000;
+                var batchNum = 0;
+                var unitsQuery = OMUnit
+                    .Where(x => x.GroupId == _subgroup.Id && x.TaskId == _taskId && x.CadastralCost > 0)
+                    .OrderBy(x => x.Id)
+                    .Select(x => new
+                        {x.Id, x.CadastralNumber, x.PropertyType_Code, x.Square, x.Upks, x.ObjectId, x.CreationDate});
+                var unitsCount = unitsQuery.ExecuteCount();
+                for (var i = 0; i < unitsCount; i++)
+                {
+                    // Подгрузка данных
+                    if (i % batch == 0)
+                    {
+                        unitInfos.Clear();
+                        unitInfosCounter = 0;
+                        batchNum++;
+                        var units = unitsQuery.SetPackageSize(batch).SetPackageIndex(batchNum).Execute();
+                        var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
+                        var attributes = GetAttributesByObject(objectIds);
+                        Dictionary<long,List<CalcItem>> factors = new Dictionary<long, List<CalcItem>>();
+                        if (loadGroupFactors)
+                        {
+                            factors = GetGroupFactors(1,1,1);
+                        }
+
+                        foreach (var unit in units)
+                        {
+                            attributes.TryGetValue(unit.Id, out var attributeList);
+                            var info = new UnitInfo();
+                            info.UnitId = unit.Id;
+                            info.Unit = unit;
+                            info.Attributes = attributeList;
+                            if (loadGroupFactors)
+                            {
+                                factors.TryGetValue(unit.Id, out var factorList);
+                                info.CalcItems = factorList;
+                            }
+                            unitInfos.Add(info);
+                        }
+                    }
+
+                    yield return unitInfos[unitInfosCounter];
+                    unitInfosCounter++;
+                }
             }
         }
 
