@@ -50,6 +50,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;

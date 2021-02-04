@@ -39,6 +39,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
