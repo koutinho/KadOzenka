@@ -74,8 +74,12 @@ namespace KadOzenka.Dal.Modeling
             RequestForService.AttributeNames.AddRange(ModelAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
             RequestForService.AttributeIds.AddRange(ModelAttributes.Select(x => x.AttributeId));
 
+            var counter = 0;
             MarketObjectsForTraining.ForEach(modelObject =>
             {
+                if(counter++ % 100 == 0)
+					Logger.Debug("Идет обработка объекта моделирования №{i}", counter);
+
                 var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
