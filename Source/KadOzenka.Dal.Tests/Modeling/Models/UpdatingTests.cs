@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 
 			MoqModelingRepository_GetById(initialModel);
 			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
-			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
+			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
 			ModelingService.MakeModelActive(initialModel.Id);
 
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
-			ModelingRepository.Setup(x => x.Save(It.IsAny<OMModel>())).Callback<OMModel>(inputModel => updatedModel = inputModel);
+			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
 			ModelingService.MakeModelActive(initialModel.Id);
 
@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 		{
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Once);
 			Assert.That(updatedModel.Id, Is.EqualTo(initialModel.Id));
-			Assert.That(initialModel.IsActive, Is.True);
+			Assert.That(updatedModel.IsActive, Is.True);
 		}
 
 		#endregion

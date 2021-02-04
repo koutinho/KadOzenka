@@ -7,11 +7,10 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 	[TestFixture]
 	public class OmModelTests
 	{
-		[TestCase(KoAlgoritmType.Line, 1, 2, 3, 1)]
-		[TestCase(KoAlgoritmType.Exp, 1, 2, 3, 2)]
-		[TestCase(KoAlgoritmType.Multi, 1, 2, 3, 3)]
-		public void Check_A0_For_Model(KoAlgoritmType type, decimal line, decimal exp, decimal mult,
-			decimal expected)
+		[TestCase(KoAlgoritmType.Line, 1, 2, 3, ExpectedResult = 1)]
+		[TestCase(KoAlgoritmType.Exp, 1, 2, 3, ExpectedResult = 2)]
+		[TestCase(KoAlgoritmType.Multi, 1, 2, 3, ExpectedResult = 3)]
+		public decimal? Check_A0_For_Model(KoAlgoritmType type, decimal line, decimal exp, decimal mult)
 		{
 			var model = new OMModel
 			{
@@ -21,7 +20,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 				A0ForMultiplicative = mult
 			};
 
-			Assert.That(model.GetA0(), Is.EqualTo(expected));
+			return model.GetA0();
 		}
 	}
 }

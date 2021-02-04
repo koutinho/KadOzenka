@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.Tests
 
 		public void Setup()
 		{
-			//расширения класса через partial
+			//пример теста с входными и выходными параметрами
 			var tmp = nameof(OmModelTests.Check_A0_For_Model);
 
 			//выбрасывание общего исключения (Exception)
@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.Tests
 
 			//примеры тестов для длительных процессов
 			tmp = nameof(ModelDictionaryImportFromExcelLongProcessTest); //простой
-			tmp = nameof(TaskForCodLongProcessTest); //сложнее
+			tmp = nameof(TaskForCodLongProcessTest); //сложнее, возможно, подобный код не нужно тестить
 		}
 	}
 }
