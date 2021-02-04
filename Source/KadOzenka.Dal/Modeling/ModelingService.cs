@@ -20,6 +20,7 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -452,10 +453,8 @@ namespace KadOzenka.Dal.Modeling
 	        var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
-            var factors = GetFactorColumnsForModelObjectsInFile(modelId);
-			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
-            var groupedFactors = factors.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
-			var columnHeaders = new object[_maxNumberOfColumns];
+            var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId);
+            var columnHeaders = new object[_maxNumberOfColumns];
             columnHeaders[IdColumnIndex] = "ИД";
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
             columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
@@ -465,7 +464,7 @@ namespace KadOzenka.Dal.Modeling
             columnHeaders[PriceColumnIndex] = "Цена";
             columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
             columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
-            factors.ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
+            groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
             //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
@@ -490,8 +489,7 @@ namespace KadOzenka.Dal.Modeling
 				groupedFactors.ForEach(factor =>
 				{
 					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
-					var factorColumns = factor.ToList();
-					factorColumns.ForEach(x =>
+					factor.ToList().ForEach(x =>
 					{
 						if (x.IsColumnWithValue)
 						{
@@ -521,22 +519,32 @@ namespace KadOzenka.Dal.Modeling
 
 		public UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file)
         {
-	        var factors = GetFactorColumnsForModelObjectsInFile(modelId).Where(x => !x.IsColumnWithValue).ToList();
+	        var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId).ToList();
 
-            var rows = file.Worksheets[0].Rows;
+	        var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
             for (var i = 1; i <= rowsCount; i++)
             {
 	            var cells = rows[i].Cells;
 	            var factorsFromFile = new List<CoefficientForObject>();
-                factors.ForEach(factor =>
-                {
-	                factorsFromFile.Add(new CoefficientForObject(factor.AttributeId)
-					{
-						Coefficient = cells[factor.ColumnIndex].Value.ParseToDecimalNullable()
-					});
-                });
+	            groupedFactors.ForEach(group =>
+	            {
+		            var factorFromFile = new CoefficientForObject(group.Key);
+		            group.ToList().ForEach(x =>
+		            {
+			            if (x.IsColumnWithValue)
+			            {
+				            factorFromFile.Value = cells[x.ColumnIndex].Value.ParseToStringNullable();
+			            }
+			            else
+			            {
+				            factorFromFile.Coefficient = cells[x.ColumnIndex].Value.ParseToDecimalNullable();
+			            }
+		            });
+
+		            factorsFromFile.Add(factorFromFile);
+	            });
 
                 modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
                 {
@@ -569,7 +577,8 @@ namespace KadOzenka.Dal.Modeling
 					x.Coefficients
 	            }).Execute();
 
-            foreach (var modelObjectFromExcel in modelObjectsFromExcel)
+            var normalizedFactors = groupedFactors.Where(x => x.ToList().Any(y => y.IsColumnWithValue)).Select(x => x.Key).ToList();
+			foreach (var modelObjectFromExcel in modelObjectsFromExcel)
             {
 	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
 	            if (modelObject == null)
@@ -578,23 +587,28 @@ namespace KadOzenka.Dal.Modeling
 		            continue;
 	            }
 
-				var coefficientsWereChanged = false;
+				var factorWasChanged = false;
 	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	            factors.ForEach(attribute =>
+	            groupedFactors.ForEach(group =>
 	            {
-		            var coefficientFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            var coefficientFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            if (coefficientFromDb != null && coefficientFromDb.Coefficient != coefficientFromFile?.Coefficient)
+		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == group?.Key);
+		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == group?.Key);
+
+		            factorWasChanged = factorFromDb != null &&
+		                                      (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
+		                                       !string.Equals(factorFromDb.Value, factorFromFile?.Value));
+		            if (factorWasChanged)
 		            {
-			            coefficientsWereChanged = true;
-			            coefficientFromDb.Coefficient = coefficientFromFile?.Coefficient;
+			            factorWasChanged = true;
+			            factorFromDb.Value = normalizedFactors.Contains(group.Key) ? factorFromFile?.Value : factorFromDb.Value;
+			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
 		            }
 	            });
 
 	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
 	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
 	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
-	                !coefficientsWereChanged)
+	                !factorWasChanged)
 	            {
 		            result.UnchangedObjectsCount++;
 		            continue;
@@ -684,7 +698,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private List<FactorInFileInfo> GetFactorColumnsForModelObjectsInFile(long modelId)
+		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(long modelId)
 		{
 			//пока работаем только с Exp (был расчет МС и процента)
 			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
@@ -719,8 +733,11 @@ namespace KadOzenka.Dal.Modeling
 
 			result = result.OrderBy(x => x.Name).ToList();
 			result.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
-			
-			return result;
+
+			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
+			var groupedFactors = result.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
+
+			return groupedFactors;
 		}
 
 		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
