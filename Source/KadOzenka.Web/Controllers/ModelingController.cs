@@ -287,15 +287,16 @@ namespace KadOzenka.Web.Controllers
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
+			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId};
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
 			//	UserId = SRDSession.GetCurrentUserId(),
-			//	ObjectId = modelId
+			//	Parameters = inputParamters.SerializeToXml()
 			//}, new CancellationToken());
 
-			ObjectFormationForModelingProcess.AddProcessToQueue(modelId);
+			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
 			return Ok();
 		}

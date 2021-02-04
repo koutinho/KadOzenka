@@ -6,6 +6,8 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -26,6 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; }
+        private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
@@ -34,31 +37,30 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         }
 
 
-        public static void AddProcessToQueue(long modelId)
+        public static void AddProcessToQueue(ObjectFormationInputParameters inputParameters)
         {
-	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
+	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess), parameters: inputParameters.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			WorkerCommon.SetProgress(processQueue, 0);
-			var modelId = processQueue.ObjectId;
 			Queue = processQueue;
 
-            Log.ForContext("ModelId", modelId).Information("Старт фонового процесса Формирования массива данных для Моделирования");
-
-			if (!modelId.HasValue)
+			InputParameters = processQueue.Parameters?.DeserializeFromXml<ObjectFormationInputParameters>();
+            if (InputParameters == null)
 			{
-				var message = Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
-				WorkerCommon.SetMessage(processQueue, message);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				NotificationSender.SendNotification(processQueue, MessageSubject, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
+				NotificationSender.SendNotification(processQueue, "Моделирование", "Операция завершена с ошибкой, т.к. нет входных данных.");
 				return;
 			}
+            Logger.ForContext("InputParameters", InputParameters, true).Debug("Старт фонового процесса Формирования массива данных для Моделирования");
+
 
 			try
 			{
-				Model = ModelingService.GetModelEntityById(modelId);
+				Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
 				Tour = ModelingService.GetModelTour(Model.GroupId);
 
 				var modelAttributes = GetGeneralModelAttributes(Model.Id);
@@ -78,11 +80,11 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				var errorId = ErrorManager.LogError(exception);
 				NotificationSender.SendNotification(processQueue, MessageSubject, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})");
-                Log.Error(exception, "Ошибка в ходе сбора данных для моделирования");
+				Logger.Error(exception, "Ошибка в ходе сбора данных для моделирования");
 			}
 
 			WorkerCommon.SetProgress(processQueue, 100);
-            Log.Information("Закончен фоновый процесс Формирования массива данных для Моделирования");
+			Logger.Information("Закончен фоновый процесс Формирования массива данных для Моделирования");
 		}
 
 
@@ -284,7 +286,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		        if (cadastralNumbers.Count == 0)
 			        return new List<MarketObjectToUnitRelation>();
 
-		        Logger.Debug("Найдено {CadastralNumbersCount} КН объектов аналогов", cadastralNumbers.Count);
+		        Logger.Debug("Найдено {CadastralNumbersCount} уникальных КН ОА", cadastralNumbers.Count);
             }
 
 	        var unitsDictionary = new Dictionary<string, UnitPure>();
@@ -332,6 +334,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	            marketObjects.ForEach(x =>
 	            {
 		            var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
+		            if (resultUnit == null && InputParameters.IsExcludeMarketObjectsWithoutUnit)
+			            return;
 
 		            marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
 		            {
@@ -339,6 +343,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			            Unit = resultUnit
 		            });
 	            });
+
+                Logger.Debug("Изанчально было {MarketObjectsCount} ОА, после фильтрации по непустой ЕО осталось {LeftCount}", marketObjects.Count, marketObjectToUnitRelation.Count);
             }
 
             return marketObjectToUnitRelation;
