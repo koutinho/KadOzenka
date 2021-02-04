@@ -472,7 +472,15 @@
                 field: "UnitId",
                 template: "# if(UnitId != null){# <a href=\"/ObjectCard?ObjId=#=UnitId#&RegisterViewId=KoObjects&isVertical=true&useMasterPage=true\" target=\"_blank\"><span class=\"k-icon k-i-hyperlink-open\"></span></a> #} #",
                 sortable: false,
-                filterable: false,
+                filterable: {
+                    extra: false,
+                    operators: {
+                        string: {
+                            isnull: "Пустое",
+                            isnotnull: "Непустое"
+                        }
+                    }
+                },
                 width: 100
             },
             {
