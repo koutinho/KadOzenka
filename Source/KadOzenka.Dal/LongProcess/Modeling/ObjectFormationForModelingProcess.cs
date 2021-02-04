@@ -14,6 +14,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -103,9 +104,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var dictionaries = GetDictionaries(modelAttributes);
             AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибутов  модели.", logger: Logger);
 
-            var marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects, tourFactorsAttributes.Count != 0);
-            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
-
+            List<MarketObjectToUnitRelation> marketObjectToUnitsRelation;
+            using (Logger.TimeOperation("Получение Единиц оценки по Объектам аналогам"))
+            {
+	            marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects, tourFactorsAttributes.Count != 0);
+	            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
+            }
+            
             var i = 0;
             AddLog(Queue, "Обработано объектов: ", logger: Logger);
             //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
@@ -272,28 +277,43 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         private List<MarketObjectToUnitRelation> GetMarketObjectToUnitRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
         {
-            var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).Distinct().ToList();
-            if (cadastralNumbers.Count == 0)
-                return new List<MarketObjectToUnitRelation>();
+	        List<string> cadastralNumbers;
+	        using (Logger.TimeOperation("Выборка КН из ОА"))
+	        {
+		        cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+		        if (cadastralNumbers.Count == 0)
+			        return new List<MarketObjectToUnitRelation>();
 
-            var unitsDictionary = new Dictionary<string, UnitPure>();
+		        Logger.Debug("Найдено {CadastralNumbersCount} КН объектов аналогов", cadastralNumbers.Count);
+            }
+
+	        var unitsDictionary = new Dictionary<string, UnitPure>();
             if (downloadUnits)
             {
-                var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
-                    .Select(x => new
-                    {
-                        x.CadastralNumber,
-                        x.PropertyType_Code,
-                        x.BuildingCadastralNumber
-                    })
-                    .Execute();
+	            List<OMUnit> units;
+	            using (Logger.TimeOperation("Поиск ЕО по КН объектов аналогов из тура с ИД {TourId}", Tour.Id))
+	            {
+		            units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
+			            .Select(x => new
+			            {
+				            x.CadastralNumber,
+				            x.PropertyType_Code,
+				            x.BuildingCadastralNumber
+			            })
+			            .Execute();
 
-                var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-                if (placementUnits.Count > 0)
-                {
-                    ProcessPlacemenUnits(placementUnits, units);
+		            Logger.Debug("Найдено {UnitsCount} ЕО", units.Count);
                 }
 
+	            using (Logger.TimeOperation("Обработка помещений в найденных ЕО"))
+	            {
+		            var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+		            if (placementUnits.Count > 0)
+		            {
+			            ProcessPlacemenUnits(placementUnits, units);
+		            }
+                }
+	            
                 unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
                 {
 	                var unit = v.First();
@@ -307,16 +327,19 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             }
 
             var marketObjectToUnitRelation = new List<MarketObjectToUnitRelation>();
-            marketObjects.ForEach(x =>
+            using (Logger.TimeOperation("Формирование отношений ЕО к ОА"))
             {
-                var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
+	            marketObjects.ForEach(x =>
+	            {
+		            var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
 
-                marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
-                {
-                    MarketObject = x,
-                    Unit = resultUnit
-                });
-            });
+		            marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
+		            {
+			            MarketObject = x,
+			            Unit = resultUnit
+		            });
+	            });
+            }
 
             return marketObjectToUnitRelation;
         }
@@ -328,26 +351,38 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var buildingCadastralNumbers = placementUnits
                 .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
                 .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
-            var buildingUnits = buildingCadastralNumbers.Count > 0
-                ? OMUnit.Where(x =>
-                        buildingCadastralNumbers.Contains(x.CadastralNumber) &&
-                        x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
-                    .Select(x => x.CadastralNumber)
-                    .Execute()
-                : new List<OMUnit>();
+            Logger.Debug("Найдено {BuildingCadastralNumbersCount} уникальных КН зданий", buildingCadastralNumbers.Count);
 
-            placementUnits.ForEach(placementUnit =>
+            List<OMUnit> buildingUnits;
+            using (Logger.TimeOperation("Получение ЕО по ранее найденным КН зданий из тура"))
             {
-                if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
-                {
-                    var currentBuildingUnits = buildingUnits.Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
-                    currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
-                    units.AddRange(buildingUnits);
-                    AddLog(Queue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: Logger);
-                }
+	            buildingUnits = buildingCadastralNumbers.Count > 0
+		            ? OMUnit.Where(x =>
+				            buildingCadastralNumbers.Contains(x.CadastralNumber) &&
+				            x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
+			            .Select(x => x.CadastralNumber)
+			            .Execute()
+		            : new List<OMUnit>();
+	            
+	            Logger.Debug("Найдено {BuildingUnitsCount} ЕО с типом здание", buildingUnits.Count);
+            }
 
-                units.Remove(placementUnit);
-            });
+            using (Logger.TimeOperation("Замена ЕД помещений на здания"))
+            {
+	            placementUnits.ForEach(placementUnit =>
+	            {
+		            if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
+		            {
+			            var currentBuildingUnits = buildingUnits
+				            .Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
+			            currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
+			            units.AddRange(buildingUnits);
+			            AddLog(Queue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: Logger);
+		            }
+
+		            units.Remove(placementUnit);
+	            });
+            }
         }
 
         #endregion
