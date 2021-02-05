@@ -3,6 +3,7 @@ using System.IO;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -36,6 +37,13 @@ namespace KadOzenka.Dal.Modeling
 			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);
 
 		void ResetTrainingResults(long? modelId, KoAlgoritmType type);
+
 		void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type);
+
+		void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo);
+
+		TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type);
+
+		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
 	}
 }

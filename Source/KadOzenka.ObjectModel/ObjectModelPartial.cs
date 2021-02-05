@@ -1604,6 +1604,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
+
+        /// <summary>
+        /// Ссылка на (223 Картинки с результатами обучения модели)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMModelTrainingResultImages> ModelTrainingResultImages { get; set; }
         public OMModel()
         {
 
@@ -1613,6 +1619,8 @@ namespace ObjectModel.KO
             PropertyChangedList = new HashSet<String>();
 
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
+
+            ModelTrainingResultImages = new List<ObjectModel.KO.OMModelTrainingResultImages>();
 
         }
         public OMModel(bool trackPropertyChanging) : this()
@@ -1960,6 +1968,30 @@ namespace ObjectModel.Ko
 
         }
         public OMGroupToMarketSegmentRelation(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 223 Картинки с результатами обучения модели
+    /// </summary>
+    public partial class OMModelTrainingResultImages
+    {
+
+        public OMModelTrainingResultImages()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelTrainingResultImages(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

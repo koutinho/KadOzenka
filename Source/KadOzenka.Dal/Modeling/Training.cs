@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -156,7 +157,7 @@ namespace KadOzenka.Dal.Modeling
 	            returnedResultType.Add(trainingType);
 
                 SaveCoefficients(trainingResult.Coefficients?.CoefficientsForAttributes, trainingType);
-	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult), trainingResult.Coefficients?.A0);
+	            SaveTrainingResult(trainingType, trainingResult, trainingResult.Coefficients?.A0);
 
 	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
             });
@@ -268,20 +269,49 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult, decimal? a0)
-		{
-			switch (type)
+        private void SaveTrainingResult(KoAlgoritmType type, TrainingResponse trainingResult, decimal? a0)
+        {
+	        var student = trainingResult.AccuracyScore?.Student;
+	        var mse = trainingResult.AccuracyScore?.MeanSquaredError;
+	        var r2 = trainingResult.AccuracyScore?.R2;
+	        var fisher = trainingResult.AccuracyScore?.FisherCriterion;
+            trainingResult.QualityControlInfo = new QualityControlInfo
+            {
+	            Student = new QualityControlSpecial
+	            {
+		            Estimated = student?.Estimated,
+		            Tabular = student?.Tabular
+	            },
+	            MeanSquaredError = new QualityControlSpecial
+	            {
+		            Estimated = mse?.Test,
+		            Tabular = mse?.Test
+                },
+	            R2 = new QualityControlSpecial
+	            {
+		            Estimated = r2?.Test,
+		            Tabular = r2?.Test
+	            },
+                Fisher = new QualityControlSpecial
+                {
+	                Estimated = fisher?.Estimated,
+                    Tabular = fisher?.Tabular
+                }
+            };
+            var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
+
+            switch (type)
 			{
 				case KoAlgoritmType.Exp:
-					GeneralModel.ExponentialTrainingResult = trainingResult;
+					GeneralModel.ExponentialTrainingResult = trainingResultStr;
 					GeneralModel.A0ForExponential = a0;
 					break;
 				case KoAlgoritmType.Line:
-					GeneralModel.LinearTrainingResult = trainingResult;
+					GeneralModel.LinearTrainingResult = trainingResultStr;
 					GeneralModel.A0 = a0;
                     break;
 				case KoAlgoritmType.Multi:
-					GeneralModel.MultiplicativeTrainingResult = trainingResult;
+					GeneralModel.MultiplicativeTrainingResult = trainingResultStr;
 					GeneralModel.A0ForMultiplicative = a0;
                     break;
                 case KoAlgoritmType.None:
@@ -289,7 +319,39 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			GeneralModel.Save();
-		}
+
+			SaveImagesToDb(type, trainingResult);
+        }
+
+        private void SaveImagesToDb(KoAlgoritmType type, TrainingResponse trainingResult)
+        {
+	        var existedImages = ModelingService.GetModelImages(GeneralModel.Id, type);
+	        if (existedImages == null)
+	        {
+		        existedImages = new OMModelTrainingResultImages
+		        {
+			        ModelId = GeneralModel.Id,
+			        AlgorithmType_Code = type
+		        };
+	        }
+
+	        var scatterImage = DownloadImage(trainingResult.Images?.ScatterLink);
+	        var correlationImage = DownloadImage(trainingResult.Images?.CorrelationLink);
+	        existedImages.Scatter = scatterImage;
+	        existedImages.Correlation = correlationImage;
+	        existedImages.Save();
+        }
+
+        private byte[] DownloadImage(string url)
+        {
+	        if (string.IsNullOrWhiteSpace(url))
+		        return null;
+
+	        using (var webClient = new WebClient())
+	        {
+		        return webClient.DownloadData(url);
+	        }
+        }
 
         #endregion
     }
