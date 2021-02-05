@@ -755,7 +755,14 @@ namespace ObjectModel.KO
         {
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
-            _log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
+            //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
+        }
+
+        public void FillMarkCatalogsFromList(Dictionary<long?, List<OMMarkCatalog>> dict)
+        {
+            var success = dict.TryGetValue(FactorId.GetValueOrDefault(), out var marks);
+            MarkCatalogs = success ? marks : new List<OMMarkCatalog>();
+            //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }
     }
     public partial class OMGroup

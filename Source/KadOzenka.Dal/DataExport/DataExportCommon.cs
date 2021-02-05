@@ -436,6 +436,23 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
+        public static bool GetObjectAttribute(DEKOGroup.UnitInfo unitInfo, long attrNumber, out string value)
+        {
+            var list = unitInfo.Attributes;
+            var unit = unitInfo.Unit;
+            bool result = false;
+            var value1 = "";
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId && x.S <= unit.CreationDate.GetValueOrDefault()).OrderByDescending(x=>x.S).ToList();
+            if (attribs.Count > 0)
+            {
+                value1 = attribs[0].StringValue;
+                result = true;
+            }
+
+            value = value1;
+            return result;
+        }
+
         public static bool GetObjectAttribute(Dictionary<long,List<GbuObjectAttribute>> dict, OMUnit unit, long attrNumber, out string value)
         {
             value = "";
