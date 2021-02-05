@@ -591,16 +591,16 @@ namespace KadOzenka.Dal.Modeling
 	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
 	            groupedFactors.ForEach(group =>
 	            {
-		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == group?.Key);
-		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == group?.Key);
+		            var factorId = group.Key;
+		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == factorId);
+		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == factorId);
 
-		            factorWasChanged = factorFromDb != null &&
-		                                      (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
-		                                       !string.Equals(factorFromDb.Value, factorFromFile?.Value));
+		            var isNormalizedFactor = normalizedFactors.Contains(factorId);
+					factorWasChanged = CheckFactorWasChanged(isNormalizedFactor, factorFromDb, factorFromFile);
+
 		            if (factorWasChanged)
 		            {
-			            factorWasChanged = true;
-			            factorFromDb.Value = normalizedFactors.Contains(group.Key) ? factorFromFile?.Value : factorFromDb.Value;
+			            factorFromDb.Value = isNormalizedFactor ? factorFromFile?.Value : factorFromDb.Value;
 			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
 		            }
 	            });
@@ -643,7 +643,7 @@ namespace KadOzenka.Dal.Modeling
             return result;
         }
 
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
 	        try
@@ -797,14 +797,31 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        #endregion
+        private bool CheckFactorWasChanged(bool isNormalizedFactor, CoefficientForObject factorFromDb, CoefficientForObject factorFromFile)
+        {
+	        bool factorWasChanged;
+	        if (isNormalizedFactor)
+	        {
+		        factorWasChanged = factorFromDb != null &&
+		                           (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
+		                            !string.Equals(factorFromDb.Value, factorFromFile?.Value));
+	        }
+	        else
+	        {
+		        factorWasChanged = factorFromDb != null && factorFromDb.Coefficient != factorFromFile?.Coefficient;
+	        }
 
-        #endregion
+	        return factorWasChanged;
+        }
+
+		#endregion
+
+		#endregion
 
 
-        #region Modeling Process
+		#region Modeling Process
 
-        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+		public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
 		{
 			var model = GetModelEntityById(modelId);
 			ResetTrainingResults(model, type);
