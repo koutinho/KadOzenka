@@ -109,8 +109,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				coefficientsToObject.TryGetValue(objectId.GetValueOrDefault(), out var coefficients);
 				var coefficient = coefficients?.FirstOrDefault();
 
-				var existedCoefficients = objects[i].Coefficients?.DeserializeFromXml<List<CoefficientForObject>>() ??
-										  new List<CoefficientForObject>();
+				var existedCoefficients = objects[i].DeserializeCoefficient();
 
 				var mustUpdateCoefficient = false;
 				var existedAttributeInCoefficients = existedCoefficients.FirstOrDefault(x => x.AttributeId == Attribute.AttributeId);
@@ -134,7 +133,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				if (mustUpdateCoefficient)
 				{
 					existedCoefficients.Add(coefficient);
-					objects[i].Coefficients = existedCoefficients.SerializeToXml();
+					objects[i].Coefficients = existedCoefficients.SerializeCoefficient();
 					objects[i].Save();
 				}
 

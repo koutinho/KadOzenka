@@ -485,7 +485,7 @@ namespace KadOzenka.Dal.Modeling
 				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
 				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
 
-				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var coefficients = obj.DeserializeCoefficient();
 				groupedFactors.ForEach(factor =>
 				{
 					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
@@ -588,7 +588,7 @@ namespace KadOzenka.Dal.Modeling
 	            }
 
 				var factorWasChanged = false;
-	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+	            var coefficientsFromDb = modelObject.DeserializeCoefficient();
 	            groupedFactors.ForEach(group =>
 	            {
 		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == group?.Key);
@@ -617,7 +617,7 @@ namespace KadOzenka.Dal.Modeling
 	            modelObject.IsForTraining = modelObjectFromExcel.IsForTraining;
 	            modelObject.IsForControl = modelObjectFromExcel.IsForControl;
 	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
-	            modelObject.Coefficients = coefficientsFromDb.SerializeToXml();
+	            modelObject.Coefficients = coefficientsFromDb.SerializeCoefficient();
 	            modelObject.Save();
 	            result.UpdatedObjectsCount++;
             }
@@ -643,7 +643,7 @@ namespace KadOzenka.Dal.Modeling
             return result;
         }
 
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
 	        try

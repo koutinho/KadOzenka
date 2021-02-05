@@ -287,16 +287,16 @@ namespace KadOzenka.Web.Controllers
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
-			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId};
-			////TODO код для отладки
-			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-			//{
-			//	Status_Code = Status.Added,
-			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = inputParamters.SerializeToXml()
-			//}, new CancellationToken());
+			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId, IsExcludeMarketObjectsWithoutUnit =  false};
+			//TODO код для отладки
+			new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+			{
+				Status_Code = Status.Added,
+				UserId = SRDSession.GetCurrentUserId(),
+				Parameters = inputParameters.SerializeToXml()
+			}, new CancellationToken());
 
-			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
+			//ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
 			return Ok();
 		}
@@ -314,22 +314,22 @@ namespace KadOzenka.Web.Controllers
 	            ModelId = modelId,
 	            ModelType = ConvertModelType(modelType)
             };
-			//////TODO код для отладки
-			//new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-			//{
-			//	Status_Code = Status.Added,
-			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = new ModelingInputParameters
-			//	{
-			//		Mode = ModelingMode.Training,
-			//		InputParametersXml = inputParameters.SerializeToXml()
-			//	}.SerializeToXml()
-			//}, new CancellationToken());
-			ModelingProcess.AddProcessToQueue(new ModelingInputParameters
+			////TODO код для отладки
+			new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			{
-				Mode = ModelingMode.Training,
-				InputParametersXml = inputParameters.SerializeToXml()
-			});
+				Status_Code = Status.Added,
+				UserId = SRDSession.GetCurrentUserId(),
+				Parameters = new ModelingInputParameters
+				{
+					Mode = ModelingMode.Training,
+					InputParametersXml = inputParameters.SerializeToXml()
+				}.SerializeToXml()
+			}, new CancellationToken());
+			//ModelingProcess.AddProcessToQueue(new ModelingInputParameters
+			//{
+			//	Mode = ModelingMode.Training,
+			//	InputParametersXml = inputParameters.SerializeToXml()
+			//});
 
 			return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
         }
@@ -343,22 +343,22 @@ namespace KadOzenka.Web.Controllers
                 ModelId = modelId,
                 ModelType = ConvertModelType(modelType)
             };
-			////TODO код для отладки
-			//new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-			//{
-			//	Status_Code = Status.Added,
-			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = new ModelingInputParameters
-			//	{
-			//		Mode = ModelingMode.Prediction,
-			//		InputParametersXml = inputParameters.SerializeToXml()
-			//	}.SerializeToXml()
-			//}, new CancellationToken());
-			ModelingProcess.AddProcessToQueue(new ModelingInputParameters
+			//TODO код для отладки
+			new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			{
-				Mode = ModelingMode.Prediction,
-				InputParametersXml = inputParameters.SerializeToXml()
-			});
+				Status_Code = Status.Added,
+				UserId = SRDSession.GetCurrentUserId(),
+				Parameters = new ModelingInputParameters
+				{
+					Mode = ModelingMode.Prediction,
+					InputParametersXml = inputParameters.SerializeToXml()
+				}.SerializeToXml()
+			}, new CancellationToken());
+			//ModelingProcess.AddProcessToQueue(new ModelingInputParameters
+			//{
+			//	Mode = ModelingMode.Prediction,
+			//	InputParametersXml = inputParameters.SerializeToXml()
+			//});
 
 			return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
         }
