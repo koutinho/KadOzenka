@@ -103,7 +103,9 @@ namespace KadOzenka.Dal.DataExport
             private readonly KOUnloadSettings _setting;
             private readonly OMGroup _subgroup;
             private readonly long _taskId;
+
             private readonly XmlDocument _xmlFile;
+
             //private Dictionary<long, List<GbuObjectAttribute>> _attributesByObject;
             //private Dictionary<long, List<CalcItem>> _calcItemDict;
             private readonly OMModel _model;
@@ -138,7 +140,9 @@ namespace KadOzenka.Dal.DataExport
                 _subgroup.Unit = OMUnit
                     .Where(x => x.GroupId == _subgroup.Id && x.TaskId == _taskId && x.CadastralCost > 0)
                     .OrderBy(x => x.Id)
-                    .Select(x => new { x.Id,x.CadastralNumber,x.PropertyType_Code,x.Square,x.Upks,x.ObjectId,x.CreationDate}).Execute();
+                    .Select(x => new
+                        {x.Id, x.CadastralNumber, x.PropertyType_Code, x.Square, x.Upks, x.ObjectId, x.CreationDate})
+                    .Execute();
                 Log.Debug(
                     "Найдено {subgroupUnitCount} ЕО с группой {subgroupId} и ЗнО {taskId}, у которых положительная Кадастровая стоимость",
                     _subgroup.Unit.Count, _subgroup.Id, _taskId);
@@ -493,9 +497,17 @@ namespace KadOzenka.Dal.DataExport
 
             private Dictionary<long?, List<OMMarkCatalog>> GetMarks()
             {
-                return OMMarkCatalog.Where(x => x.GroupId == _model.GroupId)
-                    .SelectAll().Execute()
-                    .GroupBy(x=>x.FactorId).ToDictionary(x => x.Key, x => x.ToList());
+                List<OMMarkCatalog> omMarkCatalogs;
+                using (Log.TimeOperation("Получение меток"))
+                {
+                    omMarkCatalogs = OMMarkCatalog.Where(x => x.GroupId == _model.GroupId)
+                        .SelectAll().Execute();
+                }
+
+                using (Log.TimeOperation("Группировка {marksCount} меток по факторам", omMarkCatalogs.Count))
+                {
+                    return omMarkCatalogs.GroupBy(x => x.FactorId).ToDictionary(x => x.Key, x => x.ToList());
+                }
             }
 
             private void AddAppraise(XmlNode xnPackage)
@@ -525,7 +537,8 @@ namespace KadOzenka.Dal.DataExport
                     objectIds = _subgroup.Unit.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
                 var allAttributes =
                     new GbuObjectService().GetAllAttributes(objectIds, null, new List<long> {3, 4, 5, 8, 600});
-                Log.Verbose("Получено {attributesCount} атрибутов для {objectsCount} объектов", allAttributes.Count, objectIds.Count);
+                Log.Verbose("Получено {attributesCount} атрибутов для {objectsCount} объектов", allAttributes.Count,
+                    objectIds.Count);
                 var res = allAttributes.GroupBy(x => x.ObjectId).ToDictionary(x => x.Key, x => x.ToList());
                 return res;
             }
@@ -570,7 +583,7 @@ namespace KadOzenka.Dal.DataExport
                     if (currentUnitsCount % 1000 == 0)
                     {
                         Log.Debug("Обработка 1000 ГБУ атрибутов: {elapsed} ms, длина словаря: {dictLength}",
-                            _stopwatch.ElapsedMilliseconds, 100_000);//_attributesByObject.Count);
+                            _stopwatch.ElapsedMilliseconds, _unitInfoSize); //_attributesByObject.Count);
                         _stopwatch.Restart();
                     }
                 }
@@ -625,7 +638,7 @@ namespace KadOzenka.Dal.DataExport
                     if (currentUnitsCount % 1000 == 0)
                     {
                         Log.Debug("Обработка 1000 ГБУ атрибутов: {elapsed} ms, длина словаря: {dictLength}",
-                            _stopwatch.ElapsedMilliseconds, 100_000);//_attributesByObject.Count);
+                            _stopwatch.ElapsedMilliseconds, _unitInfoSize); //_attributesByObject.Count);
                         _stopwatch.Restart();
                     }
                 }
@@ -750,7 +763,7 @@ namespace KadOzenka.Dal.DataExport
                 return xnRealEstate;
             }
 
-            private void AddXnEvaluativeFactors(Dictionary<long?,List<OMMarkCatalog>> marks, XmlNode xnRealEstate,
+            private void AddXnEvaluativeFactors(Dictionary<long?, List<OMMarkCatalog>> marks, XmlNode xnRealEstate,
                 List<CalcItem> calcItems)
             {
                 XmlNode xnCEvaluativeFactors = _xmlFile.CreateElement("Evaluative_Factors");
@@ -764,7 +777,8 @@ namespace KadOzenka.Dal.DataExport
                 xnRealEstate.AppendChild(xnCEvaluativeFactors);
             }
 
-            private void AddXnEvaluativeFactors(Dictionary<long?,List<OMMarkCatalog>> marks, XmlNode xnRealEstate, OMUnit unit,
+            private void AddXnEvaluativeFactors(Dictionary<long?, List<OMMarkCatalog>> marks, XmlNode xnRealEstate,
+                OMUnit unit,
                 int factorReestrId)
             {
                 XmlNode xnCEvaluativeFactors = _xmlFile.CreateElement("Evaluative_Factors");
@@ -781,51 +795,43 @@ namespace KadOzenka.Dal.DataExport
                 xnRealEstate.AppendChild(xnCEvaluativeFactors);
             }
 
-            private void Modelling(Dictionary<long?,List<OMMarkCatalog>> marks, List<CalcItem> calcItems, XmlNode xnCEvaluativeFactors)
+            private void Modelling(Dictionary<long?, List<OMMarkCatalog>> marks, List<CalcItem> calcItems,
+                XmlNode xnCEvaluativeFactors)
             {
-                if (_model != null)
+                using (Log.TimeOperation(
+                    "Выполнение секции Modelling, групп меток: {marksCount}, значений факторов: {calcItemsCount}",
+                    marks.Count, calcItems.Count))
                 {
+                    if (_model == null) return;
                     foreach (var factorModel in _model.ModelFactor)
                     {
-                        var findf = false;
                         var valueItem = string.Empty; //TODO: значение фактора для данного объекта
                         var factorItem = calcItems.Find(x => x.FactorId == factorModel.FactorId);
-                        if (factorItem != null)
+                        if (factorItem == null) continue;
+
+                        valueItem = factorItem.Value;
+                        XmlNode xnCEvaluativeFactor = _xmlFile.CreateElement("Evaluative_Factor");
+                        DataExportCommon.AddAttribute(_xmlFile, xnCEvaluativeFactor, "ID_Factor",
+                            factorModel.FactorId + "_" + _subgroup.Id);
+
+                        factorModel.FillMarkCatalogsFromList(marks);
+
+                        if (factorModel.SignMarket)
                         {
-                            findf = true;
-                            valueItem = factorItem.Value;
+                            var mark = factorModel.MarkCatalogs.Find(x => x.ValueFactor == valueItem);
+                            if (mark == null) continue;
+
+                            XmlNode xnQualitativeId = _xmlFile.CreateElement("Qualitative_Id");
+                            xnQualitativeId.InnerText = mark.Id.ToString();
+                            xnCEvaluativeFactor.AppendChild(xnQualitativeId);
+                            xnCEvaluativeFactors.AppendChild(xnCEvaluativeFactor);
                         }
-
-                        if (findf) // если фактор найден
+                        else
                         {
-                            XmlNode xnCEvaluativeFactor = _xmlFile.CreateElement("Evaluative_Factor");
-                            DataExportCommon.AddAttribute(_xmlFile, xnCEvaluativeFactor, "ID_Factor",
-                                factorModel.FactorId + "_" + _subgroup.Id);
-
-                            factorModel.FillMarkCatalogsFromList(marks);
-
-                            var addf = false;
-                            if (factorModel.SignMarket)
-                            {
-                                var mark = factorModel.MarkCatalogs.Find(x => x.ValueFactor == valueItem);
-                                if (mark != null)
-                                {
-                                    XmlNode xnQualitativeId = _xmlFile.CreateElement("Qualitative_Id");
-                                    xnQualitativeId.InnerText = mark.Id.ToString();
-                                    xnCEvaluativeFactor.AppendChild(xnQualitativeId);
-                                    addf = true;
-                                }
-                            }
-                            else
-                            {
-                                XmlNode xnQuantitativeValue = _xmlFile.CreateElement("Quantitative_Value");
-                                xnQuantitativeValue.InnerText = valueItem.ToUpper();
-                                xnCEvaluativeFactor.AppendChild(xnQuantitativeValue);
-                                addf = true;
-                            }
-
-                            if (addf)
-                                xnCEvaluativeFactors.AppendChild(xnCEvaluativeFactor);
+                            XmlNode xnQuantitativeValue = _xmlFile.CreateElement("Quantitative_Value");
+                            xnQuantitativeValue.InnerText = valueItem.ToUpper();
+                            xnCEvaluativeFactor.AppendChild(xnQuantitativeValue);
+                            xnCEvaluativeFactors.AppendChild(xnCEvaluativeFactor);
                         }
                     }
                 }
@@ -906,16 +912,6 @@ namespace KadOzenka.Dal.DataExport
                     OMGroup group = OMGroup.Where(x => x.Id == groupId).SelectAll().ExecuteFirstOrDefault();
                     if (group.GroupAlgoritm_Code != KoGroupAlgoritm.Model)
                         return new Dictionary<long, List<CalcItem>>();
-
-//                    if (_model== null) return new Dictionary<long, List<CalcItem>>();
-//
-//                    if (_model.ModelFactor.Count == 0)
-//                        _model.ModelFactor = OMModelFactor
-//                            .Where(x => x.ModelId == _model.Id && x.AlgorithmType_Code == _model.AlgoritmType_Code)
-//                            .SelectAll()
-//                            .Execute();
-
-                    //var modelFactors = _model.ModelFactor.Select(x => x.FactorId).ToList();
 
                     var allAttr = GetTourFactorAttributesByRegisterId(factorRegisterId);
                     var attr = allAttr
@@ -1060,7 +1056,9 @@ namespace KadOzenka.Dal.DataExport
                     .OrderBy(x => x.Name).SelectAll().Execute();
             }
 
-            private int batchSize = 100_000;
+            private const int BatchSize = 100_000;
+            private int _unitInfoSize = 0;
+
             protected IEnumerable<UnitInfo> GetUnitInfos(bool loadGroupFactors)
             {
                 List<UnitInfo> unitInfos = new List<UnitInfo>();
@@ -1076,19 +1074,22 @@ namespace KadOzenka.Dal.DataExport
                 for (var i = 0; i < unitsCount; i++)
                 {
                     // Подгрузка данных
-                    if (i % batchSize == 0)
+                    if (i % BatchSize == 0)
                     {
+                        var sw = new Stopwatch();
+                        sw.Start();
                         unitInfos.Clear();
                         unitInfosCounter = 0;
-                        var query = unitsQuery.SetPackageSize(batchSize).SetPackageIndex(batchNum);
+                        var query = unitsQuery.SetPackageSize(BatchSize).SetPackageIndex(batchNum);
+                        _unitInfoSize = query.ExecuteCount();
                         var units = query.Execute();
                         //var sql = query.GetSql();
                         var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
                         var attributes = GetAttributesByObject(objectIds);
-                        Dictionary<long,List<CalcItem>> factors = new Dictionary<long, List<CalcItem>>();
+                        Dictionary<long, List<CalcItem>> factors = new Dictionary<long, List<CalcItem>>();
                         if (loadGroupFactors)
                         {
-                            factors = GetGroupFactors(factorRegisterId,_subgroup.Id, _taskId);
+                            factors = GetGroupFactors(factorRegisterId, _subgroup.Id, _taskId);
                         }
 
                         foreach (var unit in units)
@@ -1102,10 +1103,14 @@ namespace KadOzenka.Dal.DataExport
                                 factors.TryGetValue(unit.Id, out var factorList);
                                 info.CalcItems = factorList;
                             }
+
                             unitInfos.Add(info);
                         }
 
                         batchNum++;
+                        sw.Stop();
+                        Log.Verbose("Подгружена информация по {unitInfoSize} объектов за {unitInfoLoadMilliseconds}",
+                            unitsCount, sw.ElapsedMilliseconds);
                     }
 
                     unitInfos.TryGetValue(unitInfosCounter, out var res);
